@@ -59,7 +59,7 @@ Unit and integration tests are written for this package. The tests should pass i
 `(Linux)`
 ```sh
 cd /<your_absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry_and_robots
-pytest -s --docker-compose=./chemistry_and_robots/tests/docker-compose.yml --reruns 5 --reruns-delay 5
+pytest -s --reruns 5 --reruns-delay 5
 ```
 
 # New features and package release #

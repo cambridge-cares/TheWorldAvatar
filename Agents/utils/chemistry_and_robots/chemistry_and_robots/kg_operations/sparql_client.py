@@ -627,7 +627,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
                 ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
                 ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
-                ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
+                ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution ?contains_unidentified_component
                 WHERE {{
                     {'VALUES ?autosampler { <%s> }' % trimIRI(given_autosampler_iri) if given_autosampler_iri is not None else ""}
                     ?autosampler rdf:type <{ONTOVAPOURTEC_AUTOSAMPLER}>;
@@ -652,7 +652,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?max_level_om_value <{OM_HASUNIT}> ?max_level_unit;
                                             <{OM_HASNUMERICALVALUE}> ?max_level_num_val.
                     }}
-                    OPTIONAL {{?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_solution.}}
+                    OPTIONAL {{
+                        ?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_solution.
+                        # NOTE below is made optional to accommodate the situation where the chemical solution is generated at the end of reaction
+                        # NOTE but not characterised by HPLCPostPro yet, thus we don't have information about the concentation, hence not known if contains unidentified component
+                        OPTIONAL {{?chemical_solution <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.}}
+                    }}
                 }}"""
         return query
 
@@ -734,7 +739,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         instance_iri=info_of_specific_site['chemical_solution'],
                         refersToMaterial=referred_instance_of_ontocape_material,
                         fills=info_of_specific_site['vial'],
-                        isPreparedBy=None # TODO [future work] add support for isPreparedBy
+                        isPreparedBy=None, # TODO [future work] add support for isPreparedBy
+                        containsUnidentifiedComponent=info_of_specific_site['contains_unidentified_component'] if 'contains_unidentified_component' in info_of_specific_site else None,
                     ) if 'chemical_solution' in info_of_specific_site else None,
                     hasFillLevel=OM_Volume(
                         instance_iri=info_of_specific_site['fill_level'],
@@ -1299,6 +1305,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
         ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val
         ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
+        ?contains_unidentified_component
         WHERE {{
             ?reagent_bottle <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
             ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
@@ -1313,6 +1320,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             ?warn_level_om_value <{OM_HASUNIT}> ?warn_level_unit; <{OM_HASNUMERICALVALUE}> ?warn_level_num_val.
 
             ?reagent_bottle <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_solution.
+            ?chemical_solution <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.
         }}"""
 
         response = self.performQuery(query)
@@ -1326,7 +1334,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 instance_iri=res['chemical_solution'],
                 refersToMaterial=self.get_ontocape_material(res['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL, ONTOCAPE_MATERIAL)[0],
                 fills=res['reagent_bottle'],
-                isPreparedBy=None # TODO [future work] add support for isPreparedBy
+                isPreparedBy=None, # TODO [future work] add support for isPreparedBy
+                containsUnidentifiedComponent=res['contains_unidentified_component'],
             ),
             hasFillLevel=OM_Volume(
                 instance_iri=res['fill_level'],
@@ -1500,9 +1509,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if rt_diff.get(key_min_rt_diff) < hplc.RETENTION_TIME_MATCH_THRESHOLD:
             return key_min_rt_diff
         else:
-            # TODO instead of raising an exception, we should return write this information to KG and return None
-            raise Exception("No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance (%s) given RETENTION_TIME_MATCH_THRESHOLD of %s and OntoHPLC:HPLCMethod (%s)" % (
-                retention_time, hplc.RETENTION_TIME_MATCH_THRESHOLD, hplc_method))
+            logger.warning(f"No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance ({retention_time}) given RETENTION_TIME_MATCH_THRESHOLD of {hplc.RETENTION_TIME_MATCH_THRESHOLD} and OntoHPLC:HPLCMethod ({hplc_method.instance_iri})")
+            return None
 
     def get_internal_standard(self, hplc_method_iri: str) -> InternalStandard:
         hplc_method_iri = trimIRI(hplc_method_iri)
@@ -1718,7 +1726,30 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_concentration = []
         list_phase_component = []
         list_chrom_pts= []
-        dct_points = {self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
+        dct_points = {}
+        _flag_unidentified_species = False
+        for pt in list_points:
+            _identified_species = self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method)
+            # first handle the unidentified species
+            if _identified_species is None:
+                _flag_unidentified_species = True
+                _unidentified_chrom_pt = ChromatogramPoint(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(hplc_report_iri),
+                    indicatesComponent=None,
+                    hasPeakArea=pt.get(ONTOHPLC_PEAKAREA),
+                    atRetentionTime=pt.get(ONTOHPLC_RETENTIONTIME),
+                    unidentified=True,
+                    rdfs_comment = f"Species unidentified due to unknown peak information not provided in HPLCMethod {hplc_method.instance_iri}.",
+                )
+                list_chrom_pts.append(_unidentified_chrom_pt)
+            else:
+                # then add the identified species to dict, report error if multiple records identified for the same species
+                if _identified_species not in dct_points:
+                    dct_points[_identified_species] = pt
+                else:
+                    raise Exception(f"Multiple records of ChromatogramPoint were identified for the same Species <{_identified_species}>: {str([dct_points[_identified_species], pt])}")
+
         try:
             internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue
         except KeyError:
@@ -1726,38 +1757,54 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         for pt in dct_points:
             # calculate concentration based on the peak area and response factor
-            try:
-                conc_num_val = dct_points[pt][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue / internal_standard_peak_area * internal_standard_run_conc_moleperlitre / dct_response_factor[pt]
-            except KeyError:
-                raise Exception("ResponseFactor of Species <%s> is not presented in the HPLCMethod <%s>: %s" % (pt, hplc_method.instance_iri, str(hplc_method)))
-            concentration = OntoCAPE_Molarity(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(hplc_report_iri),
-                hasValue=OntoCAPE_ScalarValue(
+            if pt not in dct_response_factor:
+                # if the species is identified, but the response factor is unknown, then we consider this as unidentified species
+                # TODO [next iteration] in theory, a good practice would be making the species as identified, but unquantified, but simplified for now
+                _flag_unidentified_species = True
+                _unidentified_chrom_pt = ChromatogramPoint(
                     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                     namespace_for_init=getNameSpace(hplc_report_iri),
-                    hasUnitOfMeasure=OM_MOLEPERLITRE,
-                    numericalValue=conc_num_val
+                    indicatesComponent=None,
+                    hasPeakArea=dct_points[pt][ONTOHPLC_PEAKAREA],
+                    atRetentionTime=dct_points[pt][ONTOHPLC_RETENTIONTIME],
+                    unidentified=True,
+                    rdfs_comment = f"Species identified as {pt}, but the response factor is not provided in HPLCMethod {hplc_method.instance_iri}. Therefore, annotated as unidentified for simplicity.",
                 )
-            )
-            # generate phase component
-            phase_component = OntoCAPE_PhaseComponent(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(hplc_report_iri),
-                hasProperty=concentration,
-                representsOccurenceOf=pt
-            )
+                list_chrom_pts.append(_unidentified_chrom_pt)
+                logger.warning("ResponseFactor of Species <%s> is not presented in the HPLCMethod <%s>: %s" % (pt, hplc_method.instance_iri, str(hplc_method)))
 
-            chrom_pt = ChromatogramPoint(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(hplc_report_iri),
-                indicatesComponent=phase_component,
-                hasPeakArea=dct_points[pt][ONTOHPLC_PEAKAREA],
-                atRetentionTime=dct_points[pt][ONTOHPLC_RETENTIONTIME]
-            )
-            list_concentration.append(concentration)
-            list_phase_component.append(phase_component)
-            list_chrom_pts.append(chrom_pt)
+            else:
+                # means the response factor information is available for this species
+                conc_num_val = dct_points[pt][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue / internal_standard_peak_area * internal_standard_run_conc_moleperlitre / dct_response_factor[pt]
+                concentration = OntoCAPE_Molarity(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(hplc_report_iri),
+                    hasValue=OntoCAPE_ScalarValue(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(hplc_report_iri),
+                        hasUnitOfMeasure=OM_MOLEPERLITRE,
+                        numericalValue=conc_num_val
+                    )
+                )
+                # generate phase component
+                phase_component = OntoCAPE_PhaseComponent(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(hplc_report_iri),
+                    hasProperty=concentration,
+                    representsOccurenceOf=pt
+                )
+
+                chrom_pt = ChromatogramPoint(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(hplc_report_iri),
+                    indicatesComponent=phase_component,
+                    hasPeakArea=dct_points[pt][ONTOHPLC_PEAKAREA],
+                    atRetentionTime=dct_points[pt][ONTOHPLC_RETENTIONTIME],
+                    rdfs_comment=f"Species identified as {pt}, and the response factor is provided in HPLCMethod {hplc_method.instance_iri}.",
+                )
+                list_concentration.append(concentration)
+                list_phase_component.append(phase_component)
+                list_chrom_pts.append(chrom_pt)
 
         composition = OntoCAPE_Composition(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -1798,7 +1845,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         chemical_solution = ChemicalSolution(
             instance_iri=chem_sol_iri,
             refersToMaterial=output_chemical,
-            fills=chem_sol_vial
+            fills=chem_sol_vial,
+            isPreparedBy=None, # TODO [future work] add support for isPreparedBy
+            # TODO [next iteration, shortcut for now] note that HPLC will not be able to identify all the species
+            # therefore, we need to set this flag to True when unidentifiable species is represented in the reaction, e.g. NaOH
+            containsUnidentifiedComponent=_flag_unidentified_species,
         )
 
         # generate hplc report instance
@@ -1818,22 +1869,24 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_chromatogram_point_of_hplc_report(self, hplc_report_iri: str) -> List[ChromatogramPoint]:
         hplc_report_iri = trimIRI(hplc_report_iri)
-        query = PREFIX_RDF+"""SELECT ?pt ?phase_component ?chemical_species ?conc ?conc_type
-                   ?conc_value ?conc_unit ?conc_num_val ?area ?area_value ?area_unit ?area_num_val
-                   ?rt ?rt_value ?rt_unit ?rt_num_val
-                   WHERE {
-                       <%s> <%s> ?pt.
-                       ?pt <%s> ?phase_component; <%s> ?area; <%s> ?rt.
-                       ?phase_component <%s> ?chemical_species.
-                       ?phase_component <%s> ?conc. ?conc rdf:type ?conc_type; <%s> ?conc_value.
-                       ?conc_value <%s> ?conc_unit; <%s> ?conc_num_val.
-                       ?area <%s> ?area_value. ?area_value <%s> ?area_unit; <%s> ?area_num_val.
-                       ?rt <%s> ?rt_value. ?rt_value <%s> ?rt_unit; <%s> ?rt_num_val.
-                   }""" % (
-                       hplc_report_iri, ONTOHPLC_RECORDS, ONTOHPLC_INDICATESCOMPONENT, ONTOHPLC_HASPEAKAREA, ONTOHPLC_ATRETENTIONTIME,
-                       ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY, ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE,
-                       OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE
-                   )
+        query = f"""{PREFIX_RDF}
+                    SELECT ?pt ?phase_component ?chemical_species ?conc ?conc_type
+                    ?conc_value ?conc_unit ?conc_num_val ?area ?area_value ?area_unit ?area_num_val
+                    ?rt ?rt_value ?rt_unit ?rt_num_val ?unidentified ?rdfs_comment
+                    WHERE {{
+                        <{hplc_report_iri}> <{ONTOHPLC_RECORDS}> ?pt.
+                        ?pt <{ONTOHPLC_HASPEAKAREA}> ?area; <{ONTOHPLC_ATRETENTIONTIME}> ?rt.
+                        ?area <{OM_HASVALUE}> ?area_value. ?area_value <{OM_HASUNIT}> ?area_unit; <{OM_HASNUMERICALVALUE}> ?area_num_val.
+                        ?rt <{OM_HASVALUE}> ?rt_value. ?rt_value <{OM_HASUNIT}> ?rt_unit; <{OM_HASNUMERICALVALUE}> ?rt_num_val.
+                        OPTIONAL {{
+                            ?pt <{ONTOHPLC_INDICATESCOMPONENT}> ?phase_component.
+                            ?phase_component <{ONTOCAPE_REPRESENTSOCCURENCEOF}> ?chemical_species.
+                            ?phase_component <{ONTOCAPE_HASPROPERTY}> ?conc. ?conc rdf:type ?conc_type; <{ONTOCAPE_HASVALUE}> ?conc_value.
+                            ?conc_value <{ONTOCAPE_HASUNITOFMEASURE}> ?conc_unit; <{ONTOCAPE_NUMERICALVALUE}> ?conc_num_val.
+                        }}
+                        ?pt <{ONTOHPLC_UNIDENTIFIED}> ?unidentified.
+                        OPTIONAL {{ ?pt <{RDFS_COMMENT}> ?rdfs_comment. }}
+                    }}"""
         response = self.performQuery(query)
 
         list_chrom_pts = []
@@ -1841,18 +1894,24 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("The ChromatogramPoint of the given HPLCReport <%s> is not uniquely stored: %s" % (
                 hplc_report_iri, str(response)))
         for r in response:
-            if r['conc_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
-                concentration = OntoCAPE_Molarity(instance_iri=r['conc'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['conc_value'],numericalValue=r['conc_num_val'],hasUnitOfMeasure=r['conc_unit']))
-            else:
-                # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
-                raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['conc_type'])
-            pt = ChromatogramPoint(
-                instance_iri=r['pt'],
-                indicatesComponent=OntoCAPE_PhaseComponent(
+            if 'phase_component' in r:
+                if r['conc_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                    concentration = OntoCAPE_Molarity(instance_iri=r['conc'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['conc_value'],numericalValue=r['conc_num_val'],hasUnitOfMeasure=r['conc_unit']))
+                else:
+                    # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
+                    raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['conc_type'])
+                _phase_component = OntoCAPE_PhaseComponent(
                     instance_iri=r['phase_component'],
                     hasProperty=concentration,
                     representsOccurenceOf=r['chemical_species']
-                ),
+                )
+            else:
+                # phase component can be None is the peak is unidentified
+                _phase_component = None
+
+            pt = ChromatogramPoint(
+                instance_iri=r['pt'],
+                indicatesComponent=_phase_component,
                 hasPeakArea=PeakArea(
                     instance_iri=r['area'],
                     hasValue=OM_Measure(instance_iri=r['area_value'],hasUnit=r['area_unit'],hasNumericalValue=r['area_num_val'])
@@ -1860,7 +1919,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 atRetentionTime=RetentionTime(
                     instance_iri=r['rt'],
                     hasValue=OM_Measure(instance_iri=r['rt_value'],hasUnit=r['rt_unit'],hasNumericalValue=r['rt_num_val'])
-                )
+                ),
+                unidentified=r['unidentified'],
+                rdfs_comment=r['rdfs_comment'] if 'rdfs_comment' in r else None,
             )
             list_chrom_pts.append(pt)
 
@@ -1868,9 +1929,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_existing_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
         hplc_report_iri = trimIRI(hplc_report_iri)
-        query = """SELECT ?chemical_solution ?report_path ?local_report_file ?lastLocalModifiedAt ?lastUploadedAt ?vial
-                   WHERE {<%s> <%s> ?chemical_solution; <%s> ?report_path; <%s> ?local_report_file; <%s> ?lastLocalModifiedAt; <%s> ?lastUploadedAt. ?chemical_solution <%s> ?vial.}""" % (
-                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_REMOTEFILEPATH, ONTOHPLC_LOCALFILEPATH, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS)
+        query = f"""SELECT ?chemical_solution ?report_path ?local_report_file ?lastLocalModifiedAt ?lastUploadedAt ?vial ?contains_unidentified_component
+                   WHERE {{
+                       <{hplc_report_iri}> <{ONTOHPLC_GENERATEDFOR}> ?chemical_solution; <{ONTOHPLC_REMOTEFILEPATH}> ?report_path;
+                       <{ONTOHPLC_LOCALFILEPATH}> ?local_report_file; <{ONTOHPLC_LASTLOCALMODIFIEDAT}> ?lastLocalModifiedAt;
+                       <{ONTOHPLC_LASTUPLOADEDAT}> ?lastUploadedAt. ?chemical_solution <{ONTOVAPOURTEC_FILLS}> ?vial.
+                       ?chemical_solution <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.
+                    }}"""
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple instances of ChemicalSolution or HPLCReport path identified for HPLCReport <%s>: %s" % (
@@ -1885,6 +1950,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             lastLocalModifiedAt =  response[0]['lastLocalModifiedAt']
             lastUploadedAt = response[0]['lastUploadedAt']
             chem_sol_vial = response[0]['vial']
+            contains_unidentified_component = response[0]['contains_unidentified_component']
 
         hplc_report_instance = HPLCReport(
             instance_iri=hplc_report_iri,
@@ -1896,7 +1962,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             generatedFor=ChemicalSolution(
                 instance_iri=chem_sol_iri,
                 refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTOREACTION_OUTPUTCHEMICAL)[0],
-                fills=chem_sol_vial
+                fills=chem_sol_vial,
+                isPreparedBy=None, # TODO [future work] add support for isPreparedBy
+                containsUnidentifiedComponent=contains_unidentified_component,
             )
         )
 
@@ -1991,6 +2059,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG
         # <chemical_solution> <refersToMaterial> <output_chemical>
         g.add((URIRef(chemical_solution.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        # NOTE it is important to finally add if this chemical_solution contains fully identified species or not
+        # <chemical_solution> <containsUnidentifiedComponent> boolean
+        g.add((URIRef(chemical_solution.instance_iri), URIRef(ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT), Literal(chemical_solution.containsUnidentifiedComponent, datatype=XSD.boolean)))
         # Also add triples related to the OutputChemical
         g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
         # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
@@ -2040,10 +2111,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         autosampler_site_iri = trimIRI(autosampler_site_iri)
         chemical_solution_iri = initialiseInstanceIRI(getNameSpace(autosampler_site_iri), ONTOLAB_CHEMICALSOLUTION)
         g.add((URIRef(chemical_solution_iri), RDF.type, URIRef(ONTOLAB_CHEMICALSOLUTION)))
-        update = PREFIX_RDF + """INSERT {<%s> rdf:type <%s>; <%s> ?vial. ?vial <%s> <%s>. } WHERE {<%s> <%s> ?vial.}""" % (
-            chemical_solution_iri, ONTOLAB_CHEMICALSOLUTION, ONTOVAPOURTEC_FILLS, ONTOVAPOURTEC_ISFILLEDWITH, chemical_solution_iri,
-            autosampler_site_iri, ONTOVAPOURTEC_HOLDS
-        )
+        update = f"""{PREFIX_RDF} INSERT {{
+            <{chemical_solution_iri}> rdf:type <{ONTOLAB_CHEMICALSOLUTION}>.
+            <{chemical_solution_iri}> <{ONTOVAPOURTEC_FILLS}> ?vial.
+            ?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> <{chemical_solution_iri}>.
+            }} WHERE {{<{autosampler_site_iri}> <{ONTOVAPOURTEC_HOLDS}> ?vial.}}"""
+        # NOTE hewe we don't add triple <chemical_solution> <containsUnidentifiedComponent> boolean
+        # NOTE this will be added by method collect_triples_for_output_chemical_of_chem_sol called by HPLCPostProAgent
+        # NOTE as now we don't know if the chemical_solution contains fully identified species or not
+        # NOTE which will only be known after the post processing has finished
+        # TODO [future work] of course a better design can be made to avoid split things into different places
         self.performUpdate(update)
         self.update_vapourtec_autosampler_liquid_level_millilitre(
             {autosampler_site_iri:amount_of_chemical_solution}, for_consumption=False

@@ -1,5 +1,6 @@
 from pyderivationagent.data_model.iris import *
 
+RDFS_COMMENT = RDFS_BASE_URL + 'comment'
 
 ###--- Common Base URL ---###
 ONTOCAPE_PHASESYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#'
@@ -277,6 +278,7 @@ ONTOLAB_TRANSLATESTOPARAMETERSETTING = ONTOLAB + 'translatesToParameterSetting'
 ONTOLAB_STATELASTUPDATEDAT = ONTOLAB + 'stateLastUpdatedAt'
 ONTOLAB_REAGENTBOTTLE = ONTOLAB + 'ReagentBottle'
 ONTOLAB_WASTEBOTTLE = ONTOLAB + 'WasteBottle'
+ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT = ONTOLAB + 'containsUnidentifiedComponent'
 
 
 ###--- IRIs for OntoVapourtec ---###
@@ -366,6 +368,7 @@ ONTOVAPOURTEC_TORECEPTACLE = ONTOVAPOURTEC + 'toReceptacle'
 ###--- IRIs for OntoHPLC ---###
 ONTOHPLC_PEAKAREA = ONTOHPLC + 'PeakArea'
 ONTOHPLC_ATRETENTIONTIME = ONTOHPLC + 'atRetentionTime'
+ONTOHPLC_UNIDENTIFIED = ONTOHPLC + 'unidentified'
 ONTOHPLC_GENERATEDFOR = ONTOHPLC + 'generatedFor'
 ONTOHPLC_HASJOB = ONTOHPLC + 'hasJob'
 ONTOHPLC_HASPEAKAREA = ONTOHPLC + 'hasPeakArea'

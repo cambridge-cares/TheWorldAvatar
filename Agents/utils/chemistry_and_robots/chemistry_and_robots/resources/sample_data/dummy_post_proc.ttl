@@ -118,6 +118,7 @@
 :ChemicalSolution_1_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_1_1;
+    ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
 #############################
@@ -184,4 +185,5 @@
 :ChemicalSolution_2_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_2_1;
+    ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .

@@ -129,6 +129,7 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
     # TODO [future work] provide super class for ontovapourtec.Vial and ontolab.ReagentBottle, e.g. ontolab.Container
     fills: str
     isPreparedBy: Optional[PreparationMethod] = None
+    containsUnidentifiedComponent: Optional[bool] = False
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # <chemical_solution> <rdf:type> <ChemicalSolution>
@@ -143,6 +144,11 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
 
         if self.isPreparedBy is not None:
             g = self.isPreparedBy.create_instance_for_kg(g)
+
+        if self.containsUnidentifiedComponent is not None:
+            # NOTE only add this triple when it's known, otherwise just skip it
+            # <chemical_solution> <containsUnidentifiedComponent> boolean
+            g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT), Literal(self.containsUnidentifiedComponent)))
 
         return g
 

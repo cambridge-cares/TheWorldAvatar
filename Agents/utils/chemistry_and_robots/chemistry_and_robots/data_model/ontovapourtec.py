@@ -118,18 +118,25 @@ class AutoSamplerSite(BaseOntology):
     holds: Vial
     locationID: str
 
-    # TODO change this to list of chemical species
     def get_ontocape_material_given_chemical_species(
         self,
         solute: str,
         solvent_as_constraint: List[str]=None,
         species_to_exclude: List[str]=None,
+        only_allow_fully_identified_material: bool=True,
     ) -> Optional[OntoCAPE_Material]:
         if self.holds is not None:
             if self.holds.isFilledWith is not None:
                 if self.holds.isFilledWith.refersToMaterial is not None:
-                    if self.holds.isFilledWith.refersToMaterial.contains_chemical_species(solute, solvent_as_constraint, species_to_exclude):
-                        return self.holds.isFilledWith.refersToMaterial
+                    # below first check if only source this material if it's fully identified, and whether it's fully identified
+                    # this offers flexibility if we want the intermediate material in multi-step reaction to be included
+                    if only_allow_fully_identified_material and self.holds.isFilledWith.containsUnidentifiedComponent:
+                        # if only_allow_fully_identified_material is True, and the material is not fully identified, return None
+                        return None
+                    else:
+                        # for all other cases, check if the material is the one we want
+                        if self.holds.isFilledWith.refersToMaterial.contains_chemical_species(solute, solvent_as_constraint, species_to_exclude):
+                            return self.holds.isFilledWith.refersToMaterial
         return None
 
 class AutoSampler(LabEquipment):

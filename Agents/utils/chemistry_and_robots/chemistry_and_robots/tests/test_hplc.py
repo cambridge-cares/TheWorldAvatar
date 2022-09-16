@@ -11,6 +11,10 @@ import os
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
     ],
 )
 def test_process_raw_hplc_report_file(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin):

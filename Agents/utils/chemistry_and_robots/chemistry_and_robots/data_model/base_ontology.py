@@ -41,6 +41,7 @@ class BaseOntology(pydantic.BaseModel):
     instance_iri: str = None
     clz: str = None
     namespace_for_init: str = None
+    rdfs_comment: Optional[str] = None
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         _instance_iri = data['instance_iri'] if 'instance_iri' in data else None

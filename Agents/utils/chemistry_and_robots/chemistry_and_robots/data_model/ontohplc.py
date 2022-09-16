@@ -50,17 +50,30 @@ class ResponseFactor(OM_QuantityOfDimensionOne):
 
 class ChromatogramPoint(BaseOntology):
     clz: str = ONTOHPLC_CHROMATOGRAMPOINT
-    indicatesComponent: OntoCAPE_PhaseComponent
+    indicatesComponent: Optional[OntoCAPE_PhaseComponent]
     hasPeakArea: PeakArea
     atRetentionTime: RetentionTime
+    unidentified: bool = False
+
+    @pydantic.root_validator
+    @classmethod
+    def if_component_identified(cls, values):
+        if 'indicatesComponent' not in values and not values.get('unidentified'):
+            raise Exception(f"If indicatesComponent is not specified, then unidentified must be True. Error when initialising ChromatogramPoint: {values}")
+        if 'indicatesComponent' in values and values.get('indicatesComponent') is None and not values.get('unidentified'):
+            raise Exception(f"If indicatesComponent is None, then unidentified must be True. Error when initialising ChromatogramPoint: {values}")
+        if 'indicatesComponent' in values and values.get('indicatesComponent') is not None and values.get('unidentified'):
+            raise Exception(f"If indicatesComponent is specified, then unidentified must be False. Error when initialising ChromatogramPoint: {values}")
+        return values
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # <pt> <rdf:type> <OntoHPLC:ChromatogramPoint>
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
         # <pt> <indicatesComponent> <phase_component>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_INDICATESCOMPONENT), URIRef(self.indicatesComponent.instance_iri)))
-        g = self.indicatesComponent.create_instance_for_kg(g)
+        if self.indicatesComponent is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_INDICATESCOMPONENT), URIRef(self.indicatesComponent.instance_iri)))
+            g = self.indicatesComponent.create_instance_for_kg(g)
 
         # <pt> <hasPeakArea> <peak_area>
         g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_HASPEAKAREA), URIRef(self.hasPeakArea.instance_iri)))
@@ -69,6 +82,9 @@ class ChromatogramPoint(BaseOntology):
         # <pt> <atRetentionTime> <retention_time>
         g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_ATRETENTIONTIME), URIRef(self.atRetentionTime.instance_iri)))
         g = self.atRetentionTime.create_instance_for_kg(g)
+
+        # <pt> <unidentified> <boolean>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_UNIDENTIFIED), Literal(self.unidentified)))
 
         return g
 

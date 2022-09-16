@@ -1,3 +1,5 @@
+from testcontainers.core.container import DockerContainer
+from testcontainers.compose import DockerCompose
 from pathlib import Path
 from rdflib import Graph
 from enum import Enum
@@ -24,12 +26,19 @@ DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
 
 HPLC_XLS_REPORT_FILE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls.xls')
 HPLC_TXT_REPORT_FILE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt.txt')
+HPLC_XLS_REPORT_FILE_INCOMPLETE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls_incomplete.xls')
+HPLC_TXT_REPORT_FILE_INCOMPLETE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_incomplete.txt')
+HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls_unidentified_peaks.xls')
+HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_unidentified_peaks.txt')
 VAPOURTEC_INPUT_FILE = os.path.join(SAMPLE_DATA_DIR,'vapourtec_input.csv')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+KG_EXPOSED_PORT = 8080 # specified in docker-compose.yml
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
+FS_EXPOSED_PORT = 8080 # specified in docker-compose.yml
+DOCKER_COMPOSE_TEST_KG = 'docker-compose.yml'
 
 def pytest_sessionstart(session):
     """ This will run before all the tests"""
@@ -53,18 +62,18 @@ def pytest_sessionfinish(session):
 # Session-scoped test fixtures
 # ----------------------------------------------------------------------------------
 
-@pytest.fixture(scope="session")
-def get_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route):
-        service = session_scoped_container_getter.get(service_name).network_info[0]
-        service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
+# @pytest.fixture(scope="session")
+# def get_service_url(session_scoped_container_getter):
+#     def _get_service_url(service_name, url_route):
+#         service = session_scoped_container_getter.get(service_name).network_info[0]
+#         service_url = f"http://localhost:{service.host_port}/{url_route}"
+#         return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
-    return _get_service_url
+#     # this will run only once per entire test session and ensures that all the services
+#     # in docker containers are ready. Increase the sleep value in case services need a bit
+#     # more time to run on your machine.
+#     time.sleep(8)
+#     return _get_service_url
 
 @pytest.fixture(scope="session")
 def get_service_auth():
@@ -96,15 +105,28 @@ def generate_random_download_path():
 # Module-scoped test fixtures
 # ----------------------------------------------------------------------------------
 
+# NOTE this fixture uses DockerCompose from the testcontainers library to start the docker
+# containers. The docker-compose.yml file is in the directory of this file
+@pytest.fixture(scope="module")
+def initialise_blazegraph_and_fileserver():
+    docker_compose = DockerCompose(THIS_DIR, DOCKER_COMPOSE_TEST_KG, pull=True)
+    with docker_compose as containers:
+        bg_host = containers.get_service_host(KG_SERVICE, KG_EXPOSED_PORT)
+        bg_port = containers.get_service_port(KG_SERVICE, KG_EXPOSED_PORT)
+        fs_host = containers.get_service_host(FS_SERVICE, FS_EXPOSED_PORT)
+        fs_port = containers.get_service_port(FS_SERVICE, FS_EXPOSED_PORT)
+        bg_url = f'http://{bg_host}:{bg_port}/{KG_ROUTE}'
+        fs_url = f'http://{fs_host}:{fs_port}/{FS_ROUTE}'
+        yield bg_url, fs_url
+
 # NOTE the scope is set as "module" so that the operations in test_hplc.py does NOT affect those in test_sparql_client.py
 @pytest.fixture(scope="module")
-def initialise_triples(get_service_url, get_service_auth):
-    # Retrieve endpoint and auth for triple store
-    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
-    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+def initialise_triples(initialise_blazegraph_and_fileserver, get_service_auth):
+    # Retrieve endpoint for triple store and file server
+    sparql_endpoint, fs_url = initialise_blazegraph_and_fileserver
 
-    # Retrieve endpoint and auth for file server
-    fs_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
+    # Retrieve auth for triple store and file server
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
     fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
     # Create SparqlClient for testing
@@ -182,13 +204,7 @@ class TargetIRIs(Enum):
     AUTOSAMPLER_LIQUID_COMPONENT_DICT = {
         DUMMY_LAB_BASE_IRI + 'Site_4': [CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759',
             CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180'],
-        DUMMY_LAB_BASE_IRI + 'Site_5': ['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
-            CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759',
-            CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',
+        DUMMY_LAB_BASE_IRI + 'Site_5': [CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759',
             'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
         DUMMY_LAB_BASE_IRI + 'Site_3': ['http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',
             'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'],
@@ -197,6 +213,13 @@ class TargetIRIs(Enum):
             'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
         DUMMY_LAB_BASE_IRI + 'Site_2': ['http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
             'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb']
+    }
+    AUTOSAMPLER_LIQUID_CONTAINS_UNIDENTIFIED_COMPONENT_DICT = {
+        DUMMY_LAB_BASE_IRI + 'Site_4': False,
+        DUMMY_LAB_BASE_IRI + 'Site_5': True,
+        DUMMY_LAB_BASE_IRI + 'Site_3': False,
+        DUMMY_LAB_BASE_IRI + 'Site_1': False,
+        DUMMY_LAB_BASE_IRI + 'Site_2': False,
     }
     AUTOSAMPLER_LIQUID_LEVEL_UNIT_DICT = {
         DUMMY_LAB_BASE_IRI + 'Site_153': onto.OM_MILLILITRE,
@@ -448,17 +471,25 @@ class TargetIRIs(Enum):
     HPLC_LOCAL_FOLDER_PATH = '/home/jb2197/CHEM32/**/'
     HPLCREPORT_DUMMY_REMOTE_PATH = 'http://placeholder_path'
     HPLCREPORT_DUMMY_LOCAL_PATH = 'placeholder_file_name'
-    CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI = DUMMY_LAB_BASE_IRI + 'ChemicalSolution_For_OutputChemical_4'
+    CHEMICAL_SOLUTION_FOR_DUMMY_OUTPUTCHEMICAL_IRI = DUMMY_LAB_BASE_IRI + 'ChemicalSolution_For_Dummy_OutputChemical'
     CHROMATOGRAMPOINT_1_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_1'
-    CHROMATOGRAMPOINT_2_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_2'
     CHROMATOGRAMPOINT_3_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_3'
     CHROMATOGRAMPOINT_4_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_4'
-    CHROMATOGRAMPOINT_5_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_5'
-    CHROMATOGRAMPOINT_6_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_6'
-    CHROMATOGRAMPOINT_7_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_7'
     CHROMATOGRAMPOINT_8_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_8'
-    LIST_CHROMATOGRAMPOINT_IRI = [CHROMATOGRAMPOINT_1_IRI, CHROMATOGRAMPOINT_2_IRI, CHROMATOGRAMPOINT_3_IRI, CHROMATOGRAMPOINT_4_IRI,
-    CHROMATOGRAMPOINT_5_IRI, CHROMATOGRAMPOINT_6_IRI, CHROMATOGRAMPOINT_7_IRI, CHROMATOGRAMPOINT_8_IRI]
+    # CHROMATOGRAMPOINT_2_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_2'
+    # CHROMATOGRAMPOINT_5_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_5'
+    # CHROMATOGRAMPOINT_6_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_6'
+    # CHROMATOGRAMPOINT_7_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_7'
+    LIST_CHROMATOGRAMPOINT_IRI = [
+        CHROMATOGRAMPOINT_1_IRI,
+        CHROMATOGRAMPOINT_3_IRI,
+        CHROMATOGRAMPOINT_4_IRI,
+        CHROMATOGRAMPOINT_8_IRI,
+        # CHROMATOGRAMPOINT_2_IRI,
+        # CHROMATOGRAMPOINT_5_IRI,
+        # CHROMATOGRAMPOINT_6_IRI,
+        # CHROMATOGRAMPOINT_7_IRI,
+    ]
     DOE_BASE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/'
     DOE_IRI = DOE_BASE_IRI + 'DoE_1'
     DOE_STRATEGY_IRI = DOE_BASE_IRI + 'Strategy_1'
@@ -496,14 +527,16 @@ class TargetIRIs(Enum):
     VAPOURTECR4_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'VapourtecR4_1'
     VAPOURTECR4_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'VapourtecR4_2'
 
+    # NOTE some of the information below are commented out following the changes made to HPLCMETHOD_DUMMY_IRI in dummy_lab.ttl
+    # this is to mimic the situation where either the species is not visible in the chromatogram or some information are not available/presented in the HPLC method
     HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY = {
         'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b': 0.55,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 2.55,
+        # "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 2.55,
         CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759': 1.55,
         CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180': 4.55,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d": 5.55,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 6.55,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 7.55,
+        # "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d": 5.55,
+        # "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 6.55,
+        # "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 7.55,
         "http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 3.55
     }
 

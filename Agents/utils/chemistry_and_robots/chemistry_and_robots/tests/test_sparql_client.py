@@ -569,10 +569,14 @@ def test_get_chromatogram_point_of_hplc_report(initialise_triples):
     assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     for pt in list_chrom_pts:
         assert pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value
-        assert pt.indicatesComponent.instance_iri is not None
-        assert pt.indicatesComponent.representsOccurenceOf is not None
-        assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
-        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        if pt.indicatesComponent is not None:
+            assert not pt.unidentified
+            assert pt.indicatesComponent.instance_iri is not None
+            assert pt.indicatesComponent.representsOccurenceOf is not None
+            assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
+            assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        else:
+            assert pt.unidentified
         assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
         assert pt.atRetentionTime.hasValue.hasUnit is not None
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
@@ -585,7 +589,7 @@ def test_get_existing_hplc_report(initialise_triples):
     assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
     hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
-    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
+    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_DUMMY_OUTPUTCHEMICAL_IRI.value
     assert hplc_report.remoteFilePath is not None
     assert hplc_report.localFilePath is not None
     assert hplc_report.lastLocalModifiedAt > 0
@@ -606,7 +610,16 @@ def test_get_hplc_job_given_hplc_report_iri(initialise_triples):
     assert hplc_job_instance.instance_iri == TargetIRIs.HPLCJOB_DUMMY_IRI.value
     assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
     assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
-    assert hplc_job_instance.hasReport == sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    direct_query_hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    assert hplc_job_instance.hasReport.instance_iri == direct_query_hplc_report.instance_iri
+    assert hplc_job_instance.hasReport.remoteFilePath == direct_query_hplc_report.remoteFilePath
+    assert hplc_job_instance.hasReport.localFilePath == direct_query_hplc_report.localFilePath
+    assert hplc_job_instance.hasReport.lastLocalModifiedAt == direct_query_hplc_report.lastLocalModifiedAt
+    assert hplc_job_instance.hasReport.lastUploadedAt == direct_query_hplc_report.lastUploadedAt
+    assert hplc_job_instance.hasReport.generatedFor.instance_iri == direct_query_hplc_report.generatedFor.instance_iri
+    assert hplc_job_instance.hasReport.generatedFor.refersToMaterial == direct_query_hplc_report.generatedFor.refersToMaterial
+    assert len(hplc_job_instance.hasReport.records) == len(direct_query_hplc_report.records)
+    assert all(pt in direct_query_hplc_report.records for pt in hplc_job_instance.hasReport.records)
 
 def test_get_hplc_job(initialise_triples):
     sparql_client = initialise_triples
@@ -633,6 +646,10 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
     ],
 )
 def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
@@ -661,7 +678,12 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     assert filecmp.cmp(local_file_path,full_downloaded_path)
 
     # Fourth process the raw report (as part of PostProc Agent)
-    hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
+    hplc_report_instance = sparql_client.process_raw_hplc_report(
+        hplc_report_iri=hplc_report_iri,
+        internal_standard_species=internal_standard_species,
+        internal_standard_run_conc_moleperlitre=internal_standard_run_conc,
+        temp_local_folder=conftest.DOWNLOADED_DIR,
+    )
     assert hplc_report_instance.instance_iri == hplc_report_iri
     assert hplc_report_instance.remoteFilePath == remote_file_path
     assert hplc_report_instance.localFilePath == local_file_path
@@ -670,15 +692,20 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     list_chrom_pts = hplc_report_instance.records
     for pt in list_chrom_pts:
         assert pt.instance_iri.startswith(pt.namespace_for_init)
-        assert pt.indicatesComponent.instance_iri is not None
-        assert pt.indicatesComponent.representsOccurenceOf is not None
-        assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
-        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        if pt.indicatesComponent is not None:
+            assert not pt.unidentified
+            assert pt.indicatesComponent.instance_iri is not None
+            assert pt.indicatesComponent.representsOccurenceOf is not None
+            assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
+            assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        else:
+            assert "unidentified" in pt.rdfs_comment
+            assert pt.unidentified
         assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
         assert pt.atRetentionTime.hasValue.hasUnit is not None
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
         assert pt.hasPeakArea.hasValue.hasUnit is not None
-    dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts}
+    dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts if not pt.unidentified}
     chemical_solution_instance = hplc_report_instance.generatedFor
     assert chemical_solution_instance.instance_iri == chemical_solution_iri
     dct_phase_comp_chemical_solution = {pc.instance_iri:pc for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
@@ -815,6 +842,10 @@ def test_connect_hplc_report_with_chemical_solution(initialise_triples):
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
     ],
 )
 def test_detect_new_hplc_report(initialise_triples, local_file_path, hplc_digital_twin):
@@ -862,6 +893,7 @@ def test_get_autosampler(initialise_triples):
     assert all([dal.check_if_two_lists_equal([comp.representsOccurenceOf for comp in site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem],
         TargetIRIs.AUTOSAMPLER_LIQUID_COMPONENT_DICT.value[site.instance_iri]) for site in autosampler_sites if site.holds.isFilledWith is not None])
     assert all([site.locationID == TargetIRIs.AUTOSAMPLER_SITE_LOC_DICT.value[site.instance_iri] for site in autosampler_sites])
+    assert all([site.holds.isFilledWith.containsUnidentifiedComponent == TargetIRIs.AUTOSAMPLER_LIQUID_CONTAINS_UNIDENTIFIED_COMPONENT_DICT.value[site.instance_iri] for site in autosampler_sites if site.holds.isFilledWith is not None])
 
 def test_get_autosampler_site_given_input_chemical(initialise_triples):
     """This method tests the get_autosampler_site_given_input_chemical method in ontovapourtec.AutoSampler dataclass."""
@@ -1134,6 +1166,10 @@ def test_get_species_molar_mass_kilogrampermole(initialise_triples):
     [
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE, onto.TXTFILE_EXTENSION),
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.XLSFILE_EXTENSION),
     ],
 )
 def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_iri, local_file_path, hplc_report_extension):
@@ -1149,7 +1185,11 @@ def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_
     hplc_method = sparql_client.get_hplc_method_given_hplc_report(hplc_report_iri)
 
     # map them to chromatogram point (qury phase component based on hplc method, and hplc)
-    dct_points = {sparql_client.get_matching_species_from_hplc_results(pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
+    dct_points = {sparql_client.get_matching_species_from_hplc_results(
+        pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method
+    ):pt for pt in list_points if sparql_client.get_matching_species_from_hplc_results(
+        pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method
+    ) is not None}
 
     assert all([dct_points[key][onto.ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue == TargetIRIs.HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY.value[key] for key in dct_points])
 
