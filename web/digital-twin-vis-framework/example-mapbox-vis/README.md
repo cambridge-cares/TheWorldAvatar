@@ -4,7 +4,7 @@ This example visualisation has been put together to demonstrate the intended use
 
 It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.0.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
-<img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="600"/>
+<img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
 ## Setup
 
@@ -66,7 +66,7 @@ It's worth noting that with this sample data, no stack is running so no support 
 The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image. Please note the caveats below before attempting to build the service using Docker:
 
 - The example visualisation installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
-- A valid Mapbox API token must be provided in your "index" file.
+- A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 
 Once the requirements have been addressed, the image can be built using the below methods. If changing the visualisation, you'll need to rebuild and rerun the Docker image after and adjustments, or setup a Docker bind mount so that local changes are reflected within the container.
