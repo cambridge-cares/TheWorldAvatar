@@ -4,7 +4,7 @@ This example visualisation has been put together to demonstrate the intended use
 
 It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.0.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
-<img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="600"/>
+<img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
 ## Setup
 
