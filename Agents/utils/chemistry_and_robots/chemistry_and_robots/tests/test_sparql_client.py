@@ -751,6 +751,10 @@ def test_get_vapourtec_rs400(initialise_triples):
         [r.instance_iri for r in vapourtec_rs400.consistsOf])
     assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
+    assert vapourtec_rs400.hasCollectionMethod is not None
+    assert vapourtec_rs400.hasCollectionMethod.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_COLLECTION_METHOD_IRI.value
+    assert vapourtec_rs400.hasCollectionMethod.clz == onto.ONTOVAPOURTEC_SINGLERECEPTACLE
+    assert vapourtec_rs400.hasCollectionMethod.toReceptacle == TargetIRIs.VAPOURTECRS400_DUMMY_COLLECTION_METHOD_TO_RECEPTACLE_IRI.value
 
 def test_update_vapourtec_rs400_state(initialise_triples):
     sparql_client = initialise_triples

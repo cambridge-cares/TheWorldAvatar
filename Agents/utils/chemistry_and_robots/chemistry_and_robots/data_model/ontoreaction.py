@@ -470,11 +470,28 @@ class ReactionExperiment(BaseOntology):
     def get_reference_input_chemical(self) -> Optional[InputChemical]:
         if self.hasInputChemical is None:
             return None
-        reaction_scale = self.get_reaction_condition(ONTOREACTION_REACTIONSCALE)
+        reaction_scale = self.get_reaction_scale()
         for input_chemical in self.hasInputChemical:
             if input_chemical.instance_iri == reaction_scale.indicateUsageOf:
                 return input_chemical
         return None
+
+    def get_reaction_scale(self, positionalID: str=None) -> Optional[ReactionCondition]:
+        if positionalID is None:
+            reaction_scale = self.get_reaction_condition(ONTOREACTION_REACTIONSCALE)
+            if reaction_scale is None:
+                # relax the requirement for the reaction scale by allowing other positionalID
+                # as the agent might not have the positionalID information
+                # although in theory it should know...
+                reaction_scale_list = [con for con in self.hasReactionCondition if con.clz == ONTOREACTION_REACTIONSCALE]
+                if not bool(reaction_scale_list):
+                    raise Exception(f"No reaction scale are identified for reaction experiment: {str(self.dict())}")
+                if len(reaction_scale_list) > 1:
+                    raise Exception(f"More than one reaction scale {[rs.instance_iri for rs in reaction_scale_list]} are identified for reaction experiment: {str(self.dict())}")
+                reaction_scale = reaction_scale_list[0]
+            return reaction_scale
+        else:
+            return self.get_reaction_condition(ONTOREACTION_REACTIONSCALE, positionalID)
 
     def get_stoichiometry_ratio_of_input_chemical(self, input_chemical: InputChemical) -> float:
         for reaction_condition in self.hasReactionCondition:
@@ -525,7 +542,7 @@ class ReactionExperiment(BaseOntology):
             raise Exception("ReactionCondition with rdf:type <%s> and positionalID <%s> is not uniquely identified: %s" % (
                 clz, str(positional_id), str(lst_rxn_cond)
             ))
-        return lst_rxn_cond[0]
+        return lst_rxn_cond[0] if len(lst_rxn_cond) == 1 else None
 
     def get_performance_indicator(self, clz: str, positional_id: Optional[int]=None) -> Optional[PerformanceIndicator]:
         if self.hasPerformanceIndicator is None: return None
@@ -536,7 +553,7 @@ class ReactionExperiment(BaseOntology):
             raise Exception("PerformanceIndicator with rdf:type <%s> and positionalID <%s> is not uniquely identified: %s" % (
                 clz, str(positional_id), str(lst_perf_ind)
             ))
-        return lst_perf_ind[0]
+        return lst_perf_ind[0] if len(lst_perf_ind) == 1 else None
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         """This method creates an instance of ReactionExperiment for KG. NOTE that this method should be called when suggesting the new reaction experiment, and before its execution."""

@@ -94,16 +94,29 @@ class VapourtecAgent(DerivationAgent):
             while not self.vapourtec_is_idle():
                 time.sleep(30)
 
-        # Get local variables of vapourtec_rs400, vapourtec_r4_reactor, and autosampler for reaction
-        vapourtec_rs400 = self.sparql_client.get_vapourtec_rs400(self.vapourtec_digital_twin)
-        vapourtec_r4_reactor = [reactor for reactor in vapourtec_rs400.consistsOf if reactor.instance_iri == rxn_exp_instance.isAssignedTo][0]
-        autosampler = self.sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
+        # Get local variables of vapourtec_rs400 and autosampler for reaction
+        vapourtec_rs400 = self.sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[self.vapourtec_digital_twin])[0]
+        autosampler = vapourtec_rs400.get_autosampler()
+
+        # Get the collection method from the vapourtec_rs400
+        # NOTE two types of collection: (1) send outlet to waste, (2) send outlet to autosampler site
+        # NOTE the collection information should be stored in KG, and VapourtecRS400 instance
+        # NOTE so that if it's sent to waste, then we don't care
+        # NOTE but if it's sent to autosampler site, then we need to know the collection site
+        # NOTE the collection site should be suggested by the vapourtec_rs400 instance
+        if vapourtec_rs400.collects_to_fraction_collector():
+            # need to know the number of collection site
+            col_site_iri, col_site_num, col_site_vial_iri = vapourtec_rs400.get_collection_site()
+        else:
+            # no need to know the number of collection site, as it will go to waste bottle
+            col_site_num = None
+            waste_bottle_iri = vapourtec_rs400.get_collection_receptacle()
 
         # Call function to create a list of ontolab.EquipmentSettings instances
-        # TODO [when run in loop, double check] Also generate settings for AutoSampler (collection bits)?
-        # TODO [when run in loop, double check] add support for pressure settings
-        list_equip_settings = self.sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
-            rxn_exp_instance, vapourtec_rs400, vapourtec_r4_reactor)
+        # TODO [future work] the collection part should be further developed as a dataclass
+        # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be stored in KG
+        # TODO [future work, when we add pressure into optimisation] add support for pressure settings
+        list_equip_settings = vapourtec_rs400.create_equip_settings_for_rs400_from_rxn_exp(rxn_exp=rxn_exp_instance)
 
         # Configure the vapourtec digital twin in KG with the created OntoLab:EquipmentSettings triples
         # NOTE here the triples written to the KG include links between the settings and the hardware
@@ -116,14 +129,14 @@ class VapourtecAgent(DerivationAgent):
         equip_settings_graph_for_derivation = self.sparql_client.collect_triples_for_equip_settings(list_equip_settings, False)
         derivation_outputs.addGraph(equip_settings_graph_for_derivation)
 
-        # TODO [when run in loop, double check] refine the way of getting the autosampler site for collecting reaction outlet stream
-        # TODO [when run in loop, double check] get settings for AutoSampler? collection site and collection volume?
-        _autosampler_site_for_collection = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None and site.holds.hasFillLevel.hasValue.hasNumericalValue == 0][0]
-        # TODO [when run in loop, double check] 1.5 is only as placeholder for testing, get this information from AutoSampler
-        _autosampler_collection_amount = 1.5
-
         # Generate the execution CSV file
-        local_run_csv_path = vapourtec.create_exp_run_csv(self.fcexp_file_container_folder, rxn_exp_instance, list_equip_settings)
+        local_run_csv_path = vapourtec.create_exp_run_csv(
+            folder_path=self.fcexp_file_container_folder,
+            rxnexp=rxn_exp_instance,
+            list_equip_settings=list_equip_settings,
+            rs_400=vapourtec_rs400,
+            start_vial_override=col_site_num,
+        )
         self.logger.info(f"The CSV run file generated within container at: {local_run_csv_path}")
         # Upload the vapourtec input file to file server for record
         local_file_path = local_run_csv_path
@@ -144,14 +157,29 @@ class VapourtecAgent(DerivationAgent):
         # Send the experiment csv for execution, also update the autosampler liquid level
         self.send_fcexp_csv_for_execution(local_file_path, list_equip_settings)
 
+        # Wait until the vapourtec is running reaction (if not dry_run)
+        if not self.dry_run:
+            vapourtec_running_reaction = False
+            while not vapourtec_running_reaction:
+                time.sleep(30)
+                vapourtec_running_reaction = self.sparql_client.vapourtec_rs400_is_running_reaction(vapourtec_rs400.instance_iri)
+
         # Create chemical solution instance for the reaction outlet stream
         # <chemical_solution> <fills> <vial>. <vial> <isFilledWith> <chemical_solution>. here we should write the vial location to the KG
         # update <vial> <hasFillLevel>/<hasValue>/<hasNumericalValue> <xxx>.
         # (the rest information about vial should already be known as part of digital twin of autosampler)
-        chemical_solution_graph = self.sparql_client.create_chemical_solution_for_reaction_outlet(
-            autosampler_site_iri=_autosampler_site_for_collection,
-            amount_of_chemical_solution=_autosampler_collection_amount
-        )
+        # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be retrieved properly
+        _amount_of_chemical_solution_ = 3
+        if vapourtec_rs400.collects_to_fraction_collector():
+            chemical_solution_graph = self.sparql_client.create_chemical_solution_for_reaction_outlet(
+                autosampler_site_iri=col_site_iri,
+                amount_of_chemical_solution=_amount_of_chemical_solution_,
+            )
+        else:
+            chemical_solution_graph = self.sparql_client.create_chemical_solution_for_outlet_to_waste(
+                waste_bottle_iri=waste_bottle_iri,
+                amount_of_chemical_solution=_amount_of_chemical_solution_,
+            )
         derivation_outputs.addGraph(chemical_solution_graph)
 
         # Remove the link between equipment settings and the digital twin of hardware
@@ -159,14 +187,15 @@ class VapourtecAgent(DerivationAgent):
         self.sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400.instance_iri)
 
     def send_fcexp_csv_for_execution(self, run_csv_file_container_path: str, list_equip_settings: List[EquipmentSettings]):
-        # TODO [when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
-        # TODO [when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
+        # TODO [nice-to-have, when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
+        # TODO [nice-to-have, when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
         if not self.dry_run:
             print("#######################")
-            # TODO [when run in loop, double check] should we load experiment everytime before we add and run new experiment?
-            template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
-            FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
-            self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
+            # NOTE The fcexp file should be loaded before the optimisation campaign is started
+            # # TODO [until further notice] should we load experiment everytime before we add and run new experiment?
+            # template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
+            # FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
+            # self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
 
             # Add reaction in CSV file to FlowCommander
             CSVParser.AddReactions(run_csv_file_container_path, self.fc)
@@ -176,16 +205,15 @@ class VapourtecAgent(DerivationAgent):
             FlowCommander.Run(self.fc)
             print("#######################")
 
-            # Update autosampler liquid amount immediately after send the experiment for execution
+            # NOTE now the liquid consumption is not updated in the KG after each reaction, this should be improved ASAP
+            # !!!TODO [limitation of API for now] Update autosampler liquid amount immediately after send the experiment for execution
             # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
             # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
-            # TODO [when run in loop, double check] double check if the sample loop volume can be setup for all rxn using the same .fcexp file
-            # TODO [when run in loop, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
-            dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
-                setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
-            self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
+            # dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
+            #     setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
+            # self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
 
-            # TODO [when run in loop, double check] send warnings if the liquid level of any vials is lower than the warning level
+            # TODO [nice-to-have, limitation of current API] send warnings if the liquid level of any vials is lower than the warning level
 
     def monitor_vapourtec_rs400_state(self):
         print("=======================")

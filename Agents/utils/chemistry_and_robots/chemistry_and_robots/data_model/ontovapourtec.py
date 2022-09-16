@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pydantic
-from typing import List, Union
+from typing import List, Union, Tuple
 
 from chemistry_and_robots.data_model.iris import *
 from pyderivationagent.data_model.utils import *
@@ -97,8 +97,10 @@ class PumpSettings(EquipmentSettings):
             g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_HASSTOICHIOMETRYRATIOSETTING), URIRef(self.hasStoichiometryRatioSetting.instance_iri)))
             g = self.hasStoichiometryRatioSetting.create_instance_for_kg(g)
 
+        # only add below triples if pumpsLiquidFrom is not None, i.e. it pumps from autosampler site
         # <pumpSetting> <OntoVapourtec:pumpsLiquidFrom> <autosampler_site>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_PUMPSLIQUIDFROM), URIRef(self.pumpsLiquidFrom.instance_iri)))
+        if self.pumpsLiquidFrom is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_PUMPSLIQUIDFROM), URIRef(self.pumpsLiquidFrom.instance_iri)))
 
         return super().create_instance_for_kg(g, configure_digital_twin)
 
@@ -195,9 +197,36 @@ class VapourtecState(Saref_State):
     clz: str = ONTOVAPOURTEC_NULL # NOTE the default is set as Null
     stateLastUpdatedAt: float
 
+class CollectionMethod(BaseOntology):
+    clz: str = ONTOVAPOURTEC_COLLECTIONMETHOD
+    toReceptacle: str
+    # when instantiation, the clz can be set to one of the following:
+    # ONTOVAPOURTEC_SINGLERECEPTACLE, ONTOVAPOURTEC_FRACTIONCOLLECTOR
+
 class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
     hasState: VapourtecState
+    hasCollectionMethod: CollectionMethod
+
+    # def get_collection_site_number(self, collection_site: str) -> int:
+    #     return int([site.locationID for site in self.get_autosampler().hasSite if site.instance_iri == collection_site][0])
+
+    # def get_collection_site_vial_iri(self, collection_site: str) -> str:
+    #     return [site.holds.instance_iri for site in self.get_autosampler().hasSite if site.instance_iri == collection_site][0]
+
+    def get_collection_site(self, collection_volume_in_ml: float=0) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        collection_site = [site for site in self.get_autosampler().hasSite if site.holds is not None and site.holds.isFilledWith is None and site.holds.hasMaxLevel.hasValue.hasNumericalValue > collection_volume_in_ml * 1.2]
+        if len(collection_site) == 0: return None, None, None
+        if len(collection_site) > 0: return collection_site[0].instance_iri, int(collection_site[0].locationID), collection_site[0].holds.instance_iri
+
+    def collects_to_single_receptacle(self) -> bool:
+        return self.hasCollectionMethod.clz == ONTOVAPOURTEC_SINGLERECEPTACLE
+
+    def collects_to_fraction_collector(self) -> bool:
+        return self.hasCollectionMethod.clz == ONTOVAPOURTEC_FRACTIONCOLLECTOR
+
+    def get_collection_receptacle(self):
+        return self.hasCollectionMethod.toReceptacle if self.collects_to_single_receptacle() else None
 
     def has_access_to_chemical_species(
         self,
@@ -349,9 +378,7 @@ class VapourtecRS400(LabEquipment):
         # get the dict for stoi ratio
         dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxn_exp.hasReactionCondition if cond.clz == ONTOREACTION_STOICHIOMETRYRATIO}
         # identify the reference reactant - the reference chemical should be the one with the ReactionScale
-        reaction_scale = rxn_exp.get_reaction_condition(ONTOREACTION_REACTIONSCALE)
-        if reaction_scale is None:
-            raise Exception("No reaction scale are identified for reaction experiment: " + str(rxn_exp.dict()))
+        reaction_scale = rxn_exp.get_reaction_scale()
 
         reference_pump = self.get_reference_r2_pump()
         autosampler = self.get_autosampler()

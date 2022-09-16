@@ -617,6 +617,53 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     #saref:isAccomplishedBy # TODO
     #saref:hasFunction # TODO
     saref:hasState :state_VapourtecRS400_Dummy;
+    # collection
+    ontovapourtec:hasCollectionMethod :CollectionMethod_VapourtecRS400_Dummy;
+.
+
+:CollectionMethod_VapourtecRS400_Dummy
+    a ontovapourtec:SingleReceptacle;
+    ontovapourtec:toReceptacle :WasteReceptacle_Dummy;
+.
+
+:WasteReceptacle_Dummy
+    a ontolab:WasteBottle;
+    ontovapourtec:hasMaxLevel :WasteReceptacle_1_level_max;
+    ontovapourtec:hasWarningLevel :WasteReceptacle_1_level_warning;
+    ontovapourtec:hasFillLevel :WasteReceptacle_1_level_fill;
+.
+
+:WasteReceptacle_1_level_max
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_max_Value;
+.
+
+:WasteReceptacle_1_level_max_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "20000"^^xsd:double;
+.
+
+:WasteReceptacle_1_level_warning
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_warning_Value;
+.
+
+:WasteReceptacle_1_level_warning_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:WasteReceptacle_1_level_fill
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_fill_Value;
+.
+
+:WasteReceptacle_1_level_fill_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "500"^^xsd:double;
 .
 
 :state_VapourtecRS400_Dummy

@@ -1034,6 +1034,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_of_labs_as_constraint = trimIRI(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else None
         query = f"""SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
                            ?state_type ?last_update ?autosampler ?is_managed_by
+                           ?collection_method ?collection_method_type ?waste_receptacle
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
@@ -1044,6 +1045,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                            <{SAREF_HASSTATE}> ?state.
                     ?state a ?state_type; <{ONTOLAB_STATELASTUPDATEDAT}> ?last_update.
                     ?autosampler a <{ONTOVAPOURTEC_AUTOSAMPLER}>.
+                    ?rs400 <{ONTOVAPOURTEC_HASCOLLECTIONMETHOD}> ?collection_method.
+                    ?collection_method a ?collection_method_type.
+                    OPTIONAL{{?collection_method <{ONTOVAPOURTEC_TORECEPTACLE}> ?waste_receptacle.}}
                 OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
                 }}"""
 
@@ -1078,6 +1082,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     instance_iri=res['state'],
                     clz=res['state_type'],
                     stateLastUpdatedAt=res['last_update']
+                ),
+                hasCollectionMethod=CollectionMethod(
+                instance_iri=res['collection_method'],
+                clz=res['collection_method_type'],
+                toReceptacle=res['waste_receptacle'],
                 )
             )
             list_vapourtec_rs400_instance.append(vapourtec_rs400)
@@ -1085,16 +1094,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return list_vapourtec_rs400_instance
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
-        query = PREFIX_RDF + \
-                """
+        query = f"""{PREFIX_RDF}
                 SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
-                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. 
-                OPTIONAL{?rs400 <%s> ?is_managed_by.}
-                }""" % (
-                    SAREF_CONSISTSOF, autosampler.instance_iri,
-                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT,
-                    ONTOLAB_ISMANAGEDBY
-                )
+                ?collection_method ?collection_method_type ?waste_receptacle
+                WHERE {{
+                    ?rs400 <{SAREF_CONSISTSOF}> <{autosampler.instance_iri}>;
+                            rdf:type <{ONTOVAPOURTEC_VAPOURTECRS400}>;
+                            <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
+                            <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
+                            <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
+                            <{SAREF_HASSTATE}> ?state.
+                    ?state a ?state_type; <{ONTOLAB_STATELASTUPDATEDAT}> ?last_update.
+                    ?rs400 <{ONTOVAPOURTEC_HASCOLLECTIONMETHOD}> ?collection_method.
+                    ?collection_method a ?collection_method_type.
+                    OPTIONAL{{?collection_method <{ONTOVAPOURTEC_TORECEPTACLE}> ?waste_receptacle.}}
+                    OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
+                }}"""
 
         response = self.performQuery(query)
 
@@ -1123,10 +1138,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 instance_iri=res['state'],
                 clz=res['state_type'],
                 stateLastUpdatedAt=res['last_update']
+            ),
+            hasCollectionMethod=CollectionMethod(
+                instance_iri=res['collection_method'],
+                clz=res['collection_method_type'],
+                toReceptacle=res['waste_receptacle'],
             )
         )
 
         return vapourtec_rs400
+
+    # TODO add unit test
+    def vapourtec_rs400_is_running_reaction(self, vapourtec_rs400_iri: str) -> bool:
+        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
+        query = f"""ASK {{<{vapourtec_rs400_iri}> <{SAREF_HASSTATE}> ?state. ?state a <{ONTOVAPOURTEC_RUNNINGREACTION}>.}}"""
+        response = self.performQuery(query)
+        return response[0]['ASK']
 
     def get_rxn_exp_assigned_to_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
         r4_reactor_iri = trimIRI(r4_reactor_iri)
@@ -1992,6 +2019,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
         self.performUpdate(update)
 
+    # TODO add unit test
+    def update_waste_bottle_liquid_level_millilitre(self, level_change_of_bottle: Dict[str, float], for_consumption: bool):
+        delete_clause = []
+        insert_clause = []
+        where_clause = []
+        i = 0
+        for bottle in level_change_of_bottle:
+            i += 1
+            bottle = trimIRI(bottle)
+            delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
+            insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
+            where_clause.append(f"""<{bottle}> <{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} . ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} . BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_bottle[bottle]} AS ?liquid_level_{str(i)}_updated).""")
+
+        update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
+        self.performUpdate(update)
+
     def create_chemical_solution_for_reaction_outlet(self, autosampler_site_iri: str, amount_of_chemical_solution: float):
         g = Graph()
         autosampler_site_iri = trimIRI(autosampler_site_iri)
@@ -2004,6 +2047,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         self.performUpdate(update)
         self.update_vapourtec_autosampler_liquid_level_millilitre(
             {autosampler_site_iri:amount_of_chemical_solution}, for_consumption=False
+        )
+        return g
+
+    # TODO add unit test
+    def create_chemical_solution_for_outlet_to_waste(self, waste_bottle_iri: str, amount_of_chemical_solution: float):
+        g = Graph()
+        waste_bottle_iri = trimIRI(waste_bottle_iri)
+        chemical_solution_iri = initialiseInstanceIRI(getNameSpace(waste_bottle_iri), ONTOLAB_CHEMICALSOLUTION)
+        g.add((URIRef(chemical_solution_iri), RDF.type, URIRef(ONTOLAB_CHEMICALSOLUTION)))
+        update = f"""{PREFIX_RDF} INSERT DATA {{
+            <{chemical_solution_iri}> rdf:type <{ONTOLAB_CHEMICALSOLUTION}>.
+            <{chemical_solution_iri}> <{ONTOVAPOURTEC_FILLS}> <{waste_bottle_iri}>}}"""
+        self.performUpdate(update)
+        self.update_waste_bottle_liquid_level_millilitre(
+            {waste_bottle_iri:amount_of_chemical_solution}, for_consumption=False
         )
         return g
 
