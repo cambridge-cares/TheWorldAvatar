@@ -20,7 +20,7 @@ public class DispersionPostGISClient {
     private String dburl;
 	private String dbuser;
 	private String dbpassword;
-    private Table<?> table = DSL.table(DSL.name(EnvConfig.SCOPE_TABLE_NAME));
+    private Table<?> table = DSL.table(DSL.name(Config.SCOPE_TABLE_NAME));
     private static final Logger LOGGER = LogManager.getLogger(DispersionPostGISClient.class);
 
     DispersionPostGISClient(String dburl, String dbuser, String dbpassword) {
@@ -62,7 +62,7 @@ public class DispersionPostGISClient {
     boolean scopeExists(Polygon polygon, Connection conn) {         
         boolean scopeExists = false;
         if (polygon != null) {
-            String sql = String.format("SELECT ST_Equals(geom, ST_GeomFromText('%s')) FROM %s", polygon.toString(), EnvConfig.SCOPE_TABLE_NAME);
+            String sql = String.format("SELECT ST_Equals(geom, ST_GeomFromText('%s')) FROM %s", polygon.toString(), Config.SCOPE_TABLE_NAME);
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {

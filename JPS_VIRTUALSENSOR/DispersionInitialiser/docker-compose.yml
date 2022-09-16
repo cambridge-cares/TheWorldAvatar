@@ -14,6 +14,7 @@ services:
       - SCOPE_TABLE_NAME=scopes
       - EPISODE_AGENT_IRI=http://theworldavatar.com/EpisodeAgent 
       - EPISODE_AGENT_URL=http://host.docker.internal:8081/EpisodeAgent
+      - WEATHER_AGENT_URL=http://host.docker.internal:8086/WeatherAgent/CreateStation
     configs:
       - postgis
       - blazegraph

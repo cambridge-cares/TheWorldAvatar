@@ -2,9 +2,14 @@ package com.cmclinnovations.dispersion;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -12,7 +17,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -64,26 +71,62 @@ public class QueryClient {
 
         ModifyQuery modify = Queries.MODIFY();
 
-        modify.insert(iri(EnvConfig.EPISODE_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
-		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.EPISODE_AGENT_URL)).andHas(hasInput, inputIri));
+        modify.insert(iri(Config.EPISODE_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
+		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.EPISODE_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).prefix(P_DISP);
 
         storeClient.executeUpdate(modify.getQueryString());
     }
 
-    void initialiseScopeDerivation(String scopeIri) {
+    void initialiseScopeDerivation(String scopeIri, List<String> weatherStations) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE));
 
         String simTime = PREFIX + UUID.randomUUID();
         String simTimeMeasure = PREFIX + UUID.randomUUID();
-        modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(HAS_VALUE,simTimeMeasure));
+        modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(HAS_VALUE, iri(simTimeMeasure)));
         modify.insert(iri(simTimeMeasure).isA(MEASURE).andHas(HAS_NUMERICALVALUE, 0));
 
         modify.prefix(P_DISP,P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
-        derivationClient.createDerivation(Arrays.asList(scopeIri), EnvConfig.EPISODE_AGENT_IRI, Arrays.asList(simTime));
+        List<String> inputs = weatherStations;
+        inputs.add(simTime);
+        inputs.add(scopeIri);
+
+        derivationClient.createAsyncDerivationForNewInfo(Config.EPISODE_AGENT_IRI, inputs);
+        // timestamp for pure inputs
+        derivationClient.addTimeInstance(inputs);
+    }
+
+    /**
+     * 
+     * @param newValue
+     */
+    void updateSimulationTime(long newValue) {
+        // replace old value
+        ModifyQuery modify = Queries.MODIFY();
+
+        SelectQuery query = Queries.SELECT();
+        Variable simTime = query.var();
+        Variable simTimeMeasure = query.var();
+        Variable oldValue = query.var();
+        GraphPattern gp = GraphPatterns.and(simTime.isA(SIMULATION_TIME).andHas(HAS_VALUE, simTimeMeasure),
+        simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue));
+
+        modify.insert(simTimeMeasure.has(HAS_NUMERICALVALUE, newValue)).delete(simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue)).where(gp).prefix(P_DISP,P_OM);
+
+        storeClient.executeUpdate(modify.getQueryString());
+
+        // get IRI of sim time
+        query.where(simTime.isA(SIMULATION_TIME)).prefix(P_DISP);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        List<String> simTimes = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            simTimes.add(queryResult.getJSONObject(i).getString(simTime.getQueryString().substring(1)));
+        }
+        // update derivation timestamp to trigger update
+        derivationClient.updateTimestamps(simTimes);
     }
 }
