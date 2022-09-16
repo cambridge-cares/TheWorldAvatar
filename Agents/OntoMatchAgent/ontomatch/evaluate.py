@@ -63,7 +63,12 @@ def getID(iri):
     return strs[0]
 
 def read_match_file_as_index_set(filename, linktypes):
-    dframe = pd.read_csv(filename)
+    dframe = pd.read_csv(filename) 
+
+    # check whether the Magellan / Ditto CSV format is used
+    if 'ltable_id' in [ str(c) for c in dframe.columns ]:
+        dframe.rename(columns={'ltable_id': 'idx_1', 'rtable_id': 'idx_2', 'label': 'link'}, inplace=True)
+
     dframe['idx_1'] = dframe['idx_1'].astype(str)
     dframe['idx_2'] = dframe['idx_2'].astype(str)
     fct = lambda s : s.replace('http://www.google.com/base/feeds/snippets/', '')

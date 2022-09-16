@@ -155,3 +155,44 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
             actual = result[i]
             self.assertAlmostEqual(actual[1], expected[1], places=2)
             self.assertAlmostEqual(actual[2], expected[2], places=2)
+
+    def test_auto_calibration_restaurant(self):
+
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_REST_AUTO_CSV)
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        #params_model_specific = self.get_params_model_specific()
+        params_model_specific = params['matching']['model_specific']
+
+        src_onto, tgt_onto = self.read_restaurant_tables()
+
+        matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
+
+        _, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, params_mapping=params_mapping)
+
+        logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
+        logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
+
+        index_set_matches = self.read_restaurant_matching_file()
+        logging.info('length of total best scores=%s', len(df_total_best_scores))
+        result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
+
+        self.assertEqual(len(df_total_best_scores), 658)
+
+        # max f1=0.95575 for t=0.4, p=0.93103, r=0.98182, area under curve=0.9838890634
+        expected_result = [[1.0, 1.0, 0.0, 0, 0, 110, 0.0], 
+            [0.9, 1.0, 0.0, 0, 0, 110, 0.0], 
+            [0.8, 1.0, 0.0, 0, 0, 110, 0.0], 
+            [0.7, 1.0, 0.19091, 21, 0, 89, 0.32061], 
+            [0.6, 1.0, 0.58182, 64, 0, 46, 0.73563], 
+            [0.5, 0.98958, 0.86364, 95, 1, 15, 0.92233], 
+            [0.4, 0.93103, 0.98182, 108, 8, 2, 0.95575], 
+            [0.3, 0.72368, 1.0, 110, 42, 0, 0.83969], 
+            [0.2, 0.28133, 1.0, 110, 281, 0, 0.43912], 
+            [0.1, 0.16871, 1.0, 110, 542, 0, 0.28871], 
+            [0.0, 0.16717, 1.0, 110, 548, 0, 0.28646]]
+
+        for i, expected in enumerate(expected_result):
+            actual = result[i]
+            self.assertAlmostEqual(actual[1], expected[1], places=2)
+            self.assertAlmostEqual(actual[2], expected[2], places=2)

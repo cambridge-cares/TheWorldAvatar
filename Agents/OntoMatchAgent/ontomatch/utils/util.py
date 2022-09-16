@@ -127,6 +127,16 @@ def read_csv(file:str) -> pd.DataFrame:
     dframe.set_index(['idx_1', 'idx_2'], inplace=True)
     return dframe
 
+def read_csv_table_ditto_format(file:str) -> pd.DataFrame:
+    dframe = pd.read_csv(file) 
+    columns = [ str(c) for c in dframe.columns]
+    if 'class' in columns:
+        dframe.drop(columns=['class'], inplace=True)
+    dframe.rename(columns={'id':'idx'}, inplace=True)
+    dframe['idx'] = dframe['idx'].astype(str)
+    dframe.set_index(['idx'], inplace=True)
+    return dframe
+
 def serialize_graph_to_str(graph: rdflib.Graph, frmt = 'turtle') -> str:
     # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html:
     # If encoding is None and destination is None, returns a string If encoding is set, and Destination is None, returns bytes
@@ -170,6 +180,8 @@ def load_ontology(graph_handle, blackboard=True):
     if graph_handle.endswith('.pkl'):
         with open(graph_handle,'rb') as file:
             onto = pickle.load(file)
+    elif graph_handle.endswith('.csv'):
+        onto = ontomatch.utils.util.read_csv_table_ditto_format(graph_handle)
     else:
         if blackboard:
             file = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/' + graph_handle

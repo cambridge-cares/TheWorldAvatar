@@ -77,12 +77,23 @@ def dist_cosine_binary(v1, v2):
         return None
     return compare_strings_binary(v1, v2)
 
+
+embedding_dict = {}
+
+def get_embedding(v):
+    embedding = embedding_dict.get(v)
+    if embedding is None:
+        embedding = SentenceTransformerWrapper.model.encode(v, convert_to_tensor=True, show_progress_bar=False)
+        embedding_dict[v] = embedding
+    return embedding
+
 def dist_cosine_embedding(v1, v2):
     if not check_str(v1, v2):
         return None
-    embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True, show_progress_bar=False)
-    embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True, show_progress_bar=False)
-    pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embeddings1, embeddings2)
+
+    embedding1 = get_embedding(v1)
+    embedding2 = get_embedding(v2)
+    pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embedding1, embedding2)
     # pytorch returns sometimes values such as 1.0000002
     # use min to avoid negative cosine distance
     cosine_sim = min(1, pytorch_tensor[0].numpy()[0])
@@ -173,6 +184,8 @@ class ScoreManager():
         self.df_scores = None
         self.df_max_scores_1 = None
         self.df_max_scores_2 = None
+        # empty embedding_dict
+        ontomatch.scoring.embedding_dict = {}
 
     def get_data1(self):
         return self.data1
@@ -245,6 +258,7 @@ class ScoreManager():
         result = pd.DataFrame(data=rows, columns=columns)
         result.set_index(['idx_1', 'idx_2'], inplace=True)
         logging.info('calculated similarity vectors=%s, score columns=%s', len(result), columns)
+        logging.info('embedding_dict=%s', len(ontomatch.scoring.embedding_dict))
         return result
 
     def save_similarity_vectors(self, df_scores, file):
@@ -362,7 +376,7 @@ class ScoreManager():
         df_result.set_index([index_column_name, other_index_column_name], inplace=True)
 
         logging.info('calculated maximum scores, scores=%s, entities=%s', count, len(df_result))
-        logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
+        logging.debug('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 
 def create_score_manager(srconto, tgtonto, params_blocking, params_mapping=None):

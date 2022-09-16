@@ -35,7 +35,7 @@ class InstanceMatcherBase():
 
         elif mode == 'fixed':
             prop_prop_sim_tuples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
-            logging.info('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
+            logging.debug('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
 
             property_mapping = []
             for t in prop_prop_sim_tuples:
@@ -288,11 +288,13 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         FP = pred_matches - TP
         FN = len(matches_minus_fn.difference(index_non_virtual))
 
-        precision = round(TP / (TP + FP), 5)
-        recall = round(TP / (TP + FN), 5)
-        if precision == 0 or recall == 0:
-            f1 = 0
+        if TP == 0:
+            precision = 0.
+            recall = 0.
+            f1 = 0.
         else:
+            precision = round(TP / (TP + FP), 5)
+            recall = round(TP / (TP + FN), 5)
             f1 = round(2 * precision * recall / (precision + recall), 5)
         logging.info('evaluated maximum scores: MAXSIM f1=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s', f1, precision, recall, TP, FP, FN)
 

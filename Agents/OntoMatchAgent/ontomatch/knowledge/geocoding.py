@@ -5,11 +5,12 @@ import rdflib
 
 import ontomatch.knowledge.search
 
+
 class Agent():
 
     def __init__(self):
         logging.info('initializing geocoding agent')
-        addr = './data/power_plant_DEU/municipalities_germany.ttl'
+        addr = ontomatch.knowledge.search.PATH_MUNICIPALITIES_GERMANY
         frmt = 'turtle'
         self.graph = rdflib.Graph()
         self.graph.parse(addr, format=frmt)

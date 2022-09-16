@@ -30,9 +30,13 @@ class Agent():
 
             if src_addr.endswith('pkl'):
                 src_graph_handle = src_addr
+            elif src_addr.endswith('csv'):
+                src_graph_handle = src_addr
             else:
                 _, src_graph_handle = self.call_agent_knowledge_enrichment(src_addr, add_knowledge, http)
             if tgt_addr.endswith('pkl'):
+                tgt_graph_handle = tgt_addr
+            elif tgt_addr.endswith('csv'):
                 tgt_graph_handle = tgt_addr
             else:
                 _, tgt_graph_handle = self.call_agent_knowledge_enrichment(tgt_addr, add_knowledge, http)

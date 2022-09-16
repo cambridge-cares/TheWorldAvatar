@@ -106,7 +106,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                 parsed = tokenize_fct(row[column])
                 # i is the index from the original dataset
                 # pos is the position of the corresponding entity in the list of entities
-                pos = row['pos']
+                pos = row.get('pos')
                 entry = (pos, i)
                 for p in parsed:
                     found = index.get(p)
