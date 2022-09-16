@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v2.0.0</title>
+        <title>DTVF v3.0.0</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- JS -->
@@ -12,7 +12,7 @@
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/2.0.0/dtvf.min.js"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -24,7 +24,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/2.0.0/dtvf.min.css" rel="stylesheet" />
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -168,15 +168,8 @@
             var manager = new Manager(MapProvider.MAPBOX);
             window.manager = manager;
 
-            // ===== CUSTOMISABLE =====
-            // Add base URLs of stacks here
-            var dataPromise = manager.loadDefinitions([
-                "./data/cambridge",
-                "./data/singapore"
-            ]);
-            // ===== CUSTOMISABLE =====
-            
-             // Only start the map after data definitions have been read.
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
             dataPromise.then(() => start());
 
             /**
@@ -185,7 +178,7 @@
             function start() {
                 // ===== CUSTOMISABLE =====
                 // Optionally provide default map settings.
-                // If no options are provided here , any included in the root group of the first stack that responds and loads
+                // If no options are provided here, any included in the root group of the first stack that responds and loads
                 // will be used (this is unreliable, so if visualising multiple stacks, I  recommend using this override). - Michael
                 let optionsOverride = {
                     "center": [60, 37],
@@ -208,12 +201,9 @@
                     This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
                     together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
                     before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
-                    Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF-v2.0.0" target="_blank">GitHub wiki</a>. 
-                    This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                    the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                    not the files within the repository.</p>
+                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect version 3.0.0 of
+                    the framework itself hosted on a remote CMCL server not the files within the repository.</p>
+                    <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
                 `);
                 
                 // Use the local.js file to build the legend

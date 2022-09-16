@@ -281,7 +281,6 @@ class MapHandler_Cesium extends MapHandler {
      * @param layerID ID of layer upon the map.
      */
     private addKMLFile(source: Object, layerID: string) {
-        // @ts-ignore
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
 
         // TODO: Investigate if camera and canvas options are actually required here.
@@ -320,18 +319,16 @@ class MapHandler_Cesium extends MapHandler {
             orientation = source["orientation"];
         }
 
-        // @ts-ignore - Generate final position
+        // Generate final position
         let finalPosition = Cesium.Cartesian3.fromDegrees(position[0], position[1])
 
-        // @ts-ignore - Generate final orientation
+        // Generate final orientation
         let finalOrientation = Cesium.Transforms.headingPitchRollQuaternion(
-            // @ts-ignore
             finalPosition,
-            // @ts-ignore
             new Cesium.HeadingPitchRoll(orientation[0], orientation[1], orientation[2])
         );
 
-        // @ts-ignore - Define the entity before adding to the map
+        // Define the entity before adding to the map
         let sourceEntity = {
             position: finalPosition,
             orientation: finalOrientation,
@@ -358,14 +355,10 @@ class MapHandler_Cesium extends MapHandler {
      * @param layerID ID of layer upon the map.
      */
     private addTileset(source: Object,  layerID: string) {
-        console.log("ADDING TILE SET!");
-
         // Check the position (if set)
         let position = source["position"];
         if(position !== null && position !== undefined) {
-            // @ts-ignore
             let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
-            // @ts-ignore
             position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
         }
 
@@ -374,10 +367,7 @@ class MapHandler_Cesium extends MapHandler {
             url: source["uri"],
         };
 
-        console.log(options);
         if(position !== null && position !== undefined) options["modelMatrix"] = position;
-
-        // @ts-ignore
         let tileset = new Cesium.Cesium3DTileset(options);
 
         // Add the tileset to the map
@@ -403,7 +393,6 @@ class MapHandler_Cesium extends MapHandler {
             console.error("Cannot plot a WMS data source that has no 'wmsLayer' parameter");
         }
 
-        // @ts-ignore
         let provider = new Cesium.WebMapServiceImageryProvider({
             url: source["uri"],
             layers: wmsLayer,

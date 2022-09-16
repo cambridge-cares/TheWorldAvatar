@@ -27,3 +27,10 @@
     width: 50% !important;
     margin-bottom: 2px;
 }
+
+.hummingbird-treeview span {
+    font-size: 8pt !important;
+}
+.hummingbird-treeview label {
+    font-size: 8pt !important;
+}

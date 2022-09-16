@@ -3,6 +3,9 @@
  */
 class CesiumUtils {
     
+    /**
+     * Silhouette outlines
+     */
     private static OUTLINE_BLUE;
     private static OUTLINE_GREEN;
 
@@ -83,11 +86,9 @@ class CesiumUtils {
 
         // Remove base layer
         MapHandler.MAP.imageryLayers.remove(baseLayer, true);
-        console.log("removed?");
 
         // Start of URL for imagery tiles
         let tileURL = "https://api.mapbox.com/styles/v1/" + MapHandler.MAP_USER + "/";
-
         switch(mode.toLowerCase()) {
             default:
             case "light":
@@ -108,7 +109,6 @@ class CesiumUtils {
         tileURL += "/tiles/256/{z}/{x}/{y}?access_token=" + MapHandler.MAP_API;
 
         // Add our own imagery provider
-        // @ts-ignore
         let imageryProvider = new Cesium.UrlTemplateImageryProvider({
             url: tileURL,
             credit: "mapbox"
@@ -141,14 +141,10 @@ class CesiumUtils {
 
         } else if(mode === "pitch") {
             MapHandler.MAP.camera.flyTo({
-                // @ts-ignore
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
                 orientation: {
-                    // @ts-ignore
                     heading: Cesium.Math.toRadians(30),
-                    // @ts-ignore
                     pitch: Cesium.Math.toRadians(-45),
-                    // @ts-ignore
                     roll: Cesium.Math.toRadians(0)
                 }
             });
@@ -229,15 +225,6 @@ class CesiumUtils {
         // Highlight newly selected feature
         CesiumUtils.OUTLINE_GREEN.selected = [feature];
     }
-
-    public static mockTimeseries() {
-        var promise = $.getJSON("https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/timeseries.json", function(json) {
-            return json;
-        });
-
-        return promise;
-    }
-
 
     /**
      * Given a mouse event, this utils method returns the top-level feature under the mouse (if any is present).
