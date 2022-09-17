@@ -1,6 +1,6 @@
 from hplcpostproagent.hypo_rxn.hypo_rxn import *
 
-import chemistry_and_robots.kg_operations.unit_conversion as unit_conv
+import chemistry_and_robots.data_model.unit_conversion as unit_conv
 
 TIME_TEMPERATURE_ECO_SCORE_FACTOR = 0.002
 AMBIENT_TEMPERATURE_DEGREECELSIUS = 25
@@ -11,7 +11,7 @@ def calculate_performance_indicator(
     hypo_end_stream: HypoEndStream,
     rxn_exp_instance: ReactionExperiment,
     target_clz: str
-) -> List[PerformanceIndicator]:
+) -> List[Optional[PerformanceIndicator]]:
     """
         This method calculates the value of performance indicator and returns an instance of PerformanceIndicator.
         Arguments:
@@ -23,6 +23,7 @@ def calculate_performance_indicator(
 
     # Locate the reference instance of the PerformanceIndicator in the source ReactionExperiment that the ReactionVariation instance isVariationOf
     # For those PerformanceIndicator that NO reference instance are located, we compute directly
+    # TODO [next iteration] improve the locate_reference_performance_indicator, in theory only relevant information should be stored, so need to remove placeholders
     lst_reference = locate_reference_performance_indicator(rxn_exp_instance, target_clz)
     # Create and return the list of PerformanceIndicator instances depends on target_clz
     if target_clz == ONTOREACTION_YIELD:
@@ -56,21 +57,25 @@ def calculate_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReac
 
     return pi_yield
 
-def calculate_conversion(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
+def calculate_conversion(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> Optional[PerformanceIndicator]:
     """This method calculates the reaction conversion based on the non-catalyst yield limiting reactant (the one with the lowest run concentration)."""
     # NOTE here the conversion is calculated based on the yield limiting species
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
-    _species_in_end_stream = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri][0]
+    _species_in_end_stream_list = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri]
+    _target_species_in_end_stream_for_conversion = _species_in_end_stream_list[0] if bool(_species_in_end_stream_list) else None
 
-    yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
-    unreacted_conc = unit_conv.unit_conversion_return_value_dq(_species_in_end_stream.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
+    if _target_species_in_end_stream_for_conversion is None:
+        return None
+    else:
+        yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
+        unreacted_conc = unit_conv.unit_conversion_return_value_dq(_target_species_in_end_stream_for_conversion.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
 
-    _conversion = round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place
+        _conversion = round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place
 
-    pi_conversion = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _conversion, unit_conv.UNIFIED_CONVERSION_UNIT)
-    pi_conversion.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
+        pi_conversion = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _conversion, unit_conv.UNIFIED_CONVERSION_UNIT)
+        pi_conversion.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
 
-    return pi_conversion
+        return pi_conversion
 
 def calculate_space_time_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
     """This method calculates the reaction space time yield, which commonly has (kg per litre per minute) as its unit."""
@@ -139,12 +144,12 @@ def locate_reference_performance_indicator(
             return lst_target
         elif len(lst_target) == 0:
             return [PerformanceIndicator(
-                instance_iri="http://placeholder",
+                instance_iri="http://placeholder", # This value here should NOT matter as it should not be accessed by any codes
                 clz=target_clz,
                 rxn_exp_iri=rxn_exp_instance.instance_iri, # The value here should NOT matter as it should not be accessed by any codes
                 objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[target_clz],
-                hasValue=None,
-                positionalID=None
+                hasValue=None, # This value here should NOT matter as it should not be accessed by any codes
+                positionalID=None # This value here should NOT matter as it should not be accessed by any codes
             )]
         else:
             raise Exception("Multiple target PerformanceIndicator with a clz <%s> is NOT yet supported, identified in ReactionExperiment: %s" % (

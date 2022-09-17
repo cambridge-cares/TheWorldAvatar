@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
-import chemistry_and_robots.kg_operations.unit_conversion as unit_conv
+import chemistry_and_robots.data_model.unit_conversion as unit_conv
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 
 from hplcpostproagent.hypo_rxn.hypo_rxn import *
@@ -20,40 +20,46 @@ def calc_run_mol_n_volume_of_other_solute(
 def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hplc_report_instance: HPLCReport, hypo_reactor: HypoReactor, species_role_dct: dict) -> HypoEndStream:
     """This method constructs an instance of HypoEndStream given the information about HPLCReport, HypoReactor, and the role of each species in the reaction."""
     lst_end_stream_comp = []
+    _flag_for_unidentified_species = False # this is the flag to indicate if there're any unidentified chromatogram points
     # Iterate over the list of ChromatogramPoint and create instance of HypoStreamSpecies for each of them
     for pt in hplc_report_instance.records:
-        # First determine the role of chemical species in the reaction
-        _species_iri = pt.indicatesComponent.representsOccurenceOf
-        try:
-            _def_role = species_role_dct[_species_iri]
-        except KeyError:
-            raise Exception("Species <%s> identified from the HPLC report <%s> is NOT represented in the recording of ReactionExperiment <%s>" % (
-                _species_iri, hplc_report_instance.instance_iri, hypo_reactor.rxn_exp_iri))
-        # Second query a list of "intrinsic" information related to the chemical species
-        _mw = sparql_client.get_species_molar_mass_kilogrampermole(_species_iri)
-        _density, _density_unit = sparql_client.get_species_density(_species_iri)
-        _cost, _cost_unit = sparql_client.get_species_material_cost(_species_iri)
-        _es, _es_unit = sparql_client.get_species_eco_score(_species_iri)
-        # Third compute a list of information that derived from the "intrinsic" information
-        _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
-        _sp_run_mol = unit_conv.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
-            unit_conv.UNIFIED_CONCENTRATION_UNIT) / unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
-        # Fourth create the instance of HypoStreamSpecies based on the collected information
-        end_stream_comp = HypoStreamSpecies(
-            species_iri=_species_iri,
-            def_role=_def_role,
-            def_molar_mass=unit_conv.unit_conversion(_mw, OM_KILOGRAMPERMOLE, unit_conv.UNIFIED_MOLAR_MASS_UNIT),
-            def_density=unit_conv.unit_conversion(_density, _density_unit, unit_conv.UNIFIED_DENSITY_UNIT),
-            def_cost=unit_conv.unit_conversion(_cost, _cost_unit, unit_conv.UNIFIED_COST_UNIT),
-            def_eco_score=unit_conv.unit_conversion(_es, _es_unit, unit_conv.UNIFIED_ECOSCORE_UNIT),
-            run_conc=unit_conv.unit_conversion(_sp_run_conc, _sp_run_conc_unit, unit_conv.UNIFIED_CONCENTRATION_UNIT),
-            run_mol=unit_conv.DimensionalQuantity(hasUnit=unit_conv.UNIFIED_MOLE_UNIT,hasNumericalValue=_sp_run_mol)
-        )
-        lst_end_stream_comp.append(end_stream_comp)
+        if pt.indicatesComponent is None:
+            _flag_for_unidentified_species = True
+            continue
+        else:
+            # First determine the role of chemical species in the reaction
+            _species_iri = pt.indicatesComponent.representsOccurenceOf
+            try:
+                _def_role = species_role_dct[_species_iri]
+            except KeyError:
+                raise Exception("Species <%s> identified from the HPLC report <%s> is NOT represented in the recording of ReactionExperiment <%s>" % (
+                    _species_iri, hplc_report_instance.instance_iri, hypo_reactor.rxn_exp_iri))
+            # Second query a list of "intrinsic" information related to the chemical species
+            _mw = sparql_client.get_species_molar_mass_kilogrampermole(_species_iri)
+            _density, _density_unit = sparql_client.get_species_density(_species_iri)
+            _cost, _cost_unit = sparql_client.get_species_material_cost(_species_iri)
+            _es, _es_unit = sparql_client.get_species_eco_score(_species_iri)
+            # Third compute a list of information that derived from the "intrinsic" information
+            _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
+            _sp_run_mol = unit_conv.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
+                unit_conv.UNIFIED_CONCENTRATION_UNIT) / unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
+            # Fourth create the instance of HypoStreamSpecies based on the collected information
+            end_stream_comp = HypoStreamSpecies(
+                species_iri=_species_iri,
+                def_role=_def_role,
+                def_molar_mass=unit_conv.unit_conversion(_mw, OM_KILOGRAMPERMOLE, unit_conv.UNIFIED_MOLAR_MASS_UNIT),
+                def_density=unit_conv.unit_conversion(_density, _density_unit, unit_conv.UNIFIED_DENSITY_UNIT),
+                def_cost=unit_conv.unit_conversion(_cost, _cost_unit, unit_conv.UNIFIED_COST_UNIT),
+                def_eco_score=unit_conv.unit_conversion(_es, _es_unit, unit_conv.UNIFIED_ECOSCORE_UNIT),
+                run_conc=unit_conv.unit_conversion(_sp_run_conc, _sp_run_conc_unit, unit_conv.UNIFIED_CONCENTRATION_UNIT),
+                run_mol=unit_conv.DimensionalQuantity(hasUnit=unit_conv.UNIFIED_MOLE_UNIT,hasNumericalValue=_sp_run_mol)
+            )
+            lst_end_stream_comp.append(end_stream_comp)
     # Assemble the instance of HypoEndStream given all complete list of species
     hypo_end_stream = HypoEndStream(
         total_run_volume=unit_conv.unit_conversion_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT),
-        component=lst_end_stream_comp
+        component=lst_end_stream_comp,
+        containsUnidentifiedComponent=_flag_for_unidentified_species,
     )
     return hypo_end_stream
 

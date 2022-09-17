@@ -1,5 +1,5 @@
 from hplcpostproagent.data_model import *
-import chemistry_and_robots.kg_operations.unit_conversion as unit_conv
+import chemistry_and_robots.data_model.unit_conversion as unit_conv
 import pydantic
 
 class HypoStreamSpecies(pydantic.BaseModel):
@@ -90,3 +90,4 @@ class HypoReactor(pydantic.BaseModel):
 class HypoEndStream(pydantic.BaseModel):
     total_run_volume: unit_conv.DimensionalQuantity
     component: List[HypoStreamSpecies]
+    containsUnidentifiedComponent: bool

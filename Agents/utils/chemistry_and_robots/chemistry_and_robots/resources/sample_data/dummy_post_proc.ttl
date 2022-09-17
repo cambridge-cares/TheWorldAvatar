@@ -118,7 +118,7 @@
 :ChemicalSolution_1_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_1_1;
-    ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
 
 #############################
@@ -185,5 +185,5 @@
 :ChemicalSolution_2_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_2_1;
-    ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .

@@ -19,6 +19,14 @@ pytest_plugins = ["docker_compose"]
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
         (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
     ],
 )
 def test_hplc_postpro_agent(

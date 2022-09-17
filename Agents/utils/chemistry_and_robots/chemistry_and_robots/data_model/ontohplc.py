@@ -86,6 +86,10 @@ class ChromatogramPoint(BaseOntology):
         # <pt> <unidentified> <boolean>
         g.add((URIRef(self.instance_iri), URIRef(ONTOHPLC_UNIDENTIFIED), Literal(self.unidentified)))
 
+        # <pt> <rdfs:comment> rdfs_comment
+        if self.rdfs_comment is not None:
+            g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment, datatype=XSD.string)))
+
         return g
 
 class HPLCReport(BaseOntology):

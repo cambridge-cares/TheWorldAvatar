@@ -23,6 +23,11 @@ URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url'
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
 HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
 HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
+HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_incomplete.xls'
+HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_incomplete.txt'
+HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_unidentified_peaks.xls'
+HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_unidentified_peaks.txt'
+
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
