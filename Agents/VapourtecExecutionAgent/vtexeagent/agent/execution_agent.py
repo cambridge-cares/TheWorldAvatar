@@ -54,14 +54,15 @@ class VapourtecExecutionAgent(DerivationAgent):
 
         # Check until get the digital twin of the most suitable hardware
         # This function also locates the digital twin of HPLC connected to the vapourtec_rs400
-        preferred_rs400, preferred_r4_reactor, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
+        preferred_rs400, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
             rxn_exp_instance)
-        while (preferred_rs400, preferred_r4_reactor, associated_hplc) == (None, None, None):
+        while (preferred_rs400, associated_hplc) == (None, None):
             time.sleep(60)
-            preferred_rs400, preferred_r4_reactor, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
+            preferred_rs400, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
                 rxn_exp_instance)
 
         # Once selected the suitable digital twin, assign experiment to the reactor
+        preferred_r4_reactor = preferred_rs400.get_suitable_r4_reactor_for_reaction_experiment(rxn_exp_instance)
         self.sparql_client.assign_rxn_exp_to_r4_reactor(
             rxn_exp_iri=rxn_exp_instance.instance_iri,
             r4_reactor_iri=preferred_r4_reactor.instance_iri
