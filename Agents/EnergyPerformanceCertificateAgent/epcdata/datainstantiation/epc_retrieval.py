@@ -78,7 +78,82 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
     return epc_data
 
 
-def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
+def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
+    """
+        Retrieves EPC data for provided list of postcodes from given endpoint
+
+        Arguments:
+            postcodes - list of strings of postcodes
+            endpoint (str) - EPC endpoint from which to retrieve data
+                             ['domestic', 'non-domestic', 'display']
+        Returns:
+            DataFrame of relevant EPC data (empty DataFrame if no data available)
+    """
+    # Get EPC API endpoint
+    endpoints = {'domestic': EPC_DOMESTIC_SEARCH,
+                 'non-domestic': EPC_NON_DOMESTIC_SEARCH,
+                 'display': EPC_DISPLAY_SEARCH}
+    url = endpoints.get(endpoint)
+    if not url:
+        logger.error('Invalid endpoint (i.e. EPC type) provided.')
+        raise ValueError('Invalid endpoint (i.e. EPC type) provided.')
+
+    # Prepare authentication header for EPC API
+    headers = {'Authorization': 'Basic {}'.format(API_TOKEN),
+               'Accept': 'application/json'}
+
+    # Initialise variables
+    i = 0 
+    all_dfs = []
+    df = pd.DataFrame()
+
+    for pc in postcodes:
+        i += 1
+        print(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
+        url_epc = url + '?postcode=' + str(pc)
+        r = requests.get(url=url_epc, headers=headers)
+        if r.status_code == 200:
+            if r.text != '':
+                epcs = r.json()
+                # Create DataFrame for current EPC data
+                df = pd.DataFrame(columns=epcs['column-names'], data=epcs['rows'])
+                # Append data to list
+                all_dfs.append(df)
+        else:
+            logger.error('Error retrieving EPC data from API.')
+            raise APIException('Error retrieving EPC data from API.')
+
+    # Construct overall DataFrame
+    if len(all_dfs) > 1:
+        df_all = pd.concat(all_dfs, ignore_index=True)
+    else:
+        df_all = df
+
+    if not df_all.empty:
+        # Extract relevant EPC data
+        relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                    'postcode', 'local-authority', 'uprn',
+                    'built-form', 'property-type', 'construction-age-band',
+                    'current-energy-rating', 'number-habitable-rooms', 'total-floor-area', 
+                    'floor-description', 'roof-description', 'walls-description',
+                    'windows-description', 'lodgement-datetime']           
+        epc_data = df_all[relevant]
+
+        # Keep only latest EPD data per UPRN
+        epc_data['date'] = pd.to_datetime(epc_data['lodgement-datetime'], yearfirst=True, dayfirst=False)
+        epc_data.sort_values(by='date', ascending=False, inplace=True)
+        epc_data[~epc_data['uprn'].duplicated()]
+        epc_data = epc_data.drop(columns=['date', 'lodgement-datetime'])
+
+        # Align missing data and reset index
+        epc_data = epc_data.where(pd.notnull(epc_data), None)
+        epc_data = epc_data.reset_index()
+
+    return epc_data
+
+
+def download_all_data(endpoint='domestic', rel_file_path='../../data/',
+                      query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT):
     """
         Downloads and saves all EPC information, primarily for data analysis 
         and quality assessment
@@ -113,7 +188,7 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
     file_path = Path.joinpath(file_path, fn)
 
     # Retrieve instantiated postcodes from KG
-    kgclient =KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    kgclient = KGClient(query_endpoint, update_endpoint)
     query = instantiated_postalcodes()
     res = kgclient.performQuery(query)
     postcodes = [r['postcode'] for r in res]
@@ -162,10 +237,15 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
 if __name__ == '__main__':
 
     # Download and store all Domestic EPC data from API for data analysis
-    download_all_data('domestic')
+    #download_all_data('domestic')
 
     # Download and store all Non-domestic EPC data from API for data analysis
-    download_all_data('non-domestic')
+    #download_all_data('non-domestic')
 
     # Download and store all Domestic EPC data from API for data analysis
-    download_all_data('display')
+    #download_all_data('display')
+
+    pcs = [
+        'XXXX XXX'
+    ]
+    obtain_latest_data_for_postcodes(pcs)
