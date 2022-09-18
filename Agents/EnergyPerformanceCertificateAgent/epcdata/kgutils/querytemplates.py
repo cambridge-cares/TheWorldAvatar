@@ -65,10 +65,10 @@ def instantiated_postalcodes() -> str:
     return query
 
 
-def instantiated_epc_for_uprn(uprn: str) -> str:
-    # Get latest instantiated epc (i.e. individual lodgement identifier) for UPRN
+def get_latest_epc_and_property_iri_for_uprn(uprn: str) -> str:
+    # Get latest instantiated EPC (i.e. individual lodgement identifier) for UPRN
     query = f"""
-        SELECT ?uprn ?certificate
+        SELECT ?property ?uprn ?certificate
         WHERE {{
             VALUES ?uprn {{ "{uprn}" }}
             ?property <{OBE_HAS_IDENTIFIER}> ?uprn ;
@@ -180,7 +180,7 @@ def instantiate_postcodes_for_district(local_authority_district: str,
     return query
 
 
-def add_epc_data(property_iri: str = None, uprn: str = None, parent_iri: str = None,
+def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri: str = None,
                  address_iri: str = None, addr_street: str = '', addr_number: str = '',
                  postcode_iri:str = None, district_iri: str = None,
                  built_form_iri: str = None, property_type_iri: str = None,
@@ -286,6 +286,98 @@ def add_epc_data(property_iri: str = None, uprn: str = None, parent_iri: str = N
         triples = None
     
     return triples
+
+
+def update_epc_data(property_iri: str = None,
+                    built_form_iri: str = None, property_type_iri: str = None,
+                    usage_iri: str = None, usage_label: str = None,
+                    construction_end: str = None,
+                    floor_description: str = None, roof_description: str = None, 
+                    wall_description: str = None, windows_description: str = None,  
+                    floor_area: float = None, rooms: int = None,
+                    epc_rating: str = None, epc_lmkkey: str = None) -> str:
+    # Returns DELETE / INSERT query to update instantiated EPC data
+
+    # Not all building data is assumed to be "updatable", i.e. assumed constant:
+    #   - UPRN and Parent building
+    #   - Address data incl. links to postcode and admin district
+    #   - Construction start date
+
+    if property_iri:
+        # Start query building blocks
+        delete = f"""
+            DELETE {{
+                <{property_iri}> <{OBE_HAS_LATEST_EPC}> ?lmkkey ;
+                                 <{OBE_HAS_ENERGYRATING}> ?epc_rating ;
+                                 <{OBE_HAS_NUMBER_ROOMS}> ?rooms ;
+                                 <{OBE_HAS_USAGE}> ?usage_iri ;
+                                 <{OBE_HAS_PROPERTY_TYPE}> ?property_type ;
+                                 <{OBE_HAS_BUILT_FORM}> ?built_form .
+                ?usage_iri <{RDFS_LABEL}> ?usage_label .
+                ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time .
+                ?floor <{RDFS_COMMENT}> ?floor_description .
+                ?roof <{RDFS_COMMENT}> ?roof_description .
+                ?wall <{RDFS_COMMENT}> ?wall_description .
+                ?windows <{RDFS_COMMENT}> ?windows_description .
+                ?area_measure <{OM_NUM_VALUE}> ?area .
+        }}
+        """
+
+        insert = f"""
+            INSERT {{
+        """
+        if epc_lmkkey:  insert += f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
+        if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
+        if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
+        if usage_iri: 
+            insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
+            if usage_label: insert += f"<{usage_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+        if property_type_iri: insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
+        if built_form_iri: insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
+        if construction_end: insert += f"?end_iri <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . "
+        
+        if floor_description: insert += f"?floor <{RDFS_COMMENT}> \"{floor_description}\"^^<{XSD_STRING}> . "
+        if roof_description: insert += f"?roof <{RDFS_COMMENT}> \"{roof_description}\"^^<{XSD_STRING}> . "
+        if wall_description: insert += f"?wall <{RDFS_COMMENT}> \"{wall_description}\"^^<{XSD_STRING}> . "        
+        if windows_description: insert += f"?windows <{RDFS_COMMENT}> \"{windows_description}\"^^<{XSD_STRING}> . "
+        if floor_area: insert += f"?area_measure <{OM_NUM_VALUE}> \"{floor_area}\"^^<{XSD_FLOAT}> . "
+        insert += f"}} "
+
+        where =f"""WHERE {{
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_LATEST_EPC}> ?lmkkey }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_USAGE}> ?usage_iri . 
+                            ?usage_iri <{RDFS_LABEL}> ?usage_label . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> ?property_type }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}> ?end_iri . 
+                            ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?floor .
+                            ?floor <{RDF_TYPE}> <{OBE_FLOOR}> ;
+                                   <{RDFS_COMMENT}> ?floor_description . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?roof .
+                            ?roof <{RDF_TYPE}> <{OBE_ROOF}> ; 
+                                  <{RDFS_COMMENT}> ?roof_description . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?wall .
+                            ?wall <{RDF_TYPE}> <{OBE_WALL}> ; 
+                                  <{RDFS_COMMENT}> ?wall_description . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?windows .
+                            ?windows <{RDF_TYPE}> <{OBE_WINDOWS}> ; 
+                                     <{RDFS_COMMENT}> ?windows_description . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}> ?area_measure . 
+                            ?area_measure <{OM_NUM_VALUE}> ?area . }}
+            }}
+        """
+
+        query = delete + insert + where
+        # Remove unnecessary whitespaces
+        query = ' '.join(query.split())
+
+    else:
+        query = None
+
+    return query
 
 
 # def filter_stations_in_circle(circle_center: str, circle_radius: str):

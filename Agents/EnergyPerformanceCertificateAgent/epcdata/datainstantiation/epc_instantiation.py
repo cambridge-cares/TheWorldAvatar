@@ -16,7 +16,8 @@ from epcdata.errorhandling.exceptions import KGException
 
 from epcdata.kgutils.kgclient import KGClient
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from epcdata.kgutils.querytemplates import add_epc_data, instantiated_epc_for_uprn, \
+from epcdata.kgutils.querytemplates import instantiate_epc_data, update_epc_data, \
+                                           get_latest_epc_and_property_iri_for_uprn, \
                                            get_postcode_and_district_iris, get_ocgml_uprns, \
                                            get_parent_building
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate
@@ -40,7 +41,7 @@ def instantiate_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                              ['domestic', 'non-domestic', 'display']
         ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
-        Dictionary of relevant EPC data (empty dictionary if no data available)
+        Tuple of newly instantiated and updated EPCs (new, updated)
     """
 
     # Retrieve EPC data
@@ -79,43 +80,69 @@ def instantiate_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
             #
             # Check if same EPC is already instantiated for UPRN
             #
-            query = instantiated_epc_for_uprn(uprn)
-            res = kgclient.performQuery(query)
+            query = get_latest_epc_and_property_iri_for_uprn(uprn)
+            instantiated = kgclient.performQuery(query)
 
             # There are 3 different cases:
-            if res and res[0].get('certificate') == lmk_key:
+            if instantiated and instantiated[0].get('certificate') == lmk_key:
                 # 1) EPC data up to date --> Do nothing
                 logger.info('EPC data for UPRN still up to date. No update needed.')
-                pass
+                updates = (0, 0)
             else:
                 # 2) & 3) Data not instantiated at all or outdated --> condition data
                 data_to_instantiate = condition_epc_data(epc_data)
-                # Add postcode and district IRIs
-                postcode = epc_data.get('postcode')
-                local_authority_code = epc_data.get('local-authority')
-                if postcode and local_authority_code:
-                    query = get_postcode_and_district_iris(postcode, local_authority_code)
-                    res = kgclient.performQuery(query)
-                    if res:
-                        data_to_instantiate['postcode_iri'] = res[0].get('postcode')
-                        data_to_instantiate['district_iri'] = res[0].get('district')
-                # Add potential parent building
-                data_to_instantiate['parent_iri'] = parent_iri
 
-                if not res[0].get('certificate'):
+                if not instantiated:
                     # 2) No EPC data instantiated yet --> Instantiate data
+                    # Create Property IRI
+                    if epc_data.get('property-type') in ['Flat', 'Maisonette']:
+                        data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
+                    else:
+                        data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
+
+                    # Add postcode and district IRIs
+                    postcode = epc_data.get('postcode')
+                    local_authority_code = epc_data.get('local-authority')
+                    if postcode and local_authority_code:
+                        query = get_postcode_and_district_iris(postcode, local_authority_code)
+                        geographies = kgclient.performQuery(query)
+                        if geographies:
+                            data_to_instantiate['postcode_iri'] = geographies[0].get('postcode')
+                            data_to_instantiate['district_iri'] = geographies[0].get('district')
+                    # Add potential parent building
+                    data_to_instantiate['parent_iri'] = parent_iri
+
                     logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
-                    insert_query = add_epc_data(**data_to_instantiate)
+                    insert_query = instantiate_epc_data(**data_to_instantiate)
                     kgclient.performUpdate(insert_query)
+                    updates = (1, 0)
+
                 else:
                     # 3) EPC data instantiated, but outdated --> Update data
+                    # Initialise list of properties to update
+                    # NOTE: Not all relationships/IRIs are updated, i.e. UPRN and parent building, 
+                    # address data incl. links to postcode and admin district
+                    # TODO: Current updating only considers already instantiated information;
+                    # potentially include instantiation of previously not available data
+                    data_to_update = ['epc_lmkkey', 'built_form_iri', 
+                                      'property_type_iri','usage_iri', 'usage_label',
+                                      'construction_end','floor_description', 
+                                      'roof_description','wall_description', 
+                                      'windows_description','floor_area', 'epc_rating', 'rooms']
+                    data_to_update = {k: v for k, v in data_to_instantiate.items() if k in data_to_update}
+                    data_to_update['property_iri'] = instantiated[0].get('property')
+
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
-                    pass
+                    update_query = update_epc_data(**data_to_update)
+                    kgclient.performUpdate(update_query)
+                    updates = (0, 1)
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
     else:
         logger.info('No EPC data available for provided lodgement identifier.')
 
+    return updates
+    
 
 def condition_epc_data(data):
     """
@@ -128,7 +155,6 @@ def condition_epc_data(data):
     # Initialise dictionary of data to Instantiate
     data_to_instantiate = {
         'epc_lmkkey': data.get('lmk-key'),
-        'property_iri': None, 
         'uprn': data.get('uprn'),
         'address_iri': None, 
         'addr_street': None, 
@@ -149,12 +175,6 @@ def condition_epc_data(data):
         'epc_rating': None, 
         'rooms': None
     }
-
-    # Create Property IRI
-    if data.get('property-type') in ['Flat', 'Maisonette']:
-        data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
-    else:
-        data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
 
     # Extract address information
     # There are 3 address fields --> assumption that street and number are provided
@@ -298,15 +318,16 @@ if __name__ == '__main__':
 
     # Retrieve individual EPC data for flats within same parent building
     # UPRN 10013002176
-    instantiate_data_for_certificate('815707079922012071918412040218942', ocgml_endpoint=ocgml_endpoint)
+    a,b = instantiate_data_for_certificate('815707079922012071918412040218942', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002177
-    instantiate_data_for_certificate('1587310959332017110616393580078797', ocgml_endpoint=ocgml_endpoint)
+    c,d = instantiate_data_for_certificate('1587310959332017110616393580078797', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002178
-    instantiate_data_for_certificate('323066450042009070814263262410988', ocgml_endpoint=ocgml_endpoint)
+    e,f = instantiate_data_for_certificate('323066450042009070814263262410988', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002181
-    instantiate_data_for_certificate('1793915247032020032008085476978708', ocgml_endpoint=ocgml_endpoint)
+    g,h = instantiate_data_for_certificate('1793915247032020032008085476978708', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002179
     # UPRN 10013002180
+
 
     #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
     #bldg = retrieve_parent_building(uprns)
