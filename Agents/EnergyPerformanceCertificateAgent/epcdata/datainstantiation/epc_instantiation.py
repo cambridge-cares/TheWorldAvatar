@@ -268,5 +268,4 @@ if __name__ == '__main__':
     instantiate_data_for_certificate('fadff9d58f3539ef0096883e195bbe93e00fc7eb4af4ecf824e991a429335557')
 
     #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
-    uprns = ['123', '456', '789']
-    bldg = retrieve_parent_building(uprns)
+    #bldg = retrieve_parent_building(uprns)

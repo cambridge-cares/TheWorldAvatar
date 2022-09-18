@@ -136,7 +136,7 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
             if r.text != '':
                 epcs = r.json()
                 # Create DataFrame for current EPC data
-                df = pd.DataFrame(columns=epcs['column-names'], data=epcs['rows'])
+                df = pd.DataFrame(columns=epcs['column-names'], data=epcs['rows'], dtype="string")
                 # Append data to list
                 all_dfs.append(df)
                 # Get number of EPCs in postcode
@@ -150,7 +150,10 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
     print(f'Maximum number of EPCs per postcode: {max(n)}')
 
     # Construct overall DataFrame
-    df_all = pd.concat(all_dfs, ignore_index=True)
+    if len(all_dfs) > 1:
+        df_all = pd.concat(all_dfs, ignore_index=True)
+    else:
+        df_all = df
 
     # Write DataFrame
     df_all.to_csv(file_path)
