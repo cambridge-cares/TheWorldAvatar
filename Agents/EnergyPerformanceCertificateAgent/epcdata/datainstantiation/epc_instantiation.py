@@ -12,11 +12,13 @@ import uuid
 import agentlogging
 from epcdata.datamodel.iris import *
 from epcdata.datamodel.data_mapping import *
+from epcdata.errorhandling.exceptions import KGException
 
 from epcdata.kgutils.kgclient import KGClient
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from epcdata.kgutils.querytemplates import add_epc_data, instantiated_epc_for_uprn, \
-                                           get_postcode_and_district_iris
+                                           get_postcode_and_district_iris, get_ocgml_uprns, \
+                                           get_parent_building
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate
 
 
@@ -193,7 +195,78 @@ def extract_street_and_number(address_strings):
     return street, nr
 
 
+def retrieve_ocgml_uprns(uprn: str = '', query_endpoint: str = '',
+                         kgclient=None):
+    """
+        Retrieve all UPRNs (instantiated in OntoCityGml) associated with same 
+        cityobject as provided UPRN
+        
+        Arguments:
+            uprn - UPRN to retrieve associated UPRNs (i.e. UPRNs for same building) for 
+            query_endpoint - SPARQL endpoint from which to retrieve data
+            kgclient - pre-initialized KG client with endpoints
+
+        Returns:
+            List of UPRNs (str) (empty list if UPRN not instantiated in OntoCityGml)
+                                 
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+    
+    # Retrieve UPRNs
+    query = get_ocgml_uprns(uprn)
+    res = kgclient.performQuery(query)
+
+    # Unwrap results
+    uprns = [r['uprns'] for r in res]
+
+    return uprns
+
+
+
+def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
+                             update_endpoint=UPDATE_ENDPOINT, kgclient=None):
+    """
+        Retrieve parent building for list of UPRNs (i.e. flats)
+        
+        Arguments:
+            uprns - List of UPRNs (str) for which to retrieve parent building
+            query_endpoint - SPARQL endpoint from which to retrieve data
+            kgclient - pre-initialized KG client with endpoints
+
+        Returns:
+            IRI of parent building (None if no parent building instantiated)
+    """
+
+    # Initialise parent building IRI
+    parent = None
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, update_endpoint)
+    
+    # Retrieve parent building IRI
+    query = get_parent_building(uprns)
+    res = kgclient.performQuery(query)
+
+    # Unwrap results
+    bldg = [r['building'] for r in res]
+    if len(bldg) == 1:
+        parent = bldg[0]
+    elif len(bldg) > 1:
+        logger.error('No single parent building could be retrieved for list of UPRNs.')
+        raise KGException('No single parent building could be retrieved for list of UPRNs.')
+
+    return parent
+
+
 if __name__ == '__main__':
 
     # Download and store all Domestic EPC data from API for data analysis
     instantiate_data_for_certificate('fadff9d58f3539ef0096883e195bbe93e00fc7eb4af4ecf824e991a429335557')
+
+    #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
+    uprns = ['123', '456', '789']
+    bldg = retrieve_parent_building(uprns)

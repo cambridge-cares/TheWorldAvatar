@@ -95,6 +95,42 @@ def get_postcode_and_district_iris(postcode: str, local_authority_code: str) -> 
     query = ' '.join(query.split())
     return query
 
+
+def get_ocgml_uprns(uprn: str):
+    # Get all UPRNs associated with same building in OntoCityGml as provided uprn
+    query = f"""
+        SELECT DISTINCT ?uprns
+        WHERE {{
+            VALUES ?uprn {{ "{uprn}"^^<{XSD_INTEGER}> }}
+            ?cityobj ^<{OSID_INTERSECTS_FEATURE}>/<{OSID_HAS_VALUE}> ?uprn ;
+  		             ^<{OSID_INTERSECTS_FEATURE}>/<{OSID_HAS_VALUE}> ?uprns
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
+
+def get_parent_building(uprns: list):
+    # Get IRI of instantiated parent building of UPRNs (i.e. identifiers of flats)
+    values = '", "'.join(uprns)
+    values = values.replace(',', f'^^<{XSD_STRING}>')
+    values = f'"{values}"^^<{XSD_STRING}>'
+    
+    query = f"""
+        SELECT DISTINCT ?building
+        WHERE {{
+            VALUES ?uprn {{ {values} }}
+            ?property <{OBE_HAS_IDENTIFIER}> ?uprn ;
+                      <{OBE_IS_IN}> ?building
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
 #
 # SPARQL UPDATES
 #

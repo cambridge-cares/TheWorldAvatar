@@ -18,6 +18,7 @@ import agentlogging
 
 from epcdata.datamodel.iris import *
 from epcdata.utils.api_endpoints import *
+from epcdata.errorhandling.exceptions import APIException
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from epcdata.kgutils.kgclient import KGClient
 from epcdata.kgutils.querytemplates import check_instantiated_local_authority, \
@@ -67,6 +68,10 @@ def retrieve_ons_postcodes(local_authority_district):
     # Perform GET request
     url = ONS_ENDPOINT + '.json?query=' + query
     res = requests.get(url)
+
+    if res.status_code != 200:
+        logger.error('Error retrieving data from ONS API.')
+        raise APIException('Error retrieving data from ONS API.')
 
     # Extract and unwrap results
     data = json.loads(res.text)

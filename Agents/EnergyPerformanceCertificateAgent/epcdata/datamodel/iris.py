@@ -16,6 +16,8 @@ XSD = 'http://www.w3.org/2001/XMLSchema#'
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
 UOM = 'http://theworldavatar.com/resource/ontouom/'
+OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
+OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
@@ -84,6 +86,13 @@ OBE_HOSPITAL = OBE + 'Hospital_b5997912-1035-4284-ad40-cde44e438485'
 OBE_CLINIC = OBE + 'Clinic_b5997912-1035-4284-ad40-cde44e438485'
 OBE_SCHOOL = OBE + 'School_b5997912-1035-4284-ad40-cde44e438485'
 OBE_UNIVERSITY = OBE + 'University_b5997912-1035-4284-ad40-cde44e438485'
+
+
+###--- External IRIs ---###
+
+# OntoCityGml / OSID
+OSID_INTERSECTS_FEATURE = OSID + 'intersectsFeature'
+OSID_HAS_VALUE = OSID + 'hasValue'
 
 # Concepts
 RDF_TYPE = RDF + 'type'

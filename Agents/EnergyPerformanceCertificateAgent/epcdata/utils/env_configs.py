@@ -15,7 +15,7 @@ import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
-# Initialise global variables to be read from properties file
+# Initialise global variables to be read from Docker compose file
 global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
 
 
