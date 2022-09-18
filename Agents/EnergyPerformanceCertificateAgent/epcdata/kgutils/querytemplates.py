@@ -180,7 +180,7 @@ def instantiate_postcodes_for_district(local_authority_district: str,
     return query
 
 
-def add_epc_data(property_iri: str = None, uprn: str = None,
+def add_epc_data(property_iri: str = None, uprn: str = None, parent_iri: str = None,
                  address_iri: str = None, addr_street: str = '', addr_number: str = '',
                  postcode_iri:str = None, district_iri: str = None,
                  built_form_iri: str = None, property_type_iri: str = None,
@@ -190,6 +190,7 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
                  wall_description: str = None, windows_description: str = None,  
                  floor_area: float = None, rooms: int = None,
                  epc_rating: str = None, epc_lmkkey: str = None) -> str:
+    # Returns triples to instantiate EPC data for single property
     
     if property_iri and uprn:
         # Start INSERT query
@@ -197,11 +198,13 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
             INSERT DATA {{
         """
 
-        # Returns triples to instantiate EPC data for single property
+        # Property definition
         if 'Building' in property_iri:
             triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
         else:
             triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
+        if parent_iri: triples += f"""<{property_iri}> <{OBE_IS_IN}> <{parent_iri}> . 
+                                      <{parent_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . """
 
         # Postal code and admin district
         if address_iri: 

@@ -26,7 +26,8 @@ from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate
 logger = agentlogging.get_logger("prod")
 
 
-def instantiate_data_for_certificate(lmk_key: str, endpoint='domestic',
+def instantiate_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
+                                     ocgml_endpoint=None,
                                      query_endpoint=QUERY_ENDPOINT, 
                                      update_endpoint=UPDATE_ENDPOINT):
     """
@@ -35,55 +36,85 @@ def instantiate_data_for_certificate(lmk_key: str, endpoint='domestic',
 
     Arguments:
         lmk_key - certificate id (i.e. individual lodgement identifier)
-        endpoint (str) - EPC endpoint from which to retrieve data
-                            ['domestic', 'non-domestic', 'display']
+        epc_endpoint (str) - EPC endpoint from which to retrieve data
+                             ['domestic', 'non-domestic', 'display']
+        ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
         Dictionary of relevant EPC data (empty dictionary if no data available)
     """
 
     # Retrieve EPC data
-    epc_data = obtain_data_for_certificate(lmk_key, endpoint)
+    epc_data = obtain_data_for_certificate(lmk_key, epc_endpoint)
     # Instantiate data (if successfully retrieved)
     if epc_data:
-        # Initialise KG client
-        kgclient = KGClient(query_endpoint, update_endpoint)
-        
-        # Check if same EPC is already instantiated for UPRN
+        # Retrieve UPRN info required to match data
         try:
             uprn = epc_data.get('uprn')
         except:
             logger.error('Retrieved EPC data does not have associated UPRN.')
             raise KeyError('Retrieved EPC data does not have associated UPRN.')
-        query = instantiated_epc_for_uprn(uprn)
-        res = kgclient.performQuery(query)
 
-        # There are 3 different cases:
-        if res and res[0].get('certificate') == lmk_key:
-            # 1) EPC data up to date --> Do nothing
-            logger.info('EPC data for UPRN still up to date. No update needed.')
-            pass
-        else:
-            # 2) & 3) Data not instantiated at all or outdated --> condition data
-            data_to_instantiate = condition_epc_data(epc_data)
-            # Add postcode and district IRIs
-            postcode = epc_data.get('postcode')
-            local_authority_code = epc_data.get('local-authority')
-            if postcode and local_authority_code:
-                query = get_postcode_and_district_iris(postcode, local_authority_code)
-                res = kgclient.performQuery(query)
-                if res:
-                    data_to_instantiate['postcode_iri'] = res[0].get('postcode')
-                    data_to_instantiate['district_iri'] = res[0].get('district')
-
-            if not res[0].get('certificate'):
-                # 2) No EPC data instantiated yet --> Instantiate data
-                logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
-                insert_query = add_epc_data(**data_to_instantiate)
-                kgclient.performUpdate(insert_query)
+        # Initialise KG client
+        kgclient = KGClient(query_endpoint, update_endpoint)
+        
+        #
+        # Check if UPRN is instantiated in OntoCityGml and whether parent building 
+        # (i.e. building hosting several flats/UPRNs) shall be instantiated
+        #
+        uprns = retrieve_ocgml_uprns(uprn, ocgml_endpoint)
+        if uprns:
+            # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
+            if len(uprns) == 1:
+                #TODO: Potentially incorporate more thorough check here, i.e. to
+                # avoid Flats (according to EPC data) having OCGML building representation
+                parent_iri = None
             else:
-                # 3) EPC data instantiated, but outdated --> Update data
-                logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
+                parent = retrieve_parent_building(uprns, kgclient=kgclient)
+                # Retrieve parent building IRI if already instantiated, otherwise create            
+                if parent:
+                    parent_iri = parent
+                else:
+                    parent_iri = OBE + 'Building_' + str(uuid.uuid4())
+
+            #
+            # Check if same EPC is already instantiated for UPRN
+            #
+            query = instantiated_epc_for_uprn(uprn)
+            res = kgclient.performQuery(query)
+
+            # There are 3 different cases:
+            if res and res[0].get('certificate') == lmk_key:
+                # 1) EPC data up to date --> Do nothing
+                logger.info('EPC data for UPRN still up to date. No update needed.')
                 pass
+            else:
+                # 2) & 3) Data not instantiated at all or outdated --> condition data
+                data_to_instantiate = condition_epc_data(epc_data)
+                # Add postcode and district IRIs
+                postcode = epc_data.get('postcode')
+                local_authority_code = epc_data.get('local-authority')
+                if postcode and local_authority_code:
+                    query = get_postcode_and_district_iris(postcode, local_authority_code)
+                    res = kgclient.performQuery(query)
+                    if res:
+                        data_to_instantiate['postcode_iri'] = res[0].get('postcode')
+                        data_to_instantiate['district_iri'] = res[0].get('district')
+                # Add potential parent building
+                data_to_instantiate['parent_iri'] = parent_iri
+
+                if not res[0].get('certificate'):
+                    # 2) No EPC data instantiated yet --> Instantiate data
+                    logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
+                    insert_query = add_epc_data(**data_to_instantiate)
+                    kgclient.performUpdate(insert_query)
+                else:
+                    # 3) EPC data instantiated, but outdated --> Update data
+                    logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
+                    pass
+        else:
+            logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
+    else:
+        logger.info('No EPC data available for provided lodgement identifier.')
 
 
 def condition_epc_data(data):
@@ -225,7 +256,6 @@ def retrieve_ocgml_uprns(uprn: str = '', query_endpoint: str = '',
     return uprns
 
 
-
 def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
                              update_endpoint=UPDATE_ENDPOINT, kgclient=None):
     """
@@ -264,15 +294,17 @@ def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
 
 if __name__ == '__main__':
 
+    ocgml_endpoint = 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql'
+
     # Retrieve individual EPC data for flats within same parent building
     # UPRN 10013002176
-    instantiate_data_for_certificate('815707079922012071918412040218942')
+    instantiate_data_for_certificate('815707079922012071918412040218942', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002177
-    instantiate_data_for_certificate('1587310959332017110616393580078797')
+    instantiate_data_for_certificate('1587310959332017110616393580078797', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002178
-    instantiate_data_for_certificate('323066450042009070814263262410988')
+    instantiate_data_for_certificate('323066450042009070814263262410988', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002181
-    instantiate_data_for_certificate('1793915247032020032008085476978708')
+    instantiate_data_for_certificate('1793915247032020032008085476978708', ocgml_endpoint=ocgml_endpoint)
     # UPRN 10013002179
     # UPRN 10013002180
 
