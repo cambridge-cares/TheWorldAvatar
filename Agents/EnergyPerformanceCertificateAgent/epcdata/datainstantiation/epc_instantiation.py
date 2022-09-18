@@ -120,7 +120,7 @@ def condition_epc_data(data):
     }
 
     # Create Property IRI
-    if data.get('property-type') == 'Flat':
+    if data.get('property-type') in ['Flat', 'Maisonette']:
         data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
     else:
         data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
@@ -264,8 +264,17 @@ def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
 
 if __name__ == '__main__':
 
-    # Download and store all Domestic EPC data from API for data analysis
-    instantiate_data_for_certificate('fadff9d58f3539ef0096883e195bbe93e00fc7eb4af4ecf824e991a429335557')
+    # Retrieve individual EPC data for flats within same parent building
+    # UPRN 10013002176
+    instantiate_data_for_certificate('815707079922012071918412040218942')
+    # UPRN 10013002177
+    instantiate_data_for_certificate('1587310959332017110616393580078797')
+    # UPRN 10013002178
+    instantiate_data_for_certificate('323066450042009070814263262410988')
+    # UPRN 10013002181
+    instantiate_data_for_certificate('1793915247032020032008085476978708')
+    # UPRN 10013002179
+    # UPRN 10013002180
 
     #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
     #bldg = retrieve_parent_building(uprns)

@@ -200,9 +200,8 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
         # Returns triples to instantiate EPC data for single property
         if 'Building' in property_iri:
             triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
-            if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
         else:
-            triples = f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
+            triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
 
         # Postal code and admin district
         if address_iri: 
@@ -216,6 +215,7 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
         
         # Instances        
         if property_type_iri: triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
+        if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
         if usage_iri: 
             triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
             if usage_label: triples += f"<{usage_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
