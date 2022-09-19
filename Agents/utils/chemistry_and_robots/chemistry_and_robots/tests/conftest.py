@@ -19,6 +19,7 @@ import chemistry_and_robots.data_model as onto
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_DIR = os.path.join(str(Path(__file__).absolute().parent.parent),'resources')
 SAMPLE_DATA_DIR = os.path.join(RESOURCE_DIR,'sample_data')
+SPACE_DASH_DOT_DIR = os.path.join(SAMPLE_DATA_DIR, 'space - with.dir')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
@@ -32,6 +33,7 @@ HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc
 HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_unidentified_peaks.txt')
 HPLC_XLS_REPORT_FILE_NO_PRODUCT = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls_no_product.xls')
 HPLC_TXT_REPORT_FILE_NO_PRODUCT = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_no_product.txt')
+HPLC_TXT_REPORT_FILE_WITH_SPACE = os.path.join(SPACE_DASH_DOT_DIR,'raw_hplc_report_txt with space.txt')
 VAPOURTEC_INPUT_FILE = os.path.join(SAMPLE_DATA_DIR,'vapourtec_input.csv')
 
 KG_SERVICE = "blazegraph"

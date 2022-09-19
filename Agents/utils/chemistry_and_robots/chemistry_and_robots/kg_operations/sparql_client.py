@@ -1441,8 +1441,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return g
 
     def upload_raw_hplc_report_to_kg(self, local_file_path, timestamp_last_modified, remote_report_subdir, hplc_digital_twin) -> str:
+        _remote_file_subdir = remote_report_subdir.replace(':', '').replace('\\', '/').replace(' ', '_') if remote_report_subdir is not None else None
         try:
-            remote_file_path, timestamp_upload = self.uploadFile(local_file_path, remote_report_subdir)
+            remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
             logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
                     local_file_path, self.fs_url, timestamp_upload, remote_file_path))
         except Exception as e:
@@ -1454,12 +1455,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
         logger.info("The initialised HPLCReport IRI is: <%s>" % (hplc_report_iri))
 
-        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> "%s"^^xsd:anyURI; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f. <%s> <%s> <%s>.}""" % (
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path,
-            ONTOHPLC_LOCALFILEPATH, local_file_path, ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified,
-            ONTOHPLC_LASTUPLOADEDAT, timestamp_upload, hplc_digital_twin, ONTOHPLC_HASPASTREPORT, hplc_report_iri
-        )
-        self.performUpdate(update)
+        update = f"""{PREFIX_XSD} INSERT DATA {{
+            <{hplc_report_iri}> a <{ONTOHPLC_HPLCREPORT}>; <{ONTOHPLC_REMOTEFILEPATH}> "{remote_file_path}"^^xsd:anyURI;
+            <{ONTOHPLC_LOCALFILEPATH}> "{local_file_path}"^^xsd:string; <{ONTOHPLC_LASTLOCALMODIFIEDAT}> {timestamp_last_modified};
+            <{ONTOHPLC_LASTUPLOADEDAT}> {timestamp_upload}. <{hplc_digital_twin}> <{ONTOHPLC_HASPASTREPORT}> <{hplc_report_iri}>.
+        }}""".replace("\\", "\\\\")
+        try:
+            self.performUpdate(update)
+        except Exception as e:
+            logger.error(f"SPARQL update to write information about the uploaded HPLCReport (remote file path: {remote_file_path}) failed: {update}", exc_info=True)
+            raise e
 
         return hplc_report_iri
 
