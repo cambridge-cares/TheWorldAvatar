@@ -159,6 +159,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
         Tuple of newly instantiated and updated EPCs (new, updated)
+        Tuple of newly summarized and updated EPC summaries (new, updated)
     """
 
     # Initialise return values
@@ -266,7 +267,10 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     else:
         logger.info('No EPC data available for provided lodgement identifier.')
 
-    return (new_epcs, updated_epcs)
+    # Potentially "summarise" EPCs for parent buildings
+    new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient)    
+
+    return (new_epcs, updated_epcs), (new_summaries, updated_summaries)
 
 
 def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
@@ -478,6 +482,11 @@ def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_EN
         summarizes and instantiates them for the parent building
 
     """
+
+    # Initialise return values
+    new_epcs = 0
+    updated_epcs = 0
+
     # Create KG client if not provided
     if not kgclient:
         kgclient = KGClient(query_endpoint, update_endpoint)
@@ -488,13 +497,37 @@ def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_EN
     # Summarize EPC information for parent buildings
     summarized = summarize_epc_data(epcs_data)
 
+    columns_to_instantiate = ['property_iri', 'uprn',
+        'address_iri', 'addr_street', 'addr_number', 'postcode_iri',
+        'district_iri', 'built_form_iri', 'property_type_iri',
+        'usage_iri', 'usage_label', 'construction_start', 'construction_end',
+        'floor_description', 'roof_description', 'wall_description',
+        'windows_description', 'floor_area', 'epc_rating', 'rooms']
+    
+    columns_to_update = ['property_iri', 'built_form_iri', 'property_type_iri',
+                         'usage_iri', 'usage_label', 'construction_end',
+                         'floor_description', 'roof_description', 'wall_description', 
+                         'windows_description','floor_area', 'epc_rating', 'rooms']
 
     # Instantiate / Update EPC information for parent buildings
-    # if identifier exists:
-    #     update
-    # else:
-    #     instantiate
+    for index, row in summarized.iterrows():
+        # Instantiate new parent building data
+        if row['created']:
+            data_to_instantiate = {k: v for k, v in row.items() if k in columns_to_instantiate}
+            logger.info('Parent building data not yet instantiated. Instantiate data ... ')
+            insert_query = instantiate_epc_data(**data_to_instantiate)
+            kgclient.performUpdate(insert_query)
+            new_epcs += 1
+      
+        # Update parent building data
+        else:
+            data_to_update = {k: v for k, v in row.items() if k in columns_to_update}
+            logger.info('Parent building data already instantiated. Updated data ... ')
+            update_query = update_epc_data(**data_to_update)
+            kgclient.performUpdate(update_query)
+            updated_epcs += 1
 
+    return (new_epcs, updated_epcs)
 
 
 def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY_ENDPOINT,
@@ -541,7 +574,8 @@ def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY
     df['rooms'] = df['rooms'].astype('Int64')
 
     # Fill missing data with None
-    df = df.fillna(np.nan).replace([np.nan], [None])
+    df = df.replace('nan', None)
+    df = df.fillna(np.nan).replace(np.nan, None)
 
     return df
 
@@ -564,7 +598,7 @@ def summarize_epc_data(data):
     cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'postcode_iri', 'district_iri',
             'built_form_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
             'construction_start', 'construction_end', 'floor_description', 'roof_description', 
-            'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms']
+            'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms', 'created']
     df = pd.DataFrame(columns=cols)
 
     #
@@ -626,7 +660,9 @@ def summarize_epc_data(data):
 
         # Retrieve/create unique identifier for parent building ("UPRN equivalent")
         uprn = d['parent_id'].unique()[0]
-        if not uprn: uprn = str(uuid.uuid4())
+        if not uprn: 
+            uprn = str(uuid.uuid4())
+            df.loc[p, 'created'] = True
         df.loc[p, 'uprn'] = uprn
 
         # Retrieve/create address information for parent building
@@ -663,6 +699,14 @@ def summarize_epc_data(data):
         except:
             logger.info('No Property number information be obtained.')
 
+    # Create 'property_iri' column
+    df['property_iri'] = df.index
+    df.reset_index(drop=True)
+
+    # Fill missing data with None
+    df = df.replace('nan', None)
+    df = df.fillna(np.nan).replace(np.nan, None)
+
     return df
 
 
@@ -670,26 +714,8 @@ if __name__ == '__main__':
 
     ocgml_endpoint = 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql'
 
-    #instantiate_epc_data_for_certificate('570250709542010121309393986207008', ocgml_endpoint=ocgml_endpoint)    
-
-    # Retrieve individual EPC data for flats within same parent building
-    # UPRN 10013002176
-    #a,b = instantiate_epc_data_for_certificate('815707079922012071918412040218942', ocgml_endpoint=ocgml_endpoint)
-    # UPRN 10013002177
-    #c,d = instantiate_epc_data_for_certificate('1587310959332017110616393580078797', ocgml_endpoint=ocgml_endpoint)
-    # UPRN 10013002178
-    #e,f = instantiate_epc_data_for_certificate('323066450042009070814263262410988', ocgml_endpoint=ocgml_endpoint)
-    # UPRN 10013002181
-    #g,h = instantiate_epc_data_for_certificate('1793915247032020032008085476978708', ocgml_endpoint=ocgml_endpoint)
-    # UPRN 10013002179
-    # UPRN 10013002180
-
-
-    #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
-    #bldg = retrieve_parent_building(uprns)
-
-    #a, b = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
-    #print(f'Newly instantiated EPCs: {a}')
-    #print(f'Updated EPCs: {b}')
-
-    instantiate_epcs_for_parent_buildings()
+    epcs, summaries = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
+    print(f'Newly instantiated EPCs: {epcs[0]}')
+    print(f'Updated EPCs: {epcs[1]}')
+    print(f'Newly instantiated EPC summaries: {summaries[0]}')
+    print(f'Updated EPC summaries: {summaries[1]}')
