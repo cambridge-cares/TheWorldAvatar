@@ -90,6 +90,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasOrientation -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasOrientation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its angle/position relative to the Sun.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its slope angle.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities">
@@ -236,6 +256,36 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isHeatSupportSuitable -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isHeatSupportSuitable">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Boolean indicator that is true when the roof is suitable for installation of heat support, and is false, otherwise.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isPVPanelSuitable -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isPVPanelSuitable">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Boolean indicator that is true when the roof is suitable for installation of photovoltaic panels, and is false, otherwise.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isSolarCollectorSuitable -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isSolarCollectorSuitable">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Boolean indicator that is true when the roof is suitable for installation of solar collectors, and is false, otherwise.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.w3.org/2000/01/rdf-schema#label -->
 
     <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
@@ -265,6 +315,16 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Angle -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <owl:disjointWith rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:Class>
     
 
 
@@ -326,6 +386,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FlatRoof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FlatRoof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof with a slope angle that is less than 9.46 degree.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor">
@@ -342,12 +412,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PVSuitableRoofArea -->
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PVSuitableRoofArea">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
-        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof of a building that is suitable for photovoltaic panel installation.</rdfs:comment>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof with a slope angle that is greater than or equal to 9.46 degree.</rdfs:comment>
     </owl:Class>
     
 
@@ -364,6 +433,16 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolarSuitableRoofArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolarSuitableRoofArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof area of a building that is suitable for solar use.</rdfs:comment>
     </owl:Class>
     
 
