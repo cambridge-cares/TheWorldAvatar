@@ -8,6 +8,8 @@
 
 import re
 import uuid
+import numpy as np
+import pandas as pd
 
 import agentlogging
 from epcdata.datamodel.iris import *
@@ -73,7 +75,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                 if parent:
                     parent_iri = parent
                 else:
-                    parent_iri = OBE + 'Building_' + str(uuid.uuid4())
+                    parent_iri = KB + 'Building_' + str(uuid.uuid4())
 
             #
             # Check if same EPC is already instantiated for UPRN
@@ -198,7 +200,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                 if parent:
                     parent_iri = parent
                 else:
-                    parent_iri = OBE + 'Building_' + str(uuid.uuid4())
+                    parent_iri = KB + 'Building_' + str(uuid.uuid4())
 
             #
             # Check if same EPC is already instantiated for UPRN
@@ -469,11 +471,206 @@ def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
     return parent
 
 
+def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_ENDPOINT,
+                                          update_endpoint=UPDATE_ENDPOINT):
+    """
+        Retrieves instantiated EPC information for "child" properties and
+        summarizes and instantiates them for the parent building
+
+    """
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, update_endpoint)
+
+    # Retrieve EPC data for childen properties and parent buildings
+    epcs_data = retrieve_epcs_child_and_parent_buildings(kgclient)
+
+    # Summarize EPC information for parent buildings
+    summarized = summarize_epc_data(epcs_data)
+
+
+    # Instantiate / Update EPC information for parent buildings
+    # if identifier exists:
+    #     update
+    # else:
+    #     instantiate
+
+
+
+def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY_ENDPOINT,
+                                             update_endpoint=UPDATE_ENDPOINT):
+    """
+        Retrieves instantiated EPC information for all parent buildings
+        and associated children properties from KG
+
+        Returns:
+            DataFrame with following columns:
+            ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
+            'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
+            'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
+            'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description', 
+            'windows_description'] 
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, update_endpoint)
+
+    # Retrieve EPC data
+    query = get_children_and_parent_building_properties()
+    res = kgclient.performQuery(query)
+
+    # Unwrap results and create DataFrame
+    cols = ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
+            'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
+            'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
+            'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description', 
+            'windows_description'] 
+    df = pd.DataFrame(columns=cols, data=res)
+
+    # Cast data types
+    #TODO: Explicit string casting creates issues with pd.NA entries for missing data
+    # for c in ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 
+    #           'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 'parent_id', 
+    #           'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
+    #           'usage_iri', 'wall_description', 'windows_description'] :
+    #     df[c] = df[c].astype('string')
+    df['construction_start'] = pd.to_datetime(df['construction_start'], yearfirst=True, dayfirst=False)
+    df['construction_end'] = pd.to_datetime(df['construction_end'], yearfirst=True, dayfirst=False)
+    df['floor_area'] = df['floor_area'].astype('float')
+    df['rooms'] = df['rooms'].astype('Int64')
+
+    # Fill missing data with None
+    df = df.fillna(np.nan).replace([np.nan], [None])
+
+    return df
+
+
+def summarize_epc_data(data):
+    """
+        Summarizes provided EPC data for "children" properties into aggregate
+        values for parent buildings
+
+        Arguments:
+            data - DataFrame with following columns:
+                  ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
+                  'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
+                  'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
+                  'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description',
+                  'windows_description'] 
+    """
+
+    # Initialise return DataFrame
+    cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'postcode_iri', 'district_iri',
+            'built_form_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
+            'construction_start', 'construction_end', 'floor_description', 'roof_description', 
+            'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms']
+    df = pd.DataFrame(columns=cols)
+
+    #
+    # How to summarize values
+    #
+    # 1) Sum up actual values of children properties
+    sum_up = ['rooms', 'floor_area']
+    # 2) Use most common value of children properties
+    most_common = ['epc_rating', 'built_form_iri', 'property_type_iri']
+    # 3) Aggregate / concatenate distinct values
+    agg = ['usage_iri', 'usage_label', 'floor_description', 'roof_description', 
+           'wall_description', 'windows_description']
+
+    # Summarize data per parent building
+    parents = data['parent_iri'].unique()
+    for p in parents:
+        d = data[data['parent_iri'] == p].copy()
+       
+        # sum up
+        for i in sum_up:
+            df.loc[p, i] = d[i].sum()
+        # most common
+        for i in most_common:
+            if not d[i].value_counts().empty:
+                # Retrieve most common value (i.e. value with highest count)
+                df.loc[p, i] = d[i].value_counts().index[0]
+        # Replace invalid maisonette property type
+        if df.loc[p, 'property_type_iri'] == OBE_MAISONETTE:
+            df.loc[p, 'property_type_iri'] = OBE_HOUSE
+        # concatenate distinct values
+        for i in agg:
+            vals = list(d[i].unique())
+            vals = [v for v in vals if v]
+            if vals:
+                concatenated = '; '.join(vals)
+                # Replace invalid single residential usage
+                if i == 'usage_iri':
+                    concatenated = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
+                df.loc[p, i] = concatenated
+
+        # Retrieve construction dates
+        try:
+            # Earliest construction start
+            df.loc[p, 'construction_start'] = d['construction_start'].min()
+            # Latest construction end
+            df.loc[p, 'construction_end'] = d['construction_end'].max()
+        except:
+            logger.info('No construction date data could be obtained.')
+        
+        # Retrieve postcode and admin district IRIs
+        try:
+            df.loc[p, 'district_iri'] = d['district_iri'].unique()[0]
+        except:
+            logger.info('No AdministrativeDistrict IRI could be obtained.')
+        try:
+            df.loc[p, 'postcode_iri'] = d['postcode_iri'].unique()[0]
+        except:
+            logger.info('No PostalCode IRI could be obtained.')
+
+        # Retrieve/create unique identifier for parent building ("UPRN equivalent")
+        uprn = d['parent_id'].unique()[0]
+        if not uprn: uprn = str(uuid.uuid4())
+        df.loc[p, 'uprn'] = uprn
+
+        # Retrieve/create address information for parent building
+        addresses = list(d['address_iri'].unique())
+        addresses = [a for a in addresses if a]
+        if len(addresses) == 1:
+            # in case all children have same address
+            address = addresses[0]
+        else:
+            # in case children have different / no address
+            address = KB + 'Address_' + str(uuid.uuid4())
+        df.loc[p, 'address_iri'] = address
+
+        # Extract street and property number
+        try:
+            street = sorted(d['addr_street'].unique())
+            street = [s for s in street if s]
+            # Remove leading and trailing single letters, i.e. "A King Street", "B King Street"
+            street = [re.sub('^[a-zA-Z] ', '', s) for s in street]
+            street = [re.sub(' [a-zA-Z]$', '', s) for s in street]
+            street = list(set(street))
+            if street:
+                concatenated = '; '.join(street)         
+                df.loc[p, 'addr_street'] = concatenated
+        except:
+            logger.info('No Street name information be obtained.')
+        
+        try:
+            nr = sorted(d['addr_number'].unique())
+            nr = [n for n in nr if n]
+            if nr:
+                concatenated = ', '.join(nr)
+                df.loc[p, 'addr_number'] = concatenated
+        except:
+            logger.info('No Property number information be obtained.')
+
+    return df
+
+
 if __name__ == '__main__':
 
     ocgml_endpoint = 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql'
 
-    #instantiate_epc_data_for_certificate('5a29e0a9d5dcae5284dcf10eebd83d8e077e9b122d44ba57c3a9f35cea573754', ocgml_endpoint=ocgml_endpoint)    
+    #instantiate_epc_data_for_certificate('570250709542010121309393986207008', ocgml_endpoint=ocgml_endpoint)    
 
     # Retrieve individual EPC data for flats within same parent building
     # UPRN 10013002176
@@ -491,6 +688,8 @@ if __name__ == '__main__':
     #uprns = retrieve_ocgml_uprns('10013004624', 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql')
     #bldg = retrieve_parent_building(uprns)
 
-    a, b = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
+    #a, b = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
+    #print(f'Newly instantiated EPCs: {a}')
+    #print(f'Updated EPCs: {b}')
 
-    print('')
+    instantiate_epcs_for_parent_buildings()

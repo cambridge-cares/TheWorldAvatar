@@ -237,15 +237,10 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/',
 if __name__ == '__main__':
 
     # Download and store all Domestic EPC data from API for data analysis
-    #download_all_data('domestic')
+    download_all_data('domestic')
 
     # Download and store all Non-domestic EPC data from API for data analysis
-    #download_all_data('non-domestic')
+    download_all_data('non-domestic')
 
     # Download and store all Domestic EPC data from API for data analysis
-    #download_all_data('display')
-
-    pcs = [
-        'XXXX XXX'
-    ]
-    obtain_latest_data_for_postcodes(pcs)
+    download_all_data('display')

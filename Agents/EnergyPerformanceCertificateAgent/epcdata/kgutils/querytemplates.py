@@ -131,6 +131,52 @@ def get_parent_building(uprns: list):
 
     return query
 
+
+def get_children_and_parent_building_properties():
+    # Get IRIs of instantiated properties and parent buildings as well as
+    # key information of properties to "summarize"
+    query = f"""
+        SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
+                        ?addr_street ?addr_number ?epc_rating ?rooms ?usage_iri ?usage_label 
+                        ?property_type_iri ?built_form_iri ?construction_start ?construction_end 
+                        ?floor_area ?floor_description ?roof_description ?wall_description 
+                        ?windows_description
+        WHERE {{
+            ?property_iri <{OBE_IS_IN}> ?parent_iri ;
+                      <{OBE_HAS_ADDRESS}> ?address_iri .
+            ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
+                     <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
+            OPTIONAL {{ ?address_iri <{OBE_HAS_PROPERTYNUMBER}> ?addr_number }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_USAGE}> ?usage_iri }}
+            OPTIONAL {{ ?property_iri <{RDFS_LABEL}> ?usage_label }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}> ?built_form_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_BEGINNING}>/<{TIME_IN_DATETIME_STAMP}> ?construction_start }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}>/<{TIME_IN_DATETIME_STAMP}> ?construction_end }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component1 .
+                        ?component1 <{RDF_TYPE}> <{OBE_FLOOR}> ;
+                                    <{RDFS_COMMENT}> ?floor_description }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component2 .                                    
+                        ?component2 <{RDF_TYPE}> <{OBE_ROOF}> ; 
+                                    <{RDFS_COMMENT}> ?roof_description }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component3 .  
+                        ?component3 <{RDF_TYPE}> <{OBE_WALL}> ; 
+                                    <{RDFS_COMMENT}> ?wall_description }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component4 .  
+                        ?component4 <{RDF_TYPE}> <{OBE_WINDOWS}> ; 
+                                    <{RDFS_COMMENT}> ?windows_description }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area }}
+            OPTIONAL {{ ?parent_iri <{OBE_HAS_IDENTIFIER}> ?parent_id }}
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
 #
 # SPARQL UPDATES
 #
@@ -221,7 +267,7 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
         if usage_iri: 
             triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
-            if usage_label: triples += f"<{usage_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+            if usage_label: triples += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if construction_start or construction_end:
             #TODO: Potentially include relevant construction time bands in ABox
             interval_iri = KB + 'Interval_' + str(uuid.uuid4())
@@ -312,8 +358,8 @@ def update_epc_data(property_iri: str = None,
                                  <{OBE_HAS_NUMBER_ROOMS}> ?rooms ;
                                  <{OBE_HAS_USAGE}> ?usage_iri ;
                                  <{OBE_HAS_PROPERTY_TYPE}> ?property_type ;
-                                 <{OBE_HAS_BUILT_FORM}> ?built_form .
-                ?usage_iri <{RDFS_LABEL}> ?usage_label .
+                                 <{OBE_HAS_BUILT_FORM}> ?built_form ;
+                                 <{RDFS_LABEL}> ?usage_label .
                 ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time .
                 ?floor <{RDFS_COMMENT}> ?floor_description .
                 ?roof <{RDFS_COMMENT}> ?roof_description .
@@ -331,7 +377,7 @@ def update_epc_data(property_iri: str = None,
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
         if usage_iri: 
             insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
-            if usage_label: insert += f"<{usage_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+            if usage_label: insert += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if property_type_iri: insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
         if built_form_iri: insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
         if construction_end: insert += f"?end_iri <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . "
@@ -347,8 +393,8 @@ def update_epc_data(property_iri: str = None,
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_LATEST_EPC}> ?lmkkey }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
-                OPTIONAL {{ <{property_iri}> <{OBE_HAS_USAGE}> ?usage_iri . 
-                            ?usage_iri <{RDFS_LABEL}> ?usage_label . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_USAGE}> ?usage_iri }} 
+                OPTIONAL {{ <{property_iri}> <{RDFS_LABEL}> ?usage_label }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> ?property_type }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}> ?end_iri . 
@@ -378,48 +424,6 @@ def update_epc_data(property_iri: str = None,
         query = None
 
     return query
-
-
-# def filter_stations_in_circle(circle_center: str, circle_radius: str):
-#     # Retrieve stationIRIs for stations of interest
-#     lat, lon = circle_center.split('#')
-#     lat = float(lat)
-#     lon = float(lon)
-#     circle_radius = float(circle_radius)
-#     postgis_client = PostGISClient()
-#     iris = postgis_client.get_feature_iris_in_circle(lat, lon, circle_radius)
-#     iris = ', '.join(f'<{iri}>' for iri in iris)
-#     filter_expression = f'FILTER ( ?station IN ({iris}) )'
-    
-#     return filter_expression
-
-
-# def instantiated_metoffice_stations_with_details(circle_center: str = None,
-#                                                  circle_radius: str = None) -> str:   
-#     if circle_center and circle_radius:
-#         # Retrieve only stations in provided circle (radius in km)
-#         filter_expression = filter_stations_in_circle(circle_center, circle_radius)
-#     else:
-#         # Returns query to retrieve all instantiated station details
-#         filter_expression = ''
-    
-#     # Construct query
-#     query = f"""
-#         SELECT ?stationID ?station ?label ?elevation ?dataIRI_obs ?dataIRI_fc
-#         WHERE {{
-#         {filter_expression}
-#         ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-#                     <{EMS_HAS_IDENTIFIER}> ?stationID .
-#         OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-#         OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-#         OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
-#         OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
-
-#             }}
-#     """
-    
-#     return query
 
 
 # def split_insert_query(triples: str, max: int):
