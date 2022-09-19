@@ -60,9 +60,4 @@ def retrieve_settings():
 
 
 # Run when module is imported
-#TODO: Uncomment
-#retrieve_settings()
-
-#TODO: Remove
-QUERY_ENDPOINT = 'http://localhost:9999/blazegraph/namespace/buildings/sparql'
-UPDATE_ENDPOINT = 'http://localhost:9999/blazegraph/namespace/buildings/sparql'
+retrieve_settings()

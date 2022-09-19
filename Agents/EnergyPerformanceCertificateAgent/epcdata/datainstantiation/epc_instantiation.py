@@ -12,11 +12,12 @@ import numpy as np
 import pandas as pd
 
 import agentlogging
+
 from epcdata.datamodel.iris import *
 from epcdata.datamodel.data_mapping import *
 from epcdata.errorhandling.exceptions import KGException
-
 from epcdata.kgutils.kgclient import KGClient
+from epcdata.utils.env_configs import OCGML_ENDPOINT
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from epcdata.kgutils.querytemplates import *
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
@@ -28,7 +29,7 @@ logger = agentlogging.get_logger("prod")
 
 
 def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
-                                         ocgml_endpoint=None,
+                                         ocgml_endpoint=OCGML_ENDPOINT,
                                          query_endpoint=QUERY_ENDPOINT, 
                                          update_endpoint=UPDATE_ENDPOINT):
     """
@@ -145,7 +146,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
 
 
 def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
-                                       ocgml_endpoint=None,
+                                       ocgml_endpoint=OCGML_ENDPOINT,
                                        query_endpoint=QUERY_ENDPOINT, 
                                        update_endpoint=UPDATE_ENDPOINT):
     """
@@ -274,7 +275,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
 
 
 def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
-                                           ocgml_endpoint=None,
+                                           ocgml_endpoint=OCGML_ENDPOINT,
                                            query_endpoint=QUERY_ENDPOINT, 
                                            update_endpoint=UPDATE_ENDPOINT):
     """
@@ -713,10 +714,7 @@ def summarize_epc_data(data):
 
 if __name__ == '__main__':
 
-    # Specify endpoint with building instances according to OntoCityGml
-    ocgml_endpoint = 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql'
-
-    epcs, summaries = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
+    epcs, summaries = instantiate_epc_data_for_all_postcodes()
     print(f'Newly instantiated EPCs: {epcs[0]}')
     print(f'Updated EPCs: {epcs[1]}')
     print(f'Newly instantiated EPC summaries: {summaries[0]}')

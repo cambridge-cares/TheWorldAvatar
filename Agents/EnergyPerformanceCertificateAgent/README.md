@@ -26,6 +26,7 @@ Before building and deploying the Docker image, several key properties need to b
 4) LAYERNAME (layer name in Geoserver, also the table name for geospatial features in PostGIS)
 5) GEOSERVER_WORKSPACE
 6) ONTOP_FILE
+7) OCGML_ENDPOINT (SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs)
 
 ### **2) Accessing Github's Container registry**
 
@@ -146,6 +147,12 @@ An overview of all provided API endpoints and their functionality is provided af
 
 - POST request to instantiate latest EPC building data for all instantiated UPRNs in all instantiated postcodes:
 > `/api/epcagent/instantiate/certificates/all`
+
+&nbsp;
+
+# 3. Current EPC data instantiation workflow
+
+...
 
 &nbsp;
 

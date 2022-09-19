@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify
 import agentlogging
 
 from epcdata.errorhandling.exceptions import InvalidInput
+from epcdata.utils.env_configs import OCGML_ENDPOINT
 from epcdata.kgutils.initialise_kb import initialise_kb
 from epcdata.datainstantiation.postcodes import initialise_postcodes
 from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
@@ -105,12 +106,17 @@ def api_instantiate_epc_data_for_certificate():
     except:
         logger.error('Invalid EPC API endpoint provided.')
         raise InvalidInput('Invalid EPC API endpoint provided.')
-    # Retrieve certificate's unique lodgement identifier
+    # Retrieve endpoint to instantiated OntoCityGml instances
+    ocgml_endpoint = None
     try:
-        inputs['ocgml_endpoint'] = str(query['ocgml_endpoint'])
+        ocgml_endpoint = str(query['ocgml_endpoint'])
     except:
         logger.error('Invalid OntoCityGml endpoint provided.')
         raise InvalidInput('Invalid OntoCityGml endpoint provided.')
+    if not ocgml_endpoint:
+        ocgml_endpoint = OCGML_ENDPOINT
+        logger.info('Using default OntoCityGml endpoint.')
+    inputs['ocgml_endpoint'] = ocgml_endpoint
     try:
         # Instantiate EPC
         response = instantiate_epc_data_for_certificate(**inputs)
@@ -148,12 +154,17 @@ def api_instantiate_epc_data_for_all_uprns():
     except:
         logger.error('Invalid EPC API endpoint provided.')
         raise InvalidInput('Invalid EPC API endpoint provided.')
-    # Retrieve certificate's unique lodgement identifier
+    # Retrieve endpoint to instantiated OntoCityGml instances
+    ocgml_endpoint = None
     try:
-        inputs['ocgml_endpoint'] = str(query['ocgml_endpoint'])
+        ocgml_endpoint = str(query['ocgml_endpoint'])
     except:
         logger.error('Invalid OntoCityGml endpoint provided.')
         raise InvalidInput('Invalid OntoCityGml endpoint provided.')
+    if not ocgml_endpoint:
+        ocgml_endpoint = OCGML_ENDPOINT
+        logger.info('Using default OntoCityGml endpoint.')
+    inputs['ocgml_endpoint'] = ocgml_endpoint
     try:
         # Instantiate EPC
         response = instantiate_epc_data_for_all_postcodes(**inputs)
