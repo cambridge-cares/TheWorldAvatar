@@ -2153,9 +2153,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             )
         self.performUpdate(update)
 
-    def upload_vapourtec_input_file_to_kg(self, vapourtec_digital_twin, local_file_path, remote_file_subdir):
+    def upload_vapourtec_input_file_to_kg(self, vapourtec_digital_twin, local_file_path: str, remote_file_subdir: str):
+        # replace windows path separators with unix path separators
+        _remote_file_subdir = remote_file_subdir.replace(':', '').replace('\\', '/') if remote_file_subdir is not None else None
         try:
-            remote_file_path, timestamp_upload = self.uploadFile(local_file_path, remote_file_subdir)
+            remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
             logger.info("Vapourtec input file (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
                     local_file_path, self.fs_url, timestamp_upload, remote_file_path))
         except Exception as e:
@@ -2165,12 +2167,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_input_file_iri = initialiseInstanceIRI(getNameSpace(vapourtec_digital_twin), ONTOVAPOURTEC_VAPOURTECINPUTFILE)
         logger.info("The initialised VapourtecInputFile IRI is: <%s>" % (vapourtec_input_file_iri))
 
-        update = PREFIX_XSD + """INSERT DATA {<%s> <%s> "%s"^^xsd:anyURI; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-            vapourtec_input_file_iri, ONTOVAPOURTEC_REMOTEFILEPATH, remote_file_path,
-            ONTOVAPOURTEC_LOCALFILEPATH, local_file_path, ONTOVAPOURTEC_LASTLOCALMODIFIEDAT, os.path.getmtime(local_file_path),
-            ONTOVAPOURTEC_LASTUPLOADEDAT, timestamp_upload
-        )
-        self.performUpdate(update)
+        update = f"""{PREFIX_XSD} INSERT DATA {{
+            <{vapourtec_input_file_iri}> <{ONTOVAPOURTEC_REMOTEFILEPATH}> "{remote_file_path}"^^xsd:anyURI;
+            <{ONTOVAPOURTEC_LOCALFILEPATH}> "{local_file_path}"^^xsd:string; <{ONTOVAPOURTEC_LASTLOCALMODIFIEDAT}> {os.path.getmtime(local_file_path)};
+            <{ONTOVAPOURTEC_LASTUPLOADEDAT}> {timestamp_upload}.}}""".replace("\\", "\\\\")
+        try:
+            self.performUpdate(update)
+        except Exception as e:
+            logger.error(f"SPARQL update to write information about the uploaded VapourtecInputFile (remote file path: {remote_file_path}) failed: {update}", exc_info=True)
+            raise e
 
         return vapourtec_input_file_iri
 
