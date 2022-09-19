@@ -156,7 +156,8 @@ class RxnOptGoalAgent(ABC):
         return render_template(
             'rxn_opt_goal.html',
             # TODO [nice-to-have] show more information about the chemical reaction once selected in dropdown
-            chem_rxn_iri=[{'iri': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1', 'display': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1'}],
+            # TODO once decided on the triple store to deploy, change the IRI to the correct one
+            chem_rxn_iri=[{'iri': 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1', 'display': 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1'}],
             # TODO [nice-to-have] specify the limits of the goal, e.g. yield within 0-100%
             # TODO [nice-to-have] put the unit as symbol in the dropdown list, e.g. %, g/mol, kg, etc.
             goal_spec_from_flask={
