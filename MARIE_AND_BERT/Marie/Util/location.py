@@ -36,5 +36,4 @@ CHEMSPOT_JAR_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin\chemspot.jar')
 DICT_ZIP_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/dict.zip')
 IDS_ZIP_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/ids.zip')
 MULTICLASS_BIN_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/multiclass.bin')
-PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem500.jsonl')
-
+PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem5000_trim3781.jsonl')

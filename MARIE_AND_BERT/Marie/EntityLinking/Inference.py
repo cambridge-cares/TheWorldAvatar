@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     # read a test file
     testdata = [{"mention": "urea", "context_left": "what is the chemical formula of", "context_right": ""}]
-    rawdata = [{"text": "what is the chemical formula of urea"}, {"text":"what is the chemical formula of benzene"}]
+    rawdata = [{"text": "what is the chemical formula of 8-cyclopentyl-1,3-dipropylxanthine."}, {"text":"what is the chemical formula of meprylcaine"}]
     # rawdata = load_mention_entries("data/pubchem/test.jsonl")
     # rawdata = [{"text":l+' '+m+' '+r} for m,l,r in rawdata]
     model = NELInfer('base500.yaml')

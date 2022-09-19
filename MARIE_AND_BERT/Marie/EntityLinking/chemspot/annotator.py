@@ -26,11 +26,14 @@ class Annotator():
 
     def tag(self, text):
         raw = self.tagger.tag(text)
-        mentions = []
         if len(raw) > 0:
+            maxlength = 0
             for mention in raw:
-                mentions.append((mention.getStart(), mention.getEnd(), mention.getText()))
-            return mentions[0]
+                newlength = mention.getEnd()-mention.getStart()
+                if newlength > maxlength:
+                    maxlength = newlength
+                    truemention = (mention.getStart(), mention.getEnd(), mention.getText())
+            return truemention
         # Currently assume one entity only
         else:
             return self.fallback_search(text)
