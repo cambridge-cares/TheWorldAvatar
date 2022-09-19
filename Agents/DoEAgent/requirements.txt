@@ -3,7 +3,7 @@
 #######################################
 pyderivationagent==1.1.0
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
-chemistry_and_robots==1.0.0
+chemistry_and_robots==1.1.0
 
 ##########################
 ## Third-party packages ##

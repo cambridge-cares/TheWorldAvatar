@@ -3,8 +3,7 @@
 #######################################
 pyderivationagent==1.1.0
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
-git+https://github.com/cambridge-cares/TheWorldAvatar@160-dev-rxn-opt-goal-agent#subdirectory=Agents/utils/chemistry_and_robots
-# chemistry_and_robots==1.0.0 # TODO update the version number after the new release
+chemistry_and_robots==1.1.0
 
 ##########################
 ## Third-party packages ##
