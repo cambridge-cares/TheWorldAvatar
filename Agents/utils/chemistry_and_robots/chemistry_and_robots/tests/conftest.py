@@ -30,6 +30,8 @@ HPLC_XLS_REPORT_FILE_INCOMPLETE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_
 HPLC_TXT_REPORT_FILE_INCOMPLETE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_incomplete.txt')
 HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls_unidentified_peaks.xls')
 HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_unidentified_peaks.txt')
+HPLC_XLS_REPORT_FILE_NO_PRODUCT = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls_no_product.xls')
+HPLC_TXT_REPORT_FILE_NO_PRODUCT = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt_no_product.txt')
 VAPOURTEC_INPUT_FILE = os.path.join(SAMPLE_DATA_DIR,'vapourtec_input.csv')
 
 KG_SERVICE = "blazegraph"

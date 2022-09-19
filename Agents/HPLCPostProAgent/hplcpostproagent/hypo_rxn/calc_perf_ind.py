@@ -48,9 +48,11 @@ def calculate_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReac
     target_product_species = retrieve_product_species(hypo_end_stream)
 
     yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
-    prod_run_conc = unit_conv.unit_conversion_return_value_dq(target_product_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
-
-    _yield = round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place
+    if target_product_species is None:
+        _yield = 0
+    else:
+        prod_run_conc = unit_conv.unit_conversion_return_value_dq(target_product_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
+        _yield = round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place
 
     pi_yield = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _yield, unit_conv.UNIFIED_YIELD_UNIT)
     pi_yield.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
@@ -81,11 +83,14 @@ def calculate_space_time_yield(rxn_exp_instance: ReactionExperiment, hypo_reacto
     """This method calculates the reaction space time yield, which commonly has (kg per litre per minute) as its unit."""
     target_product_species = retrieve_product_species(hypo_end_stream)
 
-    prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
-    residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
-    reactor_volume = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, unit_conv.UNIFIED_VOLUME_UNIT)
+    if target_product_species is None:
+        _sty = 0
+    else:
+        prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
+        residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
+        reactor_volume = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, unit_conv.UNIFIED_VOLUME_UNIT)
 
-    _sty = round(prod_run_mass / residence_time / reactor_volume, 2) # Round the decimal place
+        _sty = round(prod_run_mass / residence_time / reactor_volume, 2) # Round the decimal place
 
     pi_sty = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _sty, unit_conv.UNIFIED_SPACETIMEYIELD_UNIT)
 
@@ -107,14 +112,17 @@ def calculate_eco_score(rxn_exp_instance: ReactionExperiment, hypo_reactor: Hypo
 def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
     """This method calculates the reaction environmental factor."""
     target_product_species = retrieve_product_species(hypo_end_stream)
-    all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
-    all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
-    reactant_and_solvent = all_reactant + all_solvent
+    if target_product_species is None:
+        _e_factor = 0
+    else:
+        all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
+        all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
+        reactant_and_solvent = all_reactant + all_solvent
 
-    total_reac_n_solvent_run_mass = sum([unit_conv.unit_conversion_return_value_dq(s._run_mass, unit_conv.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
-    prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
+        total_reac_n_solvent_run_mass = sum([unit_conv.unit_conversion_return_value_dq(s._run_mass, unit_conv.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
+        prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
 
-    _e_factor = round(prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass), 2) # Round the decimal place
+        _e_factor = round(prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass), 2) # Round the decimal place # TODO double-check the formula
 
     pi_e_factor = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _e_factor, unit_conv.UNIFIED_ENVIRONMENTFACTOR_UNIT)
 
@@ -198,14 +206,15 @@ def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpec
         yield_limiting_species_iri = yield_limiting_species_lst[0]
     return all_reactant_species[yield_limiting_species_iri]
 
-def retrieve_product_species(hypo_end_stream: HypoEndStream) -> HypoStreamSpecies:
+def retrieve_product_species(hypo_end_stream: HypoEndStream) -> Optional[HypoStreamSpecies]:
     """This method retrieves the product species given the instance of HypoEndStream."""
     all_target_product = [comp for comp in hypo_end_stream.component if comp._is_target_product]
 
     if len(all_target_product) > 1:
         raise NotImplementedError("Multiple TargetProduct in the end stream is NOT yet supported: %s" % (str(all_target_product)))
     elif len(all_target_product) < 1:
-        raise Exception("No TargetProduct identified in the end stream %s" % (str(hypo_end_stream)))
+        # instead of raising an error, we return None, i.e. no product was found in the reaction
+        return None
     else:
         target_product = all_target_product[0]
     return target_product

@@ -27,6 +27,8 @@ HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_incomp
 HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_incomplete.txt'
 HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_unidentified_peaks.xls'
 HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_unidentified_peaks.txt'
+HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_no_product.xls'
+HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_no_product.txt'
 
 
 KG_SERVICE = "blazegraph"

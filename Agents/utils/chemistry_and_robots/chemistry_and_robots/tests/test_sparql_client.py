@@ -650,6 +650,8 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
         (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
         (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
     ],
 )
 def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
@@ -846,6 +848,8 @@ def test_connect_hplc_report_with_chemical_solution(initialise_triples):
         (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
         (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
     ],
 )
 def test_detect_new_hplc_report(initialise_triples, local_file_path, hplc_digital_twin):
@@ -1170,6 +1174,8 @@ def test_get_species_molar_mass_kilogrampermole(initialise_triples):
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, onto.XLSFILE_EXTENSION),
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.TXTFILE_EXTENSION),
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, onto.XLSFILE_EXTENSION),
     ],
 )
 def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_iri, local_file_path, hplc_report_extension):
