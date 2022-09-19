@@ -11,6 +11,11 @@ Install below recommended VS Code extensions:
 
 Get access to docker image registry, follow the steps [here](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry).
 
+Install build-essential in WSL2 (otherwise GPy will fail to build due to missing gcc)
+```sh
+$ sudo apt update && sudo apt install build-essential
+```
+
 Install Java 11 in WSL2
 ```sh
 $ sudo apt update

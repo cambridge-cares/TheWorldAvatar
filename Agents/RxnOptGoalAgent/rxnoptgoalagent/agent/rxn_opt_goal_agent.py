@@ -155,6 +155,8 @@ class RxnOptGoalAgent(ABC):
     def goal_page(self):
         return render_template(
             'rxn_opt_goal.html',
+            # TODO [nice-to-have] show more information about the chemical reaction once selected in dropdown
+            chem_rxn_iri=[{'iri': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1', 'display': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1'}],
             # TODO [nice-to-have] specify the limits of the goal, e.g. yield within 0-100%
             # TODO [nice-to-have] put the unit as symbol in the dropdown list, e.g. %, g/mol, kg, etc.
             goal_spec_from_flask={
@@ -246,8 +248,6 @@ class RxnOptGoalAgent(ABC):
             deadline=datetime.timestamp(datetime.fromisoformat(parameters['deadline']))
         )
 
-        # TODO doe boundaries? this should be design together with the ROGI agent
-
         # Now we need to construct a GoalSet object with above information
         goal_list = [first_goal, second_goal]
         goal_set_instance = GoalSet(
@@ -271,13 +271,13 @@ class RxnOptGoalAgent(ABC):
         )
 
         # Construct the list for derivation inputs
-        derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp
+        derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp + [chem_rxn_iri]
 
         # Create a RxnOptGoalIter (ROGI) derivation for new info
         # NOTE: the ROGI derivations needs to be created with the IRI of the ROGI agent
         # which is DIFFERENT from the IRI of ROG agent (self.goal_agent_iri)
-        # TODO in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
-        # TODO but in the future, this information should obtained by ROG agent from the KG
+        # TODO [next iteration] in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
+        # TODO [next iteration] but in the future, this information should obtained by ROG agent from the KG
         rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
 
         # # TODO
@@ -296,3 +296,6 @@ class RxnOptGoalAgent(ABC):
         """
         self.logger.info("Monitoring the goal iterations...")
         # TODO implement
+        # monitors best result after each run
+        # update ReactionExperiment/Restriction accordingly
+        # and then request another round of update

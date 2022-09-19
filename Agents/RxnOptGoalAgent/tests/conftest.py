@@ -1,4 +1,5 @@
 from testcontainers.core.container import DockerContainer
+from testcontainers.compose import DockerCompose
 from pathlib import Path
 from flask import Flask
 import logging
@@ -71,9 +72,11 @@ HPLC_REPORT_TXT_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+KG_EXPOSED_PORT = 8080 # specified in docker-compose.test.kg.yml
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
-
+FS_EXPOSED_PORT = 8080 # specified in docker-compose.test.kg.yml
+DOCKER_COMPOSE_TEST_KG = 'docker-compose.test.kg.yml'
 
 # Configuration env files
 # NOTE the triple store and file server URL ("localhost") provided in the agent.*.env files are made possible via:
@@ -81,11 +84,15 @@ FS_ROUTE = "FileServer/"
 DOE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
 VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
 HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
-VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
-HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
+# VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
+# HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
 ROG_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.env.test')
 ROGI_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.iter.env.test')
 
+LAB1_VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.lab1.vapourtec.env.test')
+LAB1_HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.lab1.hplc.env.test')
+LAB2_VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.lab2.vapourtec.env.test')
+LAB2_HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.lab2.hplc.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
 
@@ -109,6 +116,17 @@ def pytest_sessionstart(session):
         shutil.rmtree(FCEXP_FILE_DIR)
     if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
         shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
+
+    # Create folder for test hplc reports
+    if not os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
+        os.mkdir(HPLC_REPORT_LOCAL_TEST_DIR)
+    # Create folder for downloaded files
+    if not os.path.exists(DOWNLOADED_DIR):
+        os.mkdir(DOWNLOADED_DIR)
+    # Create folder for downloaded files
+    if not os.path.exists(FCEXP_FILE_DIR):
+        os.mkdir(FCEXP_FILE_DIR)
+
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -161,19 +179,6 @@ def get_service_auth():
 
     return _get_service_auth
 
-# @pytest.fixture(scope="session")
-# def create_test_report():
-#     def _create_test_report(filename_extension, docker_integration:bool=False):
-#         if filename_extension == XLSFILE_EXTENSION:
-#             file_path = create_hplc_xls_report(docker_integration)
-#         elif filename_extension == TXTFILE_EXTENSION:
-#             file_path = create_hplc_txt_report(docker_integration)
-#         else:
-#             raise NotImplementedError("HPLC raw report with a filename extension (%s) is NOT yet supported." % filename_extension)
-
-#         return file_path
-#     return _create_test_report
-
 @pytest.fixture(scope="session")
 def generate_random_download_path():
     def _generate_random_download_path(filename_extension):
@@ -193,9 +198,9 @@ def retrieve_hplc_report():
             raise NotImplementedError("Handling HPLC raw report (%s) in the chemistry_and_robots package is NOT yet supported due to its file extension." % 
                 report_extension)
 
-        with open(local_file_path, 'w') as outfile, open(report_path_in_folder, 'r', encoding='utf-8') as infile:
-            for line in infile:
-                outfile.write(line)
+        # copy the report to the target folder
+        # this will give the last modified time as the current time
+        shutil.copy(report_path_in_folder, local_file_path)
         timestamp_last_modified = os.path.getmtime(local_file_path)
 
         return local_file_path, timestamp_last_modified
@@ -287,6 +292,60 @@ def initialise_test_triples(initialise_triple_store):
 
         # Clear logger at the end of the test
         clear_loggers()
+
+
+@pytest.fixture(scope="module")
+def initialise_blazegraph_and_fileserver():
+    docker_compose = DockerCompose(THIS_DIR, DOCKER_COMPOSE_TEST_KG, pull=True)
+    with docker_compose as containers:
+        bg_host = containers.get_service_host(KG_SERVICE, KG_EXPOSED_PORT)
+        bg_port = containers.get_service_port(KG_SERVICE, KG_EXPOSED_PORT)
+        fs_host = containers.get_service_host(FS_SERVICE, FS_EXPOSED_PORT)
+        fs_port = containers.get_service_port(FS_SERVICE, FS_EXPOSED_PORT)
+        bg_url = f'http://{bg_host}:{bg_port}/{KG_ROUTE}'
+        fs_url = f'http://{fs_host}:{fs_port}/{FS_ROUTE}'
+        yield bg_url, fs_url
+
+
+@pytest.fixture(scope="module")
+def initialise_blazegraph_fileserver_with_test_triples(
+    initialise_blazegraph_and_fileserver,
+    get_service_auth
+):
+    bg_url, fs_url = initialise_blazegraph_and_fileserver
+
+    # Wait some arbitrary time until container is reachable
+    time.sleep(8)
+
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+
+    # Create SparqlClient for testing
+    sparql_client = ChemistryAndRobotsSparqlClient(
+        query_endpoint=bg_url,
+        update_endpoint=bg_url,
+        kg_user=sparql_user,
+        kg_password=sparql_pwd,
+        fs_url=fs_url,
+        fs_user=fs_user,
+        fs_pwd=fs_pwd,
+    )
+
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
+    initialise_triples(sparql_client)
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
+        sparql_client.kg_client,
+        DERIVATION_INSTANCE_BASE_URL
+    )
+
+    yield sparql_client, derivation_client
+
+    # Clear logger at the end of the test
+    clear_loggers()
 
 
 @pytest.fixture(scope="module")
@@ -427,6 +486,7 @@ def create_hplc_postpro_agent():
 @pytest.fixture(scope="module")
 def create_vapourtec_agent():
     def _create_vapourtec_agent(
+        env_file:str,
         vapourtec_digital_twin:str=None,
         vapourtec_state_periodic_timescale:int=None,
         fcexp_file_container_folder:str=None,
@@ -434,7 +494,7 @@ def create_vapourtec_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        vapourtec_agent_config = config_vapourtec_agent(VAPOURTEC_AGENT_ENV)
+        vapourtec_agent_config = config_vapourtec_agent(env_file)
         vapourtec_agent = VapourtecAgent(
             vapourtec_digital_twin=vapourtec_agent_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
             vapourtec_state_periodic_timescale=vapourtec_agent_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
@@ -460,6 +520,7 @@ def create_vapourtec_agent():
 @pytest.fixture(scope="module")
 def create_hplc_agent():
     def _create_hplc_agent(
+        env_file:str,
         hplc_digital_twin:str=None,
         hplc_report_periodic_timescale:int=None,
         hplc_report_container_dir:str=None,
@@ -468,7 +529,7 @@ def create_hplc_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        hplc_agent_config = config_hplc_agent(HPLC_AGENT_ENV)
+        hplc_agent_config = config_hplc_agent(env_file)
         hplc_agent = HPLCAgent(
             hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
@@ -495,38 +556,23 @@ def create_hplc_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-# def create_hplc_xls_report(docker_integration:bool=False):
-#     if docker_integration:
-#         file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.xls')
-#     else:
-#         file_path = os.path.join(HPLC_REPORT_LOCAL_TEST_DIR,f'{str(uuid.uuid4())}.xls')
-#     if not os.path.exists(file_path):
-#         wb = xlwt.Workbook()
-#         ws = wb.add_sheet("Test Sheet")
-#         for i in range(0,10):
-#             for j in range(0,10):
-#                 ws.write(i,j,"Placeholder")
-#         wb.save(file_path)
-#     return file_path
 
-# def create_hplc_txt_report(docker_integration:bool=False):
-#     if docker_integration:
-#         file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.txt')
-#     else:
-#         file_path = os.path.join(HPLC_REPORT_LOCAL_TEST_DIR,f'{str(uuid.uuid4())}.txt')
-#     if not os.path.exists(file_path):
-#         with open(file_path, "w") as file:
-#             file.truncate(10 ** 3)
-#     return file_path
+def get_timestamp(derivation_iri: str, sparql_client):
+    query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
+        derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
+    # the queried results must be converted to int, otherwise it will not be comparable
+    return int(sparql_client.performQuery(query_timestamp)[0]['time'])
+
 
 def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
-	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['sample_data/rxn_data.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/dummy_lab.ttl']:
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
+    # Upload the example triples for testing
+    pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        g = Graph()
+        g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
 
     # Upload all relevant example triples provided in the test_triples folder of 'rxnoptgoaliteragent' package to triple store
@@ -534,6 +580,39 @@ def initialise_triples(sparql_client):
         data = pkgutil.get_data('rxnoptgoaliteragent', 'tests/test_triples/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         sparql_client.uploadGraph(g)
+
+    # TODO delete below
+    # # Add timestamp to pure inputs
+    # for input in derivation_inputs:
+    #     derivation_client.addTimeInstance(input)
+    #     derivation_client.updateTimestamp(input)
+
+
+
+# def initialise_triples(sparql_client):
+#     # Delete all triples before initialising prepared triples
+#     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+# 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
+#     # NOTE 'sample_data/duplicate_ontorxn.ttl' is for adding <OntoReaction:ReactionVariation> <rdfs:subClassOf> <OntoReaction:ReactionExperiment>.
+#     # So that the VapourtecExecution Derivation will be connected to the new instance of OntoReaction:ReactionVariation when DoEAgent cleaning up the Finished status
+#     # of the DoE Derivation. This is a workaround for the current way of uploading ontology TBox to the triple store. (We don't upload at all!!!)
+#     for f in [
+#         'sample_data/rxn_data.ttl',
+#         'sample_data/new_exp_data.ttl',
+#         'sample_data/dummy_lab.ttl',
+#         'sample_data/duplicate_ontorxn.ttl',
+#         'sample_data/doe_template.ttl',
+#     ]:
+#         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+#         g = Graph().parse(data=data)
+#         sparql_client.uploadGraph(g)
+
+#     # Upload all relevant example triples provided in the test_triples folder of 'rxnoptgoaliteragent' package to triple store
+#     for f in ['goal_iter.ttl', 'plan_step_agent.ttl']:
+#         data = pkgutil.get_data('rxnoptgoaliteragent', 'tests/test_triples/'+f).decode("utf-8")
+#         g = Graph().parse(data=data)
+#         sparql_client.uploadGraph(g)
 
 
 def get_endpoint(docker_container):

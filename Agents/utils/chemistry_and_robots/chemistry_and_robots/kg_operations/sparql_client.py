@@ -623,6 +623,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             return lst_ontocape_material
 
     def construct_query_for_autosampler(self, given_autosampler_iri: str = None) -> str:
+        # TODO this query will return nothing if the autosampler is an empty rack on line "?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc."
         query = f"""{PREFIX_RDF}
                 SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
                 ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
@@ -661,6 +662,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 }}"""
         return query
 
+    # TODO add support if none of the autosampler site holds anything (i.e. an empty rack with no vial)
+    # the current implementation will throw an error
     def get_all_autosampler_with_fill(self, given_autosampler_iri: str = None) -> List[AutoSampler]:
         query = self.construct_query_for_autosampler(given_autosampler_iri)
         response = self.performQuery(query)
@@ -1307,6 +1310,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
         ?contains_unidentified_component
         WHERE {{
+            VALUES ?reagent_bottle {{ <{reagent_bottle_iri}> }}
             ?reagent_bottle <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
             ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
             ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit; <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
@@ -1445,7 +1449,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             logger.error(e)
             # TODO need to think a way to inform the post proc agent about the failure of uploading the file
             # TODO [when run in loop] repeat the upload process until the file is uploaded successfully?
-            raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path))
+            raise Exception(f"HPLC raw report ({local_file_path}) upload failed with error: {e}")
 
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
         logger.info("The initialised HPLCReport IRI is: <%s>" % (hplc_report_iri))

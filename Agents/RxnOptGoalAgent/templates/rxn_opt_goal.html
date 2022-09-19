@@ -53,8 +53,12 @@
                 <span class="chem-rxn">Please specify the chemical reaction:</span><br><br>
 
                 <!-- chemical reaction iri -->
-                <label for="chemicalReaction">Chemical Reaction IRI</label>
-                <input type="text" placeholder="http://chem_rxn_123" name="chem_rxn">
+                <select name="chem_rxn" id="chem_rxn" class="Input">
+                    <option value="" disabled selected>Please select chemical reaction IRI</option>
+                    {% for o in chem_rxn_iri %}
+                    <option value="{{ o.iri }}">{{ o.display }}</option>
+                    {% endfor %}
+                </select>
             </div><br><br>
 
             <br><br>
