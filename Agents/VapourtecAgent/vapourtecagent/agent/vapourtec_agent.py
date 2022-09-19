@@ -197,6 +197,8 @@ class VapourtecAgent(DerivationAgent):
             # FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
             # self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
 
+            # Clear existing reaction experiments before adding new one, otherwise the old experiments will be executed again
+            FlowCommander.ClearReactions(self.fc)
             # Add reaction in CSV file to FlowCommander
             CSVParser.AddReactions(run_csv_file_container_path, self.fc)
             self.logger.info("Experiment recorded in the CSV file (%s) is added." % (run_csv_file_container_path))
