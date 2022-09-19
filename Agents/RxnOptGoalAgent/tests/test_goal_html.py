@@ -9,7 +9,7 @@ import tests.conftest as cf
 # Test cases for the function RxnOptGoalAgent::handle_rxn_opt_goal_request
 # upon receiving a goal request, the rog agent should:
 # 1. correctly create the rogi derivation
-# TODO 2. start the goal iteration monitoring job
+# 2. add and start the goal iteration monitoring job
 # ----------------------------------------------------------------------------------
 
 def test_handle_rxn_opt_goal_request(
@@ -44,13 +44,7 @@ def test_handle_rxn_opt_goal_request(
                 }}"""
         )
         rxn_exp_beliefs = [x['rxn_exp'] for x in rxn_exp_beliefs_res]
-        assert cf.dal.check_if_two_lists_equal(rxn_exp_beliefs, [
-            cf.rogi_cf.IRIs.EXP_1_BASE_IRI.value,
-            cf.rogi_cf.IRIs.EXP_2_BASE_IRI.value,
-            cf.rogi_cf.IRIs.EXP_3_BASE_IRI.value,
-            cf.rogi_cf.IRIs.EXP_4_BASE_IRI.value,
-            cf.rogi_cf.IRIs.EXP_5_BASE_IRI.value,
-        ])
+        assert len(rxn_exp_beliefs) == 0
 
         # Check that the GoalSet is valid
         goal_set_query_res = rog_agent.sparql_client.performQuery(
@@ -133,5 +127,10 @@ def test_handle_rxn_opt_goal_request(
             assert postpro_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_POSTPRO_AGENT.value
             assert postpro_step.hasNextStep is None
 
-        # TODO 2. start the goal iteration monitoring job
-        # TODO test if the periodical goal monitoring job is started
+        # 2. start the goal iteration monitoring job
+        # test if the periodical goal monitoring job is added and the scheduler is started
+        list_jobs = rog_agent.scheduler.get_jobs()
+        assert len(list_jobs) == 1
+        assert cf.getShortName(rogi_derivation) in list_jobs[0].id
+        assert rog_agent.scheduler.running
+        rog_agent.scheduler.shutdown()

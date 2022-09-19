@@ -8,7 +8,9 @@ from rdflib import RDF
 from rdflib import XSD
 from typing import Optional
 from typing import List
+from typing import Dict
 import pydantic
+import time
 
 import chemistry_and_robots.data_model as dm
 from rxnoptgoaliteragent.data_model import iris as iris
@@ -81,6 +83,42 @@ class Goal(dm.BaseOntology):
         else:
             raise ValueError(f"desiresGreaterThan and desiresLessThan cannot both be None for Goal {self.instance_iri}")
 
+    def get_best_result(self) -> Optional[dm.OM_Measure]:
+        if self.hasResult is None:
+            return None
+        dct_result = {res.instance_iri:dm.unit_conv.unit_conversion_return_value(
+            res.hasValue.hasNumericalValue, res.hasValue.hasUnit, self.desires().hasValue.hasUnit
+        ) for res in self.hasResult}
+        if self.desiresGreaterThan is not None:
+            return self.retrieve_result_given_iri(max(dct_result, key=dct_result.get))
+        else:
+            return self.retrieve_result_given_iri(min(dct_result, key=dct_result.get))
+
+    def retrieve_result_given_iri(self, result_iri: str) -> Optional[dm.OM_Quantity]:
+        if self.hasResult is None:
+            return None
+        for result in self.hasResult:
+            if result.instance_iri == result_iri:
+                return result
+        return None
+
+    def if_goal_met(self) -> bool:
+        if self.hasResult is None:
+            return False
+        # the code will only execute below if there's previous results presented already
+        # first we compile a list of previous results in the unit of the goal desires
+        list_results = [dm.unit_conv.unit_conversion_return_value(
+            res.hasValue.hasNumericalValue, res.hasValue.hasUnit, self.desires().hasValue.hasUnit
+        ) for res in self.hasResult]
+        if self.desiresGreaterThan is not None:
+            # then means we want the result to be greater than the desires
+            if max(list_results) >= self.desires().hasValue.hasNumericalValue:
+                return True
+        else:
+            if min(list_results) <= self.desires().hasValue.hasNumericalValue:
+                return True
+        return False
+
     def create_instance_for_kg(self, g: Graph) -> Graph:
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
@@ -128,6 +166,17 @@ class GoalSet(dm.BaseOntology):
             if goal.desires().instance_iri == desired_quantity:
                 return goal
         return None
+
+    def get_unmet_goals(self) -> List[Goal]:
+        return [goal for goal in self.hasGoal if not goal.if_goal_met()]
+
+    def if_restrictions_are_okay(self) -> bool:
+        if self.hasRestriction.cycleAllowance > 0 and self.hasRestriction.deadline > time.time():
+            return True
+        return False
+
+    def get_best_results(self) -> Dict[str, dm.OM_Quantity]:
+        return {goal.instance_iri:goal.get_best_result() for goal in self.hasGoal if goal.get_best_result() is not None}
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))

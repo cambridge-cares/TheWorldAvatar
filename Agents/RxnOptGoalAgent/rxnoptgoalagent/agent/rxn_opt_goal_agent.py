@@ -280,14 +280,17 @@ class RxnOptGoalAgent(ABC):
         # TODO [next iteration] but in the future, this information should obtained by ROG agent from the KG
         rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
 
-        # # TODO
-        # # Add a periodical job to monitor the goal iterations for the created ROGI derivation
-        # self.scheduler.add_job(
-        #     id=f'monitor_goal_{getShortName(rogi_derivation)}',
-        #     func=self.monitor_goal_iterations,
-        #     trigger='interval', seconds=self.goal_monitor_time_interval
-        # )
-        # self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
+        # TODO [next iteration] optimise the following code that deals with the ROGI iterations
+        # Add a periodical job to monitor the goal iterations for the created ROGI derivation
+        self.current_running_rogi_derivation = rogi_derivation
+        self.scheduler.add_job(
+            id=f'monitor_goal_{getShortName(rogi_derivation)}',
+            func=self.monitor_goal_iterations,
+            trigger='interval', seconds=self.goal_monitor_time_interval
+        )
+        if not self.scheduler.running:
+            self.scheduler.start()
+        self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
         return jsonify({self.GOAL_SPECS_RESPONSE_KEY: rogi_derivation})
 
     def monitor_goal_iterations(self):
@@ -295,7 +298,50 @@ class RxnOptGoalAgent(ABC):
         This function is called by the scheduler to monitor the goal iterations.
         """
         self.logger.info("Monitoring the goal iterations...")
-        # TODO implement
-        # monitors best result after each run
-        # update ReactionExperiment/Restriction accordingly
-        # and then request another round of update
+        # 1. Check if the current running ROGI derivation is finished (up-to-date)
+        # 2. if no, skip
+        # 3. if yes, query the goal set instance from the KG
+        # 4. compare if the best result meet the goal
+        # 5. if yes, stop the scheduler
+        # 6. if no, check if the restriction is still okay, update the rogi derivation with new restriction and rxn exp, request for an update
+        # 7. if the restriction is not okay, stop the scheduler
+        rogi_derivation_up_to_date = self.sparql_client.check_if_rogi_derivation_is_up_to_date(self.current_running_rogi_derivation)
+        if rogi_derivation_up_to_date:
+            # get the latest goal set instance
+            goal_set_instance = self.sparql_client.get_goal_set_instance_from_rogi_derivation(self.current_running_rogi_derivation)
+            # check if any of the goals are met
+            unmet_goals = goal_set_instance.get_unmet_goals()
+            if len(unmet_goals) == 0:
+                self.logger.info("All goals are met. Stop monitoring the goal iterations.")
+                self.scheduler.remove_job(f'monitor_goal_{getShortName(self.current_running_rogi_derivation)}')
+            else:
+                # check if the restriction is still okay
+                if goal_set_instance.if_restrictions_are_okay():
+                    # update the rogi derivation with new restriction and rxn exp, request for an update
+                    self.logger.info("Restrictions are still okay. Update the ROGI derivation with new restriction and rxn exp, request for an update.")
+
+                    # update ReactionExperiment/Restriction accordingly
+                    self.sparql_client.performUpdate(f"""
+                        # delete the old restriction
+                        DELETE {{
+                            <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> {goal_set_instance.hasRestriction.cycleAllowance} .
+                        }}
+                        INSERT {{
+                            # add the new restriction by minus 1 cycleAllowance
+                            <{goal_set_instance.hasRestriction.instance_iri}> {goal_set_instance.hasRestriction.cycleAllowance - 1} .
+                            # add the new ReactionExperiment
+                            <{self.current_running_rogi_derivation}> <{ONTODERIVATION_ISDERIVEDFROM}> ?rxn_exp.
+                        }} WHERE {{
+                            # query the new ReactionExperiment
+                            ?result <{ONTODERIVATION_BELONGSTO}> <{self.current_running_rogi_derivation}>; <{ONTOGOAL_REFERSTO}> ?pi.
+                            ?pi ^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn_exp.
+                    }}""")
+                    # update the timestamp of the goal_set instance as the restriction (cycleAllowance) is updated
+                    self.derivation_client.updateTimestamp(goal_set_instance.instance_iri)
+                    # finally request another round of update
+                    self.derivation_client.unifiedUpdateDerivation(self.current_running_rogi_derivation)
+                else:
+                    self.logger.info(f"Restrictions are not okay. Stop monitoring the goal iterations. Current best results: { goal_set_instance.get_best_results() }")
+                    self.scheduler.remove_job(f'monitor_goal_{getShortName(self.current_running_rogi_derivation)}')
+        else:
+            self.logger.info(f"The current iteration of <{self.current_running_rogi_derivation}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")

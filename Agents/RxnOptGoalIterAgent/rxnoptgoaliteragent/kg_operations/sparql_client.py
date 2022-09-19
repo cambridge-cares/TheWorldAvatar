@@ -341,3 +341,18 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             _list_plan.append(_plan)
 
         return _list_plan
+
+    # TODO add unit test
+    def check_if_rogi_complete_one_iter(self, rogi_derivation: str) -> bool:
+        # NOTE here we simplify the check by assuming that one rogi iter is done if has no status
+        # TODO [next iteration] improve the check by checking the status of each step in the plan
+        return not self.check_if_triple_exist(rogi_derivation, ONTODERIVATION_HASSTATUS, None)
+
+    # TODO add unit test
+    def get_goal_set_instance_from_rogi_derivation(self, rogi_derivation: str) -> GoalSet:
+        query = f"""SELECT ?goal_set WHERE {{
+            <{rogi_derivation}> <{ONTODERIVATION_ISDERIVEDFROM}> ?goal_set.
+            ?goal_set a <{ONTOGOAL_GOALSET}>.
+        }}"""
+        response = self.performQuery(query)
+        return self.get_goal_set_instance(goal_set_iri=response[0]['goal_set'])
