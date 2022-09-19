@@ -148,22 +148,25 @@ def locate_reference_performance_indicator(
     """This method creates a placeholder PerformanceIndicator instance that to be added to the ReactionExperiment instance."""
     if isinstance(rxn_exp_instance, ReactionVariation):
         lst_target = [pi for pi in rxn_exp_instance.isVariationOf.hasPerformanceIndicator if pi.clz == target_clz]
-        if len(lst_target) == 1:
-            return lst_target
-        elif len(lst_target) == 0:
-            return [PerformanceIndicator(
-                instance_iri="http://placeholder", # This value here should NOT matter as it should not be accessed by any codes
-                clz=target_clz,
-                rxn_exp_iri=rxn_exp_instance.instance_iri, # The value here should NOT matter as it should not be accessed by any codes
-                objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[target_clz],
-                hasValue=None, # This value here should NOT matter as it should not be accessed by any codes
-                positionalID=None # This value here should NOT matter as it should not be accessed by any codes
-            )]
-        else:
-            raise Exception("Multiple target PerformanceIndicator with a clz <%s> is NOT yet supported, identified in ReactionExperiment: %s" % (
-                target_clz, str(rxn_exp_instance)))
+    elif isinstance(rxn_exp_instance, ReactionExperiment):
+        lst_target = [pi for pi in rxn_exp_instance.hasPerformanceIndicator if pi.clz == target_clz]
     else:
-        raise NotImplementedError("Post processing ReactionExperiment is NOT yet supported.")
+        raise NotImplementedError(f"Post processing {type(rxn_exp_instance)} is NOT yet supported.")
+
+    if len(lst_target) == 1:
+        return lst_target
+    elif len(lst_target) == 0:
+        return [PerformanceIndicator(
+            instance_iri="http://placeholder", # This value here should NOT matter as it should not be accessed by any codes
+            clz=target_clz,
+            rxn_exp_iri=rxn_exp_instance.instance_iri, # The value here should NOT matter as it should not be accessed by any codes
+            objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[target_clz],
+            hasValue=None, # This value here should NOT matter as it should not be accessed by any codes
+            positionalID=None # This value here should NOT matter as it should not be accessed by any codes
+        )]
+    else:
+        raise Exception("Multiple target PerformanceIndicator with a clz <%s> is NOT yet supported, identified in ReactionExperiment: %s" % (
+            target_clz, str(rxn_exp_instance)))
 
 def create_performance_indicator_instance(
     rxn_exp_instance: ReactionExperiment,
