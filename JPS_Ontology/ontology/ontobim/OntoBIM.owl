@@ -48,6 +48,7 @@
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
     </owl:ObjectProperty>
     
 
@@ -57,6 +58,7 @@
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
     </owl:ObjectProperty>
     
 
@@ -93,6 +95,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#"/>
     </owl:ObjectProperty>
     
 
@@ -102,6 +105,7 @@
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+        <rdfs:isDefinedBy rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#"/>
     </owl:ObjectProperty>
     
 
@@ -121,6 +125,7 @@
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
         <owl:propertyDisjointWith rdf:resource="https://w3id.org/bot#intersectsZone"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -130,6 +135,7 @@
     <owl:ObjectProperty rdf:about="https://w3id.org/bot#containsZone">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:comment rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -140,6 +146,7 @@
         <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -149,6 +156,7 @@
     <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasElement">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -160,6 +168,7 @@
         <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Storey"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Space"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -170,6 +179,7 @@
         <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Storey"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -180,6 +190,7 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -189,6 +200,7 @@
     <owl:ObjectProperty rdf:about="https://w3id.org/bot#intersectsZone">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
     </owl:ObjectProperty>
     
 
@@ -209,6 +221,7 @@
     <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
     </owl:DatatypeProperty>
     
 
@@ -239,6 +252,7 @@
     <owl:DatatypeProperty rdf:about="http://www.w3.org/2004/02/skos/core#notation">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2004/02/skos/core#"/>
     </owl:DatatypeProperty>
     
 
@@ -258,31 +272,41 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
     </owl:Class>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:Class>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:Class>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:Class>
     
 
 
     <!-- http://www.purl.org/oema/infrastructure/Building -->
 
-    <owl:Class rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
+    <owl:Class rdf:about="http://www.purl.org/oema/infrastructure/Building">
+        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.purl.org/oema/infrastructure/"/>
+    </owl:Class>
     
 
 
@@ -379,13 +403,17 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption">
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#"/>
+    </owl:Class>
     
 
 
     <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries -->
 
-    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries">
+        <rdfs:isDefinedBy rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#"/>
+    </owl:Class>
     
 
 
@@ -393,6 +421,7 @@
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Appliance">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -401,6 +430,7 @@
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Device">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -409,6 +439,7 @@
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Meter">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
     </owl:Class>
     
 
@@ -417,24 +448,7 @@
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Sensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding">
-        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Building"/>
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey">
-        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Storey"/>
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
     </owl:Class>
     
 
@@ -481,15 +495,6 @@
     
 
 
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite">
-        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Site"/>
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
-    </owl:Class>
-    
-
-
     <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel -->
 
     <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel">
@@ -498,32 +503,20 @@
     
 
 
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace">
-        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Space"/>
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
-    
-
-
     <!-- https://w3id.org/bot#Building -->
 
     <owl:Class rdf:about="https://w3id.org/bot#Building">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
     <!-- https://w3id.org/bot#Element -->
 
-    <owl:Class rdf:about="https://w3id.org/bot#Element"/>
+    <owl:Class rdf:about="https://w3id.org/bot#Element">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 
@@ -531,6 +524,7 @@
 
     <owl:Class rdf:about="https://w3id.org/bot#Site">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -539,6 +533,7 @@
 
     <owl:Class rdf:about="https://w3id.org/bot#Space">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -547,13 +542,16 @@
 
     <owl:Class rdf:about="https://w3id.org/bot#Storey">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
     <!-- https://w3id.org/bot#Zone -->
 
-    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    <owl:Class rdf:about="https://w3id.org/bot#Zone">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 
@@ -748,15 +746,6 @@
             <rdf:Description rdf:about="https://saref.etsi.org/core/Appliance"/>
             <rdf:Description rdf:about="https://saref.etsi.org/core/Meter"/>
             <rdf:Description rdf:about="https://saref.etsi.org/core/Sensor"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding"/>
-            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey"/>
-            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite"/>
-            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
