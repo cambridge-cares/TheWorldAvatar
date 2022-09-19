@@ -5,21 +5,23 @@ The `Energy Performance Certificate` (EPC) agent is an input agent which queries
 It is designed to interact with the stack spun up by the stack manager. 
 
 <span style="color:red">Tests are currently still excluded.</span>
+<br/><br/>
 
-# Setup
 
-This section specifies the minimum requirement to build the docker image. 
+# 1. Setup
 
-## Prerequisites
+This section specifies the minimum requirements to build and deploy the Docker image. 
+
+&nbsp;
+
+## 1.1 Prerequisites
 
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
-
-<!--
 
 ### **1) The environment variables used by the agent container**
 
 1) STACK_NAME
-2) API_KEY (MetOffice DataPoint API key)
+2) API_AUTH (authentication token for EPC API)
 3) DATABASE (database name in PostGIS)
 4) LAYERNAME (layer name in Geoserver, also the table name for geospatial features in PostGIS)
 5) GEOSERVER_WORKSPACE
@@ -37,7 +39,9 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
-## Spinning up the stack
+&nbsp;
+
+## 1.2 Spinning up the core stack
 
 Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
@@ -54,7 +58,9 @@ bash ./stack.sh remove <STACK_NAME> -v
 
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
 
-## Deploying the agent to the stack
+&nbsp;
+
+## 1.3 Deploying the agent to the stack
 
 This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile]. Compiling those resources requires a [Java Runtime Environment version >=11].
 
@@ -76,9 +82,11 @@ The *debug version* will run when built and launched through the provided VS Cod
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
 
-> **Update JPSRM and Build and Debug**: Updated py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file)
+> **Update JPSRM and Build and Debug**: Updated py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file) 
 
-## Spinning up the Stack remotely via SSH
+&nbsp;
+
+## 1.4 Spinning up the Stack remotely via SSH
 
 To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
 
@@ -92,7 +100,7 @@ $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-Before starting development or spinning up the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the[JPS_BASE_LIB] and [Stack-Clients] `.jar` files to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotly by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
+Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the[JPS_BASE_LIB] and [Stack-Clients] `.jar` files to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
 
 ```bash
 # Java >= 11
@@ -118,35 +126,31 @@ chmod -R +rwx <REPO NAME>
 # To prevent git from identifying all files as changed (due to changed permission rights), exclude file permission (chmod) changes from git
 git config core.fileMode false
 ```
+&nbsp;
 
--->
+# 2. Using the Agent
 
-# How to use the Agent
+Agent start-up will automatically register a recurring task to assimilate latest EPC data for all instantiated UPRNs every 4 weeks (i.e. new data is published 3-4 times a year). Besides this recurring background task, additional HTTP requests can be sent to the agent.
 
-<!--
-
-The provided `docker-compose` file contains instructions to create Docker images for both the Debugging and Production stage. The debugging image allows for hot-reloading code changes by mounting the `metoffice` folder containing the source code as external volume. While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. 
-
--->
+&nbsp;
 
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as POST requests and all available endpoints are listed below:
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to instantiate all postcodes in a given local authority:
 > `/api/epcagent/instantiate/postcodes`
 
+- POST request to instantiate EPC building data for given single certificate:
+> `/api/epcagent/instantiate/certificates/single`
 
-Example requests are provided in the [resources] folder.
+- POST request to instantiate latest EPC building data for all instantiated UPRNs in all instantiated postcodes:
+> `/api/epcagent/instantiate/certificates/all`
 
-<!--
-
-Agent start-up will automatically register recurring tasks to assimilate latest time series data (i.e. every hour) and to create DTVF output files (i.e. once per day). Besides those recurring background tasks, additional HTTP requests can be sent (but they might be delayed) to the agent.
-
--->
+&nbsp;
 
 # Authors #
-Markus Hofmeister (mh807@cam.ac.uk), March 2022
+Markus Hofmeister (mh807@cam.ac.uk), September 2022
 
 
 <!-- Links -->

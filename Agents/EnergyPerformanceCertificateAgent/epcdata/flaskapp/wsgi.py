@@ -6,22 +6,21 @@
 # Start Web Server Gateway Interface (WSGI) as simple web server to forward
 # requests to actual application and initialise recurring tasks
 
-import os
-from pathlib import Path
-
 from epcdata.flaskapp import create_app
+from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_all_postcodes
 from apscheduler.schedulers.background import BackgroundScheduler
-from pytz import utc
+
 
 #from epcdata.datainstantiation.readings import update_all_stations
 
-#TODO: Update scheduler
-# Add recurring background tasks
-# 1) Assimilate latest time series data once per day
-#sched = BackgroundScheduler(daemon=True)
-#sched.add_job(update_all_stations, trigger='cron', hour='3', timezone=utc)
-# Create path to output directory
-#sched.start()
+# Add recurring background task to assimilate latest EPC data every 4 months
+# "The department will publish register data every four to six months for new EPCs
+# and DECs or where the status of the EPC or DEC has changed" 
+# (https://epc.opendatacommunities.org/docs/guidance#faq-updates)
+sched = BackgroundScheduler(daemon=True)
+#TODO: update ocgml endpoint
+sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='interval', weeks=2)
+sched.start()
 
 app = create_app()
 

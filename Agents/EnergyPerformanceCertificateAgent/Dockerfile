@@ -31,8 +31,8 @@ COPY ./resources/ontop.obda ./resources/ontop.obda
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
-# Installation of agentlogging currently suspended due to performance issues
-#RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+# Installation of agentlogging (potentially to be excluded to avoid performance issues)
+RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Update py4jps resources
 RUN jpsrm uninstall JpsBaseLib
