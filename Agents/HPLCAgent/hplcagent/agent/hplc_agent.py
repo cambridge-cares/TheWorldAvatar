@@ -23,7 +23,7 @@ class HPLCAgent(DerivationAgent):
         super().__init__(**kwargs)
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
-        self.hplc_report_container_dir = hplc_report_container_dir if hplc_report_container_dir.endswith("/") else hplc_report_container_dir + "/"
+        self.hplc_report_container_dir = hplc_report_container_dir
         self.current_hplc_method = current_hplc_method
         self.hplc_report_file_extension = hplc_report_file_extension
 
@@ -124,7 +124,9 @@ class HPLCAgent(DerivationAgent):
 
     def get_list_of_hplc_files(self, log=True):
         self.timestamp_check, self.lst_files_check = datetime.now().timestamp(), glob.glob(
-            self.hplc_report_container_dir + "*." + self.hplc_report_file_extension, recursive=True)
+            os.path.join(self.hplc_report_container_dir, '**', '*.'+self.hplc_report_file_extension),
+            recursive=True
+        )
         if log:
             self.logger.info(
                 """The list of HPLC report files with filename extension (%s) found at local report directory (%s) of HPLC <%s> at timestamp %f: %s""" % (
