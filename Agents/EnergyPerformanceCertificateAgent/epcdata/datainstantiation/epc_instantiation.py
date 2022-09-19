@@ -299,10 +299,11 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     postcodes = postcodes[:10]
 
     # Instantiate EPC data for all postcodes
-    n, u = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, ocgml_endpoint,
+    epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, ocgml_endpoint,
                                               query_endpoint, update_endpoint)
-    # Return numbe rof newly instantiated and updated EPCs
-    return (n, u)
+    
+    # Return number of newly instantiated and updated EPCs (single and summaries)
+    return (epcs, summaries)
 
 
 def condition_epc_data(data):

@@ -10,7 +10,8 @@ import agentlogging
 from epcdata.errorhandling.exceptions import InvalidInput
 from epcdata.kgutils.initialise_kb import initialise_kb
 from epcdata.datainstantiation.postcodes import initialise_postcodes
-from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate
+from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
+                                                        instantiate_epc_data_for_all_postcodes
 
 
 # Initialise logger
@@ -114,7 +115,7 @@ def api_instantiate_epc_data_for_certificate():
         # Instantiate EPC
         response = instantiate_epc_data_for_certificate(**inputs)
         return jsonify({'status': '200', 
-                        'Instantiated EPCs': response[0],
+                        'Newly instantiated EPCs': response[0],
                         'Updated EPCs': response[1]})
     except Exception as ex:
         logger.error("Unable to instantiate EPC data.", ex)
@@ -123,6 +124,44 @@ def api_instantiate_epc_data_for_certificate():
 
 # Define route for API request to instantiate all latest EPC data for all 
 # instantiated postcodes (i.e. latest available data for all UPRNs)
-@inputtasks_bp.route('/api/epcagent/instantiate/certificates/single', methods=['POST'])
-def api_instantiate_epc_data_for_all_postcodes():
-    pass
+@inputtasks_bp.route('/api/epcagent/instantiate/certificates/all', methods=['POST'])
+def api_instantiate_epc_data_for_all_uprns():
+    #
+    # Check arguments (query parameters)
+    #
+    inputs = { 'epc_endpoint': None,
+               'ocgml_endpoint': None 
+             }
+    # Get received 'query' JSON object which holds all parameters
+    try:
+        query = request.json['query']
+    except:
+        logger.error('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.')
+    # Retrieve EPC API endpoint
+    try:
+        endpoint = str(query['epc_endpoint'])
+        if endpoint in ['domestic', 'non-domestic', 'display']:
+            inputs['epc_endpoint'] = endpoint
+        else:
+            raise InvalidInput('Invalid EPC API endpoint provided.')
+    except:
+        logger.error('Invalid EPC API endpoint provided.')
+        raise InvalidInput('Invalid EPC API endpoint provided.')
+    # Retrieve certificate's unique lodgement identifier
+    try:
+        inputs['ocgml_endpoint'] = str(query['ocgml_endpoint'])
+    except:
+        logger.error('Invalid OntoCityGml endpoint provided.')
+        raise InvalidInput('Invalid OntoCityGml endpoint provided.')
+    try:
+        # Instantiate EPC
+        response = instantiate_epc_data_for_all_postcodes(**inputs)
+        return jsonify({'status': '200', 
+                        'Newly instantiated EPCs': response[0][0],
+                        'Updated EPCs': response[0][1],
+                        'Newly instantiated parent buildings': response[1][0],
+                        'Updated parent buildings': response[1][1]})
+    except Exception as ex:
+        logger.error("Unable to instantiate EPC data.", ex)
+        return jsonify({"status": '500', 'msg': 'EPC data instantiation failed'})

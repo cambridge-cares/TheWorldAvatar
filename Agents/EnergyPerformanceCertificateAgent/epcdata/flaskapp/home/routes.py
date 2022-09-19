@@ -27,4 +27,10 @@ def default():
     msg += "Request to instantiate EPC building data for given single certificate (i.e. single individual lodgement identifier):<BR>"
     msg += "(Property data to be newly instantiated if not existing; only updated otherwise)<BR>"
     msg += "&nbsp&nbsp [POST request]   /api/epcagent/instantiate/certificates/single"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "Request to instantiate latest EPC building data for all instantiated UPRNs in all instantiated postcodes:<BR>"
+    msg += "NOTE: Only UPRNs with geospatial representation in provided OntoCityGml namespace are considered<BR>"
+    msg += "(Property data to be newly instantiated if not existing; only updated otherwise)<BR>"
+    msg += "&nbsp&nbsp [POST request]   /api/epcagent/instantiate/certificates/all"
     return msg
