@@ -22,4 +22,9 @@ def default():
     msg += "Request to instantiate Local authority district and postcodes based on ONS API (only executed if district not yet instantiated):<BR>"
     msg += "Local authority codes: https://epc.opendatacommunities.org/docs/api/domestic#domestic-local-authority<BR>"
     msg += "&nbsp&nbsp [POST request]   /api/epcagent/instantiate/postcodes"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "Request to instantiate EPC building data for given single certificate (i.e. single individual lodgement identifier):<BR>"
+    msg += "(Property data to be newly instantiated if not existing; only updated otherwise)<BR>"
+    msg += "&nbsp&nbsp [POST request]   /api/epcagent/instantiate/certificates/single"
     return msg
