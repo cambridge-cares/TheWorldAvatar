@@ -18,8 +18,6 @@ setup(
         'pandas~=1.3',
         'JayDeBeApi~=1.2',
         'py4jps==1.0.22', 
-        'requests~=2.27',
-        #TODO: potentially remove
-        'SPARQLWrapper~=1.8'
+        'requests~=2.27'
     ]
 )

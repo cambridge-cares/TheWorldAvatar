@@ -713,6 +713,7 @@ def summarize_epc_data(data):
 
 if __name__ == '__main__':
 
+    # Specify endpoint with building instances according to OntoCityGml
     ocgml_endpoint = 'http://localhost:9999/blazegraph/namespace/kings-lynn/sparql'
 
     epcs, summaries = instantiate_epc_data_for_all_postcodes(ocgml_endpoint=ocgml_endpoint)
