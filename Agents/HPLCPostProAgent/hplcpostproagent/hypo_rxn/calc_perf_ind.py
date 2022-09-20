@@ -149,7 +149,7 @@ def locate_reference_performance_indicator(
     if isinstance(rxn_exp_instance, ReactionVariation):
         lst_target = [pi for pi in rxn_exp_instance.isVariationOf.hasPerformanceIndicator if pi.clz == target_clz]
     elif isinstance(rxn_exp_instance, ReactionExperiment):
-        lst_target = [pi for pi in rxn_exp_instance.hasPerformanceIndicator if pi.clz == target_clz]
+        lst_target = []
     else:
         raise NotImplementedError(f"Post processing {type(rxn_exp_instance)} is NOT yet supported.")
 

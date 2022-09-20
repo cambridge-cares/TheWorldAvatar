@@ -306,7 +306,7 @@ class RxnOptGoalAgent(ABC):
         # 5. if yes, stop the scheduler
         # 6. if no, check if the restriction is still okay, update the rogi derivation with new restriction and rxn exp, request for an update
         # 7. if the restriction is not okay, stop the scheduler
-        rogi_derivation_up_to_date = self.sparql_client.check_if_rogi_derivation_is_up_to_date(self.current_running_rogi_derivation)
+        rogi_derivation_up_to_date = self.sparql_client.check_if_rogi_complete_one_iter(self.current_running_rogi_derivation)
         if rogi_derivation_up_to_date:
             # get the latest goal set instance
             goal_set_instance = self.sparql_client.get_goal_set_instance_from_rogi_derivation(self.current_running_rogi_derivation)
