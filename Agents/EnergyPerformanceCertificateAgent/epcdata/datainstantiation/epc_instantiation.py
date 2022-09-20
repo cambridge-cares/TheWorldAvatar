@@ -297,7 +297,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     postcodes = [r['postcode'] for r in res]
 
     #TODO: remove limit
-    postcodes = postcodes[:10]
+    postcodes = postcodes[:100]
 
     # Instantiate EPC data for all postcodes
     epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, ocgml_endpoint,
@@ -564,12 +564,11 @@ def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY
     df = pd.DataFrame(columns=cols, data=res)
 
     # Cast data types
-    #TODO: Explicit string casting creates issues with pd.NA entries for missing data
-    # for c in ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 
-    #           'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 'parent_id', 
-    #           'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
-    #           'usage_iri', 'wall_description', 'windows_description'] :
-    #     df[c] = df[c].astype('string')
+    for c in ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 
+              'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 'parent_id', 
+              'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
+              'usage_iri', 'usage_label', 'wall_description', 'windows_description'] :
+        df[c] = df[c].astype('string')
     df['construction_start'] = pd.to_datetime(df['construction_start'], yearfirst=True, dayfirst=False)
     df['construction_end'] = pd.to_datetime(df['construction_end'], yearfirst=True, dayfirst=False)
     df['floor_area'] = df['floor_area'].astype('float')
@@ -577,7 +576,8 @@ def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY
 
     # Fill missing data with None
     df = df.replace('nan', None)
-    df = df.fillna(np.nan).replace(np.nan, None)
+    df = df.replace('', None)
+    df = df.replace({np.nan: None})
 
     return df
 
@@ -707,7 +707,8 @@ def summarize_epc_data(data):
 
     # Fill missing data with None
     df = df.replace('nan', None)
-    df = df.fillna(np.nan).replace(np.nan, None)
+    df = df.replace('', None)
+    df = df.replace({np.nan: None})
 
     return df
 
