@@ -45,8 +45,8 @@ class ScoreModel(nn.Module):
         nlp_components_pos = positive_triplets['question']
         nlp_components_neg = negative_triplets['question']
 
-        projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
-        projected_rel_neg = self.bert_with_reduction.predict(nlp_components_neg)
+        projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos).to(self.device)
+        projected_rel_neg = self.bert_with_reduction.predict(nlp_components_neg).to(self.device)
 
         dist_positive = self.distance(positive_triplets, projected_rel_pos)
         dist_negative = self.distance(negative_triplets, projected_rel_neg)
@@ -76,7 +76,7 @@ class ScoreModel(nn.Module):
 class Trainer:
 
     def __init__(self, epoches=20, negative_rate=20, learning_rate=5e-4, drop_out=0.1, resume=False, frac=0.1,
-                 batch_size=8, model_name= 'bert_model_embedding_20_cosine_single_layer_pubchem500_no_eh', device = torch.device('cuda')):
+                 batch_size=8, model_name= 'bert_embedding_5000', device = torch.device('cuda')):
         self.df_path = os.path.join(DATA_DIR, 'question_set_full')
         self.df = pd.read_csv(self.df_path, sep='\t')
         self.frac = frac
@@ -117,22 +117,23 @@ class Trainer:
         # TODO: Test with both Adam and SGD
         init_train_loss = 0
         init_val_loss = 0
+        total_loss_train = 0
         with tqdm(total=self.epoches, unit=' epoch') as tepoch:
             model = self.model.cuda()
             for epoch_num in range(self.epoches):
                 tepoch.set_description(f'Epoch {epoch_num}')
-                model.train()
-                total_loss_train = 0
-                for positive_set, negative_set in tqdm(self.train_dataloader):
-                    self.optimizer.zero_grad()
-                    loss = model(positive_set, negative_set)
-                    # loss.mean().backward()
-                    loss.backward()
-                    loss = loss.data.cuda()
-                    self.optimizer.step()
-                    self.step += 1
-                    total_loss_train += loss.mean().item()
-                print(f'total_loss_train: {total_loss_train}')
+                # model.train()
+                # total_loss_train = 0
+                # for positive_set, negative_set in tqdm(self.train_dataloader):
+                #     self.optimizer.zero_grad()
+                #     loss = model(positive_set, negative_set)
+                #     # loss.mean().backward()
+                #     loss.backward()
+                #     loss = loss.data.cuda()
+                #     self.optimizer.step()
+                #     self.step += 1
+                #     total_loss_train += loss.mean().item()
+                # print(f'total_loss_train: {total_loss_train}')
 
                 if epoch_num % self.test_frequency == 0:
                     total_loss_val = self.evaluate()
@@ -188,7 +189,7 @@ class Trainer:
             tmp2 = None
             tmp3 = None
             tmp4 = None
-            for positive_set, negative_set in self.test_dataloader:
+            for positive_set, negative_set in tqdm(self.test_dataloader):
                 total_prediction_loss += self.model(positive_set, negative_set).mean().item()
                 # TODO: write the hit-k here
                 # TODO: concat the first positive and all the other negative samples without changing the shape

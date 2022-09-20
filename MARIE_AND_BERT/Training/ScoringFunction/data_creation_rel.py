@@ -10,7 +10,7 @@ import random
 from pprint import pprint
 from Marie.Util.location import DATA_DIR
 
-ent_label_path = os.path.join(DATA_DIR, r'pubchem_500/embeddings/transe/ent_labels.tsv')
+ent_label_path = os.path.join(DATA_DIR, r'ent_labels.tsv')
 full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 
 r2i_path = open(os.path.join(DATA_DIR, 'relation2idx.pkl'), 'rb')

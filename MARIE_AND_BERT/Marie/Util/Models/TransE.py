@@ -8,7 +8,7 @@ import torch
 from torch import nn
 
 from Marie.Util.Models.TransE_Dataset import Dataset
-from Marie.Util.location import DATA_DIR, DATASET_DIR
+from Marie.Util.location import DATA_DIR
 
 
 class TransE(nn.Module):

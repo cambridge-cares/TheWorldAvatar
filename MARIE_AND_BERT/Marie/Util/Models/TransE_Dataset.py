@@ -1,5 +1,6 @@
 import os
 import pickle
+import random
 import time
 from random import choice
 import torch
@@ -30,9 +31,9 @@ class Dataset(torch.utils.data.Dataset):
         head = self.entity2idx[triplet[0]]
         rel = self.relation2idx[triplet[1]]
         tail = self.entity2idx[triplet[2]]
-        fake_entity = self.get_fake_tail(triplet[0], triplet[2])
+        # fake_entity = self.get_fake_tail(triplet[0], triplet[2])
+        fake_entity = random.randint(0, self.ent_num)
         fake_triple = choice([(head, rel, fake_entity), (fake_entity, rel, tail)])
-
         # for the neg set, just replace the tail with something starting with the same prefix
         return (head, rel, tail), fake_triple
 
@@ -48,5 +49,6 @@ class Dataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         START_TIME = time.time()
         positive_set, negative_set = self.triplet2idx(self.df[idx])
+        # print('Used time: ', time.time() - START_TIME)
         return positive_set, negative_set
 

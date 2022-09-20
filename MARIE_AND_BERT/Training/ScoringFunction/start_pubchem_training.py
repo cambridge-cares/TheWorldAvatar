@@ -6,10 +6,16 @@ import pandas as pd
 from Marie.Util.location import DATA_DIR
 from Training.Embedding.TransE_Trainer import Trainer
 
+# STEP 0
+# create training set of size x
 
 # STEP 1:
 # create entity2idx.pickle and relation2idx.pickle
-def create_indexing(dataset_name='pubchem500'):
+def create_indexing(dataset_name='pubchem500', data_dir = None, DATA_DIR = DATA_DIR):
+
+    if data_dir is not None:
+        DATA_DIR = os.path.join(DATA_DIR, data_dir)
+
     dataset_name = f"{dataset_name}-train.txt"
     df_dataset = pd.read_csv(os.path.join(DATA_DIR, dataset_name), sep='\t', header=None)
 
@@ -39,15 +45,21 @@ def create_indexing(dataset_name='pubchem500'):
     pickle.dump(idx2entity, file)
     file = open(os.path.join(DATA_DIR, 'idx2relation.pkl'), 'wb')
     pickle.dump(idx2relation, file)
+    file = os.path.join(DATA_DIR,'ent_labels.tsv')
+    ent_labels = '\n'.join(entities)
+    with open(file, 'w') as f:
+        f.write(ent_labels)
+        f.close()
 
     print(f'Pickle files are saved to {DATA_DIR}')
 
 
-def train_TransE():
-    # my_transe_trainer = Trainer()
-    pass
+def train_TransE(dataset_name):
+    my_transe_trainer = Trainer(dataset_name=dataset_name, load_pretrained_embeddings=True)
+    my_transe_trainer.train()
 
 
 if __name__ == '__main__':
-    dataset_name = 'pubchem500'
-    create_indexing(dataset_name=dataset_name)
+    dataset_name = 'pubchem50000'
+   # create_indexing(dataset_name=dataset_name, data_dir= 'pubchem_50000')
+    train_TransE(dataset_name=dataset_name)

@@ -3,7 +3,7 @@ from pprint import pprint
 import numpy as np
 import torch
 import transformers
-from torch import nn, optim, FloatTensor, LongTensor
+from torch import nn, optim, FloatTensor, LongTensor, no_grad
 import os
 import pandas as pd
 from torch.nn.functional import normalize
@@ -72,14 +72,14 @@ class StandAloneBERT(nn.Module):
         return distance
 
     def predict(self, question):
-        input_ids = torch.reshape(question['input_ids'], (-1, max_len))
-        attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
+        input_ids = torch.reshape(question['input_ids'], (-1, max_len)).to(self.device)
+        attention_mask = torch.reshape(question['attention_mask'], (-1, max_len)).to(self.device)
         pooled_output = self.bert(input_ids=input_ids,
                                   attention_mask=attention_mask,
                                   return_dict=False)[1].to(self.device)
 
-        dropout_output = self.dropout(pooled_output)
-        linear_output = self.linear(dropout_output)
+        dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
+        linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
         return linear_output
 
     def forward(self, question, y):
@@ -135,33 +135,38 @@ def one_train_iteration(learning_rate=1e-8, model_name='bert_model_embedding_20_
 
         print(f'\ntotal_loss_train: {total_loss_train}')
         if epoch % 10 == 0:
-            model.eval()
-            total_loss_val = 0
-            avg_cos_similarity = 0
-            dist_similarity = 0
-            for test_batch in tqdm(test_dataloader):
-                true_y = test_batch[1].to(device)  # the y is replaced by the embedding now, the loss is the distance
-                loss, output_val = model(test_batch[0], true_y)
-                total_loss_val += loss.detach().mean().item()
-                test_cosine = torch.nn.CosineSimilarity(dim=1, eps=1e-08)
-                cos_similarity = test_cosine(output_val, true_y).detach()
-                avg_cos_similarity += torch.mean(cos_similarity).detach().item()
-                dist_similarity += (output_val - true_y).norm(p=1, dim=1).detach().mean()
+            with no_grad():
+                model.eval()
+                total_loss_val = 0
+                avg_cos_similarity = 0
+                dist_similarity = 0
+                for test_batch in tqdm(test_dataloader):
+                    true_y = test_batch[1].to(device)  # the y is replaced by the embedding now, the loss is the distance
+                    loss, output_val = model(test_batch[0], true_y)
+                    total_loss_val += loss.detach().mean().item()
+                    test_cosine = torch.nn.CosineSimilarity(dim=1, eps=1e-08)
+                    cos_similarity = test_cosine(output_val, true_y).detach()
+                    avg_cos_similarity += torch.mean(cos_similarity).detach().item()
+                    dist_similarity += (output_val - true_y).norm(p=1, dim=1).detach().mean()
 
-            print(f'\ntotal_loss_val: {total_loss_val}')
-            print('average cosine similarity', avg_cos_similarity / len(test_dataloader))
-            print('average dist similarity', dist_similarity / len(test_dataloader))
-            torch.save(model.state_dict(), os.path.join(DATA_DIR, model_name))
-            print('model saved')
+                print(f'\ntotal_loss_val: {total_loss_val}')
+                print('average cosine similarity', avg_cos_similarity / len(test_dataloader))
+                print('average dist similarity', dist_similarity / len(test_dataloader))
+    torch.save(model.state_dict(), os.path.join(DATA_DIR, model_name))
+    print('model saved')
 
 
 if __name__ == '__main__':
-    starting_lr = 1e-6  # this is probably the best lr
+    starting_lr = 1e-20  # this is probably the best lr
     # starting_lr = 1e-4
     current_lr = starting_lr
+
+    one_train_iteration(current_lr,
+                        model_name='bert_embedding_5000',
+                        resume_training=True, batch_size=128)
     for i in range(10):
         print(f'current learning rate {current_lr}')
         one_train_iteration(current_lr,
-                            model_name='bert_model_test',
+                            model_name='bert_embedding_5000',
                             resume_training=True, batch_size=128)
-        # current_lr = current_lr / 100
+        current_lr = current_lr / 10

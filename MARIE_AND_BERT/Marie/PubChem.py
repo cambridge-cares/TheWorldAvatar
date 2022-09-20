@@ -7,7 +7,7 @@ import torch
 from transformers import BertTokenizer
 
 from Marie.SubgraphExtraction.SubgraphExtractor import SubgraphExtractor
-# from Marie.EntityLinking.Inference import NELInfer
+from Marie.EntityLinking.Inference import NELInfer
 from Marie.Util.Models.ModelBuilder_Score_Pretrained_BERT_removed_eh import ScoreModel
 from Marie.Util.location import DATA_DIR
 
@@ -16,9 +16,9 @@ class PubChemEngine:
 
     def __init__(self):
         self.subgraph_extractor = SubgraphExtractor()
-        # print('============ Initializing entity linking ============')
-        # self.entity_linker = NELInfer('conf/base500.yaml')
-        # print('============ Done initializing entity linking ==============')
+        print('- Initializing entity linking')
+        self.entity_linker = NELInfer('base500.yaml')
+        print('- Done initializing entity linking ')
         '''Find the device available for running the model'''
         use_cuda = torch.cuda.is_available()
         self.device = torch.device("cuda" if use_cuda else "cpu")
@@ -80,14 +80,22 @@ class PubChemEngine:
         print(labels_top_k)
         return labels_top_k
 
-    # def extract_head_ent(self, question):
-    #     return self.entity_linker.infer([{"text": question}])
+    def extract_head_ent(self, question):
+        return self.entity_linker.infer([{"text": question}], use_ner=True)
+
+
+    def run(self, question):
+        NEL_result = my_pubchem_engine.extract_head_ent(question)
+        print(NEL_result)
 
 
 if __name__ == '__main__':
     my_pubchem_engine = PubChemEngine()
     START_TIME = time.time()
-    question = 'what is the weight of'
-    head_entity = 'CID1'
-    my_pubchem_engine.find_answers(question=question, head_entity=head_entity, k=3)
-    print(f'Took {time.time() - START_TIME} seconds')
+    question = 'what is the weight of benzene'
+    my_pubchem_engine.run(question)
+    # NEL_result = my_pubchem_engine.extract_head_ent(question)
+    # print(NEL_result)
+    # head_entity = 'CID1'
+    # my_pubchem_engine.find_answers(question=question, head_entity=head_entity, k=3)
+    # print(f'Took {time.time() - START_TIME} seconds')
