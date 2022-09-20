@@ -44,7 +44,7 @@ public class RemoteRDBStoreClientIntegrationTest {
         assertFalse(conn.isClosed());
         stmt = (Statement) statement.get(rdbStoreClient);
         assertNotNull(stmt);
-
+        conn.close();
         RemoteRDBStoreClient rdbStoreClient1 = new RemoteRDBStoreClient(null, null, null);
         JPSRuntimeException e = assertThrows(JPSRuntimeException.class, () -> rdbStoreClient1.getConnection());
         assertEquals(e.getMessage(), "The connection attempt failed");
