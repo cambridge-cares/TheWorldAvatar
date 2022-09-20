@@ -19,6 +19,25 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * 
  * @author Markus Hofmeister, Niklas Kasenburg
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
+ *
+ * Updates:
+ *
+ * An instance of the TimeSeriesClient can only be created with a pre-defined kbClient and the class type
+ * for the time values.
+ * The methods used to interact with the RDB require a java.sql.Connection object containing the
+ * connection to the RDB to be passed as an argument.
+ * To create a connection object: create an instance of {@link uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient RemoteRDBStoreClient}
+ * and use its getConnection() method to obtain the connection object.
+ * Example:
+ * RDBStoreClient rdbStoreClient = new RDBStoreClient(url, user, password);
+ * try (Connection conn = rdbStoreClient.getConnection()) {
+ *     TimeSeries ts = TimeSeriesClient.getTimeSeriesWithinBounds(dataIRIs, lowerbound, upperbound, conn);
+ *     TimeSeriesClient.addTimeSeriesData(ts, conn);
+ *     // other methods can be called similarly in this block
+ * }
+ * Note: The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources)
+ * as shown in the example above. This is to ensure the connection is closed automatically by Java.
+ * @author Mehal Agarwal (ma988@cam.ac.uk)
  */
 
 public class TimeSeriesClient<T> {
@@ -29,7 +48,7 @@ public class TimeSeriesClient<T> {
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	
     /**
-     * Constructor with pre-defined kbClient and RDB client to be created with provided parameters
+     * Constructor with pre-defined kbClient
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
      * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
      */
@@ -53,6 +72,7 @@ public class TimeSeriesClient<T> {
      * @param dataIRIs list of dataIRIs as Strings
      * @param dataClass list of data classes for each dataIRI
      * @param timeUnit time unit as (full) IRI
+	 * @param conn connection to the RDB
      */
     public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn) {
 
@@ -136,6 +156,7 @@ public class TimeSeriesClient<T> {
     /**
      * Append time series data to an already instantiated time series
 	 * @param ts TimeSeries object to add
+	 * @param conn connection to the RDB
      */
     public void addTimeSeriesData(TimeSeries<T> ts, Connection conn) {
     	// Add time series data to respective database table
@@ -149,6 +170,7 @@ public class TimeSeriesClient<T> {
      * Append time series data to an already instantiated time series 
 	 * (i.e. add data for several time series in a single RDB connection)
 	 * @param ts_list List of TimeSeries objects to add
+	 * @param conn connection to the RDB
      */
     public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list, Connection conn) {
     	// Add time series data to respective database tables
@@ -161,6 +183,7 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRI data IRI provided as string
 	 * @param lowerBound start timestamp from which to delete data (inclusive)
 	 * @param upperBound end timestamp until which to delete data (inclusive)
+	 * @param conn connection to the RDB
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound, Connection conn) {
 		// Delete RDB time series table rows between lower and upper Bound
@@ -171,6 +194,7 @@ public class TimeSeriesClient<T> {
     /**
      * Delete individual time series in triple store and relational database (i.e. time series for one dataIRI)
      * @param dataIRI dataIRIs as Strings
+	 * @param conn connection to the RDB
      */
     public void deleteIndividualTimeSeries(String dataIRI, Connection conn) {
     	
@@ -217,6 +241,7 @@ public class TimeSeriesClient<T> {
     /**
      * Delete time series and all associated dataIRI connections from triple store and relational database 
      * @param tsIRI time series IRI as String
+	 * @param conn connection to the RDB
      */
     public void deleteTimeSeries(String tsIRI, Connection conn) {
     	
@@ -302,6 +327,7 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRIs list of data IRIs provided as string
 	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
 	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
+	 * @param conn connection to the RDB
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound, Connection conn) {
@@ -315,6 +341,7 @@ public class TimeSeriesClient<T> {
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
 	 * @param dataIRIs list of data IRIs provided as string
+	 * @param conn connection to the RDB
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs, Connection conn) {
@@ -324,6 +351,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Retrieve average value of an entire time series
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getAverage(String dataIRI, Connection conn) {
@@ -335,6 +363,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Retrieve maximum value of an entire time series
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connectio to the RDB
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMaxValue(String dataIRI, Connection conn) {
@@ -346,6 +375,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Retrieve minimum value of an entire time series
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMinValue(String dataIRI, Connection conn) {
@@ -357,6 +387,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Retrieve latest (maximum) time entry for a given dataIRI
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
 	 * @return The maximum (latest) timestamp of the corresponding data series
 	 */
 	public T getMaxTime(String dataIRI, Connection conn) {
@@ -368,6 +399,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Retrieve earliest (minimum) time entry for a given dataIRI
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
 	 * @return The minimum (earliest) timestamp of the corresponding data series
 	 */
 	public T getMinTime(String dataIRI, Connection conn) {
@@ -388,6 +420,7 @@ public class TimeSeriesClient<T> {
 	/**
 	 * Check whether given data IRI is attached to a time series in kb
 	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
     public boolean checkDataHasTimeSeries(String dataIRI, Connection conn) {
