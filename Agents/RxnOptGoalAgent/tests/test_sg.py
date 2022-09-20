@@ -322,8 +322,8 @@ def initialise_triples(sparql_client):
 # ----------------------------------------------------------------------------------
 sample_goal_request = {
     "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
-    "cycleAllowance": 50,
-    "deadline": "2022-09-22T17:05",
+    "cycleAllowance": 30,
+    "deadline": "2022-09-30T17:05",
     "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
     "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
     "first_goal_num_val": 99,
@@ -331,7 +331,7 @@ sample_goal_request = {
     "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
     "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
     "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
-    "second_goal_num_val": 0.01,
+    "second_goal_num_val": 0.001,
     "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterling"
 }
 
@@ -342,7 +342,7 @@ sample_goal_request = {
 #         # (cf.rogi_cf.IRIs.GOALSET_1.value, cf.rogi_cf.IRIs.DERIVATION_INPUTS.value, cf.DOCKER_INTEGRATION_DIR, None, False),
 #     ],
 # )
-def _test_rxn_rogi():
+def _test_rxn_rogi(hplc_report_container_dir, clean_and_initialise_triples: bool = False):
 
     bg_url = 'http://localhost:48082/blazegraph/namespace/kb/sparql'
     kg_user = 'bg_user'
@@ -362,10 +362,11 @@ def _test_rxn_rogi():
         fs_pwd=fs_pwd,
     )
 
-    # Clear triple store before any usage
-    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+    if clean_and_initialise_triples:
+        # Clear triple store before any usage
+        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
-    initialise_triples(sparql_client)
+        initialise_triples(sparql_client)
 
     # Create DerivationClient for creating derivation instances
     derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
@@ -397,7 +398,7 @@ def _test_rxn_rogi():
     hplc_agent = create_hplc_agent(
         env_file=LAB2_HPLC_AGENT_ENV,
         register_agent=True,
-        hplc_report_container_dir="C:\\Chem32\\1\\Data\\Optimization\\Optimization 2022-09-19 22-41-02"
+        hplc_report_container_dir=hplc_report_container_dir
     )
 
     # Start the scheduler to monitor derivations if it's local agent test
@@ -422,4 +423,5 @@ def _test_rxn_rogi():
 
 if __name__ == '__main__':
     # TODO revise this to use pytest
-    _test_rxn_rogi()
+    hplc_report_container_dir = "C:\\Chem32\\1\\Data\\Optimization\\Optimization 2022-09-19 22-41-02"
+    _test_rxn_rogi(hplc_report_container_dir, clean_and_initialise_triples=False)

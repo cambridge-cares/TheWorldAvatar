@@ -321,21 +321,44 @@ class RxnOptGoalAgent(ABC):
                     # update the rogi derivation with new restriction and rxn exp, request for an update
                     self.logger.info("Restrictions are still okay. Update the ROGI derivation with new restriction and rxn exp, request for an update.")
 
-                    # update ReactionExperiment/Restriction accordingly
+                    # update ReactionExperiment/Restriction accordingly, example SPARQL update with sub query:
+                    # DELETE {
+                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    # }
+                    # INSERT {
+                    # <http://www.theworldavatar.com/triplestore/repository/derivedAsyn_7de8e4b9-0d6d-4fc3-ad37-09cbfa9e7cf5> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
+                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance_update.
+                    # }
+                    # WHERE {
+                    # SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
+                    # WHERE {
+                    #     ?result <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#belongsTo> <http://www.theworldavatar.com/triplestore/repository/derivedAsyn_7de8e4b9-0d6d-4fc3-ad37-09cbfa9e7cf5>;
+                    #             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#refersTo> ?pi.
+                    #     ?pi ^<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator> ?rxn_exp.
+                    #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    #     BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
+                    # }
+                    # }
+
+                    # delete clause: delete the old restriction
+                    # insert clause: insert the new restriction, add the rxn exp as input to rogi derivation
+                    # where clause: get the rxn exp, the old cycle allowance, and compute the new one
                     self.sparql_client.performUpdate(f"""
-                        # delete the old restriction
                         DELETE {{
-                            <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> {goal_set_instance.hasRestriction.cycleAllowance} .
+                            <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance .
                         }}
                         INSERT {{
-                            # add the new restriction by minus 1 cycleAllowance
-                            <{goal_set_instance.hasRestriction.instance_iri}> {goal_set_instance.hasRestriction.cycleAllowance - 1} .
-                            # add the new ReactionExperiment
                             <{self.current_running_rogi_derivation}> <{ONTODERIVATION_ISDERIVEDFROM}> ?rxn_exp.
-                        }} WHERE {{
-                            # query the new ReactionExperiment
-                            ?result <{ONTODERIVATION_BELONGSTO}> <{self.current_running_rogi_derivation}>; <{ONTOGOAL_REFERSTO}> ?pi.
-                            ?pi ^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn_exp.
+                            <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance_update .
+                        }}
+                        WHERE {{
+                            SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
+                            WHERE {{
+                                ?result <{ONTODERIVATION_BELONGSTO}> <{self.current_running_rogi_derivation}>; <{ONTOGOAL_REFERSTO}> ?pi.
+                                ?pi ^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn_exp.
+                                <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance .
+                                BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
+                            }}
                     }}""")
                     # update the timestamp of the goal_set instance as the restriction (cycleAllowance) is updated
                     self.derivation_client.updateTimestamp(goal_set_instance.instance_iri)
