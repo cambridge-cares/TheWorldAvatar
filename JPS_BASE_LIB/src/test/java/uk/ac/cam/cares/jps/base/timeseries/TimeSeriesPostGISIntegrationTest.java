@@ -35,7 +35,7 @@ public class TimeSeriesPostGISIntegrationTest {
 
     @BeforeClass
 	// Initialise RemoteRDBStoreClient before any test
-	public static void initialiseRDBStoreClient() throws SQLException, ClassNotFoundException {
+	public static void initialiseRDBStoreClient() {
         //RemoteRDBStoreClient
         rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
 	}
