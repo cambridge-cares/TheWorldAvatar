@@ -14,6 +14,7 @@ import ontomatch.utils.util
 
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
+BASE_UK = Namespace('<http://www.theworldavatar.com/kb/ontoenergysystem/>')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
 BASE_MUN_GER = Namespace('http://www.theworldavatar.com/kb/municipalities/')
 BASE_REST_FODOR = Namespace('http://www.theworldavatar.com/kb/restaurants/fodor/')
@@ -40,6 +41,7 @@ def bind_prefixes(g):
     g.bind('owl', OWL)
     g.bind('sdo', SDO)  # schema.org
     g.bind('base', BASE)
+    g.bind('baseuk', BASE_UK)
     g.bind('dbo', DBO)
     g.bind('dbr', DBR)
     g.bind('geo', GEO )
@@ -1262,10 +1264,13 @@ def link_entity_pairs(link_file, iri_pairs):
     #BASE = namespace
 
     graph = rdflib.Graph()
-    bind_prefixes(graph)
-
+    #bind_prefixes(graph)
+    #TODO: important modification to debug uk_digitaltwin run
     for iri_1, iri_2 in iri_pairs:
+        if type(iri_2) != str:
+            iri_2 = str(iri_2[0])
         graph.add((URIRef(iri_1), OWL.sameAs, URIRef(iri_2)))
+
 
     graph.serialize(link_file, format='turtle')
 

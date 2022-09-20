@@ -10,14 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Vector extends DataSubset {
 
+    @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
     @JsonProperty
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
-
-    public Ogr2OgrOptions getOgr2ogrOptions() {
-        return ogr2ogrOptions;
-    }
 
     @Override
     public void loadData(GDALClient gdalClient, String datasetDir, String database) {

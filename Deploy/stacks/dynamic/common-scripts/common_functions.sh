@@ -30,9 +30,11 @@ init_swarm(){
 # Attempt compatibility with podman
 get_executables
 
-# Read in the stack name as the first argument
-export STACK_NAME="$1"
+if [[ -z "$NO_STACK_NAME" ]]; then
+    # Read in the stack name as the first argument
+    export STACK_NAME="$1"
 
-if (( $# >= 1 )); then
-    shift
+    if (( $# >= 1 )); then
+        shift
+    fi
 fi
