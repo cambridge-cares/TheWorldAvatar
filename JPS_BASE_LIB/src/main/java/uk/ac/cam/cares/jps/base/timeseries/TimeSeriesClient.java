@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -27,7 +28,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * The methods used to interact with the RDB require a java.sql.Connection object containing the
  * connection to the RDB to be passed as an argument.
  * To create a connection object: create an instance of {@link uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient RemoteRDBStoreClient}
- * and use its getConnection() method to obtain the connection object.
+ * and use {@link RemoteRDBStoreClient#getConnection()} method to obtain the connection object.
  * Example:
  * RDBStoreClient rdbStoreClient = new RDBStoreClient(url, user, password);
  * try (Connection conn = rdbStoreClient.getConnection()) {
