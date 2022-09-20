@@ -5,13 +5,14 @@
 //               ['domestic', 'non-domestic', 'display']
 // ocgml_endpoint: Available SPARQL endpoint containing instantiated buildings in OntoCityGML
 //                 (the agent only instantiates EPC data for buildings instantiated in OntoCityGml)
+//                 --> OPTIONAL: if not provided, default namespace from environment variables will be used
 
-POST http://127.0.0.1:5000/api/epcagent/instantiate/certificates/single
+POST http://128.199.197.40:5001/api/epcagent/instantiate/certificates/single
 Content-Type: application/json
 
 { "query": {
       "lmk_key": "183853459832008111113380456968799",
       "epc_endpoint": "domestic",
-      "ocgml_endpoint": "http://localhost:9999/blazegraph/namespace/kings-lynn/sparql"
+      "ocgml_endpoint": "http://128.199.197.40:9999/blazegraph/namespace/ocgml/sparql"
     }
 }
