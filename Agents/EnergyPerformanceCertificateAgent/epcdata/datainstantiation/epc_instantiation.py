@@ -296,9 +296,6 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     res = kgclient.performQuery(query)
     postcodes = [r['postcode'] for r in res]
 
-    #TODO: remove limit
-    postcodes = postcodes[:100]
-
     # Instantiate EPC data for all postcodes
     epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, 
                             ocgml_endpoint, query_endpoint, update_endpoint)
