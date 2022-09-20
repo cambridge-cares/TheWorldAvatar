@@ -300,8 +300,8 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     postcodes = postcodes[:100]
 
     # Instantiate EPC data for all postcodes
-    epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, ocgml_endpoint,
-                                              query_endpoint, update_endpoint)
+    epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, 
+                            ocgml_endpoint, query_endpoint, update_endpoint)
     
     # Return number of newly instantiated and updated EPCs (single and summaries)
     return (epcs, summaries)

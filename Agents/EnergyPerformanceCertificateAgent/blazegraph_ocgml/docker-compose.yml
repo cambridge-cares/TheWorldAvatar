@@ -6,6 +6,7 @@ services:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     restart: unless-stopped
     pull_policy: if_not_present
+    #TODO: Include password protection to SPARQL endpoint
     # environment:
     #   BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     ports:

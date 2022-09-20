@@ -152,7 +152,29 @@ An overview of all provided API endpoints and their functionality is provided af
 
 # 3. Current EPC data instantiation workflow
 
-...
+### **1) Ensure instantiated OtoCityGml building data is available**
+The agent requires an available SPARQL endpoint to retrieve instantiated OntoCityGml building data (i.e. EPC data will only be instantiated for buildings with an OntoCityGml representation). This endpoint is specified as `OCGML_ENDPOINT` in the [docker compose file].
+In case the quad data is not already available via a SPARQL endpoint, the following steps can be used:
+
+1) Export OntoCityGml quads from local Blazegraph and unzip file. Rename file to `data.nq` and place it into the `data` folder within this agent.
+2) Spin up a remotely hosted Docker container with a Blazegraph image. Using SSH in VSCode (as described in section 1.4), this can be achied using the provided `blazegraph_ocgml/docker-compose.yml` file and the following command:
+    ```bash
+    docker-compose -f "docker-compose.yml" up
+    ```
+    This shall bring up Blazegraph at endpoint http://128.199.197.40:4999/blazegraph/ .
+3) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
+
+### **2) Initialise namespace for EPC building data**
+1) Create `buildings` namespace and upload TBox and ABox .owl files by sending `POST` request to `/api/epcagent/initialise`
+2) Instantiate all relevant postcode instances by sending `POST` request to `/api/epcagent/instantiate/postcodes`
+
+### **3) Instantiate all EPC building data**
+Instantiate EPC data for all instantiated UPRNs (and postcodes) send `POST` request to `/api/epcagent/instantiate/certificates/all`
+
+### **4) Run Building Matching Agent**
+
+### **5) Update geospatial representation of buildings in OntoBuiltEnv namespace**
+
 
 &nbsp;
 

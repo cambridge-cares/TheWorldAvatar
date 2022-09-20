@@ -9,8 +9,9 @@ import agentlogging
 
 from epcdata.errorhandling.exceptions import InvalidInput
 from epcdata.utils.env_configs import OCGML_ENDPOINT
-from epcdata.kgutils.initialise_kb import initialise_kb
-from epcdata.kgutils.initialise_ocgml import create_blazegraph_namespace, upload_ocgml_quads
+from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from epcdata.kgutils.initialise_kb import create_blazegraph_namespace, initialise_kb
+from epcdata.kgutils.initialise_ocgml import upload_ocgml_quads
 from epcdata.datainstantiation.postcodes import initialise_postcodes
 from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
                                                         instantiate_epc_data_for_all_postcodes
@@ -34,6 +35,9 @@ def api_initialise_kb():
         logger.warning("Query parameters provided, although not required. \
                         Provided arguments will be neglected.")
     try:
+        # Create OntoCityGml namespace
+        create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, 
+                                    quads=False, geospatial=False)
         # Initialise KB
         initialise_kb()
         return jsonify({'status': '200', 'msg': 'Initialisation successful'})

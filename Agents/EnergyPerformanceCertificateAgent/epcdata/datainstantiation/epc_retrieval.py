@@ -129,7 +129,9 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
     else:
         df_all = df
 
-    if not df_all.empty:
+    if df_all.empty:
+        return df_all
+    else:
         # Extract relevant EPC data
         relevant = ['lmk-key', 'address1', 'address2', 'address3',
                     'postcode', 'local-authority', 'uprn',
