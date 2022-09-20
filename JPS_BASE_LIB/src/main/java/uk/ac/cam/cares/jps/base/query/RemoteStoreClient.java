@@ -56,7 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge
@@ -85,7 +85,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteStoreClient implements StoreClientInterface {
+public class RemoteStoreClient implements TripleStoreClientInterface {
 
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
     private static final String HTTP_PROTOCOL = "http:";
