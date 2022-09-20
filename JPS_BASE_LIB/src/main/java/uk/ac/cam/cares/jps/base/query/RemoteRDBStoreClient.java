@@ -26,6 +26,8 @@ public class RemoteRDBStoreClient {
     private String rdbURL;
     private String rdbUser;
     private String rdbPassword;
+    //Driver string
+    static final String driver = "org.postgresql.Driver";
 
     /**
      * A constructor defined to initialise the URL, username and password to connect to the RDB
@@ -45,7 +47,7 @@ public class RemoteRDBStoreClient {
      */
     public Connection getConnection(){
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(driver);
             conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
         } catch (SQLException e) {
