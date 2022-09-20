@@ -113,6 +113,12 @@ class HPLCMethod(BaseOntology):
     localFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment
     remoteFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment
 
+    def get_retention_time_for_species(self, species: str) -> Optional[RetentionTime]:
+        for rt in self.hasRetentionTime:
+            if rt.refersToSpecies == species:
+                return rt
+        return None
+
 class HPLCJob(BaseOntology):
     clz: str = ONTOHPLC_HPLCJOB
     hasReport: HPLCReport
