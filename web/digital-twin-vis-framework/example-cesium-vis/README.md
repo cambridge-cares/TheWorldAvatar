@@ -36,6 +36,8 @@ Additional formats, provided they are supported by Cesium JS, can be added but w
 
 At the time of writing, client-side styling is not implemented. Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server.
 
+Custom terrain elevation has also yet to be implemented at the time of writing. In theory this can be handled by loading elevation data into Geoserver, then using a [Third Party Plugin](https://github.com/kaktus40/Cesium-GeoserverTerrainProvider) to provide that data as terrain elevation to Cesium. Note that this has not yey been tried.
+
 ## Configuration
 
 Configuration for the visualisation is provided via a number of local JSON files. Each of these is detailed below.
@@ -48,6 +50,8 @@ Configuration for the visualisation is provided via a number of local JSON files
   - This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
 
 In addition to these JSON files, areas of the `index.html` file can also be adjusted to change the default side panel content of the visualisation. Please note however that not all areas of this file are configurable, some HTML elements are required by the framework and had to be setup here rather than dynamically injected by the framework itself. Areas that are considered configurable are clearly commented within the HTML file.
+
+Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium Ion (which would require a licence).
 
 ### Visualisation JSON File
 

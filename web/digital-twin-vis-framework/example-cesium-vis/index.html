@@ -152,21 +152,15 @@
 
             // ===== CUSTOMISABLE =====
             // Enter Mapbox API key here, even in Cesium visualisations!
-            MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
+            MapHandler.MAP_API = "";
             // ===== CUSTOMISABLE =====
 
             // Create a new manager instance
             var manager = new Manager(MapProvider.CESIUM);
             window.manager = manager;
 
-            // ===== CUSTOMISABLE =====
-            // Add base URLs of stacks here
-            var dataPromise = manager.loadDefinitions([
-                "./data/singapore"
-            ]);
-            // ===== CUSTOMISABLE =====
-            
-             // Only start the map after data definitions have been read.
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
             dataPromise.then(() => start());
 
             /**
@@ -176,7 +170,7 @@
                 // ===== CUSTOMISABLE =====
                 // Optionally provide default map settings.
                 // If no options are provided here , any included in the root group of the first stack that responds and loads
-                // will be used (this is unreliable, so if visualising multiple stacks, I  recommend using this override). - Michael
+                // will be used (this is unreliable, so if visualising multiple stacks, I recommend using this override). - Michael
                 let optionsOverride = {
                     "target": [7.605, 49.196, 750],
                     "heading": 0.0,
