@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<surrogates>
+
+  <case name="CaseGroup_Case">
+    <response_var name="var4">
+      <statistic name="Number of regressors">11</statistic>
+      <statistic name="Number of points fitted to">5</statistic>
+      <statistic name="Mean of data">0.38</statistic>
+      <statistic name="Standard deviation of data">0.15200000000000002</statistic>
+      <statistic name="R-squared">0.37234916510845339</statistic>
+      <statistic name="Adjusted R-squared">1</statistic>
+      <statistic name="Chi-squared">0.38161170761406038</statistic>
+      <statistic name="Reduced chi-squared">2.0687212122053369e-20</statistic>
+      <statistic name="Durbin-Watson">3.1149726131599267</statistic>
+      <statistic name="Total sum of squares">0.6080000000000001</statistic>
+      <statistic name="Regression sum of squares">0.20898335910435245</statistic>
+      <statistic name="Residual sum of squares">0.38161170761406038</statistic>
+      <statistic name="F-statistic">1.0943393002897719e+18</statistic>
+      <statistic name="RMS deviation">0.27626498425028834</statistic>
+      <statistic name="Mean absolute deviation">0.24378941107073987</statistic>
+      <statistic name="Max absolute deviation">0.43587020853677272</statistic>
+    </response_var>
+    <response_var name="var5">
+      <statistic name="Number of regressors">5</statistic>
+      <statistic name="Number of points fitted to">5</statistic>
+      <statistic name="Mean of data">1.5</statistic>
+      <statistic name="Standard deviation of data">0.16</statistic>
+      <statistic name="R-squared">0.42535256204878458</statistic>
+      <statistic name="Adjusted R-squared">-inf</statistic>
+      <statistic name="Chi-squared">0.36777436028877791</statistic>
+      <statistic name="Reduced chi-squared">inf</statistic>
+      <statistic name="Durbin-Watson">2.6565570173372501</statistic>
+      <statistic name="Total sum of squares">0.64000000000000001</statistic>
+      <statistic name="Regression sum of squares">0.1782173523003972</statistic>
+      <statistic name="Residual sum of squares">0.36777436028877791</statistic>
+      <statistic name="F-statistic">0</statistic>
+      <statistic name="RMS deviation">0.27121001467083694</statistic>
+      <statistic name="Mean absolute deviation">0.2298765432098766</statistic>
+      <statistic name="Max absolute deviation">0.42817719680464772</statistic>
+    </response_var>
+    <response_var name="var6">
+      <statistic name="Number of regressors">14</statistic>
+      <statistic name="Number of points fitted to">5</statistic>
+      <statistic name="Mean of data">2.5600000000000001</statistic>
+      <statistic name="Standard deviation of data">1.0830000000000002</statistic>
+      <statistic name="R-squared">0.87955925378932664</statistic>
+      <statistic name="Adjusted R-squared">1</statistic>
+      <statistic name="Chi-squared">0.52174931258463686</statistic>
+      <statistic name="Reduced chi-squared">2.8284086909854091e-20</statistic>
+      <statistic name="Durbin-Watson">1.1009885733282245</statistic>
+      <statistic name="Total sum of squares">4.3320000000000007</statistic>
+      <statistic name="Regression sum of squares">3.7012428929779846</statistic>
+      <statistic name="Residual sum of squares">0.52174931258463686</statistic>
+      <statistic name="F-statistic">1.036258330199604e+19</statistic>
+      <statistic name="RMS deviation">0.3230322933035138</statistic>
+      <statistic name="Mean absolute deviation">0.24045984598877132</statistic>
+      <statistic name="Max absolute deviation">0.64513340404210151</statistic>
+    </response_var>
+  </case>
+
+
+
+</surrogates>
