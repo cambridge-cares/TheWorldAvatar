@@ -13,6 +13,6 @@ Content-Type: application/json
 { "query": {
       "lmk_key": "183853459832008111113380456968799",
       "epc_endpoint": "domestic",
-      "ocgml_endpoint": "http://128.199.197.40:9999/blazegraph/namespace/ocgml/sparql"
+      "ocgml_endpoint": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql"
     }
 }

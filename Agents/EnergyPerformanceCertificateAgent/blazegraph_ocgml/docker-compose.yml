@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  blazegraph_ocgml:
+    container_name: "blazegraph_ocgml"
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    restart: unless-stopped
+    pull_policy: if_not_present
+    # environment:
+    #   BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    ports:
+      - "4999:8080"
+    volumes:
+      - blazegraph_ocgml:/data
+    # # Add a secret to set the password for BASIC authentication
+    # secrets:
+    #   - blazegraph_password
+
+volumes:
+  blazegraph_ocgml:
+    name: "blazegraph_ocgml"
+
+# # Secrets used to set runtime passwords
+# secrets:
+#   blazegraph_password:
+#     file: blazegraph_password

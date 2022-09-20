@@ -19,6 +19,7 @@ services:
       - "5001:5000"
     volumes:
       # Link container output directory to local directory to access output files
+      - ./data:/app/data
       - logs:/root/.jps
     configs:
       - blazegraph

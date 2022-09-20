@@ -10,6 +10,7 @@ import agentlogging
 from epcdata.errorhandling.exceptions import InvalidInput
 from epcdata.utils.env_configs import OCGML_ENDPOINT
 from epcdata.kgutils.initialise_kb import initialise_kb
+from epcdata.kgutils.initialise_ocgml import create_blazegraph_namespace, upload_ocgml_quads
 from epcdata.datainstantiation.postcodes import initialise_postcodes
 from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
                                                         instantiate_epc_data_for_all_postcodes
@@ -39,6 +40,28 @@ def api_initialise_kb():
 
     except Exception as ex:
         logger.error("Unable to initialise knowledge base with TBox and ABox.", ex)
+        return jsonify({'status': '500', 'msg': f'Initialisation failed'})
+
+
+# Define route for API request to initialise OntoCityGml knowledge base with 
+# previously instantiated and exported quads
+@inputtasks_bp.route('/api/ocgml/initialise', methods=['GET'])
+def api_initialise_ocgml():
+    # Check arguments (query parameters)
+    if len(request.args) > 0:
+        print("Query parameters provided, although not required. " \
+              + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
+    try:
+        # Create OntoCityGml namespace
+        create_blazegraph_namespace()
+        # Upload OntoCityGml quads
+        upload_ocgml_quads()
+        return jsonify({'status': '200', 'msg': 'OntoCityGml quad upload successful'})
+
+    except Exception as ex:
+        logger.error("Unable to upload OntoCityGml quads.", ex)
         return jsonify({'status': '500', 'msg': f'Initialisation failed'})
 
 
