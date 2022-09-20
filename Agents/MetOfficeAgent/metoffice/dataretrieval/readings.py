@@ -12,10 +12,10 @@ import pandas as pd
 
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.timeseries import TSClient
+from metoffice.kgutils.tsclient import TSClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.errorhandling.exceptions import InvalidInput, TSException
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger

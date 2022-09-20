@@ -13,11 +13,11 @@ setup(
     include_package_data=True,
     install_requires= [
         'apscheduler~=3.9',
-        'configobj~=5.0',
         'docopt~=0.6',
         'flask~=2.1',
         'pandas~=1.3',
-        'py4jps==1.0.19', 
+        'JayDeBeApi~=1.2',
+        'py4jps==1.0.22', 
         'requests~=2.27',
         'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer',
     ]

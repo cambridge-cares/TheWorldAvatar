@@ -1,129 +1,125 @@
 # Description
 
-The `MetOffice` agent is an input and output agent which queries data from the MetOffice API, also known as [DataPoint], and instantiates it according to the [OntoEMS] ontology in the [TheWorldAvatar] knowledge graph.
+The `MetOffice` agent is an input (and output) agent which queries data from the MetOffice API, also known as [DataPoint], and instantiates it according to the [OntoEMS] ontology in the [TheWorldAvatar] knowledge graph.
 
-# Installation
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+It is designed to interact with the stack spun up by the stack manager. 
 
-## Requirements
+<span style="color:red">Tests are currently still excluded and have not been updated to work with the stack architecture yet.</span>
 
-- You need Python >3.7 to run the `MetOffice` agent. You can install Python by going to the official Python [download page]
-- You also need to install a [Java Runtime Environment version >=8]
+# Setup
 
-## 1. Virtual environment setup
+This section specifies the minimum requirement to build the docker image. 
 
-It is highly recommended to use a [virtual environment] for the `MetOffice` agent installation. The virtual environment can be created as follows:
+## Prerequisites
 
-`(Windows)`
+Retrieving data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
 
-```cmd
-$ python -m venv metoff_venv
-$ metoff_venv\Scripts\activate.bat
-(metoff_venv) $
+### **1) The environment variables used by the agent container**
+
+1) STACK_NAME
+2) API_KEY (MetOffice DataPoint API key)
+3) DATABASE (database name in PostGIS)
+4) LAYERNAME (layer name in Geoserver, also the table name for geospatial features in PostGIS)
+5) GEOSERVER_WORKSPACE
+6) ONTOP_FILE
+
+### **2) Accessing Github's Container registry**
+
+While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
+```
+  $ docker login ghcr.io -u <github_username>
+  $ <github_personal_access_token>
 ```
 
-The above commands will create and activate the virtual environment `metoff_venv` in the current directory.
+### **3) VS Code specifics**
 
-## 2. Installation from the version-controlled source (for developers)
+In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
-This type of installation is only for the developers. To install `MetOffice`  directly from its repository you need to first clone the [TheWorldAvatar] project. Then simply navigate to the *TheWorldAvatar\Agents\MetOfficeAgent* directory and execute the following commands:
+## Spinning up the stack
+
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+
 ```bash
-# build and install
-(metoff_venv) $ python -m pip install .
-(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+# Start the stack (please note that this might take some time)
+bash ./stack.sh start <STACK NAME>
 
-# or build for in-place development
-(metoff_venv) $ python -m pip install -e .
-(metoff_venv) $ python -m pip install -r dev_requirements.txt
-(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+# Stop the stack
+bash ./stack.sh stop <STACK NAME>
+
+# Remove stack services (incl. volumes)
+bash ./stack.sh remove <STACK_NAME> -v
 ```
 
-Alternatively, use the provided `install_script_pip.sh` convenience scripts, that can create the virtual environment and install the `MetOffice` agent in one go:
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+
+## Deploying the agent to the stack
+
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile]. Compiling those resources requires a [Java Runtime Environment version >=11].
+
+Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# create the environment and install the project
-$ install_script_pip.sh -v -i
-# create the environment and install the project for in-place development
-$ install_script_pip.sh -v -i -e
+# Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
+build_py4jps_resources.sh
+# Buildings the agent Docker image and pushing it
+./stack.sh build
+# Deploying the agent (using pulled image)
+./stack.sh start <STACK NAME>
 ```
-Note that installing the project for in-place development (setting the `-e` flag) also installs the required python packages for development and testing. 
 
-## Notes on testing
+The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
+> **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
 
-Please note that some of the tests use the `testcontainers` library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images. You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'.
-Furthermore, there are two integration tests which require a (local) Blazegraph and PostgreSQL RDB reachable at the endpoints specified in the [properties file]. Those tests are ignored by default and need to be actively activated if needed.
+> **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
 
-To test the code, simply run the following commands:
+> **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
+`bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
+
+> **Update JPSRM and Build and Debug**: Updated py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file)
+
+## Spinning up the Stack remotely via SSH
+
+To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
+
+Once logged in, a remote copy of The World Avatar repository can be cloned using the following commands:
 
 ```bash
-# Run all tests
-(metoff_venv) $ pytest
+$ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
+$ cd <REPO NAME>
+$ git checkout dev-MetOfficeAgent-withinStack
+$ git pull
+```
+Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-# Run selected tests, e.g. test_datainstantiation.py
-(metoff_venv) $ pytest test_datainstantiation.py
+Before starting development or spinning up the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the[JPS_BASE_LIB] and [Stack-Clients] `.jar` files to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotly by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
+
+```bash
+# Java >= 11
+# Test installation
+java -version
+javac -verison
+# Install in case it is missing
+sudo apt install openjdk-11-jdk-headless
+
+# MAVEN 
+# Test installation
+mvn -version
+# Install in case it is missing
+sudo apt install maven
+```
+To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
+
+```bash
+# Check permissions
+ls -l <REPO NAME>
+# Grant permissions
+chmod -R +rwx <REPO NAME>
+# To prevent git from identifying all files as changed (due to changed permission rights), exclude file permission (chmod) changes from git
+git config core.fileMode false
 ```
 
 # How to use the Agent
 
-The `MetOffice` agent can be deployed as locally running web agent or using the provided dockerized version.
-
-## Prerequisites
-
-Before starting the Flask web app or building the Docker image, several key properties need to be set in the [properties file]:
-- `api.key` API key to retrieve data from the MetOffice DataPoint API. Requires registration for the [DataPoint] platform
-
-Further credentials and endpoints are needed for the TimeSeries client to access the knowledge graph and the Postgres database:
-- `db.user` the username to access the Postgres database
-- `db.password` the password to access the Postgres database
-- `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
-- `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
-
-
-## Web agent usage
-
-In order to deploy the `MetOffice` as a web agent, simply start a server with the following app entry point:
-
-`(Windows)`
-```cmd
-(metoff_venv) $ set FLASK_APP=metoffice\flaskapp\wsgi.py & flask run
-```
-
-## Dockerized agent usage
-
-The provided `docker-compose` file contains instructions to create Docker images for both the Debugging and Production stage. The debugging image allows for hot-reloading code changes by mounting the `metoffice` folder containing the source code as external volume.
-
-```bash
-# Build debugging image and spin up container
-docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_debug
-
-# Build production image and spin up container
-docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_production
-```
-
-While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. Using `VS Code`, this can be achieved by using the `launch.json` settings below:
-
-```
-    {
-        "name": "Python: Remote Attach",
-        "type": "python",
-        "request": "attach",
-        "connect": {
-            "host": "127.0.0.1",
-            "port": 5678
-        },
-        "pathMappings": [
-            {
-                "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
-                "remoteRoot": "/app/metoffice/flaskapp/"
-            }
-        ]
-    }
-```
-
-A database connection issue has been observed when using the dockerised agent with locally running Postgres RDB. Therefore, a `docker-compose_stack.yml` file is provided to spin up a stack with a Blazegraph and a PostgreSQL within the same network as the agent container. For the agent to access the Blazegraph, the hostname is `blazegraph` (specified in the compose file), port number = 9999. The `sparql.query.endpoint` and `sparql.query.endpoint` to enter in the `metoffice.properties` will be in the form of `http://blazegraph:9999/blazegraph/namespace/[NAME OF NAMESPACE]/sparql`. The Blazegraph namespace must have geospatial enabled. The hostname for the PostgreSQL container is `postgres`, accessible via the default port 5432. The field to enter for `db.url` will be in the form `jdbc:postgresql://postgres/[NAME OF DATABASE]`.
-Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker step, but before sending the first update request to the dockerised agent.
-
-Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows) - simply paste this path into the file explorer to inspect the respective location..
-
+The provided `docker-compose` file contains instructions to create Docker images for both the Debugging and Production stage. The debugging image allows for hot-reloading code changes by mounting the `metoffice` folder containing the source code as external volume. While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. 
 
 ## Provided functionality
 
@@ -151,13 +147,30 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 
 
 <!-- Links -->
+<!-- websites -->
+[allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [DataPoint]: https://www.metoffice.gov.uk/services/data/datapoint/about
-[OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
-[download page]: https://www.python.org/getit/
-[Java Runtime Environment version >=8]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
-[virtual environment]: https://docs.python.org/3/tutorial/venv.html
-[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[properties file]: resources\metoffice.properties
+[Container registry on Github]: ghcr.io
+[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5000/]: http://localhost:5000/
-[resources]: resources
+[Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
+[JDBC driver]: https://jdbc.postgresql.org/download/ 
+[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
+[personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+[py4jps]: https://pypi.org/project/py4jps/#description
+[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
+[Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
+[virtual environment]: https://docs.python.org/3/tutorial/venv.html
+[VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+
+<!-- files -->
+[Dockerfile]: Dockerfile
+[docker compose file]: docker-compose.yml
 [example retrieve all request]: resources\HTTPRequest_retrieve_all.http
+[resources]: resources
+[stack.sh]: stack.sh
