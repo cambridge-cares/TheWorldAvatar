@@ -10,9 +10,9 @@ The current, working version of the DTVF is **3.0.0**.
 
 The DTVF is written in [TypeScript](https://www.typescriptlang.org/) and compiled into a single minified JS file (and a single minified CSS file). These files are then hosted on a CMCL server that allows remote imports. A number of abstract base classes exist within the DTVF library, with concrete implementations for each Mapping Provider.
 
-At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/)and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows.
+At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows.
 
-* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) fromlocal files or from WMS endpoints. It is however more customisable and has less of a performance overhead; unless plotting 3D building data, it's advised to use this mapping provider.
+* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from WMS endpoints. It is however more customisable and has less of a performance overhead; unless plotting 3D building data, it's advised to use this mapping provider.
 
 * CesiumJS can handle 2D data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation.
 
@@ -26,7 +26,7 @@ A brief list of these requirements is shown below, but as the current implementa
 
 * A stack instance needs to be running (at some location, can be remote), containing:
   * A blazegraph instance holding metadata on the visualised features.
-  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries.
+  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries. These queries must return data in a specific tabular format.
   * If applicable, a PostgreSQL instance containing timeseries data for the visualisation features.
 * Geospatial data needs to contain `name`, `iri`, and `endpoint` fields for each feature (regardless of how the data is served, i.e. locally or via WMS).
   * The `name` field needs to contain the human readable name of the feature.
@@ -43,7 +43,7 @@ For more information on the DTVF library, see the associated README file within 
 
 To act as an example of how to use the DTVF, as well as a template upon which new visualisations can be based, two visualisations have been produced. One to show the Mapbox implementation, and one to show CesiumJS.
 
-Before attempting to create their own visualisations, developers should try running the appropriate example visualisation and read it's associated README. These examples can be found within the [DTVF](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework) directory.
+Before attempting to create their own visualisations, developers should try running the appropriate example visualisation and read its associated README. These examples can be found within the [DTVF](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework) directory.
 
 # Support
 
