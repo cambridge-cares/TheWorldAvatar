@@ -104,7 +104,7 @@ public class StoreRouter{
 	 * @param isQueryOperation true/false
 	 * @param isUpdateOperation true/false. 
 	 * Note: both query and update operations can be true at the same time.
-	 * @return StoreClient
+	 * @return TripleStoreClient
 	 */
 	public static TripleStoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
 		
