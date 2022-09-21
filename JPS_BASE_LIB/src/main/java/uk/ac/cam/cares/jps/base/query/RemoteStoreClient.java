@@ -91,6 +91,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
 
+    //Connection and Statement objects
+    Connection conn;
+    Statement stmt;
+
     private String queryEndpoint;
     private String updateEndpoint;
     private String query;
@@ -350,14 +354,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        Connection conn = null;
-        Statement stmt = null;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            connect();
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -427,7 +425,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     /**
      * Excute sparql query
      *
-     * @param sparql
+     * @param query
      * @return JSONArray as String
      */
     @Override
@@ -468,15 +466,9 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results = new JSONArray();
-        Connection conn = null;
-        Statement stmt = null;
+        JSONArray results;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            connect();
             java.sql.ResultSet rs = stmt.executeQuery(query);
             results = convert(rs);
         } catch (SQLException e) {
@@ -541,6 +533,20 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return builder.build();
     }
 
+    /**
+     * Establishes connection to triple store and sets the Statement Object
+     */
+    protected void connect(){
+        try {
+            if (this.conn == null || this.conn.isClosed()) {
+                RemoteEndpointDriver.register();
+                conn = DriverManager.getConnection(getConnectionUrl());
+                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            }
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
     /**
      * Generates the URL of the remote data repository's EndPoint, which<br>
      * might require authentication either to perform a data retrieval or<br>
@@ -822,7 +828,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * Get rdf content from store. Performs a construct query on the store and
      * returns the model as a string.
      *
-     * @param graphName (if any)
+     * @param resourceUrl (if any)
      * @param accept
      * @return String
      */

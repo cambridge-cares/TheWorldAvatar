@@ -34,6 +34,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class contains a collection of methods to interact with a triple store/knowledge base (kb).
+ * This class should not be used directly. It should only be accessed internally via {@link TimeSeriesClient TimeSeriesClient}
  * @author Kok Foong Lee
  */
 
