@@ -1,0 +1,7 @@
+{"Locations": 
+    {"Location": 
+        [{"elevation": "50.0", "id": "14", "latitude": "54.9375", "longitude": "-2.8092", "name": "Carlisle Airport", "region": "nw", "unitaryAuthArea": "Cumbria"}, 
+        {"elevation": "25.0", "id": "25", "latitude": "60.4322", "longitude": "-1.2992", "name": "Scatsta", "region": "os", "unitaryAuthArea": "Shetland Islands"},
+        {"elevation": "24.0", "id": "22", "latitude": "53.5797", "longitude": "-0.3472", "name": "Humberside Airport", "region": "yh", "unitaryAuthArea": "North Lincolnshire"}]
+    }
+}

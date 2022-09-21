@@ -1,0 +1,72 @@
+# This configuration file should include all docker-compose options required to *build images* for
+# services in the 'dafni' stack.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'build/*',
+# 'labels/authors' and 'labels/description' nodes.
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+  
+  csvkit:
+    image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
+    build:
+      args:
+        PYTHON_VERSION: 3.7.12
+      context: csvkit
+      labels:
+        authors: "oparry@cmclinnovations, gbrownbridge@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Python with the 'csvkit' and 'psycopg2' packages installed."
+        hash: "${HASH}"
+
+  geoserver:
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
+    build:
+      args:
+        GEOSERVER_VERSION: ${GEOSERVER_VERSION}
+      context: geoserver
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Customised version of the geoserver image to allow a password to be set via a secret."
+        hash: "${HASH}"
+
+  ontop-pgsql:
+    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+    build:
+      args:
+        ONTOP_POSTGRES_VERSION: ${ONTOP_POSTGRES_VERSION}
+        ONTOP_VERSION: ${ONTOP_VERSION}
+      context: ontop
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "The ontop image to allow a password to be set via a secret."
+        hash: "${HASH}"
+
+  python:
+    image: docker.cmclinnovations.com/python_with_ssh:${PYTHON_VERSION}
+    build:
+      args:
+        PYTHON_SCRIPTS_DIR: ${PYTHON_SCRIPTS_DIR}
+        PYTHON_VERSION: ${PYTHON_VERSION}
+      context: python
+      labels:
+        authors: "oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Python installation with an ssh server installed."
+        hash: "${HASH}"
+
+  qgis:
+    image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+    build:
+      context: qgis
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Customised version of the QGIS image with an ssh server installed."
+        hash: "${HASH}"

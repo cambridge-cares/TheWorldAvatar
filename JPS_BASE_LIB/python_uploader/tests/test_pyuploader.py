@@ -9,7 +9,8 @@ pytest_plugins = ["docker_compose"]
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DIR = os.path.join(THIS_DIR, 'test_files')
-TEST_FILE = os.path.join(TEST_DIR, 'test.owl')
+OWL_FILE = os.path.join(TEST_DIR, 'test.owl')
+TTL_FILE = os.path.join(TEST_DIR, 'test.ttl')
 
 # ----------------------------------------------------------------------------------
 # Tests
@@ -23,17 +24,19 @@ TEST_FILE = os.path.join(TEST_DIR, 'test.owl')
     """service_name, file_or_dir,
       file_ext, subdirs, dry_run, uploaded_files_nr""",
 [
-    ("blazegraph",     TEST_FILE, "owl",     None,    False, 1),
+    ("blazegraph",     OWL_FILE, "owl",     None,    False, 1),
     ("blazegraph",     TEST_DIR,  "owl",     None,    False, 1),
-    ("blazegraph",     TEST_FILE, "owl",     None,    True,  0),
+    ("blazegraph",     OWL_FILE, "owl",     None,    True,  0),
     ("blazegraph",     TEST_DIR,  "owl",     None,    True,  0),
-    ("blazegraph-geo", TEST_FILE, "owl",     None,    False, 1),
+    ("blazegraph",     TTL_FILE, "ttl",     None,    False,  1),
+    ("blazegraph-geo", OWL_FILE, "owl",     None,    False, 1),
     ("blazegraph-geo", TEST_DIR,  "owl",     None,    False, 1),
-    ("blazegraph-geo", TEST_FILE, "owl",     None,    True,  0),
+    ("blazegraph-geo", OWL_FILE, "owl",     None,    True,  0),
     ("blazegraph-geo", TEST_DIR,  "owl",     None,    True,  0),
-    ("fileserver",     TEST_FILE, "owl",     None,    False, 1),
+    ("blazegraph-geo", TTL_FILE, "ttl",     None,    False,  1),
+    ("fileserver",     OWL_FILE, "owl",     None,    False, 1),
     ("fileserver",     TEST_DIR,  "owl,log", 'a/b/c', False, 2),
-    ("fileserver",     TEST_FILE, "owl",     None,    True,  0),
+    ("fileserver",     OWL_FILE, "owl",     None,    True,  0),
     ("fileserver",     TEST_DIR,  "owl,log", 'a/b/c', True,  0)
 ]
 )
@@ -77,9 +80,9 @@ def test_uploader(
 @pytest.mark.parametrize(
     "service_name, test_file, file_ext",
 [
-    ("blazegraph", TEST_FILE, 'owl'),
-    ("blazegraph-geo", TEST_FILE, 'owl'),
-    ("fileserver", TEST_FILE, 'owl')
+    ("blazegraph", OWL_FILE, 'owl'),
+    ("blazegraph-geo", OWL_FILE, 'owl'),
+    ("fileserver", OWL_FILE, 'owl')
 ]
 )
 def test_uploader_stress_test(
@@ -105,8 +108,8 @@ def test_uploader_stress_test(
 @pytest.mark.parametrize(
     "service_name, file_or_dir, file_ext",
 [
-    ("blazegraph", TEST_FILE, "ttl"),
-    ("blazegraph-geo", TEST_FILE, "ttl")
+    ("blazegraph", OWL_FILE, "log"),
+    ("blazegraph-geo", OWL_FILE, "log")
 ]
 )
 def test_uploader_wrong_file_ext(
@@ -141,10 +144,10 @@ def test_uploader_wrong_file_ext(
        file_ext, subdirs, uploaded_files_nr""",
 [
     ("blazegraph", TEST_DIR,  "owl",     None, 1),
-    ("blazegraph", TEST_FILE, "owl",     None, 1),
-    ("blazegraph-geo", TEST_FILE, "owl",     None, 1),
+    ("blazegraph", OWL_FILE, "owl",     None, 1),
+    ("blazegraph-geo", OWL_FILE, "owl",     None, 1),
     ("blazegraph-geo", TEST_DIR,  "owl",     None, 1),
-    ("fileserver", TEST_FILE, "owl",     None, 1),
+    ("fileserver", OWL_FILE, "owl",     None, 1),
     ("fileserver", TEST_DIR,  "owl,log", 'a/b/c', 2),
 ]
 )

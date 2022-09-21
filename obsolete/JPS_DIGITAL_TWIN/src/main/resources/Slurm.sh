@@ -50,3 +50,4 @@ echo $PWD
 cp $PWD/output/$output$output_file_extension .			
 #cd $SLURM_SUBMIT_DIR
 #rm -rf $SCRATCH_DIRECTORY || exit $?
+

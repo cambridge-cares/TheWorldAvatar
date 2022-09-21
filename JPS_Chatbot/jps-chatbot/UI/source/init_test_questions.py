@@ -4,7 +4,7 @@ from pprint import pprint
 
 from CoordinateAgent import CoordinateAgent
 
-ca = CoordinateAgent(None)
+ca = CoordinateAgent()
 qa_pairs = {}
 with open('test_questions') as f:
     questions = f.readlines()

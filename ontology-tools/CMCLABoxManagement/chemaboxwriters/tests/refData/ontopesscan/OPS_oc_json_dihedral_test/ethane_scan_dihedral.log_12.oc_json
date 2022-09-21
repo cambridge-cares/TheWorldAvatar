@@ -1,0 +1,89 @@
+{
+    "Empirical_Formula": "C2H6",
+    "Atom_Total_Counts": [
+        2,
+        6
+    ],
+    "Atom_List": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atom_Masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Elements": [
+        "C",
+        "H"
+    ],
+    "Level_of_Theory": "RB3LYP",
+    "Basis_Set": "6-31G(d,p)",
+    "Spin_Multiplicity": 1,
+    "Total_Charge": 0,
+    "Geometry_Type": "nonlinear",
+    "X_Atoms_Coordinates": [
+        0.768092,
+        -0.768092,
+        1.176028,
+        1.16947,
+        1.167685,
+        -1.167696,
+        -1.176023,
+        -1.169462
+    ],
+    "Y_Atoms_Coordinates": [
+        0.001259,
+        0.001254,
+        0.740824,
+        -0.981905,
+        0.233536,
+        0.234049,
+        0.740467,
+        -0.982048
+    ],
+    "Z_Atoms_Coordinates": [
+        -0.003892,
+        0.003891,
+        -0.698831,
+        -0.269632,
+        0.989223,
+        -0.989098,
+        0.699208,
+        0.269135
+    ],
+    "Rotational_Constants_String": "80.3711954 19.9105557 19.9105311",
+    "Rotational_Constants_Number": 3,
+    "Rotational_Symmetry_Number": null,
+    "Frequencies_String": null,
+    "Frequencies_Number": null,
+    "Electronic_Energy": -2172.465007910531,
+    "Electronic_And_ZPE_Energy": null,
+    "ZPE_Energy": null,
+    "Homo_Energy": -0.33915,
+    "Homo-1_Energy": -0.33917,
+    "Homo-2_Energy": -0.36314,
+    "Lumo_Energy": 0.10498,
+    "Lumo+1_Energy": 0.15618,
+    "Lumo+2_Energy": 0.16392,
+    "Program_Name": "Gaussian",
+    "Program_Version": "2009+D.01",
+    "Run_Date": "Fri Sep 3 12:29:18 2021",
+    "Log_File_Name": "ethane_scan_dihedral.log",
+    "Species_IRI": null,
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_OCtestID-111-111-111",
+    "PNG_Source_Location": null,
+    "CCLOG_Source_Location": null,
+    "Entry_ID": "OCtestID-111-111-111"
+}
