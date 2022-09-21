@@ -13,17 +13,23 @@ import org.json.JSONArray;
 public interface StoreClientInterface {
 
 
-	// SPARQL Query methods
-	
+	// Query methods
+
 	/**
 	 * Executes the query supplied by the calling method and returns results<p>
 	 * as a JSONArray.
-	 * 
-	 * @param sparql query
+	 * @param query
 	 * @return JSONArray
 	 */
 	JSONArray executeQuery(String query);	
-	
+
+	/**
+	 * Execute sparql query supplied by the calling method.
+	 * @param query
+	 * @return JSONArray as String
+	 */
+	String execute(String query);
+
 	/**
 	 * Executes the query that is provided through the constructors or setter<p>
 	 * method and returns the results as a JSONArray.
@@ -32,22 +38,13 @@ public interface StoreClientInterface {
 	JSONArray executeQuery();
 
 	/**
-	 * Execute sparql query using the query variable.
-	 * @return JSONArray as String 
-	 */
-	String execute();
-	
-	/**
-	 * Execute sparql query supplied by the calling method.
-	 * @param sparql query
+	 * Execute query using the query variable.
 	 * @return JSONArray as String
 	 */
-	String execute(String query);
-	
+	String execute();
 
-	
-	// SPARQL update methods
-	
+	// update methods
+
 	/**
 	 * Executes the update operation that is provided through the constructors or setter<p>
 	 * method.
@@ -56,21 +53,18 @@ public interface StoreClientInterface {
 
 	/**
 	 * Executes the update operation supplied by the calling method.
-	 * @param sparql update as String
+	 * @param update as String
 	 */
 	int executeUpdate(String update);
 	
 	/**
 	 * Executes the update operation supplied by the calling method.
-	 * @param sparql update as UpdateRequest
+	 * @param update as UpdateRequest
 	 */
 	int executeUpdate(UpdateRequest update);
-	
-	
-	// Set/Get varaible methods
-	
+
 	/**
-	 * Sets the query. 
+	 * Sets the query.
 	 * @param query
 	 */
 	String setQuery(String query);
@@ -79,8 +73,6 @@ public interface StoreClientInterface {
 	 * Returns the available query.
 	 */
 	String getQuery();
-	
-
 
 	// Authentication
 	String getUser();
@@ -90,6 +82,5 @@ public interface StoreClientInterface {
 	String getPassword();
 
 	void setPassword(String password);
-
 
 }
