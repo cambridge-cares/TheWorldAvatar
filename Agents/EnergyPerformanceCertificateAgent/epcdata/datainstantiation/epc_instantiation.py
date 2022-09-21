@@ -56,14 +56,15 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
             logger.error('Retrieved EPC data does not have associated UPRN.')
             raise KeyError('Retrieved EPC data does not have associated UPRN.')
 
-        # Initialise KG client
-        kgclient = KGClient(query_endpoint, update_endpoint)
+        # Initialise KG clients
+        kgclient_epc = KGClient(query_endpoint, update_endpoint)
+        kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
         
         #
         # Check if UPRN is instantiated in OntoCityGml and whether parent building 
         # (i.e. building hosting several flats/UPRNs) shall be instantiated
         #
-        uprns = retrieve_ocgml_uprns(uprn, ocgml_endpoint)
+        uprns = retrieve_ocgml_uprns(uprn, kgclient=kgclient_ocgml)
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
@@ -71,7 +72,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                 # avoid Flats (according to EPC data) having OCGML building representation
                 parent_iri = None
             else:
-                parent = retrieve_parent_building(uprns, kgclient=kgclient)
+                parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                 # Retrieve parent building IRI if already instantiated, otherwise create            
                 if parent:
                     parent_iri = parent
@@ -82,7 +83,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
             # Check if same EPC is already instantiated for UPRN
             #
             query = get_latest_epc_and_property_iri_for_uprn(uprn)
-            instantiated = kgclient.performQuery(query)
+            instantiated = kgclient_epc.performQuery(query)
 
             # There are 3 different cases:
             if instantiated and instantiated[0].get('certificate') == lmk_key:
@@ -106,7 +107,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                     local_authority_code = epc_data.get('local-authority')
                     if postcode and local_authority_code:
                         query = get_postcode_and_district_iris(postcode, local_authority_code)
-                        geographies = kgclient.performQuery(query)
+                        geographies = kgclient_epc.performQuery(query)
                         if geographies:
                             data_to_instantiate['postcode_iri'] = geographies[0].get('postcode')
                             data_to_instantiate['district_iri'] = geographies[0].get('district')
@@ -115,7 +116,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
 
                     logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
                     insert_query = instantiate_epc_data(**data_to_instantiate)
-                    kgclient.performUpdate(insert_query)
+                    kgclient_epc.performUpdate(insert_query)
                     updates = (1, 0)
 
                 else:
@@ -135,7 +136,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
 
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                     update_query = update_epc_data(**data_to_update)
-                    kgclient.performUpdate(update_query)
+                    kgclient_epc.performUpdate(update_query)
                     updates = (0, 1)
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
@@ -172,8 +173,9 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     epc_data = obtain_latest_data_for_postcodes(postcodes, epc_endpoint)
     n_epcs = len(epc_data)
 
-    # Initialise KG client
-    kgclient = KGClient(query_endpoint, update_endpoint)
+    # Initialise KG clients
+    kgclient_epc = KGClient(query_endpoint, update_endpoint)
+    kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
     # Iterate through DataFrame
     for index, row in epc_data.iterrows():
@@ -189,7 +191,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         # Check if UPRN is instantiated in OntoCityGml and whether parent building 
         # (i.e. building hosting several flats/UPRNs) shall be instantiated
         #
-        uprns = retrieve_ocgml_uprns(uprn, ocgml_endpoint)
+        uprns = retrieve_ocgml_uprns(uprn, kgclient=kgclient_ocgml)
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
@@ -197,7 +199,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                 # avoid Flats (according to EPC data) having OCGML building representation
                 parent_iri = None
             else:
-                parent = retrieve_parent_building(uprns, kgclient=kgclient)
+                parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                 # Retrieve parent building IRI if already instantiated, otherwise create            
                 if parent:
                     parent_iri = parent
@@ -208,7 +210,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
             # Check if same EPC is already instantiated for UPRN
             #
             query = get_latest_epc_and_property_iri_for_uprn(uprn)
-            instantiated = kgclient.performQuery(query)
+            instantiated = kgclient_epc.performQuery(query)
 
             # There are 3 different cases:
             if instantiated and instantiated[0].get('certificate') == row.get('lmk-key'):
@@ -232,7 +234,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                     local_authority_code = row.get('local-authority')
                     if postcode and local_authority_code:
                         query = get_postcode_and_district_iris(postcode, local_authority_code)
-                        geographies = kgclient.performQuery(query)
+                        geographies = kgclient_epc.performQuery(query)
                         if geographies:
                             data_to_instantiate['postcode_iri'] = geographies[0].get('postcode')
                             data_to_instantiate['district_iri'] = geographies[0].get('district')
@@ -241,7 +243,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
 
                     logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
                     insert_query = instantiate_epc_data(**data_to_instantiate)
-                    kgclient.performUpdate(insert_query)
+                    kgclient_epc.performUpdate(insert_query)
                     new_epcs += 1
 
                 else:
@@ -261,7 +263,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
 
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                     update_query = update_epc_data(**data_to_update)
-                    kgclient.performUpdate(update_query)
+                    kgclient_epc.performUpdate(update_query)
                     updated_epcs += 1
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
@@ -269,7 +271,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         logger.info('No EPC data available for provided lodgement identifier.')
 
     # Potentially "summarise" EPCs for parent buildings
-    new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient)    
+    new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc)    
 
     return (new_epcs, updated_epcs), (new_summaries, updated_summaries)
 
@@ -295,6 +297,10 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     query = instantiated_postalcodes()
     res = kgclient.performQuery(query)
     postcodes = [r['postcode'] for r in res]
+    postcodes = [p for p in postcodes if p]
+
+    # TODO: remove
+    postcodes = postcodes[:500]
 
     # Instantiate EPC data for all postcodes
     epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, 
@@ -408,7 +414,7 @@ def extract_street_and_number(address_strings):
     return street, nr
 
 
-def retrieve_ocgml_uprns(uprn: str = '', query_endpoint: str = '',
+def retrieve_ocgml_uprns(uprn: str = '', query_endpoint=OCGML_ENDPOINT,
                          kgclient=None):
     """
         Retrieve all UPRNs (instantiated in OntoCityGml) associated with same 
@@ -474,12 +480,12 @@ def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
     return parent
 
 
-def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_ENDPOINT,
-                                          update_endpoint=UPDATE_ENDPOINT):
+def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
+                                          update_endpoint=UPDATE_ENDPOINT,
+                                          kgclient=None, ):
     """
         Retrieves instantiated EPC information for "child" properties and
         summarizes and instantiates them for the parent building
-
     """
 
     # Initialise return values
@@ -491,7 +497,7 @@ def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_EN
         kgclient = KGClient(query_endpoint, update_endpoint)
 
     # Retrieve EPC data for childen properties and parent buildings
-    epcs_data = retrieve_epcs_child_and_parent_buildings(kgclient)
+    epcs_data = retrieve_epcs_child_and_parent_buildings(kgclient=kgclient)
 
     # Summarize EPC information for parent buildings
     summarized = summarize_epc_data(epcs_data)
@@ -529,8 +535,9 @@ def instantiate_epcs_for_parent_buildings(kgclient=None, query_endpoint=QUERY_EN
     return (new_epcs, updated_epcs)
 
 
-def retrieve_epcs_child_and_parent_buildings(kgclient=None, query_endpoint=QUERY_ENDPOINT,
-                                             update_endpoint=UPDATE_ENDPOINT):
+def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
+                                             update_endpoint=UPDATE_ENDPOINT, 
+                                             kgclient=None):
     """
         Retrieves instantiated EPC information for all parent buildings
         and associated children properties from KG
