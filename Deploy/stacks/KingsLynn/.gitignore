@@ -60,3 +60,5 @@ Thumbs.db
 # Directories
 outputs/*
 !.gitkeep
+*/secrets/*
+!.gitkeep
