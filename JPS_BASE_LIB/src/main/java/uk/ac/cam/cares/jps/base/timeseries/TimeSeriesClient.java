@@ -7,7 +7,7 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -53,7 +53,7 @@ public class TimeSeriesClient<T> {
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
      * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
      */
-    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass) {
+    public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass) {
     	// Initialise Sparql client with pre-defined kbClient
     	this.rdfClient = new TimeSeriesSparql(kbClient);
     	// Initialise RDB client
@@ -64,7 +64,7 @@ public class TimeSeriesClient<T> {
 	 * Setter for knowledge base client (in Sparql client)
 	 * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information with already specified endpoint (triplestore/owl file)
 	*/
-    public void setKBClient(StoreClientInterface kbClient) {    	
+    public void setKBClient(TripleStoreClientInterface kbClient) {
     	this.rdfClient.setKBClient(kbClient);
     }
 
@@ -587,7 +587,7 @@ public class TimeSeriesClient<T> {
 	 * @param password password to access relational database
 	 */
 	@Deprecated
-	public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password) {
+	public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password) {
 		// Initialise Sparql client with pre-defined kbClient
 		this.rdfClient = new TimeSeriesSparql(kbClient);
 		// Initialise RDB client according to properties file
@@ -605,7 +605,7 @@ public class TimeSeriesClient<T> {
 	 * @param filepath absolute path to file with RDB configs (URL, username, password)
 	 */
 	@Deprecated
-	public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
+	public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
 		// Initialise Sparql client with pre-defined kbClient
 		this.rdfClient = new TimeSeriesSparql(kbClient);
 		// Initialise RDB client according to properties file

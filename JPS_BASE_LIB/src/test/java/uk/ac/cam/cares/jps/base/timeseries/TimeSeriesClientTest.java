@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -100,7 +100,7 @@ public class TimeSeriesClientTest {
         TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(client);
         Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
-        StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
+        TripleStoreClientInterface setKBClient = (TripleStoreClientInterface) kbClientField.get(rdfClient);
         Assert.assertEquals(kbClient.getQueryEndpoint(), setKBClient.getQueryEndpoint());
         Assert.assertEquals(kbClient.getUpdateEndpoint(), setKBClient.getUpdateEndpoint());
         // Retrieve the rdb client to test whether it is set correctly
@@ -126,7 +126,7 @@ public class TimeSeriesClientTest {
         TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(testClient);
         Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
-        StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
+        TripleStoreClientInterface setKBClient = (TripleStoreClientInterface) kbClientField.get(rdfClient);
         Assert.assertEquals(kbClient.getQueryEndpoint(), setKBClient.getQueryEndpoint());
         Assert.assertEquals(kbClient.getUpdateEndpoint(), setKBClient.getUpdateEndpoint());
     }
