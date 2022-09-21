@@ -123,8 +123,8 @@ class PanelHandler {
 			leftButton.style.visibility = "hidden";
 
 			// Stop keyboard events
-			MapHandler.MAP["keyboard"].disable();
-			MapHandler.MAP.resize();
+			// MapHandler.MAP["keyboard"].disable();
+			// MapHandler.MAP.resize();
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -137,8 +137,8 @@ class PanelHandler {
 			leftButton.style.visibility = "visible";
 
 			// Allow keyboard events
-			MapHandler.MAP["keyboard"].enable();
-			MapHandler.MAP.resize();
+			// MapHandler.MAP["keyboard"].enable();
+			// MapHandler.MAP.resize();
 		}
 	}
 
@@ -192,27 +192,36 @@ class PanelHandler {
      * @param endpoint 
      * @returns 
      */
-    public addSupportingData(feature: Object) {
-        console.log("Getting metadata and timeseries...");
-        
+    public addSupportingData(feature, properties) {
         // Get required details
-        let iri = feature["properties"]["iri"];
-        let stack = Manager.findStack(feature);
+        let iri = properties["iri"];
+        let stack = Manager.findStack(feature, properties);
 
-        if(iri === undefined || stack === undefined) {
-            console.error("Feature is missing required information to get metadata/timeseries!");
+        if(iri == null || stack == null) {
+            console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
+
+            // Render metadata tree
+            this.prepareMetaContainers(true, false);
+            document.getElementById("metaTreeContainer").innerHTML = "";
+
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree);
             return;
         }
+
+        // Proceed to contact agent for metadata and timeseries
         this.prepareMetaContainers(true, true);
 
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        console.log("Contacting: " + agentURL);
         let params = { "iri": iri };
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
-            console.log("Got a response");
             // Get results
             let meta = json["meta"];
             let time = json["time"];

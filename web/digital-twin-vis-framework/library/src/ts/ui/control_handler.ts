@@ -52,11 +52,6 @@ class ControlHandler {
 	 */
 	showControls() {
         this.setupCollapses();
-
-        //Ensure selected terrain option is right
-        let terrainContainer = document.getElementById("terrainContainer");
-        let terrainSelect = terrainContainer.querySelector("input[id='" + window.terrain + "']") as HTMLInputElement;
-        if(terrainSelect != null) terrainSelect.checked = true;
 	}
 
 	/**

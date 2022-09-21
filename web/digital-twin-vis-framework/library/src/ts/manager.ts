@@ -62,7 +62,9 @@ class Manager {
                 this.mapHandler = new MapHandler_MapBox(this);
             break;
 
-            // TODO: CesiumJS
+            case MapProvider.CESIUM:
+                this.mapHandler = new MapHandler_Cesium(this);
+            break;
 
             default:
                 throw new Error("Unknown map provider specified!");
@@ -92,24 +94,36 @@ class Manager {
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
-        this.controlHandler.showInfoPanel();
 
         // Override CTRL+F shortcut for feature searching (BETA)
-        let self = this;
-        document.addEventListener("keydown", function(e){
-            if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-                if(self.searchUp) {
-                    self.hideSearch();
-                } else {
-                    self.showFeatureFinder();
-                }
-                e.preventDefault();
-            }
+        let searchBox = document.getElementById("finderContainer");
+        if(searchBox !== null) {
 
-            if(e.altKey && e.key === "Enter") {
-               self.toggleFullscreen();
-            }
-        });
+            let self = this;
+            document.addEventListener("keydown", function(e){
+                if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
+                    if(self.searchUp) {
+                        self.hideSearch();
+                    } else {
+                        self.showFeatureFinder();
+                    }
+                    e.preventDefault();
+                }
+
+                if(e.altKey && e.key === "Enter") {
+                    self.toggleFullscreen();
+                    console.log(MapHandler.MAP.camera.position);
+                    
+                    var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
+                    var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
+                    // @ts-ignore
+                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
+                    // @ts-ignore
+                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
+                    console.log(longitudeString + ", " + latitudeString);
+                }
+            });
+        }
     }
 
     private toggleFullscreen() {
@@ -137,7 +151,11 @@ class Manager {
             this.inFullscreen = true;
         }
 
-        MapHandler.MAP.resize();
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
+            MapHandler.MAP.resize();
+        } else {
+            MapHandler.MAP.scene.requestRender();
+        }
     }
 
     /**
@@ -163,14 +181,14 @@ class Manager {
     public loadImagesAndLinks() {
         let promises = [];
 
-        if(Manager.PROVIDER === MapProvider.MAPBOX) {
+            if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-            let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
-            promises.push(iconPromise);
-        }
+                let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
+                promises.push(iconPromise);
+            }
 
         let linksFile = "./links.json"
-        promises.push(this.panelHandler.addLinks(linksFile));
+            promises.push(this.panelHandler.addLinks(linksFile));
 
         let promise = Promise.all(promises).catch(function(err) {
             console.warn("Loading icons and/or links has failed, these will be skipped."); 
@@ -208,7 +226,7 @@ class Manager {
     public async featureSelectChange(select: HTMLInputElement) {
         if(window.selectFeatures !== null && window.selectFeatures !== undefined) {
             let feature = window.selectFeatures[select.value];
-            this.showFeature(feature);
+            this.showFeature(feature, feature["properties"]);
         } else {
             console.error("Could not find feature cached with key: " + select.value);
         }
@@ -220,23 +238,28 @@ class Manager {
     /**
      * Fires when an individual feature is selected.
      */
-    public showFeature(feature: Object) {
-        console.log("Selected feature:");
+    public showFeature(feature, properties) {
         console.log(feature);
-        
+        console.log(properties);
+
         // Title
-        let name = feature["properties"]["name"];
-        if(name === null || name === undefined) {
-            name = "Feature " + feature["id"];
+        let name = null;
+        if(properties.hasOwnProperty("name")) {
+            name = properties["name"];
+        } else {
+            if(feature.hasOwnProperty("id")) {
+                name = "Feature " + feature["id"];
+            } else {
+                name = "Selected Feature";
+            }
         }
         this.panelHandler.setTitle("<h3>" + name + "</h2");
         document.getElementById("titleContainer").classList.add("clickable");
 
-
         // Description
-        let desc = feature["properties"]["description"];
-        if(desc === null && feature["properties"]["desc"]) {
-            desc = feature["properties"]["desc"];
+        let desc = properties["description"];
+        if(desc === null && properties["desc"]) {
+            desc = properties["desc"];
         }
         if(desc !== null && desc !== undefined) {
             this.panelHandler.setContent("<div class='description'>" + desc + "</div>");
@@ -244,9 +267,10 @@ class Manager {
             this.panelHandler.setContent("");
         }
 
-        // TODO
-        this.panelHandler.addSupportingData(feature);
+        // Retrieve and display meta and timeseries data
+        this.panelHandler.addSupportingData(feature, properties);
 
+        // Update buttons accordingly
         let metaTreeButton = document.getElementById("treeButton");
         let timeseriesButton = document.getElementById("timeButton");
 
@@ -486,14 +510,26 @@ class Manager {
      * @param feature 
      * @returns 
      */
-    public static findStack(feature: Object) {
-        let layer = feature["layer"]["id"];
+    public static findStack(feature, properties) {
+        // @ts-ignore
+        if(feature instanceof Cesium.Cesium3DTileFeature) {
+            // Feature within 3D tileset
+            let tileset = feature.tileset;
 
-        if(layer !== null && layer !== undefined) {
+        } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+            // WMS feature on cesium
+            return null;
 
-            for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
-                let layers = value as string[];
-                if(layers.includes(layer)) return stack;
+        } else {
+            // MapBox or WMS feature?
+            let layer = feature["layer"]["id"];
+
+            if(layer !== null && layer !== undefined) {
+
+                for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                    let layers = value as string[];
+                    if(layers.includes(layer)) return stack;
+                }
             }
         }
 

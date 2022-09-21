@@ -42,6 +42,7 @@ class MapHandler_MapBox extends MapHandler {
             MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
 
             // Create popup
+             // @ts-ignore
             MapHandler_MapBox.POPUP = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false,
