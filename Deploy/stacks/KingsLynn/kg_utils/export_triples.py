@@ -8,8 +8,7 @@
 
 import os
 from pathlib import Path
-from SPARQLWrapper import SPARQLWrapper, JSON, RDFXML
-from rdflib import Graph
+from SPARQLWrapper import SPARQLWrapper
 
 
 def get_all_triples(endpoint, filepath):
@@ -21,7 +20,7 @@ def get_all_triples(endpoint, filepath):
     sparql.setQuery(queryString)
     results = sparql.queryAndConvert()
     
-    results.serialize(filepath)
+    results.serialize(filepath, format='nt')
 
 
 if __name__ == '__main__':
@@ -29,7 +28,7 @@ if __name__ == '__main__':
     # Specify SPARQL query endpoint
     endpoint = "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql"
     # Output file for triples (relative path)
-    fp = r'outputs\triples.ttl'
+    fp = r'outputs\triples.nt'
 
     # Get all Triples and serialise as turtle
     file_name = os.path.join(Path(__file__).parent.parent, fp)
