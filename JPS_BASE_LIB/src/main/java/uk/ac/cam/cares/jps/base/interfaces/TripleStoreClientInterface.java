@@ -31,6 +31,8 @@ public interface TripleStoreClientInterface extends StoreClientInterface{
      */
     void insert(String graphName, String content, String contentType);
 
+
+
     // SPARQL Construct query methods
 
     /**
