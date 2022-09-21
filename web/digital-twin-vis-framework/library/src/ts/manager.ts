@@ -94,33 +94,36 @@ class Manager {
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
-        // this.controlHandler.showInfoPanel();
 
         // Override CTRL+F shortcut for feature searching (BETA)
-         let self = this;
-        document.addEventListener("keydown", function(e){
-            if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
-                if(self.searchUp) {
-                    self.hideSearch();
-                } else {
-                    self.showFeatureFinder();
-                }
-                e.preventDefault();
-            }
+        let searchBox = document.getElementById("finderContainer");
+        if(searchBox !== null) {
 
-            if(e.altKey && e.key === "Enter") {
-                self.toggleFullscreen();
-                console.log(MapHandler.MAP.camera.position);
-                
-                var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
-                var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
-                // @ts-ignore
-                var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
-                // @ts-ignore
-                var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-                console.log(longitudeString + ", " + latitudeString);
-            }
-        });
+            let self = this;
+            document.addEventListener("keydown", function(e){
+                if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
+                    if(self.searchUp) {
+                        self.hideSearch();
+                    } else {
+                        self.showFeatureFinder();
+                    }
+                    e.preventDefault();
+                }
+
+                if(e.altKey && e.key === "Enter") {
+                    self.toggleFullscreen();
+                    console.log(MapHandler.MAP.camera.position);
+                    
+                    var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
+                    var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
+                    // @ts-ignore
+                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
+                    // @ts-ignore
+                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
+                    console.log(longitudeString + ", " + latitudeString);
+                }
+            });
+        }
     }
 
     private toggleFullscreen() {

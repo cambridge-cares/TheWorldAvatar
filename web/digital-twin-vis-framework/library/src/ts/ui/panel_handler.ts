@@ -200,10 +200,8 @@ class PanelHandler {
         if(iri == null || stack == null) {
             console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
 
-            // ===== DEVELOPMENT TESTING ONLY =====
-            this.prepareMetaContainers(true, true);
-
             // Render metadata tree
+            this.prepareMetaContainers(true, false);
             document.getElementById("metaTreeContainer").innerHTML = "";
 
             // @ts-ignore
@@ -212,18 +210,6 @@ class PanelHandler {
             JsonView.expandChildren(metaTree);
             // @ts-ignore
             JsonView.selectiveCollapse(metaTree);
-
-            let self = this;
-            CesiumUtils.mockTimeseries().then(data => {
-                self.timeseriesHandler.parseData(data);
-                self.timeseriesHandler.showData("metaTimeContainer");
-
-                // Auto-select the first option in the dropdown
-                let select = document.getElementById("time-series-select") as HTMLInputElement;
-                select.onchange(null);
-            });
-            // ===== DEVELOPMENT TESTING ONLY =====
-
             return;
         }
 

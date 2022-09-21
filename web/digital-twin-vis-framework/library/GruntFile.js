@@ -10,8 +10,7 @@ module.exports = function (grunt) {
                     "./output/ts/mapbox/*.js",
                     "./output/ts/cesium/*.js"
                 ],
-                //dest: "./output/dtvf.temp.js"
-                dest: "./output/dtvf.min.js"
+                dest: "./output/dtvf.temp.js"
             }
         },
         uglify: {
@@ -53,6 +52,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean");
 
     // Register Tasks
-    // grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean"]);
-    grunt.registerTask("package", ["concat", "cssmin"]);
+    grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean"]);
 }
