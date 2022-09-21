@@ -8,3 +8,7 @@ Spin up Docker container using the provided `docker-compose.yml` file.This shall
 ```
 docker-compose -f "docker-compose.yml" up
 ```
+
+## Exporting online Blazegraph namespace
+
+The `export_triples.py` script can be used to export all triples from a specified Blazegraph endpoint and serialse them as Turtle in the `outputs` folder (file name will be `triples.ttl`)
