@@ -149,7 +149,9 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
 def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                                        ocgml_endpoint=OCGML_ENDPOINT,
                                        query_endpoint=QUERY_ENDPOINT, 
-                                       update_endpoint=UPDATE_ENDPOINT):
+                                       update_endpoint=UPDATE_ENDPOINT,
+                                       kgclient_epc=None, kgclient_ocgml=None,
+                                       summarise=True):
     """
     Retrieves EPC data for provided list of postcodes from given endpoint and 
     instantiates them in the KG according to OntoBuiltEnv
@@ -159,6 +161,8 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         epc_endpoint (str) - EPC endpoint from which to retrieve data
                              ['domestic', 'non-domestic', 'display']
         ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
+        kgclient - KG Client to interact with OntoBuiltEnv SPARQL endpoint
+        summarise (bool) - boolean flag whether to summarise EPC data for parent buildings
     Returns:
         Tuple of newly instantiated and updated EPCs (new, updated)
         Tuple of newly summarized and updated EPC summaries (new, updated)
@@ -167,6 +171,8 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     # Initialise return values
     new_epcs = 0
     updated_epcs = 0
+    new_summaries = 0
+    updated_summaries = 0
     
     # Retrieve DataFrame with EPC data
     logger.info('Retrieving EPC data from API ...')
@@ -174,8 +180,10 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     n_epcs = len(epc_data)
 
     # Initialise KG clients
-    kgclient_epc = KGClient(query_endpoint, update_endpoint)
-    kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+    if not kgclient_epc:
+        kgclient_epc = KGClient(query_endpoint, update_endpoint)
+    if not kgclient_ocgml:
+        kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
     # Iterate through DataFrame
     for index, row in epc_data.iterrows():
@@ -270,8 +278,9 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     else:
         logger.info('No EPC data available for provided lodgement identifier.')
 
-    # Potentially "summarise" EPCs for parent buildings
-    new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc)    
+    if summarise:
+        # Potentially "summarise" EPCs for parent buildings
+        new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc)    
 
     return (new_epcs, updated_epcs), (new_summaries, updated_summaries)
 
@@ -292,22 +301,45 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
         Tuple of newly instantiated and updated EPCs (new, updated)
     """
 
+    # Initialise return values
+    all_epcs = (0, 0)
+    all_summaries = (0, 0)
+
+    # Initialise KG clients
+    kgclient_epc = KGClient(query_endpoint, update_endpoint)
+    kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+
     # Retrieve instantiated postcodes from KG
-    kgclient = KGClient(query_endpoint, update_endpoint)
     query = instantiated_postalcodes()
-    res = kgclient.performQuery(query)
+    res = kgclient_epc.performQuery(query)
     postcodes = [r['postcode'] for r in res]
     postcodes = [p for p in postcodes if p]
 
-    # TODO: remove
-    postcodes = postcodes[:500]
+    # Split list of postcodes in chunks of max. size n
+    n = 500
+    postcodes = [postcodes[i:i + n] for i in range(0, len(postcodes), n)]
+    
+    i = 0
+    for pc in postcodes:
+        i += 1
+        print(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
 
-    # Instantiate EPC data for all postcodes
-    epcs, summaries = instantiate_epc_data_for_postcodes(postcodes, epc_endpoint, 
-                            ocgml_endpoint, query_endpoint, update_endpoint)
+        # Instantiate EPC data for postcodes
+        epcs, _ = instantiate_epc_data_for_postcodes(postcodes=pc,
+                                epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
+                                query_endpoint=query_endpoint, update_endpoint=update_endpoint,
+                                kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
+                                summarise=False)
+
+        # Update number of amended EPC instances
+        all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
+
+    # Summarise EPCs for parent building
+    summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc)  
+    all_summaries = tuple([sum(x) for x in zip(all_summaries, summaries)])    
     
     # Return number of newly instantiated and updated EPCs (single and summaries)
-    return (epcs, summaries)
+    return (all_epcs, all_summaries)
 
 
 def condition_epc_data(data):
