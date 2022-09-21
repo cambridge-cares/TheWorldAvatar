@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -98,7 +98,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	 * @return url
 	 */
 	@Override
-	public String getFromStore(String agentID, StoreClientInterface storeClient) {
+	public String getFromStore(String agentID, TripleStoreClientInterface storeClient) {
 		
 		LOGGER.debug("Get URL from triple store. AgentID="+agentID);
 		
@@ -122,7 +122,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	}
 	
 	@Override
-	public StoreClientInterface getStoreClient() {
+	public TripleStoreClientInterface getStoreClient() {
 		return new RemoteStoreClient(agentRouterEndpoint);
 	}
 	

@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 /**
@@ -86,7 +86,7 @@ public class StoreRouter{
 	static StoreRouter storeRouter = null;	
 	
 	/**
-	 * Returns a StoreClientInterface object based on a target resource ID
+	 * Returns a TripleStoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
 	 * supports two types of resources: <br> (a) a repository/namespace and <br>
 	 * (b) an ontology/rdf file. <br> Some examples of these resources are provided below:<br>
@@ -106,11 +106,11 @@ public class StoreRouter{
 	 * Note: both query and update operations can be true at the same time.
 	 * @return StoreClient
 	 */
-	public static StoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static TripleStoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
 		
 		String queryIRI = null;
 		String updateIRI = null;
-		StoreClientInterface kbClient = null;
+		TripleStoreClientInterface kbClient = null;
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
