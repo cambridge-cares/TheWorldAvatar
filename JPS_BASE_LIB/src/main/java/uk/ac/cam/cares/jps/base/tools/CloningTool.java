@@ -12,7 +12,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This class implements a cloning tool. 
+ * This class implements a cloning tool for Triple Stores. 
+ * ** Do not use with quads. **  
  * On large stores cloning is performed step-wise with an overlap between each step.
  * <p>
  * <b>How it works:</b>
