@@ -10,8 +10,8 @@ is the complete IRI of the OntoCityGML namespace.
 
 Example input: <br/>
 {<br/>
-&emsp; "ocgml": "http:<span></span>//host.docker.internal:48080/kings-lynn", <br/>
-&emsp; "obe": "http:<span></span>//host.docker.internal:48080/ontobuiltenv", <br/>
+&emsp; "ocgml": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql", <br/>
+&emsp; "obe": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/ontobuiltenv/sparql", <br/>
 &emsp; "prefixIRI": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/" <br/>
 }
 
@@ -29,23 +29,7 @@ The following prerequisites are required before running the Building Matching Ag
 2. On the OntoCityGML namespace, run the [Thematic Surface Discovery Agent](https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/README.md#thematic-surface-discovery-agent-user-guide) in the restructure mode followed 
 by the [UPRN agent](https://github.com/cambridge-cares/CitiesKG/blob/uprn-agent/agents/src/main/resources/uprn_HTTPRequest.http). <br/>
 This step is used to link a building in OntoCityGML to its corresponding UPRN(s).
-3. Access Agent to be deployed locally via Docker to access your local blazegraph. 
-   1. Set up a Docker environment as described in the [TWA Wiki - Docker: Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment) page. 
-   2. In the TWA repository clone, locate the properties file in _TheWorldAvatar/JPS_ACCESS_AGENT/access-agent/src/main/resources/accessagent.properties_, and replace `http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql` with `http://host.docker.internal:9999/blazegraph/namespace/ontokgrouter/sparql`.
-   If using a different port for Blazegraph, replace `9999` with your port number. 
-   3. In your local Blazegraph, create a new namespace called 'ontokgrouter'. 
-   4. For each endpoint to be accessed, 5 triples need to be added to the 'ontokgrouter' namespace. An example SPARQL update is shown, which inserts the triples required to access a namespace 'test' in a local Blazegraph on port 9999. Replace all occurrences of `test` with the name of the namespace and `9999` with your port number, and execute the SPARQL update.
-   ```
-   INSERT DATA {
-   <http://host.docker.internal:9999/blazegraph/ontokgrouter/test>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://host.docker.internal:9999/blazegraph/namespace/test/sparql".
-   <http://host.docker.internal:9999/blazegraph/ontokgrouter/test>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://host.docker.internal:9999/blazegraph/namespace/test/sparql".
-   <http://host.docker.internal:9999/blazegraph/ontokgrouter/test>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
-   <http://host.docker.internal:9999/blazegraph/ontokgrouter/test>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
-   <http://host.docker.internal:9999/blazegraph/ontokgrouter/test>	<http://www.w3.org/2000/01/rdf-schema#label> "test".
-   }
-   ```
-   5. In this repository, locate the agents properties file in _agents/src/main/resources/config.properties_, and set the uri.route to `http://localhost:48080/access-agent/access/test`, replacing `test` with the name of the namespace to connect to. 
-   6. Build and deploy the AccessAgent as described in the README of the [JPS_ACCESS_AGENT directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) in the TWA repository.
+
 
 ### Building the <i>Building Matching Agent</i>
 1. The Building Matching Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
@@ -73,8 +57,8 @@ An example request is shown below.
 PUT http://localhost:58085/BuildingMatchingAgent/match
 Content-Type: application/json
 {
-  "ocgml": "http://host.docker.internal:48080/kings-lynn",
-  "obe": "http://host.docker.internal:48080/ontobuiltenv",
+  "ocgml": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql",
+  "obe": "http://127.0.0.1:9999/blazegraph/namespace/ontobuiltenv/sparql",
   "prefixIRI":"http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
 }
 ```
