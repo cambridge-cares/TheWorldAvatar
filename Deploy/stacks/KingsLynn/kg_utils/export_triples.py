@@ -4,7 +4,7 @@
 ################################################
 
 # This module extracts all triples from an online Blazegraph SPARQL endpoint 
-# and saves them as .ttl file
+# and saves them as .nt file
 
 import os
 from pathlib import Path
@@ -33,6 +33,3 @@ if __name__ == '__main__':
     # Get all Triples and serialise as turtle
     file_name = os.path.join(Path(__file__).parent.parent, fp)
     get_all_triples(endpoint, file_name)
-
-
-
