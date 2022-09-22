@@ -54,7 +54,7 @@ public class ModsSimpleAgentApplication {
 
         sim.run();
 
-        sim.save();
+        sim.saveWhenFinished();
 
         Request reponse = sim.getResponse();
 

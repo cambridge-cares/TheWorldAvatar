@@ -2,16 +2,17 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.FileUtils;
-
+import com.cmclinnovations.mods.api.MoDSAPI;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataSeparateFiles;
@@ -25,20 +26,25 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 public class Simulation {
+
+    private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
 
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
-    public static final String DEFAULT_HDMR_ALGORITHM_NAME = "HDMR";
+    public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
 
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
-    private static final String DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = ".\\Saved_Surrogates\\";
-
-    private static final String DEFAULT_SURROGATE_DIRECTORY_NAME = "GenSurrogateAlg";
+    private static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("SavedSurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
@@ -261,25 +267,48 @@ public class Simulation {
         modsBackend.run();
     }
 
+    public void saveWhenFinished() {
+        String simDir = getModsBackend().getSimDir().toString();
+        String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME; 
+
+        
+        Thread t = new Thread(() -> {
+            try {
+                while (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
+                    if (!modsBackend.isAlive()) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "The job '" + getModsBackend().getJobID()
+                                        + "' has not been run or has failed to run correctly so could not save.");
+                    }
+                    Thread.sleep(100);
+                }
+                save();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();      
+            } catch (FileGenerationException ex) {
+                throw new ResponseStatusException(
+                            HttpStatus.NO_CONTENT,
+                            "The job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+            } 
+        });
+
+        t.start();
+    }
+
     public void save() throws FileGenerationException{
         for(Algorithm algorithm : request.getAlgorithms()) {
             if(algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()){
-                try{
-
-                    File saveDirectory = new File(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH + modsBackend.getJobID() + "\\" + DEFAULT_SURROGATE_DIRECTORY_NAME);
-                    File surrogateDirectory = new File(modsBackend.getSimDir().toString() + "\\" + DEFAULT_SURROGATE_DIRECTORY_NAME);
-
-                    if (!saveDirectory.exists()) {
-                        saveDirectory.mkdir();
-                    };
-
-                    FileUtils.copyDirectory(surrogateDirectory, saveDirectory);
-                } catch (IOException ex) {
-                    throw new FileGenerationException(
-                            "Failed to save surrogate.", ex);
-                }
                 
-            };
+                Path saveDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+                Path surrogateDirectory = modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+
+                    
+
+                copyDirectory(surrogateDirectory, saveDirectory); 
+                
+                LOGGER.info("Surrotage saved at '{}'.", saveDirectory.toAbsolutePath());
+            }
         }
     }
 
@@ -288,19 +317,47 @@ public class Simulation {
             if(algorithm.getLoadSurrogate() != null){
                 try{
 
-                    File loadDirectory = new File(modsBackend.getSimDir().toString());
-                    File surrogateDirectory = new File(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH + algorithm.getLoadSurrogate());
+                    Path loadDirectory = modsBackend.getSimDir();
+                    Path surrogateDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getLoadSurrogate());
 
-                    FileUtils.copyDirectory(surrogateDirectory, loadDirectory);
+                    if(!Files.exists(surrogateDirectory)) {
+                        throw new IOException("File '" + surrogateDirectory + "' could not be found to load.");
+                    }
+                    
+                    copyDirectory(surrogateDirectory, loadDirectory);
+
                 } catch (IOException ex) {
                     throw new FileGenerationException(
                             "Failed to load surrogate.", ex);
                 }
-                
-            };
+            }
         }
     }
 
+    private void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException{
+        try(Stream<Path> stream = Files.walk(sourceDirectory)) {
+
+            if(!Files.exists(destinationDirectory)) {
+                Files.createDirectories(destinationDirectory);
+            }
+
+            stream.filter(Files::isRegularFile).forEach(source -> {
+                Path destination = destinationDirectory.resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
+                try{
+                    Files.copy(source, destination);
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(
+                        HttpStatus.NO_CONTENT,
+                        "The job '" + getModsBackend().getJobID() + "' failed to copy '"
+                        + destinationDirectory + "` to `"+ sourceDirectory +"'.", ex);
+                    }
+                }
+            );
+        } catch (IOException ex) {
+                throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory 
+                + "' or in creating destination directory '" + destinationDirectory + "'.", ex);
+            }
+        }
 
     public final Request getResponse() {
         Request response = new Request();

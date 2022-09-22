@@ -30,7 +30,7 @@ class MOOonly extends Simulation {
 
     @Override
     protected Algorithm getPrimaryAlgorithm() {
-        return getAlgorithmOfType("MOOonly");
+        return getAlgorithmOfType("MOO");
     }
 
     @Override

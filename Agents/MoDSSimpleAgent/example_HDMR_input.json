@@ -2,7 +2,7 @@
 	"SimulationType": "HDMR",
 	"Algorithms": [{
 			"name": "algorithm1",
-			"type": "HDMR",
+			"type": "GenSurrogateAlg",
 			"maxNumberOfResults": 10,
 			"saveSurrogate": true,
 			"variables": [{

@@ -30,7 +30,7 @@ class HDMR extends Simulation {
 
     @Override
     protected Algorithm getPrimaryAlgorithm() {
-        return getAlgorithmOfType("HDMR");
+        return getAlgorithmOfType("GenSurrogateAlg");
     }
 
     @Override
@@ -49,7 +49,7 @@ class HDMR extends Simulation {
     public Request getResults() {
 
         String simDir = getModsBackend().getSimDir().toString();
-        String algorithmName = Simulation.DEFAULT_HDMR_ALGORITHM_NAME;
+        String algorithmName = Simulation.DEFAULT_SURROGATE_ALGORITHM_NAME;
 
         if (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
             throw new ResponseStatusException(

@@ -2,9 +2,9 @@
 	"SimulationType": "MOOonly",
 	"Algorithms": [{
 			"name": "algorithm1",
-			"type": "MOOonly",
+			"type": "MOO",
 			"maxNumberOfResults": 10,
-			"loadSurrogate": "mods-sim-2620877660752367456",
+			"loadSurrogate": "mods-sim-9870752618649687266",
 			"variables": [{
 					"name": "var1",
 					"type": "input"
