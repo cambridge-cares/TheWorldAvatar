@@ -20,6 +20,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 import java.util.*;
 
 @WebServlet(urlPatterns = {BuildingMatchingAgent.URI_LISTEN})
@@ -63,6 +65,7 @@ public class BuildingMatchingAgent extends JPSAgent {
     private static String targetResourceId_obe = null;
     private static String bldgGraph = null;
     private static String surfGeomGraph = null;
+    private static String identifiersGraph = null;
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -91,6 +94,7 @@ public class BuildingMatchingAgent extends JPSAgent {
                 targetResourceId_obe = requestParams.getString(KEY_OBE);
                 bldgGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"building/" :  requestParams.getString(KEY_PREFIXIRI)+"/building/";
                 surfGeomGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"surfacegeometry/" :  requestParams.getString(KEY_PREFIXIRI)+"/surfacegeometry/";
+                identifiersGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"identifiers" :  requestParams.getString(KEY_PREFIXIRI)+"/identifiers";
             }
             return true;
         }
@@ -108,10 +112,14 @@ public class BuildingMatchingAgent extends JPSAgent {
             e.printStackTrace();
         }
 
-        JSONArray ocgml_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, selectBuilder_ocgml.buildString());
+        RemoteStoreClient ocgml_client = new RemoteStoreClient(targetResourceId_ocgml);
+//        JSONArray ocgml_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, selectBuilder_ocgml.buildString());
+        JSONArray ocgml_result = ocgml_client.executeQuery(selectBuilder_ocgml.buildString());
         HashMap<String, String> ontocitygml = createOcgmlMapping(ocgml_result);
 
-        JSONArray obe_result = AccessAgentCaller.queryStore(targetResourceId_obe, selectBuilder_obe.buildString());
+        RemoteStoreClient obe_client = new RemoteStoreClient(targetResourceId_obe, targetResourceId_obe);
+//        JSONArray obe_result = AccessAgentCaller.queryStore(targetResourceId_obe, selectBuilder_obe.buildString());
+        JSONArray obe_result = obe_client.executeQuery(selectBuilder_obe.buildString());
         HashMap<String, ArrayList> ontobuilenv = createObeMapping(obe_result);
 
         UpdateBuilder insertion = new UpdateBuilder();
@@ -144,7 +152,8 @@ public class BuildingMatchingAgent extends JPSAgent {
                 insertion.addInsert(triple);
                 try {
                     SelectBuilder geom_query = getGeomQuery(ocgml_bldg);
-                    JSONArray geom_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, geom_query.buildString());
+//                    JSONArray geom_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, geom_query.buildString());
+                    JSONArray geom_result = ocgml_client.executeQuery(geom_query.buildString());
                     if (geom_result.length()>1){
                         Double xsum = 0.0;
                         Double ysum = 0.0;
@@ -183,27 +192,37 @@ public class BuildingMatchingAgent extends JPSAgent {
             }
         }
 
-        AccessAgentCaller.updateStore(targetResourceId_obe, new UpdateRequest().add(insertion.build()).toString());
-        AccessAgentCaller.updateStore(targetResourceId_obe, new UpdateRequest().add(insertion_centroid.build()).toString());
+        obe_client.executeUpdate(new UpdateRequest().add(insertion.build()).toString());
+        obe_client.executeUpdate(new UpdateRequest().add(insertion_centroid.build()).toString());
     }
 
     private static SelectBuilder ocgmlQueryBuilder() throws ParseException {
-        WhereBuilder where = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addWhere(QM+BLDG, KEY_OCGML+":objectClassId",  "26");
+//        WhereBuilder where = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addWhere(QM+BLDG, KEY_OCGML+":objectClassId",  "26");
+//
+//        return new SelectBuilder().setDistinct(true)
+//                .addPrefix(KEY_OCGML, ocgmlUri).addPrefix("osid", osidUri)
+//                .addVar(QM+BLDG).addVar(QM+uprn)
+//                .addGraph(NodeFactory.createURI(bldgGraph), where)
+//                .addBind("IRI(REPLACE(str("+QM+BLDG+"), \"building\", \"cityobject\"))", QM+CITYOBJ)
+//                .addWhere(QM+ATTR, "osid:intersectsFeature" , QM+CITYOBJ)
+//                .addWhere(QM+ATTR, "osid:hasValue", QM+uprn).addOrderBy(QM+BLDG);
+        WhereBuilder where = new WhereBuilder().addPrefix("osid", osidUri).addWhere("?cityobj", "^osid:intersectsFeature/osid:hasValue",  "?uprn");
 
-        return new SelectBuilder().setDistinct(true)
-                .addPrefix(KEY_OCGML, ocgmlUri).addPrefix("osid", osidUri)
+        return   new SelectBuilder().setDistinct(true)
+                .addPrefix(KEY_OCGML, ocgmlUri)
                 .addVar(QM+BLDG).addVar(QM+uprn)
-                .addGraph(NodeFactory.createURI(bldgGraph), where)
-                .addBind("IRI(REPLACE(str("+QM+BLDG+"), \"building\", \"cityobject\"))", QM+CITYOBJ)
-                .addWhere(QM+ATTR, "osid:intersectsFeature" , QM+CITYOBJ)
-                .addWhere(QM+ATTR, "osid:hasValue", QM+uprn).addOrderBy(QM+BLDG);
+                .addGraph(NodeFactory.createURI(identifiersGraph), where)
+                .addBind("IRI(REPLACE(str("+QM+"cityobj"+"), \"cityobject\", \"building\"))", QM+BLDG)
+                .addGraph(NodeFactory.createURI(bldgGraph), QM+BLDG, KEY_OCGML+":objectClassId", "26")
+                .addOrderBy(QM+BLDG);
+
     }
 
     private static SelectBuilder obeQueryBuilder() throws ParseException {
         WhereBuilder inner_where = new WhereBuilder()
                 .addPrefix("dabgeo", dabgeoUri).addPrefix(KEY_OBE, obeUri)
                 .addWhere(QM+BLDG, "a", "dabgeo:Building")
-                .addFilter("EXISTS { "+QM+BLDG+"^obe:isIn "+QM+FLAT+" }")
+                .addWhere(QM+BLDG, "^obe:isIn ", QM+FLAT)
                 .addWhere(QM+FLAT, "obe:hasIdentifier", QM+uprn);
 
         WhereBuilder where = new WhereBuilder()
