@@ -15,24 +15,37 @@ from rdflib import Graph
 
 def upload_all_triples(endpoint, filepath):
 
-    # Read serialized triples
-    with open(filepath, 'r') as f:
-        triples = f.read()
-    # Create INSERT DATA update
-    insert_data = f'INSERT DATA {{ {triples} }}'
-
     # Initialise SPARQL wrapper
     sparql = SPARQLWrapper(endpoint)
     sparql.setMethod('POST')
-    sparql.setQuery(insert_data)
 
-    # Upload data
-    results = sparql.query()
+    # Read serialized triples
+    with open(filepath, 'r') as f:
+        triples = f.readlines()
 
-    if results.response.code == 200:
-        print('Triple upload successfully finished!')
-    else:
-        raise Exception('Triple upload unsuccessful.')
+    # Split data in chunks to avoid memory issues (i.e. number of triples per upload)
+    # NOTE: SPARQLWrapper SPARQL update quite size limited, i.e. having issues
+    #       with chunk sizes > 2500 triples
+    n = 2500
+    chunks = [triples[i:i + n] for i in range(0, len(triples), n)]
+
+    i = 1
+    for c in chunks:
+        print(f'Uploading batch {i:>3}/{len(chunks):>3}.')
+        i += 1
+
+        insert_triples = ' '.join(c)
+        # Create INSERT DATA update
+        insert_data = f'INSERT DATA {{ {insert_triples} }}'
+        sparql.setQuery(insert_data)
+
+        # Upload data
+        results = sparql.query()
+
+        if results.response.code == 200:
+            print('Triple upload successfully finished!')
+        else:
+            raise Exception('Triple upload unsuccessful.')
 
 
 if __name__ == '__main__':
