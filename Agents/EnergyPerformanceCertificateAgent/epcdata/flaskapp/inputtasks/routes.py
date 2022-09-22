@@ -35,7 +35,7 @@ def api_initialise_kb():
         logger.warning("Query parameters provided, although not required. \
                         Provided arguments will be neglected.")
     try:
-        # Create OntoCityGml namespace
+        # Create OntoBuiltEnv namespace
         create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, 
                                     quads=False, geospatial=False)
         # Initialise KB

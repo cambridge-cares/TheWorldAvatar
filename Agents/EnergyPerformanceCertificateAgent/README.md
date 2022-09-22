@@ -6,7 +6,7 @@ It is designed to interact with the stack spun up by the stack manager.
 
 <span style="color:red">Tests are currently still excluded.</span>
 <br/><br/>
-
+<span style="color:red">The current version of the agent (i.e. commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
 
 # 1. Setup
 
@@ -152,12 +152,14 @@ An overview of all provided API endpoints and their functionality is provided af
 
 # 3. Current EPC data instantiation workflow
 
+The following workflow refers to the state of the agent as of commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac.
+
 ### **1) Ensure instantiated OtoCityGml building data is available**
 The agent requires an available SPARQL endpoint to retrieve instantiated OntoCityGml building data (i.e. EPC data will only be instantiated for buildings with an OntoCityGml representation). This endpoint is specified as `OCGML_ENDPOINT` in the [docker compose file].
 In case the quad data is not already available via a SPARQL endpoint, the following steps can be used:
 
 1) Export OntoCityGml quads from local Blazegraph and unzip file. Rename file to `data.nq` and place it into the `data` folder within this agent.
-2) Spin up a remotely hosted Docker container with a Blazegraph image. Using SSH in VSCode (as described in section 1.4), this can be achied using the provided `blazegraph_ocgml/docker-compose.yml` file and the following command:
+2) Spin up a remotely hosted Docker container with a Blazegraph image. Using SSH in VSCode (as described in section 1.4), this can be achied using the provided `./resources/blazegraph_ocgml/docker-compose.yml` file and the following command:
     ```bash
     docker-compose -f "docker-compose.yml" up
     ```
@@ -165,15 +167,47 @@ In case the quad data is not already available via a SPARQL endpoint, the follow
 3) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
 
 ### **2) Initialise namespace for EPC building data**
+
 1) Create `buildings` namespace and upload TBox and ABox .owl files by sending `POST` request to `/api/epcagent/initialise`
 2) Instantiate all relevant postcode instances by sending `POST` request to `/api/epcagent/instantiate/postcodes`
 
 ### **3) Instantiate all EPC building data**
+
 Instantiate EPC data for all instantiated UPRNs (and postcodes) send `POST` request to `/api/epcagent/instantiate/certificates/all`
 
 ### **4) Run Building Matching Agent**
 
-### **5) Update geospatial representation of buildings in OntoBuiltEnv namespace**
+The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit 7100e8466daf6cf1cb56fe86d7c7e3fbf0f922b1. More details can be found in the [Building Matching Readme]:
+
+1) Ensure both SPARQL endpoints, i.e. one containing buildings instantiated in OntoCityGML (`ocgml_endpoint`) and one with their OntoBuiltEnv counterparts (`epc_endpoint`), are available. In the following, let's assume the endpoints are:
+
+    > ocgml endpoint: http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql
+
+    > epc_endpoint: http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql
+
+2) Follow the [Access Agent Readme] to deploy the Access Agent locally within a Docker container. Once the agent is available (at the default port 48888), upload the KG routing information for both endpoints. A `routing_json` template for the endpoints mentioned above can be found in the `./resources/access_agent` folder. From that directory, simply run the following command to upload the routing information:
+    ```
+    bash ./uploadRouting.sh
+    ```
+
+3) Build and start the agent as Docker container by running the following command within the directory where the [Building Matching Readme] is located. Please note that your github username and access token need to be provided as single-word text files `repo_username.txt` and `repo_password.txt` in the [credentials] folder of the Building Matching agent.
+    ```
+    docker-compose up -d
+    ```
+
+4) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
+    ```json
+    { "ocgml": "http://host.docker.internal:48888/ocgml",
+      "buildings": "http://host.docker.internal:48888/buildings",
+      "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+    }
+    ```
+An [example request] to match the building instances in the previously introduced SPARQL endpoints is also provided.
+
+### **5) Update building height information**
+
+
+### **6) Update geospatial representation of buildings in OntoBuiltEnv namespace**
 
 
 &nbsp;
@@ -185,7 +219,6 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 <!-- Links -->
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Container registry on Github]: ghcr.io
 [EPC APIs]: https://epc.opendatacommunities.org/docs/api
@@ -193,19 +226,26 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [http://localhost:5000/]: http://localhost:5000/
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
-[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+
+<!-- github -->
+[Access Agent Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
+[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
+[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- files -->
 [Dockerfile]: Dockerfile
 [docker compose file]: docker-compose.yml
 [resources]: resources
 [stack.sh]: stack.sh
+[example request]: resources\matching_agent\HTTPRequest_MatchingAgent.http

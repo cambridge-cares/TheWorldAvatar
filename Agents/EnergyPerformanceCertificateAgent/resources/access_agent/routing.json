@@ -1,0 +1,12 @@
+[
+	{
+		"label": "ocgml",
+		"queryEndpoint": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql",
+		"updateEndpoint": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql"
+	},
+	{
+		"label": "buildings",
+		"queryEndpoint": "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql",
+		"updateEndpoint": "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql"
+	}
+]
