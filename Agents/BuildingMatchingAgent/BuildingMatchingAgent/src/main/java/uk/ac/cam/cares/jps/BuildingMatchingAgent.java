@@ -31,6 +31,7 @@ public class BuildingMatchingAgent extends JPSAgent {
     public static final String URI_LISTEN = "/match";
     public static final String KEY_OCGML = "ocgml";
     public static final String KEY_OBE = "obe";
+    public static final String KEY_OSID = "osid";
     public static final String KEY_PREFIXIRI = "prefixIRI";
 
     private static final Logger LOGGER = LogManager.getLogger(BuildingMatchingAgent.class);
@@ -47,7 +48,6 @@ public class BuildingMatchingAgent extends JPSAgent {
     private static final String BLDG = "bldg";
     private static final String uprn = "uprn";
     private static final String CITYOBJ = "cityobj";
-    private static final String ATTR = "attr";
     private static final String QM ="?";
     private static final String FLAT = "flat";
     private static final String SURF_GEOM = "surf_geom";
@@ -206,13 +206,13 @@ public class BuildingMatchingAgent extends JPSAgent {
 //                .addBind("IRI(REPLACE(str("+QM+BLDG+"), \"building\", \"cityobject\"))", QM+CITYOBJ)
 //                .addWhere(QM+ATTR, "osid:intersectsFeature" , QM+CITYOBJ)
 //                .addWhere(QM+ATTR, "osid:hasValue", QM+uprn).addOrderBy(QM+BLDG);
-        WhereBuilder where = new WhereBuilder().addPrefix("osid", osidUri).addWhere("?cityobj", "^osid:intersectsFeature/osid:hasValue",  "?uprn");
+        WhereBuilder where = new WhereBuilder().addPrefix(KEY_OSID, osidUri).addWhere(QM+CITYOBJ, "^"+KEY_OSID+":intersectsFeature/"+KEY_OSID+":hasValue",  QM+uprn);
 
         return   new SelectBuilder().setDistinct(true)
                 .addPrefix(KEY_OCGML, ocgmlUri)
                 .addVar(QM+BLDG).addVar(QM+uprn)
                 .addGraph(NodeFactory.createURI(identifiersGraph), where)
-                .addBind("IRI(REPLACE(str("+QM+"cityobj"+"), \"cityobject\", \"building\"))", QM+BLDG)
+                .addBind("IRI(REPLACE(str("+QM+CITYOBJ+"), \"cityobject\", \"building\"))", QM+BLDG)
                 .addGraph(NodeFactory.createURI(bldgGraph), QM+BLDG, KEY_OCGML+":objectClassId", "26")
                 .addOrderBy(QM+BLDG);
 
