@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -48,12 +46,12 @@ public abstract class DataSubset {
         return skip;
     }
 
-    public abstract void loadData(GDALClient gdalClient, String dataSubsetDir, String database);
+    public abstract void loadData(String dataSubsetDir, String database);
 
-    public abstract void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
+    public abstract void createLayer(String dataSubsetDir, String workspaceName,
             String database);
 
-    public void runSQLPostProcess(PostGISClient postGISClient, String database) {
+    public void runSQLPostProcess(String database) {
         if (null != sql) {
 
             if (sql.startsWith("@")) {
@@ -66,7 +64,7 @@ public abstract class DataSubset {
                 }
             }
 
-            postGISClient.executeUpdate(database, sql);
+            PostGISClient.getInstance().executeUpdate(database, sql);
         }
     }
 }

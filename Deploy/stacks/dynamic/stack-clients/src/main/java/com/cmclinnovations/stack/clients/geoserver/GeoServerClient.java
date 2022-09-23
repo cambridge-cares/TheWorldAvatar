@@ -35,7 +35,16 @@ public class GeoServerClient extends ContainerClient {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
-    public GeoServerClient() {
+    private static GeoServerClient instance = null;
+
+    public static GeoServerClient getInstance() {
+        if (null == instance) {
+            instance = new GeoServerClient();
+        }
+        return instance;
+    }
+
+    private GeoServerClient() {
         this(null, null, null);
     }
 
@@ -148,7 +157,7 @@ public class GeoServerClient extends ContainerClient {
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coveragestore '{}' already exists.", name);
         } else {
-            new PostGISClient().createDatabase(database);
+            PostGISClient.getInstance().createDatabase(database);
 
             String containerId = getContainerId("geoserver");
 

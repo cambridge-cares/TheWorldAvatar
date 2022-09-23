@@ -17,15 +17,17 @@ public class Vector extends DataSubset {
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @Override
-    public void loadData(GDALClient gdalClient, String datasetDir, String database) {
+    public void loadData(String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
-        gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+        GDALClient.getInstance()
+                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
-    public void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
+    public void createLayer(String dataSubsetDir, String workspaceName,
             String database) {
-        geoServerClient.createPostGISLayer(dataSubsetDir, workspaceName, database, getName(), geoServerSettings);
+        GeoServerClient.getInstance()
+                .createPostGISLayer(dataSubsetDir, workspaceName, database, getName(), geoServerSettings);
     }
 
 }

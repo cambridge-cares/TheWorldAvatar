@@ -19,8 +19,8 @@ public class TempTestCalls {
 
         StackClient.uploadInputDatasets();
 
-        GDALClient gdalClient = new GDALClient();
-        PostGISClient postGISClient = new PostGISClient();
+        GDALClient gdalClient = GDALClient.getInstance();
+        PostGISClient postGISClient = PostGISClient.getInstance();
 
         String rasterDatabase = "rasters";
         postGISClient.createDatabase(rasterDatabase);
