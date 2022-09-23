@@ -31,6 +31,8 @@ public class Stack {
 
         manager.initialiseService(name, "gdal");
 
+        manager.initialiseService(name, "citydbimpexp");
+
         manager.initialiseService(name, "geoserver");
 
     }
