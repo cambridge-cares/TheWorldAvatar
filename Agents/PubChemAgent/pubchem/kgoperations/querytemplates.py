@@ -67,14 +67,25 @@ def ontospecies_data_query(osIRI):
         PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         PREFIX otk: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
-        SELECT ?mol_weight ?chem_formula ?enthalpy_ref
+        SELECT ?MolecularWeight ?MolecularFormula ?enthalpy_ref
                ?enthalpy_ref_unit ?enthalpy_ref_temp
                ?enthalpy_ref_temp_unit ?enthalpy_ref_prov
+               ?InChI ?CID ?SMILES ?InChIKey
         WHERE {
             <#osIRI#> os:hasMolecularWeight ?y .
-            ?y os:value ?mol_weight .
-            <#osIRI#> rdfs:label ?chem_formula .
-            FILTER (!REGEX(str(?chem_formula), "Species", "i"))
+            ?y os:value ?MolecularWeight .
+            <#osIRI#> rdfs:label ?MolecularFormula .
+            <#osIRI#> os:inChI ?InChI .
+            OPTIONAL{
+                <#osIRI#> os:pubChemCID ?CID .
+            }
+            OPTIONAL{
+                <#osIRI#> os:SMILES ?SMILES .
+            }
+            OPTIONAL{
+                <#osIRI#> os:inChIKey ?inChIKey .
+            }
+            FILTER (!REGEX(str(?MolecularFormula), "Species", "i"))
 
             OPTIONAL {
                 <#osIRI#> os:hasStandardEnthalpyOfFormation ?standardEnthalpyOfFormation .
