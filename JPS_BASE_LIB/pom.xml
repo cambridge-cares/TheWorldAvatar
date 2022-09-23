@@ -9,8 +9,7 @@
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
 
-
-    <version>1.14.0</version>
+    <version>1.15.0</version>
 
     <!-- Project Properties -->
     <properties>
@@ -300,6 +299,14 @@
             <version>0.10.9.1</version>
         </dependency>
 
+		<!-- For BlazegraphRepositoryWrapper -->
+		<!-- https://mvnrepository.com/artifact/com.blazegraph/bigdata-core -->
+		<dependency>
+			<groupId>com.blazegraph</groupId>
+			<artifactId>bigdata-core</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+		
         <!-- Following RDF4J dependencies are added for enabling the federated query
 		feature supported by FedX-->
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
