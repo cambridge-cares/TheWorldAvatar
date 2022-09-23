@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -43,12 +44,13 @@ public class BuildingMatchingAgentTest {
     public void testNewBuildingMatchingAgentFields(){
 
         BuildingMatchingAgent buildingMatchingAgent = new BuildingMatchingAgent();
-        assertEquals(29, buildingMatchingAgent.getClass().getDeclaredFields().length);
+        assertEquals(30, buildingMatchingAgent.getClass().getDeclaredFields().length);
 
         try {
             assertEquals("/match", buildingMatchingAgent.getClass().getDeclaredField("URI_LISTEN").get(buildingMatchingAgent));
             assertEquals("ocgml", buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent));
             assertEquals("obe", buildingMatchingAgent.getClass().getDeclaredField("KEY_OBE").get(buildingMatchingAgent));
+            assertEquals("osid", buildingMatchingAgent.getClass().getDeclaredField("KEY_OSID").get(buildingMatchingAgent));
             assertEquals("prefixIRI", buildingMatchingAgent.getClass().getDeclaredField("KEY_PREFIXIRI").get(buildingMatchingAgent));
 
             Field LOGGER = buildingMatchingAgent.getClass().getDeclaredField("LOGGER");
@@ -90,10 +92,6 @@ public class BuildingMatchingAgentTest {
             Field CITYOBJ = BuildingMatchingAgent.class.getDeclaredField("CITYOBJ");
             CITYOBJ.setAccessible(true);
             assertEquals("cityobj", CITYOBJ.get(BuildingMatchingAgent.class));
-
-            Field ATTR = BuildingMatchingAgent.class.getDeclaredField("ATTR");
-            ATTR.setAccessible(true);
-            assertEquals("attr", ATTR.get(BuildingMatchingAgent.class));
 
             Field QM = BuildingMatchingAgent.class.getDeclaredField("QM");
             QM.setAccessible(true);
@@ -149,6 +147,10 @@ public class BuildingMatchingAgentTest {
             surfGeomGraph.setAccessible(true);
             assertNull(surfGeomGraph.get(buildingMatchingAgent));
 
+            Field identifiersGraph = BuildingMatchingAgent.class.getDeclaredField("identifiersGraph");
+            identifiersGraph.setAccessible(true);
+            assertNull(identifiersGraph.get(buildingMatchingAgent));
+
         } catch (IllegalAccessException | NoSuchFieldException e) {
             fail();
         }
@@ -180,24 +182,26 @@ public class BuildingMatchingAgentTest {
             uprn.setAccessible(true);
             Field CITYOBJ = BuildingMatchingAgent.class.getDeclaredField("CITYOBJ");
             CITYOBJ.setAccessible(true);
-            Field ATTR = BuildingMatchingAgent.class.getDeclaredField("ATTR");
-            ATTR.setAccessible(true);
 
+            Field identifiersGraph = buildingMatchingAgent.getClass().getDeclaredField("identifiersGraph");
+            identifiersGraph.setAccessible(true);
             Field bldgGraph = buildingMatchingAgent.getClass().getDeclaredField("bldgGraph");
             bldgGraph.setAccessible(true);
             bldgGraph.set(buildingMatchingAgent, "http://www.theworldavatar.com:83/citieskg/namespace/kings-lynn/sparql/building");
+            identifiersGraph.set(buildingMatchingAgent, "http://www.theworldavatar.com:83/citieskg/namespace/kings-lynn/sparql/identifiers");
 
-            WhereBuilder where = new WhereBuilder().addPrefix(buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent).toString(), ocgmlUri.get(buildingMatchingAgent).toString()).addWhere(QM.get(buildingMatchingAgent).toString() + BLDG.get(buildingMatchingAgent).toString(), buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent).toString() + ":objectClassId", "26");
+            WhereBuilder where = new WhereBuilder().addPrefix(buildingMatchingAgent.getClass().getDeclaredField("KEY_OSID").get(buildingMatchingAgent).toString(), osidUri.get(buildingMatchingAgent).toString()).addWhere(QM.get(buildingMatchingAgent).toString() + CITYOBJ.get(buildingMatchingAgent).toString(), "^"+buildingMatchingAgent.getClass().getDeclaredField("KEY_OSID").get(buildingMatchingAgent).toString() + ":intersectsFeature/"+buildingMatchingAgent.getClass().getDeclaredField("KEY_OSID").get(buildingMatchingAgent).toString()+":hasValue", QM.get(buildingMatchingAgent).toString()+uprn.get(buildingMatchingAgent).toString());
             Method ocgmlQueryBuilder = BuildingMatchingAgent.class.getDeclaredMethod("ocgmlQueryBuilder");
             ocgmlQueryBuilder.setAccessible(true);
             assertEquals(ocgmlQueryBuilder.invoke(BuildingMatchingAgent.class).toString(), new SelectBuilder().setDistinct(true)
-                    .addPrefix(buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent).toString(), String.valueOf(ocgmlUri)).addPrefix("osid", osidUri.get(buildingMatchingAgent).toString())
+                    .addPrefix(buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent).toString(), ocgmlUri.get(buildingMatchingAgent).toString())
                     .addVar(QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString()).addVar(QM.get(buildingMatchingAgent).toString()+uprn.get(buildingMatchingAgent).toString())
-                    .addGraph(NodeFactory.createURI(bldgGraph.get(buildingMatchingAgent).toString()), where)
-                    .addBind("IRI(REPLACE(str("+QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString()+"), \"building\", \"cityobject\"))", QM.get(buildingMatchingAgent).toString()+CITYOBJ.get(buildingMatchingAgent).toString())
-                    .addWhere(QM.get(buildingMatchingAgent).toString()+ATTR.get(buildingMatchingAgent).toString(), "osid:intersectsFeature" , QM.get(buildingMatchingAgent).toString()+CITYOBJ.get(buildingMatchingAgent).toString())
-                    .addWhere(QM.get(buildingMatchingAgent).toString()+ATTR.get(buildingMatchingAgent).toString(), "osid:hasValue", QM.get(buildingMatchingAgent).toString()+uprn.get(buildingMatchingAgent).toString()).addOrderBy(QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString()).buildString());
+                    .addGraph(NodeFactory.createURI(identifiersGraph.get(buildingMatchingAgent).toString()), where)
+                    .addBind("IRI(REPLACE(str("+QM.get(buildingMatchingAgent).toString()+CITYOBJ.get(buildingMatchingAgent).toString()+"), \"cityobject\", \"building\"))", QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString())
+                    .addGraph(NodeFactory.createURI(bldgGraph.get(buildingMatchingAgent).toString()), QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString(), buildingMatchingAgent.getClass().getDeclaredField("KEY_OCGML").get(buildingMatchingAgent).toString()+":objectClassId", "26")
+                    .addOrderBy(QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString()).buildString());
             bldgGraph.set(buildingMatchingAgent, null);
+            identifiersGraph.set(buildingMatchingAgent, null);
         } catch (IllegalAccessException | NoSuchFieldException | ParseException | InvocationTargetException | NoSuchMethodException e) {
             fail();
         }
@@ -226,7 +230,7 @@ public class BuildingMatchingAgentTest {
             WhereBuilder inner_where = new WhereBuilder()
                     .addPrefix("dabgeo", dabgeoUri.get(buildingMatchingAgent).toString()).addPrefix((String) buildingMatchingAgent.getClass().getDeclaredField("KEY_OBE").get(buildingMatchingAgent), obeUri.get(buildingMatchingAgent).toString())
                     .addWhere(QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString(), "a", "dabgeo:Building")
-                    .addFilter("EXISTS { "+QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString()+"^obe:isIn "+QM.get(buildingMatchingAgent).toString()+FLAT.get(buildingMatchingAgent).toString()+" }")
+                    .addWhere(QM.get(buildingMatchingAgent).toString()+BLDG.get(buildingMatchingAgent).toString(), "^obe:isIn ", QM.get(buildingMatchingAgent).toString()+FLAT.get(buildingMatchingAgent).toString())
                     .addWhere(QM.get(buildingMatchingAgent).toString()+FLAT.get(buildingMatchingAgent).toString(), "obe:hasIdentifier", QM.get(buildingMatchingAgent).toString()+uprn.get(buildingMatchingAgent).toString());
 
             WhereBuilder where = new WhereBuilder()
@@ -469,4 +473,56 @@ public class BuildingMatchingAgentTest {
             fail();
         }
     }
+
+//    @Test
+//    public void test() throws ParseException {
+//        //Prefix Iris
+//        String ocgmlUri = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";;
+//        String osidUri = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#";
+//
+//        //Query labels
+//        final String BLDG = "bldg";
+//        final String uprn = "uprn";
+//        final String CITYOBJ = "cityobj";
+//        String ATTR = "attr";
+//       String QM ="?";
+//
+//
+//        String KEY_OCGML = "ocgml";
+//        String identifiersGraph = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/identifiers";
+//        String bldgGraph = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building";
+//
+//        WhereBuilder where1 = new WhereBuilder().addPrefix("osid", osidUri).addWhere("?cityobj", "^osid:intersectsFeature/osid:hasValue",  "?uprn");
+//
+//        SelectBuilder query =  new SelectBuilder().setDistinct(true)
+//                .addPrefix(KEY_OCGML, ocgmlUri)
+//                .addVar(QM+BLDG).addVar(QM+uprn)
+//                .addGraph(NodeFactory.createURI(identifiersGraph), where1)
+//                .addBind("IRI(REPLACE(str("+QM+"cityobj"+"), \"cityobject\", \"building\"))", QM+BLDG)
+//                .addGraph(NodeFactory.createURI(bldgGraph+"/"), QM+BLDG, KEY_OCGML+":objectClassId", "26")
+//                .addOrderBy(QM+BLDG);
+//
+//        String obeUri = "https://www.theworldavatar.com/kg/ontobuiltenv/";
+//        String dabgeoUri = "http://www.purl.org/oema/infrastructure/";
+//        String KEY_OBE = "obe";
+//        String FLAT = "flat";
+//        String kbUri = "https://www.theworldavatar.com/kg/ontobuiltenv/";
+//        WhereBuilder inner_where = new WhereBuilder()
+//                .addPrefix("dabgeo", dabgeoUri).addPrefix(KEY_OBE, obeUri)
+//                .addWhere(QM+BLDG, "a", "dabgeo:Building")
+//                .addWhere(QM+BLDG, "^obe:isIn ", QM+FLAT)
+//                .addWhere(QM+FLAT, "obe:hasIdentifier", QM+uprn);
+//
+//        WhereBuilder where = new WhereBuilder()
+//                .addPrefix("dabgeo", dabgeoUri).addPrefix(KEY_OBE, obeUri)
+//                .addWhere(QM+BLDG, "a", "dabgeo:Building")
+//                .addFilter("NOT EXISTS {"+QM+BLDG+" ^obe:isIn "+QM+FLAT+" }")
+//                .addWhere(QM+BLDG, "obe:hasIdentifier", QM+uprn)
+//                .addUnion(inner_where);
+//
+//       SelectBuilder query2 =  new SelectBuilder()
+//                .addPrefix("obe", obeUri).addPrefix("dabgeo", dabgeoUri).addPrefix("kb", kbUri)
+//                .addVar(QM+BLDG).addVar(QM+uprn)
+//                .addWhere(where);
+//    }
    }
