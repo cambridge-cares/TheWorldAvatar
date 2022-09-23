@@ -1,21 +1,32 @@
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import matplotlib.pyplot as plt
 from abc import ABC
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
 from flask import jsonify
+from flask import send_file
 from flask import render_template
 from urllib.parse import unquote
 from urllib.parse import urlparse
 from rdflib import Graph, URIRef, Literal
 from datetime import datetime
+import pandas as pd
+import base64
 import json
 import time
 import os
+import io
 
 import agentlogging
 
 from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
 from rxnoptgoalagent.data_model import *
+
+# Disable excessive debug logging from numba and matplotlib module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 # TODO find a better place to put this
 AVAILABLE_RXN_OPT_PLAN_LIST = ['http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan']
@@ -123,6 +134,9 @@ class RxnOptGoalAgent(ABC):
 
         # add the route for the rxn opt goal specification
         self.app.add_url_rule('/goal', 'rxn_opt_goal', self.goal_page, methods=['GET'])
+
+        # add the route for the goal result plot
+        self.app.add_url_rule('/goal/result', 'rxn_opt_goal_result', self.goal_result_page, methods=['GET'])
 
         # add the url pattern that handles the goal request
         url_pattern = urlparse(self.goal_agent_endpoint).path
@@ -369,3 +383,58 @@ class RxnOptGoalAgent(ABC):
                     self.scheduler.remove_job(f'monitor_goal_{getShortName(self.current_running_rogi_derivation)}')
         else:
             self.logger.info(f"The current iteration of <{self.current_running_rogi_derivation}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
+
+    def goal_result_page(self):
+        """
+        Plot the ROGI results of the given ROGI derivation IRI.
+        """
+        if 'rogi' in request.args:
+            _rogi_derivation_for_plot = request.args['rogi']
+        elif hasattr(self, 'current_running_rogi_derivation'):
+            _rogi_derivation_for_plot = self.current_running_rogi_derivation
+        else:
+            return "No ROGI derivation IRI is provided. Nor is any RODI derivation is currently running. Please provide a ROGI derivation IRI in the URL."
+
+        # get the goal set instance
+        goal_set_instance = self.sparql_client.get_goal_set_instance_from_rogi_derivation(_rogi_derivation_for_plot)
+
+        # query the devTime of each reaction experiment that the performance indicators referring to
+        _obj_dct = {}
+        _goal_res_query_lst = []
+        _result_val_dct = {}
+        for goal in goal_set_instance.hasGoal:
+            _result_iri_dct = {res.instance_iri:{'value': res.hasValue.hasNumericalValue, 'unit': res.hasValue.hasUnit} for res in goal.hasResult}
+            _obj = goal.desires().clz
+            _obj_key = f"{getShortName(_obj)}"
+            _obj_dct[_obj_key] = _obj
+            _goal_res_query_lst.append(f"""VALUES ?{_obj_key} {{ <{'> <'.join(list(_result_iri_dct.keys()))}> }} ?rxn <{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?{_obj_key} .""")
+            _result_val_dct.update(_result_iri_dct)
+
+        query = f"""
+            SELECT ?devTime ?rxn ?{" ?".join(list(_obj_dct.keys()))}
+            WHERE {{ {" ".join(_goal_res_query_lst)}
+                ?rxn <{ONTODERIVATION_BELONGSTO}>/<{TIME_HASTIME}>/<{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?devTime .
+            }}
+            ORDER BY ?devTime
+        """
+        response = self.sparql_client.performQuery(query)
+
+        if len(response) == 0:
+            return f"No results found for ROGI derivation {_rogi_derivation_for_plot} when executing query: {query}. Check if the derivation is finished. Or if the derivation IRI is correct. Or if the triplestore is specified correctly."
+
+        # convert the response to a dataframe and plot
+        _df = pd.DataFrame(response)
+        _df.sort_values(by=['devTime'], ascending=True, inplace=True, ignore_index=True)
+        _df['Goal Iteration (-)'] = _df.index + 1
+        fig, ax = plt.subplots(figsize=(10, 10))
+        _legend_lst = []
+        for key, value in _obj_dct.items():
+            ax.plot(_df['Goal Iteration (-)'], _df[key].apply(lambda x: unit_conv.unit_conversion_return_value(_result_val_dct[x]['value'], _result_val_dct[x]['unit'], UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])), 'o')
+            _legend_lst.append(key+f' ({getShortName(UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])})')
+        ax.set_xlabel('Goal Iteration (-)')
+        ax.legend(_legend_lst)
+        canvas = FigureCanvas(fig)
+        img = io.BytesIO()
+        fig.savefig(img)
+        img.seek(0)
+        return send_file(img, mimetype='image/png')
