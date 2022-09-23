@@ -80,10 +80,6 @@ public class DockerClient extends BaseClient {
 
         if (null != endpoint) {
             dockerConfigBuilder.withDockerHost(endpoint.toString());
-            // TODO need to set up TLS so that the unsecured Docker port "2375" doesn't need
-            // to be opened.
-            // dockerConfigBuilder.withDockerTlsVerify(true);
-            // dockerConfigBuilder.withDockerCertPath("dockerCertPath");
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder
