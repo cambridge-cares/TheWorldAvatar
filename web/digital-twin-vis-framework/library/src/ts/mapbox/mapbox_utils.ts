@@ -407,4 +407,27 @@ class MapBoxUtils {
         return result;
     }
 
+    /**
+     * Load search terms and populate the drop down box.
+     */
+    public static loadSearchTerms() {
+        let terms = Manager.SETTINGS.getSetting("search");
+        if(terms == null) {
+            terms = {};
+            terms["Name"] = "name";
+        }
+
+        let searchSelect = document.getElementById("search-select");
+        for (const [key, value] of Object.entries(terms)) {
+            let option = document.createElement("option");
+            option.text = key;
+
+            // @ts-ignore
+            option.value = value;
+
+            // @ts-ignore
+            searchSelect.add(option);
+        }
+    }
+
 }

@@ -24,6 +24,11 @@ class Manager {
     public static STACK_LAYERS = {};
 
     /**
+     * Global visualisation settings.
+     */
+    public static SETTINGS: Settings;
+
+    /**
      * Map handler instance.
      */
     private mapHandler: MapHandler;
@@ -74,22 +79,12 @@ class Manager {
 
     /**
      * Initialise the (blank) map instance via the map handler.
-     * 
-     * @param mapOptionsOverride dictionary of default map options. If passed this will be used
-     * when initialising the map rather than any meta data stored within DataGroups.
      */
-    public initialiseMap(mapOptions: Object) {
+    public initialiseMap() {
         // Initialise the map
-
-        if(mapOptions === null || mapOptions === undefined) {
-            // Try to pick up map options from the first listed stack
-            let firstRoot = Manager.DATA_STORE.dataGroups[0];
-            if(firstRoot.mapOptions !== null) {
-                mapOptions = firstRoot.mapOptions;
-            }
-        }
-
+        let mapOptions = Manager.SETTINGS.getSetting("start");
         this.mapHandler.initialiseMap(mapOptions);
+
         this.controlHandler.showControls();
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
@@ -159,10 +154,7 @@ class Manager {
     }
 
     /**
-     * Given the location of one (or more) visualisation files, query and parse
-     * them all into object definitions. 
-     * 
-     * @param endPoints visualisation endpoints
+     * Loads the definition of data groups and the global visualisation settings.
      * 
      * @returns promise object
      */
@@ -170,8 +162,13 @@ class Manager {
         Manager.STACK_LAYERS = {};
         let promises = [];
 
-        let visFile = "./visualisation.json";
-        promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
+        // Initialise global settings
+        Manager.SETTINGS = new Settings();
+        promises.push(Manager.SETTINGS.loadSettings("./settings.json"));
+
+        // Load data definitions
+        promises.push(Manager.DATA_STORE.loadDataGroups("./data.json"));
+
         return Promise.all(promises);
     }
 

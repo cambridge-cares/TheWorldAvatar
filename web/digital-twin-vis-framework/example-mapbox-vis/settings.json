@@ -1,0 +1,13 @@
+{
+    "start": {
+        "center": [60, 37],
+        "zoom": 2,
+        "bearing": 0,
+        "pitch": 45,
+        "style": "mapbox://styles/mapbox/light-v10?optimize=true"
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    }
+}

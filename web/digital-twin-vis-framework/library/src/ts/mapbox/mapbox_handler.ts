@@ -62,6 +62,9 @@ class MapHandler_MapBox extends MapHandler {
         if(mapOptions["style"].includes("dark")) window.terrain = "dark";
         if(mapOptions["style"].includes("outdoors")) window.terrain = "outdoors";
         if(mapOptions["style"].includes("satellite")) window.terrain = "satellite";
+
+        // Load custom search terms
+        MapBoxUtils.loadSearchTerms();
     }
 
     /**
