@@ -1,6 +1,5 @@
 package com.cmclinnovations.stack.clients.gdal;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,13 +55,12 @@ public class GDALClient extends ContainerClient {
 
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path filePath = tmpDir.getPath().resolve(layername);
-            try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-                writer.append(fileContents);
-                writer.flush();
+            try {
+                Files.writeString(filePath, fileContents);
                 uploadVectorToPostGIS(database, layername, filePath.toString(), options, append);
-            } catch (IOException e) {
+            } catch (IOException ex) {
                 throw new RuntimeException("Failed to write string for vector '" + layername
-                        + "' layer to a file in a temporary directory.");
+                        + "' layer to a file in a temporary directory.", ex);
             }
         }
     }
