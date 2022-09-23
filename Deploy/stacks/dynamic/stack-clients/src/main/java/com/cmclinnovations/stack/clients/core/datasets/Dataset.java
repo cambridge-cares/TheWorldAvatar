@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -70,20 +69,17 @@ public class Dataset {
 
     public void loadData() {
         if (!skip) {
-            PostGISClient postGISClient = new PostGISClient();
-            GDALClient gdalClient = new GDALClient();
-            GeoServerClient geoServerClient = new GeoServerClient();
-            OntopClient ontopClient = new OntopClient();
 
             Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
             String fullDatasetDirStr = fullDatasetDir.toString();
 
             if (null != database) {
-                postGISClient.createDatabase(database);
+                PostGISClient.getInstance().createDatabase(database);
             }
 
             if (dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).count() > 0
                     || !geoserverStyles.isEmpty()) {
+                GeoServerClient geoServerClient = GeoServerClient.getInstance();
                 geoServerClient.createWorkspace(workspaceName);
 
                 geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
@@ -91,12 +87,12 @@ public class Dataset {
 
             dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
                     subset -> {
-                        subset.loadData(gdalClient, fullDatasetDirStr, database);
-                        subset.runSQLPostProcess(postGISClient, database);
-                        subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
+                        subset.loadData(fullDatasetDirStr, database);
+                        subset.runSQLPostProcess(database);
+                        subset.createLayer(fullDatasetDirStr, workspaceName, database);
                     });
 
-            ontopMappings.forEach(mapping -> ontopClient.updateOBDA(fullDatasetDir.resolve(mapping)));
+            ontopMappings.forEach(mapping -> OntopClient.getInstance().updateOBDA(fullDatasetDir.resolve(mapping)));
         }
     }
 

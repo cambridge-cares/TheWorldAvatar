@@ -17,16 +17,17 @@ public class Raster extends DataSubset {
     private GeoServerRasterSettings geoServerSettings = new GeoServerRasterSettings();
 
     @Override
-    public void loadData(GDALClient gdalClient, String datasetDir, String database) {
+    public void loadData(String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
-        gdalClient.uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), options, false);
+        GDALClient.getInstance()
+                .uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), options, false);
     }
 
     @Override
-    public void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
+    public void createLayer(String dataSubsetDir, String workspaceName,
             String database) {
-        geoServerClient.createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indicies", "public",
-                geoServerSettings);
+        GeoServerClient.getInstance()
+                .createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indicies", "public", geoServerSettings);
     }
 
 }

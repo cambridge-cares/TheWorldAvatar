@@ -62,7 +62,16 @@ public class DockerClient extends BaseClient {
 
     private final com.github.dockerjava.api.DockerClient internalClient;
 
-    public DockerClient() {
+    private static DockerClient instance = null;
+
+    public static DockerClient getInstance() {
+        if (null == instance) {
+            instance = new DockerClient();
+        }
+        return instance;
+    }
+
+    private DockerClient() {
         this(null);
     }
 

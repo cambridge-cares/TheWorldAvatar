@@ -71,7 +71,7 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        new OntopClient().updateOBDA(null);
+        OntopClient.getInstance().updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
     }

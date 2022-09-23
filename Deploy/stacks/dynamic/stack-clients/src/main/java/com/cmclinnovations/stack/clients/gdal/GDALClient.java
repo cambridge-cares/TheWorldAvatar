@@ -32,7 +32,16 @@ public class GDALClient extends ContainerClient {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
-    public GDALClient() {
+    private static GDALClient instance = null;
+
+    public static GDALClient getInstance() {
+        if (null == instance) {
+            instance = new GDALClient();
+        }
+        return instance;
+    }
+
+    private GDALClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 

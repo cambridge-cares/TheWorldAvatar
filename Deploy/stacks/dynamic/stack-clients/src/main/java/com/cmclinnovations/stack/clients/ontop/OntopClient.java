@@ -13,6 +13,18 @@ public class OntopClient extends ContainerClient {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
+    private static OntopClient instance = null;
+
+    public static OntopClient getInstance() {
+        if (null == instance) {
+            instance = new OntopClient();
+        }
+        return instance;
+    }
+
+    private OntopClient() {
+    }
+
     public void updateOBDA(Path newMappingFilePath) {
         String containerId = getContainerId("ontop");
         Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)

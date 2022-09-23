@@ -12,7 +12,16 @@ public class PostGISClient extends ContainerClient {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
-    public PostGISClient() {
+    private static PostGISClient instance = null;
+
+    public static PostGISClient getInstance() {
+        if (null == instance) {
+            instance = new PostGISClient();
+        }
+        return instance;
+    }
+
+    private PostGISClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
