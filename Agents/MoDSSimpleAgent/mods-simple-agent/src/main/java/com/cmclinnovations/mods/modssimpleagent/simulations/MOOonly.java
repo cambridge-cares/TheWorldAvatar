@@ -48,6 +48,7 @@ class MOOonly extends Simulation {
 
     @Override
     public Request getResults() {
+        loadDataInfo();
 
         String simDir = getModsBackend().getSimDir().toString();
         String algorithmName = Simulation.DEFAULT_MOO_ALGORITHM_NAME;
@@ -59,21 +60,17 @@ class MOOonly extends Simulation {
                             + "' has not finished yet, has not been run or has failed to run correctly.");
         }
 
-        Request request = getRequest();
-        Data inputs = request.getInputs();
+        List<Variable> variables = getPrimaryAlgorithm().getVariables();
 
         List<String> outputVarNames = MoDSAPI.getReducedYVarIDs(simDir, algorithmName).stream().map(MoDSAPI::getVarName)
                 .collect(Collectors.toList());
+                
+        List<Double> minimaFromData = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
+                Variable::getMinimum);
 
-        List<Double> minimaFromData = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), outputVarNames,
-                DataColumn::getName, column -> column.getValues().get(0));
-
-        List<Double> maximaFromData = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), outputVarNames,
-                DataColumn::getName, column -> column.getValues().get(0));
-
-        Algorithm primaryAlgorithm = getPrimaryAlgorithm();
-        List<Variable> variables = primaryAlgorithm.getVariables();
-
+        List<Double> maximaFromData = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
+                Variable::getMaximum);
+                
         List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
                 Variable::getMinimum);
 
@@ -83,7 +80,7 @@ class MOOonly extends Simulation {
         List<Double> weightsFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
                 Variable::getWeight);
 
-        int numResults = primaryAlgorithm.getMaxNumberOfResults();
+        int numResults = getPrimaryAlgorithm().getMaxNumberOfResults();
 
         List<List<Double>> points = MoDSAPI.getMCDMSimpleWeightedPoints(simDir, algorithmName,
                 ListUtils.replaceNulls(minimaFromAlg, minimaFromData),

@@ -1,9 +1,15 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +28,10 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackendFactory;
 import com.cmclinnovations.mods.modssimpleagent.TemplateLoader;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
+import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +52,7 @@ public class Simulation {
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
-    private static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("SavedSurrogates");
+    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("SavedSurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
@@ -269,9 +277,8 @@ public class Simulation {
 
     public void saveWhenFinished() {
         String simDir = getModsBackend().getSimDir().toString();
-        String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME; 
+        String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME;
 
-        
         Thread t = new Thread(() -> {
             try {
                 while (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
@@ -285,46 +292,106 @@ public class Simulation {
                 }
                 save();
             } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();      
+                Thread.currentThread().interrupt();
             } catch (FileGenerationException ex) {
                 throw new ResponseStatusException(
-                            HttpStatus.NO_CONTENT,
-                            "The job '" + getModsBackend().getJobID() + "' failed to save.", ex);
-            } 
+                        HttpStatus.NO_CONTENT,
+                        "The job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+            }
         });
 
         t.start();
     }
 
-    public void save() throws FileGenerationException{
-        for(Algorithm algorithm : request.getAlgorithms()) {
-            if(algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()){
-                
-                Path saveDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    public void save() throws FileGenerationException {
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+
+                Path saveDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+                        .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
                 Path surrogateDirectory = modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
 
-                    
+                copyDirectory(surrogateDirectory, saveDirectory);
 
-                copyDirectory(surrogateDirectory, saveDirectory); 
-                
+                createDataInfoFile(saveDirectory);
+
                 LOGGER.info("Surrotage saved at '{}'.", saveDirectory.toAbsolutePath());
             }
         }
     }
 
-    public void load() throws FileGenerationException{
-        for(Algorithm algorithm : request.getAlgorithms()) {
-            if(algorithm.getLoadSurrogate() != null){
-                try{
+    private void createDataInfoFile(Path saveDirectory) throws FileGenerationException {
+        Data inputs = getRequest().getInputs();
 
-                    Path loadDirectory = modsBackend.getSimDir();
-                    Path surrogateDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getLoadSurrogate());
+        Path dataInfoDirectory = saveDirectory.resolve("dataInfo.csv");
 
-                    if(!Files.exists(surrogateDirectory)) {
+        List<String> outputVarNames = getPrimaryAlgorithm().getVariables().stream().map(Variable::getName)
+                .collect(Collectors.toList());
+
+        List<String> minimaFromData = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), outputVarNames,
+                DataColumn::getName, column -> column.getValues().get(0)).stream().map(t -> t.toString())
+                .collect(Collectors.toList());
+
+        List<String> maximaFromData = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), outputVarNames,
+                DataColumn::getName, column -> column.getValues().get(0)).stream().map(t -> t.toString())
+                .collect(Collectors.toList());
+
+        List<String> scalingOfData = Collections.nCopies(outputVarNames.size(), "linear");
+
+        String[] columnNames = { "variableName", "dataMinimum", "dataMaximum", "scaling" };
+
+        List<String[]> dataLines = new ArrayList<>();
+
+        dataLines.add(columnNames);
+
+        for (int i = 0; i < outputVarNames.size(); i++) {
+            dataLines.add(new String[] { outputVarNames.get(i), minimaFromData.get(i), maximaFromData.get(i),
+                    scalingOfData.get(i) });
+        }
+        try {
+            if (!Files.exists(dataInfoDirectory)) {
+                Files.createFile(dataInfoDirectory);
+            }
+
+            writeDataLinesToCSV(dataInfoDirectory, dataLines);
+        } catch (IOException ex) {
+            throw new FileGenerationException("Failed to generate data info file.", ex);
+        }
+    }
+
+    private void writeDataLinesToCSV(Path directory, List<String[]> dataLines) throws IOException {
+        try (PrintWriter pw = new PrintWriter(directory.toFile())) {
+            dataLines.stream()
+                    .map(this::convertToCSV)
+                    .forEach(pw::println);
+        } catch (IOException ex) {
+            throw new IOException("Failed to write data info file.", ex);
+        }
+    }
+
+    public String convertToCSV(String[] data) {
+        return Stream.of(data)
+                .collect(Collectors.joining(","));
+    }
+
+    public void load() throws FileGenerationException {
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getLoadSurrogate() != null) {
+                try {
+
+                    Path loadDirectory = modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+                    Path surrogateDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
+                            .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+
+                    if (!Files.exists(surrogateDirectory)) {
                         throw new IOException("File '" + surrogateDirectory + "' could not be found to load.");
                     }
-                    
+
                     copyDirectory(surrogateDirectory, loadDirectory);
+                    loadDataInfo();
+
+                    LOGGER.info("File '{}' loaded to '{}'.", surrogateDirectory.toAbsolutePath(),
+                            loadDirectory.toAbsolutePath());
 
                 } catch (IOException ex) {
                     throw new FileGenerationException(
@@ -334,30 +401,65 @@ public class Simulation {
         }
     }
 
-    private void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException{
-        try(Stream<Path> stream = Files.walk(sourceDirectory)) {
+    public void loadDataInfo() {
+        List<List<String>> dataInfo = new ArrayList<>();
 
-            if(!Files.exists(destinationDirectory)) {
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(getPrimaryAlgorithm().getLoadSurrogate())
+                        .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME).resolve("dataInfo.csv").toString()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                dataInfo.add(Arrays.asList(values));
+            }
+        } catch (IOException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "Failed to read data info load file.");
+        }
+
+        Data inputs = new Data(dataInfo.stream().skip(1)
+                .map(x -> new DataColumn(x.get(0),
+                        Arrays.asList(Double.parseDouble(x.get(1)), Double.parseDouble(x.get(1)))))
+                .collect(Collectors.toList()));
+
+        getRequest().setInputs(inputs);
+
+        List<Variable> variables = getPrimaryAlgorithm().getVariables();
+
+        variables.forEach(variable ->
+                dataInfo.stream().filter(data -> data.get(0).equals(variable.getName())).forEach(data -> {
+                        variable.setMinimum(Double.parseDouble(data.get(1)));
+                        variable.setMaximum(Double.parseDouble(data.get(2)));
+                })
+        );
+    }
+
+    private void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
+        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
+
+            if (!Files.exists(destinationDirectory)) {
                 Files.createDirectories(destinationDirectory);
             }
 
             stream.filter(Files::isRegularFile).forEach(source -> {
-                Path destination = destinationDirectory.resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
-                try{
+                Path destination = destinationDirectory
+                        .resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
+                try {
                     Files.copy(source, destination);
                 } catch (IOException ex) {
                     throw new ResponseStatusException(
-                        HttpStatus.NO_CONTENT,
-                        "The job '" + getModsBackend().getJobID() + "' failed to copy '"
-                        + destinationDirectory + "` to `"+ sourceDirectory +"'.", ex);
-                    }
+                            HttpStatus.NO_CONTENT,
+                            "The job '" + getModsBackend().getJobID() + "' failed to copy '"
+                                    + destinationDirectory + "` to `" + sourceDirectory + "'.",
+                            ex);
                 }
-            );
+            });
         } catch (IOException ex) {
-                throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory 
-                + "' or in creating destination directory '" + destinationDirectory + "'.", ex);
-            }
+            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory
+                    + "' or in creating destination directory '" + destinationDirectory + "'.", ex);
         }
+    }
 
     public final Request getResponse() {
         Request response = new Request();
