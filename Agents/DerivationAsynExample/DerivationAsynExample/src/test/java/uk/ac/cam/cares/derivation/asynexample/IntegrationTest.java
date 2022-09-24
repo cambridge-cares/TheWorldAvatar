@@ -37,6 +37,16 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * These tests start a Docker container of blazegraph based on "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for more details.
  * For information regarding the Docker registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+ * 
+ * If one is developing in WSL2 and want to keep the container alive after the test (this will be useful when debugging if any test ran into exceptions),
+ * then please follow the instruction from [1/5] to [5/5]
+ * [1/5] - add the following line to file: ~/.testcontainers.properties
+ * testcontainers.reuse.enable=true
+ * [2/5] - comment out the line: @Testcontainers
+ * [3/5] - comment out the line: @Container
+ * [4/5] - uncomment out the line: .withReuse(true)
+ * [5/5] - comment out the lines in method stopContainers: if (blazegraph.isRunning()) { blazegraph.stop(); }
+ * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
  */
@@ -89,8 +99,12 @@ public class IntegrationTest extends TestCase {
     // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private static GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-                                                        .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+    private static GenericContainer<?> blazegraph;
+    static {
+        blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+            // .withReuse(true)
+            .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+    }
 
     @BeforeAll
     public static void initialise()
@@ -374,12 +388,12 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(2, diffReverseDerivations.size());
         Assert.assertEquals(2, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
 
-        // create three more derivations, and call monitorAsyncDerivations with the periodicalTimescale of (5 * Config.delayAgentDiffReverse)
+        // create three more derivations, and call monitorAsyncDerivations with the periodicalTimescale of (8 * Config.delayAgentDiffReverse)
         // so that this makes sure that all derivations will be updated after the call
         String diff_dev_3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
         String diff_dev_4 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
         String diff_dev_5 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
-        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, 5 * Config.delayAgentDiffReverse);
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, 8 * Config.delayAgentDiffReverse);
         // now check that all derivations should be up-to-date
         diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
         Assert.assertEquals(5, diffReverseDerivations.size());
