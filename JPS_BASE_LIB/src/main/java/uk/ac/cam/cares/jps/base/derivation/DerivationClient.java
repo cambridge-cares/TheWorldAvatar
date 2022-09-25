@@ -705,11 +705,15 @@ public class DerivationClient {
 		JSONObject agentInputs = new JSONObject();
 		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
 
+		return agentInputs;
+	}
+
+	public boolean updateStatusBeforeSetupJob(String derivation) {
 		// mark derivation status as InProgress
 		// record timestamp at the point the derivation status is marked as InProgress
-		this.sparqlClient.updateStatusBeforeSetupJob(derivation);
-
-		return agentInputs;
+		// also add uuidLock to the derivation
+		// this method will return a boolean to indicate if the status update is successful
+		return this.sparqlClient.updateStatusBeforeSetupJob(derivation);
 	}
 
 	/**
@@ -767,6 +771,7 @@ public class DerivationClient {
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI,
 			List<TriplePattern> newTriples) {
 		// mark as Finished and add newDerivedIRI to Finished status
+		// also delete the uuidLock
 		this.sparqlClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
 	}
 

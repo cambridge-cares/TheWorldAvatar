@@ -249,27 +249,37 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 								// assume the checking is really fast so all sync ones are up-to-date
 								// retrieve the agent inputs that mapped to their rdf:type
 								JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
-								LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of asynchronous derivation <"
-										+ derivation + ">: " + agentInputs.toString() + ".");
-								LOGGER.info("Asynchronous derivation <" + derivation + "> is now in progress.");
-								// serialise JSONObject retrieved from KG to instance of DerivationInputs
-								DerivationInputs derivationInputs = new DerivationInputs(
-										agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
-								DerivationOutputs derivationOutputs = new DerivationOutputs();
-								// perform the conversion from DerivationInputs to DerivationOutputs
-								processRequestParameters(derivationInputs, derivationOutputs);
-								// deserialise the derivationOutputs to a list of String of new derived IRI
-								List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
-								List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();
-								// update the status records in KG when the job is completed, also writes all
-								// new triples to KG
-								devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
-								LOGGER.info("Asynchronous derivation <" + derivation + "> has new generated derived IRI: "
-										+ newDerivedIRI.toString() + ".");
-								LOGGER.info("Asynchronous derivation <" + derivation + "> has all new generated triples: "
-										+ newTriples.stream().map(t -> t.getQueryString()).collect(Collectors.toList()));
-								LOGGER.info(
-										"Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.");
+								// if another agent thread is updating the same derivation concurrently
+								// and successed before this thread, then this method will return false
+								boolean progressToJob = devClient.updateStatusBeforeSetupJob(derivation);
+								// only progress to job if the status is updated successfully
+								// otherwise, the other thread will handle the job
+								if (progressToJob) {
+									LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of asynchronous derivation <"
+											+ derivation + ">: " + agentInputs.toString() + ".");
+									LOGGER.info("Asynchronous derivation <" + derivation + "> is now in progress.");
+									// serialise JSONObject retrieved from KG to instance of DerivationInputs
+									DerivationInputs derivationInputs = new DerivationInputs(
+											agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
+									DerivationOutputs derivationOutputs = new DerivationOutputs();
+									// perform the conversion from DerivationInputs to DerivationOutputs
+									processRequestParameters(derivationInputs, derivationOutputs);
+									// deserialise the derivationOutputs to a list of String of new derived IRI
+									List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
+									List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();
+									// update the status records in KG when the job is completed, also writes all
+									// new triples to KG
+									devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
+									LOGGER.info("Asynchronous derivation <" + derivation + "> has new generated derived IRI: "
+											+ newDerivedIRI.toString() + ".");
+									LOGGER.info("Asynchronous derivation <" + derivation + "> has all new generated triples: "
+											+ newTriples.stream().map(t -> t.getQueryString()).collect(Collectors.toList()));
+									LOGGER.info(
+											"Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.");
+								} else {
+									LOGGER.info("Asynchronous derivation <" + derivation
+											+ "> is already in progress by another agent thread.");
+								}
 							}
 						}
 						// set flag to true as the agent has been process this derivation for some time
