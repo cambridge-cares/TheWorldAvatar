@@ -235,6 +235,10 @@ public class DockerIntegrationTest extends TestCase {
 		TimeUnit.SECONDS.sleep(6 * Config.periodAgentDiffReverse);
 		Map<String, StatusType> diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
         Assert.assertEquals(5, diffReverseDerivations.size());
+		// NOTE below check is likely to fail if the agent is not thread-safe
+		// as the same derivation is likely to be processed by multiple threads
+		// therefore, produce more DiffReverse instances than the amount of derivations created
+		// (as observed in several testing runs before the changes made to the uuidLock)
         Assert.assertEquals(5, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
 		// also all values should be the same and they are the difference of min and max
 		Map<String, Integer> diffReverseValues = sparqlClient.getDiffReverseValues();

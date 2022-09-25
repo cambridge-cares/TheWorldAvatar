@@ -83,7 +83,8 @@ public class DiffReverseAgent extends DerivationAgent {
 	public void init() throws ServletException {
 		LOGGER.info("\n---------------------- Diff Reverse Agent has started ----------------------\n");
 		System.out.println("\n---------------------- Diff Reverse Agent has started ----------------------\n");
-		ScheduledExecutorService exeService = Executors.newSingleThreadScheduledExecutor();
+		// initialise scheduled executor service with 2 threads
+		ScheduledExecutorService exeService = Executors.newScheduledThreadPool(2);
 
 		Config.initProperties();
 
@@ -95,11 +96,13 @@ public class DiffReverseAgent extends DerivationAgent {
 		DiffReverseAgent diffReverseAgent = new DiffReverseAgent(this.kbClient, Config.derivationInstanceBaseURL);
 
 		exeService.scheduleAtFixedRate(() -> {
-			try {
-				diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.periodAgentDiffReverse);
-			} catch (JPSRuntimeException e) {
-				e.printStackTrace();
-			}
+			exeService.execute(() -> {
+				try {
+					diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.periodAgentDiffReverse);
+				} catch (JPSRuntimeException e) {
+					e.printStackTrace();
+				}
+			});
 		}, Config.initDelayAgentDiffReverse, Config.periodAgentDiffReverse, TimeUnit.SECONDS);
 		LOGGER.info("\n---------------------- Diff Reverse Agent is monitoring derivation instance ----------------------\n");
 		System.out.println("\n---------------------- Diff Reverse Agent is monitoring derivation instance ----------------------\n");
