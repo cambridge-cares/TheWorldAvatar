@@ -126,7 +126,7 @@
     <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasDownstreamGridConnection">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
         <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and upstream grid connection, i.e., flow</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and downstream grid connection, i.e., return flow</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has downstream grid connection</rdfs:label>
     </owl:ObjectProperty>
@@ -419,7 +419,7 @@
     <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasUpstreamGridConnection">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
         <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and downstream grid connection, i.e., return flow</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> A relationship between heat provider and upstream grid connection, i.e., flow</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has upstream grid connection</rdfs:label>
     </owl:ObjectProperty>
