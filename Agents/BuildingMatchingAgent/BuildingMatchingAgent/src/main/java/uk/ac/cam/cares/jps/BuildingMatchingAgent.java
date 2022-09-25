@@ -127,73 +127,91 @@ public class BuildingMatchingAgent extends JPSAgent {
         Coordinate lat_lon;
         Coordinate centroid;
 
-        for (String env_bldg : ontobuilenv.keySet()) {
-            ArrayList<String> UPRNS = ontobuilenv.get(env_bldg);
-            HashMap<String, Integer> results = new HashMap<>();
-            String ocgml_bldg = "";
-            if (UPRNS.size() > 1) {
-                for (String UPRN : UPRNS) {
-                    if (ontocitygml.keySet().contains(UPRN)) {
-                        if (results.containsKey(ontocitygml.get(UPRN))) {
-                            results.put(ontocitygml.get(UPRN), results.get(ontocitygml.get(UPRN)) + 1);
-                        } else {
-                            results.put(ontocitygml.get(UPRN), 1);
-                        }
-                    }
-                }
-                if (!results.isEmpty())
-                    ocgml_bldg = Collections.max(results.entrySet(), Map.Entry.comparingByValue()).getKey();
-            } else {
-                if (ontocitygml.keySet().contains(UPRNS.get(0)))
-                    ocgml_bldg = ontocitygml.get(UPRNS.get(0));
-            }
-            if (!ocgml_bldg.isEmpty()) {
-                Triple triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasOntoCityGMLRepresentation"), NodeFactory.createURI(ocgml_bldg));
-                insertion.addInsert(triple);
-                try {
-                    SelectBuilder geom_query = getGeomQuery(ocgml_bldg);
-//                    JSONArray geom_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, geom_query.buildString());
-                    JSONArray geom_result = ocgml_client.executeQuery(geom_query.buildString());
-                    if (geom_result.length()>1){
-                        Double xsum = 0.0;
-                        Double ysum = 0.0;
-                        Double zsum = 0.0;
-                        Double asum=0.0;
-                        for (int i = 0; i < geom_result.length(); i++) {
-                            String data = geom_result.getJSONObject(i).getString(GEOMETRY_TYPE);
-                            String datatypeIri = geom_result.getJSONObject(i).getString(DATATYPE);
+        // Split set into smaller chunks of max. 100 buildings each
+        int chunksize = 100;
+        int buildings = ontobuilenv.keySet().size();
+        int chunk_count = buildings / chunksize + 1;
 
-                            Polygon polygon = getPolygon(data, datatypeIri);
-                            centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
-                            Double area = polygon.getArea();
-                            xsum += centroid.x * area;
-                            ysum += centroid.y *area;
-                            zsum += centroid.z *area;
-                            asum += area;
-                        }
-                        lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
-                    }
-                    else {
-                        String data = geom_result.getJSONObject(0).getString(GEOMETRY_TYPE);
-                        String datatypeIri = geom_result.getJSONObject(0).getString(DATATYPE);
-                        Polygon polygon = getPolygon(data, datatypeIri);
-                        centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
-                        lat_lon = centroid;
-                    }
-                    StringBuilder value = new StringBuilder();
-                    for (int i = 0; i < 2; i++)
-                        value.append("#").append(lat_lon.getOrdinate(i));
-                    value.deleteCharAt(0);
-                    triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasWGS84LatitudeLongitude"), NodeFactory.createLiteral(value.toString(), new BaseDatatype("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon")));
-                    insertion_centroid.addInsert(triple);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
+        List<Set<String>> chunks = new ArrayList<Set<String>>(chunk_count);
+        for (int i = 0; i < chunk_count; i++) {
+            chunks.add(new HashSet<String>());
         }
 
-        obe_client.executeUpdate(new UpdateRequest().add(insertion.build()).toString());
-        obe_client.executeUpdate(new UpdateRequest().add(insertion_centroid.build()).toString());
+        int index = 0;
+        for (String env_bldg : ontobuilenv.keySet()) {
+            chunks.get(index++ % chunk_count).add(env_bldg);
+        }
+
+        // Match buildings in chunks
+        for (Set<String> chunk : chunks) {
+            for (String env_bldg : chunk) {
+                ArrayList<String> UPRNS = ontobuilenv.get(env_bldg);
+                HashMap<String, Integer> results = new HashMap<>();
+                String ocgml_bldg = "";
+                if (UPRNS.size() > 1) {
+                    for (String UPRN : UPRNS) {
+                        if (ontocitygml.keySet().contains(UPRN)) {
+                            if (results.containsKey(ontocitygml.get(UPRN))) {
+                                results.put(ontocitygml.get(UPRN), results.get(ontocitygml.get(UPRN)) + 1);
+                            } else {
+                                results.put(ontocitygml.get(UPRN), 1);
+                            }
+                        }
+                    }
+                    if (!results.isEmpty())
+                        ocgml_bldg = Collections.max(results.entrySet(), Map.Entry.comparingByValue()).getKey();
+                } else {
+                    if (ontocitygml.keySet().contains(UPRNS.get(0)))
+                        ocgml_bldg = ontocitygml.get(UPRNS.get(0));
+                }
+                if (!ocgml_bldg.isEmpty()) {
+                    Triple triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasOntoCityGMLRepresentation"), NodeFactory.createURI(ocgml_bldg));
+                    insertion.addInsert(triple);
+                    try {
+                        SelectBuilder geom_query = getGeomQuery(ocgml_bldg);
+    //                    JSONArray geom_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, geom_query.buildString());
+                        JSONArray geom_result = ocgml_client.executeQuery(geom_query.buildString());
+                        if (geom_result.length()>1){
+                            Double xsum = 0.0;
+                            Double ysum = 0.0;
+                            Double zsum = 0.0;
+                            Double asum=0.0;
+                            for (int i = 0; i < geom_result.length(); i++) {
+                                String data = geom_result.getJSONObject(i).getString(GEOMETRY_TYPE);
+                                String datatypeIri = geom_result.getJSONObject(i).getString(DATATYPE);
+
+                                Polygon polygon = getPolygon(data, datatypeIri);
+                                centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
+                                Double area = polygon.getArea();
+                                xsum += centroid.x * area;
+                                ysum += centroid.y *area;
+                                zsum += centroid.z *area;
+                                asum += area;
+                            }
+                            lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
+                        }
+                        else {
+                            String data = geom_result.getJSONObject(0).getString(GEOMETRY_TYPE);
+                            String datatypeIri = geom_result.getJSONObject(0).getString(DATATYPE);
+                            Polygon polygon = getPolygon(data, datatypeIri);
+                            centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
+                            lat_lon = centroid;
+                        }
+                        StringBuilder value = new StringBuilder();
+                        for (int i = 0; i < 2; i++)
+                            value.append("#").append(lat_lon.getOrdinate(i));
+                        value.deleteCharAt(0);
+                        triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasWGS84LatitudeLongitude"), NodeFactory.createLiteral(value.toString(), new BaseDatatype("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon")));
+                        insertion_centroid.addInsert(triple);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            obe_client.executeUpdate(new UpdateRequest().add(insertion.build()).toString());
+            obe_client.executeUpdate(new UpdateRequest().add(insertion_centroid.build()).toString());
+        }
     }
 
     private static SelectBuilder ocgmlQueryBuilder() throws ParseException {
