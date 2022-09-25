@@ -154,8 +154,15 @@ An overview of all provided API endpoints and their functionality is provided af
 
 The following workflow refers to the state of the agent as of commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac.
 
-### **1) Ensure instantiated OtoCityGml building data is available**
-The agent requires an available SPARQL endpoint to retrieve instantiated OntoCityGml building data (i.e. EPC data will only be instantiated for buildings with an OntoCityGml representation). This endpoint is specified as `OCGML_ENDPOINT` in the [docker compose file].
+### **1) Ensure instantiated OntoCityGml building data is available**
+The agent requires an available SPARQL endpoint to retrieve instantiated OntoCityGml building data (i.e. EPC data will only be instantiated for buildings with an OntoCityGml representation). This endpoint is specified as `OCGML_ENDPOINT` in the [docker compose file]. The instantiated data needs to contain a coordinate reference system definition in the following form:
+```
+PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#> 
+
+<http://<host>:<port>/blazegraph/namespace/<namespace>/sparql/> ocgml:srsname 'EPSG:<EPSG code>' ;
+																ocgml:srid '1'^^xsd:integer. 
+```
+
 In case the quad data is not already available via a SPARQL endpoint, the following steps can be used:
 
 1) Export OntoCityGml quads from local Blazegraph and unzip file. Rename file to `data.nq` and place it into the `data` folder within this agent.
@@ -177,7 +184,7 @@ Instantiate EPC data for all instantiated UPRNs (and postcodes) send `POST` requ
 
 ### **4) Run Building Matching Agent**
 
-The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit 7100e8466daf6cf1cb56fe86d7c7e3fbf0f922b1. More details can be found in the [Building Matching Readme]:
+The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit 092e750c8fa7a4653b0d4b67b5fd3ff2d643dfcb. More details can be found in the [Building Matching Readme]:
 
 1) Ensure both SPARQL endpoints, i.e. one containing buildings instantiated in OntoCityGML (`ocgml_endpoint`) and one with their OntoBuiltEnv counterparts (`epc_endpoint`), are available. In the following, let's assume the endpoints are:
 
@@ -185,20 +192,15 @@ The following steps refer to the Building Matching agent (on branch `1376-dev-bu
 
     > epc_endpoint: http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql
 
-2) Follow the [Access Agent Readme] to deploy the Access Agent locally within a Docker container. Once the agent is available (at the default port 48888), upload the KG routing information for both endpoints. A `routing_json` template for the endpoints mentioned above can be found in the `./resources/access_agent` folder. From that directory, simply run the following command to upload the routing information:
-    ```
-    bash ./uploadRouting.sh
-    ```
-
-3) Build and start the agent as Docker container by running the following command within the directory where the [Building Matching Readme] is located. Please note that your github username and access token need to be provided as single-word text files `repo_username.txt` and `repo_password.txt` in the [credentials] folder of the Building Matching agent.
+2) Build and start the agent as Docker container by running the following command within the directory where the [Building Matching Readme] is located. Please note that your github username and access token need to be provided as single-word text files `repo_username.txt` and `repo_password.txt` in the [credentials] folder of the Building Matching agent. (Maybe a `--build` flag needs to be added to the docker compose command to force agent rebuild in case a previous version has been used before.)
     ```
     docker-compose up -d
     ```
 
-4) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
+3) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
     ```json
-    { "ocgml": "http://host.docker.internal:48888/ocgml",
-      "buildings": "http://host.docker.internal:48888/buildings",
+    { "ocgml": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql",
+      "obe": "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql",
       "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
     }
     ```
@@ -234,7 +236,6 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- github -->
-[Access Agent Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
