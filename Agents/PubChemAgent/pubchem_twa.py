@@ -6,7 +6,7 @@ def query_with_inchi(inchi):
     IRI = get_iri_data(inchi)
     if IRI:
         # this needs to be implemented
-        data = get_ontospecies_data(IRI)
+        data = get_testontospecies_data(IRI)
         print(data)
         return (data, 'TWA')
     else:

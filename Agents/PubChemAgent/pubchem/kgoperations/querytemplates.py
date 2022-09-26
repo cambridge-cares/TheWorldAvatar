@@ -105,3 +105,12 @@ def ontospecies_data_query(osIRI):
             }
         }""".replace('#osIRI#',osIRI)
     return query
+
+def test_data_query(osIRI):
+    query = """
+    SELECT *
+    WHERE{
+    ?x ?y ?z . 
+    } LIMIT 10
+    """
+    return query

@@ -1,7 +1,8 @@
 from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from pubchem.kgoperations.querykg import querykg
 from pubchem.kgoperations.querytemplates import ontocompchem_data_query, \
-                                             ontospecies_data_query, spec_inchi_query
+                                             ontospecies_data_query, spec_inchi_query, \
+                                                 test_data_query
 import pubchem.unitconverter.unitconverter as unitconv
 
 def get_ontocompchem_data(ocIRI, osIRI):
@@ -19,6 +20,17 @@ def get_ontocompchem_data(ocIRI, osIRI):
 def get_ontospecies_data(osIRI):
     query = ontospecies_data_query(osIRI)
     sparqlendpoint = SPARQL_ENDPOINTS['ontospecies']
+    data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
+
+
+    if data:
+        data = data[0]
+
+    return data
+
+def get_testontospecies_data(osIRI):
+    query = test_data_query(osIRI)
+    sparqlendpoint = 'http://blazegraph/namespace/testontospecies/sparql/'
     data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
 
 
