@@ -15,15 +15,26 @@ def load_infer_data(path):
     return q_list
 
 
-def prase_inference(entitydict, candidate_result):
-    labels = candidate_result['labels']
+#TODO: the mention is lowered case, restore original
+def prase_inference(entitydict, candidate_result, mention_data, one_pass_format=True):
     inferred=[]
-    for qid, ids in enumerate(labels):
-        #print('golden: {}'.format(golden_label))
-        #print(' | '.join(names))
-        inferred_entity_id = entitydict[ids[0]][2]
-        inferred_entity_label = entitydict[ids[0]][0]
-        inferred.append((inferred_entity_id, inferred_entity_label))
+    if one_pass_format:
+        for entry in candidate_result:
+            print(entry)
+            entity_line_idx = int(entry['pred_triples'][0][0])
+            inferred_entity_cid = entitydict[entity_line_idx][2] #The
+            inferred_entity_label = entitydict[entity_line_idx][0]
+            mention = entry['pred_tuples_string'][0][1]
+            inferred.append((inferred_entity_cid, inferred_entity_label, mention))
+    else:
+        labels = candidate_result['labels']
+        for qid, ids in enumerate(labels):
+            #print('golden: {}'.format(golden_label))
+            #print(' | '.join(names))
+            inferred_entity_cid = entitydict[ids[0]][2]
+            inferred_entity_label = entitydict[ids[0]][0]
+            mention = mention_data[qid]['mention']
+            inferred.append((inferred_entity_cid, inferred_entity_label, mention))
 
     #print('Eval: {}/500 not in top 1'.format(not_top))
     return inferred
