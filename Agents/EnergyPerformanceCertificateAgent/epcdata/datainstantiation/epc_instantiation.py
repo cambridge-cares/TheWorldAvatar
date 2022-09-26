@@ -26,7 +26,8 @@ from epcdata.utils.geo_utils import initialise_pyproj_transformer, get_coordinat
                                     create_geojson_feature
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
                                                     obtain_latest_data_for_postcodes
-
+from epcdata.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
+                                         GeoserverClient
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -766,6 +767,12 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     elevations = 0
     footprints = 0
 
+    # Initialise relevant Stack Clients and parameters
+    postgis_client = PostGISClient()
+    gdal_client = GdalClient()
+    geoserver_client = GeoserverClient()
+    feature_type = 'Building'
+
     # Create KG clients if not provided
     if not kgclient_epc:
         kgclient_epc = KGClient(query_endpoint, update_endpoint)
@@ -886,7 +893,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     # Required for Ontop
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
-                    'type': 'building',
+                    'type': feature_type,
                     'building height': float(surf['height'][0])
                 }
                 if surf.get('height').any():
@@ -898,12 +905,28 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
 
                 # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
                 # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
-                rewound = rewind(feature)
-                # Potentially restore json dictionary from returned String by rewind method
-                if type(rewound) is not str:
-                    feature = json.dumps(rewound)
-
-                pass
+                geojson = rewind(feature)
+                # Ensure GeoJSON object is converted to String
+                if type(geojson) is not str:
+                    geojson = json.dumps(geojson)
+                
+                # Upload OBDA mapping and create Geoserver layer when first geospatial
+                # data is uploaded to PostGIS
+                if not postgis_client.check_table_exists():
+                    logger.info('Uploading OBDA mapping ...')
+                    OntopClient.upload_ontop_mapping()
+                    # Initial data upload required to create postGIS table and Geoserver layer            
+                    logger.info('Uploading GeoJSON to PostGIS ...')
+                    gdal_client.uploadGeoJSON(geojson)
+                    logger.info('Creating layer in Geoserver ...')
+                    geoserver_client.create_workspace()
+                    geoserver_client.create_postgis_layer()
+                else:        
+                    # Upload new geospatial information
+                    #if not postgis_client.check_point_feature_exists(lat, lon, feature_type):
+                        logger.info('Uploading GeoJSON to PostGIS ...')
+                        gdal_client.uploadGeoJSON(geojson)
+                
             
 
 
@@ -914,14 +937,14 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             # b) Instantiate/update building elevation
             #
             # Delete (potentially) old building height triples
-            logger.info('Deleting (potentially) outdated elevation triples.')
-            delete_query = delete_old_building_elevation(iris)
-            kgclient_epc.performUpdate(delete_query)
+            # logger.info('Deleting (potentially) outdated elevation triples.')
+            # delete_query = delete_old_building_elevation(iris)
+            # kgclient_epc.performUpdate(delete_query)
 
-            # Instantiate retrieved building elevation for linked buildings
-            logger.info('Instantiating latest elevation triples.')
-            insert_query = instantiate_building_elevation(batch)
-            kgclient_epc.performUpdate(insert_query)
+            # # Instantiate retrieved building elevation for linked buildings
+            # logger.info('Instantiating latest elevation triples.')
+            # insert_query = instantiate_building_elevation(batch)
+            # kgclient_epc.performUpdate(insert_query)
 
 
 
