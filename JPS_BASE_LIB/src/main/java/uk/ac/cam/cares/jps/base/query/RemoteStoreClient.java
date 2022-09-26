@@ -59,31 +59,21 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This class allows to establish connection with remote knowledge
- * repositories
- * <p>
+ * This class allows to establish connection with remote knowledge repositories
  * to perform SPARQL query and update operations. It supports many triple
- * stores
- * <p>
- * such as Blazegraph and RDF4J. It requires to set the end point URL for the
- * <p>
- * intended type of operation. See some example end point URLS:
- * <p>
+ * stores such as Blazegraph and RDF4J. It requires to set the end point URL for
+ * the intended type of operation. See some example end point URLS:
  * <p>
  * Blazegraph query end point URL:
  * http://localhost:8080/blazegraph/namespace/kb/sparql
  * <p>
  * Note that this is for the namespace called "kb". If you have a different
- * namespace,
- * <p>
- * e.g, "ontokin", replace "kb" with "ontokin" in the above URL
- * <p>
+ * namespace, e.g, "ontokin", replace "kb" with "ontokin" in the above URL
  * <p>
  * RDF4J query end point URL:
  * http://localhost:8080/rdf4j-server/repositories/ontospecies
  * <p>
  * Note that this is for the repository called ontospecies.
- * <p>
  * <p>
  * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
  *
@@ -123,11 +113,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update
-     * <p>
-     * EndPoint URL and a set of graphs to send a data retrieval or update
-     * <p>
-     * query.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL and a set of graphs to send a data retrieval or update query.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -152,9 +139,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update
-     * <p>
-     * EndPoint URL, user name and password.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL, user name and password.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -169,11 +155,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update
-     * <p>
-     * EndPoint URL, user name and password and a data retrieval or update
-     * <p>
-     * query.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL, user name and password and a data retrieval or update query.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -320,10 +303,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     // Sparql query and update
     ///////////////////////////
     /**
-     * Executes the update operation that is provided through the constructors
-     * or setter
-     * <p>
-     * method.
+     * Executes the update operation that is provided through the constructors or
+     * setter method.
      *
      * @return
      */
@@ -381,31 +362,29 @@ public class RemoteStoreClient implements StoreClientInterface {
      * entity of response from blazegraph endpoint will be something look like:
      * 
      * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-     * "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv=
-     * "Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade;
-     * by SYSTAP</title
-     * ></head
-     * ><body
+     * "http://www.w3.org/TR/html4/loose.dtd">
+     * <html>
+     * <head>
+     * <meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8">
+     * <title>blazegraph&trade; by SYSTAP</title>
+     * </head>
+     * <body>
      * <p>
      * totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0,
      * whereClause=0ms, deleteClause=0ms, insertClause=0ms
-     * </p
-     * >
+     * </p>
      * <hr>
      * <p>
      * COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1
-     * </p
-     * >
-     * </html
-     * >
+     * </p>
+     * </body>
+     * </html>
      * 
      * So one can parse this string to determine the amount of triples got updated
-     * by
-     * regex matching "mutationCount=(.*)</p".
+     * by regex matching "mutationCount=([0-9]+)".
      * 
      * However, the rdf4j endpoint will only return HTTP 204 No Content status -
-     * there
-     * is no way to know if the SPARQL update actually changed any triples.
+     * there is no way to know if the SPARQL update actually changed any triples.
      * 
      * @param query
      * @return
@@ -467,7 +446,6 @@ public class RemoteStoreClient implements StoreClientInterface {
 
     /**
      * Executes the query that is provided through the constructors or setter
-     * <p>
      * method.
      *
      * @return
@@ -486,9 +464,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Executes the query supplied by the calling method and returns results
-     * <p>
-     * as a JSONArray.
+     * Executes the query supplied by the calling method and returns results as a
+     * JSONArray.
      *
      * @param query
      * @return
@@ -607,9 +584,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Puts the type of an endpoint (e.g. query and update), equal to symbol
-     * <p>
-     * and end point URL in a string and returns the string.
+     * Puts the type of an endpoint (e.g. query and update), equal to symbol and end
+     * point URL in a string and returns the string.
      *
      * @param endpointType
      * @param endpointURL
@@ -676,16 +652,12 @@ public class RemoteStoreClient implements StoreClientInterface {
 
     /**
      * Checks the validity of the URL generated for connecting to a remote
-     * <p>
      * repository based on user provided inputs via one of the parameterised
-     * <p>
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing
-     *                      <p>
-     *                      a connection with the remote repository to perform a
-     *                      query operation
-     *                      <p>
+     * @param connectionUrl provided URL that is to be used for establishing a
+     *                      connection with the remote repository to perform a query
+     *                      operation
      * @return
      */
     public boolean isConnectionQueryUrlValid(String connectionUrl) {
@@ -700,16 +672,12 @@ public class RemoteStoreClient implements StoreClientInterface {
 
     /**
      * Checks the validity of the URL generated for connecting to a remote
-     * <p>
      * repository based on user provided inputs via one of the parameterised
-     * <p>
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing
-     *                      <p>
-     *                      a connection with the remote repository to perform an
+     * @param connectionUrl provided URL that is to be used for establishing a
+     *                      connection with the remote repository to perform an
      *                      update operation
-     *                      <p>
      * @return
      */
     public boolean isConnectionUpdateUrlValid(String connectionUrl) {
@@ -933,10 +901,9 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * upload a file to the endpoint using its REST API
-     * only tested the xml format with Blazegraph and RDF4j, this may vary between
-     * stores
-     * the update endpoint for rdf4j is
+     * upload a file to the endpoint using its REST API only tested the xml format
+     * with Blazegraph and RDF4j, this may vary between stores the update endpoint
+     * for rdf4j is
      * <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
      * The query and update endpoints for Blazegraph are the same
      * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig,
