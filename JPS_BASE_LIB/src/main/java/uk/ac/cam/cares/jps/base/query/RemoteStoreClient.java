@@ -18,7 +18,6 @@ import java.util.Objects;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -47,10 +46,8 @@ import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -342,17 +339,16 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
+
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl());
+                Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                        java.sql.ResultSet.CONCUR_READ_ONLY)) {
             RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            // System.out.println(query);
+            LOGGER.debug("Connection URL = {}", getConnectionUrl());
+            LOGGER.debug("Query = {}", query);
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException("Failed to execute update.", e);
         }
     }
 
@@ -389,7 +385,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param query
      * @return
      */
-    public HttpResponse executeUpdateByPost(String query) {
+    public CloseableHttpResponse executeUpdateByPost(String query) {
         HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
 
         // below lines follow the uploadFile(File file, String extension) method
@@ -404,8 +400,7 @@ public class RemoteStoreClient implements StoreClientInterface {
 
         LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", this.updateEndpoint, query);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             CloseableHttpResponse response = httpclient.execute(postRequest);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < 200 || statusCode > 300) {
@@ -473,24 +468,16 @@ public class RemoteStoreClient implements StoreClientInterface {
     @Override
     public JSONArray executeQuery(String query) {
         JSONArray results = new JSONArray();
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            // System.out.println(query);
+
+        try (Connection conn = DriverManager.getConnection(getConnectionUrl());
+                Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                        java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            LOGGER.debug("Connection URL = {}", getConnectionUrl());
+            LOGGER.debug("Query = {}", query);
             java.sql.ResultSet rs = stmt.executeQuery(query);
             results = convert(rs);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                throw new JPSRuntimeException(e.getMessage(), e);
-            }
+            throw new JPSRuntimeException("Failed to execute query.", e);
         }
         return results;
     }
@@ -790,14 +777,12 @@ public class RemoteStoreClient implements StoreClientInterface {
         BindingSet bSet;
         // Creates a federation with all provided endpoints.
         Repository repository = FedXFactory.createSparqlFederation(endpoints);
-        try {
-            // Establishes a connection with all the endpoints.
-            RepositoryConnection conn = repository.getConnection();
+        try (// Establishes a connection with all the endpoints.
+                RepositoryConnection conn = repository.getConnection()) {
             // Prepares the query for execution against all the endpoints.
             TupleQuery tq = conn.prepareTupleQuery(query);
-            try {
-                // Evaluates the query against all the endpoints.
-                TupleQueryResult tqRes = tq.evaluate();
+            try (// Evaluates the query against all the endpoints.
+                    TupleQueryResult tqRes = tq.evaluate()) {
                 // Processes the result
                 while (tqRes.hasNext()) {
                     obj = new JSONObject();
@@ -819,14 +804,10 @@ public class RemoteStoreClient implements StoreClientInterface {
                     }
                     json.put(obj);
                 }
-            } catch (TupleQueryResultHandlerException e) {
-                e.printStackTrace();
             }
-            conn.close();
-        } catch (RepositoryException e) {
-            e.printStackTrace();
+        } finally {
+            repository.shutDown();
         }
-        repository.shutDown();
         return json;
     }
 
@@ -989,15 +970,13 @@ public class RemoteStoreClient implements StoreClientInterface {
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
+        LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
-
-            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
-                throw new JPSRuntimeException(
-                        "Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
+        try (CloseableHttpClient httpclient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpclient.execute(postRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 300) {
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code = " + statusCode);
             }
         } catch (IOException ex) {
             throw new JPSRuntimeException("Upload RDF file failed.", ex);

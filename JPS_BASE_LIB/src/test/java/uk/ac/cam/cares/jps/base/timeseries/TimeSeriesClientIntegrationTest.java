@@ -294,7 +294,7 @@ public class TimeSeriesClientIntegrationTest {
 			tsClient.deleteIndividualTimeSeries(dataIRI);
 			Assert.fail();
 		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
+			Assert.assertTrue(e.getCause().getMessage().contains("Error occurred during SPARQL query evaluation"));
 		}
 	}
 
@@ -422,13 +422,11 @@ public class TimeSeriesClientIntegrationTest {
 		tsClient.deleteTimeSeries(tsIRI);
 		Assert.assertEquals(1, tsClient.countTimeSeries());
 		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
-		try {
-			tsClient.getTimeSeries(dataIRI_1);
-			Assert.fail();
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage()
-					.contains("<" + dataIRI_1.get(0) + "> does not have an assigned time series instance"));
-		}
+		Exception ex1 = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.getTimeSeries(dataIRI_1));
+		Assert.assertEquals(
+				"TimeSeriesRDBClient: <" + dataIRI_1.get(0) + "> does not have an assigned time series instance",
+				ex1.getMessage());
+
 		TimeSeries<Instant> ts3 = tsClient.getTimeSeries(dataIRI_2);
 		Assert.assertEquals(ts2.getDataIRIs(), ts3.getDataIRIs());
 
@@ -438,13 +436,10 @@ public class TimeSeriesClientIntegrationTest {
 		tsClient.deleteTimeSeries(tsIRI);
 		Assert.assertEquals(0, tsClient.countTimeSeries());
 		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_2.get(0)));
-		try {
-			tsClient.getTimeSeries(dataIRI_2);
-			Assert.fail();
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage()
-					.contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
-		}
+		Exception ex2 = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.getTimeSeries(dataIRI_2));
+		Assert.assertEquals(
+				"TimeSeriesRDBClient: <" + dataIRI_2.get(0) + "> does not have an assigned time series instance",
+				ex2.getMessage());
 	}
 
 	@Test
@@ -458,14 +453,11 @@ public class TimeSeriesClientIntegrationTest {
 		// Interrupt triple store connection
 		blazegraph.stop();
 
-		try {
 			// Delete time series in knowledge base and database
-			tsClient.deleteTimeSeries(tsIRI);
-			Assert.fail();
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
+		Exception ex = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.deleteTimeSeries(tsIRI));
+
+		Assert.assertEquals("Error occurred during SPARQL query evaluation", ex.getCause().getMessage());
 		}
-	}
 
 	@Test
 	public void testDeleteTimeSeriesWithKGDeleteException()
@@ -490,13 +482,11 @@ public class TimeSeriesClientIntegrationTest {
 
 		// Retrieve tsIRI to be deleted
 		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
-		try {
+
 			// Delete time series in knowledge base and database
-			tsClient.deleteTimeSeries(tsIRI);
-			Assert.fail();
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Timeseries " + tsIRI + " was not deleted!"));
-		}
+		Exception ex = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.deleteTimeSeries(tsIRI));
+		Assert.assertEquals("TimeSeriesClient: Timeseries " + tsIRI + " was not deleted!",
+				ex.getMessage());
 
 		// Check that knowledge base and database are still consistent
 		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);

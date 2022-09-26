@@ -2682,8 +2682,8 @@ public class DerivationSparql {
 		try {
 			if (storeClient.getClass() == RemoteStoreClient.class) {
 				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-							.executeUpdateByPost(modify.getQueryString());
+					try (CloseableHttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+							.executeUpdateByPost(modify.getQueryString())) {
 					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
 						String html = EntityUtils.toString(httpResponse.getEntity());
 						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
@@ -2691,12 +2691,13 @@ public class DerivationSparql {
 						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
 							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
 							// the parsed value is greater than 0
-							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-									+ matcher.group(1));
+								LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
+										+ ") executed with mutationCount=" + matcher.group(1));
 							return true;
 						}
-						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-								+ matcher.group(1));
+							LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString() +
+									") executed with mutationCount=" + matcher.group(1));
+					}
 					}
 				} else {
 					storeClient.executeUpdate(modify.getQueryString());
@@ -2840,8 +2841,8 @@ public class DerivationSparql {
 		try {
 			if (storeClient.getClass() == RemoteStoreClient.class) {
 				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-							.executeUpdateByPost(modify.getQueryString());
+					try (CloseableHttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+							.executeUpdateByPost(modify.getQueryString())) {
 					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
 						String html = EntityUtils.toString(httpResponse.getEntity());
 						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
@@ -2849,12 +2850,13 @@ public class DerivationSparql {
 						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
 							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
 							// the parsed value is greater than 0
-							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-									+ matcher.group(1));
+								LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
+										+ ") executed with mutationCount=" + matcher.group(1));
 							return true;
 						}
-						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-								+ matcher.group(1));
+							LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
+									+ ") executed with mutationCount=" + matcher.group(1));
+					}
 					}
 				} else {
 					storeClient.executeUpdate(modify.getQueryString());
