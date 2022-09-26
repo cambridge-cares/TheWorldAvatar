@@ -749,13 +749,14 @@ def summarize_epc_data(data):
     return df
 
 
-def update_building_elevation(query_endpoint=QUERY_ENDPOINT,
+def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                               update_endpoint=UPDATE_ENDPOINT, 
                               ocgml_endpoint=OCGML_ENDPOINT,
                               kgclient_epc=None, kgclient_ocgml=None):
     '''
-        Retrieve building elevation from OntoCityGml SPARQl endpoint and
-        instantiate/update according to OntoBuiltEnv
+        Retrieve relevant building information (i.e. footprint, elevation) from
+        OntoCityGml SPARQl endpoint and instantiate/update according to OntoBuiltEnv
+        (elevation as triples, footprint uploaded to postgis)
     '''
     elevations = 0
 
@@ -777,7 +778,7 @@ def update_building_elevation(query_endpoint=QUERY_ENDPOINT,
                     'instances could be retrieved. Please run Building Matching Agent first.')
     else:
         # Split matches into chunks of max. size n
-        n = 1000
+        n = 100
         batches = [matches[i:i + n] for i in range(0, len(matches), n)]
 
         # Update each chunk of matched buildings

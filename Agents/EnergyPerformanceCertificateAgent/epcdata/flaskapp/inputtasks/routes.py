@@ -15,7 +15,7 @@ from epcdata.kgutils.initialise_ocgml import upload_ocgml_quads
 from epcdata.datainstantiation.postcodes import initialise_postcodes
 from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
                                                         instantiate_epc_data_for_all_postcodes, \
-                                                        update_building_elevation
+                                                        add_ocgml_building_data
 
 
 # Initialise logger
@@ -210,10 +210,10 @@ def api_instantiate_epc_data_for_all_uprns():
 # OntoBuiltEnv building instances with OntoCityGml ones
 #
 
-# Define route for API request to retrieve building elevation from OCGML and 
-# instantiate as OntoBuiltEnv
-@inputtasks_bp.route('/api/epcagent/addElevation', methods=['GET'])
-def api_instantiate_building_elevation():
+# Define route for API request to retrieve relevant building information from OCGML and 
+# instantiate according to OntoBuiltEnv
+@inputtasks_bp.route('/api/epcagent/add/ocgml_info', methods=['GET'])
+def api_add_ocgml_building_data():
     # Check arguments (query parameters)
     if len(request.args) > 0:
         print("Query parameters provided, although not required. " \
@@ -222,7 +222,7 @@ def api_instantiate_building_elevation():
                         Provided arguments will be neglected.")
     try:
         # Retrieve and instantiate building elevation
-        res = update_building_elevation()
+        res = add_ocgml_building_data()
         return jsonify({'status': '200', 'msg': f'Updated building elevations: {res:>5}'})
 
     except Exception as ex:

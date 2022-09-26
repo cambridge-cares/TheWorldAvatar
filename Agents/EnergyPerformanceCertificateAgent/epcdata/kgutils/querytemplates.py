@@ -186,17 +186,20 @@ def get_children_and_parent_building_properties():
 def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint) -> str:
     # Check if any OntoBuiltEnv building has been matched with OntoCityGml representations
     query = f"""
-        SELECT DISTINCT ?obe_bldg ?height ?unit
+        SELECT DISTINCT ?obe_bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom
         WHERE {{
             SERVICE <{obe_endpoint}> {{
                  ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
                 }}
             SERVICE <{ocgml_endpoint}> {{
-                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
-                            <{OCGML_BLDG_HEIGHT_UNIT}> ?unit
+                ?surf <{OCGML_CITYOBJ_ID}> ?ocgml_bldg ;
+       		          <{OCGML_GEOM_TYPE}> ?geom .
+       		    FILTER (!isBlank(?geom))
             }}
         }}
+        LIMIT 100
     """
+    # TODO: Remove limit
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     return query
