@@ -815,7 +815,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         # 3) Process buildings' information in chunks of max. n buildings
         #
         #TODO:UPDATE
-        n = 10
+        n = 100
         bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
         i = 0
@@ -823,6 +823,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             i += 1
             print(f'Instantiating OCGML data chunk {i:>4}/{len(bldg_iris):>4}')
 
+            logger.info(f'Retrieving OCGML data for chunk  {i:>4}/{len(bldg_iris):>4} ...')
             query = get_matched_ocgml_information(obe_endpoint=query_endpoint,
                                                   ocgml_endpoint=ocgml_endpoint,
                                                   bldg_iris=iri_chunk) 
@@ -866,6 +867,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                 # a) Instantiate/update building footprint (in PostGIS)
                 #
                 # Prepare GeoJSON to upload to PostGIS (each building is represented by 2D base polygon)
+                logger.info('Creating GeoJSON feature ...')
                 base_polygon = [[]]
                 for p in all_polygons:
                     # Get entire base polygon (incl. interior rings) and convert to 2D
@@ -875,21 +877,31 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                         # Create list to allow for composite ground surfaces
                         base_polygon[0].append(poly.tolist())
 
-                # Add building height to GeoJSON properties
-                geojson_props = None
+                # Define GeoJSON properties
+                props = {
+                    # Required by DTVF
+                    'iri': b,
+                    'name': b.split('/')[-1].replace('>',''),
+                    'endpoint': QUERY_ENDPOINT,
+                    # Required for Ontop
+                    'geom_iri': b + '/geometry',
+                    # Optional (for styling)
+                    'type': 'building',
+                    'building height': float(surf['height'][0])
+                }
                 if surf.get('height').any():
-                    geojson_props = {'building height': float(surf['height'][0])}
+                    props['building height'] = float(surf['height'][0])
 
                 # Create GeoJSON Feature
-                feature = create_geojson_feature(base_polygon, geojson_props,
+                feature = create_geojson_feature(base_polygon, props,
                                                  crs_name=target_crs)
 
                 # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
                 # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
                 rewound = rewind(feature)
                 # Potentially restore json dictionary from returned String by rewind method
-                if type(rewound) is str:
-                    feature = json.loads(rewound)
+                if type(rewound) is not str:
+                    feature = json.dumps(rewound)
 
                 pass
             
