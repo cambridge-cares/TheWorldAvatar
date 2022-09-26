@@ -17,6 +17,7 @@ setup(
         'flask~=2.1',
         'pandas~=1.3',
         'JayDeBeApi~=1.2',
+        'pyproj~=3.3',
         'py4jps==1.0.22', 
         'requests~=2.27'
     ]

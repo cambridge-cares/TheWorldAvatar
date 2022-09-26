@@ -204,6 +204,18 @@ def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint) -> str:
     query = ' '.join(query.split())
     return query
 
+
+def get_ocgml_crs():
+    # Retrieve coordinate reference system (from OCGML endpoint)
+    query = f"""SELECT ?crs
+        WHERE {{ ?s <{OCGML_SRSNAME}> ?crs . }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 #
 # SPARQL UPDATES
 #

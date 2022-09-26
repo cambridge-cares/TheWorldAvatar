@@ -93,6 +93,7 @@ OCGML_BLDG_HEIGHT = OCGML + 'measuredHeigh'     # typo intended (part of OCGML o
 OCGML_BLDG_HEIGHT_UNIT = OCGML + 'measuredHeightUnit'
 OCGML_CITYOBJ_ID = OCGML + 'cityObjectId'
 OCGML_GEOM_TYPE = OCGML + 'GeometryType'
+OCGML_SRSNAME = OCGML + 'srsname'
 # OntoCityGml / OSID
 OSID_INTERSECTS_FEATURE = OSID + 'intersectsFeature'
 OSID_HAS_VALUE = OSID + 'hasValue'

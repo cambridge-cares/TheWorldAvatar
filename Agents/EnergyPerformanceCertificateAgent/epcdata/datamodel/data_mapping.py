@@ -77,3 +77,9 @@ UNITS_MAPPING = {
      OM_HEIGHT: (OM_M, 'm'),
      OM_AMOUNT_MONEY: (OM_GBP, '£')
 }
+
+# Define full coordinate reference systems (CRS) for pyproj
+CRSs = {'EPSG:27700': 'urn:ogc:def:crs:EPSG::27700',
+        'EPSG:4326': 'urn:ogc:def:crs:EPSG::4326',
+        'crs_84': 'urn:ogc:def:crs:OGC::CRS84'
+        }

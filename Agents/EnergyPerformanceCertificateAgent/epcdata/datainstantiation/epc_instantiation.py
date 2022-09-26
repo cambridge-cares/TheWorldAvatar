@@ -20,6 +20,7 @@ from epcdata.kgutils.kgclient import KGClient
 from epcdata.utils.env_configs import OCGML_ENDPOINT
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from epcdata.kgutils.querytemplates import *
+from epcdata.utils.geo_utils import initialise_pyproj_transformer
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
                                                     obtain_latest_data_for_postcodes
 
@@ -750,15 +751,17 @@ def summarize_epc_data(data):
 
 
 def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
-                              update_endpoint=UPDATE_ENDPOINT, 
-                              ocgml_endpoint=OCGML_ENDPOINT,
-                              kgclient_epc=None, kgclient_ocgml=None):
+                            update_endpoint=UPDATE_ENDPOINT, 
+                            ocgml_endpoint=OCGML_ENDPOINT,
+                            kgclient_epc=None, kgclient_ocgml=None):
     '''
         Retrieve relevant building information (i.e. footprint, elevation) from
         OntoCityGml SPARQl endpoint and instantiate/update according to OntoBuiltEnv
         (elevation as triples, footprint uploaded to postgis)
     '''
+    # Initialise return values
     elevations = 0
+    footprints = 0
 
     # Create KG clients if not provided
     if not kgclient_epc:
@@ -766,17 +769,46 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     if not kgclient_ocgml:
         kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
-    # Query information from matched buildings
-    # [{'unit': '...', 'obe_bldg': '...', 'height': '...'}, ...]
-    query = get_matched_ocgml_information(obe_endpoint=query_endpoint,
-                                          ocgml_endpoint=ocgml_endpoint)
-    matches = kgclient_epc.performQuery(query)
+    # Retrieve Coordinate Reference System form OCGML endpoint
+    query_crs = get_ocgml_crs()
+    try:
+        kg_crs = kgclient_ocgml.performQuery(query_crs)
+        # Unpack queried CRS result to extract coordinate reference system
+        if len(kg_crs) != 1:
+            logger.error('No or multiple CRS detected in SPARQL query result.')
+            raise ValueError('No or multiple CRS detected in SPARQL query result.')
+        else:
+            crs = kg_crs[0]['crs']
+    except KGException as ex:
+        logger.error('Unable to retrieve CRS from OCGML endpoint.')
+        raise KGException('Unable to retrieve CRS from OCGML endpoint.', ex)
+    try:
+        # Initialise Pyproj projection from OCGML CRS to EPSG:4326 (current Postgis default)
+        ocgml_crs = CRSs[crs]
+        target_crs = CRSs['EPSG:4326']
+        trans = initialise_pyproj_transformer(current_crs=ocgml_crs, 
+                                              target_crs=target_crs)
+    except:
+        logger.error('Unable to initialise Pyproj transformation object.')
+   
+    # Query information for matched buildings
+    # [{'obe_bldg': '...', 'surf': '...', 'datatype': '...', 'geom': '...'}, ...]
+    query_geom = get_matched_ocgml_information(obe_endpoint=query_endpoint,
+                                               ocgml_endpoint=ocgml_endpoint) 
+    try:
+        matches = kgclient_epc.performQuery(query_geom)
+    except KGException as ex:
+        logger.error('Unable to retrieve CRS from OCGML endpoint.')
+        raise KGException('Unable to retrieve CRS from OCGML endpoint.', ex)
 
     # Check if buildings have been matched yet
     if not matches:
         logger.warn('No relationships between OntoBuiltEnv and OntoCityGml buildings ' + \
                     'instances could be retrieved. Please run Building Matching Agent first.')
     else:
+        # Create DataFrame from dictionary list
+        results = pd.DataFrame(matches)
+
         # Split matches into chunks of max. size n
         n = 100
         batches = [matches[i:i + n] for i in range(0, len(matches), n)]
