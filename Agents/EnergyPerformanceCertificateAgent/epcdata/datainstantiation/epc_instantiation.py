@@ -7,9 +7,11 @@
 # the energy performance certificates API according to OntoBuiltEnv
 
 import re
+import json
 import uuid
 import numpy as np
 import pandas as pd
+from geojson_rewind import rewind
 
 import agentlogging
 
@@ -20,7 +22,8 @@ from epcdata.kgutils.kgclient import KGClient
 from epcdata.utils.env_configs import OCGML_ENDPOINT
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from epcdata.kgutils.querytemplates import *
-from epcdata.utils.geo_utils import initialise_pyproj_transformer
+from epcdata.utils.geo_utils import initialise_pyproj_transformer, get_coordinates, \
+                                    create_geojson_feature
 from epcdata.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
                                                     obtain_latest_data_for_postcodes
 
@@ -808,7 +811,10 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         logger.warn('No relationships between OntoBuiltEnv and OntoCityGml buildings ' + \
                     'instances could be retrieved. Please run Building Matching Agent first.')
     else: 
-        # Process buildings in chunks of max. n buildings
+        #
+        # 3) Process buildings' information in chunks of max. n buildings
+        #
+        #TODO:UPDATE
         n = 10
         bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
@@ -822,19 +828,79 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                                                   bldg_iris=iri_chunk) 
             try:
                 # Return format
-                # [{'obe_bldg': '...', 'surf': '...', 'datatype': '...', 'geom': '...'}, ...]
+                # [{'obe_bldg': '...', 'surf': '...', 'datatype': '...', 'geom': '...', 'height': '...' }, ...]
                 ocgml_data = kgclient_epc.performQuery(query)
             except KGException as ex:
                 logger.error('Unable to retrieve information for matched buildings.')
                 raise KGException('Unable to retrieve information for matched buildings.', ex)
 
             # Create DataFrame from dictionary list
-            data = pd.DataFrame(ocgml_data)
+            cols = ['obe_bldg', 'surf', 'datatype', 'geom', 'height', 'elevation']
+            data = pd.DataFrame(columns=cols, data=ocgml_data)
+
+            # Iterate through all buildings (each building represents one geospatial feature)
+            for b in data['obe_bldg'].unique():
+                # Extract all floor surface geometries for this building
+                surf = data[data['obe_bldg'] == b]
+                # Initialise list of surface geometry coordinates (polygons)
+                all_polygons = []
+
+                # Iterate through all surface geometries
+                for s in surf['surf'].unique():
+                    # Extract list of linear rings forming this surface polygon
+                    polytype = surf[surf['surf'] == s]['datatype'].values[0]
+                    polydata = surf[surf['surf'] == s]['geom'].values[0]
+                    # Initialise base elevation
+                    base_elevation = np.inf
+                    # Transform coordinates for surface geometry
+                    polygon, zmin = get_coordinates(polydata, polytype, trans, 
+                                                    dimensions=3)
+                    # Append transformed polygon coordinate list as sublist to overall list for building
+                    all_polygons.append(polygon)
+                    # Potentially update min elevation
+                    if zmin < base_elevation:
+                        base_elevation = zmin
+                    data.loc[data['obe_bldg'] == b, 'elevation'] = base_elevation
+
+                #
+                # a) Instantiate/update building footprint (in PostGIS)
+                #
+                # Prepare GeoJSON to upload to PostGIS (each building is represented by 2D base polygon)
+                base_polygon = [[]]
+                for p in all_polygons:
+                    # Get entire base polygon (incl. interior rings) and convert to 2D
+                    for poly in p:
+                        # Trim dimensions from 3D to 2D by dropping Z value
+                        poly = np.array(poly)[:, :2]
+                        # Create list to allow for composite ground surfaces
+                        base_polygon[0].append(poly.tolist())
+
+                # Add building height to GeoJSON properties
+                geojson_props = None
+                if surf.get('height').any():
+                    geojson_props = {'building height': float(surf['height'][0])}
+
+                # Create GeoJSON Feature
+                feature = create_geojson_feature(base_polygon, geojson_props,
+                                                 crs_name=target_crs)
+
+                # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
+                # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
+                rewound = rewind(feature)
+                # Potentially restore json dictionary from returned String by rewind method
+                if type(rewound) is str:
+                    feature = json.loads(rewound)
+
+                pass
+            
+
+
+
+
 
             #
-            # a) Instantiate/update building elevation
+            # b) Instantiate/update building elevation
             #
-
             # Delete (potentially) old building height triples
             logger.info('Deleting (potentially) outdated elevation triples.')
             delete_query = delete_old_building_elevation(iris)
@@ -844,10 +910,6 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             logger.info('Instantiating latest elevation triples.')
             insert_query = instantiate_building_elevation(batch)
             kgclient_epc.performUpdate(insert_query)
-
-            #
-            # b) Instantiate/update building footprint (in PostGIS)
-            #
 
 
 

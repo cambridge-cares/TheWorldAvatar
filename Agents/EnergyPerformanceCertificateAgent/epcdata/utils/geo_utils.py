@@ -64,7 +64,7 @@ def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3
 
     # Initialise output coordinate collection
     polygon = []
-    z_min, z_max = None, None
+    z_min = None
 
     # Retrieve list of polygon's linear rings
     linear_rings, available_dimensions = split_polygon_data(polygon_data, polygon_datatype)
@@ -102,10 +102,9 @@ def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3
         # Convert to numpy array
         coordinates = np.array(coordinates)
 
-        if not z_min and not z_max and dimensions == 3:
-            # Extract min and max Z values from exterior polygon ring
+        if not z_min and dimensions == 3:
+            # Extract min Z values from exterior polygon ring
             z_min = min(coordinates[:, 2])
-            z_max = max(coordinates[:, 2])
 
         # Potentially trim dimensions from 3D to 2D by dropping Z value
         coordinates = coordinates[:, :dimensions]
@@ -116,7 +115,7 @@ def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3
         # Append linear ring to polygon
         polygon.append(coordinates)
 
-    return polygon, z_min, z_max
+    return polygon, z_min
 
 
 def split_polygon_data(polygon_data, polygon_datatype):
@@ -183,3 +182,63 @@ def split_polygon_data(polygon_data, polygon_datatype):
         rings[i] = [float(c) for c in split]
 
     return rings, dimension
+
+
+def add_geometry(coordinates):
+    '''
+        Returns geometry member (Polygon, Multipolygon) for single GeoJSON feature
+
+        Arguments:
+            coordinates - list of polygon coordinates in the form [[[x1,y1,z1],...], [[x2,y2,z2],...], ...]
+
+        Returns:
+            GeoJSON Geometry object as dictionary
+    '''
+
+    if len(coordinates) == 1:
+        # Add single Polygon geometry member if coordinates list contains only coordinates for one surface geometry
+        geometry = {'type': 'Polygon',
+                    'coordinates': coordinates[0]
+                    }
+    else:
+        # Add MultiPolygon geometry member if coordinates list contains coordinates for multiple surface geometries
+        geometry = {'type': 'MultiPolygon',
+                    'coordinates': coordinates
+                    }
+
+    return geometry
+
+
+def create_geojson_feature(polygon_coordinates, properties=None,
+                           crs_name='urn:ogc:def:crs:OGC::CRS84'):
+    '''
+        Creates dictionary for GeoJSON output
+        According to latest standard, all GeoJSON coordinates SHALL be in "urn:ogc:def:crs:OGC::CRS84" (default)
+        The use of alternative CRS is still possible, but STRONGLY advices against
+
+        Arguments:
+            properties - feature properties as dictionary
+            coordinates - list of polygon coordinates (incl. interior rings) in the form
+                          [ [ [[x1,y1,z1], ... ],     poly1 exterior ring
+                              [[x1,y1,z1], ... ],     poly1 interior ring1
+                              ... ],
+                            [ [[x2,y2,z2], ... ],     poly2 exterior ring
+                              ... ],                  poly2 interior ring1
+                          ]
+
+        Returns:
+            GeoJSON Feature object as dictionary
+    '''
+
+    feature = {'type': 'Feature',
+               'geometry': add_geometry(polygon_coordinates)
+               }
+    if properties: feature['properties'] = properties
+
+    # Add CRS member if required
+    if crs_name not in ['urn:ogc:def:crs:OGC::CRS84', 'urn:ogc:def:crs:OGC:1.3:CRS84']:
+        feature['crs'] = {'type': 'name',
+                          'properties': {'name': str(crs_name)}
+                          }
+
+    return feature

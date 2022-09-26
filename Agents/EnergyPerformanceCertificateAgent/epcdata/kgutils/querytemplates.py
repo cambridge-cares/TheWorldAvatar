@@ -204,14 +204,16 @@ def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint, bldg_iris=[]) ->
     values = '<' + values + '>'
 
     query = f"""
-        SELECT DISTINCT ?obe_bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom
+        SELECT DISTINCT ?obe_bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom ?height
         WHERE {{
             SERVICE <{obe_endpoint}> {{
                 VALUES ?obe_bldg {{ {values} }}
                  ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
                 }}
             SERVICE <{ocgml_endpoint}> {{
-                ?surf <{OCGML_CITYOBJ_ID}> ?ocgml_bldg ;
+                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
+                            <{OCGML_FOOTPRINT}> ?footprint .
+                ?surf <{OCGML_ROOT_ID}> ?footprint ;
        		          <{OCGML_GEOM_TYPE}> ?geom .
        		    FILTER (!isBlank(?geom))
             }}
