@@ -9,9 +9,14 @@
 import uuid
 import pandas as pd
 
+import agentlogging
+
 from epcdata.datamodel.iris import *
 from epcdata.datamodel.data_mapping import UNITS_MAPPING
 #from epcdata.kgutils.stackclients import PostGISClient
+
+# Initialise logger
+logger = agentlogging.get_logger("prod")
 
 
 #
@@ -44,19 +49,6 @@ def check_instantiated_local_authority(local_authority_district: str) -> str:
         ?district <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
                   <{OWL_SAMEAS}> ?ons_district .
         ?ons_district <{ONS_NAME}> "{local_authority_district}"
-        }}
-    """
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-    return query
-
-
-def check_building_matching() -> str:
-    # Check if any OntoBuiltEnv building has been matched with OntoCityGml representations
-    query = f"""
-        SELECT ?obe_bldg
-        WHERE {{
-        ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg
         }}
     """
     # Remove unnecessary whitespaces
@@ -188,6 +180,25 @@ def get_children_and_parent_building_properties():
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
 
+    return query
+
+
+def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint) -> str:
+    # Check if any OntoBuiltEnv building has been matched with OntoCityGml representations
+    query = f"""
+        SELECT DISTINCT ?obe_bldg ?height ?unit
+        WHERE {{
+            SERVICE <{obe_endpoint}> {{
+                 ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
+                }}
+            SERVICE <{ocgml_endpoint}> {{
+                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
+                            <{OCGML_BLDG_HEIGHT_UNIT}> ?unit
+            }}
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
     return query
 
 #
@@ -439,41 +450,34 @@ def update_epc_data(property_iri: str = None,
     return query
 
 
-def instantiate_building_elevation(obe_endpoint, ocgml_endpoint):
-    # Retrieve building elevation from OntoCityGml instances and instantiate/update
-    # OntoBuiltEnv information accordingly
+def delete_old_building_elevation(obe_bldg_iris):
+    # Delete (potentially) outdated OntoBuiltEnv building elevation triples
+
+    values = '> <'.join(obe_bldg_iris)
+    values = '<' + values + '>'
+
     query = f"""        
         DELETE {{
-            SERVICE <{obe_endpoint}> {{
-                ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev .
-                ?old_elev <{RDF_TYPE}> ?old_quant_type ;
-                          <{OM_HAS_VALUE}> ?old_measure .
-                ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
-                            <{OM_NUM_VALUE}> ?old_value
+            ?bldg_iri <{OBE_HAS_GROUND_ELEVATION}> ?old_elev .
+            ?old_elev <{RDF_TYPE}> ?old_quant_type ;
+                        <{OM_HAS_VALUE}> ?old_measure .
+            ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
+                            <{OM_NUM_VALUE}> ?old_value ;
                             <{OM_HAS_UNIT}> ?old_unit .
-                ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                      <{OM_SYMBOL}> ?old_unit_symbol 
-            }}
-        }}
-        INSERT {{
-            SERVICE <{obe_endpoint}> {{
-                ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?elev .
-                ?elev <{RDF_TYPE}> <{OM_HEIGHT}> ;
-                      <{OM_HAS_VALUE}> ?measure .
-                ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
-                         <{OM_NUM_VALUE}> ?height ;
-                         <{OM_HAS_UNIT}> ?unit .
-                ?unit <{RDF_TYPE}> <{OM_UNIT}> ;
-                      <{OM_SYMBOL}> ?unit 
+            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
+                        <{OM_SYMBOL}> ?old_unit_symbol 
         }}
         WHERE {{
-            SERVICE <{obe_endpoint}> {{
-                ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg 
-            }}
-            SERVICE <{ocgml_endpoint}> {{
-                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
-                            <{OCGML_BLDG_HEIGHT_UNIT}> ?unit
-            }}
+                VALUES ?bldg_iri {{ {values} }}
+                ?bldg_iri <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
+                OPTIONAL {{ ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev }}
+                            ?old_elev <{RDF_TYPE}> ?old_quant_type ;
+                                      <{OM_HAS_VALUE}> ?old_measure .
+                            ?old_measure <{RDF_TYPE}> ?old_measure_type ;
+                                         <{OM_NUM_VALUE}> ?old_value ;
+                                         <{OM_HAS_UNIT}> ?old_unit .
+                            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
+                                      <{OM_SYMBOL}> ?old_unit_symbol 
         }}
     """
 
@@ -483,34 +487,43 @@ def instantiate_building_elevation(obe_endpoint, ocgml_endpoint):
     return query
 
 
+def instantiate_building_elevation(elevation_data):
+    # Instantiate building elevation (as retrieved from OntoCityGml instances) 
+    # according to OntoBuiltEnv
+    # elevation_data: [{'unit': '...', 'obe_bldg': '...', 'height': '...'}, ...]
 
-# def split_insert_query(triples: str, max: int):
-#     """"
-#         Split large SPARQL insert query into list of smaller chunks (primarily
-#         to avoid heap size/memory issues when executing large SPARQL updated)
+    # Initialise data insert query
+    query = f"INSERT DATA {{"
 
-#         Arguments
-#             triples - original SPARQL update string with individual triples 
-#                       separated by " . ", i.e. in the form
-#                       <s1> <p1> <o1> .
-#                       <s2> <p2> <o2> . 
-#                       ...
-#             max - maximum number of triples per SPARQL update
+    for d in elevation_data:
+        # Create IRIs
+        elevation = KB + 'GroundElevation_' + str(uuid.uuid4())
+        measure = KB + 'Measure_' + str(uuid.uuid4())
+        if d['unit'] == 'm':
+            unit = OM_M
+        else:
+            unit = None
+            logger.warn('Building elevation specified in unknown unit, i.e. not metres.')
 
-#     """
+        # Add triples to instantiate
+        query += f"""
+            <{d['obe_bldg']}> <{OBE_HAS_GROUND_ELEVATION}> <{elevation}> . 
+            <{elevation}> <{RDF_TYPE}> <{OM_HEIGHT}> . 
+            <{elevation}> <{OM_HAS_VALUE}> <{measure}> . 
+            <{measure}> <{RDF_TYPE}> <{OM_MEASURE}> . 
+            <{measure}> <{OM_NUM_VALUE}> "{d['height']}"^^<{XSD_FLOAT}>  . 
+        """
+        if unit:
+            query += f"""
+                <{measure}> <{OM_HAS_UNIT}> <{unit}> . 
+                <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
+                <{unit}> <{OM_SYMBOL}> "{d['unit']}"^^<{XSD_STRING}> . 
+            """
 
-#     # Initialise list of return queries
-#     queries = []
+    # Close query
+    query += f"}}"
 
-#     # Split original query every max'th occurrence of " . " and append queries list
-#     splits = triples.split(' . ')
-#     cutoffs = list(range(0, len(splits), max))
-#     cutoffs.append(len(splits))
-#     for i in range(len(cutoffs)-1):
-#         start = cutoffs[i]
-#         end = cutoffs[i+1]
-#         query = ' . '.join([t for t in splits[start:end]])
-#         query = " INSERT DATA { " + query + " } "
-#         queries.append(query)
-    
-#     return queries
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query

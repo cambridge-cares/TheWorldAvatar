@@ -1,0 +1,4 @@
+// Example HTTP request to initialise the knowledge base at given KG endpoint with TBox and ABox from TWA
+
+GET http://128.199.197.40:5001/api/epcagent/addElevation
+Content-Type: application/json

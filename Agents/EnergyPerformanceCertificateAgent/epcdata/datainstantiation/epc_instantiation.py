@@ -749,10 +749,10 @@ def summarize_epc_data(data):
     return df
 
 
-def instantiate_building_elevation(query_endpoint=QUERY_ENDPOINT,
-                                   update_endpoint=UPDATE_ENDPOINT, 
-                                   ocgml_endpoint=OCGML_ENDPOINT,
-                                   kgclient_epc=None, kgclient_ocgml=None):
+def update_building_elevation(query_endpoint=QUERY_ENDPOINT,
+                              update_endpoint=UPDATE_ENDPOINT, 
+                              ocgml_endpoint=OCGML_ENDPOINT,
+                              kgclient_epc=None, kgclient_ocgml=None):
     '''
         Retrieve building elevation from OntoCityGml SPARQl endpoint and
         instantiate/update according to OntoBuiltEnv
@@ -765,21 +765,47 @@ def instantiate_building_elevation(query_endpoint=QUERY_ENDPOINT,
     if not kgclient_ocgml:
         kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
+    # Query information from matched buildings
+    # [{'unit': '...', 'obe_bldg': '...', 'height': '...'}, ...]
+    query = get_matched_ocgml_information(obe_endpoint=query_endpoint,
+                                          ocgml_endpoint=ocgml_endpoint)
+    matches = kgclient_epc.performQuery(query)
+
     # Check if buildings have been matched yet
-    query = check_building_matching()
-    res = kgclient_epc.performQuery(query)
+    if not matches:
+        logger.warn('No relationships between OntoBuiltEnv and OntoCityGml buildings ' + \
+                    'instances could be retrieved. Please run Building Matching Agent first.')
+    else:
+        # Split matches into chunks of max. size n
+        n = 1000
+        batches = [matches[i:i + n] for i in range(0, len(matches), n)]
 
+        # Update each chunk of matched buildings
+        i = 0
+        for batch in batches:
+            i += 1
+            print(f'Updating building elevation chunk {i:>3}/{len(batches):>3}')
+            elevations += len(batch)
+            # Extract building IRIs
+            iris = [b['obe_bldg'] for b in batch]
 
+            # Delete (potentially) old building height triples
+            logger.info('Deleting (potentially) outdated elevation triples.')
+            delete_query = delete_old_building_elevation(iris)
+            kgclient_epc.performUpdate(delete_query)
+
+            # Instantiate retrieved building elevation for linked buildings
+            logger.info('Instantiating latest elevation triples.')
+            insert_query = instantiate_building_elevation(batch)
+            kgclient_epc.performUpdate(insert_query)
 
     return elevations
 
 
 if __name__ == '__main__':
 
-    # epcs, summaries = instantiate_epc_data_for_all_postcodes()
-    # print(f'Newly instantiated EPCs: {epcs[0]}')
-    # print(f'Updated EPCs: {epcs[1]}')
-    # print(f'Newly instantiated EPC summaries: {summaries[0]}')
-    # print(f'Updated EPC summaries: {summaries[1]}')
-
-    instantiate_building_elevation()
+    epcs, summaries = instantiate_epc_data_for_all_postcodes()
+    print(f'Newly instantiated EPCs: {epcs[0]}')
+    print(f'Updated EPCs: {epcs[1]}')
+    print(f'Newly instantiated EPC summaries: {summaries[0]}')
+    print(f'Updated EPC summaries: {summaries[1]}')

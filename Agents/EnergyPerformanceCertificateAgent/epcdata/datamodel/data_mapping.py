@@ -73,7 +73,6 @@ EPC_DATA = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-     # original OM symbol for °C: '&#x00B0;C'
      OM_AREA: (OM_M2, 'm2'),
      OM_HEIGHT: (OM_M, 'm'),
      OM_AMOUNT_MONEY: (OM_GBP, '£')
