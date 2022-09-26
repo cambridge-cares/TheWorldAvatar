@@ -31,6 +31,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * requires docker to be installed to run, hence the @Ignore until everyone is
  * expected to have docker installed
+ * 
  * @author Kok Foong Lee
  *
  */
@@ -41,13 +42,13 @@ public class RemoteStoreIntegrationTest {
 	@Container
 	private static GenericContainer<?> blazegraph = new GenericContainer<>(
 			DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-												 .withExposedPorts(9999);
-	
+			.withExposedPorts(9999);
+
 	@BeforeAll
 	public static void initialise() throws URISyntaxException {
 		// start containers
 		blazegraph.start();
-		
+
 		String endpoint = new URIBuilder().setScheme("http").setHost(blazegraph.getHost())
 				.setPort(blazegraph.getFirstMappedPort())
 				.setPath("/blazegraph/namespace/kb/sparql").build().toString();
@@ -67,15 +68,17 @@ public class RemoteStoreIntegrationTest {
 	public void testUploadFile() throws URISyntaxException {
 		// getResource returns URL with encodings. convert it to URI to remove them
 		// upload the file testOWL.owl to the test container
-		String filepath = new URI(getClass().getClassLoader().getResource(Paths.get("KBClientTest","testOWL.owl").toString()).toString()).getPath();
+		String filepath = new URI(
+				getClass().getClassLoader().getResource(Paths.get("KBClientTest", "testOWL.owl").toString()).toString())
+				.getPath();
 		File testOwl = new File(filepath);
 		storeClient.uploadFile(testOwl);
-		
+
 		// construct a simple query to check that triples have been uploaded
 		SelectQuery query = Queries.SELECT();
-        query.where(query.var().has(query.var(),query.var()));
-        
-        // length is the number of triples uploaded to blazegraph
+		query.where(query.var().has(query.var(), query.var()));
+
+		// length is the number of triples uploaded to blazegraph
 		Assertions.assertTrue(storeClient.executeQuery(query.getQueryString()).length() > 1);
 	}
 

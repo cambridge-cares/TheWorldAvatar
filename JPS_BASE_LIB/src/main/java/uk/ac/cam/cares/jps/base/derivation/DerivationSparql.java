@@ -189,7 +189,8 @@ public class DerivationSparql {
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<Iri> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
+			List<String> agentURLList, List<List<String>> inputsList, List<Iri> derivationTypeList,
+			List<Boolean> forAsyncUpdateFlagList) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		if (entitiesList.size() != agentIRIList.size()) {
@@ -792,7 +793,7 @@ public class DerivationSparql {
 
 		// query the status and statusType
 		GraphPattern query_gp = GraphPatterns.and(
-			iri(derivation).has(hasStatus, status), status.isA(statusType));
+				iri(derivation).has(hasStatus, status), status.isA(statusType));
 		TriplePattern delete_tp = status.isA(statusType);
 		TriplePattern insert_tp_rdf_type = status.isA(InProgress);
 
@@ -824,7 +825,7 @@ public class DerivationSparql {
 		Variable statusType = query.var();
 
 		GraphPattern query_gp = GraphPatterns.and(
-			iri(derivation).has(hasStatus, status), status.isA(statusType));
+				iri(derivation).has(hasStatus, status), status.isA(statusType));
 		TriplePattern delete_tp = status.isA(statusType);
 		TriplePattern insert_tp_rdf_type = status.isA(Finished);
 
@@ -1655,7 +1656,7 @@ public class DerivationSparql {
 				Entity e = new Entity(eiri);
 				e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
 				e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
-					queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
+						queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
 				entityMap.put(eiri, e);
 			} else {
 				entityMap.get(eiri)
@@ -1674,10 +1675,10 @@ public class DerivationSparql {
 		Variable agentIRI = query.var();
 
 		GraphPattern queryPattern = GraphPatterns.and(
-			downstream.has(isDerivedFrom, iri(derivation))
-			.andHas(RdfPredicate.a, downstreamType)
-			.andHas(isDerivedUsing, agentIRI),
-			new ValuesPattern(downstreamType, Arrays.asList(DerivationAsyn)));
+				downstream.has(isDerivedFrom, iri(derivation))
+						.andHas(RdfPredicate.a, downstreamType)
+						.andHas(isDerivedUsing, agentIRI),
+				new ValuesPattern(downstreamType, Arrays.asList(DerivationAsyn)));
 
 		query.prefix(p_derived, p_agent).select(downstream, agentIRI).where(queryPattern);
 
@@ -1685,8 +1686,8 @@ public class DerivationSparql {
 		Map<String, String> downstreamDerivations = new HashMap<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			downstreamDerivations.put(
-				queryResult.getJSONObject(i).getString(downstream.getQueryString().substring(1)),
-				queryResult.getJSONObject(i).getString(agentIRI.getQueryString().substring(1)));
+					queryResult.getJSONObject(i).getString(downstream.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(agentIRI.getQueryString().substring(1)));
 		}
 		return downstreamDerivations;
 	}
@@ -2849,11 +2850,11 @@ public class DerivationSparql {
 							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
 							// the parsed value is greater than 0
 							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-								+ matcher.group(1));
+									+ matcher.group(1));
 							return true;
 						}
 						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-							+ matcher.group(1));
+								+ matcher.group(1));
 					}
 				} else {
 					storeClient.executeUpdate(modify.getQueryString());

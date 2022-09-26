@@ -60,10 +60,13 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge
- * repositories<p>
+ * repositories
+ * <p>
  * to perform SPARQL query and update operations. It supports many triple
- * stores<p>
- * such as Blazegraph and RDF4J. It requires to set the end point URL for the<p>
+ * stores
+ * <p>
+ * such as Blazegraph and RDF4J. It requires to set the end point URL for the
+ * <p>
  * intended type of operation. See some example end point URLS:
  * <p>
  * <p>
@@ -73,12 +76,14 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * Note that this is for the namespace called "kb". If you have a different
  * namespace,
  * <p>
- * e.g, "ontokin", replace "kb" with "ontokin" in the above URL<p>
+ * e.g, "ontokin", replace "kb" with "ontokin" in the above URL
+ * <p>
  * <p>
  * RDF4J query end point URL:
  * http://localhost:8080/rdf4j-server/repositories/ontospecies
  * <p>
- * Note that this is for the repository called ontospecies.<p>
+ * Note that this is for the repository called ontospecies.
+ * <p>
  * <p>
  * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
  *
@@ -118,8 +123,10 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
-     * EndPoint URL and a set of graphs to send a data retrieval or update<p>
+     * A constructor defined to initialise the query EndPoint URL, update
+     * <p>
+     * EndPoint URL and a set of graphs to send a data retrieval or update
+     * <p>
      * query.
      *
      * @param queryEndpoint
@@ -145,7 +152,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
+     * A constructor defined to initialise the query EndPoint URL, update
+     * <p>
      * EndPoint URL, user name and password.
      *
      * @param queryEndpoint
@@ -161,8 +169,10 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
-     * EndPoint URL, user name and password and a data retrieval or update<p>
+     * A constructor defined to initialise the query EndPoint URL, update
+     * <p>
+     * EndPoint URL, user name and password and a data retrieval or update
+     * <p>
      * query.
      *
      * @param queryEndpoint
@@ -185,7 +195,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String getQuery() {
+    public String getQuery() {
         return query;
     }
 
@@ -196,7 +206,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String setQuery(String query) {
+    public String setQuery(String query) {
         this.query = query;
         return this.query;
     }
@@ -207,7 +217,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String getQueryEndpoint() {
+    public String getQueryEndpoint() {
         return queryEndpoint;
     }
 
@@ -218,7 +228,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String setQueryEndpoint(String queryEndpoint) {
+    public String setQueryEndpoint(String queryEndpoint) {
         this.queryEndpoint = queryEndpoint;
         return this.queryEndpoint;
     }
@@ -229,7 +239,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String getUpdateEndpoint() {
+    public String getUpdateEndpoint() {
         return updateEndpoint;
     }
 
@@ -240,7 +250,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String setUpdateEndpoint(String updateEndpoint) {
+    public String setUpdateEndpoint(String updateEndpoint) {
         this.updateEndpoint = updateEndpoint;
         return this.updateEndpoint;
     }
@@ -251,7 +261,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String getUser() {
+    public String getUser() {
         return userName;
     }
 
@@ -261,7 +271,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param userName
      */
     @Override
-	public void setUser(String userName) {
+    public void setUser(String userName) {
         this.userName = userName;
     }
 
@@ -271,7 +281,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     @Override
-	public String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -281,7 +291,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param password
      */
     @Override
-	public void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -311,7 +321,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     ///////////////////////////
     /**
      * Executes the update operation that is provided through the constructors
-     * or setter<p>
+     * or setter
+     * <p>
      * method.
      *
      * @return
@@ -357,7 +368,7 @@ public class RemoteStoreClient implements StoreClientInterface {
             // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            // System.out.println(query);
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -369,17 +380,31 @@ public class RemoteStoreClient implements StoreClientInterface {
      * instance. This method was tested for blazegraph and rdf4j triple store. The
      * entity of response from blazegraph endpoint will be something look like:
      * 
-     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade; by SYSTAP</title
+     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     * "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv=
+     * "Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade;
+     * by SYSTAP</title
      * ></head
-     * ><body<p>totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0, whereClause=0ms, deleteClause=0ms, insertClause=0ms</p
-     * ><hr><p>COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1</p
-     * ></html
+     * ><body
+     * <p>
+     * totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0,
+     * whereClause=0ms, deleteClause=0ms, insertClause=0ms
+     * </p
+     * >
+     * <hr>
+     * <p>
+     * COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1
+     * </p
+     * >
+     * </html
      * >
      * 
-     * So one can parse this string to determine the amount of triples got updated by
+     * So one can parse this string to determine the amount of triples got updated
+     * by
      * regex matching "mutationCount=(.*)</p".
      * 
-     * However, the rdf4j endpoint will only return HTTP 204 No Content status - there
+     * However, the rdf4j endpoint will only return HTTP 204 No Content status -
+     * there
      * is no way to know if the SPARQL update actually changed any triples.
      * 
      * @param query
@@ -420,7 +445,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return JSONArray as String
      */
     @Override
-	public String execute() {
+    public String execute() {
         return execute(this.query);
     }
 
@@ -431,7 +456,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return JSONArray as String
      */
     @Override
-	public String execute(String query) {
+    public String execute(String query) {
         JSONArray result = executeQuery(query);
         if (result == null) {
             throw new JPSRuntimeException("KnowledgeBaseClient: sparql query result is null.");
@@ -441,7 +466,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Executes the query that is provided through the constructors or setter<p>
+     * Executes the query that is provided through the constructors or setter
+     * <p>
      * method.
      *
      * @return
@@ -460,7 +486,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Executes the query supplied by the calling method and returns results<p>
+     * Executes the query supplied by the calling method and returns results
+     * <p>
      * as a JSONArray.
      *
      * @param query
@@ -476,18 +503,17 @@ public class RemoteStoreClient implements StoreClientInterface {
             // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            // System.out.println(query);
             java.sql.ResultSet rs = stmt.executeQuery(query);
             results = convert(rs);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
-        }
-        finally {
-        	try {
-				conn.close();
-			} catch (SQLException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                throw new JPSRuntimeException(e.getMessage(), e);
+            }
         }
         return results;
     }
@@ -581,7 +607,8 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Puts the type of an endpoint (e.g. query and update), equal to symbol<p>
+     * Puts the type of an endpoint (e.g. query and update), equal to symbol
+     * <p>
      * and end point URL in a string and returns the string.
      *
      * @param endpointType
@@ -648,12 +675,17 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Checks the validity of the URL generated for connecting to a remote<p>
-     * repository based on user provided inputs via one of the parameterised<p>
+     * Checks the validity of the URL generated for connecting to a remote
+     * <p>
+     * repository based on user provided inputs via one of the parameterised
+     * <p>
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing<p>
-     * a connection with the remote repository to perform a query operation<p>
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      <p>
+     *                      a connection with the remote repository to perform a
+     *                      query operation
+     *                      <p>
      * @return
      */
     public boolean isConnectionQueryUrlValid(String connectionUrl) {
@@ -667,12 +699,17 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Checks the validity of the URL generated for connecting to a remote<p>
-     * repository based on user provided inputs via one of the parameterised<p>
+     * Checks the validity of the URL generated for connecting to a remote
+     * <p>
+     * repository based on user provided inputs via one of the parameterised
+     * <p>
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing<p>
-     * a connection with the remote repository to perform an update operation<p>
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      <p>
+     *                      a connection with the remote repository to perform an
+     *                      update operation
+     *                      <p>
      * @return
      */
     public boolean isConnectionUpdateUrlValid(String connectionUrl) {
@@ -701,7 +738,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     private boolean isConnectionUrlValid(String connectionUrl) {
-        String[] tokens = new String[]{""};
+        String[] tokens = new String[] { "" };
         if (connectionUrl.contains(HTTP_PROTOCOL)) {
             tokens = connectionUrl.split(HTTP_PROTOCOL);
         } else if (connectionUrl.contains(HTTPS_PROTOCOL)) {
@@ -767,12 +804,13 @@ public class RemoteStoreClient implements StoreClientInterface {
      * http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql
      *
      * @param endpoints a list of endpoints.
-     * @param query a SPARQL query.
+     * @param query     a SPARQL query.
      * @return
      * @throws Exception
      */
     public JSONArray executeFederatedQuery(List<String> endpoints, String query) throws Exception {
-        // Declares a JSONArray and JSONObject to produce the query output in JSON format. 
+        // Declares a JSONArray and JSONObject to produce the query output in JSON
+        // format.
         JSONArray json = new JSONArray();
         JSONObject obj;
         BindingSet bSet;
@@ -786,7 +824,7 @@ public class RemoteStoreClient implements StoreClientInterface {
             try {
                 // Evaluates the query against all the endpoints.
                 TupleQueryResult tqRes = tq.evaluate();
-                // Processes the result 
+                // Processes the result
                 while (tqRes.hasNext()) {
                     obj = new JSONObject();
                     bSet = tqRes.next();
@@ -799,7 +837,7 @@ public class RemoteStoreClient implements StoreClientInterface {
                             obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
                                     bSet.getValue(bindingName).toString().length() - 1));
                         } // A value found without double quotes is codified as a JSON Object
-                        // without modification.
+                          // without modification.
                         else {
                             obj.put(bindingName, bSet.getValue(bindingName).toString());
 
@@ -837,10 +875,10 @@ public class RemoteStoreClient implements StoreClientInterface {
                 .addConstruct(varS, varP, varO);
 
         if (resourceUrl == null) {
-            //Default graph
+            // Default graph
             builder.addWhere(varS, varP, varO);
         } else {
-            //Named graph
+            // Named graph
             String graphURI = "<" + resourceUrl + ">";
             builder.addGraph(graphURI, varS, varP, varO);
         }
@@ -851,7 +889,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         if (accept != null) {
             syntax = RDFLanguages.contentTypeToLang(accept);
         } else {
-            //default to application/rdf+xml
+            // default to application/rdf+xml
             syntax = Lang.RDFXML;
         }
 
@@ -863,7 +901,7 @@ public class RemoteStoreClient implements StoreClientInterface {
     /**
      * Insert rdf content into store.
      *
-     * @param graphName (if any)
+     * @param graphName   (if any)
      * @param content
      * @param contentType
      */
@@ -874,8 +912,8 @@ public class RemoteStoreClient implements StoreClientInterface {
 
         InputStream in = new ByteArrayInputStream(content.getBytes());
         if (contentType == null) {
-            //RDF/XML default
-            //base=null, assume all uri are absolute
+            // RDF/XML default
+            // base=null, assume all uri are absolute
             model.read(in, null);
         } else {
             Lang syntax = RDFLanguages.contentTypeToLang(contentType);
@@ -896,82 +934,87 @@ public class RemoteStoreClient implements StoreClientInterface {
 
     /**
      * upload a file to the endpoint using its REST API
-     * only tested the xml format with Blazegraph and RDF4j, this may vary between stores
-     * the update endpoint for rdf4j is <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
+     * only tested the xml format with Blazegraph and RDF4j, this may vary between
+     * stores
+     * the update endpoint for rdf4j is
+     * <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
      * The query and update endpoints for Blazegraph are the same
-     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig, nq, rsj, json
+     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig,
+     * nq, rsj, json
      *
      * @param file
      */
     public void uploadFile(File file) {
-    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
-    	uploadFile(file, extension);
+        String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+        uploadFile(file, extension);
     }
-    
+
     /**
      * same method as above but receives extension as a separate argument
+     * 
      * @param file
      * @param extension
      */
     public void uploadFile(File file, String extension) {
-    	if (!file.exists()) {
-    		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
-    	}
-    	
-    	HttpEntity entity;
-    	switch (extension) {
-    		case "rdf":
-    		case "rdfs":
-    		case "owl":
-    		case "xml":
-    			entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
-    			break;
-    		
-    		case "nt":
-    			entity = new FileEntity(file, ContentType.TEXT_PLAIN);
-    			break;
-    			
-    		case "ntx":
-    			entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
-    			break;
+        if (!file.exists()) {
+            throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
+        }
 
-    		case "ttl":
-    			entity = new FileEntity(file, ContentType.create("application/x-turtle"));
-    			break;
-    			
-    		case "ttlx":
-    			entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
-    			break;
-    			
-    		case "n3":
-    			entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
-    			break;
-    			
-    		case "trix":
-    			entity = new FileEntity(file, ContentType.create("application/trix"));
-    			break;
-    			
-    		case "trig":
-    			entity = new FileEntity(file, ContentType.create("application/x-trig"));
-    			break;
-    			
-    		case "nq":
-    			entity = new FileEntity(file, ContentType.create("text/x-nquads"));
-    			break;
-    			
-    		case "srj":
-    			entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
-    			break;
-    			
-    		case "json":
-    			entity = new FileEntity(file, ContentType.APPLICATION_JSON);
-    			break;
-    		
-    		default:
-    			throw new JPSRuntimeException("Unsupported file extension: " + extension);
-    	}
+        HttpEntity entity;
+        switch (extension) {
+            case "rdf":
+            case "rdfs":
+            case "owl":
+            case "xml":
+                entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
+                break;
 
-        // tried a few methods to add credentials, this seems to be the only way that works
+            case "nt":
+                entity = new FileEntity(file, ContentType.TEXT_PLAIN);
+                break;
+
+            case "ntx":
+                entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
+                break;
+
+            case "ttl":
+                entity = new FileEntity(file, ContentType.create("application/x-turtle"));
+                break;
+
+            case "ttlx":
+                entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
+                break;
+
+            case "n3":
+                entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
+                break;
+
+            case "trix":
+                entity = new FileEntity(file, ContentType.create("application/trix"));
+                break;
+
+            case "trig":
+                entity = new FileEntity(file, ContentType.create("application/x-trig"));
+                break;
+
+            case "nq":
+                entity = new FileEntity(file, ContentType.create("text/x-nquads"));
+                break;
+
+            case "srj":
+                entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
+                break;
+
+            case "json":
+                entity = new FileEntity(file, ContentType.APPLICATION_JSON);
+                break;
+
+            default:
+                throw new JPSRuntimeException("Unsupported file extension: " + extension);
+        }
+
+        // tried a few methods to add credentials, this seems to be the only way that
+        // works
         // i.e. setting it manually in the header
         HttpPost postRequest = new HttpPost(this.updateEndpoint);
         if ((this.userName != null) && (this.password != null)) {
@@ -980,7 +1023,7 @@ public class RemoteStoreClient implements StoreClientInterface {
             postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
         }
 
-        // add contents to the post request 
+        // add contents to the post request
         postRequest.setEntity(entity);
 
         LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
@@ -990,7 +1033,8 @@ public class RemoteStoreClient implements StoreClientInterface {
             CloseableHttpResponse response = httpclient.execute(postRequest);
 
             if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
+                throw new JPSRuntimeException(
+                        "Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
             }
         } catch (IOException ex) {
             throw new JPSRuntimeException("Upload RDF file failed.", ex);
