@@ -37,6 +37,7 @@ public interface DerivationAgentInterface {
 	 * isDerivedUsing the instantiated agent.
 	 * 
 	 * @param agentIRI
+	 * @param periodicalTimescale
 	 */
-	void monitorAsyncDerivations(String agentIRI);
+	void monitorAsyncDerivations(String agentIRI, long periodicalTimescale);
 }

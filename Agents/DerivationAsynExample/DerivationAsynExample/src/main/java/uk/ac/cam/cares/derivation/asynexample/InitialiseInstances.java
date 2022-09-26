@@ -158,6 +158,7 @@ public class InitialiseInstances extends JPSAgent {
 		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
 		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
 		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String diff_reverse_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
 
 		// create ontoagent instances
 		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
@@ -168,6 +169,8 @@ public class InitialiseInstances extends JPSAgent {
 				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
 		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
 				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+		sparqlClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
+				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_reverse_rdf_type));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
