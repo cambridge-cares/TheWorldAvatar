@@ -50,6 +50,7 @@ OBE_ROOF = OBE + 'Roof'
 OBE_WINDOWS = OBE + 'Windows'
 OBE_FLOOR = OBE + 'Floor'
 OBE_HAS_LATEST_EPC = OBE + 'hasLatestEPC'
+OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
 
 ###--- IRIs for OntoBuiltEnv ABox ---###
 # http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl
@@ -86,6 +87,10 @@ OBE_HOSPITAL = OBE + 'Hospital_b5997912-1035-4284-ad40-cde44e438485'
 OBE_CLINIC = OBE + 'Clinic_b5997912-1035-4284-ad40-cde44e438485'
 OBE_SCHOOL = OBE + 'School_b5997912-1035-4284-ad40-cde44e438485'
 OBE_UNIVERSITY = OBE + 'University_b5997912-1035-4284-ad40-cde44e438485'
+
+###--- OntoCityGml TBox ---###
+OCGML_BLDG_HEIGHT = OCGML + 'measuredHeigh'     # typo intended (part of OCGML ontology)
+OCGML_BLDG_HEIGHT_UNIT = OCGML + 'measuredHeightUnit'
 
 
 ###--- External IRIs ---###

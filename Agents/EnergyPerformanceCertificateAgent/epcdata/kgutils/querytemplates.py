@@ -51,6 +51,19 @@ def check_instantiated_local_authority(local_authority_district: str) -> str:
     return query
 
 
+def check_building_matching() -> str:
+    # Check if any OntoBuiltEnv building has been matched with OntoCityGml representations
+    query = f"""
+        SELECT ?obe_bldg
+        WHERE {{
+        ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 def instantiated_postalcodes() -> str:
     # Retrieve all instantiated postal codes (per OntoBuiltEnv)
     query = f"""
@@ -424,6 +437,51 @@ def update_epc_data(property_iri: str = None,
         query = None
 
     return query
+
+
+def instantiate_building_elevation(obe_endpoint, ocgml_endpoint):
+    # Retrieve building elevation from OntoCityGml instances and instantiate/update
+    # OntoBuiltEnv information accordingly
+    query = f"""        
+        DELETE {{
+            SERVICE <{obe_endpoint}> {{
+                ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev .
+                ?old_elev <{RDF_TYPE}> ?old_quant_type ;
+                          <{OM_HAS_VALUE}> ?old_measure .
+                ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
+                            <{OM_NUM_VALUE}> ?old_value
+                            <{OM_HAS_UNIT}> ?old_unit .
+                ?old_unit <{RDF_TYPE}> ?old_unit_type ;
+                      <{OM_SYMBOL}> ?old_unit_symbol 
+            }}
+        }}
+        INSERT {{
+            SERVICE <{obe_endpoint}> {{
+                ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?elev .
+                ?elev <{RDF_TYPE}> <{OM_HEIGHT}> ;
+                      <{OM_HAS_VALUE}> ?measure .
+                ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                         <{OM_NUM_VALUE}> ?height ;
+                         <{OM_HAS_UNIT}> ?unit .
+                ?unit <{RDF_TYPE}> <{OM_UNIT}> ;
+                      <{OM_SYMBOL}> ?unit 
+        }}
+        WHERE {{
+            SERVICE <{obe_endpoint}> {{
+                ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg 
+            }}
+            SERVICE <{ocgml_endpoint}> {{
+                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
+                            <{OCGML_BLDG_HEIGHT_UNIT}> ?unit
+            }}
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
 
 
 # def split_insert_query(triples: str, max: int):

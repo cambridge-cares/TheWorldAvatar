@@ -749,10 +749,37 @@ def summarize_epc_data(data):
     return df
 
 
+def instantiate_building_elevation(query_endpoint=QUERY_ENDPOINT,
+                                   update_endpoint=UPDATE_ENDPOINT, 
+                                   ocgml_endpoint=OCGML_ENDPOINT,
+                                   kgclient_epc=None, kgclient_ocgml=None):
+    '''
+        Retrieve building elevation from OntoCityGml SPARQl endpoint and
+        instantiate/update according to OntoBuiltEnv
+    '''
+    elevations = 0
+
+    # Create KG clients if not provided
+    if not kgclient_epc:
+        kgclient_epc = KGClient(query_endpoint, update_endpoint)
+    if not kgclient_ocgml:
+        kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+
+    # Check if buildings have been matched yet
+    query = check_building_matching()
+    res = kgclient_epc.performQuery(query)
+
+
+
+    return elevations
+
+
 if __name__ == '__main__':
 
-    epcs, summaries = instantiate_epc_data_for_all_postcodes()
-    print(f'Newly instantiated EPCs: {epcs[0]}')
-    print(f'Updated EPCs: {epcs[1]}')
-    print(f'Newly instantiated EPC summaries: {summaries[0]}')
-    print(f'Updated EPC summaries: {summaries[1]}')
+    # epcs, summaries = instantiate_epc_data_for_all_postcodes()
+    # print(f'Newly instantiated EPCs: {epcs[0]}')
+    # print(f'Updated EPCs: {epcs[1]}')
+    # print(f'Newly instantiated EPC summaries: {summaries[0]}')
+    # print(f'Updated EPC summaries: {summaries[1]}')
+
+    instantiate_building_elevation()
