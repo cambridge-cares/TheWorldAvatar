@@ -769,10 +769,12 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     if not kgclient_ocgml:
         kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
-    # Retrieve Coordinate Reference System form OCGML endpoint
-    query_crs = get_ocgml_crs()
+    #
+    # 1) Retrieve Coordinate Reference System form OCGML endpoint
+    #
+    query = get_ocgml_crs()
     try:
-        kg_crs = kgclient_ocgml.performQuery(query_crs)
+        kg_crs = kgclient_ocgml.performQuery(query)
         # Unpack queried CRS result to extract coordinate reference system
         if len(kg_crs) != 1:
             logger.error('No or multiple CRS detected in SPARQL query result.')
@@ -790,37 +792,48 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                                               target_crs=target_crs)
     except:
         logger.error('Unable to initialise Pyproj transformation object.')
-   
-    # Query information for matched buildings
-    # [{'obe_bldg': '...', 'surf': '...', 'datatype': '...', 'geom': '...'}, ...]
-    query_geom = get_matched_ocgml_information(obe_endpoint=query_endpoint,
-                                               ocgml_endpoint=ocgml_endpoint) 
+    
+    #
+    # 2) Query information for matched buildings
+    #
+    query = get_matched_buildings()
     try:
-        matches = kgclient_epc.performQuery(query_geom)
+        kg_crs = kgclient_epc.performQuery(query)
+        obe_bldg_iris = [b['obe_bldg'] for b in kg_crs]
     except KGException as ex:
-        logger.error('Unable to retrieve CRS from OCGML endpoint.')
-        raise KGException('Unable to retrieve CRS from OCGML endpoint.', ex)
-
+        logger.error('Unable to retrieve matched buildings from endpoints.')
+        raise KGException('Unable to retrieve matched buildings from endpoints.', ex)
     # Check if buildings have been matched yet
-    if not matches:
+    if not obe_bldg_iris:
         logger.warn('No relationships between OntoBuiltEnv and OntoCityGml buildings ' + \
                     'instances could be retrieved. Please run Building Matching Agent first.')
-    else:
-        # Create DataFrame from dictionary list
-        results = pd.DataFrame(matches)
+    else: 
+        # Process buildings in chunks of max. n buildings
+        n = 10
+        bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
-        # Split matches into chunks of max. size n
-        n = 100
-        batches = [matches[i:i + n] for i in range(0, len(matches), n)]
-
-        # Update each chunk of matched buildings
         i = 0
-        for batch in batches:
+        for iri_chunk in bldg_iris:
             i += 1
-            print(f'Updating building elevation chunk {i:>3}/{len(batches):>3}')
-            elevations += len(batch)
-            # Extract building IRIs
-            iris = [b['obe_bldg'] for b in batch]
+            print(f'Instantiating OCGML data chunk {i:>4}/{len(bldg_iris):>4}')
+
+            query = get_matched_ocgml_information(obe_endpoint=query_endpoint,
+                                                  ocgml_endpoint=ocgml_endpoint,
+                                                  bldg_iris=iri_chunk) 
+            try:
+                # Return format
+                # [{'obe_bldg': '...', 'surf': '...', 'datatype': '...', 'geom': '...'}, ...]
+                ocgml_data = kgclient_epc.performQuery(query)
+            except KGException as ex:
+                logger.error('Unable to retrieve information for matched buildings.')
+                raise KGException('Unable to retrieve information for matched buildings.', ex)
+
+            # Create DataFrame from dictionary list
+            data = pd.DataFrame(ocgml_data)
+
+            #
+            # a) Instantiate/update building elevation
+            #
 
             # Delete (potentially) old building height triples
             logger.info('Deleting (potentially) outdated elevation triples.')
@@ -831,6 +844,12 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             logger.info('Instantiating latest elevation triples.')
             insert_query = instantiate_building_elevation(batch)
             kgclient_epc.performUpdate(insert_query)
+
+            #
+            # b) Instantiate/update building footprint (in PostGIS)
+            #
+
+
 
     return elevations
 

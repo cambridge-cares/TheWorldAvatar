@@ -183,12 +183,31 @@ def get_children_and_parent_building_properties():
     return query
 
 
-def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint) -> str:
-    # Check if any OntoBuiltEnv building has been matched with OntoCityGml representations
+def get_matched_buildings() -> str:
+    # Retrieve all OntoBuiltEnv building with a OntoCityGml representations
+    query = f"""
+        SELECT DISTINCT ?obe_bldg
+        WHERE {{
+            ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
+def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint, bldg_iris=[]) -> str:
+    # Retrieved relevant OCGML information for matched buildings (i.e. OBE building IRIs)
+    
+    # Create list of IRIs of interest
+    values = '> <'.join(bldg_iris)
+    values = '<' + values + '>'
+
     query = f"""
         SELECT DISTINCT ?obe_bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom
         WHERE {{
             SERVICE <{obe_endpoint}> {{
+                VALUES ?obe_bldg {{ {values} }}
                  ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
                 }}
             SERVICE <{ocgml_endpoint}> {{
@@ -197,9 +216,8 @@ def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint) -> str:
        		    FILTER (!isBlank(?geom))
             }}
         }}
-        LIMIT 100
     """
-    # TODO: Remove limit
+
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     return query
@@ -468,6 +486,7 @@ def update_epc_data(property_iri: str = None,
 def delete_old_building_elevation(obe_bldg_iris):
     # Delete (potentially) outdated OntoBuiltEnv building elevation triples
 
+    # Create list of IRIs of interest
     values = '> <'.join(obe_bldg_iris)
     values = '<' + values + '>'
 
