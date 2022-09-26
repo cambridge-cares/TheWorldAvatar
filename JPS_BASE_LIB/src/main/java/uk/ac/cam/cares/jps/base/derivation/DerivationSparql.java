@@ -15,6 +15,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -31,16 +38,9 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
-import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -67,62 +67,62 @@ public class DerivationSparql {
 	private static final Iri PLACEHOLDER_IRI = iri(PLACEHOLDER);
 
 	// status concepts
-	private static String REQUESTED = "Requested";
-	private static String INPROGRESS = "InProgress";
-	private static String FINISHED = "Finished";
+	private static final String REQUESTED = "Requested";
+	private static final String INPROGRESS = "InProgress";
+	private static final String FINISHED = "Finished";
 
 	// derivation types
-	public static String DERIVATION = "Derivation";
-	public static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
-	public static String DERIVATIONASYN = "DerivationAsyn";
-	public static String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
-	public static String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
-	public static String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
+	public static final String DERIVATION = "Derivation";
+	public static final String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
+	public static final String DERIVATIONASYN = "DerivationAsyn";
+	public static final String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
+	public static final String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
+	public static final String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
 
 	// prefix/namespace
-	private static Prefix p_agent = SparqlBuilder.prefix("agent",
+	private static final Prefix p_agent = SparqlBuilder.prefix("agent",
 			iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
-	private static Prefix p_derived = SparqlBuilder.prefix("derived", iri(derivednamespace));
-	private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+	private static final Prefix p_derived = SparqlBuilder.prefix("derived", iri(derivednamespace));
+	private static final Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
 
 	// classes
-	private static Iri Service = p_agent.iri("Service");
-	private static Iri Operation = p_agent.iri("Operation");
-	private static Iri TimePosition = p_time.iri("TimePosition");
-	private static Iri Derivation = p_derived.iri(DERIVATION);
-	private static Iri DerivationWithTimeSeries = p_derived.iri(DERIVATIONWITHTIMESERIES);
-	private static Iri DerivationAsyn = p_derived.iri(DERIVATIONASYN);
-	private static Iri Status = p_derived.iri("Status");
-	private static Iri Requested = p_derived.iri(REQUESTED);
-	private static Iri InProgress = p_derived.iri(INPROGRESS);
-	private static Iri Finished = p_derived.iri(FINISHED);
-	private static Iri InstantClass = p_time.iri("Instant");
+	private static final Iri Service = p_agent.iri("Service");
+	private static final Iri Operation = p_agent.iri("Operation");
+	private static final Iri TimePosition = p_time.iri("TimePosition");
+	private static final Iri Derivation = p_derived.iri(DERIVATION);
+	private static final Iri DerivationWithTimeSeries = p_derived.iri(DERIVATIONWITHTIMESERIES);
+	private static final Iri DerivationAsyn = p_derived.iri(DERIVATIONASYN);
+	private static final Iri Status = p_derived.iri("Status");
+	private static final Iri Requested = p_derived.iri(REQUESTED);
+	private static final Iri InProgress = p_derived.iri(INPROGRESS);
+	private static final Iri Finished = p_derived.iri(FINISHED);
+	private static final Iri InstantClass = p_time.iri("Instant");
 
 	// object properties
-	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
-	private static Iri hasOperation = p_agent.iri("hasOperation");
-	private static Iri hasInput = p_agent.iri("hasInput");
-	private static Iri hasMandatoryPart = p_agent.iri("hasMandatoryPart");
-	private static Iri hasType = p_agent.iri("hasType");
-	private static Iri hasName = p_agent.iri("hasName");
-	private static Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
-	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
-	private static Iri belongsTo = p_derived.iri("belongsTo");
-	private static Iri hasStatus = p_derived.iri("hasStatus");
-	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
-	private static Iri hasTime = p_time.iri("hasTime");
-	private static Iri numericPosition = p_time.iri("numericPosition");
-	private static Iri hasTRS = p_time.iri("hasTRS");
-	private static Iri inTimePosition = p_time.iri("inTimePosition");
+	private static final Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
+	private static final Iri hasOperation = p_agent.iri("hasOperation");
+	private static final Iri hasInput = p_agent.iri("hasInput");
+	private static final Iri hasMandatoryPart = p_agent.iri("hasMandatoryPart");
+	private static final Iri hasType = p_agent.iri("hasType");
+	private static final Iri hasName = p_agent.iri("hasName");
+	private static final Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
+	private static final Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
+	private static final Iri belongsTo = p_derived.iri("belongsTo");
+	private static final Iri hasStatus = p_derived.iri("hasStatus");
+	private static final Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
+	private static final Iri hasTime = p_time.iri("hasTime");
+	private static final Iri numericPosition = p_time.iri("numericPosition");
+	private static final Iri hasTRS = p_time.iri("hasTRS");
+	private static final Iri inTimePosition = p_time.iri("inTimePosition");
 
 	// data properties
-	private static Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
+	private static final Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
 
 	// the derived quantity client relies on matching rdf:type to figure out which
 	// old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list
 	// so that the client can figure out which to use
-	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING), iri(OWL.NAMEDINDIVIDUAL));
+	private static final List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING), iri(OWL.NAMEDINDIVIDUAL));
 
 	//
 	private static final Map<String, StatusType> statusToType;
