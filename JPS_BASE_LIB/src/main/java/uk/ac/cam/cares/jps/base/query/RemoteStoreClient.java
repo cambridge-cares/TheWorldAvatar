@@ -288,7 +288,7 @@ public class RemoteStoreClient implements StoreClientInterface {
             try {
                 // normalise the URI before checking if it contains the "/blazegraph/namespace/"
                 // so that this works on both Linux and Windows OS
-                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath().toString()
+                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath()
                         .contains("/blazegraph/namespace/")) {
                     return true;
                 }
@@ -396,21 +396,21 @@ public class RemoteStoreClient implements StoreClientInterface {
         HttpPost postRequest = new HttpPost(this.updateEndpoint);
         if ((this.userName != null) && (this.password != null)) {
             String auth = this.userName + ":" + this.password;
-            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Executing SPARQL update to " + this.updateEndpoint + ". SPARQL update string: " + query);
+        LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", this.updateEndpoint, query);
         // then send the post request
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             CloseableHttpResponse response = httpclient.execute(postRequest);
-            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 300) {
                 throw new JPSRuntimeException(
-                        "SPARQL update execution by HTTP POST failed. Response status code ="
-                                + response.getStatusLine().getStatusCode());
+                        "SPARQL update execution by HTTP POST failed. Response status code = " + statusCode);
             }
             return response;
         } catch (IOException ex) {
@@ -572,13 +572,13 @@ public class RemoteStoreClient implements StoreClientInterface {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
+            sb.append(generateEndpointProperty(JenaDriver.PARAM_USERNAME, this.userName));
         }
         if (this.password != null) {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
+            sb.append(generateEndpointProperty(JenaDriver.PARAM_PASSWORD, this.password));
         }
         return sb.toString();
     }
@@ -592,11 +592,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     private String generateEndpointProperty(String endpointType, String endpointURL) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(endpointType);
-        sb.append("=");
-        sb.append(endpointURL);
-        return sb.toString();
+        return endpointType + "=" + endpointURL;
     }
 
     /**
@@ -613,37 +609,48 @@ public class RemoteStoreClient implements StoreClientInterface {
         while (rs.next()) {
             int numColumns = rsmd.getColumnCount();
             JSONObject obj = new JSONObject();
-            for (int i = 1; i < numColumns + 1; i++) {
-                String column_name = rsmd.getColumnName(i);
-                if (rsmd.getColumnType(i) == java.sql.Types.ARRAY) {
-                    obj.put(column_name, rs.getArray(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BIGINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BOOLEAN) {
-                    obj.put(column_name, rs.getBoolean(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BLOB) {
-                    obj.put(column_name, rs.getBlob(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DOUBLE) {
-                    obj.put(column_name, rs.getDouble(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.FLOAT) {
-                    obj.put(column_name, rs.getFloat(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.INTEGER) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.NVARCHAR) {
-                    obj.put(column_name, rs.getNString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.VARCHAR) {
-                    obj.put(column_name, rs.getString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TINYINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.SMALLINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DATE) {
-                    obj.put(column_name, rs.getDate(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP) {
-                    obj.put(column_name, rs.getTimestamp(column_name));
-                } else {
-                    obj.put(column_name, rs.getObject(column_name));
+            for (int i = 1; i <= numColumns; i++) {
+                final Object value;
+                String columnName = rsmd.getColumnName(i);
+                switch (rsmd.getColumnType(i)) {
+                    case java.sql.Types.ARRAY:
+                        value = rs.getArray(columnName);
+                        break;
+                    case java.sql.Types.BOOLEAN:
+                        value = rs.getBoolean(columnName);
+                        break;
+                    case java.sql.Types.BLOB:
+                        value = rs.getBlob(columnName);
+                        break;
+                    case java.sql.Types.DOUBLE:
+                        value = rs.getDouble(columnName);
+                        break;
+                    case java.sql.Types.FLOAT:
+                        value = rs.getFloat(columnName);
+                        break;
+                    case java.sql.Types.INTEGER:
+                    case java.sql.Types.TINYINT:
+                    case java.sql.Types.SMALLINT:
+                    case java.sql.Types.BIGINT:
+                        value = rs.getInt(columnName);
+                        break;
+                    case java.sql.Types.NVARCHAR:
+                        value = rs.getNString(columnName);
+                        break;
+                    case java.sql.Types.VARCHAR:
+                        value = rs.getString(columnName);
+                        break;
+                    case java.sql.Types.DATE:
+                        value = rs.getDate(columnName);
+                        break;
+                    case java.sql.Types.TIMESTAMP:
+                        value = rs.getTimestamp(columnName);
+                        break;
+                    default:
+                        value = rs.getObject(columnName);
+                        break;
                 }
+                obj.put(columnName, value);
             }
             json.put(obj);
         }
@@ -731,9 +738,9 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     private String getQueryEndpointConnectionPrfixes() {
         return JenaDriver.DRIVER_PREFIX
-                .concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-                .concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
-                .concat("=");
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_QUERY_ENDPOINT
+                + "=";
     }
 
     /**
@@ -744,9 +751,9 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     private String getUpdateEndpointConnectionPrefixes() {
         return JenaDriver.DRIVER_PREFIX
-                .concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-                .concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
-                .concat("=");
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+                + "=";
     }
 
     /**
@@ -755,8 +762,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @return
      */
     private String getUpdateEndpointConnectionParameter() {
-        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
-                .concat("=");
+        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT + "=";
     }
 
     /**
@@ -927,58 +933,48 @@ public class RemoteStoreClient implements StoreClientInterface {
             throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
         }
 
-        HttpEntity entity;
+        final ContentType contentType;
         switch (extension) {
             case "rdf":
             case "rdfs":
             case "owl":
             case "xml":
-                entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
+                contentType = ContentType.create("application/rdf+xml");
                 break;
-
             case "nt":
-                entity = new FileEntity(file, ContentType.TEXT_PLAIN);
+                contentType = ContentType.TEXT_PLAIN;
                 break;
-
             case "ntx":
-                entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
+                contentType = ContentType.create("application/x-n-triples-RDR");
                 break;
-
             case "ttl":
-                entity = new FileEntity(file, ContentType.create("application/x-turtle"));
+                contentType = ContentType.create("application/x-turtle");
                 break;
-
             case "ttlx":
-                entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
+                contentType = ContentType.create("application/x-turtle-RDR");
                 break;
-
             case "n3":
-                entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
+                contentType = ContentType.create("text/rdf+n3");
                 break;
-
             case "trix":
-                entity = new FileEntity(file, ContentType.create("application/trix"));
+                contentType = ContentType.create("application/trix");
                 break;
-
             case "trig":
-                entity = new FileEntity(file, ContentType.create("application/x-trig"));
+                contentType = ContentType.create("application/x-trig");
                 break;
-
             case "nq":
-                entity = new FileEntity(file, ContentType.create("text/x-nquads"));
+                contentType = ContentType.create("text/x-nquads");
                 break;
-
             case "srj":
-                entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
+                contentType = ContentType.create("application/sparql-results+json");
                 break;
-
             case "json":
-                entity = new FileEntity(file, ContentType.APPLICATION_JSON);
+                contentType = ContentType.APPLICATION_JSON;
                 break;
-
             default:
                 throw new JPSRuntimeException("Unsupported file extension: " + extension);
         }
+        FileEntity entity = new FileEntity(file, contentType);
 
         // tried a few methods to add credentials, this seems to be the only way that
         // works
@@ -986,8 +982,8 @@ public class RemoteStoreClient implements StoreClientInterface {
         HttpPost postRequest = new HttpPost(this.updateEndpoint);
         if ((this.userName != null) && (this.password != null)) {
             String auth = this.userName + ":" + this.password;
-            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
 
         // add contents to the post request
