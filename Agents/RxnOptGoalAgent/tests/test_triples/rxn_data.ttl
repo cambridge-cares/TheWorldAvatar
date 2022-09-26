@@ -24,7 +24,6 @@
 @prefix OntoVapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
 @prefix OntoHPLC:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
 @prefix OntoBPR:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
-@prefix OntoUoM:        <http://theworldavatar.com/resource/ontouom/> .
 
 # specific namespaces for test cases
 @prefix placeholder:     <http://www.placeholder.com/for_species/> .
@@ -221,7 +220,7 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 
 :RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "6.83"^^xsd:double;
 .
 

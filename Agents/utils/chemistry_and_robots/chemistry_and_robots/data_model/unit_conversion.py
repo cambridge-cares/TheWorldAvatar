@@ -17,8 +17,8 @@ class UnitConversionError(Exception):
 # TODO NOTE this information should be queried from KG of Units Of Measure if want to do properly
 # TODO this should be developed as utils that also available to other agents
 MAPPING_UNIT_CONVERSION_FACTOR = {
-    OM_KILOGRAMPERMOLE:{ONTOUOM_GRAMPERMOLE:1e3},
-    ONTOUOM_GRAMPERMOLE:{OM_KILOGRAMPERMOLE:1e-3},
+    OM_KILOGRAMPERMOLE:{OM_GRAMPERMOLE:1e3},
+    OM_GRAMPERMOLE:{OM_KILOGRAMPERMOLE:1e-3},
     OM_LITRE:{OM_MILLILITRE:1e3},
     OM_MILLILITRE:{OM_LITRE:1e-3},
 }

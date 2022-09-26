@@ -48,7 +48,7 @@ def read_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_ext
             hasValue=OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(hplc_report_iri),
-                hasUnit=ONTOUOM_MILLIABSORBANCEUNITMULTIPLIESMINUTE,
+                hasUnit=OM_MILLIABSORBANCEUNITMULTIPLIESMINUTE,
                 hasNumericalValue=float(peak_area[i])
             )
         )

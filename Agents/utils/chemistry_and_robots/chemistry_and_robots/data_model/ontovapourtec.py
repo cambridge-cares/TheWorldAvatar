@@ -402,7 +402,7 @@ class VapourtecRS400(LabEquipment):
         )
         reactor_volume_dq_in_ml = reactor_volume_dq.convert_to(OM_MILLILITRE)
         dct_vol_flowrate = rxn_exp.calculate_volumetric_flow_rate_for_input_chemical(
-            total_flowrate_unit=ONTOUOM_MILLILITREPERMINUTETIME,
+            total_flowrate_unit=OM_MILLILITREPERMINUTETIME,
             # total_flowrate_value = reactor volume / residence time
             total_flowrate_value=reactor_volume_dq_in_ml.hasNumericalValue / res_time_dq_in_min.hasNumericalValue,
             all_solute=rxn_exp.isOccurenceOf.get_list_of_reactant_and_catalyst(),

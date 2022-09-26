@@ -3,7 +3,6 @@
 @prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
 @prefix saref:             <https://saref.etsi.org/core/> .
 @prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
-@prefix ontouom:		<http://theworldavatar.com/resource/ontouom/> .
 @prefix ontorxn:         <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
 @prefix ontogoal:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#> .
 @prefix :                <http://www.example.com/triplestore/ontogoal/rxnopt/> .
@@ -59,7 +58,7 @@
 
 :Desired_Quantity_Measure_2
     a om:Measure;
-    om:hasUnit ontouom:pound_sterling_per_litre;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "0.01"^^xsd:double;
 .
 

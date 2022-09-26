@@ -24,7 +24,6 @@
 @prefix OntoVapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
 @prefix OntoHPLC:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
 @prefix OntoBPR:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
-@prefix OntoUoM:        <http://theworldavatar.com/resource/ontouom/> .
 
 # specific namespaces for test cases
 @prefix placeholder:     <http://www.placeholder.com/for_species/> .
@@ -260,35 +259,35 @@ placeholder:D_S_931_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumeri
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_240.
 placeholder:MaterialCost_Species_240 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_240_V;.
-placeholder:M_C_S_240_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "18.0024"^^xsd:double;.
+placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "18.0024"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasMaterialCost placeholder:MaterialCost_Species_180.
 placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_180_V;.
-placeholder:M_C_S_180_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "6.38176"^^xsd:double;.
+placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;.
 
 placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
 placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
-placeholder:M_C_S_637759_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "500"^^xsd:double;.
+placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
 
 placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
 placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
-placeholder:M_C_S_640180_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "10"^^xsd:double;.
+placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
 placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
-placeholder:M_C_S_14798_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "58.575"^^xsd:double;.
+placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasMaterialCost placeholder:MaterialCost_Species_6342.
 placeholder:MaterialCost_Species_6342 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_6342_V;.
-placeholder:M_C_S_6342_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "8.83"^^xsd:double;.
+placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasMaterialCost placeholder:MaterialCost_Species_702.
 placeholder:MaterialCost_Species_702 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_702_V;.
-placeholder:M_C_S_702_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "8.83"^^xsd:double;.
+placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasMaterialCost placeholder:MaterialCost_Species_931.
 placeholder:MaterialCost_Species_931 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_931_V;.
-placeholder:M_C_S_931_V a om:Measure; om:hasUnit OntoUoM:pound_sterling_per_litre; om:hasNumericalValue "400"^^xsd:double;.
+placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "400"^^xsd:double;.
 
 ###############################################################################
 ## Placeholder EcoScore data -- TODO to find a proper way of representing it ##

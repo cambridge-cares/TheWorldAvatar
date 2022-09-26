@@ -15,7 +15,6 @@
 @prefix ontohplc:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
 @prefix ontobpr:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
 @prefix ontolab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
-@prefix ontouom:        <http://theworldavatar.com/resource/ontouom/> .
 @prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
@@ -198,7 +197,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D1
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "3000"^^xsd:double;
 .
 
@@ -227,7 +226,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 # :V_PA_CP_D2
 #     a om:Measure;
-#     om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
 #     om:hasNumericalValue "3400"^^xsd:double;
 # .
 
@@ -258,7 +257,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D3
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "15000"^^xsd:double;
 .
 
@@ -290,7 +289,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D4
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "20"^^xsd:double;
 .
 
@@ -319,7 +318,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 # :V_PA_CP_D5
 #     a om:Measure;
-#     om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
 #     om:hasNumericalValue "900"^^xsd:double;
 # .
 
@@ -348,7 +347,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 # :V_PA_CP_D6
 #     a om:Measure;
-#     om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
 #     om:hasNumericalValue "150"^^xsd:double;
 # .
 
@@ -377,7 +376,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 # :V_PA_CP_D7
 #     a om:Measure;
-#     om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
 #     om:hasNumericalValue "100"^^xsd:double;
 # .
 
@@ -408,7 +407,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D8
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "120"^^xsd:double;
 .
 
