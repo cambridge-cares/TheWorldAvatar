@@ -7,22 +7,22 @@ import pytest
 import os
 
 @pytest.mark.parametrize(
-    "local_file_path,hplc_digital_twin,remote_report_subdir",
+    "local_file_path,hplc_digital_twin",
     [
-        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value, conftest.SAMPLE_DATA_DIR),
-        (conftest.HPLC_TXT_REPORT_FILE_WITH_SPACE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, conftest.SPACE_DASH_DOT_DIR),
+        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_WITH_SPACE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
     ],
 )
 def test_process_raw_hplc_report_file(
     initialise_triples, generate_random_download_path,
-    local_file_path, hplc_digital_twin, remote_report_subdir
+    local_file_path, hplc_digital_twin
 ):
     sparql_client = initialise_triples
     timestamp_last_modified = os.path.getmtime(local_file_path)
@@ -31,7 +31,7 @@ def test_process_raw_hplc_report_file(
     hplc_report_iri = sparql_client.upload_raw_hplc_report_to_kg(
         local_file_path=local_file_path,
         timestamp_last_modified=timestamp_last_modified,
-        remote_report_subdir=remote_report_subdir,
+        remote_report_subdir='D:\\' + local_file_path, # 'D:\\' is added to test the method is able to cope with a path with a drive letter
         hplc_digital_twin=hplc_digital_twin
     )
     g = Graph()

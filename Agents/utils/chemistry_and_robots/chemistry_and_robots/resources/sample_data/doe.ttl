@@ -52,7 +52,7 @@ OntoDoE:TSEMO
 :ContinuousVariable_1
     rdf:type OntoDoE:ContinuousVariable;
     OntoDoE:refersTo :StoiRatio;
-    OntoDoE:positionalID "2"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
     OntoDoE:upperLimit "10"^^xsd:double;
     OntoDoE:lowerLimit "1"^^xsd:double;
 .
@@ -60,7 +60,7 @@ OntoDoE:TSEMO
 :ContinuousVariable_2
     rdf:type OntoDoE:ContinuousVariable;
     OntoDoE:refersTo :StoiRatio;
-    OntoDoE:positionalID "3"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d"^^xsd:string;
     OntoDoE:upperLimit "0.2"^^xsd:double;
     OntoDoE:lowerLimit "0.02"^^xsd:double;
 .
