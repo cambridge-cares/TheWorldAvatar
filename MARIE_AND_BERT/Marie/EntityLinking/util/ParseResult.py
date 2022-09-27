@@ -24,7 +24,9 @@ def prase_inference(entitydict, candidate_result, mention_data, one_pass_format=
             entity_line_idx = int(entry['pred_triples'][0][0])
             inferred_entity_cid = entitydict[entity_line_idx][2] #The
             inferred_entity_label = entitydict[entity_line_idx][0]
-            mention = entry['pred_tuples_string'][0][1]
+            text = entry['text']
+            mentionbounds = entry['pred_tuples_string'][0][2]
+            mention = text[mentionbounds[0]:mentionbounds[1]]
             inferred.append((inferred_entity_cid, inferred_entity_label, mention))
     else:
         labels = candidate_result['labels']

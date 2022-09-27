@@ -230,11 +230,15 @@ def _process_biencoder_dataloader(samples, tokenizer, biencoder_params, logger):
         )
     else:
         samples_text_tuple = []
+        sample_token_offsets = []
         max_seq_len = 0
         for sample in samples:
-            samples_text_tuple
+            #TODO: MODIFY HERE TO SAVE ORGINAL CHAR OFFSET
             # truncate the end if the sequence is too long...
-            encoded_sample = [101] + tokenizer.encode(sample['text'])[:biencoder_params["max_context_length"]-2] + [102]
+            encodings = tokenizer(sample['text'], return_offsets_mapping=True)
+            sample_token_offsets.append(encodings['offset_mapping'])
+            encoded_sample = [101] + encodings['input_ids'][:biencoder_params["max_context_length"]-2] + [102]
+            #encoded_sample = [101] + tokenizer.encode(sample['text'])[:biencoder_params["max_context_length"]-2] + [102]
             max_seq_len = max(len(encoded_sample), max_seq_len)
             samples_text_tuple.append(encoded_sample + [0 for _ in range(biencoder_params["max_context_length"] - len(encoded_sample))])
 
@@ -246,7 +250,7 @@ def _process_biencoder_dataloader(samples, tokenizer, biencoder_params, logger):
     dataloader = DataLoader(
         tensor_data, sampler=sampler, batch_size=biencoder_params["eval_batch_size"]
     )
-    return dataloader
+    return dataloader, sample_token_offsets
 
 
 def _run_biencoder(
@@ -381,7 +385,7 @@ def _run_biencoder(
 
 def get_predictions(
         args, dataloader, biencoder_params, samples, nns, dists, mention_scores, cand_scores,
-        pred_mention_bounds, id2title, threshold=-2.9, mention_threshold=-0.6931,
+        pred_mention_bounds, id2title, threshold=-2.9, mention_threshold=-0.6931, token_offsets=None
 ):
     """
     Arguments:
@@ -548,9 +552,10 @@ def get_predictions(
                 if errors_f is not None and (num_overlap_weak != len(gold_triples) or num_overlap_weak != len(pred_triples)):
                     errors_f.write(json.dumps(entity_results) + "\n")
             else:
+                this_token_offset = token_offsets[i]
                 entity_results.update({
                     "pred_tuples_string": [
-                        [id2title[triple[0]], tokenizer.decode(input_context[triple[1]:triple[2]])]
+                        [id2title[triple[0]], tokenizer.decode(input_context[triple[1]:triple[2]]), (this_token_offset[triple[1]][0],this_token_offset[triple[2]-1][1])]
                         for triple in pred_triples
                     ],
                     "pred_triples": pred_triples,
@@ -749,7 +754,7 @@ def run(
             samples = test_data
 
         if logger: logger.info("Preparing data for biencoder")
-        dataloader = _process_biencoder_dataloader(
+        dataloader, token_offsets = _process_biencoder_dataloader(
             samples, biencoder.tokenizer, biencoder_params, None,
         )
 
@@ -791,7 +796,7 @@ def run(
             args, dataloader, biencoder_params,
             samples, nns, dists, mention_scores, cand_scores,
             pred_mention_bounds, id2title, threshold=threshold,
-            mention_threshold=mention_threshold,
+            mention_threshold=mention_threshold,token_offsets=token_offsets
         )
 
         print("*--------*")
