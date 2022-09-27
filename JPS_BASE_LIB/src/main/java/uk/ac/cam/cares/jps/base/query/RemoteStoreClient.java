@@ -323,15 +323,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is empty.");
-        }
-        if (isConnectionUpdateUrlValid(connectionUrl)) {
             return executeUpdate(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
-        }
     }
 
     /**
@@ -356,8 +348,16 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     @Override
     public int executeUpdate(String query) {
         try {
-            connect();
-            return stmt.executeUpdate(query);
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is empty.");
+            }
+            if (isConnectionUpdateUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                return stmt.executeUpdate(query);
+            } else {
+                throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
@@ -447,15 +447,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public JSONArray executeQuery() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
-        }
-        if (isConnectionQueryUrlValid(connectionUrl)) {
-            return executeQuery(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
-        }
+        return executeQuery(this.query);
     }
 
     /**
@@ -469,9 +461,17 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     public JSONArray executeQuery(String query) {
         JSONArray results;
         try {
-            connect();
-            java.sql.ResultSet rs = stmt.executeQuery(query);
-            results = StoreClientHelper.convert(rs);
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
+            }
+            if (isConnectionQueryUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                java.sql.ResultSet rs = stmt.executeQuery(query);
+                results = StoreClientHelper.convert(rs);
+            } else {
+                throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
@@ -537,11 +537,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     /**
      * Establishes connection to triple store and sets the Statement Object
      */
-    protected void connect(){
+    protected void connect(String connectionUrl){
         try {
             if (this.conn == null || this.conn.isClosed()) {
                 RemoteEndpointDriver.register();
-                conn = DriverManager.getConnection(getConnectionUrl());
+                conn = DriverManager.getConnection(connectionUrl);
                 stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
             }
         } catch (SQLException e) {
