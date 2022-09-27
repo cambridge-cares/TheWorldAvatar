@@ -40,7 +40,7 @@ def instantiate_stations(station_data: list,
     postgis_client = PostGISClient()
     gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
-    feature_type = 'MetOffice station'
+    feature_type = EMS_REPORTING_STATION
     
     # Initialise update SPARQL query
     query_string = f"""
@@ -66,7 +66,7 @@ def instantiate_stations(station_data: list,
         station_name = feature_type + f' at {lat},{lon}' if not \
                        to_instantiate.get('label') else to_instantiate.get('label')
         geojson = create_geojson_for_postgis(station_IRI, station_name, feature_type,
-                                            lat, lon)
+                                             lat, lon)
 
         # Upload OBDA mapping and create Geoserver layer when first geospatial
         # data is uploaded to PostGIS
