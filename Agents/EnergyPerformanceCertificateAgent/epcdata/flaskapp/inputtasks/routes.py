@@ -223,8 +223,10 @@ def api_add_ocgml_building_data():
     try:
         # Retrieve and instantiate building elevation
         res = add_ocgml_building_data()
-        return jsonify({'status': '200', 'msg': f'Updated building elevations: {res:>5}'})
+        return jsonify({'status': '200', 
+                        'Updated PostGIS footprints': res[1],
+                        'Updated building elevations': res[0]})
 
     except Exception as ex:
-        logger.error("Unable to instantiate OntoBuiltEnv building elevations.", ex)
-        return jsonify({'status': '500', 'msg': f'Instantiating building elevations failed'})
+        logger.error("Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.", ex)
+        return jsonify({'status': '500', 'msg': f'Instantiating OntoCityGml data failed.'})

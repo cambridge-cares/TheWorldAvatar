@@ -821,8 +821,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         #
         # 3) Process buildings' information in chunks of max. n buildings
         #
-        #TODO:UPDATE
-        n = 100
+        n = 500
         bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
         i = 0
@@ -894,10 +893,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
                     'type': feature_type,
-                    'building height': float(surf['height'][0])
                 }
                 if surf.get('height').any():
-                    props['building height'] = float(surf['height'][0])
+                    props['building height'] = float(surf['height'].iloc[0])
 
                 # Create GeoJSON Feature
                 feature = create_geojson_feature(base_polygon, props,
@@ -906,9 +904,14 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                 # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
                 # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
                 geojson = rewind(feature)
-                # Ensure GeoJSON object is converted to String
+                # Extract 'geometry' node and ensure GeoJSON objects are converted to String
+                # (sometimes rewind returns string and sometimes dict)
                 if type(geojson) is not str:
-                    geojson = json.dumps(geojson)
+                    geojson_geom_str = json.dumps(geojson['geometry'])
+                    geojson_str = json.dumps(geojson)
+                else:
+                    geojson_str = geojson
+                    geojson_geom_str = json.dumps(json.loads(geojson_str)['geometry'])
                 
                 # Upload OBDA mapping and create Geoserver layer when first geospatial
                 # data is uploaded to PostGIS
@@ -917,38 +920,39 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     OntopClient.upload_ontop_mapping()
                     # Initial data upload required to create postGIS table and Geoserver layer            
                     logger.info('Uploading GeoJSON to PostGIS ...')
-                    gdal_client.uploadGeoJSON(geojson)
+                    gdal_client.uploadGeoJSON(geojson_str)
+                    footprints += 1
                     logger.info('Creating layer in Geoserver ...')
                     geoserver_client.create_workspace()
                     geoserver_client.create_postgis_layer()
                 else:        
-                    # Upload new geospatial information
-                    #if not postgis_client.check_point_feature_exists(lat, lon, feature_type):
+                    # Upload new geospatial information                    
+                    if not postgis_client.check_polygon_feature_exists(geojson_geom_str, feature_type):
                         logger.info('Uploading GeoJSON to PostGIS ...')
-                        gdal_client.uploadGeoJSON(geojson)
-                
-            
-
-
-
-
+                        gdal_client.uploadGeoJSON(geojson_str)
+                        footprints += 1
 
             #
             # b) Instantiate/update building elevation
             #
             # Delete (potentially) old building height triples
-            # logger.info('Deleting (potentially) outdated elevation triples.')
-            # delete_query = delete_old_building_elevation(iris)
-            # kgclient_epc.performUpdate(delete_query)
+            iris = list(data['obe_bldg'].unique())
+            logger.info('Deleting (potentially) outdated elevation triples ...')
+            delete_query = delete_old_building_elevation(iris)
+            kgclient_epc.performUpdate(delete_query)
+            elevations -= len(iris)
 
-            # # Instantiate retrieved building elevation for linked buildings
-            # logger.info('Instantiating latest elevation triples.')
-            # insert_query = instantiate_building_elevation(batch)
-            # kgclient_epc.performUpdate(insert_query)
+            # Instantiate retrieved building elevation for linked buildings
+            batch = data[['obe_bldg', 'elevation']].copy()
+            batch = batch.drop_duplicates(subset=['obe_bldg'])
+            batch['unit'] = 'm'
+            batch = batch.to_dict('records')
+            logger.info('Instantiating latest elevation triples ...')
+            insert_query = instantiate_building_elevation(batch)
+            kgclient_epc.performUpdate(insert_query)
+            elevations += len(batch)
 
-
-
-    return elevations
+    return (elevations, footprints)
 
 
 if __name__ == '__main__':

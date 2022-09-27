@@ -123,27 +123,36 @@ class PostGISClient:
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
 
-    # def check_polygon_feature_exists(self, lat, lon, feature_type, table=LAYERNAME):
-    #     """
-    #         This function checks whether an identical geo-feature already exists
-    #         in PostGIS table
-    #         Returns True if point already exists, False otherwise
-    #     """
-    #     try:
-    #         with jaydebeapi.connect(*self.conn_props) as conn:
-    #             with conn.cursor() as curs:
-    #                 curs.execute(f'SELECT type=\'{feature_type}\' AND \
-    #                                ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}), 4326)) from {table}')
-    #                 # Fetching the SQL results from the cursor only works on first call
-    #                 # Recurring calls return empty list and curs.execute needs to be run again
-    #                 res = curs.fetchall()
-    #                 # Extract Boolean results from tuples and check for any Trues
-    #                 res = [r[0] for r in res]
-    #                 res = any(res)
-    #                 return res
-    #     except Exception as ex:
-    #         #logger.error(f'Unsuccessful JDBC interaction: {ex}')
-    #         raise StackException(f'Unsuccessful JDBC interaction: {ex}')
+    def check_polygon_feature_exists(self, geojson_geometry, feature_type, table=LAYERNAME):
+        """
+            This function checks whether an identical geo-feature already exists in PostGIS table
+            
+            Arguments:
+                geojson_geometry - GeoJSON Geometry fragments, i.e. only content of
+                                   'geometry' field of entire GeoJSON, e.g.
+                                   '{"type": "Polygon", 
+                                             "coordinates": [[[0.4391965267561903, 52.7499954541537], 
+                                                              [0.43934282344250064, 52.75000143684585], 
+                                                              ... ]]
+                                    }'
+
+            Returns True if point already exists, False otherwise
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                with conn.cursor() as curs:
+                    curs.execute(f'SELECT type=\'{feature_type}\' AND \
+                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_GeomFromGeoJSON(\'{geojson_geometry}\'), 4326)) from {table}')
+                    # Fetching the SQL results from the cursor only works on first call
+                    # Recurring calls return empty list and curs.execute needs to be run again
+                    res = curs.fetchall()
+                    # Extract Boolean results from tuples and check for any Trues
+                    res = [r[0] for r in res]
+                    res = any(res)
+                    return res
+        except Exception as ex:
+            #logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
 
 class GdalClient:

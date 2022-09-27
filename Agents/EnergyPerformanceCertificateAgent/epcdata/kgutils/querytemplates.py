@@ -506,14 +506,15 @@ def delete_old_building_elevation(obe_bldg_iris):
         WHERE {{
                 VALUES ?bldg_iri {{ {values} }}
                 ?bldg_iri <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
-                OPTIONAL {{ ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev }}
-                            ?old_elev <{RDF_TYPE}> ?old_quant_type ;
+                OPTIONAL {{ ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev 
+                OPTIONAL {{ ?old_elev <{RDF_TYPE}> ?old_quant_type ;
                                       <{OM_HAS_VALUE}> ?old_measure .
                             ?old_measure <{RDF_TYPE}> ?old_measure_type ;
-                                         <{OM_NUM_VALUE}> ?old_value ;
-                                         <{OM_HAS_UNIT}> ?old_unit .
+                                         <{OM_NUM_VALUE}> ?old_value }}
+                OPTIONAL {{ ?old_measure <{OM_HAS_UNIT}> ?old_unit .
                             ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                                      <{OM_SYMBOL}> ?old_unit_symbol 
+                                      <{OM_SYMBOL}> ?old_unit_symbol }}
+                }}
         }}
     """
 
@@ -526,7 +527,7 @@ def delete_old_building_elevation(obe_bldg_iris):
 def instantiate_building_elevation(elevation_data):
     # Instantiate building elevation (as retrieved from OntoCityGml instances) 
     # according to OntoBuiltEnv
-    # elevation_data: [{'unit': '...', 'obe_bldg': '...', 'height': '...'}, ...]
+    # elevation_data: [{'unit': '...', 'obe_bldg': '...', 'elevation': '...'}, ...]
 
     # Initialise data insert query
     query = f"INSERT DATA {{"
@@ -547,7 +548,7 @@ def instantiate_building_elevation(elevation_data):
             <{elevation}> <{RDF_TYPE}> <{OM_HEIGHT}> . 
             <{elevation}> <{OM_HAS_VALUE}> <{measure}> . 
             <{measure}> <{RDF_TYPE}> <{OM_MEASURE}> . 
-            <{measure}> <{OM_NUM_VALUE}> "{d['height']}"^^<{XSD_FLOAT}>  . 
+            <{measure}> <{OM_NUM_VALUE}> "{d['elevation']}"^^<{XSD_FLOAT}>  . 
         """
         if unit:
             query += f"""
