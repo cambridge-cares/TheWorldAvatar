@@ -29,7 +29,7 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontordbrouter/hasUrl -->
+    <!-- http://www.theworldavatar.com/kg/ontordbrouter/hasUrl -->
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontordbrouter/hasUrl">
