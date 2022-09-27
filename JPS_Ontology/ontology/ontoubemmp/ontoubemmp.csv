@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoUBEMMP,TBox,http://www.theworldavatar.com/ontology/OntoUBEMMP/OntoUBEMMP.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoUBEMMP,TBox,https://www.theworldavatar.com/kg/ontoubemmp/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoUBEMMP,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoUBEMMP,TBox,Ontology for urban building energy modelling (UBEM) and master planning (MP) data,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoUBEMMP,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
