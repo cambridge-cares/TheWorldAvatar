@@ -104,6 +104,7 @@ class AgentConfig(Config):
     FILE_SERVER_PASSWORD: str
     ONTOAGENT_OPERATION_HTTP_URL: str
     REGISTER_AGENT: bool
+    MAX_THREAD_MONITOR_ASYNC_DERIVATIONS: int = 1
 
 
 def config_derivation_agent(env_file: str = None) -> AgentConfig:

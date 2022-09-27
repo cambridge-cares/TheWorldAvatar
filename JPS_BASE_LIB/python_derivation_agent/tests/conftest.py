@@ -22,6 +22,7 @@ from tests.agents.agents_for_test import RNGAgent
 from tests.agents.agents_for_test import MaxValueAgent
 from tests.agents.agents_for_test import MinValueAgent
 from tests.agents.agents_for_test import DifferenceAgent
+from tests.agents.agents_for_test import DiffReverseAgent
 from tests.agents.agents_for_test import UpdateEndpoint
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -53,6 +54,7 @@ RNGAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.rng.env.test')
 MAXAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.max.env.test')
 MINAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.min.env.test')
 DIFFAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.env.test')
+DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 
 
@@ -240,14 +242,16 @@ def initialise_agent(initialise_triple_store):
         min_agent = create_min_agent(MINAGENT_ENV, endpoint, True)
         max_agent = create_max_agent(MAXAGENT_ENV, endpoint, True)
         diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint, True)
+        diff_reverse_agent = create_diff_reverse_agent(DIFFREVERSEAGENT_ENV, endpoint, True)
 
-        yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
+        yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent
 
         # Tear down scheduler of derivation agents
         rng_agent.scheduler.shutdown()
         min_agent.scheduler.shutdown()
         max_agent.scheduler.shutdown()
         diff_agent.scheduler.shutdown()
+        diff_reverse_agent.scheduler.shutdown()
 
         # Clear logger at the end of the test
         clear_loggers()
@@ -305,6 +309,8 @@ def create_rng_agent(env_file: str = None, sparql_endpoint: str = None, register
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
@@ -355,6 +361,23 @@ def create_diff_agent(env_file: str = None, sparql_endpoint: str = None, registe
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
+        app=Flask(__name__)
+    )
+
+
+def create_diff_reverse_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
+    return DiffReverseAgent(
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
+        max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
         app=Flask(__name__)
     )
 

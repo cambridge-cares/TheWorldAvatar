@@ -1,5 +1,6 @@
 import random
 import uuid
+import time
 
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
@@ -11,6 +12,7 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
 from .sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
+from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
@@ -36,9 +38,11 @@ class UpdateEndpoint(DerivationAgent):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         diff_iri = sparql_client.getDifferenceIRI()
-        diff_derivation = self.derivationClient.getDerivationsOf([diff_iri])[diff_iri]
-        self.derivationClient.unifiedUpdateDerivation(diff_derivation)
-        return {"status": "successfully requested update derivation <" + diff_derivation + ">, will be done in due course"}
+        diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
+        derivations = self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list)
+        for derivation in derivations:
+            self.derivationClient.unifiedUpdateDerivation(derivation)
+        return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
 
 
 class DifferenceAgent(DerivationAgent):
@@ -65,6 +69,36 @@ class DifferenceAgent(DerivationAgent):
         diff_iri = RANDOM_EXAMPLE_BASE_URL + 'Difference_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(diff_iri, RANDOM_EXAMPLE_DIFFERENCE)
         derivation_outputs.addTriple(diff_iri, RANDOM_EXAMPLE_HASVALUE, diff)
+
+
+class DiffReverseAgent(DerivationAgent):
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_MAXVALUE, RANDOM_EXAMPLE_MINVALUE]
+
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_DIFFERENCEREVERSE]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # DiffReverseAgent will sleep for a few seconds before it runs
+        # This is to simulate an agent running long jobs
+        time.sleep(self.time_interval)
+
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
+
+        # Get min and max value
+        max_iri = derivation_inputs.getIris(RANDOM_EXAMPLE_MAXVALUE)[0]
+        max = sparql_client.getValue(max_iri)
+        min_iri = derivation_inputs.getIris(RANDOM_EXAMPLE_MINVALUE)[0]
+        min = sparql_client.getValue(min_iri)
+
+        # Compute difference, write to derivation_outputs
+        diff_reverse = min - max
+        diff_reverse_iri = RANDOM_EXAMPLE_BASE_URL + 'DifferenceReverse_' + str(uuid.uuid4())
+        derivation_outputs.createNewEntity(diff_reverse_iri, RANDOM_EXAMPLE_DIFFERENCEREVERSE)
+        derivation_outputs.addTriple(diff_reverse_iri, RANDOM_EXAMPLE_HASVALUE, diff_reverse)
 
 
 class MaxValueAgent(DerivationAgent):
