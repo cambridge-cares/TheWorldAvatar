@@ -808,8 +808,8 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     #
     query = get_matched_buildings()
     try:
-        kg_crs = kgclient_epc.performQuery(query)
-        obe_bldg_iris = [b['obe_bldg'] for b in kg_crs]
+        kg_bldgs = kgclient_epc.performQuery(query)
+        obe_bldg_iris = [b['obe_bldg'] for b in kg_bldgs]
     except KGException as ex:
         logger.error('Unable to retrieve matched buildings from endpoints.')
         raise KGException('Unable to retrieve matched buildings from endpoints.', ex)
@@ -821,7 +821,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         #
         # 3) Process buildings' information in chunks of max. n buildings
         #
-        n = 100
+        n = 500
         bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
         i = 0

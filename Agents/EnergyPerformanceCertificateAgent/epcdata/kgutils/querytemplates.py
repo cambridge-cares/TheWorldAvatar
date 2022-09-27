@@ -506,7 +506,7 @@ def delete_old_building_elevation(obe_bldg_iris):
         WHERE {{
                 VALUES ?bldg_iri {{ {values} }}
                 ?bldg_iri <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
-                OPTIONAL {{ ?obe_bldg <{OBE_HAS_GROUND_ELEVATION}> ?old_elev 
+                OPTIONAL {{ ?bldg_iri <{OBE_HAS_GROUND_ELEVATION}> ?old_elev 
                 OPTIONAL {{ ?old_elev <{RDF_TYPE}> ?old_quant_type ;
                                       <{OM_HAS_VALUE}> ?old_measure .
                             ?old_measure <{RDF_TYPE}> ?old_measure_type ;

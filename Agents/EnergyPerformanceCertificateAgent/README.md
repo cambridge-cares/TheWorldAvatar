@@ -148,6 +148,9 @@ An overview of all provided API endpoints and their functionality is provided af
 - POST request to instantiate latest EPC building data for all instantiated UPRNs in all instantiated postcodes:
 > `/api/epcagent/instantiate/certificates/all`
 
+- GET request to instantiate/update building footprint and elevation information as instantiated for linked OntoCityGml instance according to OntoBuiltEnv for all buildings:
+> `/api/epcagent/add/ocgml_info`
+
 &nbsp;
 
 # 3. Current EPC data instantiation workflow
@@ -206,10 +209,9 @@ The following steps refer to the Building Matching agent (on branch `1376-dev-bu
     ```
 An [example request] to match the building instances in the previously introduced SPARQL endpoints is also provided.
 
-### **5) Update building height information**
+### **5) Update geospatial representation of buildings in OntoBuiltEnv namespace**
 
-
-### **6) Update geospatial representation of buildings in OntoBuiltEnv namespace**
+To allow for visualisation using the [Digital Twin Visualisation Framework], the geospatial representation of the buildings (i.e. their 2D footprints) needs to be uploaded to PostGIS using the Stack architecture. Running a GET request to the `/api/epcagent/add/ocgml_info` endpoint, queries the building footprints as well as elevations and instantiates them as required by OntoBuiltEnv.
 
 
 &nbsp;
@@ -239,6 +241,7 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
+[Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-dtvf-cesium/web/digital-twin-vis-framework/example-mapbox-vis
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
