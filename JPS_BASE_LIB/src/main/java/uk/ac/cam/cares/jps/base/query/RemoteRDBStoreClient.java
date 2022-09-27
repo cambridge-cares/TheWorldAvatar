@@ -86,7 +86,7 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      * @param query
      * @return query result as a ResultSet
      */
-    public ResultSet executeQuery_ResultSet(String query) {
+    public ResultSet executeQuerytoResultSet(String query) {
         ResultSet rs;
         try {
             if(this.conn == null || stmt==null){
