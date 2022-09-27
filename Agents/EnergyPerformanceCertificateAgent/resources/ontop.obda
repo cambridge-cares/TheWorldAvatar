@@ -1,10 +1,15 @@
 [PrefixDeclaration]
 geo:		http://www.opengis.net/ont/geosparql#
 xsd:		http://www.w3.org/2001/XMLSchema#
+dabgeo:     http://www.purl.org/oema/infrastructure/
 
 [MappingDeclaration] @collection [[
-mappingId   station_location
-target      <{iri}> a geo:Feature ; geo:hasGeometry <{geom_iri}> . 
+mappingId   building_location
+target      <{iri}> a geo:Feature ; 
+                    a dabgeo:Building ; 
+                    geo:hasGeometry <{geom_iri}> . 
             <{geom_iri}> geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
-source      SELECT ST_AsText(wkb_geometry) as wkt, iri, geom_iri FROM metoffice
-]] 
+source      SELECT ST_AsText(wkb_geometry) as wkt, iri, geom_iri, type
+            FROM buildings
+            WHERE type='http://www.purl.org/oema/infrastructure/Building'
+]]

@@ -771,7 +771,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     postgis_client = PostGISClient()
     gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
-    feature_type = 'Building'
+    feature_type = OBE_BUILDING
 
     # Create KG clients if not provided
     if not kgclient_epc:
@@ -821,7 +821,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         #
         # 3) Process buildings' information in chunks of max. n buildings
         #
-        n = 500
+        n = 100
         bldg_iris = [obe_bldg_iris[i:i + n] for i in range(0, len(obe_bldg_iris), n)]
 
         i = 0
