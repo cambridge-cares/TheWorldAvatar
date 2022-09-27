@@ -40,7 +40,7 @@ def instantiate_stations(station_data: list,
     postgis_client = PostGISClient()
     gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
-    feature_type = EMS_REPORTING_STATION
+    feature_type = 'MetOffice Reporting station'
     
     # Initialise update SPARQL query
     query_string = f"""
