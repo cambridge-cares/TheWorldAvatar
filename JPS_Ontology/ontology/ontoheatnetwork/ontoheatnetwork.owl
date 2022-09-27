@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#"
-     xml:base="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl"
-     xmlns:OntoHeatNetwork="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#"
+<rdf:RDF xmlns="http://www.theworldavatar.com/kg/ontoheatnetwork/"
+     xml:base="http://www.theworldavatar.com/kg/ontoheatnetwork/"
+     xmlns:OntoHeatNetwork="http://www.theworldavatar.com/kg/ontoheatnetwork/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 September 2022</dc:date>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 September 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology defined for representing the district heating network </rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -33,7 +33,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasFuelType">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
         <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator and its fuel type</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
@@ -46,8 +46,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasIndividualCO2Emission">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2EmissionInTimeInterval"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2EmissionInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator/plant item and CO2 emission per time interval (in specific time interval)</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has individual CO2 emission</rdfs:label>
@@ -55,12 +55,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCO2Factor -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasCO2Factor -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCO2Factor">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasCO2Factor">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2Factor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2Factor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a fuel and its CO2 factor</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has CO2 factor</rdfs:label>
@@ -68,12 +68,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCoGenElectricityAmount -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasCoGenElectricityAmount -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCoGenElectricityAmount">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasCoGenElectricityAmount">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between gas turbine and co-generated electricity amount</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has co-generated electricity amount</rdfs:label>
@@ -81,12 +81,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasConsumedGasAmount -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasConsumedGasAmount -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasConsumedGasAmount">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasConsumedGasAmount">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator and previous/planned gas amount consumed</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has consumed gas amount</rdfs:label>
@@ -94,11 +94,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCumulativeEnergyCap -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasCumulativeEnergyCap -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCumulativeEnergyCap">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Tier"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasCumulativeEnergyCap">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Tier"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a tier and its cumulative energy cap</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -107,12 +107,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCurrentUnitPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasCurrentUnitPrice -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCurrentUnitPrice">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasCurrentUnitPrice">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatUnitPrice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between contract and current heat unit price based on relative purchases according to tiers</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has current unit price</rdfs:label>
@@ -120,25 +120,25 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasDownstreamGridConnection -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasDownstreamGridConnection -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasDownstreamGridConnection">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and downstream grid connection, i.e., return flow</rdfs:comment>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasDownstreamGridConnection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and downstream grid connection, i.e., flow</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has downstream grid connection</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasGeneratedHeatAmount -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasGeneratedHeatAmount -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasGeneratedHeatAmount">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasGeneratedHeatAmount">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator and previous/planned heat amount generated</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has generated heat amount</rdfs:label>
@@ -146,12 +146,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasHeatDemand -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasHeatDemand -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasHeatDemand">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Consumer"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasHeatDemand">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Consumer"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between consumer and heat demand</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has heat demand</rdfs:label>
@@ -159,12 +159,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasHigherCalorificValue -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasHigherCalorificValue -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasHigherCalorificValue">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasHigherCalorificValue">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a fuel and its higher caloric value</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has higher calorific value</rdfs:label>
@@ -172,12 +172,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasLowerCalorificValue -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasLowerCalorificValue -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasLowerCalorificValue">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasLowerCalorificValue">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a fuel and its lower caloric value</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has lower calorific value</rdfs:label>
@@ -185,10 +185,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMaxAnnualPurchaseVolume -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMaxAnnualPurchaseVolume -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMaxAnnualPurchaseVolume">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMaxAnnualPurchaseVolume">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a contract and maximum quantity to be purchased annually</rdfs:comment>
@@ -198,11 +198,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMaxHourlySupply -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMaxHourlySupply -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMaxHourlySupply">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMaxHourlySupply">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between incineration plant and the maximum heat amount it can provide per hour</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -211,10 +211,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinAnnualPurchaseVolume -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinAnnualPurchaseVolume -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinAnnualPurchaseVolume">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinAnnualPurchaseVolume">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a contract and minimum quantity to be purchased annually, e.g., take or pay contract</rdfs:comment>
@@ -224,11 +224,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinFlowRate -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinFlowRate -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinFlowRate">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinFlowRate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heating network and its minimum volumetric flow rate, i.e., due to minimum pump speed of installed pumps</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -237,11 +237,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinHourlySupply -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinHourlySupply -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinHourlySupply">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinHourlySupply">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between incineration plant and the minimum heat amount it can provide per hour</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -250,11 +250,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumIdleTime -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumIdleTime -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumIdleTime">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumIdleTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Minimum duration between 2 subsequent gas turbine operations (due to technical limits)</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -263,11 +263,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumThermalLoad -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumThermalLoad -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumThermalLoad">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumThermalLoad">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between gas turbine and its minimum thermal load (due to emission regulation)</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -276,11 +276,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasObservableProperties -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasObservableProperties -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasObservableProperties">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasObservableProperties">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between grid connection and observed thermodynamic properties at that location</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -289,19 +289,19 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasOperatingAvailability -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasOperatingAvailability -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasOperatingAvailability">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasOperatingAvailability">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Availability"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Availability"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between incineration plant/heat generator and its anticipated operating availability</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has operating availability</rdfs:label>
@@ -309,12 +309,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasOperatingTime -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasOperatingTime -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasOperatingTime">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DurationInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasOperatingTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/DurationInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator and its previous/planned operating time</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has operating time</rdfs:label>
@@ -322,12 +322,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasProvidedHeatAmount -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasProvidedHeatAmount -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasProvidedHeatAmount">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasProvidedHeatAmount">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between incineration plant and the heat amount it has provided to the network</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has provided heat amount</rdfs:label>
@@ -335,11 +335,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasPurchaseAgreement -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasPurchaseAgreement -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasPurchaseAgreement">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasPurchaseAgreement">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
         <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between municipal utility and the purchase agreement signed in a contract with another heat provider</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -348,11 +348,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasRatedElectricalPower -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasRatedElectricalPower -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasRatedElectricalPower">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasRatedElectricalPower">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between gas turbine and its rated electrical power</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -361,11 +361,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasRatedThermalPower -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasRatedThermalPower -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasRatedThermalPower">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasRatedThermalPower">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat generator and its rated thermal power</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -374,12 +374,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasTier -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasTier -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasTier">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#TieredUnitPrice"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Tier"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasTier">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/TieredUnitPrice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Tier"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between tiered unit price and tier</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has tier</rdfs:label>
@@ -387,12 +387,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasTieredUnitPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasTieredUnitPrice -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasTieredUnitPrice">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasTieredUnitPrice">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#TieredUnitPrice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/TieredUnitPrice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between contract and tiered unit price</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has tiered unit price</rdfs:label>
@@ -400,12 +400,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasUnitPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasUnitPrice -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasUnitPrice">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Tier"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatUnitPrice"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasUnitPrice">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Tier"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a tier and the associated heat unit price</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit price</rdfs:label>
@@ -413,29 +413,29 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasUpstreamGridConnection -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/hasUpstreamGridConnection -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasUpstreamGridConnection">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> A relationship between heat provider and upstream grid connection, i.e., flow</rdfs:comment>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/hasUpstreamGridConnection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and upstream grid connection, i.e., return flow</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has upstream grid connection</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isFulfilledBy -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/isFulfilledBy -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isFulfilledBy">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/isFulfilledBy">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -446,12 +446,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#operates -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/operates -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#operates">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/operates">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between municipal utility and heating network that it operates</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">operates</rdfs:label>
@@ -459,12 +459,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#providesHeatTo -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/providesHeatTo -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#providesHeatTo">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/providesHeatTo">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heat provider and the heating network</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">provides heat to</rdfs:label>
@@ -472,12 +472,12 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#suppliesHeatTo -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/suppliesHeatTo -->
 
 
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#suppliesHeatTo">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Consumer"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/suppliesHeatTo">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/Consumer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heating network and consumer</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">supplies heat to</rdfs:label>
@@ -508,11 +508,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2EmissionInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DurationInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2EmissionInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/DurationInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
                 </owl:unionOf>
@@ -529,8 +529,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heating network and grid connection/grid points</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#h</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has part</rdfs:label>
@@ -545,7 +545,7 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Cost"/>
                 </owl:unionOf>
             </owl:Class>
@@ -561,8 +561,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#hasRevenue">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CoGenRevenueInTimeInterval"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between gas turbine and its co-generated electricity revenue </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has revenue</rdfs:label>
@@ -574,11 +574,11 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isOwnerOf">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ThermalEnergyStorage"/>
                 </owl:unionOf>
             </owl:Class>
@@ -597,14 +597,13 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Availability"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2EmissionInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CoGenRevenueInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DurationInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate
-"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Availability"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2EmissionInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/DurationInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
                 </owl:unionOf>
             </owl:Class>
@@ -624,9 +623,9 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Availability"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalendarEffect"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CoGenRevenueInTimeInterval"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Availability"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast"/>
@@ -653,11 +652,21 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isHoliday -->
+    <!-- http://purl.org/dc/elements/1.1/date -->
 
 
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isHoliday">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalendarEffect"/>
+    <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/date">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/isHoliday -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/isHoliday">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indication whether a particular date is holiday</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -666,11 +675,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isVacation -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/isVacation -->
 
 
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#isVacation">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalendarEffect"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/isVacation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indication whether a particular date is vacation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -747,11 +756,11 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Contract"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatBoiler"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork"/>
-                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Contract"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatBoiler"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -781,23 +790,23 @@
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasCO2Factor"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasCO2Factor"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2Factor"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2Factor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasHigherCalorificValue"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasHigherCalorificValue"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasLowerCalorificValue"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasLowerCalorificValue"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type of fuel used by the heat generator</rdfs:comment>
@@ -807,10 +816,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Availability -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/Availability -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Availability">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Availability">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries"/>
@@ -825,11 +834,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CHPBonus -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CHPBonus -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CHPBonus">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CHPBonus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bonus from combined-heat-and-power gas turbine, i.e., subsidy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CHP bonus</rdfs:label>
@@ -837,11 +846,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2CertificatePrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CO2CertificatePrice -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2CertificatePrice">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2CertificatePrice">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit cost of CO2 emission certificates</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CO2 certificate price</rdfs:label>
@@ -849,10 +858,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2EmissionInTimeInterval -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CO2EmissionInTimeInterval -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2EmissionInTimeInterval">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2EmissionInTimeInterval">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CO2 emission generated in specific time interval</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
@@ -861,10 +870,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2Factor -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CO2Factor -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CO2Factor">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CO2Factor">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of carbon dioxide produced per megawatt-hour of energy produced from a given fossil fuel source</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -873,10 +882,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalendarEffect -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalendarEffect">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries"/>
@@ -891,10 +900,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CalorificValue">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CalorificValue">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total energy released as heat when a substance undergoes complete combustion with oxygen under standard conditions</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -903,10 +912,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CoGenRevenueInTimeInterval -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CoGenRevenueInTimeInterval">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -922,10 +931,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Consumer -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/Consumer -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Consumer">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Consumer">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Individuals or businesses or a group thereof that consume heat </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Consumer</rdfs:label>
@@ -933,17 +942,17 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Contract -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/Contract -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Contract"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Contract"/>
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Cost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In a particular time interval</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -952,11 +961,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DemandDrivenWearCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/DemandDrivenWearCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DemandDrivenWearCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/DemandDrivenWearCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost per megawatt hour for wear</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Demand driven wear cost</rdfs:label>
@@ -964,10 +973,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DurationInTimeInterval -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/DurationInTimeInterval -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#DurationInTimeInterval">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/DurationInTimeInterval">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In a particular time interval</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -976,11 +985,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#ElectricitySpotPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/ElectricitySpotPrice -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#ElectricitySpotPrice">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/ElectricitySpotPrice">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electricity spot price for sold electricity</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electricity spot price</rdfs:label>
@@ -988,11 +997,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EmissionCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/EmissionCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EmissionCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/EmissionCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes carbon emission cost associated with heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emission cost</rdfs:label>
@@ -1000,10 +1009,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#EnergyInTimeInterval">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/EnergyInTimeInterval">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In a particular time interval</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -1012,11 +1021,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/FixedCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/FixedCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all fixed cost associated with heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fixed cost</rdfs:label>
@@ -1024,11 +1033,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedWearCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/FixedWearCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedWearCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/FixedWearCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/FixedCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fixed wear cost for gas turbine</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fixed wear cost</rdfs:label>
@@ -1036,11 +1045,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FuelCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/FuelCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FuelCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/FuelCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost for the fuel that is used by heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fuel cost</rdfs:label>
@@ -1048,11 +1057,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FuelUnitCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/FuelUnitCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FuelUnitCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/FuelUnitCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit cost for used fuel</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fuel unit cost</rdfs:label>
@@ -1060,21 +1069,21 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasTurbine">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumIdleTime"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumIdleTime"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinimumThermalLoad"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinimumThermalLoad"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
             </owl:Restriction>
@@ -1086,11 +1095,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasUnitCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/GasUnitCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GasUnitCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FuelUnitCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/GasUnitCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/FuelUnitCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit cost for used natural gas</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gas unit cost</rdfs:label>
@@ -1098,11 +1107,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridCharges -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/GridCharges -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridCharges">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/GridCharges">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saved grid charges for each “avoided” MWh electricity sourced from the grid</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grid charges</rdfs:label>
@@ -1110,10 +1119,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#GridConnection">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grid point at which (thermodynamic) properties are observed, i.e., flow and return temperature for heat feed in</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grid connection</rdfs:label>
@@ -1121,11 +1130,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatBoiler -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HeatBoiler -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatBoiler">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatBoiler">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A closed, pressure vessel that uses fuel for heating water or other fluids to supply steam or hot water for heating</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat boiler</rdfs:label>
@@ -1133,13 +1142,13 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatGenerator">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatGenerator">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasRatedThermalPower"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasRatedThermalPower"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
             </owl:Restriction>
@@ -1151,10 +1160,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">provides heat to the district heating network</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat provider</rdfs:label>
@@ -1162,11 +1171,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatUnitPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatUnitPrice">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price for purchasing heat energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat unit price</rdfs:label>
@@ -1174,13 +1183,13 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatingNetwork">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinFlowRate"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinFlowRate"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
             </owl:Restriction>
@@ -1192,11 +1201,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HourlyLabourCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HourlyLabourCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HourlyLabourCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HourlyLabourCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit cost for labour</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly labour cost</rdfs:label>
@@ -1204,11 +1213,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HourlyWearCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/HourlyWearCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HourlyWearCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/HourlyWearCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost per hour for wear </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly wear cost</rdfs:label>
@@ -1216,11 +1225,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#IncinerationPlant">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/IncinerationPlant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Also known as energy-from-waste (EfW) plant</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Incineration plant</rdfs:label>
@@ -1228,11 +1237,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#LabourCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/LabourCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#LabourCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#FixedCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/LabourCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/FixedCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Personnel cost of operation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Labour cost</rdfs:label>
@@ -1240,11 +1249,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#MunicipalUtility">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#HeatProvider"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/HeatProvider"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A utility that is wholly owned or operated by a municipality to provide service to the public</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Municipal utility</rdfs:label>
@@ -1252,10 +1261,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#NaturalGas -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/NaturalGas -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#NaturalGas">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/NaturalGas">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A mixture of gases which are rich in hydrocarbons</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -1264,11 +1273,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#ShutDownCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/ShutDownCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#ShutDownCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#SwitchingCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/ShutDownCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/SwitchingCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost for shutting down the heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shut-down cost</rdfs:label>
@@ -1276,11 +1285,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#StartUpCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/StartUpCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#StartUpCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#SwitchingCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/StartUpCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/SwitchingCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost for starting up the heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Start-up cost</rdfs:label>
@@ -1288,11 +1297,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#SwitchingCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/SwitchingCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#SwitchingCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/SwitchingCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost for switching on and off the heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Switching cost</rdfs:label>
@@ -1300,10 +1309,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Tier -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/Tier -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#Tier">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/Tier">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Individual tier within the tiered unit price, i.e., unitprice for particular purchase window</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tier</rdfs:label>
@@ -1311,10 +1320,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#TieredUnitPrice -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/TieredUnitPrice -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#TieredUnitPrice">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/TieredUnitPrice">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price of heat based on the quantity purchased</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tiered unit price</rdfs:label>
@@ -1322,10 +1331,10 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hypernym of unit cost and unit price</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
@@ -1334,11 +1343,11 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#CostInTimeInterval"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/CostInTimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all variable cost associated with heat generator</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Variable cost</rdfs:label>
@@ -1346,24 +1355,15 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableWearCost -->
+    <!-- http://www.theworldavatar.com/kg/ontoheatnetwork/VariableWearCost -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableWearCost">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#VariableCost"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableWearCost">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/VariableCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Demand-dependent wear cost for heat boiler</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Variable wear cost</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate
-     -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#UnitRate
-"/>
     
 
 
@@ -1618,14 +1618,14 @@
     <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMaxAnnualPurchaseVolume"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMaxAnnualPurchaseVolume"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl#hasMinAnnualPurchaseVolume"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoheatnetwork/hasMinAnnualPurchaseVolume"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
             </owl:Restriction>
@@ -1634,6 +1634,23 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Contract</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/date">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A date associated with an event in the life cycle of the resource</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/elements/1.1/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">date</rdfs:label>
+    </rdf:Description>
 </rdf:RDF>
 
 
