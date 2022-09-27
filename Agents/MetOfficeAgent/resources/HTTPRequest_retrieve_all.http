@@ -22,7 +22,7 @@
 // Output directory path depends on whether agent is deployed ...
 //    ... locally: "<path to Agents folder>/MetOfficeAgent/output"
 //    ... in Docker container: "/app/output"
-GET http://localhost:5000/api/metofficeagent/retrieve/all
+GET http://128.199.197.40:5000/api/metofficeagent/retrieve/all
 Content-Type: application/json
 
 { "query": {

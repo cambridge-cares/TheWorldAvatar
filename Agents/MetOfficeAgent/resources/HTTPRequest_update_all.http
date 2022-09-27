@@ -1,5 +1,5 @@
 // This is an example HTTP request to update all Met Office stations and readings
 // (incl. assimilating latest time series data)
 
-GET http://localhost:5000/api/metofficeagent/update/all
+GET http://128.199.197.40:5000/api/metofficeagent/update/all
 Content-Type: application/json

@@ -65,9 +65,9 @@ class OntopClient:
             fp = f.toPath()
             # Update ONTOP mapping (requires JAVA path object)
             stackClientsView.OntopClient().updateOBDA(fp)
-        except:
+        except Exception as e:
             #logger.error("Unable to update OBDA mapping.")
-            raise StackException("Unable to update OBDA mapping.")
+            raise StackException("Unable to update OBDA mapping.", e)
 
 
 class PostGISClient:
