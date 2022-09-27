@@ -17,7 +17,7 @@ from torch.nn import MarginRankingLoss
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 from Marie.Util.Models.ScoringModel_Dataset import Dataset
-from Marie.Util.location import DATA_DIR
+from Marie.Util.location import DEPLOYMENT_DIR
 from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
 
 
@@ -31,8 +31,8 @@ class ScoreModel(nn.Module):
         self.bert_with_reduction = StandAloneBERT(device=device)
         self.bert_with_reduction = self.bert_with_reduction.to(self.device)
         self.bert_with_reduction.load_model(model_name)
-        self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
-        self.ent_embedding = pd.read_csv(os.path.join(DATA_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
+        self.rel_embedding = pd.read_csv(os.path.join(DEPLOYMENT_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.ent_embedding = pd.read_csv(os.path.join(DEPLOYMENT_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
 
     def forward(self, positive_triplets, negative_triplets):
         """
@@ -77,7 +77,7 @@ class Trainer:
 
     def __init__(self, epoches=20, negative_rate=20, learning_rate=5e-4, drop_out=0.1, resume=False, frac=0.1,
                  batch_size=8, model_name= 'bert_embedding_5000', device = torch.device('cuda')):
-        self.df_path = os.path.join(DATA_DIR, 'question_set_full')
+        self.df_path = os.path.join(DEPLOYMENT_DIR, 'question_set_full')
         self.df = pd.read_csv(self.df_path, sep='\t')
         self.frac = frac
         self.df = self.df.sample(frac=self.frac)
@@ -138,7 +138,7 @@ class Trainer:
                 if epoch_num % self.test_frequency == 0:
                     total_loss_val = self.evaluate()
 
-                    torch.save(model.state_dict(), os.path.join(DATA_DIR, 'score_model'))
+                    torch.save(model.state_dict(), os.path.join(DEPLOYMENT_DIR, 'score_model'))
 
                     print('total_loss_val', total_loss_val)
 

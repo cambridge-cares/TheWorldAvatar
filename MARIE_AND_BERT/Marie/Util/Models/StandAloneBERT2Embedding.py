@@ -11,7 +11,7 @@ from torch.utils.data.dataset import Dataset as TorchDataset
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
 
-from Marie.Util.location import DATA_DIR
+from Marie.Util.location import DEPLOYMENT_DIR, DATA_DIR
 
 # TODO: a Dataset class that provides question examples and their relation
 # TODO: also provides a rel embedding
@@ -32,7 +32,7 @@ class Dataset(TorchDataset):
         self.tokenized_questions = [self.tokenizer(text,
                                                    padding='max_length', max_length=self.max_len, truncation=True,
                                                    return_tensors="pt") for text in self.df.iloc[:, 0]]
-        self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.rel_embedding = pd.read_csv(os.path.join(DEPLOYMENT_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
         self.y = self.rel_embedding.iloc[self.df.iloc[:, 1].tolist()].reset_index(drop=True)
 
     def classes(self):
@@ -47,7 +47,7 @@ class Dataset(TorchDataset):
 
 class StandAloneBERT(nn.Module):
 
-    def __init__(self, device=torch.device("cuda")):
+    def __init__(self, device=torch.device("cpu")):
         super(StandAloneBERT, self).__init__()
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-cased')
@@ -57,7 +57,7 @@ class StandAloneBERT(nn.Module):
         self.criterion = torch.nn.CosineEmbeddingLoss()
 
     def load_model(self, model_name):
-        self.load_state_dict(torch.load(os.path.join(DATA_DIR, model_name)))
+        self.load_state_dict(torch.load(os.path.join(DEPLOYMENT_DIR, model_name),map_location=self.device))
 
     def distance(self, emb_1, emb_2):
         """
@@ -152,21 +152,21 @@ def one_train_iteration(learning_rate=1e-8, model_name='bert_model_embedding_20_
                 print(f'\ntotal_loss_val: {total_loss_val}')
                 print('average cosine similarity', avg_cos_similarity / len(test_dataloader))
                 print('average dist similarity', dist_similarity / len(test_dataloader))
-    torch.save(model.state_dict(), os.path.join(DATA_DIR, model_name))
+    torch.save(model.state_dict(), os.path.join(DEPLOYMENT_DIR, model_name))
     print('model saved')
 
 
 if __name__ == '__main__':
-    starting_lr = 1e-20  # this is probably the best lr
-    # starting_lr = 1e-4
+    # starting_lr = 1e-20  # this is probably the best lr
+    starting_lr = 1e-20
     current_lr = starting_lr
 
     one_train_iteration(current_lr,
-                        model_name='bert_embedding_5000',
-                        resume_training=True, batch_size=128)
+                        model_name='bert_embedding_5000_updated',
+                        resume_training=True, batch_size=32)
     for i in range(10):
         print(f'current learning rate {current_lr}')
         one_train_iteration(current_lr,
-                            model_name='bert_embedding_5000',
-                            resume_training=True, batch_size=128)
+                            model_name='bert_embedding_5000_updated',
+                            resume_training=True, batch_size=32)
         current_lr = current_lr / 10

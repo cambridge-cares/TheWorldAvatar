@@ -40,8 +40,8 @@ class Trainer:
         self.e_num = self.train_set.ent_num
         self.r_num = self.train_set.rel_num
 
-        use_cuda = torch.cuda.is_available()
-        device = torch.device("cuda" if use_cuda else "cpu")
+        self.use_cuda = torch.cuda.is_available()
+        device = torch.device("cuda" if self.use_cuda else "cpu")
         self.device = device
         print(f'=========== USING {device} ===============')
         self.model = TransE(dim=self.dim, ent_num=self.e_num, rel_num=self.r_num,
@@ -56,7 +56,7 @@ class Trainer:
         #         self.learning_rate = float(meta_data["learning_rate"])
 
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
-        self.scheduler = ExponentialLR(self.optimizer, gamma=0.999)
+        self.scheduler = ExponentialLR(self.optimizer, gamma=0.8)
 
         self.train_dataloader = torch.utils.data.DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
         self.test_dataloader = torch.utils.data.DataLoader(self.test_set, batch_size=32, shuffle=True)
@@ -83,14 +83,17 @@ class Trainer:
                     self.optimizer.zero_grad()
                     loss = self.model(positive_triplets, negative_triples)
                     loss.mean().backward()
-                    loss = loss.data.cpu()
+                    if self.use_cuda:
+                        loss = loss.data.cuda()
+                    else:
+                        loss = loss.data.cpu()
                     self.optimizer.step()
                     self.step += 1
                     total_loss_train += loss.mean().item()
                 tepoch.write(f"acc_loss_train: {total_loss_train}")
                 tepoch.write(f"current learning rate : {self.learning_rate}")
 
-                if epoch_num % 10 == 0:
+                if epoch_num % 20 == 0:
                     self.evaluate()
                     self.save_model()
 
@@ -137,6 +140,7 @@ class Trainer:
         total_case = 0
 
         for positive_triplets, _ in tqdm(random.sample(list(self.test_dataloader), 20)):
+        # for positive_triplets, _ in tqdm(self.test_dataloader):
             prediction = self.model.predict(positive_triplets).mean()
             total_loss_val += prediction
             ground_truth_triplets = torch.transpose(torch.stack(positive_triplets), 0, 1).type(torch.LongTensor)

@@ -11,7 +11,7 @@ from Marie.Util.location import DATA_DIR
 class PubchemReader:
 
     def __init__(self):
-        self.output_path = os.path.join(DATA_DIR, r'pubchem_50000/pubchem50000-train.txt')
+        self.output_path = os.path.join(DATA_DIR, r'pubchem_10000/pubchem10000-train.txt')
         self.pubchem_dir = os.path.join(DATA_DIR, r'pubchem.csv')
         self.line_template = '%s\t%s\t%s\n'
 
@@ -98,7 +98,7 @@ class PubchemReader:
 
         csv_lines = open(self.pubchem_dir).readlines()
         print('Total rows', len(csv_lines))
-        file = csv_lines [0:50000]
+        file = csv_lines [0:10000]
         csv_reader = csv.DictReader(file)
         return csv_reader
 
