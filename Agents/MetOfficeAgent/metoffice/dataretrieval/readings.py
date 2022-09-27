@@ -10,7 +10,7 @@ import re
 import datetime as dt
 import pandas as pd
 
-#import agentlogging
+import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.tsclient import TSClient
 from metoffice.kgutils.querytemplates import *
@@ -19,7 +19,7 @@ from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 def get_instantiated_observations(stations: list = None,
@@ -190,7 +190,7 @@ def get_time_series_data(station_iris: list = None,
             rec = re.compile(r'Z$')
             if not bool(rec.match(time_string)):
                 time_string += 'Z'
-                #logger.info('Provided time string assumed in UTC.')
+                logger.info('Provided time string assumed in UTC.')
             rec = re.compile(r'\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}Z')
             if bool(rec.match(time_string)):
                 t = dt.datetime.strptime(time_string, '%Y-%m-%dT%H:%MZ')
@@ -214,13 +214,13 @@ def get_time_series_data(station_iris: list = None,
         try:
             tmin = _validate_time_format(tmin)
         except:
-            #logger.info(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
+            logger.info(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
             raise InvalidInput(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
     if tmax:
         try:
             tmax = _validate_time_format(tmax)
         except:
-            #logger.info(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
+            logger.info(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
             raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
 
     # Get DataFrames for observation and forecast time series
@@ -259,7 +259,7 @@ def get_time_series_data(station_iris: list = None,
         try:
             ts_data.append(ts_client.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax))
         except:
-            #logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
+            logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
             raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
         
         # Get time series names and units (as dict with dataIRIs as key)

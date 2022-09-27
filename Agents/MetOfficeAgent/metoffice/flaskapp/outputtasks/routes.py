@@ -7,14 +7,14 @@ import pathlib
 import datetime as dt
 from flask import Blueprint, request, jsonify
 
-#import agentlogging
+import agentlogging
 from metoffice.dataretrieval.stations import create_json_output_files
 from metoffice.utils.readings_mapping import TIME_FORMAT
 from metoffice.errorhandling.exceptions import InvalidInput
 
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 outputtasks_bp = Blueprint(
     'outputtasks_bp', __name__
@@ -41,17 +41,17 @@ def api_retrieve_all_stations():
     try:
         query = request.json['query']
     except:
-        #logger.error('No JSON "query" object could be identified.')
+        logger.error('No JSON "query" object could be identified.')
         raise InvalidInput('No JSON "query" object could be identified.')
 
     # Output directory
     try:
         inputs['outdir'] = str(query['outDir'])
     except:
-        #logger.error('Required output directory could not be determined.')
+        logger.error('Required output directory could not be determined.')
         raise InvalidInput('Required output directory could not be determined.')
     if not pathlib.Path.exists(pathlib.Path(inputs['outdir'])):
-        #logger.error('Provided output directory does not exist.')
+        logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
 
     if 'observationTypes' in query:
@@ -61,7 +61,7 @@ def api_retrieve_all_stations():
             # Remove potential EMS namespace if IRI is provided
             inputs['observation_types'] = [i.split('/')[-1].split('>')[0] for i in obstypes]
         except:
-            #logger.error('Parameter "observationTypes" not provided in expected format (list of strings).')
+            logger.error('Parameter "observationTypes" not provided in expected format (list of strings).')
             raise InvalidInput('Parameter "observationTypes" not provided in expected format (list of strings).')
     
     # Whether to provide joint or separate output files
@@ -69,7 +69,7 @@ def api_retrieve_all_stations():
         try:
             inputs['split_obs_fcs'] = bool(query['splitObsFcs'])
         except:
-            #logger.error('Parameter "splitObsFcs" not provided in expected format (boolean).')
+            logger.error('Parameter "splitObsFcs" not provided in expected format (boolean).')
             raise InvalidInput('Parameter "splitObsFcs" not provided in expected format (boolean).')
 
     # Parameters for potential geospatial search
@@ -78,10 +78,10 @@ def api_retrieve_all_stations():
             inputs['circle_center'] = str(query['circleCenter'])
             inputs['circle_radius'] = str(query['circleRadius'])
         except:
-            #logger.error('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.')
+            logger.error('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.')
             raise InvalidInput('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.')
         if '#' not in inputs['circle_center']:
-            #logger.error('Parameter "circleCenter" does not follow "lat#lon" format.')
+            logger.error('Parameter "circleCenter" does not follow "lat#lon" format.')
             raise InvalidInput('Parameter "circleCenter" does not follow "lat#lon" format.')           
 
     # Get earliest time stamp to retrieve
@@ -90,7 +90,7 @@ def api_retrieve_all_stations():
     try:
         diff = dt.timedelta(days=int(request.args['daysBack']))
     except:
-        #logger.info('Duration to retrieve could not be determined, using default.')
+        logger.info('Duration to retrieve could not be determined, using default.')
         diff = dt.timedelta(days=14)
     tmin = tnow - diff
     inputs['tmin'] = tmin.strftime(TIME_FORMAT)

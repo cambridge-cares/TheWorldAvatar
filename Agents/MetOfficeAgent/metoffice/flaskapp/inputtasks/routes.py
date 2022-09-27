@@ -5,7 +5,7 @@
 
 from flask import Blueprint, request, jsonify
 
-#import agentlogging
+import agentlogging
 from metoffice.datainstantiation.stations import instantiate_all_stations
 from metoffice.datainstantiation.readings import instantiate_all_station_readings
 from metoffice.datainstantiation.readings import add_all_readings_timeseries
@@ -13,7 +13,7 @@ from metoffice.datainstantiation.readings import update_all_stations
 
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__
@@ -24,10 +24,10 @@ inputtasks_bp = Blueprint(
 def api_instantiate_all_stations():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        #logger.warning("Query parameters provided, although not required. \
-        #                Provided arguments will be neglected.")
+        #print("Query parameters provided, although not required. " \
+        #      + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
     try:
         # Instantiate stations
         response = instantiate_all_stations()
@@ -45,10 +45,10 @@ def api_instantiate_all_stations():
 def api_instantiate_all_readings():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        #logger.warning("Query parameters provided, although not required. \
-        #                Provided arguments will be neglected.")
+        #print("Query parameters provided, although not required. " \
+        #      + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
     try:
         # Instantiate stations
         response = instantiate_all_station_readings()
@@ -66,10 +66,10 @@ def api_instantiate_all_readings():
 def api_add_all_readings_timeseries():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        #logger.warning("Query parameters provided, although not required. \
-        #                Provided arguments will be neglected.")
+        #print("Query parameters provided, although not required. " \
+        #      + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
     try:
         # Instantiate stations
         response = add_all_readings_timeseries()
@@ -87,10 +87,10 @@ def api_add_all_readings_timeseries():
 def api_update_all_stations():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        #logger.warning("Query parameters provided, although not required. \
-        #                Provided arguments will be neglected.")
+        #print("Query parameters provided, although not required. " \
+        #      + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
     try:
         # Instantiate stations
         response = update_all_stations()

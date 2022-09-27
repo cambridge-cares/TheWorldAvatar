@@ -9,7 +9,7 @@
 import uuid
 import metoffer
 
-#import agentlogging
+import agentlogging
 from metoffice.kgutils.querytemplates import *
 from metoffice.datamodel.utils import create_sparql_prefix
 from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
@@ -22,7 +22,7 @@ from metoffice.kgutils.stackclients import OntopClient, PostGISClient, GdalClien
                                            GeoserverClient, create_geojson_for_postgis
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 def instantiate_stations(station_data: list,
@@ -71,18 +71,18 @@ def instantiate_stations(station_data: list,
         # Upload OBDA mapping and create Geoserver layer when first geospatial
         # data is uploaded to PostGIS
         if not postgis_client.check_table_exists():
-            #logger.info('Uploading OBDA mapping ...')
+            logger.info('Uploading OBDA mapping ...')
             OntopClient.upload_ontop_mapping()
             # Initial data upload required to create postGIS table and Geoserver layer            
-            #logger.info('Uploading GeoJSON to PostGIS ...')
+            logger.info('Uploading GeoJSON to PostGIS ...')
             gdal_client.uploadGeoJSON(geojson)
-            #logger.info('Creating layer in Geoserver ...')
+            logger.info('Creating layer in Geoserver ...')
             geoserver_client.create_workspace()
             geoserver_client.create_postgis_layer()
         else:        
             # Upload new geospatial information
             if not postgis_client.check_point_feature_exists(lat, lon, feature_type):
-                #logger.info('Uploading GeoJSON to PostGIS ...')
+                logger.info('Uploading GeoJSON to PostGIS ...')
                 gdal_client.uploadGeoJSON(geojson)
 
     # Close query
@@ -105,25 +105,25 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
 
     # Create MetOffice client
     if not api_key:
-        #logger.error("No Met Office DataPoint API key provided.")
+        logger.error("No Met Office DataPoint API key provided.")
         raise APIException("No Met Office DataPoint API key provided.")
     else:
         # Initialise MetOffer client
         metclient = metoffer.MetOffer(api_key)
         obs_sites = fcs_sites = []
         try:
-            print('Retrieving station data from API ...')
-            #logger.info('Retrieving station data from API ...')
+            #print('Retrieving station data from API ...')
+            logger.info('Retrieving station data from API ...')
             # 1) Get all observations sites
             sites = metclient.loc_observations(metoffer.SITELIST)
             obs_sites = sites['Locations']['Location']
             # 2) Get all forecasts sites
             sites = metclient.loc_forecast(metoffer.SITELIST, metoffer.THREE_HOURLY)
             fcs_sites = sites['Locations']['Location']
-            print('Station data successfully retrieved.')
-            #logger.info('Station data successfully retrieved.')
+            #print('Station data successfully retrieved.')
+            logger.info('Station data successfully retrieved.')
         except Exception as ex:
-            #logger.error("Error while retrieving station data from DataPoint.")
+            logger.error("Error while retrieving station data from DataPoint.")
             raise APIException("Error while retrieving station data from DataPoint")
         sites = []
         sites += obs_sites 
@@ -157,13 +157,13 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     to_instantiate = [s for s in available if s['id'] in missing_ids]
 
     # Instantiate missing stations
-    print('Instantiate/update stations in KG ...')
-    #logger.info('Instantiate/update stations in KG ...')
+    #print('Instantiate/update stations in KG ...')
+    logger.info('Instantiate/update stations in KG ...')
     instantiate_stations(station_data=to_instantiate,
                          query_endpoint=query_endpoint,
                          update_endpoint=update_endpoint)
-    print('Stations successfully instantiated/updated.')
-    #logger.info('Stations successfully instantiated/updated.')
+    #print('Stations successfully instantiated/updated.')
+    logger.info('Stations successfully instantiated/updated.')
     
     return len(missing_ids)
 
@@ -189,7 +189,7 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
     else:
-        #logger.warning(f"Station {station_data['id']} does not have location data.")
-        print(f"Station {station_data['id']} does not have location data.")
+        logger.warning(f"Station {station_data['id']} does not have location data.")
+        #print(f"Station {station_data['id']} does not have location data.")
     
     return conditioned
