@@ -771,7 +771,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     postgis_client = PostGISClient()
     gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
-    feature_type = OBE_BUILDING
+    feature_type = 'Building'
 
     # Create KG clients if not provided
     if not kgclient_epc:
