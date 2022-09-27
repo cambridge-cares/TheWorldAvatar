@@ -6,13 +6,13 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (i.e. for the Time Series Client) from Stack clients
 
-import agentlogging
+#import agentlogging
 
 from metoffice.kgutils.javagateway import stackClientsGw
 from metoffice.utils.env_configs import DATABASE
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 # Initialise global variables to be read from properties file

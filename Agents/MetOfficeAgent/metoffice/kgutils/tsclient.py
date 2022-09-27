@@ -6,7 +6,7 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-import agentlogging
+#import agentlogging
 from metoffice.errorhandling.exceptions import TSException
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 from metoffice.kgutils.kgclient import KGClient
@@ -14,7 +14,7 @@ from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                           DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 class TSClient:
@@ -39,7 +39,7 @@ class TSClient:
             ts_client = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, instant_class, 
                                                         DB_URL, DB_USER, DB_PASSWORD)
         except:
-            logger.error("Unable to initialise TS client")
+            #logger.error("Unable to initialise TS client")
             raise TSException("Unable to initialise TS client")
         
         return ts_client
@@ -57,7 +57,7 @@ class TSClient:
         try:
             timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except:
-            logger.error("Unable to create timeseries")
+            #logger.error("Unable to create timeseries")
             raise TSException("Unable to create timeseries")
         
         return timeseries

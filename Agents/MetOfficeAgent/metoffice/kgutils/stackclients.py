@@ -11,14 +11,14 @@ import jaydebeapi
 import json
 
 
-import agentlogging
+#import agentlogging
 from metoffice.errorhandling.exceptions import StackException
 from metoffice.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
 from metoffice.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 from metoffice.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 class OntopClient:
@@ -33,7 +33,7 @@ class OntopClient:
             # Initialise OntopClient as RemoteStoreClient
             self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
         except:
-            logger.error("Unable to initialise OntopClient.")
+            #logger.error("Unable to initialise OntopClient.")
             raise StackException("Unable to initialise OntopClient.")
     
     def performQuery(self, query):
@@ -45,7 +45,7 @@ class OntopClient:
         try:
             response = self.ontop_client.execute(query)
         except:
-            logger.error("SPARQL query not successful")
+            #logger.error("SPARQL query not successful")
             raise StackException("SPARQL query not successful")
         return json.loads(response)
 
@@ -66,7 +66,7 @@ class OntopClient:
             # Update ONTOP mapping (requires JAVA path object)
             stackClientsView.OntopClient().updateOBDA(fp)
         except:
-            logger.error("Unable to update OBDA mapping.")
+            #logger.error("Unable to update OBDA mapping.")
             raise StackException("Unable to update OBDA mapping.")
 
 
@@ -82,7 +82,7 @@ class PostGISClient:
             # Retrieve JDBC connection properties
             self.conn_props = self.connection_properties()
         except:
-            logger.error("Unable to retrieve JDBC connection properties.")
+            #logger.error("Unable to retrieve JDBC connection properties.")
             raise StackException("Unable to retrieve JDBC connection properties.")
 
     
@@ -119,7 +119,7 @@ class PostGISClient:
                     else:
                         return False
         except Exception as ex:
-            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            #logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
 
@@ -142,7 +142,7 @@ class PostGISClient:
                     res = any(res)
                     return res
         except Exception as ex:
-            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            #logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
     def get_feature_iris_in_circle(self, lat: float, lon: float, radius: float,
@@ -169,7 +169,7 @@ class PostGISClient:
                     res = [r[0] for r in res]
                     return res
         except Exception as ex:
-            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            #logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
 
@@ -185,7 +185,7 @@ class GdalClient:
             self.client = stackClientsView.GDALClient()
             self.orgoptions = stackClientsView.Ogr2OgrOptions()
         except:
-            logger.error("Unable to initialise GdalClient.")
+            #logger.error("Unable to initialise GdalClient.")
             raise StackException("Unable to initialise GdalClient.")
 
 
@@ -209,7 +209,7 @@ class GeoserverClient:
             self.client = stackClientsView.GeoServerClient()
             self.vectorsettings = stackClientsView.GeoServerVectorSettings()
         except:
-            logger.error("Unable to initialise GeoServerClient.")
+            #logger.error("Unable to initialise GeoServerClient.")
             raise StackException("Unable to initialise GeoServerClient.")    
 
 

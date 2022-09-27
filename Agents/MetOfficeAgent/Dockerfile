@@ -32,7 +32,7 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+#RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Update py4jps resources
 RUN jpsrm uninstall JpsBaseLib
