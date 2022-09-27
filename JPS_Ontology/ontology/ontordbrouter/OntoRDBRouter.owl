@@ -8,7 +8,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:OntoRDBRouter="http://www.theworldavatar.com/kg/ontordbrouter/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontordbrouter">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontordbrouter/">
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 September 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing Relational Database routing maps.</rdfs:comment>
