@@ -37,13 +37,18 @@ class UpdateEndpoint(DerivationAgent):
     def update_derivations(self):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
-        diff_iri = sparql_client.getDifferenceIRI()
-        diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
-        derivations = self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list)
-        for derivation in derivations:
-            self.derivationClient.unifiedUpdateDerivation(derivation)
-        return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
-
+        try:
+            diff_iri = sparql_client.getDifferenceIRI()
+            diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
+            self.logger.info("Difference IRI: %s", diff_iri)
+            self.logger.info("Difference Reverse IRI List: %s", diff_reverse_iri_list)
+            derivations = list(self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
+            self.logger.info("Derivations: %s", derivations)
+            for derivation in derivations:
+                self.derivationClient.unifiedUpdateDerivation(derivation)
+            return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
+        except Exception as e:
+            raise f"Difference IRI: {diff_iri}; DifferenceReverse IRI list: {diff_reverse_iri_list}; Requested Derivations: {derivations}; Error in update_derivations: {str(e)}"
 
 class DifferenceAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
