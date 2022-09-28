@@ -764,9 +764,10 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         (elevation as triples, footprint uploaded to postgis)
     '''
     # Initialise return values
-    elevations = 0
-    footprints = 0
-    duplicates = 0
+    footprints_new = 0
+    footprints_dup = 0
+    elevations_new = 0
+    elevations_old = 0
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -922,7 +923,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     # Initial data upload required to create postGIS table and Geoserver layer            
                     logger.info('Uploading GeoJSON to PostGIS ...')
                     gdal_client.uploadGeoJSON(geojson_str)
-                    footprints += 1
+                    footprints_new += 1
                     logger.info('Creating layer in Geoserver ...')
                     geoserver_client.create_workspace()
                     geoserver_client.create_postgis_layer()
@@ -931,10 +932,10 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     if not postgis_client.check_polygon_feature_exists(geojson_geom_str, feature_type):
                         logger.info('Uploading GeoJSON to PostGIS ...')
                         gdal_client.uploadGeoJSON(geojson_str)
-                        footprints += 1
+                        footprints_new += 1
                     else:
                         logger.info(f'Feature with same geometry and type already exists when processing <{b}>.')
-                        duplicates += 1
+                        footprints_dup += 1
 
             #
             # b) Instantiate/update building elevation
@@ -944,7 +945,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             logger.info('Deleting (potentially) outdated elevation triples ...')
             delete_query = delete_old_building_elevation(iris)
             kgclient_epc.performUpdate(delete_query)
-            elevations -= len(iris)
+            elevations_old += len(iris)
 
             # Instantiate retrieved building elevation for linked buildings
             batch = data[['obe_bldg', 'elevation']].copy()
@@ -954,9 +955,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             logger.info('Instantiating latest elevation triples ...')
             insert_query = instantiate_building_elevation(batch)
             kgclient_epc.performUpdate(insert_query)
-            elevations += len(batch)
+            elevations_new += len(batch)
 
-    return (elevations, footprints, duplicates)
+    return (footprints_new, footprints_dup, elevations_new, elevations_old)
 
 
 if __name__ == '__main__':
