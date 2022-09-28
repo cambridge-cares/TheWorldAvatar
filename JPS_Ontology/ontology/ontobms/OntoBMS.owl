@@ -611,9 +611,9 @@
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
     </owl:Class>
 
-   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoints -->
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoint -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoints">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoint">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
     </owl:Class>
 
