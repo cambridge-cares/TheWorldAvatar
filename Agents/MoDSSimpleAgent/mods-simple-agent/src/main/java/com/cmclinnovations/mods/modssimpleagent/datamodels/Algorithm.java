@@ -10,6 +10,7 @@ public class Algorithm {
     private int maxNumberOfResults = Integer.MAX_VALUE;
     private Boolean saveSurrogate;
     private String loadSurrogate;
+    private String saveDirectory;
 
     public String getName() {
         return name;
@@ -54,4 +55,9 @@ public class Algorithm {
     public void getLoadSurrogate(String loadSurrogate) {
         this.loadSurrogate = loadSurrogate;
     }
+
+    public String getSaveDirectory() {
+        return saveDirectory;
+    }
+    
 }

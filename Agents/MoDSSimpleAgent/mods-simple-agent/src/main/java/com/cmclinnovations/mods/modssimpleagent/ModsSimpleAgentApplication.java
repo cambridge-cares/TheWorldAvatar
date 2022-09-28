@@ -50,11 +50,7 @@ public class ModsSimpleAgentApplication {
 
         Simulation sim = Simulation.createSimulation(request);
 
-        sim.load();
-
         sim.run();
-
-        sim.saveWhenFinished();
 
         Request reponse = sim.getResponse();
 

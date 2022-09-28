@@ -1,15 +1,9 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +22,9 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackendFactory;
 import com.cmclinnovations.mods.modssimpleagent.TemplateLoader;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfo;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
-import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +56,7 @@ public class Simulation {
     private final Request request;
     private final BackendInputFile inputFile;
     private final MoDSBackend modsBackend;
+    private final InputInfo inputInfo;
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
@@ -73,7 +67,11 @@ public class Simulation {
 
         OBJECT_MAPPER.writeValue(getRequestFilePath(modsBackend), request);
 
-        return createSimulation(request, inputFile, modsBackend);
+        load(request, modsBackend);
+
+        InputInfo inputInfo = InputInfo.createInputInfo(request, modsBackend, request.getAlgorithms().get(0));
+
+        return createSimulation(request, inputFile, modsBackend, inputInfo);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -85,20 +83,23 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        return createSimulation(originalRequest, inputFile, modsBackend);
+        InputInfo inputInfo = InputInfo.createInputInfo(originalRequest, modsBackend, originalRequest.getAlgorithms().get(0));
+
+        return createSimulation(originalRequest, inputFile, modsBackend, inputInfo);
     }
 
-    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend)
+    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputInfo inputInfo)
             throws IOException {
 
         String simulationType = request.getSimulationType();
         switch (simulationType) {
             case "MOO":
-                return new MOO(request, inputFile, modsBackend);
+                return new MOO(request, inputFile, modsBackend, inputInfo);
             case "HDMR":
-                return new HDMR(request, inputFile, modsBackend);
+                return new HDMR(request, inputFile, modsBackend, inputInfo);
             case "MOOonly":
-                return new MOOonly(request, inputFile, modsBackend);
+                return new MOOonly(request, inputFile, modsBackend, inputInfo);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -108,10 +109,11 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend) {
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputInfo inputInfo) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
+        this.inputInfo = inputInfo;
     }
 
     protected final Request getRequest() {
@@ -185,10 +187,9 @@ public class Simulation {
     }
 
     private void populateParameterNodes(List<Variable> variables) {
-        Data inputs = request.getInputs();
-        Iterator<Double> minItr = inputs.getMinimums().getValues().iterator();
-        Iterator<Double> maxItr = inputs.getMaximums().getValues().iterator();
-        for (String name : inputs.getHeaders()) {
+        Iterator<Double> minItr = inputInfo.getMinima().iterator();
+        Iterator<Double> maxItr = inputInfo.getMaxima().iterator();
+        for (String name : inputInfo.getVarNames()) {
             Variable variable = variables.stream().filter(varToTest -> varToTest.getName().equals(name))
                     .findFirst().orElseThrow();
             inputFile.addParameter(name, variable.getSubtype(), variable.getType(),
@@ -251,7 +252,12 @@ public class Simulation {
 
     protected final void generateInitialFile() throws FileGenerationException {
         Data inputs = getRequest().getInputs();
-        new CSVDataFile(inputs.getAverages()).marshal(modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME));
+        Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
+        if (inputs != null)
+            new CSVDataFile(inputs.getAverages()).marshal(path);
+        else {
+            new CSVDataFile(inputInfo.meansToData()).marshal(path);
+        }
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
@@ -273,6 +279,7 @@ public class Simulation {
         populateInputFile();
         generateFiles();
         modsBackend.run();
+        saveWhenFinished();
     }
 
     public void saveWhenFinished() {
@@ -293,149 +300,83 @@ public class Simulation {
                 save();
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-            } catch (FileGenerationException ex) {
-                throw new ResponseStatusException(
-                        HttpStatus.NO_CONTENT,
-                        "The job '" + getModsBackend().getJobID() + "' failed to save.", ex);
             }
         });
 
         t.start();
     }
 
-    public void save() throws FileGenerationException {
-        for (Algorithm algorithm : request.getAlgorithms()) {
-            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+    public void save() {
+        request.getAlgorithms().stream()
+                .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
+                .forEach(algorithm -> {
+                    Path saveDirectory = getSaveDirectory(algorithm);
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
 
-                Path saveDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
-                        .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-                Path surrogateDirectory = modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-
-                copyDirectory(surrogateDirectory, saveDirectory);
-
-                createDataInfoFile(saveDirectory);
-
-                LOGGER.info("Surrotage saved at '{}'.", saveDirectory.toAbsolutePath());
-            }
-        }
-    }
-
-    private void createDataInfoFile(Path saveDirectory) throws FileGenerationException {
-        Data inputs = getRequest().getInputs();
-
-        Path dataInfoDirectory = saveDirectory.resolve("dataInfo.csv");
-
-        List<String> outputVarNames = getPrimaryAlgorithm().getVariables().stream().map(Variable::getName)
-                .collect(Collectors.toList());
-
-        List<String> minimaFromData = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), outputVarNames,
-                DataColumn::getName, column -> column.getValues().get(0)).stream().map(t -> t.toString())
-                .collect(Collectors.toList());
-
-        List<String> maximaFromData = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), outputVarNames,
-                DataColumn::getName, column -> column.getValues().get(0)).stream().map(t -> t.toString())
-                .collect(Collectors.toList());
-
-        List<String> scalingOfData = Collections.nCopies(outputVarNames.size(), "linear");
-
-        String[] columnNames = { "variableName", "dataMinimum", "dataMaximum", "scaling" };
-
-        List<String[]> dataLines = new ArrayList<>();
-
-        dataLines.add(columnNames);
-
-        for (int i = 0; i < outputVarNames.size(); i++) {
-            dataLines.add(new String[] { outputVarNames.get(i), minimaFromData.get(i), maximaFromData.get(i),
-                    scalingOfData.get(i) });
-        }
-        try {
-            if (!Files.exists(dataInfoDirectory)) {
-                Files.createFile(dataInfoDirectory);
-            }
-
-            writeDataLinesToCSV(dataInfoDirectory, dataLines);
-        } catch (IOException ex) {
-            throw new FileGenerationException("Failed to generate data info file.", ex);
-        }
-    }
-
-    private void writeDataLinesToCSV(Path directory, List<String[]> dataLines) throws IOException {
-        try (PrintWriter pw = new PrintWriter(directory.toFile())) {
-            dataLines.stream()
-                    .map(this::convertToCSV)
-                    .forEach(pw::println);
-        } catch (IOException ex) {
-            throw new IOException("Failed to write data info file.", ex);
-        }
-    }
-
-    public String convertToCSV(String[] data) {
-        return Stream.of(data)
-                .collect(Collectors.joining(","));
-    }
-
-    public void load() throws FileGenerationException {
-        for (Algorithm algorithm : request.getAlgorithms()) {
-            if (algorithm.getLoadSurrogate() != null) {
-                try {
-
-                    Path loadDirectory = modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-                    Path surrogateDirectory = DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                            .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-
-                    if (!Files.exists(surrogateDirectory)) {
-                        throw new IOException("File '" + surrogateDirectory + "' could not be found to load.");
+                    try {
+                        copyDirectory(surrogateDirectory, saveDirectory);
+                        inputInfo.writeToCSV(saveDirectory.resolve(InputInfo.DEFAULT_INPUT_INFO_FILE_NAME));
+                    } catch (FileGenerationException ex) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "Algorithm '" + algorithm.getName() + "' from job '" + getModsBackend().getJobID()
+                                        + "' failed to save.",
+                                ex);
                     }
 
-                    copyDirectory(surrogateDirectory, loadDirectory);
-                    loadDataInfo();
-
-                    LOGGER.info("File '{}' loaded to '{}'.", surrogateDirectory.toAbsolutePath(),
-                            loadDirectory.toAbsolutePath());
-
-                } catch (IOException ex) {
-                    throw new FileGenerationException(
-                            "Failed to load surrogate.", ex);
-                }
-            }
-        }
+                    LOGGER.info("Algorithm '{}' from job '{}'saved at '{}'.", algorithm.getName(),
+                            getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
+                });
     }
 
-    public void loadDataInfo() {
-        List<List<String>> dataInfo = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(
-                new FileReader(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(getPrimaryAlgorithm().getLoadSurrogate())
-                        .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME).resolve("dataInfo.csv").toString()))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                dataInfo.add(Arrays.asList(values));
-            }
-        } catch (IOException ex) {
-            throw new ResponseStatusException(
-                    HttpStatus.NO_CONTENT,
-                    "Failed to read data info load file.");
-        }
-
-        Data inputs = new Data(dataInfo.stream().skip(1)
-                .map(x -> new DataColumn(x.get(0),
-                        Arrays.asList(Double.parseDouble(x.get(1)), Double.parseDouble(x.get(1)))))
-                .collect(Collectors.toList()));
-
-        getRequest().setInputs(inputs);
-
-        List<Variable> variables = getPrimaryAlgorithm().getVariables();
-
-        variables.forEach(variable ->
-                dataInfo.stream().filter(data -> data.get(0).equals(variable.getName())).forEach(data -> {
-                        variable.setMinimum(Double.parseDouble(data.get(1)));
-                        variable.setMaximum(Double.parseDouble(data.get(2)));
-                })
-        );
+    public static Path getSurrogateDirectory(MoDSBackend modsBackend, Algorithm algorithm) {
+        return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
-    private void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
+    private Path getSaveDirectory(Algorithm algorithm) {
+        if (algorithm.getSaveDirectory() != null)
+            return Path.of(algorithm.getSaveDirectory());
+        else
+            return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+                    .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    public static void load(Request request, MoDSBackend modsBackend) {
+        request.getAlgorithms().stream()
+                .filter(algorithm -> algorithm.getLoadSurrogate() != null)
+                .forEach(algorithm -> {
+                    try {
+                        Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
+                        Path loadDirectory = getLoadDirectory(algorithm);
+
+                        if (!Files.exists(loadDirectory)) {
+                            throw new IOException("File '" + loadDirectory + "' could not be found to load.");
+                        }
+
+                        copyDirectory(loadDirectory, surrogateDirectory);
+
+                        LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                                loadDirectory.toAbsolutePath());
+
+                    } catch (IOException ex) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "Algorithm '" + algorithm.getName() + "' from job '" + modsBackend.getJobID()
+                                        + "' failed to load.",
+                                ex);
+                    }
+                });
+    }
+
+    private static Path getLoadDirectory(Algorithm algorithm) {
+        if(Files.exists(Path.of(algorithm.getLoadSurrogate())))
+            return Path.of(algorithm.getLoadSurrogate());
+        else
+            return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
+                    .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
         try (Stream<Path> stream = Files.walk(sourceDirectory)) {
 
             if (!Files.exists(destinationDirectory)) {
@@ -450,7 +391,7 @@ public class Simulation {
                 } catch (IOException ex) {
                     throw new ResponseStatusException(
                             HttpStatus.NO_CONTENT,
-                            "The job '" + getModsBackend().getJobID() + "' failed to copy '"
+                            "Failed to copy '"
                                     + destinationDirectory + "` to `" + sourceDirectory + "'.",
                             ex);
                 }
@@ -470,6 +411,10 @@ public class Simulation {
 
     public Request getResults() {
         return getResponse();
+    }
+
+    public InputInfo getInputInfo() {
+        return inputInfo;
     }
 
 }

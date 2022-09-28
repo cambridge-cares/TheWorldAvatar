@@ -14,6 +14,8 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfo;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfoRow;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
@@ -24,77 +26,79 @@ import org.springframework.web.server.ResponseStatusException;
 
 class MOOonly extends Simulation {
 
-    public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend) throws IOException {
-        super(request, inputFile, modsBackend);
-    }
-
-    @Override
-    protected Algorithm getPrimaryAlgorithm() {
-        return getAlgorithmOfType("MOO");
-    }
-
-    @Override
-    protected void populateAlgorithmNodes(List<Variable> variables) {
-        populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, getPrimaryAlgorithm().getName(), variables);
-        super.populateAlgorithmNodes(variables);
-    }
-
-    @Override
-    protected void generateFiles() throws FileGenerationException {
-        generateInitialFile();
-        generateDataAlgFiles();
-        super.generateFiles();
-    }
-
-    @Override
-    public Request getResults() {
-        loadDataInfo();
-
-        String simDir = getModsBackend().getSimDir().toString();
-        String algorithmName = Simulation.DEFAULT_MOO_ALGORITHM_NAME;
-
-        if (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NO_CONTENT,
-                    "The multi-objective optimisation job with job '" + getModsBackend().getJobID()
-                            + "' has not finished yet, has not been run or has failed to run correctly.");
+        public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputInfo inputInfo)
+                        throws IOException {
+                super(request, inputFile, modsBackend, inputInfo);
         }
 
-        List<Variable> variables = getPrimaryAlgorithm().getVariables();
+        @Override
+        protected Algorithm getPrimaryAlgorithm() {
+                return getAlgorithmOfType("MOO");
+        }
 
-        List<String> outputVarNames = MoDSAPI.getReducedYVarIDs(simDir, algorithmName).stream().map(MoDSAPI::getVarName)
-                .collect(Collectors.toList());
-                
-        List<Double> minimaFromData = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMinimum);
+        @Override
+        protected void populateAlgorithmNodes(List<Variable> variables) {
+                populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, getPrimaryAlgorithm().getName(),
+                                variables);
+                super.populateAlgorithmNodes(variables);
+        }
 
-        List<Double> maximaFromData = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMaximum);
-                
-        List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMinimum);
+        @Override
+        protected void generateFiles() throws FileGenerationException {
+                generateInitialFile();
+                super.generateFiles();
+        }
 
-        List<Double> maximaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMaximum);
+        @Override
+        public Request getResults() {
 
-        List<Double> weightsFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getWeight);
+                String simDir = getModsBackend().getSimDir().toString();
+                String algorithmName = Simulation.DEFAULT_MOO_ALGORITHM_NAME;
 
-        int numResults = getPrimaryAlgorithm().getMaxNumberOfResults();
+                if (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.NO_CONTENT,
+                                        "The multi-objective optimisation job with job '" + getModsBackend().getJobID()
+                                                        + "' has not finished yet, has not been run or has failed to run correctly.");
+                }
 
-        List<List<Double>> points = MoDSAPI.getMCDMSimpleWeightedPoints(simDir, algorithmName,
-                ListUtils.replaceNulls(minimaFromAlg, minimaFromData),
-                ListUtils.replaceNulls(maximaFromAlg, maximaFromData),
-                ListUtils.replaceNulls(weightsFromAlg, Collections.nCopies(weightsFromAlg.size(), 1.0)),
-                numResults, new Options().setVarIndexFirst(true)).get(DataType.OutputVariable);
+                List<Variable> variables = getPrimaryAlgorithm().getVariables();
 
-        Data outputValues = new Data(
-                Streams.zip(outputVarNames.stream(), points.stream(), DataColumn::new).collect(Collectors.toList()));
+                List<String> outputVarNames = MoDSAPI.getReducedYVarIDs(simDir, algorithmName).stream()
+                                .map(MoDSAPI::getVarName)
+                                .collect(Collectors.toList());
 
-        Request results = super.getResults();
-        results.setOutputs(outputValues);
+                List<Double> minimaFromData = ListUtils.filterAndSort(getInputInfo().getRows(), outputVarNames, InputInfoRow::getVarName,
+                                InputInfoRow::getMinimum);
 
-        return results;
-    }
+                List<Double> maximaFromData = ListUtils.filterAndSort(getInputInfo().getRows(), outputVarNames, InputInfoRow::getVarName,
+                                InputInfoRow::getMaximum);
+
+                List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
+                                Variable::getMinimum);
+
+                List<Double> maximaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
+                                Variable::getMaximum);
+
+                List<Double> weightsFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
+                                Variable::getWeight);
+
+                int numResults = getPrimaryAlgorithm().getMaxNumberOfResults();
+
+                List<List<Double>> points = MoDSAPI.getMCDMSimpleWeightedPoints(simDir, algorithmName,
+                                ListUtils.replaceNulls(minimaFromAlg, minimaFromData),
+                                ListUtils.replaceNulls(maximaFromAlg, maximaFromData),
+                                ListUtils.replaceNulls(weightsFromAlg, Collections.nCopies(weightsFromAlg.size(), 1.0)),
+                                numResults, new Options().setVarIndexFirst(true)).get(DataType.OutputVariable);
+
+                Data outputValues = new Data(
+                                Streams.zip(outputVarNames.stream(), points.stream(), DataColumn::new)
+                                                .collect(Collectors.toList()));
+
+                Request results = super.getResults();
+                results.setOutputs(outputValues);
+
+                return results;
+        }
 
 }
