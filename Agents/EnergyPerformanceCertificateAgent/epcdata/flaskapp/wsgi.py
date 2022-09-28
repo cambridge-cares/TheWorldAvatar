@@ -11,8 +11,6 @@ from epcdata.datainstantiation.epc_instantiation import instantiate_epc_data_for
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-#from epcdata.datainstantiation.readings import update_all_stations
-
 # Add recurring background task to assimilate latest EPC data every 4 months
 # "The department will publish register data every four to six months for new EPCs
 # and DECs or where the status of the EPC or DEC has changed" 

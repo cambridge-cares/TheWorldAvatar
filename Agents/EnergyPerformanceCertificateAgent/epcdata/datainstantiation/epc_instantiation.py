@@ -766,6 +766,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     # Initialise return values
     elevations = 0
     footprints = 0
+    duplicates = 0
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -931,6 +932,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                         logger.info('Uploading GeoJSON to PostGIS ...')
                         gdal_client.uploadGeoJSON(geojson_str)
                         footprints += 1
+                    else:
+                        logger.info(f'Feature with same geometry and type already exists when processing <{b}>.')
+                        duplicates += 1
 
             #
             # b) Instantiate/update building elevation
@@ -952,7 +956,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             kgclient_epc.performUpdate(insert_query)
             elevations += len(batch)
 
-    return (elevations, footprints)
+    return (elevations, footprints, duplicates)
 
 
 if __name__ == '__main__':

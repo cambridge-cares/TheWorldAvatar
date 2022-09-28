@@ -225,6 +225,7 @@ def api_add_ocgml_building_data():
         res = add_ocgml_building_data()
         return jsonify({'status': '200', 
                         'Updated PostGIS footprints': res[1],
+                        'Already instantiated PostGIS footprints': res[2],
                         'Updated building elevations': res[0]})
 
     except Exception as ex:
