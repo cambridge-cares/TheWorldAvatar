@@ -160,7 +160,7 @@ public class BuildingMatchingAgentTest {
     public void testNewBuildingMatchingAgentMethods(){
 
         BuildingMatchingAgent buildingMatchingAgent = new BuildingMatchingAgent();
-        assertEquals(11, buildingMatchingAgent.getClass().getDeclaredMethods().length);
+        assertEquals(12, buildingMatchingAgent.getClass().getDeclaredMethods().length);
 
     }
 
