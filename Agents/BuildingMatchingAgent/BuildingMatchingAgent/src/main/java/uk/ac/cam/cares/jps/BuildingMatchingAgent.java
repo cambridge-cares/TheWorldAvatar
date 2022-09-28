@@ -6,6 +6,16 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
+import org.cts.CRSFactory;
+import org.cts.IllegalCoordinateException;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.crs.GeodeticCRS;
+import org.cts.op.CoordinateOperation;
+import org.cts.op.CoordinateOperationException;
+import org.cts.op.CoordinateOperationFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.*;
@@ -171,22 +181,24 @@ public class BuildingMatchingAgent extends JPSAgent {
                             zsum += centroid.z *area;
                             asum += area;
                         }
-                        lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
+//                        lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
+                        lat_lon = transformEPSG27700ToWGS84(new Coordinate(xsum/asum, ysum/asum, zsum/asum));
                     }
                     else {
                         String data = geom_result.getJSONObject(0).getString(GEOMETRY_TYPE);
                         String datatypeIri = geom_result.getJSONObject(0).getString(DATATYPE);
                         Polygon polygon = getPolygon(data, datatypeIri);
                         centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
-                        lat_lon = centroid;
+//                        lat_lon = centroid;
+                        lat_lon = transformEPSG27700ToWGS84(centroid);
                     }
                     StringBuilder value = new StringBuilder();
-                    for (int i = 0; i < 2; i++)
+                    for (int i = 1; i >= 0; i--)
                         value.append("#").append(lat_lon.getOrdinate(i));
                     value.deleteCharAt(0);
                     triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasWGS84LatitudeLongitude"), NodeFactory.createLiteral(value.toString(), new BaseDatatype("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon")));
                     insertion_centroid.addInsert(triple);
-                } catch (ParseException e) {
+                } catch (ParseException | CRSException | CoordinateOperationException | IllegalCoordinateException e) {
                     e.printStackTrace();
                 }
             }
@@ -324,5 +336,26 @@ public class BuildingMatchingAgent extends JPSAgent {
             z += coordinates[i].getZ();
         }
         return new Coordinate(x / length, y / length, z / length);
+    }
+
+    private static Coordinate transformEPSG27700ToWGS84(Coordinate centroid) throws CRSException, CoordinateOperationException, IllegalCoordinateException {
+        CRSFactory crsFactory = new CRSFactory();
+        RegistryManager registryManager = crsFactory.getRegistryManager();
+        registryManager.addRegistry(new EPSGRegistry());
+        CoordinateReferenceSystem crs1 = crsFactory.getCRS("EPSG:27700");
+        CoordinateReferenceSystem crs2 = crsFactory.getCRS("EPSG:4326");
+
+        Set<CoordinateOperation> operations = CoordinateOperationFactory
+                .createCoordinateOperations((GeodeticCRS) crs1, (GeodeticCRS) crs2);
+        double[] transform = new double[2];
+        if (operations.size() != 0) {
+            // Test each transformation method (generally, only one method is available)
+            for (CoordinateOperation op : operations) {
+                // Transform coord using the op CoordinateOperation from crs1 to crs2
+                 transform  = op.transform(new double[] {centroid.x, centroid.y, centroid.z});
+            }
+        }
+        return new Coordinate(transform[0], transform[1]);
+
     }
 }
