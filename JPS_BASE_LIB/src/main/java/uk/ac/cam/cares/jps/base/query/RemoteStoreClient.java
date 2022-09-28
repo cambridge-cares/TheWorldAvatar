@@ -914,6 +914,39 @@ public class RemoteStoreClient implements StoreClientInterface {
             throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
         }
 
+        ContentType contentType = getRDFContentType(extension);
+        if (null == contentType) {
+            throw new JPSRuntimeException("Unsupported file extension: " + extension);
+        }
+        FileEntity entity = new FileEntity(file, contentType);
+
+        // tried a few methods to add credentials, this seems to be the only way that
+        // works
+        // i.e. setting it manually in the header
+        HttpPost postRequest = new HttpPost(this.updateEndpoint);
+        if ((this.userName != null) && (this.password != null)) {
+            String auth = this.userName + ":" + this.password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
+        }
+
+        // add contents to the post request
+        postRequest.setEntity(entity);
+
+        LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
+        // then send the post request
+        try (CloseableHttpClient httpclient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpclient.execute(postRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 300) {
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code = " + statusCode);
+            }
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("Upload RDF file failed.", ex);
+        }
+    }
+
+    public ContentType getRDFContentType(String extension) {
         final ContentType contentType;
         switch (extension) {
             case "rdf":
@@ -953,33 +986,8 @@ public class RemoteStoreClient implements StoreClientInterface {
                 contentType = ContentType.APPLICATION_JSON;
                 break;
             default:
-                throw new JPSRuntimeException("Unsupported file extension: " + extension);
+                contentType = null;
         }
-        FileEntity entity = new FileEntity(file, contentType);
-
-        // tried a few methods to add credentials, this seems to be the only way that
-        // works
-        // i.e. setting it manually in the header
-        HttpPost postRequest = new HttpPost(this.updateEndpoint);
-        if ((this.userName != null) && (this.password != null)) {
-            String auth = this.userName + ":" + this.password;
-            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
-        }
-
-        // add contents to the post request
-        postRequest.setEntity(entity);
-
-        LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
-        // then send the post request
-        try (CloseableHttpClient httpclient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpclient.execute(postRequest)) {
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code = " + statusCode);
-            }
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("Upload RDF file failed.", ex);
-        }
+        return contentType;
     }
 }
