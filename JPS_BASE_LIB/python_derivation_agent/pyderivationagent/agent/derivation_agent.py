@@ -5,6 +5,8 @@ from flask import Flask
 from flask import request
 from urllib.parse import unquote
 from urllib.parse import urlparse
+import traceback
+import yagmail
 import json
 import time
 
@@ -42,6 +44,11 @@ class DerivationAgent(ABC):
         agent_endpoint: str = "http://localhost:5000/sync_derivation",
         register_agent: bool = True,
         max_thread_monitor_async_derivations: int = 1,
+        email_recipient: str = '',
+        email_subject_prefix: str = '',
+        email_username: str = '',
+        email_auth_json_path: str = '',
+        email_start_end_async_derivations: bool = False,
         logger_name: str = "dev"
     ):
         """
@@ -111,6 +118,15 @@ class DerivationAgent(ABC):
         # initialise the logger
         self.logger = agentlogging.get_logger(logger_name)
 
+        # initialise the email object and email_start_end_async_derivations flag
+        if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
+            self.yag = yagmail.SMTP(email_username, oauth2_file=email_auth_json_path)
+            self.email_recipient = email_recipient.split(';')
+            self.email_subject_prefix = email_subject_prefix if bool(email_subject_prefix) else str(self.__class__.__name__)
+        else:
+            self.yag = None
+        self.email_start_end_async_derivations = email_start_end_async_derivations
+
         # register the agent to the KG if required
         self.register_agent = register_agent
         try:
@@ -135,6 +151,49 @@ class DerivationAgent(ABC):
                 self.logger.info("Scheduler is started.")
         inner.__is_periodical_job__ = True
         return inner
+
+    def send_email_when_exception(func):
+        def inner(self, *args, **kwargs):
+            try:
+                func(self, *args, **kwargs)
+            except Exception as e:
+                if self.yag is not None:
+                    try:
+                        self.yag.send(
+                            self.email_recipient,
+                            f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
+                            [format_current_time(), str(e), traceback.format_exc()]
+                        )
+                    except Exception as yag_e:
+                        # if failed to send email, log the error and continue
+                        self.logger.error(f"Failed to send email. Error: {yag_e}",
+                            stack_info=True, exc_info=True)
+                raise e
+        return inner
+
+    def send_email_when_async_derivation_up_to_date(self, derivation_iri):
+        if self.yag is not None and self.email_start_end_async_derivations:
+            try:
+                self.yag.send(
+                    self.email_recipient,
+                    f"[{self.email_subject_prefix}] async derivation up-to-date",
+                    [format_current_time(), f"{derivation_iri}"]
+                )
+            except Exception as e:
+                # if failed to send email, log the error and continue
+                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
+
+    def send_email_when_async_derivation_started(self, derivation_iri):
+        if self.yag is not None and self.email_start_end_async_derivations:
+            try:
+                self.yag.send(
+                    self.email_recipient,
+                    f"[{self.email_subject_prefix}] async derivation now-in-progress",
+                    [format_current_time(), f"{derivation_iri}"]
+                )
+            except Exception as e:
+                # if failed to send email, log the error and continue
+                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
 
     def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
         """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
@@ -190,6 +249,7 @@ class DerivationAgent(ABC):
                               function, methods=methods, *args, **kwargs)
         self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
 
+    @send_email_when_exception
     def monitor_async_derivations(self):
         """
             This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
@@ -256,11 +316,13 @@ class DerivationAgent(ABC):
                                 # only progress to job if the status is updated successfully
                                 # otherwise, the other thread will handle the job
                                 if not progressToJob:
-                                    self.logger.info(f"Asynchronous derivation <{derivation}> is already in progress by another thread.")
+                                    self.logger.info(f"Asynchronous derivation <{derivation}> is already in progress by another agent thread.")
                                 else:
                                     self.logger.info("Agent <%s> retrieved inputs of asynchronous derivation <%s>: %s." % (
                                         self.agentIRI, derivation, agentInputs))
                                     self.logger.info("Asynchronous derivation <%s> is in progress." % (derivation))
+                                    # send email to indicate the derivation is handled in this thread and started, i.e. now-in-progress
+                                    self.send_email_when_async_derivation_started(derivation)
 
                                     # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
                                     agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
@@ -302,6 +364,8 @@ class DerivationAgent(ABC):
                         self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
                         # set flag to false as this cleaning up process is fast and no need to query again
                         query_again = False
+                        # send email to indicate the derivation is now finished and cleaned up, i.e. up-to-date
+                        self.send_email_when_async_derivation_up_to_date(derivation)
 
                     elif statusType == 'NOSTATUS':
                         # no need to query_again as the derivation is considered as up-to-date
@@ -367,6 +431,7 @@ class DerivationAgent(ABC):
         for func in all_periodical_jobs:
             func()
 
+    @send_email_when_exception
     def handle_sync_derivations(self):
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
         requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
@@ -484,3 +549,6 @@ class DerivationAgent(ABC):
             This method runs the flask app as an HTTP servlet.
         """
         self.app.run(**kwargs)
+
+def format_current_time() -> str:
+    return str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + f" {str(time.localtime().tm_zone)}"

@@ -61,7 +61,7 @@ def test_config_derivation_agent(env_file):
         var_type = get_type_hints(AgentConfig)[key]
         default_value = getattr(AgentConfig, key, None)
         if var_type == bool:
-            env_value = env.get(key) if type(env.get(key)) == bool else env.get(key).lower() in ['true', 'yes', '1']
+            env_value = env.get(key, default_value) if type(env.get(key, default_value)) == bool else env.get(key).lower() in ['true', 'yes', '1']
         else:
             env_value = var_type(env.get(key, default_value)) # assign default value if env var not found
         assert value == env_value

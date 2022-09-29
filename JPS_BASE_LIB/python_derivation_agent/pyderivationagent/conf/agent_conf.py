@@ -105,6 +105,11 @@ class AgentConfig(Config):
     ONTOAGENT_OPERATION_HTTP_URL: str
     REGISTER_AGENT: bool
     MAX_THREAD_MONITOR_ASYNC_DERIVATIONS: int = 1
+    EMAIL_RECIPIENT: str = ''
+    EMAIL_SUBJECT_PREFIX: str = ''
+    EMAIL_USERNAME: str = ''
+    EMAIL_AUTH_JSON_PATH: str = ''
+    EMAIL_START_END_ASYNC_DERIVATIONS: bool = False
 
 
 def config_derivation_agent(env_file: str = None) -> AgentConfig:
