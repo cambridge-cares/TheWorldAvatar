@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v3.0.0</title>
+        <title>Pirmasens Digitaler Zwilling</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <meta charset="utf-8">
@@ -169,21 +169,15 @@
 
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setTitle("<h1>Pirmasens Digitaler Zwilling</h1>");
                 manager.getPanelHandler().setContent(`
-                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
-                    This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                    together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
-                    before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
-                    Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF-v2.0.0" target="_blank">GitHub wiki</a>. 
-                    This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                    the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                    not the files within the repository.</p>
+                    <p>(als Teil des World Avatars)</p>
+                    <div style="display: flex; justify-content: center;">
+                        <img src="./img/Flag_of_Pirmasens.png" width="350px"/>
+                    </div>
                 `);
                 
-                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                manager.getPanelHandler().setFooter("&copy; CMPG Innovations,  " + new Date().getFullYear());
                 // ===== CUSTOMISABLE =====
 
                 // Save general tab state as default
