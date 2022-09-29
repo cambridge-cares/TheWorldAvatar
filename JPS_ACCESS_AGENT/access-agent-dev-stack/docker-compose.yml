@@ -4,7 +4,7 @@ services:
   # access-agent
   access-agent:
     image: ghcr.io/cambridge-cares/access-agent:1.4.0
-    container_name: access-agent-SNAPSHOT
+    container_name: access-agent
     environment:
         LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
         STOREROUTER_ENDPOINT: "http://blazegraph-access-agent:8080/blazegraph/namespace/kb/sparql"
