@@ -94,13 +94,17 @@ class DerivationAgent(ABC):
         # assign KG related information
         self.kgUrl = kg_url
         self.kgUpdateUrl = kg_update_url if kg_update_url is not None else kg_url
-        self.kgUser = kg_user
-        self.kgPassword = kg_password
+        # NOTE that we check first if below are empty string first
+        # as the config_derivation_agent will read as '' if the value is not provided in env file
+        self.kgUser = kg_user if kg_user != '' else None
+        self.kgPassword = kg_password if kg_password != '' else None
 
         # assign file server related information
-        self.fs_url = fs_url
-        self.fs_user = fs_user
-        self.fs_password = fs_password
+        # NOTE that we check first if below are empty string first
+        # as the config_derivation_agent will read as '' if the value is not provided in env file
+        self.fs_url = fs_url if fs_url != '' else None
+        self.fs_user = fs_user if fs_user != '' else None
+        self.fs_password = fs_password if fs_password != '' else None
 
         # initialise the derivationClient with SPARQL Query and Update endpoint
         if self.kgUser is None:
