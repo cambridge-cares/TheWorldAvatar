@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class DataSubset {
 
     private String name;
+    @JsonProperty
     private String subdirectory;
 
     @JsonProperty
