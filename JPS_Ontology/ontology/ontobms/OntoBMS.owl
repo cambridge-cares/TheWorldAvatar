@@ -115,6 +115,15 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
         <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart"/>
     </owl:ObjectProperty>
 
     <!-- https://saref.etsi.org/core/isMeasuredByDevice -->
