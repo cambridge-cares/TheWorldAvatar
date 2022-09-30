@@ -4,6 +4,10 @@ from testcontainers.core.container import DockerContainer
 
 from typing import get_type_hints
 from pathlib import Path
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
+from rdflib import XSD
 import logging
 import pytest
 import random
@@ -16,6 +20,8 @@ from pyderivationagent.conf import config_derivation_agent
 from pyderivationagent.conf import config_generic
 from pyderivationagent.conf import AgentConfig
 from pyderivationagent.conf import Config
+
+from pyderivationagent.data_model import iris
 
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
@@ -107,6 +113,17 @@ class Config4Test2(Config4Test1):
     INT_2: int
     BOOL_2_1: bool
     BOOL_2_2: bool
+
+
+test_triples_for_check_exist = [
+    ['http://s', 'http://p0', 'http://o', None], # object property
+    ['http://s', 'http://p1', 'http://o', XSD.string], # data property
+    ['http://s', 'http://p2', 'o', XSD.string.toPython()], # data property with string
+    ['http://s', 'http://p3', 3, XSD.int.toPython()], # data property with int
+    ['http://s', 'http://p4', 3.14, XSD.double.toPython()], # data property with double
+    ['http://s', 'http://p5', True, XSD.boolean.toPython()], # data property with boolean
+    ['http://s', 'http://p6', '48.13188#11.54965#1379714400', iris.GEOSPATIAL_LAT_LON_TIME], # data property with custom datatype
+]
 
 
 # ----------------------------------------------------------------------------------
@@ -214,6 +231,32 @@ def initialise_triple_store():
     # the port is set as 9999 to match with the value set in the docker image
     blazegraph.with_exposed_ports(9999)
     yield blazegraph
+
+
+@pytest.fixture(scope="module")
+def initialise_test_triples(initialise_triple_store):
+    with initialise_triple_store as container:
+        # Wait some arbitrary time until container is reachable
+        time.sleep(3)
+
+        # Retrieve SPARQL endpoint
+        endpoint = get_endpoint(container)
+
+        # Create SparqlClient for testing
+        sparql_client = PySparqlClientForTest(endpoint, endpoint)
+
+        g = Graph()
+        for tp in test_triples_for_check_exist:
+            if tp[3] is None:
+                g.add((URIRef(tp[0]), URIRef(tp[1]), URIRef(tp[2])))
+            else:
+                g.add((URIRef(tp[0]), URIRef(tp[1]), Literal(tp[2], datatype=tp[3])))
+        sparql_client.uploadGraph(g)
+
+        yield sparql_client
+
+        # Clear logger at the end of the test
+        clear_loggers()
 
 
 @pytest.fixture(scope="module")
