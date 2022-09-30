@@ -39,6 +39,13 @@
   </repositories>
 
   <dependencies>
+
+    <dependency>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-base-lib</artifactId>
+      <version>1.16.0-272-SNAPSHOT</version>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
     <dependency>
       <groupId>com.github.docker-java</groupId>

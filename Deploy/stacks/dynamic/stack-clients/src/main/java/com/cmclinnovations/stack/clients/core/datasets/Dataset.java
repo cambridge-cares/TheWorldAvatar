@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -91,6 +92,9 @@ public class Dataset {
 
             if (null != database) {
                 PostGISClient.getInstance().createDatabase(database);
+            }
+            if (null != namespace) {
+                BlazegraphClient.getInstance().createNamespace(namespace);
             }
             if (null != workspaceName) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
