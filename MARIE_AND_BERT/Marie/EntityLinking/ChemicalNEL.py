@@ -31,6 +31,7 @@ class ChemicalNEL:
     def find_cid(self, question):
         doc = Document(question)
         mentions = doc.cems
+        print("mentions", mentions)
         try:
             mention_str = str(mentions[0])
             # TODO: rearrange the chemical formula

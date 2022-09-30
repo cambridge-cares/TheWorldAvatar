@@ -16,17 +16,8 @@ class MyTestCase(unittest.TestCase):
         answers = my_pubchem_engine.find_answers(question=question, head_entity=head_entity)
         best_answer = answers[0][0]
         assert (best_answer == 'CID1_charge')
+        # assert (my_pubchem_engine.self_inspection() == "The full test is passed!")
 
-        test_questions = open(os.path.join(DATA_DIR, 'Test/test_questions.txt')).readlines()
-        tmp = {}
-        for question in test_questions:
-            print(question)
-            answer = my_pubchem_engine.run(question=question)
-            tmp[question] = answer[0]
-
-        with open('../../DATA/Test/test_question_and_answers.json', 'w') as f:
-            f.write(json.dumps(tmp))
-            f.close()
 
     # def test_nel(self):
     #     my_pubchem_engine = PubChemEngine()

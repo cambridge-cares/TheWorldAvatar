@@ -67,9 +67,11 @@ class ScoreModel(nn.Module):
         return (head + projected_rel - tail).norm(p=1, dim=1).to(self.device)
 
     def predict(self, triplet):
+        print(" - predicting scores")
         nlp_components_pos = triplet['question']
         projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
         dist_positive = self.distance(triplet, projected_rel_pos)
+        print(" - Done predicting scores")
         return dist_positive
 
 

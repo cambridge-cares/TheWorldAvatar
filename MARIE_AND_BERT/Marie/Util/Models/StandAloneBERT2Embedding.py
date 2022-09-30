@@ -57,7 +57,8 @@ class StandAloneBERT(nn.Module):
         self.criterion = torch.nn.CosineEmbeddingLoss()
 
     def load_model(self, model_name):
-        self.load_state_dict(torch.load(os.path.join(DEPLOYMENT_DIR, model_name),map_location=self.device))
+        print(" - Loading pretrained BERT Mapping model")
+        self.load_state_dict(torch.load(os.path.join(DEPLOYMENT_DIR, model_name), map_location=self.device))
 
     def distance(self, emb_1, emb_2):
         """
@@ -72,15 +73,21 @@ class StandAloneBERT(nn.Module):
         return distance
 
     def predict(self, question):
-        input_ids = torch.reshape(question['input_ids'], (-1, max_len)).to(self.device)
-        attention_mask = torch.reshape(question['attention_mask'], (-1, max_len)).to(self.device)
-        pooled_output = self.bert(input_ids=input_ids,
-                                  attention_mask=attention_mask,
-                                  return_dict=False)[1].to(self.device)
-
-        dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
-        linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
-        return linear_output
+        with no_grad():
+            print(' - Embedding predicting')
+            input_ids = torch.reshape(question['input_ids'], (-1, max_len)).to(self.device)
+            print(' Step 1')
+            attention_mask = torch.reshape(question['attention_mask'], (-1, max_len)).to(self.device)
+            print(' Step 2')
+            pooled_output = self.bert(input_ids=input_ids,
+                                      attention_mask=attention_mask,
+                                      return_dict=False)[1].to(self.device)
+            print(' Step 3')
+            dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
+            print(' Step 4')
+            linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
+            print(' Step 5')
+            return linear_output
 
     def forward(self, question, y):
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))

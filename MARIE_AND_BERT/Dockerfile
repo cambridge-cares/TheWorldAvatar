@@ -1,18 +1,22 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
-# copy the code for Marie 
-COPY ./Marie/ Marie
-# copy the supporting data for Marie
-COPY ./DATA/ DATA
-COPY ./main.py .
-COPY requirements_linux.txt .
+ADD requirements_linux.txt .
 RUN pip install -r requirements_linux.txt
-# let chemcialdataextractor download the binaries 
-RUN cde data download
+
+# let chemcialdataextractor download the binaries
+
+ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cde_models.zip .
+RUN mkdir -p /root/.local/share/ChemDataExtractor/
+RUN unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
+COPY ./Marie/ Marie
 
 
-
-
-
-
-
-
+# copy the supporting data for Marie
+# COPY ./DATA/Deployment DATA/Deployment
+COPY ./DATA/Dictionaries DATA/Dictionaries
+COPY ./DATA/Test DATA/Test
+COPY static static
+COPY templates templates
+COPY ./main.py .
+ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Deployment.zip .
+RUN unzip Deployment.zip -d ./DATA/Deployment
+COPY ./uwsgi.ini .

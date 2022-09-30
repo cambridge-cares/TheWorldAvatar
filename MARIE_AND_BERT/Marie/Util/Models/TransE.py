@@ -9,6 +9,7 @@ from torch import nn
 
 from Marie.Util.Models.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
+from Training.Embedding.TransE_Trainer import Trainer as TransETrainer
 
 
 class TransE(nn.Module):
@@ -111,10 +112,10 @@ class TransE(nn.Module):
 
 if __name__ == '__main__':
     train_triplets = [line.split('\t') for line in
-                      open(os.path.join(DATASET_DIR, 'pubchemini-train.txt')).read().splitlines()]
+                      open(os.path.join('pubchemini-train.txt')).read().splitlines()]
 
     test_triplets = [line.split('\t') for line in
-                     open(os.path.join(DATASET_DIR, 'pubchemini-test.txt')).read().splitlines()]
+                     open(os.path.join('pubchemini-test.txt')).read().splitlines()]
 
     train_set = Dataset(train_triplets)
     test_set = Dataset(test_triplets)
@@ -122,5 +123,6 @@ if __name__ == '__main__':
     e_num = train_set.ent_num
     r_num = train_set.rel_num
     model = TransE(dim=50, ent_num=e_num, rel_num=r_num)
-    rst = model.load_ent_embedding()
-    index = torch.tensor([1, 2, 3, 4, 5])
+    my_transe_trainer = TransETrainer(dataset_name="pubchemini", load_pretrained_embeddings=False, dim=20,
+                                      batch_size=64)
+    my_transe_trainer.train()

@@ -6,6 +6,7 @@ from Marie.Util.location import DEPLOYMENT_DIR
 
 logging.basicConfig(level=logging.DEBUG, filename='marie.log', format='%(asctime)s %(levelname)s:%(message)s')
 
+
 # we need a proper place to hold all the triples, currently in file form
 
 class SubgraphExtractor:
@@ -13,11 +14,12 @@ class SubgraphExtractor:
         self.PUBCHEM_PATH = os.path.join(DEPLOYMENT_DIR, f'{dataset_name}-train.txt')
         e2i_file = open(os.path.join(DEPLOYMENT_DIR, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_file)
-
         self.entity_dictionary = {}
         self.pubchem_triples = []
         self.load_pubchem()
+        print("3. Done loading pubchem")
         self.make_dictionary()
+        print("4. Done making dictionary")
         pubchem_value_dict_path = open(os.path.join(DEPLOYMENT_DIR, 'pubchem_value_dict.pkl'), 'rb')
         self.pubchem_value_dict = pickle.load(pubchem_value_dict_path)
 
