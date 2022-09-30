@@ -14,9 +14,9 @@ To load static data files into the stack please follow the instructions below:
 
 1. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-data-uploader` subdirectory within it in a `bash` terminal).
 
-2. You can start from an example dataset by following the instructions in the [README.md](../example_datasets/README.md) file in the `example_datasets` directory. Alternatively put the relevant data in the `.inputs/data/` directory. The stack uploader supports all of vector, raster, and non-geospatial tabular data. These can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, shapefile, and CSV.
+2. To start you can follow the instructions in the [README.md](../example_datasets/README.md) file in the `example_datasets` directory to load in one of the example datasets. To load another data set, put the relevant data in the `.inputs/data/` directory. The stack uploader supports vector, raster, and non-geospatial tabular data; these can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, shapefile, and CSV.
 
-3. Create a JSON file in the `.inputs/data/` to configure how the data is to be uploaded. You can again look at the examples in `example_datasets` directory or follow this simplified template, adding the necessary details where `< >` are used. 
+3. Create a JSON file in `.inputs/config/` to configure how the data is to be uploaded. The steps to create such a file are detailed in full here but it is recommended that you also look at the example configurations in the `example_datasets` directory. The following is a template for a basic config file. It is necessary that you replace the any text fields with `< >`.
     ```json
     {
         "database": "postgres",
@@ -37,55 +37,67 @@ To load static data files into the stack please follow the instructions below:
         ]
     }
     ``` 
-    For more options on how the data is uploaded consider the following.
+    The following options are also supported.
 
     **Vector and Tabular Options:**
 
-    An `"ogr2ogrOptions"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
-    - `"inputDatasetOpenOptions"` uses [-oo](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo). These open options are driver specific and details on them can be found in the driver pages below.
-    - `"layerCreationOptions"` uses [`-lco`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco).
-    - `"outputDatasetOpenOptions"` uses [`-doo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo).
-    - `"envVars"` uses [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
-    - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/vector_common_options.html) and the [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html).
-    
-    The key value pairs `"sridIn"` and `"sridOut"` can also be used inside `"ogr2ogrOptions"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), and [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) to set the input and output SRS.
-        
-    Drivers:
-    - [CSV](https://gdal.org/drivers/vector/csv.html)
-    - [PostGIS](https://gdal.org/drivers/vector/pg.html)
-    - [shapefile](https://gdal.org/drivers/vector/shapefile.html)
+    - GDal Options
 
+        An `"ogr2ogrOptions"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
+        - `"inputDatasetOpenOptions"` implements [-oo](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo). These open options are driver specific and details on them can be found in the driver pages below.
+        - `"layerCreationOptions"` implements [`-lco`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco).
+        - `"outputDatasetOpenOptions"` implements [`-doo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo).
+        - `"envVars"` implements [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
+        - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/vector_common_options.html) and the [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html).
+        
+        The key value pairs `"sridIn"` and `"sridOut"` can also be used inside `"ogr2ogrOptions"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), and [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) to set the input and output SRS.
+            
+        Drivers:
+        - [CSV](https://gdal.org/drivers/vector/csv.html)
+        - [PostGIS](https://gdal.org/drivers/vector/pg.html)
+        - [shapefile](https://gdal.org/drivers/vector/shapefile.html)
+
+    - GeoServer Options
+
+        For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json. Within that the following nodes can be added.
+        - `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows.
+            - `"name"`: a name is required. 
+            - `"sql"`: a SQL query is required.
+            - `"keyColumn"`: specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) keys. 
+            - `"escapeSql"` is Boolean `true` or `false`. This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
+            - `"geometry"` specifies the geometry with the following `key:value` pairs.
+                - `"name"`: name of column with the geometry.
+                - `"type"`: one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
+                - `"srid"`: EPSG code as an integer.
+            - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
+                - `"name"`: parameter name.
+                - `"defaultValue"`: default value of parameter.
+                - `"regexpValidator"`: validation regular expression.
+        - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
+        These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
+      
     **Raster Options:**
 
-    An `"ogr2ogrOptions"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
-    - `"inputDatasetOpenOptions"` uses [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo). These open options are driver specific and details on them can be found in the driver pages below.
-    - `"creationOptions"` uses [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co). These creation options are driver specific and details on them can be found in the driver pages below.
-    -  `"envVars"` uses [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
-    - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/raster_common_options.html) and the [GDAL translate options](https://gdal.org/programs/gdal_translate.html).
-    
-    The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
+    - GDal Options
 
-    Drivers:
-    - [PostGIS](https://gdal.org/drivers/raster/postgisraster.html)
+        An `"ogr2ogrOptions"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
+        - `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo). These open options are driver specific and details on them can be found in the driver pages below.
+        - `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co). These creation options are driver specific and details on them can be found in the driver pages below.
+        -  `"envVars"` implements [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
+        - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/raster_common_options.html) and the [GDAL translate options](https://gdal.org/programs/gdal_translate.html).
+        
+        The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
 
-4. For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json. Within this you can set
-    - `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows.
-        - `"name"`: a name is required. 
-        - `"sql"`: a SQL query is required.
-        - `"keyColumn"`: specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) keys. 
-        - `"escapeSql"` is Boolean `true` or `false`.
-        - `"geometry"` specifies the geometry with the following `key:value` pairs.
-            - `"name"`: name of column with the geometry.
-            - `"type"`: one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
-            - `"srid"`: EPSG code as an integer.
-        - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
-            - `"name"`: parameter name.
-            - `"defaultValue"`: default value of parameter.
-            - `"regexpValidator"`: validation regular expression.
-    - `"defaultStyle"` specify name of style within GeoServer that will be the style if of this layer if no other style is specified.
-    - For all other options go to [GSLayerEncoder](https://github.com/geosolutions-it/geoserver-manager/blob/master/src/main/java/it/geosolutions/geoserver/rest/encoder/GSLayerEncoder.java) and search for "@param", reading the associated comments for more details.
+        Drivers:
+        - [PostGIS](https://gdal.org/drivers/raster/postgisraster.html)
 
-5. You can create a `.sld` GeoServer style in the config directory and upload it. In GeoServer the style will be named `the_world_avatar:<style name>` as it is created within the `the_world_avatar` workspace.
+    - GeoServer Options
+
+        For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json. Within that the following nodes can be added.
+        - `"layerSettings"`
+            - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
+
+4. You can create a `.sld` GeoServer style in the config directory and upload it. In GeoServer the style will be named `the_world_avatar:<style name>` as it is created within the `the_world_avatar` workspace. The following node can be added to the top level of the config file.
     ```json
         "styles": [
             {
@@ -95,7 +107,7 @@ To load static data files into the stack please follow the instructions below:
         ]
     ```
 
-6. Create a `.obda` file in the `datasetDirectory` to specify the mapping. Once again you can look at the examples in `example_datasets` directory or follow this simplified template.
+5. Create a `.obda` file in the `datasetDirectory` to specify the mapping. Once again you can look at the examples in `example_datasets` directory or follow this simplified template.
     ```obda
     [PrefixDeclaration]
     ex:     http://example.org/
@@ -112,16 +124,14 @@ To load static data files into the stack please follow the instructions below:
     source      <SQL query>
     ]]
     ```
-    You can test out your SQL queries in PostgreSQL GUI by selecting a table and clicking `Edit` to query the table.
-
-    Add the following to your config file.
+    Add the following as a top level node in the config file.
     ```json
         "mappings": [
             "<name of mapping file>.obda"
         ]
     ```
 
-8. From a terminal in the `stack-data-uploader` directory, start the `stack-data-uploader` container by running the following:
+6. From a terminal in the `stack-data-uploader` directory, start the `stack-data-uploader` container by running the following:
     ```console
     ./stack.sh start <STACK NAME>
     ```
@@ -163,14 +173,13 @@ You will need permission to push to the CMCL package repository to be able to bu
 ## Troubleshooting
 
 - The best place to start is to look at the container logs. These can be seen by right clicking on the containers on VSCode or through Docker Desktop.
-- It is often helpful to run the uploader after each step after step 3 of [Running the Stack Data Uploader](#Running-the-Stack-Data-Uploader) to narrow down where any problem might be occurring.
-- Look at step 5 of [Spinning up a Stack](../stack-manager/README.md#spinning-up-a-stack) and look at the user interfaces of the various services. You should be able to see your data sets being populated here.
-- When writing SQL queries it is recommended that you try them in the Adminer first.
+- It is often helpful to run the uploader after each step after step 3 of [Running the Stack Data Uploader](#Running-the-Stack-Data-Uploader). This way you can look at look at the user interfaces of the various services (see step 5 of [Spinning up a Stack](../stack-manager/README.md#spinning-up-a-stack)) and be able to see your data sets being populated here.
+- When writing SQL queries you can try them in the Adminer first.
 - It is recommended that you write and validate GeoServer styles in the GeoServer UI, saving it to a `.sld` file.
 
 ### Quick Fixes
 
-- For certain geometries (e.g. `MULTILINESTRING` and `LINESTRING`) it is necessary to use [`-nlt`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt) to specify the geometry in the following way. 
+- For certain vector geometries (e.g. `MULTILINESTRING` and `LINESTRING`) it is necessary to use [`-nlt`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt) to specify the geometry in the following way. 
     ```json
     "ogr2ogrOptions": {
                     "otherOptions": {
