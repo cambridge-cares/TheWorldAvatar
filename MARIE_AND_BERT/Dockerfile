@@ -12,8 +12,12 @@ COPY ./Marie/ Marie
 
 # copy the supporting data for Marie
 # COPY ./DATA/Deployment DATA/Deployment
-COPY ./DATA/Dictionaries DATA/Dictionaries
-COPY ./DATA/Test DATA/Test
+
+ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/DATA.zip .
+RUN unzip DATA.zip -d ./DATA
+
+# COPY ./DATA/Dictionaries DATA/Dictionaries
+# COPY ./DATA/Test DATA/Test
 COPY static static
 COPY templates templates
 COPY ./main.py .

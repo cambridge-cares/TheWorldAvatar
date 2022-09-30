@@ -8,7 +8,6 @@ from flask import render_template, send_from_directory
 app = Flask(__name__)
 print(" - Initializing Pubchem Engine")
 my_pubchem_engine = PubChemEngine()
-# 
 print(" - Done initializing Pubchem Engine")
 
 
@@ -42,20 +41,19 @@ def dashboard():
     return render_template('dashboard.html')
 
 
-#
-# @app.route('/log')
-# def stream():
-#     def generate():
-#         with open('marie.log') as f:
-#             while True:
-#                 yield f.read()
-#                 time.sleep(1)
-#     return app.response_class(generate(), mimetype='text/plain')
+@app.route('/log')
+def stream():
+    def generate():
+        with open('marie.log') as f:
+            while True:
+                yield f.read()
+                time.sleep(1)
+    return app.response_class(generate(), mimetype='text/plain')
 
 
-# @app.route('/full_test')
-# def full_test():
-#     return my_pubchem_engine.self_inspection()
+@app.route('/full_test')
+def full_test():
+    return my_pubchem_engine.self_inspection()
 
 
 if __name__ == "__main__":
