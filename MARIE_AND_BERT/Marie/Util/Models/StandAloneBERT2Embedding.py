@@ -11,7 +11,7 @@ from torch.utils.data.dataset import Dataset as TorchDataset
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
 
-from Marie.Util.location import TRAINING_DIR
+from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR
 
 # TODO: a Dataset class that provides question examples and their relation
 # TODO: also provides a rel embedding
@@ -47,7 +47,7 @@ class Dataset(TorchDataset):
 
 class StandAloneBERT(nn.Module):
 
-    def __init__(self, device=torch.device("cpu")):
+    def __init__(self, device=torch.device("cpu"), for_training=False):
         super(StandAloneBERT, self).__init__()
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-cased')
@@ -55,10 +55,16 @@ class StandAloneBERT(nn.Module):
         self.linear = nn.Linear(768, 20)  # keep this model ...
         self.mid_2 = nn.Linear(512, 20)
         self.criterion = torch.nn.CosineEmbeddingLoss()
+        self.for_training = for_training
+        if self.for_training:
+            self.model_dir = TRAINING_DIR
+        else:
+            self.model_dir = DEPLOYMENT_DIR
 
     def load_model(self, model_name):
         print(" - Loading pretrained BERT Mapping model")
-        self.load_state_dict(torch.load(os.path.join(TRAINING_DIR, model_name), map_location=self.device))
+
+        self.load_state_dict(torch.load(os.path.join(self.model_dir, model_name), map_location=self.device))
 
     def distance(self, emb_1, emb_2):
         """
@@ -142,7 +148,8 @@ def one_train_iteration(learning_rate=1e-8, model_name='bert_model_embedding_20_
                 avg_cos_similarity = 0
                 dist_similarity = 0
                 for test_batch in tqdm(test_dataloader):
-                    true_y = test_batch[1].to(device)  # the y is replaced by the embedding now, the loss is the distance
+                    true_y = test_batch[1].to(
+                        device)  # the y is replaced by the embedding now, the loss is the distance
                     loss, output_val = model(test_batch[0], true_y)
                     total_loss_val += loss.detach().mean().item()
                     test_cosine = torch.nn.CosineSimilarity(dim=1, eps=1e-08)

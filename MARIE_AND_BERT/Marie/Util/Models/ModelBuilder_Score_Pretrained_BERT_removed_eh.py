@@ -17,13 +17,13 @@ from torch.nn import MarginRankingLoss
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 from Marie.Util.Models.ScoringModel_Dataset import Dataset
-from Marie.Util.location import TRAINING_DIR
+from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR
 from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
 
 
 class ScoreModel(nn.Module):
 
-    def __init__(self, device, model_name, dropout=0.1):
+    def __init__(self, device, model_name, dropout=0.1, for_training=False):
         super(ScoreModel, self).__init__()
         self.criterion = MarginRankingLoss(margin=1)  # to make sure that the positive triplet always have smaller
         # distance than negative ones
@@ -31,8 +31,12 @@ class ScoreModel(nn.Module):
         self.bert_with_reduction = StandAloneBERT(device=device)
         self.bert_with_reduction = self.bert_with_reduction.to(self.device)
         self.bert_with_reduction.load_model(model_name)
-        self.rel_embedding = pd.read_csv(os.path.join(TRAINING_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
-        self.ent_embedding = pd.read_csv(os.path.join(TRAINING_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
+        if for_training:
+            self.data_dir = TRAINING_DIR
+        else:
+            self.data_dir = DEPLOYMENT_DIR
+        self.rel_embedding = pd.read_csv(os.path.join(self.data_dir, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.ent_embedding = pd.read_csv(os.path.join(self.data_dir, 'ent_embedding.tsv'), sep='\t', header=None)
 
     def forward(self, positive_triplets, negative_triplets):
         """
