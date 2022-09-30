@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobuiltenv/"
-     xml:base="https://www.theworldavatar.com/kg/ontobuiltenv/"
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/"
+     xml:base="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:OntoBuiltEnv="https://www.theworldavatar.com/kg/ontobuiltenv/"
+     xmlns:OntoBuiltEnv="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21 September 2022</dc:date>
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 September 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBuiltEnvAdminInfo is an extension of OntoBuiltEnv for the inclusion of data properties on administrative information on properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
     </owl:Ontology>
     
@@ -70,7 +70,7 @@
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/AveragePricePerSqm"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AveragePricePerSqm"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -81,250 +81,250 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasAddress -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasAddress">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its address.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has address</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasAdministrativeDistrict -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasAdministrativeDistrict -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasAdministrativeDistrict">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasAdministrativeDistrict">
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an address and an encompassing administrative district.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has administrative district</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasBuiltForm -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasBuiltForm -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuiltForm">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasBuiltForm">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its built form.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has built form</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasConstructionComponent -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasConstructionComponent -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasConstructionComponent">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasConstructionComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and one of its key construction components.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has construction component</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasConstructionDate -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasConstructionDate -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasConstructionDate">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasConstructionDate">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="https://www.w3.org/2006/time#Interval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its construction dates.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has construction date</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasGroundElevation -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasGroundElevation -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasGroundElevation">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasGroundElevation">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its ground elevation.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ground elevation</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasInstalledPVArea -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasInstalledPVArea -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasInstalledPVArea">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasInstalledPVArea">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its total installed photovoltaics area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has installed PV area</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasLatestTransactionRecord -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasLatestTransactionRecord -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasLatestTransactionRecord">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasLatestTransactionRecord">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://landregistry.data.gov.uk/def/ppi/TransactionRecord"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its latest transaction record.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has latest transaction record</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasMarketValue -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasMarketValue -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasMarketValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasMarketValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its (estimated) property value.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has market value</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasOntoCityGMLRepresentation -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasOntoCityGMLRepresentation">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its corresponding instance IRI in OntoCityGml.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has OntoCityGML representation</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasPVsuitableRoofArea -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPVsuitableRoofArea -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasPVsuitableRoofArea">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPVsuitableRoofArea">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its roof area suitable for photovoltaics installation.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has roof area suitable for PV</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasPostalCode -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPostalCode -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasPostalCode">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPostalCode">
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an address and the respective postal code.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has postal code</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyType -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPropertyType -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPropertyType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its property type.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has property type</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalFloorArea -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalFloorArea -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalFloorArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalFloorArea">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its total floor area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has total floor area</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalRoofArea -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalRoofArea -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalRoofArea">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalRoofArea">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its total roof area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has total roof area</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasUsageCategory -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasUsageCategory -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasUsageCategory">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasUsageCategory">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyUsageCategory"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has usage category</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/isIn -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/isIn -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/isIn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Flat"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/isIn">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Flat"/>
         <rdfs:range rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a flat/apartment and its parent building it is contained within.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is in</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/locatedIn -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedIn -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/locatedIn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedIn">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and an encompassing administrative district.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">located in</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/representativeFor -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/representativeFor -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/representativeFor">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/AveragePricePerSqm"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/representativeFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AveragePricePerSqm"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyPriceIndex"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property price index and the area it refers to.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the average price per square metre and the area it refers to.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">representative for</rdfs:label>
     </owl:ObjectProperty>
     
@@ -334,10 +334,10 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyPriceIndex"/>
         <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the property price index and its actual time series history.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time series</rdfs:label>
     </owl:ObjectProperty>
     
@@ -386,7 +386,7 @@
         <rdfs:domain rdf:resource="http://landregistry.data.gov.uk/def/ppi/TransactionRecord"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a transaction record and the associated transaction price.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Price paid</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -399,7 +399,7 @@
         <rdfs:domain rdf:resource="http://landregistry.data.gov.uk/def/ppi/TransactionRecord"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a transaction record and the associated transaction data.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transaction date</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -442,80 +442,171 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasEnergyRating -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToAdminCommunity -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasEnergyRating">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToAdminCommunity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and the administrative community it belongs to </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">belongs to administrative community</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToCommunity -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToCommunity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and the community it belongs to </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">belongs to community</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToManagementGroup -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/belongsToManagementGroup">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and the management group it belongs to </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">belongs to management group</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasBuildingID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasBuildingID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its building ID</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has building ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasEnergyRating -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasEnergyRating">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its overall energy efficiency rating (e.g. linear &apos;A to G&apos; rating (where A is the most energy efficient and G is the least energy efficient))</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has energy rating</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasIdentifier -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasGovernorateNumber -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasIdentifier">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasGovernorateNumber">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its governorate number</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has governorate number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasIdentifier -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasIdentifier">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unique identifier describing the property.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has identifier</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasLatestEPC -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasLatestEPC -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasLatestEPC">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasLatestEPC">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its latest Energy Performance record (i.e. unique lodgement identifier).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">latest EPC</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfHabitableRooms -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasNumberOfHabitableRooms -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasNumberOfHabitableRooms">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasNumberOfHabitableRooms">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and its total number of habitable rooms.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has number of habitable rooms</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyNumber -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPropertyNumber -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyNumber">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPropertyNumber">
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an address and the respective property number (e.g. house and/or unit number)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has property number</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/hasWGS84LatitudeLongitude -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasWGS84LatitudeLongitude -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasWGS84LatitudeLongitude">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasWGS84LatitudeLongitude">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Location of property footprint centroid in WGS84 coordinates.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has WGS84 coordinates</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedInCounty -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedInCounty">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and the county it is located in</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">located in county</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedInDistrict -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/locatedInDistrict">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and the district it is located in</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">located in district</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -524,9 +615,9 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
@@ -615,9 +706,9 @@
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#Address">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasPostalCode"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPostalCode"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -701,444 +792,444 @@
         <owl:equivalentClass rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#IfcBuilding"/>
         <owl:equivalentClass rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasInstalledPVArea"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation"/>
-                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasPVsuitableRoofArea"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalRoofArea"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A built structure with ground, roof, and walls which stands more or less permanently in one place.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area defined for administrative purposes, e.g. a county or local authority district.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Administrative district</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/AveragePricePerSqm -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/AveragePricePerSqm">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/representativeFor"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The average property price per square metre in a particular area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average price per square metre</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The built form of the property.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Built form</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Bungalow -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Bungalow">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small house with a single story.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bungalow</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Clinic -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Clinic">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A medical facility for outpatient primary level healthcare.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clinic</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction component of a property (i.e. wall, floor, roof, window).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction component</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/CulturalFacility -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/CulturalFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature that is deemed to be of particular interest to society.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cultural facility</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Detached -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Detached">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property with a detached built form.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Detached</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Domestic -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Domestic">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves as living space for one or more parties.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Domestic</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/DrinkingEstablishment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/DrinkingEstablishment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A business whose primary function is the serving of alcoholic beverages for consumption on the premises.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Drinking establishment</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/EatingEstablishment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/EatingEstablishment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A business whose primary function is the serving of food for consumption on the premises.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eating establishment</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Education -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Education">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Education includes a very broad group of sites with a common high level primary function of providing education (either state funded or by fees).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Education</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyService -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emergency services are organizations which ensure public safety and health by addressing different emergencies.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emergency service</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/FireStation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/FireStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyService"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A facility which may house fire fighters, and contains the equipment and vehicles.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fire station</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Flat -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Flat">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Property"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A self-contained suite of rooms which occupies part of a building.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flat</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Floor -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Floor">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction characteristics of the property&apos;s floor.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Floor</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Hospital -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Hospital">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A medical facility that provides second level care.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hospital</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Hotel -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Hotel">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property where travelers can pay for lodging and meals and other services.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/House -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/House">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dwelling that serves as living quarters for one or more families, with one or more storeys.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">House</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/IndustrialFacility -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/IndustrialFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property used for industrial fabrication or processing of goods. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Industrial facility</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Maisonette -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Maisonette">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A self-contained apartment (usually on two floors) in a larger building and with its own entrance from the outside.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maisonette</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical care includes sites which focus on the provision of secondary medical care services.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical care</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/MultiResidential -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/MultiResidential">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves as living space for more than one party.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Multi residential</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves non-living purposes (i.e. commercial, industrial, public propertys).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-Domestic</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Office -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Office">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A place of business where professional or clerical duties are performed.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Office</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/ParkHome -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/ParkHome">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Typically offsite manufactured bungalow-style homes that are located within a private estate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ParkHome</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/PoliceStation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/PoliceStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyService"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The local office of a police force in a particular area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Police station</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A code of letters and digits denoting a particular (mostly granular) geographic area used to aid in the sorting of mail.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Postal code</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Property -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Property">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasBuiltForm"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasGroundElevation"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasGroundElevation"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasLatestTransactionRecord"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasInstalledPVArea"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasOntoCityGMLRepresentation"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPVsuitableRoofArea"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalRoofArea"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A built structure with ground, roof, and walls which stands more or less permanently in one place.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AdministrativeDistrict">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area defined for administrative purposes, e.g. a county or local authority district.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Administrative district</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AveragePricePerSqm -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/AveragePricePerSqm">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/representativeFor"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The average property price per square metre in a particular area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average price per square metre</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The built form of the property.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Built form</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Bungalow -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Bungalow">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small house with a single story.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bungalow</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Clinic -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Clinic">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MedicalCare"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A medical facility for outpatient primary level healthcare.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clinic</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction component of a property (i.e. wall, floor, roof, window).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/CulturalFacility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/CulturalFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature that is deemed to be of particular interest to society.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cultural facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Detached -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Detached">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property with a detached built form.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Detached</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Domestic -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Domestic">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyUsageCategory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves as living space for one or more parties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Domestic</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/DrinkingEstablishment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/DrinkingEstablishment">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A business whose primary function is the serving of alcoholic beverages for consumption on the premises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Drinking establishment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EatingEstablishment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EatingEstablishment">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A business whose primary function is the serving of food for consumption on the premises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eating establishment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Education -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Education">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Education includes a very broad group of sites with a common high level primary function of providing education (either state funded or by fees).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Education</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EmergencyService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EmergencyService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emergency services are organizations which ensure public safety and health by addressing different emergencies.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emergency service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/FireStation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/FireStation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EmergencyService"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A facility which may house fire fighters, and contains the equipment and vehicles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fire station</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Flat -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Flat">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A self-contained suite of rooms which occupies part of a building.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flat</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Floor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Floor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction characteristics of the property&apos;s floor.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Floor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Hospital -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Hospital">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MedicalCare"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A medical facility that provides second level care.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hospital</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Hotel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Hotel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property where travelers can pay for lodging and meals and other services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/House -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/House">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dwelling that serves as living quarters for one or more families, with one or more storeys.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">House</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/IndustrialFacility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/IndustrialFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property used for industrial fabrication or processing of goods. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Industrial facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Maisonette -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Maisonette">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A self-contained apartment (usually on two floors) in a larger building and with its own entrance from the outside.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maisonette</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MedicalCare -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MedicalCare">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical care includes sites which focus on the provision of secondary medical care services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical care</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MultiResidential -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/MultiResidential">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves as living space for more than one party.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Multi residential</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyUsageCategory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves non-living purposes (i.e. commercial, industrial, public propertys).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-Domestic</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Office -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Office">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A place of business where professional or clerical duties are performed.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Office</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ParkHome -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ParkHome">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Typically offsite manufactured bungalow-style homes that are located within a private estate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ParkHome</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PoliceStation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PoliceStation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/EmergencyService"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The local office of a police force in a particular area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Police station</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PostalCode">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A code of letters and digits denoting a particular (mostly granular) geographic area used to aid in the sorting of mail.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Postal code</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Property">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasAddress"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasBuiltForm"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasLatestTransactionRecord"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://landregistry.data.gov.uk/def/ppi/TransactionRecord"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasMarketValue"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasMarketValue"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasPropertyType"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasPropertyType"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasTotalFloorArea"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/hasTotalFloorArea"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A built structure which is available for occupation or business purposes.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyPriceIndex -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyPriceIndex">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries"/>
@@ -1147,173 +1238,173 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An index denoting the (average) property price evolution within a specific area over time.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property price index</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyType">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyType">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The general type of the property.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property type</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyUsageCategory -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/PropertyUsageCategory">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Description of the (intended) usage and/or function of a property.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property usage category</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/ReligiousFacility -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ReligiousFacility -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/ReligiousFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ReligiousFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A place where members of a religious group congregate for worship.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Religious facility</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/RetailEstablishment -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/RetailEstablishment -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/RetailEstablishment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/RetailEstablishment">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature that sells to the general public finished goods.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Retail establishment</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Roof -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Roof -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Roof">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Roof">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction characteristics of the property&apos;s roof.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/School -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/School -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/School">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Education"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/School">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Education"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property where young people receive primary and secondary education.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">School</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Semi-Detached -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Semi-Detached -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Semi-Detached">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Semi-Detached">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property with a semi-detached built form.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semi-Detached</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/SingleResidential -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/SingleResidential -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/SingleResidential">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Domestic"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/SingleResidential">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Domestic"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that serves as living space for one party.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Single residential</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/SportsFacility -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/SportsFacility -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/SportsFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/SportsFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature where one or many different sports can be played.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports facility</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Terraced -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Terraced -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Terraced">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/BuiltForm"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Terraced">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/BuiltForm"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property with a terraced built form.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Terraced</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/TransportFacility -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/TransportFacility -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/TransportFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/TransportFacility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Non-Domestic"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature that is associated with the movement of passengers and goods.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transport facility</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/University -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/University -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/University">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Education"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/University">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Education"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A site providing higher/university education.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Wall -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Wall -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Wall">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Wall">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction characteristics of the property&apos;s walls.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Window -->
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Window -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Window">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/ConstructionComponent"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/Window">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/ConstructionComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Key construction characteristics of the property&apos;s windows.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Window</rdfs:label>
     </owl:Class>
     
@@ -1367,7 +1458,7 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a postal code and its actual code of letters and digits.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property and a textual description of it (e.g. its name or (intended) usage classification).</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an administrative district and its actual official name.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenvadmininfo/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
     </rdf:Description>
 </rdf:RDF>
