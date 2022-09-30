@@ -1,0 +1,24 @@
+{
+    "name": "solarkataster",
+    "database": "psdt",
+    "workspace": "twa",
+    "datasetDirectory": "einstrahlungsraster",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "Einstrahlung",
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "twa:einstrahlungsraster"
+                }
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "einstrahlungsraster",
+            "file": "einstrahlungsraster.sld"
+        }
+    ]
+}

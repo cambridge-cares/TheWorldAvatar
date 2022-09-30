@@ -1,0 +1,173 @@
+{
+    "name": "dlm",
+    "database": "psdt",
+    "workspace": "twa",
+    "datasetDirectory": "dlm",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "name": "dlmgew01f",
+            "skip": false,
+            "subdirectory": "gew01f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_gew01f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmgew01l",
+            "skip": false,
+            "subdirectory": "gew01l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_gew01l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmsie02f",
+            "skip": false,
+            "subdirectory": "sie02f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmsie03p",
+            "skip": false,
+            "subdirectory": "sie03p",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmveg01f",
+            "skip": false,
+            "subdirectory": "veg01f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_veg01f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmveg02f",
+            "skip": false,
+            "subdirectory": "veg02f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_veg02f"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver01l",
+            "skip": false,
+            "subdirectory": "ver01l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_ver01l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver02l",
+            "skip": false,
+            "subdirectory": "ver02l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:bdlm_ver02l"
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver03f",
+            "skip": false,
+            "subdirectory": "ver03f",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver03l",
+            "skip": false,
+            "subdirectory": "ver03l",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "name": "dlmver07p",
+            "skip": false,
+            "subdirectory": "ver07p",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "PRECISION": "NO"
+                }
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "bdlm_gew01f",
+            "file": "bdlm_gew01f.sld"
+        },
+        {
+            "name": "bdlm_gew01l",
+            "file": "bdlm_gew01l.sld"
+        },
+        {
+            "name": "bdlm_veg01f",
+            "file": "bdlm_veg01f.sld"
+        },
+        {
+            "name": "bdlm_veg02f",
+            "file": "bdlm_veg02f.sld"
+        },
+        {
+            "name": "bdlm_ver01l",
+            "file": "bdlm_ver01l.sld"
+        },
+        {
+            "name": "bdlm_ver02l",
+            "file": "bdlm_ver02l.sld"
+        }
+    ]
+}
