@@ -110,6 +110,13 @@
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
     </owl:ObjectProperty>
 
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:ObjectProperty>
+
     <!-- https://saref.etsi.org/core/isMeasuredByDevice -->
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isMeasuredByDevice">
@@ -602,6 +609,12 @@
    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Current -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Current">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Frequency -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Frequency">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
     </owl:Class>
 
