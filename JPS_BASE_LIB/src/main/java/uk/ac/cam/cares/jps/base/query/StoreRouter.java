@@ -205,6 +205,12 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		return new RemoteStoreClient(storeRouterEndpoint);
 	}
 	
+	/**
+	 * Get the query endpoint and update endpoint from the ontokgrouter triple store for the targetResourceLabel.
+	 * 
+	 * @param targetResourceLabel
+	 * @param storeClient
+	 */
 	@Override
 	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
 		
