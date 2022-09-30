@@ -61,7 +61,7 @@ def create_indexing(dataset_name='pubchem500', data_dir=None):
 
 
 def train_TransE(dataset_name):
-    my_transe_trainer = TransETrainer(dataset_name=dataset_name, load_pretrained_embeddings=True, dim=20,
+    my_transe_trainer = TransETrainer(dataset_name=dataset_name, load_pretrained_embeddings=False, dim=20,
                                       batch_size=64)
     my_transe_trainer.train()
 
@@ -74,6 +74,6 @@ def train_Complex(dataset_name):
 
 
 if __name__ == '__main__':
-    dataset_name = 'pubchem10000'
+    dataset_name = 'pubchem20000'
     # create_indexing(dataset_name=dataset_name, data_dir='ontocompchem_calculation')
     train_TransE(dataset_name=dataset_name)

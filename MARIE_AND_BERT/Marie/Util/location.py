@@ -24,6 +24,7 @@ PARENT_DIR = get_parent_path(this_dir)
 ROOT_DIR = get_parent_path(PARENT_DIR)
 DATA_DIR = os.path.join(ROOT_DIR, 'DATA')
 ARCHIVE_DIR = os.path.join(ROOT_DIR, 'archived')
+TRAINING_DIR = os.path.join(DATA_DIR, 'Training')
 
 ENTITY_LINKING_DATA_DIR = os.path.join(DATA_DIR, 'EntityLinking')
 ENTITY_LINKING_CONF_DIR = os.path.join(ENTITY_LINKING_DATA_DIR, 'conf')

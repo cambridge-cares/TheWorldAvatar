@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.DEBUG, filename='marie.log', format='%(asctime
 class PubChemEngine:
 
     def __init__(self):
-        self.subgraph_extractor = SubgraphExtractor(dataset_name='pubchem5000')
+        self.subgraph_extractor = SubgraphExtractor(dataset_name='pubchem10000')
         self.chemical_nel = ChemicalNEL()
         assert (self.chemical_nel.find_cid("CO2")[1] == "CID280")
         print("1. Done initializing NEL ")
@@ -35,7 +35,7 @@ class PubChemEngine:
 
         print(f'=========== USING {self.device} ===============')
         '''Initialize the scoring model'''
-        self.score_model_name = 'bert_embedding_5000_updated'
+        self.score_model_name = 'bert_embedding_10000'
         self.score_model = ScoreModel(device=self.device, model_name=self.score_model_name)
         self.score_model = self.score_model.to(self.device)
         '''Initialize tokenizer'''

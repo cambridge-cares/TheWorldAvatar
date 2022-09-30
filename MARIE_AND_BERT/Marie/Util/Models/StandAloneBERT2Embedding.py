@@ -11,7 +11,7 @@ from torch.utils.data.dataset import Dataset as TorchDataset
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
 
-from Marie.Util.location import DEPLOYMENT_DIR, DATA_DIR
+from Marie.Util.location import TRAINING_DIR
 
 # TODO: a Dataset class that provides question examples and their relation
 # TODO: also provides a rel embedding
@@ -32,7 +32,7 @@ class Dataset(TorchDataset):
         self.tokenized_questions = [self.tokenizer(text,
                                                    padding='max_length', max_length=self.max_len, truncation=True,
                                                    return_tensors="pt") for text in self.df.iloc[:, 0]]
-        self.rel_embedding = pd.read_csv(os.path.join(DEPLOYMENT_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.rel_embedding = pd.read_csv(os.path.join(TRAINING_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
         self.y = self.rel_embedding.iloc[self.df.iloc[:, 1].tolist()].reset_index(drop=True)
 
     def classes(self):
@@ -58,7 +58,7 @@ class StandAloneBERT(nn.Module):
 
     def load_model(self, model_name):
         print(" - Loading pretrained BERT Mapping model")
-        self.load_state_dict(torch.load(os.path.join(DEPLOYMENT_DIR, model_name), map_location=self.device))
+        self.load_state_dict(torch.load(os.path.join(TRAINING_DIR, model_name), map_location=self.device))
 
     def distance(self, emb_1, emb_2):
         """
@@ -74,19 +74,13 @@ class StandAloneBERT(nn.Module):
 
     def predict(self, question):
         with no_grad():
-            print(' - Embedding predicting')
             input_ids = torch.reshape(question['input_ids'], (-1, max_len)).to(self.device)
-            print(' Step 1')
             attention_mask = torch.reshape(question['attention_mask'], (-1, max_len)).to(self.device)
-            print(' Step 2')
             pooled_output = self.bert(input_ids=input_ids,
                                       attention_mask=attention_mask,
                                       return_dict=False)[1].to(self.device)
-            print(' Step 3')
             dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
-            print(' Step 4')
             linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
-            print(' Step 5')
             return linear_output
 
     def forward(self, question, y):
@@ -116,7 +110,7 @@ def one_train_iteration(learning_rate=1e-8, model_name='bert_model_embedding_20_
     print(f'=========== USING {device} ===============')
     # ===========================
 
-    df = pd.read_csv(os.path.join(DATA_DIR, 'question_set_rel'), sep=',', header=None)
+    df = pd.read_csv(os.path.join(TRAINING_DIR, 'question_set_rel'), sep=',', header=None)
     df = df.sample(frac=1)
     df_train, df_test = np.split(df.sample(frac=1, random_state=42), [int(.8 * len(df))])
     dataset_test = Dataset(df_test)
@@ -159,21 +153,21 @@ def one_train_iteration(learning_rate=1e-8, model_name='bert_model_embedding_20_
                 print(f'\ntotal_loss_val: {total_loss_val}')
                 print('average cosine similarity', avg_cos_similarity / len(test_dataloader))
                 print('average dist similarity', dist_similarity / len(test_dataloader))
-    torch.save(model.state_dict(), os.path.join(DEPLOYMENT_DIR, model_name))
+    torch.save(model.state_dict(), os.path.join(TRAINING_DIR, model_name))
     print('model saved')
 
 
 if __name__ == '__main__':
     # starting_lr = 1e-20  # this is probably the best lr
-    starting_lr = 1e-20
+    starting_lr = 1e-5
     current_lr = starting_lr
 
     one_train_iteration(current_lr,
-                        model_name='bert_embedding_5000_updated',
-                        resume_training=True, batch_size=32)
+                        model_name='bert_embedding_10000',
+                        resume_training=False, batch_size=32)
     for i in range(10):
         print(f'current learning rate {current_lr}')
         one_train_iteration(current_lr,
-                            model_name='bert_embedding_5000_updated',
+                            model_name='bert_embedding_10000',
                             resume_training=True, batch_size=32)
         current_lr = current_lr / 10
