@@ -1,14 +1,21 @@
 from unittest import installHandler
 from pubchem.kgoperations.getkgdata import *
+from pubchem.kgoperations.insertkgdata import *
 from pubchem.pug.pubchem_api import *
 
 def query_with_inchi(inchi):
     IRI = get_iri_data(inchi)
     print("The IRI is:", IRI)
     if IRI:
-        # this needs to be implemented
+        # main get data
         data = get_ontospecies_data(IRI)
-        #data = get_test_data()
+        
+        # test get data
+        # data = get_test_data()
+        
+        # test insert data
+        # data = insert_test_data()
+
         print(data)
         return (data, 'TWA')
     else:

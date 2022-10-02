@@ -30,7 +30,7 @@ def get_ontospecies_data(osIRI):
 
 def get_test_data():
     query = test_data_query()
-    sparqlendpoint = SPARQL_ENDPOINTS['ontopubchem']
+    sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
     data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
 
 
