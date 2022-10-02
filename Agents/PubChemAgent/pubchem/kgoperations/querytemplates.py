@@ -48,7 +48,7 @@ def ontocompchem_data_query(ocIRI, osIRI):
                     gc:isCalculationOn ?rotSym .
 
                 ?vibAnal a gc:VibrationalAnalysis ;
-                        gc:hasResult ?freqResult .
+                        gc:hasResult ?freqResult . 
 
                 ?freqResult oc:hasFrequencies ?frequencies .
 
@@ -106,7 +106,7 @@ def ontospecies_data_query(osIRI):
         }""".replace('#osIRI#',osIRI)
     return query
 
-def test_data_query(osIRI):
+def test_data_query():
     query = """
     SELECT *
     WHERE{

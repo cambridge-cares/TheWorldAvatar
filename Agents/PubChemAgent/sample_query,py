@@ -1,0 +1,32 @@
+from multiprocessing.connection import Client
+from pubchem.kgoperations.javagateway import jpsBaseLibGW
+import json
+
+
+def test_data_query(osIRI):
+    query = """
+    SELECT *
+    WHERE{
+    ?x ?y ?z . 
+    } LIMIT 10
+    """
+    return query
+
+jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+def querykg(sparqlEndPoint=None, queryStr=None):
+    # perform an example sparqle query, see the jps-base-lib docs for further details
+    StoreRouter = jpsBaseLib_view.StoreRouter
+    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
+    response = json.loads(str(StoreClient.executeQuery(queryStr)))
+    return response
+
+if __name__ == '__main__' :
+    sparqlEndPoint = 'http://www.theworldavatar.com/blazegraph/namespace/CleanPubChem'
+    # sparqlEndPoint = 'http://kb/ontospecies'
+    StoreRouter = jpsBaseLib_view.StoreRouter
+    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
+    Client = jpsBaseLib_view.RemoteStoreClient(sparqlEndPoint,sparqlEndPoint,None, None)
+    response = json.loads(str(Client.executeQuery(test_data_query('ABSC'))))
+    print(response)

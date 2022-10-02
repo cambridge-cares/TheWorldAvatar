@@ -1,4 +1,4 @@
-from querykg import *
+from pubchem_twa import *
 import pytest
 import os
 import json

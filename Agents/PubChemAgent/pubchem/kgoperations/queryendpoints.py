@@ -1,5 +1,5 @@
 SPARQL_ENDPOINTS = {
-    'ontocompchem': 'http://kb/ontocompchem',
-    'ontospecies': 'http://kb/ontospecies',
-    'testontospecies': 'http://www.theworldavatar.com/blazegraph/namespace/testontospecies/sparql'
+    'ontopubchem': 'http://www.theworldavatar.com/blazegraph/namespace/CleanPubChem',
+    'ontospecies': 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies',
+    'copyontospecies': 'http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies'
 }

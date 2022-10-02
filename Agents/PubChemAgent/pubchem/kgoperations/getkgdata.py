@@ -28,9 +28,9 @@ def get_ontospecies_data(osIRI):
 
     return data
 
-def get_testontospecies_data(osIRI):
-    query = test_data_query(osIRI)
-    sparqlendpoint = 'http://blazegraph/namespace/testontospecies/sparql/'
+def get_test_data():
+    query = test_data_query()
+    sparqlendpoint = SPARQL_ENDPOINTS['ontopubchem']
     data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
 
 
