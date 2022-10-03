@@ -50,7 +50,7 @@ public class RDBAccessAgentCaller {
         String requestUrl = (String) a[0];
         JSONObject joparams = (JSONObject) a[1];
 
-        return Http.execute(Http.get(requestUrl, null,joparams));
+        return (String) new JSONObject(Http.execute(Http.get(requestUrl, null,joparams))).get("result");
     }
 
     public static Object[] createRDBAccessRequestUrl(String targetUrl) {
