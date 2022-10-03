@@ -13,8 +13,9 @@ import java.util.Map.Entry;
 import com.cmclinnovations.stack.exceptions.InvalidTemplateException;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.github.dockerjava.api.model.EndpointSpec;
+import com.github.dockerjava.api.model.PortConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
@@ -24,6 +25,11 @@ import com.github.odiszapc.nginxparser.javacc.NginxConfigParser;
 import com.github.odiszapc.nginxparser.javacc.ParseException;
 
 public final class NginxService extends ContainerService implements ReverseProxyService {
+
+    /**
+     *
+     */
+    private static final String EXTERNAL_PORT = "EXTERNAL_PORT";
 
     public static final String TYPE = "nginx";
 
@@ -40,6 +46,8 @@ public final class NginxService extends ContainerService implements ReverseProxy
     public NginxService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
 
+        updateExternalPort(config);
+
         try (InputStream inStream = new BufferedInputStream(
                 NginxService.class.getResourceAsStream(SERVER_CONF_TEMPLATE))) {
             NginxConfigParser parser = new NginxConfigParser(inStream);
@@ -49,6 +57,21 @@ public final class NginxService extends ContainerService implements ReverseProxy
             throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
         } catch (IOException ex) {
             throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
+        }
+    }
+
+    private void updateExternalPort(ServiceConfig config) {
+        String externalPort = System.getenv(EXTERNAL_PORT);
+        if (null != externalPort) {
+            EndpointSpec endpointSpec = config.getDockerServiceSpec().getEndpointSpec();
+            if (null != endpointSpec) {
+                List<PortConfig> ports = endpointSpec.getPorts();
+                if (null != ports) {
+                    ports.stream()
+                            .filter(port -> port.getTargetPort() == 80)
+                            .forEach(port -> port.withPublishedPort(Integer.parseInt(externalPort)));
+                }
+            }
         }
     }
 

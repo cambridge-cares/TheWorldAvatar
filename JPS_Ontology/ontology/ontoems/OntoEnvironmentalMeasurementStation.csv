@@ -3,7 +3,7 @@ OntoEMS,TBox,http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl,https://
 OntoEMS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoEMS,TBox,"The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoEMS,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-ReportingStation,Class,,,,,,A station (physical or virtual) reporting a quantity.,https://www.theworldavatar.com/kg/ontoems/,Reporting station
+ReportingStation,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A station (physical or virtual) reporting a quantity.,https://www.theworldavatar.com/kg/ontoems/,Reporting station
 WaterLevelReportingStation,Class,ReportingStation,IS-A,,,,A reporting station that reports the level of water (potentially besides any other environmental observations).,https://www.theworldavatar.com/kg/ontoems/,Water level reporting station
 Forecast,Class,,,,,,A prediction or estimation of a quantity.,https://www.theworldavatar.com/kg/ontoems/,Forecast
 WaterLevel,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,IS-A,,,,"The height reached by the water in a reservoir, river, the tide at sea, or similar.",https://www.theworldavatar.com/kg/ontoems/,Water level
@@ -62,7 +62,6 @@ https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontolog
 createdOn,Data Property,,,Forecast,date time,,A relationship between a forecast and its creation time.,https://www.theworldavatar.com/kg/ontoems/,created on
 dataSource,Data Property,,,ReportingStation,string,,Description of data source of reporting station (e.g. API URL),https://www.theworldavatar.com/kg/ontoems/,data source
 hasIdentifier,Data Property,,,ReportingStation,string,,Description of unique identifier of reporting station,https://www.theworldavatar.com/kg/ontoems/,has identifier
-hasObservationLocation,Data Property,,,ReportingStation,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,,Description of observation location (i.e. point location in WGS84),https://www.theworldavatar.com/kg/ontoems/,has observation location
 hasObservationElevation,Data Property,,,ReportingStation,Float,,Description of observation elevation (i.e. in metres),https://www.theworldavatar.com/kg/ontoems/,has observation elevation
 https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,ReportingStation UNION AirPollutantConcentration,string,exactly 1,Textual description of instance.,https://www.theworldavatar.com/kg/ontoems/,label
 SulfurDioxideConcentration,Class,AirPollutantConcentration,IS-A,,,,The concentration of sulfur dioxide in the ambient air.,https://www.theworldavatar.com/kg/ontoems/,Sulfur dioxide concentration
