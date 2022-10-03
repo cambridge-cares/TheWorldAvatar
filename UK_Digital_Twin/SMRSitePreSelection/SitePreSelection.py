@@ -1,28 +1,26 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 August 2022       #
+# Last Update Date: 28 Sept 2022         #
 ##########################################
 
 """
 This module is used to pre-screen the protential SMR sites 
 """
 from logging import raiseExceptions
-from operator import length_hint
-from tkinter import S
-from pyrsistent import b
 from pyscipopt import Model
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 import SMRSitePreSelection.DecommissioningCost as DCost
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
-from math import pi
 from sklearn.cluster import DBSCAN
 import numpy as np
 from shapely.geometry import MultiPoint
 from UK_Digital_Twin_Package import generatorCluster as genCluster
+import matplotlib.pyplot as plt
+import matplotlib
 
-class SitePreSelection(object):
+class SitePreSelectionAndCapacityReplacement(object):
 
     def __init__(self, 
             geospatialQueryEndpointLabel:str,    
@@ -41,7 +39,9 @@ class SitePreSelection(object):
             replaceRenewableGenerator:bool,
             clusterFlag:bool,
             maxmumSMRUnitAtOneSite:int,
-            DecommissioningCostEstimatedLevel:int = 1 ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
+            SMRIntergratedDiscount:float, 
+            genTypeSummary:list,
+            DecommissioningCostEstimatedLevel:int = 1, ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
         ):
         ##-- Model Parameters --##  
         self.generatorToBeReplacedList = generatorToBeReplacedList
@@ -60,212 +60,297 @@ class SitePreSelection(object):
         self.pureBackUpAllGenerator = pureBackUpAllGenerator
         self.replaceRenewableGenerator = replaceRenewableGenerator
         self.clusterFlag = clusterFlag
+        self.genTypeSummary = genTypeSummary
+        self.ir = SMRIntergratedDiscount
 
-        if DecommissioningCostEstimatedLevel in [0,1,2]:
+        if DecommissioningCostEstimatedLevel in [0, 1 , 2, 3]:
             self.DcLevel = DecommissioningCostEstimatedLevel
         else:
-            raiseExceptions("Decommissioning Cost Estimated Level must be 0 for minimum cost, 1 for middle and 2 for high.")
+            raiseExceptions("DecommissioningCost Estimated Level must be 0 for no cost, and 1 for minimum cost, 2 for middle and 3 for high cost level.")
         
         self.totalRenewableCapacity = 0
         for gen in self.generatorToBeReplacedList: 
             if 'Solar' in gen["fuelOrGenType"] or 'Wind' in gen["fuelOrGenType"]:  
                 self.totalRenewableCapacity += float(gen["Capacity"])
 
-    def SMRSitePreSelector(self):
+    def SitePreSelectorAndCapacityReplacementFinder(self):
         ##-- Setup model --##
-        self.model = Model("SMRSitePreSelection")
+        self.model = Model("SitePreSelectorAndCapacityReplacementFinder")
 
         ##--Site Pre-cluster --##
         if self.clusterFlag:
-            print('...Clustering starts...')
+            print('...Renewable generator clustering starts...')
             self.siteCluster()
 
         ##-- Binary variable --##
         self.varSets = locals()  
-        self.binaryVarNameList = []
-        self.solarOrWindbinaryVarNameList = []
-        self.newClusteredSiteVarNameList = []
-        self.otherGeneratorbinaryVarNameList = []
-        for s in range(len(self.generatorToBeReplacedList)):
-            sumOfBinaryVar = 0
-            binaryVarNameShortList = []
-            for i in range(self.N + 1):
-                binaryVarName = "y_" + str(s) + "_" + str(i) 
-                self.varSets[binaryVarName] = self.model.addVar(binaryVarName, vtype = "B")
-                binaryVarNameShortList.append(binaryVarName)
-                sumOfBinaryVar += self.varSets[binaryVarName]
-            self.binaryVarNameList.append(binaryVarNameShortList)
-            if 'Solar' in self.generatorToBeReplacedList[s]["fuelOrGenType"] or 'Wind' in self.generatorToBeReplacedList[s]["fuelOrGenType"]:
-                self.solarOrWindbinaryVarNameList.append(binaryVarNameShortList)
-            elif self.generatorToBeReplacedList[s]["fuelOrGenType"] is 'SMR':
-                self.newClusteredSiteVarNameList.append(binaryVarNameShortList)
-            else:
-                self.otherGeneratorbinaryVarNameList.append(binaryVarNameShortList)
-            ## the binary variables constrians Sum(i, (0，4)) y_s_i = 1, where y_s_0 = 1 identifying there is no SMR in the site s ##  
-            self.model.addCons(sumOfBinaryVar == 1)
-
-        ##-- Set up constraint --##
-        ## 1. the replacedCapacity
-            ## pureBackUpAllGenerator Flag:
-            ### a. when the back-up option is set to be True, no matter what generator types are involved, the SMR is not used to replace the generators but as the back up capacity;
-            ### b. when the back-up option is set to be False, the SMR is used to relaced the carbon internsive generator and only back up the renewable generators (e.g., solar, wind)
+        self.CapacityReplacementBinaryVarNameList = [] ## identify if the capacity is replaced by SMR, does not nacessarily means that the plant has to be decommissioned
+        self.siteSelectionBinaryVarNameList = [] ## identify if the site is selected to host the SMR. The site whose plant's capacity being replaced by SMR does not nacessarily becomes the site hosting the SMR
+        # self.solarOrWindBackedUpBinaryVarNameList = [] ## identify if the solar or wind site to be backed up by SMR
+        # self.newClusteredSiteSelectedVarNameList = [] ## identify if a new site selected to be the potential site hosting SMRs
+       
         replacedCapacity = 0
-        if self.pureBackUpAllGenerator is True:
-            print('===This is a pure back-up scenario===')
-            for gen in self.generatorToBeReplacedList:
-                replacedCapacity += float(gen["Capacity"])
-            replacedCapacity = float(self.backUpCapRatio) * float(replacedCapacity)
-        elif not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: 
-            print('===This is a half pure back-up (solar and wind) and half replacing scenario===')            
-            for s in range(len(self.generatorToBeReplacedList)):
-                gen = self.generatorToBeReplacedList[s]
-                if not ('Solar' in gen["fuelOrGenType"] or 'Wind' in gen["fuelOrGenType"] or gen["fuelOrGenType"] is 'SMR'):
-                    bvList = self.binaryVarNameList[s]
-                    for bvname in bvList:
-                        if bvList.index(bvname) > 0:
-                            replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
-            replacedCapacity += self.totalRenewableCapacity * float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax))
-
-            print("The carbonTax is: ", self.carbonTax, "and the backup ratio is: ", round(float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax)), 4))
-        else:
-            print('===This is a pure replacement scenario===')
-            for s in range(len(self.generatorToBeReplacedList)):
-                gen = self.generatorToBeReplacedList[s]
-                bvList = self.binaryVarNameList[s]
-                for bvname in bvList:
-                    if bvList.index(bvname) > 0:
-                        replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
-
-        ## 2. the total capacity of SMR
         totalSMRCapacity = 0
-        for bvList in self.binaryVarNameList:
-            for bvname in bvList:
-                i = bvList.index(bvname)
-                totalSMRCapacity += i * self.varSets[bvname] * self.Cap_SMR
-        ## 3. SMR capacity constraint
-        self.model.addCons(totalSMRCapacity >= replacedCapacity, name = "SMRCapacityConstraint")
+        ## NOTE: do not consider the solar and wind at this iteration
+        for s in range(len(self.generatorToBeReplacedList)):
+            gen = self.generatorToBeReplacedList[s]
+            ## 1. identify power plant located at site s being replaced or not
+            capacityReplaceBinaryVarName = "y_" + str(s) 
+            self.varSets[capacityReplaceBinaryVarName] = self.model.addVar(capacityReplaceBinaryVarName, vtype = "B")
+            self.CapacityReplacementBinaryVarNameList.append(capacityReplaceBinaryVarName)
+            replacedCapacity += float(gen["Capacity"]) * self.varSets[capacityReplaceBinaryVarName]
+
+            ## 2. identify if site s hosting SMRs or not
+            sumOfSiteSelectionBinaryVar = 0
+            siteSelectionBinaryVarNameShortList = []
+            for i in range(self.N + 1):
+                siteSelectionBinaryVarName = "smr_" + str(s) + "_" + str(i) 
+                self.varSets[siteSelectionBinaryVarName] = self.model.addVar(siteSelectionBinaryVarName, vtype = "B")
+                siteSelectionBinaryVarNameShortList.append(siteSelectionBinaryVarName)
+                sumOfSiteSelectionBinaryVar += self.varSets[siteSelectionBinaryVarName]
+                totalSMRCapacity += i * self.varSets[siteSelectionBinaryVarName] * self.Cap_SMR
+            self.siteSelectionBinaryVarNameList.append(siteSelectionBinaryVarNameShortList)
+
+            ##--Set up constrains --##
+            ## 1. limit the number of SMR to be hosted at each site
+            ## the binary variables constrians Sum(i, (0，4)) smr_s_i = 1, where smr_s_0 = 1 identifying there is no SMR in the site s ##  
+            self.model.addCons(sumOfSiteSelectionBinaryVar == 1)
+
+            ## 2. Capacity constraint
+            self.model.addCons(totalSMRCapacity >= replacedCapacity, name = "CapacityConstraint")
 
         ##-- Formulate the objective function --##
-        totalSMRCapitalCost = 0
-        totalDecommissioningCost = 0
-        totalProtentialCarbonCost = 0
-        totalLifeMonetaryCost = 0
-        
-        count = 0
-        for s in range(len(self.binaryVarNameList)):
-            bvList = self.binaryVarNameList[s]
+        ## Assign the variables
+        totalSMRCapitalCost = self.model.addVar("totalSMRCapitalCost")
+        totalProtentialCarbonCost = self.model.addVar("totalProtentialCarbonCost")
+        totalLifeMonetaryCost = self.model.addVar("totalLifeMonetaryCost")
+
+        totalProtentialCarbonCost = 0 ## promote the capacity replacement 
+        totalSMRCapitalCost = 0 ## prevent placing the SMRs
+        totalLifeMonetaryCost = 0 ## prevent placing the SMRs
+
+        ## Calculate the cost of the SMR investment considering the intergration discount
+        sumUpSMRIntergratedCost = 0
+        SMRIntergratedCostForDifferentInterationNumberList = []
+        for i in range(self.N):
+            sumUpSMRIntergratedCost += (self.ir**i ) * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+            SMRIntergratedCostForDifferentInterationNumberList.append(sumUpSMRIntergratedCost)
+
+        for s in range(len(self.CapacityReplacementBinaryVarNameList)):
+            y = self.varSets[self.CapacityReplacementBinaryVarNameList[s]]
+            genIRI = self.generatorToBeReplacedList[s]["PowerGenerator"]
             existingGenCap = self.generatorToBeReplacedList[s]["Capacity"]
             existingGenFuelType = self.generatorToBeReplacedList[s]["fuelOrGenType"]
             annualOperatingHours = self.generatorToBeReplacedList[s]["annualOperatingHours"]
             CO2EmissionFactor = self.generatorToBeReplacedList[s]["CO2EmissionFactor"]
-           
-            carbonCost = 0
 
-            if existingGenFuelType in DCost.DecommissioningCost.keys():
-                dc = DCost.DecommissioningCost[existingGenFuelType][self.DcLevel]
-            elif not self.replaceRenewableGenerator and existingGenFuelType is 'SMR':
-                dc = 0
-            elif self.replaceRenewableGenerator and existingGenFuelType is 'SMR':
-                sumOfdcCapaMultipled = 0
-                if 'beClusteredGenerators' in self.generatorToBeReplacedList[s].keys():
-                    beClusteredGenerators = self.generatorToBeReplacedList[s]['beClusteredGenerators']
-                    for gen in beClusteredGenerators:
-                        if gen['fuelOrGenType'] in DCost.DecommissioningCost.keys():
-                            sumOfdcCapaMultipled += float(DCost.DecommissioningCost[gen['fuelOrGenType']][self.DcLevel]) * float(gen['Capacity'])
-                        else:
-                            raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
-            else:
-                raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
-            
+            ## 1. Formulate the Carbon emmision penalty
+            carbonCost = 0
             ## the protential carbon emission cost if the old generator is not being replaced by SMR
             for l in range(self.L):
                 ## l starts frm 0, therefore it is no need to use -(l-1) bus just use -l
-                carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * (1 + float(self.i)) **(-l)
+                carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * ((1 + float(self.i)) **(-l))
+            totalProtentialCarbonCost += (1-y) * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
 
-            ## calculte the Neighbourhood radius for SMR unit and the population within the circle centred at the to be replaced generator with the radius rs
-            for bvname in bvList:
-                i = bvList.index(bvname)
-                bv = self.varSets[bvname]
-                ## totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
-                if i == 0:
-                    ## half backup and half replacement: carbon emitted power plant
-                    if not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator and not ('Solar' in existingGenFuelType or 'Wind' in existingGenFuelType or existingGenFuelType is None):
-                        totalDecommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    ## pure replacement: for non-clustered power plant
-                    elif not self.pureBackUpAllGenerator and self.replaceRenewableGenerator and existingGenFuelType is not 'SMR':
-                        totalDecommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    ## pure replacement: for clustered power plant
-                    elif self.replaceRenewableGenerator and existingGenFuelType is 'SMR': 
-                        totalDecommissioningCost += (1-bv) * sumOfdcCapaMultipled * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    if not self.pureBackUpAllGenerator:     
-                        totalProtentialCarbonCost += bv * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                else: 
-                    rs =  (self.r0/1000) * ((i * self.Cap_SMR)**(0.5))
-                    ## print("Performing the population density calculation for:", self.generatorToBeReplacedList[s])
-                    print("The count of the generator is:", count)
-                    print("i is:", i)
+            ## 2. Formulate the SMR investment and the risk cost for SMR failure
+            siteSelectionBinaryVarShortList = self.siteSelectionBinaryVarNameList[s]
+            for i in range(len(siteSelectionBinaryVarShortList)):
+                smr_bv = self.varSets[siteSelectionBinaryVarShortList[i]] 
+                if i > 0:
+                    rs =  (self.r0/1000) * (i * (self.Cap_SMR**(0.5)))
+                    print(i, genIRI)
                     population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
-                    totalLifeMonetaryCost += bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
-
-                    count += 1
+                    totalLifeMonetaryCost += smr_bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))  
+                    totalSMRCapitalCost += SMRIntergratedCostForDifferentInterationNumberList[i-1] * smr_bv
+                    ## totalSMRCapitalCost += int(i) * smr_bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
 
         ##-- Set up the objective function --##
-        self.model.setObjective(totalSMRCapitalCost + totalDecommissioningCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")
-        
+        self.model.setObjective(totalSMRCapitalCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")
+
         ##-- Set up optimisation method --##
         self.model.optimize()
+        
+        for y in self.CapacityReplacementBinaryVarNameList:
+            print((self.varSets[y].name), self.model.getVal(self.varSets[y]), type(self.model.getVal(self.varSets[y])))
+
+        for nameList in self.siteSelectionBinaryVarNameList:
+            for smr in nameList:
+                 print((self.varSets[smr].name), self.model.getVal(self.varSets[smr]))
 
         ##-- Results post processing --##
-        print("Optimal value:", self.model.getObjVal())
-        totalSMR = 0
-        self.solarAndWindSiteSelected = []
-        self.clusteredSiteSelected = []
-        self.otherSiteSelected = []
-        selectedbvNames = []
-        numOfReplaced = 0
-        numOfBackup = 0
-        numOfPlacedAtClusteredSite = 0
-        for s in range(len(self.binaryVarNameList)):
-            bvList = self.binaryVarNameList[s]
-            numOfSMR = 0
-            for bvname in bvList:
-                print((self.varSets[bvname].name), " = ", (self.model.getVal(self.varSets[bvname])))
-                totalSMR += self.model.getVal(self.varSets[bvname]) * bvList.index(bvname)
-                numOfSMR += self.model.getVal(self.varSets[bvname]) * bvList.index(bvname)
-                if int(self.model.getVal(self.varSets[bvname])) > 0:
-                    selectedbvNames.append(bvname)
-            if numOfSMR >= 1:
-                self.generatorToBeReplacedList[s].update({"numberOfSMR": numOfSMR})
-                if bvList in self.solarOrWindbinaryVarNameList:
-                    self.solarAndWindSiteSelected.append(self.generatorToBeReplacedList[s])                     
-                    numOfBackup += 1
-                elif bvList in self.newClusteredSiteVarNameList:
-                    self.clusteredSiteSelected.append(self.generatorToBeReplacedList[s])                    
-                    numOfPlacedAtClusteredSite += 1
-                else:
-                    self.otherSiteSelected.append(self.generatorToBeReplacedList[s])                    
-                    numOfReplaced += 1
+        print("The Site Selection Optimal Value:", self.model.getObjVal())
 
-        totalSMRCapa = totalSMR * self.Cap_SMR
-        capa = 0
-        for gen in self.otherSiteSelected: ## to be replaced capacity
-            capa += float(gen["Capacity"])
+        numOfSMR = 0
+        totalReplacedCapacity = 0
+        capacityReplacedbvNames = []
+        siteSelectedbvNames = [] 
+        self.capacityReplacedGeneratorList = []
+        self.SMRList = []
+              
+        for s in range(len(self.generatorToBeReplacedList)):
+            capacityReplaceBinaryVarName = self.CapacityReplacementBinaryVarNameList[s]
+            siteSelectionBinaryVarShortList = self.siteSelectionBinaryVarNameList[s]
+            if round(self.model.getVal(self.varSets[capacityReplaceBinaryVarName])) > 0:
+                genType = self.generatorToBeReplacedList[s]["fuelOrGenType"]
+                capacity = float(self.generatorToBeReplacedList[s]["Capacity"])
+                print((self.varSets[capacityReplaceBinaryVarName].name), "TechType is: ", genType, "The capacity is: ", capacity)
+                totalReplacedCapacity += capacity
+                capacityReplacedbvNames.append(capacityReplaceBinaryVarName)
 
-        if not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: 
-            capa += self.totalRenewableCapacity * float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax)) ## to be back up
+                self.generatorToBeReplacedList[s].update({"Status": "CapacityReplaced"})
+                self.capacityReplacedGeneratorList.append(self.generatorToBeReplacedList[s])
 
-        print("The number of generator to be replaced and backup is: ", len(self.solarAndWindSiteSelected + self.otherSiteSelected))
-        print("Total replaced and backup capacity: ", capa)
-        print("The total number of SMR is: ", totalSMR, "total SMR Capacity: ", totalSMRCapa)
+                for sumary in self.genTypeSummary:
+                    if sumary['fuelOrGenType'] == genType:
+                        sumary['Replaced_Capacity'] += capacity
+                        sumary['Replaced_number_of_Generators'] += 1
+                        break
 
-        print(selectedbvNames, numOfReplaced, numOfBackup, numOfPlacedAtClusteredSite)
+            for smr_bv in siteSelectionBinaryVarShortList:
+                if round(self.model.getVal(self.varSets[smr_bv])) > 0 and siteSelectionBinaryVarShortList.index(smr_bv) > 0:
+                    numOfSMR += round(self.model.getVal(self.varSets[smr_bv])) * siteSelectionBinaryVarShortList.index(smr_bv)
+                    siteSelectedbvNames.append(smr_bv)
+                    ## vibrate the site location from the original site a bit
+                    lalon = [float(self.generatorToBeReplacedList[s]["LatLon"][0]) + 0.004, float(self.generatorToBeReplacedList[s]["LatLon"][1]) + 0.004]
+                    ## initialise the SMR generator with the atttributes
+                    SMRSite = {'PowerGenerator': None, 
+                    'Bus': self.generatorToBeReplacedList[s]["Bus"], 
+                    'Capacity': round(self.model.getVal(self.varSets[smr_bv])) * siteSelectionBinaryVarShortList.index(smr_bv) * self.Cap_SMR, 
+                    'LatLon': lalon,
+                    'fuelOrGenType': 'SMR', 
+                    'annualOperatingHours': 0, 
+                    'CO2EmissionFactor': 0.0, 
+                    'place': None,
+                    'NumberOfSMRUnits': round(self.model.getVal(self.varSets[smr_bv])) * siteSelectionBinaryVarShortList.index(smr_bv) }
+                    self.SMRList.append(SMRSite)
+        
+        self.TotalRetrofittingCost = round(self.model.getVal(totalSMRCapitalCost), 2) + round(self.model.getVal(totalLifeMonetaryCost), 2) 
 
-        return selectedbvNames
+        print("The number of generators being replaced capacity: ", len(capacityReplacedbvNames))
+        print("The list of generators being replaced capacity: ", capacityReplacedbvNames)
+        print("Total replaced capacity: ", totalReplacedCapacity)
 
+        print("The total number of SMR is: ", numOfSMR)
+        print("The selected sites of hosting SMR are: ", siteSelectedbvNames)
+        print("Total SMR Capacity: ", numOfSMR * self.Cap_SMR)
+        print("Total Retrofitting Cost is: ", self.TotalRetrofittingCost)
+        return
+
+    def barChartCreator_Capacity(self):
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        label_list = []
+        totcalCapacityDiff = []
+        replacedCapacity = []
+        totalNumberOfGeneratorsDiff = []
+        replacedNumberOfGenerators = [] 
+
+        totcalCapacity = []
+        totalNumberOfGenerators = []
+
+        for sumary in self.genTypeSummary:
+            genType = sumary['fuelOrGenType'].split('#')[1]
+            label_list.append(genType)
+            totcalCapacityDiff.append(float(sumary['Total_Capacity']) - float(sumary['Replaced_Capacity']))
+            totcalCapacity.append(float(sumary['Total_Capacity']))
+            replacedCapacity.append(float(sumary['Replaced_Capacity']))
+            totalNumberOfGeneratorsDiff.append(float(sumary['Total_Number_of_Generators']) - float(sumary['Replaced_number_of_Generators']))
+            replacedNumberOfGenerators.append(float(sumary['Replaced_number_of_Generators']))
+            totalNumberOfGenerators.append(float(sumary['Total_Number_of_Generators']))
+
+        x = range(len(totcalCapacity))
+        rects1 = plt.bar(x, height=replacedCapacity, width=0.35, alpha = 0.5, color='blue', label="Replaced Capacity")
+        rects2 = plt.bar(x, height=totcalCapacityDiff, width=0.35, alpha = 0.3, color='blue', label="Total Capacity", bottom=replacedCapacity)
+        plt.ylim(0, max(totcalCapacity))
+        plt.ylabel("Capacity")
+        plt.xticks(x, label_list)
+        plt.xlabel("Generator Technology Types")
+        plt.title("Generator Replacement -- Capacity")
+        plt.legend()
+        plt.show()
+        plt.clf()
+
+    def barChartCreator_NumOfGenerator(self):
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        label_list = []
+        totcalCapacityDiff = []
+        replacedCapacity = []
+        totalNumberOfGeneratorsDiff = []
+        replacedNumberOfGenerators = [] 
+
+        totcalCapacity = []
+        totalNumberOfGenerators = []
+
+        for sumary in self.genTypeSummary:
+            genType = sumary['fuelOrGenType'].split('#')[1]
+            label_list.append(genType)
+            totcalCapacityDiff.append(float(sumary['Total_Capacity']) - float(sumary['Replaced_Capacity']))
+            totcalCapacity.append(float(sumary['Total_Capacity']))
+            replacedCapacity.append(float(sumary['Replaced_Capacity']))
+            totalNumberOfGeneratorsDiff.append(float(sumary['Total_Number_of_Generators']) - float(sumary['Replaced_number_of_Generators']))
+            replacedNumberOfGenerators.append(float(sumary['Replaced_number_of_Generators']))
+            totalNumberOfGenerators.append(float(sumary['Total_Number_of_Generators']))
+
+        x = range(len(totalNumberOfGenerators))
+        rects1 = plt.bar(x, height=replacedNumberOfGenerators, width=0.35, alpha = 0.5, color='grey', label="Number of Replaced Generators")
+        rects2 = plt.bar(x, height=totalNumberOfGeneratorsDiff, width=0.35, alpha = 0.3, color='grey', label="Total Number of Generators", bottom=replacedNumberOfGenerators)
+        plt.ylim(0, max(totalNumberOfGenerators))
+        plt.ylabel("Number of Generators")
+        plt.xticks(x, label_list)
+        plt.xlabel("Generator Technology Types")
+        plt.title("Generator Replacement -- Number of Generators")
+        plt.legend()
+        plt.show()
+        plt.clf()
+
+
+
+        # ## Capacity
+        # 
+        # rects1 = plt.bar(x, height=totcalCapacity, width=0.4, alpha=0.8, color='blue', label="Total Capacity")
+        # rects2 = plt.bar([i + 0.4 for i in x], height=replacedCapacity, width=0.4, color='grey', label="Replaced Capacity")
+
+        # plt.ylim(0, max(totcalCapacity))
+        # plt.ylabel("Capacity")
+
+        # plt.xticks([index + 0.2 for index in x], label_list)
+        # plt.xlabel("Generator Technology Types")
+        # plt.title("Generator Replacement -- Capacity")
+        # plt.legend()     
+        
+        # for rect in rects1:
+        #     height = rect.get_height()
+        #     plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+        # for rect in rects2:
+        #     height = rect.get_height()
+        #     plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+        # plt.show()
+
+        # ## Number of Generator
+        # x = range(len(totalNumberOfGenerators))
+        # rects1 = plt.bar(x, height=totalNumberOfGenerators, width=0.4, alpha=0.8, color='blue', label="Total Number of Generators")
+        # rects2 = plt.bar([i + 0.4 for i in x], height=replacedNumberOfGenerators, width=0.4, color='grey', label="Number of Replaced Generators")
+
+        # plt.ylim(0, max(totalNumberOfGenerators))
+        # plt.ylabel("Number of Generators")
+
+        # plt.xticks([index + 0.2 for index in x], label_list)
+        # plt.xlabel("Generator Technology Types")
+        # plt.title("Generator Replacement -- Number of Generators")
+        # plt.legend()     
+        
+        # for rect in rects1:
+        #     height = rect.get_height()
+        #     plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+        # for rect in rects2:
+        #     height = rect.get_height()
+        #     plt.text(rect.get_x() + rect.get_width() / 2, height+1, str(height), ha="center", va="bottom")
+        # plt.show()
+
+
+##NOTE: This function is not used 
     """The generator cluster function"""
     def siteCluster(self):
-        genNotCluster = []  
+        genNotCluster = []
         toBeCluster = [] 
         location = []
 
@@ -351,8 +436,8 @@ class SitePreSelection(object):
         ## print(self.generatorToBeReplacedList, len(self.generatorToBeReplacedList))
         return
         
-if __name__ == '__main__': 
-    ##NOTUSED [0]generator IRI, [1]capcacity, [2]primary fuel, [3]generaor technology, [4]lat-lon 
+if __name__ == '__main__':
+    carbonTax = 820 
     GenCoal = [{'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_3b7acf93-cc8b-4ad7-9c85-2f737eace679', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'Capacity': '1559.0', 'LatLon': [51.38731, -3.4049], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Wales'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_7bda0d1f-8df0-496c-8f7a-b328c70ffe2d', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2000.0', 'LatLon': [53.304, -0.7815], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_598cdc45-52b8-4027-888f-3eb4758b329c', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'Capacity': '230.0', 'LatLon': [51.54907, -2.97053], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Yorkshire_and_the_Humber'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_c2153e52-dee7-49d8-9ba2-90f83edfde5f', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2000.0', 'LatLon': [53.36046, -0.81019], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_a04e0e57-f847-426b-9cc3-c323d261aecd', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2021.0', 'LatLon': [52.86463, -1.25829], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_b32946fc-6abb-4df5-9437-7e01dbe1ca64', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'Capacity': '1961.0', 'LatLon': [53.37234, -2.68912], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/North_West_England'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_74fbe81f-339b-41fe-b2da-940d05b774b2', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'Capacity': '1320.0', 'LatLon': [53.74043, -0.9981], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Yorkshire_and_the_Humber'}]
     testPP = [{"PowerGenerator": 1, "Bus": 1, "Capacity": 500, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.181, "annualOperatingHours": 3593.48},
     {"PowerGenerator": 1, "Bus": 1, "Capacity":500, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0, "annualOperatingHours": 482.06}]
@@ -375,10 +460,8 @@ if __name__ == '__main__':
                     {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_08f97f64-251c-4b5a-89ee-cb826ea440d6', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5', 'Capacity': '500', 'LatLon': [51.38731, -3.4049], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas', 'annualOperatingHours': 3593.48, 'CO2EmissionFactor': 0.181, 'place': 'https://dbpedia.org/page/East_of_England'}
                     ]
 
-    test = SitePreSelection('ukdigitaltwin_pd', solarGen, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 500, 0.7, 0.0125, 10, False, False, True, 4, 0)
-    test.SMRSitePreSelector()
-    print(test.solarAndWindSiteSelected)
-    print(test.otherSiteSelected)
+    test = SitePreSelectionAndCapacityReplacement('ukdigitaltwin_pd', GenCoal, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax, False, False, True, 4, 0)
+    test.SitePreSelectorAndCapacityReplacementFinder()
    
 
 

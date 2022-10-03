@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 June 2022         #
+# Last Update Date: 09 Sept 2022         #
 ##########################################
 
 import sys, os, json
@@ -79,7 +79,9 @@ class BranchPropertyInitialisation(object):
         ## read the files from local folder
         BranchModelInitialisationArrays = readFile(ELine_Model.BranchModelInitialisation)  
         branchTopoInfoArrays = readFile(ELine_Model.BranchInfo)
-        for iri in branchTopoInfoArrays[2]:
+        branchTopoInfoArrays = np.array(branchTopoInfoArrays)
+
+        for iri in branchTopoInfoArrays[1:,2]:
             parse(iri, rule="IRI") # check if the iri is a valid IRI
             iri.strip("\n").strip(" ")
 
@@ -88,32 +90,34 @@ class BranchPropertyInitialisation(object):
             raise Exception('The header of BranchProperty does not match.') 
         
         ## valid the branchNodeIRI
-        branchNodeIRI = branchTopoInfoArrays[1][2]
-        
+        branchNodeIRI = branchTopoInfoArrays[1][2]      
         if not self.branchNodeIRIExitInRemoteStore(endpoint_label, branchNodeIRI): 
             raise Exception('!!!!The branchNodeIRI does not exist in the remote store, please update the triples!!!!')
 
         print("---The given branch node IRI is in the remote store---")
+
+        if len(BranchModelInitialisationArrays) != len(branchTopoInfoArrays):
+            raise Exception('!!!!The number of the rows of BranchModelInitialisationArrays does not equal to branchTopoInfoArrays!!!!')
           
         ELine_Model.FROMBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['From_Bus']))
         ELine_Model.TOBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['To_Bus']))
-        counter = int(branchTopoInfoArrays[2].index(str(ELineNodeIRI)))
+
+        for iri in branchTopoInfoArrays[:,2]:
+            if str(ELineNodeIRI) in str(iri):
+                counter = int(np.where(branchTopoInfoArrays[:,2] == iri)[0][0])
+
+        ELine_Model.R = BranchModelInitialisationArrays[counter][2].strip('\n')
+        ELine_Model.X = BranchModelInitialisationArrays[counter][3].strip('\n')
+        ELine_Model.B = BranchModelInitialisationArrays[counter][4].strip('\n')
+        ELine_Model.RateA = BranchModelInitialisationArrays[counter][5].strip('\n')
+        ELine_Model.RateB = BranchModelInitialisationArrays[counter][6].strip('\n')
+        ELine_Model.RateC = BranchModelInitialisationArrays[counter][7].strip('\n')
+        ELine_Model.RATIO = BranchModelInitialisationArrays[counter][8].strip('\n')
+        ELine_Model.ANGLE = BranchModelInitialisationArrays[counter][9].strip('\n')
+        ELine_Model.STATUS = BranchModelInitialisationArrays[counter][10].strip('\n')
+        ELine_Model.ANGMIN = BranchModelInitialisationArrays[counter][11].strip('\n')
+        ELine_Model.ANGMAX = BranchModelInitialisationArrays[counter][12].strip('\n')
         
-        if str(ELine_Model.FROMBUS) == BranchModelInitialisationArrays[counter][0].strip('\n') and \
-            str(ELine_Model.TOBUS) == BranchModelInitialisationArrays[counter][1].strip('\n'):
-            ELine_Model.R = BranchModelInitialisationArrays[counter][2].strip('\n')
-            ELine_Model.X = BranchModelInitialisationArrays[counter][3].strip('\n')
-            ELine_Model.B = BranchModelInitialisationArrays[counter][4].strip('\n')
-            ELine_Model.RateA = BranchModelInitialisationArrays[counter][5].strip('\n')
-            ELine_Model.RateB = BranchModelInitialisationArrays[counter][6].strip('\n')
-            ELine_Model.RateC = BranchModelInitialisationArrays[counter][7].strip('\n')
-            ELine_Model.RATIO = BranchModelInitialisationArrays[counter][8].strip('\n')
-            ELine_Model.ANGLE = BranchModelInitialisationArrays[counter][9].strip('\n')
-            ELine_Model.STATUS = BranchModelInitialisationArrays[counter][10].strip('\n')
-            ELine_Model.ANGMIN = BranchModelInitialisationArrays[counter][11].strip('\n')
-            ELine_Model.ANGMAX = BranchModelInitialisationArrays[counter][12].strip('\n')
-        else:
-            raise Exception('The ELine number does not match.') 
         return ELine_Model
 
     """This method is called to check if the Branch Node exists in the remote triple store""" 

@@ -48,7 +48,7 @@ class initialiseEBusModelVariable(object):
         EBus_Model_instance.BUS = int(BusNumber)
         
         for busInput in BusModelInitialisationArrays:
-            if str(EBus["BusLatLon"][0]) and str(EBus["BusLatLon"][1]) in busInput:
+            if str(EBus["BusLatLon"][0]) in str(busInput[14]) and str(EBus["BusLatLon"][1]) in str(busInput[13]):
                 arrayIndex = BusModelInitialisationArrays.index(busInput)
                 break
         

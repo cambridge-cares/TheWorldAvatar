@@ -33,7 +33,8 @@ class ModelFactor:
     OCGT = ['http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine']
 
     Renewable = ['Solar','Hydro', 'PumpHydro', 'Wind']
-    NaturalGasOrOil = ['NaturalGas', 'Oil']
+    Natural = ['NaturalGas']
+    Oil = ['Oil']
     
     FixMaintenanceCostsKey = "FixMaintenanceCosts_"
     OperationalExpenditureCostsKey = "OperationalExpenditureCosts_"

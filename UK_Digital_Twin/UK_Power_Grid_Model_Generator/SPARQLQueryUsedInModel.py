@@ -32,17 +32,27 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
     
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
     PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    SELECT DISTINCT ?BusNodeIRI ?BusLatLon
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
     WHERE
     {
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?BusNodeIRI . 
     ?BusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode . 
+
+    ?PowerGenerator meta_model_topology:hasOutput ?BusNodeIRI .
+    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
+    ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
+    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
+    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
     
     ?BusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .  
-    }
+
+    } GROUP BY ?BusNodeIRI ?BusLatLon
     """ % (topologyNodeIRI)
     
     print('...remoteQuery queryBusTopologicalInformation...')
@@ -51,7 +61,10 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
     
     for r in res:
         r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])] 
-    
+        generationOfBusNode = 0
+        for capa in r['GenerationLinkedToBusNode'].split('***'):
+            generationOfBusNode += float(capa)
+        r['GenerationLinkedToBusNode'] = generationOfBusNode    
     return int(len(res)), res 
 
 ####EGen information query####
@@ -321,7 +334,7 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     """% (startTime_of_EnergyConsumption)
     
     print('...Query ElectricityConsumption_LocalArea...')
-    res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri)) 
+    res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri])) 
     print('...Query ElectricityConsumption_LocalArea is done...')
           
     for r in res:

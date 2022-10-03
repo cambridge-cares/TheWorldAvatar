@@ -25,7 +25,7 @@ class demandLoadAllocator(object):
     """"This allocation principle is firstly appoled in the 10-bus model (UK) as a most strightforward way. 
     which is to assign the regional demanding to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this method may not be suitable anymore."""   
-    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus):
+    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel):
         # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
 
@@ -84,7 +84,7 @@ class demandLoadAllocator(object):
     However, it may generate some unpractical design. For example, a place located in Walse will be allocated to a bus across the Bristol channel,
     which is aginst the reality."""
     # This function is modified from: John Atherton (ja685@cam.ac.uk) #   
-    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus):
+    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel:str = "Bus_lat_lon" ):
       # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       ons_label = endpointList.ONS['lable']
@@ -104,7 +104,7 @@ class demandLoadAllocator(object):
               ec['Geo_InfoList'] = [lat, lon] 
       
       # detect the location of the bus, in GB or in NI
-      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)   
+      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label, busLatLonLabel)   
 
       busAndDemandPairList = []
       busNumberArray = [] #list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
@@ -114,7 +114,7 @@ class demandLoadAllocator(object):
         busAndDemandPair = {}  
         if len(busInGB) > 0: 
             demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'K03000001', ons_label)
-            if demandArea_within_flag == True: # power plant located in GB
+            if demandArea_within_flag == True: # deman located in GB
                 j = 0
                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
                 for bus in busInGB:
@@ -172,7 +172,9 @@ class demandLoadAllocator(object):
           print("WARNING: There are buses not being assigned with any load, which are:", busNumberArray)
       else:
           print("************All buses are assigned with demand loads************") 
-      aggregatedBusFlag = False      
+
+      aggregatedBusFlag = False  
+          
       return busAndDemandPairList, aggregatedBusFlag
 
     

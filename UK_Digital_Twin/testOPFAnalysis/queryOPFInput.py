@@ -136,6 +136,7 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
 
 def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationOrFuelType:list, topologyNodeIRI:str, endPoint_label):  
     results = []
+    genTypeSummary = []
     keys = ElectricityProductionDistribution.keys()
     for type in retrofitGenerationOrFuelType:
         if type not in keys:
@@ -151,24 +152,24 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
             CO2EmissionFactor = float(modelFactorArrays[3][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.Coal: 
             CO2EmissionFactor = float(modelFactorArrays[4][4].replace('\n', ''))
-        elif fuelOrGenType in ukmf.NaturalGasOrOil: 
+        elif fuelOrGenType in ukmf.Natural: 
             CO2EmissionFactor = float(modelFactorArrays[5][4].replace('\n', ''))
-        elif fuelOrGenType in ukmf.Solar:  
+        elif fuelOrGenType in ukmf.Oil: 
             CO2EmissionFactor = float(modelFactorArrays[7][4].replace('\n', ''))
-        elif fuelOrGenType in ukmf.Hydro:  
+        elif fuelOrGenType in ukmf.Solar:  
             CO2EmissionFactor = float(modelFactorArrays[8][4].replace('\n', ''))
-        elif fuelOrGenType in ukmf.PumpHydro:  
+        elif fuelOrGenType in ukmf.Hydro:  
             CO2EmissionFactor = float(modelFactorArrays[9][4].replace('\n', ''))
+        elif fuelOrGenType in ukmf.PumpHydro:  
+            CO2EmissionFactor = float(modelFactorArrays[10][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.WindOnshore:  
-            CO2EmissionFactor = float(modelFactorArrays[10][4].replace('\n', ''))  
+            CO2EmissionFactor = float(modelFactorArrays[11][4].replace('\n', ''))  
         elif fuelOrGenType in ukmf.WindOffshore:  
-            CO2EmissionFactor = float(modelFactorArrays[11][4].replace('\n', ''))       
-        elif fuelOrGenType in ukmf.Waste:  
             CO2EmissionFactor = float(modelFactorArrays[12][4].replace('\n', ''))       
+        elif fuelOrGenType in ukmf.Waste:  
+            CO2EmissionFactor = float(modelFactorArrays[13][4].replace('\n', ''))       
         else:
-            CO2EmissionFactor = float(modelFactorArrays[13][4].replace('\n', ''))  
-
-        # print(CO2EmissionFactor) 
+            CO2EmissionFactor = float(modelFactorArrays[14][4].replace('\n', ''))  
 
         annualGenerationOfGivenType = ElectricityProductionDistribution[type]
         queryStr_1 = """
@@ -211,15 +212,12 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
         ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
         ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
-
-        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
-
-        ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
-        } LIMIT 20
-        """% (topologyNodeIRI, topologyNodeIRI, type, type)
-        ## FIXME: delete this query limitation
         
+        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+        ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
+        }
+        """% (topologyNodeIRI, topologyNodeIRI, type, type)
+       
         queryStr_totalGeneration = """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -270,7 +268,14 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
                             }
             results.append(arranged_res) 
 
-    return results 
+        genTypeSummary.append({'fuelOrGenType': type,
+                               'Total_Capacity': Total_Capacity,
+                               'Total_Number_of_Generators':len(res),
+                               'Replaced_Capacity': 0,
+                               'Replaced_number_of_Generators': 0
+                            })
+        
+    return results, genTypeSummary
 
 ############################################OLD####################################
 
