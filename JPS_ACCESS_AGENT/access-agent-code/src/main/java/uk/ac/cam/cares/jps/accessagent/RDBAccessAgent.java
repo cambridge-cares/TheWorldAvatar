@@ -90,7 +90,6 @@ public class RDBAccessAgent extends JPSAgent {
 
         try {
             logInputParams(requestParams, false);
-            RDBStoreRouter.RDBStoreRouterEndpoint = "http://host.docker.internal:9999/blazegraph/namespace/ontordbrouter/sparql";
             String rdbUrl = RDBStoreRouter.getRDBUrl(targetIRI);
             return rdbUrl;
 
@@ -99,7 +98,6 @@ public class RDBAccessAgent extends JPSAgent {
             throw new JPSRuntimeException(e);
         }
     }
-
 
     protected void logInputParams(JSONObject requestParams, boolean hasErrorOccured) {
 
