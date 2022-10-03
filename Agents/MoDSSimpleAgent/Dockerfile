@@ -21,13 +21,16 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 FROM python:3.6.15-buster
 
 ARG MODS_BIN_DIR="/usr/local/mods-simple-agent/bin"
+ARG MODS_SAVE_DIR="/usr/local/mods-simple-agent/savedsurrogates"
 
 ARG USER="user"
 RUN useradd -s /bin/bash ${USER}
 
 RUN apt update && apt install openjdk-11-jre mpich rsync -y && \
     mkdir -p "${MODS_BIN_DIR}" && \
+    mkdir -p "${MODS_SAVE_DIR}" && \
     chown user:user "${MODS_BIN_DIR}" && \
+    chown user:user "${MODS_SAVE_DIR}" && \
     ln -s /usr/lib/x86_64-linux-gnu/libmpi.so "${MODS_BIN_DIR}/libmpi.so.12" && \
     ln -s /usr/lib/x86_64-linux-gnu/libmpifort.so "${MODS_BIN_DIR}/libmpifort.so.12"&& \
     ln -s /usr/local/lib/libpython3.6m.so.1.0 "${MODS_BIN_DIR}/libpython3.6m.so.1.0"

@@ -45,7 +45,7 @@ public class Simulation {
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
-    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("SavedSurrogates");
+    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("savedsurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
@@ -83,7 +83,8 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        InputInfo inputInfo = InputInfo.createInputInfo(originalRequest, modsBackend, originalRequest.getAlgorithms().get(0));
+        InputInfo inputInfo = InputInfo.createInputInfo(originalRequest, modsBackend,
+                originalRequest.getAlgorithms().get(0));
 
         return createSimulation(originalRequest, inputFile, modsBackend, inputInfo);
     }
@@ -324,7 +325,7 @@ public class Simulation {
                                 ex);
                     }
 
-                    LOGGER.info("Algorithm '{}' from job '{}'saved at '{}'.", algorithm.getName(),
+                    LOGGER.info("Algorithm '{}' from job '{}' saved at '{}'.", algorithm.getName(),
                             getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
                 });
     }
@@ -350,7 +351,7 @@ public class Simulation {
                         Path loadDirectory = getLoadDirectory(algorithm);
 
                         if (!Files.exists(loadDirectory)) {
-                            throw new IOException("File '" + loadDirectory + "' could not be found to load.");
+                            throw new IOException("File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
                         }
 
                         copyDirectory(loadDirectory, surrogateDirectory);
@@ -369,7 +370,7 @@ public class Simulation {
     }
 
     private static Path getLoadDirectory(Algorithm algorithm) {
-        if(Files.exists(Path.of(algorithm.getLoadSurrogate())))
+        if (Files.exists(Path.of(algorithm.getLoadSurrogate())))
             return Path.of(algorithm.getLoadSurrogate());
         else
             return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
@@ -377,11 +378,16 @@ public class Simulation {
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
-
-            if (!Files.exists(destinationDirectory)) {
+        if (!Files.exists(destinationDirectory)) {
+            try {
                 Files.createDirectories(destinationDirectory);
+            } catch (IOException ex) {
+                throw new FileGenerationException(
+                        "Failed to create destination directory '" + destinationDirectory.toAbsolutePath() + "'.", ex);
             }
+        }
+
+        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
 
             stream.filter(Files::isRegularFile).forEach(source -> {
                 Path destination = destinationDirectory
@@ -397,8 +403,7 @@ public class Simulation {
                 }
             });
         } catch (IOException ex) {
-            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory
-                    + "' or in creating destination directory '" + destinationDirectory + "'.", ex);
+            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory + "'.", ex);
         }
     }
 
