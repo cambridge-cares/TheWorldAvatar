@@ -335,11 +335,8 @@ public class Simulation {
     }
 
     private Path getSaveDirectory(Algorithm algorithm) {
-        if (algorithm.getSaveDirectory() != null)
-            return Path.of(algorithm.getSaveDirectory());
-        else
-            return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
-                    .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
@@ -370,11 +367,8 @@ public class Simulation {
     }
 
     private static Path getLoadDirectory(Algorithm algorithm) {
-        if (Files.exists(Path.of(algorithm.getLoadSurrogate())))
-            return Path.of(algorithm.getLoadSurrogate());
-        else
-            return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                    .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
+                .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
