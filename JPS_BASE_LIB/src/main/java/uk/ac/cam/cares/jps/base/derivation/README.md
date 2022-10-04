@@ -146,12 +146,13 @@ When developing a new derivation agent, developer only need to implement the age
 Upon receiving the inputs, developer may check the complete agent inputs by using `DerivationInputs.getInputs()`, or retrieve list of IRIs of specific rdf:type by using `DerivationInputs.getIris(String)`. Once the calculation is done, the new created instances are expected to be put in the instance of DerivationOutputs and provided as an argument to the method `uk.ac.cam.cares.jps.base.agent.DerivationAgent.processRequestParameters(DerivationInputs, DerivationOutputs)`. Developer can add the new created instances and new created triples to outputs by calling below methods:
  - `derivationOutputs.createNewEntity(String, String)`
  - `derivationOutputs.createNewEntityWithBaseUrl(String, String)`
- - `derivationOutputs.addTriple(TriplePattern)`
+ - `derivationOutputs.addTriple(TriplePattern)` _(note that this method can be used to add both IRI triple and literal triple as the s-p-o statement is now provided in TriplePattern format, the parsing will be handled behind-the-scenes)_
  - `derivationOutputs.addTriple(List<TriplePattern>)`
- - `derivationOutputs.addTriple(String, String, String)`
- - `derivationOutputs.addTriple(String, String, Number)`
- - `derivationOutputs.addTriple(String, String, Boolean)`
- - `derivationOutputs.addTriple(String, String, String, String)` _(Can be used to add triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
+ - `derivationOutputs.addTriple(String, String, String)` _(different from `addTriple(TriplePattern)` and `addTriple(List<TriplePattern>)`, this method should be used when the object in the s-p-o statement is denoted by an IRI, so called referent, see https://www.w3.org/TR/rdf11-concepts/#dfn-referent)_
+ - `derivationOutputs.addLiteral(String, String, String)` _(all `addLiteral` should be used when the object in the s-p-o statement is denoted by a literal, so called literal value, see https://www.w3.org/TR/rdf11-concepts/#dfn-literal-value)_
+ - `derivationOutputs.addLiteral(String, String, Number)`
+ - `derivationOutputs.addLiteral(String, String, Boolean)`
+ - `derivationOutputs.addLiteral(String, String, String, String)` _(Can be used to add literal triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
 
 For example, if your agent creates below information after calculation:
 
@@ -183,7 +184,7 @@ For adding triples, you can directly use below functions:
 ```java
 derivationOutputs.addTriple("<newDerivedQuantity>", "<hasValue>", "<valueIRI>");
 derivationOutputs.addTriple("<valueIRI>", "<hasUnit>", "<unit>");
-derivationOutputs.addTriple("<valueIRI>", "<hasNumericalValue>", 5);
+derivationOutputs.addLiteral("<valueIRI>", "<hasNumericalValue>", 5);
 ```
 
 or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern` and `org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri`, below lines have the same effect when adding triples:
@@ -191,6 +192,7 @@ or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePatt
 ```java
 derivationOutputs.addTriple(Rdf.iri("<newDerivedQuantity>").has(Rdf.iri("<hasValue>"), Rdf.iri("<valueIRI>")));
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasUnit>"), Rdf.iri("<unit>")));
+// NOTE below the literal is added using addTriple as the whole s-p-o statement is now provided in TriplePattern format
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasNumericalValue>"), 5));
 ```
 
