@@ -188,7 +188,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return
      */
-    public String getQuery() {
+    @Override
+	public String getQuery() {
         return query;
     }
 
@@ -198,7 +199,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param query
      * @return
      */
-    public String setQuery(String query) {
+    @Override
+	public String setQuery(String query) {
         this.query = query;
         return this.query;
     }
@@ -208,7 +210,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return
      */
-    public String getQueryEndpoint() {
+    @Override
+	public String getQueryEndpoint() {
         return queryEndpoint;
     }
 
@@ -218,7 +221,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param queryEndpoint
      * @return
      */
-    public String setQueryEndpoint(String queryEndpoint) {
+    @Override
+	public String setQueryEndpoint(String queryEndpoint) {
         this.queryEndpoint = queryEndpoint;
         return this.queryEndpoint;
     }
@@ -228,7 +232,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return
      */
-    public String getUpdateEndpoint() {
+    @Override
+	public String getUpdateEndpoint() {
         return updateEndpoint;
     }
 
@@ -238,7 +243,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param updateEndpoint
      * @return
      */
-    public String setUpdateEndpoint(String updateEndpoint) {
+    @Override
+	public String setUpdateEndpoint(String updateEndpoint) {
         this.updateEndpoint = updateEndpoint;
         return this.updateEndpoint;
     }
@@ -248,7 +254,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return
      */
-    public String getUser() {
+    @Override
+	public String getUser() {
         return userName;
     }
 
@@ -257,7 +264,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @param userName
      */
-    public void setUser(String userName) {
+    @Override
+	public void setUser(String userName) {
         this.userName = userName;
     }
 
@@ -266,7 +274,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return
      */
-    public String getPassword() {
+    @Override
+	public String getPassword() {
         return password;
     }
 
@@ -275,7 +284,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @param password
      */
-    public void setPassword(String password) {
+    @Override
+	public void setPassword(String password) {
         this.password = password;
     }
 
@@ -407,7 +417,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      *
      * @return JSONArray as String
      */
-    public String execute() {
+    @Override
+	public String execute() {
         return execute(this.query);
     }
 
@@ -417,7 +428,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param query
      * @return JSONArray as String
      */
-    public String execute(String query) {
+    @Override
+	public String execute(String query) {
         JSONArray result = executeQuery(query);
         if (result == null) {
             throw new JPSRuntimeException("KnowledgeBaseClient: sparql query result is null.");
@@ -461,6 +473,13 @@ public class RemoteStoreClient implements StoreClientInterface {
             results = convert(rs);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
+        }
+        finally {
+        	try {
+				conn.close();
+			} catch (SQLException e) {
+				throw new JPSRuntimeException(e.getMessage(), e);
+			}
         }
         return results;
     }

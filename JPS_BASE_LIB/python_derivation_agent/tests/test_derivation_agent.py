@@ -7,14 +7,17 @@ def test_integration_test(initialise_agent):
 
     all_instances = utils.initialise_triples_assert_pure_inputs(
         sparql_client=sparql_client,
-        derivation_client=derivation_client
+        derivation_client=derivation_client,
+        # Do NOT delete all triples, as we have just registered agent instances
+        # Instead, the triples are deleted as part of initialise_agent fixture
+        delete_all_triples=False
     )
 
     # Start the scheduler to monitor derivations
-    rng_agent.start_monitoring_derivations()
-    min_agent.start_monitoring_derivations()
-    max_agent.start_monitoring_derivations()
-    diff_agent.start_monitoring_derivations()
+    rng_agent.start_all_periodical_job()
+    min_agent.start_all_periodical_job()
+    max_agent.start_all_periodical_job()
+    diff_agent.start_all_periodical_job()
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(

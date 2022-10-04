@@ -1,0 +1,24 @@
+{
+	"featureType": {
+		"name": "cropmap",
+		"nativeName": "cropmap_extended",
+		"metadata": {
+			"entry": [
+				{
+					"@key": "JDBC_VIRTUAL_TABLE",
+					"virtualTable": {
+						"name": "cropmap_extended",
+						"sql": "SELECT gid, prob, county, cromeid, cropmap.lucode, geom, label, colour\r\nFROM cropmap, cropmap_labels, cropmap_colours\r\nWHERE cropmap.lucode = cropmap_labels.lucode AND cropmap.lucode = cropmap_colours.lucode\n",
+						"escapeSql": false,
+						"keyColumn": "label",
+						"geometry": {
+							"name": "geom",
+							"type": "Polygon",
+							"srid": 27700
+						}
+					}
+				}
+			]
+		}
+	}
+}
