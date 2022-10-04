@@ -9,7 +9,7 @@
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
 
-    <version>1.16.0-170-dev-async-derivation-queryagain-flag-SNAPSHOT</version>
+    <version>1.16.1</version>
 
     <!-- Project Properties -->
     <properties>
