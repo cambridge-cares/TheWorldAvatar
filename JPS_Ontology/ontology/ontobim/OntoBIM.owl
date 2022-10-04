@@ -87,6 +87,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCompoundPlaneAngle -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCompoundPlaneAngle">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the Site to its world longitude or latitude. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection">
@@ -160,6 +170,30 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement&apos;s direction to the local X axis.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefLatitude -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefLatitude">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCompoundPlaneAngle"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Latitude"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the site of a model and its world latitude.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefLongitude -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefLongitude">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCompoundPlaneAngle"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Longitude"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the site of a model and its world longtitude.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -335,6 +369,28 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegree -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegree">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the compound plane angle&apos;s degrees measure  as an integer value.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the degree, minutes, seconds, and microseconds for a Compound Plane Angle as an integer value. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio">
@@ -352,6 +408,53 @@
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasMicroSecond -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasMicroSecond">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the compound plane angle&apos;s microseconds measure  as an integer value.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasMinute -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasMinute">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the compound plane angle&apos;s minutes measure  as an integer value.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Site&apos;s datum elevation relative to sea level.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSecond -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSecond">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDegreeMinuteSecond"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the compound plane angle&apos;s seconds measure as an integer value.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -558,6 +661,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A compound measure of the plane angle in degrees, minutes, seconds, and optionally micro-seconds of arc, as defined in IfcCompoundPlaneAngleMeasure. This quantity class is intended to work only for IFC models.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector">
@@ -609,10 +720,29 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Latitude -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Latitude">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Longitude"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The world longitude at reference point defined as integer values for degrees, minutes, seconds, and, optionally, microseconds with respect to the world geodetic system WGS84.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relative placement of a product in relation to the placement of a parent product or the absolute placement of a product within the project&apos;s geometric representation context. Its IFC equivalent is the IfcLocalPlacement class.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Longitude -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Longitude">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The world longitude at reference point defined as integer values for degrees, minutes, seconds, and, optionally, microseconds with respect to the world geodetic system WGS84.</rdfs:comment>
     </owl:Class>
     
 
