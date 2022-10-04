@@ -235,6 +235,9 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 							LOGGER.info("Asynchronous derivation <" + derivation
 									+ "> has a list of immediate upstream asynchronous derivations to be updated: "
 									+ immediateUpstreamDerivationToUpdate.toString());
+							// set flag to false to skips this "Requested" derivation until next time
+							// this is to avoid the agent flooding the KG with queries of the status over a short period of time
+							queryAgain = false;
 						} else {
 							// here implies all the immediate upstream async derivations are up-to-date
 							// request update if any of upstream sync derivations are outdated
@@ -281,10 +284,11 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 											+ "> is already in progress by another agent thread.");
 								}
 							}
+							// set flag to true as either (1) the agent has been process this derivation for some time
+							// and status of other derivations in KG might have changed by other processes during this time
+							// or (2) the derivation is processed by another agent therefore needs a record update
+							queryAgain = true;
 						}
-						// set flag to true as the agent has been process this derivation for some time
-						// and status of other derivations in KG might have changed by other processes during this time
-						queryAgain = true;
 						break;
 					case INPROGRESS:
 						// the current design just passes when the derivation is "InProgress"
