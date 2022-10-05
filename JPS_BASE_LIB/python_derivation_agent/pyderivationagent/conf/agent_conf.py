@@ -91,6 +91,12 @@ class AgentConfig(Config):
       - FILE_SERVER_PASSWORD: The password to access the file server.
       - ONTOAGENT_OPERATION_HTTP_URL: The URL of the OntoAgent:Operation HTTP endpoint.
       - REGISTER_AGENT: Whether to register the OntoAgent instance of the configured agent to knowledge graph.
+      - MAX_THREAD_MONITOR_ASYNC_DERIVATIONS: The maximum number of thread can be invoked to monitor async derivations at the same time, the default value is 1.
+      - EMAIL_RECIPIENT: The list of recipients of email notifications during agent operation, multiple email address should be seperated by semicolon, e.g. foo.1@bar.com;foo.2@bar.com.
+      - EMAIL_SUBJECT_PREFIX: The subject prefix for email notifications, "[] " is automatically added, e.g. the prefix will be "[YourAgent] " if "YourAgent" is specified.
+      - EMAIL_USERNAME: The username of the email sender, note that a gmail account is required.
+      - EMAIL_AUTH_JSON_PATH: The json file path to the OAuth2 file of the gmail account defined by EMAIL_USERNAME.
+      - EMAIL_START_END_ASYNC_DERIVATIONS: The boolean flag to choose whether to send email notification at the start and end of process an async derivation, the default value is False.
     """
     ONTOAGENT_SERVICE_IRI: str
     DERIVATION_PERIODIC_TIMESCALE: int
