@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='py4jps',
@@ -11,7 +11,7 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=('tests')),
+    packages=find_namespace_packages(exclude=('tests')),
     install_requires= ['py4j==0.10.9.1','docopt'],
     include_package_data= True,
     entry_points={
