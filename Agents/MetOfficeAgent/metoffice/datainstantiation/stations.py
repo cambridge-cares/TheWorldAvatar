@@ -124,7 +124,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
             #logger.info('Station data successfully retrieved.')
         except Exception as ex:
             #logger.error("Error while retrieving station data from DataPoint.")
-            raise APIException("Error while retrieving station data from DataPoint")
+            raise APIException("Error while retrieving station data from DataPoint.") from ex
         sites = []
         sites += obs_sites 
         sites += fcs_sites
