@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -191,8 +193,7 @@ public class DerivationClient {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public Derivation createSyncDerivationForNewInfo(String agentIRI, List<String> inputsIRI, String derivationType)
-			throws ClientProtocolException, IOException {
+	public Derivation createSyncDerivationForNewInfo(String agentIRI, List<String> inputsIRI, String derivationType) {
 		// retrieve agentURL for HTTP request
 		String agentURL = this.sparqlClient.getAgentUrlGivenAgentIRI(agentIRI);
 		return createSyncDerivationForNewInfo(agentIRI, agentURL, inputsIRI, derivationType);
@@ -211,7 +212,7 @@ public class DerivationClient {
 	 * @throws IOException
 	 */
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
-			String derivationType) throws ClientProtocolException, IOException {
+			String derivationType) {
 		// create a unique IRI for this new derived quantity
 		String derivationIRI = this.sparqlClient.createDerivationIRI();
 		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
@@ -242,20 +243,27 @@ public class DerivationClient {
 		HttpResponse httpResponse;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET + requestParams.toString();
-		HttpGet httpGet = new HttpGet(
+		HttpGet httpGet;
+		String response;
+		try {
+			httpGet = new HttpGet(
 				agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
-
-		httpResponse = httpClient.execute(httpGet);
-		if (httpResponse.getStatusLine().getStatusCode() != 200) {
-			String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
-					+ originalRequest;
-			String body = EntityUtils.toString(httpResponse.getEntity());
-			LOGGER.error(msg);
-			throw new JPSRuntimeException(msg + " Error body: " + body);
+					+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
+			httpResponse = httpClient.execute(httpGet);
+			if (httpResponse.getStatusLine().getStatusCode() != 200) {
+				String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
+						+ originalRequest;
+				String body = EntityUtils.toString(httpResponse.getEntity());
+				LOGGER.error(msg);
+				throw new JPSRuntimeException(msg + " Error body: " + body);
+			}
+			response = EntityUtils.toString(httpResponse.getEntity());
+			LOGGER.debug("Obtained http response from agent: " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new JPSRuntimeException("Failed to update derivation <" + derivationIRI + "> with original request: "
+				+ originalRequest, e);
 		}
-		String response = EntityUtils.toString(httpResponse.getEntity());
-		LOGGER.debug("Obtained http response from agent: " + response);
 
 		// process the agentResponse to add the created outputs to createdDerivation
 		JSONObject agentResponse = new JSONObject(response);
