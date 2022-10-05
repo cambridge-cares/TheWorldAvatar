@@ -54,11 +54,17 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 
 	/**
 	 * Provide the default constructor to enable agent initialisation.
+	 * This constructor is required to enable servlet create the very first instance of DerivationAgent before calling init() during initialisation.
 	 */
 	public DerivationAgent() {
 		LOGGER.info("A new DerivationAgent has been initialised.");
 	}
 
+	/**
+	 * This constructor initialises DerivationClient which will be used to handle both sync and async derivations.
+	 * @param storeClient
+	 * @param derivationInstanceBaseURL
+	 */
 	public DerivationAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
 		this.storeClient = storeClient;
 		this.devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
