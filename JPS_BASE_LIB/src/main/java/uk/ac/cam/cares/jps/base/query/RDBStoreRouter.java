@@ -41,17 +41,17 @@ public class RDBStoreRouter {
                     + " Using jps.properties.");
             RDBStoreRouterEndpoint = KeyValueMap.getInstance().get(IKeys.URL_RDB_STOREROUTER_ENDPOINT);
         }
-        LOGGER.info("STOREROUTER_ENDPOINT set to "+RDBStoreRouterEndpoint);
+        LOGGER.info("RDB STOREROUTER_ENDPOINT set to "+RDBStoreRouterEndpoint);
     }
 
-    static StoreRouter storeRouter = null;
+    static RDBStoreRouter rdbStoreRouter = null;
 
     public static String getRDBUrl(String targetRDBResourceID){
 
         String rdbUrl = null;
         if (targetRDBResourceID != null && !targetRDBResourceID.isEmpty()) {
-            if (storeRouter == null) {
-                storeRouter = new StoreRouter();
+            if (rdbStoreRouter == null) {
+                rdbStoreRouter = new RDBStoreRouter();
             }
            if(isRemoteTargetResourceID(targetRDBResourceID)){
 
