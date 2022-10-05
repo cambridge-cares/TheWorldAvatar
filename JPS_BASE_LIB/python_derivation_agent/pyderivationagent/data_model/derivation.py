@@ -26,6 +26,10 @@ class DerivationOutputs():
     def createNewEntity(self, iri, rdfType):
         self.derivation_outputs.createNewEntity(iri, rdfType)
 
+    def createNewEntityWithBaseUrl(self, baseUrl, rdfType):
+        """This method initialises an IRI with the given baseUrl and rdfType, adds the new entity to derivation outputs, then returns the initialised IRI."""
+        return self.derivation_outputs.createNewEntityWithBaseUrl(baseUrl, rdfType)
+
     def addTriple(self, s, p, o):
         """Only one addTriple is provided here, the two functions taking TriplePattern is NOT provided for simplicity of java-python data structure conversion."""
         self.derivation_outputs.addTriple(s, p, o)
