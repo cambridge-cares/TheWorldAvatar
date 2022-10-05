@@ -156,24 +156,29 @@ class DerivationAgent(ABC):
         inner.__is_periodical_job__ = True
         return inner
 
-    def send_email_when_exception(func):
-        def inner(self, *args, **kwargs):
-            try:
-                func(self, *args, **kwargs)
-            except Exception as e:
-                if self.yag is not None:
-                    try:
-                        self.yag.send(
-                            self.email_recipient,
-                            f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
-                            [format_current_time(), str(e), traceback.format_exc()]
-                        )
-                    except Exception as yag_e:
-                        # if failed to send email, log the error and continue
-                        self.logger.error(f"Failed to send email. Error: {yag_e}",
-                            stack_info=True, exc_info=True)
-                raise e
-        return inner
+    def send_email_when_exception(func_return_value=False):
+        def decorator(func):
+            def inner(self, *args, **kwargs):
+                try:
+                    if not func_return_value:
+                        func(self, *args, **kwargs)
+                    else:
+                        return func(self, *args, **kwargs)
+                except Exception as e:
+                    if self.yag is not None:
+                        try:
+                            self.yag.send(
+                                self.email_recipient,
+                                f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
+                                [format_current_time(), str(e), traceback.format_exc()]
+                            )
+                        except Exception as yag_e:
+                            # if failed to send email, log the error and continue
+                            self.logger.error(f"Failed to send email. Error: {yag_e}",
+                                stack_info=True, exc_info=True)
+                    raise e
+            return inner
+        return decorator
 
     def send_email_when_async_derivation_up_to_date(self, derivation_iri):
         if self.yag is not None and self.email_start_end_async_derivations:
@@ -253,7 +258,7 @@ class DerivationAgent(ABC):
                               function, methods=methods, *args, **kwargs)
         self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
 
-    @send_email_when_exception
+    @send_email_when_exception(func_return_value=False)
     def monitor_async_derivations(self):
         """
             This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
@@ -439,7 +444,7 @@ class DerivationAgent(ABC):
         for func in all_periodical_jobs:
             func()
 
-    @send_email_when_exception
+    @send_email_when_exception(func_return_value=True)
     def handle_sync_derivations(self):
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
         requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
