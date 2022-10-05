@@ -10,7 +10,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.16.0-java11-SNAPSHOT</version>
+    <version>1.17.0</version>
 
     <!-- Project Properties -->
     <properties>
