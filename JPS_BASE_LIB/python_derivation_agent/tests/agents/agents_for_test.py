@@ -1,7 +1,7 @@
 import random
 import uuid
 import time
-
+from rdflib import RDFS
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
 from .sparql_client_for_test import RANDOM_EXAMPLE_NUMOFPOINTS
@@ -73,7 +73,7 @@ class DifferenceAgent(DerivationAgent):
         diff = max - min
         diff_iri = RANDOM_EXAMPLE_BASE_URL + 'Difference_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(diff_iri, RANDOM_EXAMPLE_DIFFERENCE)
-        derivation_outputs.addTriple(diff_iri, RANDOM_EXAMPLE_HASVALUE, diff)
+        derivation_outputs.addLiteral(diff_iri, RANDOM_EXAMPLE_HASVALUE, diff)
 
 
 class DiffReverseAgent(DerivationAgent):
@@ -103,7 +103,7 @@ class DiffReverseAgent(DerivationAgent):
         diff_reverse = min - max
         diff_reverse_iri = RANDOM_EXAMPLE_BASE_URL + 'DifferenceReverse_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(diff_reverse_iri, RANDOM_EXAMPLE_DIFFERENCEREVERSE)
-        derivation_outputs.addTriple(diff_reverse_iri, RANDOM_EXAMPLE_HASVALUE, diff_reverse)
+        derivation_outputs.addLiteral(diff_reverse_iri, RANDOM_EXAMPLE_HASVALUE, diff_reverse)
 
 
 class MaxValueAgent(DerivationAgent):
@@ -127,7 +127,7 @@ class MaxValueAgent(DerivationAgent):
         # Compute max value, write to derivation_outputs
         max_iri = RANDOM_EXAMPLE_BASE_URL + 'MaxValue_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(max_iri, RANDOM_EXAMPLE_MAXVALUE)
-        derivation_outputs.addTriple(max_iri, RANDOM_EXAMPLE_HASVALUE, max)
+        derivation_outputs.addLiteral(max_iri, RANDOM_EXAMPLE_HASVALUE, max)
 
 
 class MinValueAgent(DerivationAgent):
@@ -151,7 +151,7 @@ class MinValueAgent(DerivationAgent):
         # Compute min value, write to derivation_outputs
         min_iri = RANDOM_EXAMPLE_BASE_URL + 'MinValue_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(min_iri, RANDOM_EXAMPLE_MINVALUE)
-        derivation_outputs.addTriple(min_iri, RANDOM_EXAMPLE_HASVALUE, min)
+        derivation_outputs.addLiteral(min_iri, RANDOM_EXAMPLE_HASVALUE, min)
 
 
 class RNGAgent(DerivationAgent):
@@ -194,5 +194,6 @@ class RNGAgent(DerivationAgent):
             derivation_outputs.createNewEntity(pt_iri, RANDOM_EXAMPLE_POINT)
             derivation_outputs.addTriple(
                 listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri)
-            derivation_outputs.addTriple(
+            derivation_outputs.addLiteral(
                 pt_iri, RANDOM_EXAMPLE_HASVALUE, new_point)
+            derivation_outputs.addLiteral(pt_iri, RDFS.comment.toPython(), "this is a random comment")
