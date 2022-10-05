@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.agent;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -49,14 +50,21 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	public DerivationClient devClient;
 
 	public static final String EMPTY_REQUEST_MSG = "An empty request received by DerivationAgent.";
+	public static final String DERIVATION_CLIENT_NOT_INITIALISED = "DerivationClient is not initialised yet. You may want to instantiate DerivationAgent with DerivationAgent(StoreClientInterface, String).";
 
 	/**
 	 * Provide the default constructor to enable agent initialisation.
+	 * This constructor is required to enable servlet create the very first instance of DerivationAgent before calling init() during initialisation.
 	 */
 	public DerivationAgent() {
 		LOGGER.info("A new DerivationAgent has been initialised.");
 	}
 
+	/**
+	 * This constructor initialises DerivationClient which will be used to handle both sync and async derivations.
+	 * @param storeClient
+	 * @param derivationInstanceBaseURL
+	 */
 	public DerivationAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
 		this.storeClient = storeClient;
 		this.devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
@@ -64,6 +72,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
+		// check if this.devClient is initialised properly, this will throw meaningful exception
+		checkIfDerivationClientInitialised();
 		JSONObject res = new JSONObject();
 		if (validateInput(requestParams)) {
 			// serialises DerivationInputs objects from JSONObject
@@ -201,6 +211,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	 */
 	@Override
 	public void monitorAsyncDerivations(String agentIRI, long periodicalTimescaleInSecond) {
+		// check if this.devClient is initialised properly, this will throw meaningful exception
+		checkIfDerivationClientInitialised();
 		// NOTE two things used to control the loop:
 		// 1. breakOutTime - the time when the next run of monitorAsyncDerivations is scheduled
 		long breakOutTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(periodicalTimescaleInSecond);
@@ -313,5 +325,11 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				}
 			};
 		} while (System.currentTimeMillis() < breakOutTime && queryAgain); // process until the time is up and if have not gone through all derivations
+	}
+
+	public void checkIfDerivationClientInitialised() {
+		if (Objects.isNull(this.devClient)) {
+			throw new JPSRuntimeException(DERIVATION_CLIENT_NOT_INITIALISED);
+		}
 	}
 }
