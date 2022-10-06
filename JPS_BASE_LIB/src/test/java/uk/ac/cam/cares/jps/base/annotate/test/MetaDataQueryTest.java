@@ -30,8 +30,8 @@ public class MetaDataQueryTest {
     public void testGetSparqlQueryResources(){
         //Two cases are distinguished. One with non null arguments and one with null arguments
 
-        String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
@@ -45,8 +45,8 @@ public class MetaDataQueryTest {
         String actual_nullArg=MetaDataQuery.getSparqlQueryResources(null,null,
                 null, null, null,null,null,null);
 
-        String expected ="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String expected ="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
@@ -79,8 +79,8 @@ public class MetaDataQueryTest {
     public void testGetSparqlQueryResourcesOldRepository(){
         //Two cases are distinguished. One with non null arguments and one with null arguments
 
-        String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"PREFIX j1:<https://www.w3.org/2006/time#> \r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
@@ -97,8 +97,8 @@ public class MetaDataQueryTest {
         String actual_nullArg=MetaDataQuery.getSparqlQueryResourcesOldRepository(null,null,
                 null,null, null,null,null,null);
 
-        String expected="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String expected="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"PREFIX j1:<https://www.w3.org/2006/time#> \r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
@@ -182,8 +182,8 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts eight arguments
         public void testQueryResources1(){
 
-        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
@@ -218,8 +218,8 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts only three arguments
     public void testQueryResources2(){
 
-        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
