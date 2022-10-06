@@ -57,7 +57,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
         # Retrieve UPRN info required to match data
         try:
             uprn = epc_data.get('uprn')
-        except:
+        except Exception:
             logger.error('Retrieved EPC data does not have associated UPRN.')
             raise KeyError('Retrieved EPC data does not have associated UPRN.')
 
@@ -402,7 +402,7 @@ def condition_epc_data(data):
     try:
         r = data.get('number-habitable-rooms')
         data_to_instantiate[EPC_KEYS.get('number-habitable-rooms')] = int(float(r))
-    except:
+    except Exception:
         # Leave number or rooms as None in case of potential conversion issues
         pass
 
@@ -410,7 +410,7 @@ def condition_epc_data(data):
     try:
         f = data.get('total-floor-area')
         data_to_instantiate[EPC_KEYS.get('total-floor-area')] = float(f)
-    except:
+    except Exception:
         # Leave floor area as None in case of potential conversion issues
         pass
 
@@ -688,17 +688,17 @@ def summarize_epc_data(data):
             df.loc[p, 'construction_start'] = d['construction_start'].min()
             # Latest construction end
             df.loc[p, 'construction_end'] = d['construction_end'].max()
-        except:
+        except Exception:
             logger.info('No construction date data could be obtained.')
         
         # Retrieve postcode and admin district IRIs
         try:
             df.loc[p, 'district_iri'] = d['district_iri'].unique()[0]
-        except:
+        except Exception:
             logger.info('No AdministrativeDistrict IRI could be obtained.')
         try:
             df.loc[p, 'postcode_iri'] = d['postcode_iri'].unique()[0]
-        except:
+        except Exception:
             logger.info('No PostalCode IRI could be obtained.')
 
         # Retrieve/create unique identifier for parent building ("UPRN equivalent")
@@ -730,7 +730,7 @@ def summarize_epc_data(data):
             if street:
                 concatenated = '; '.join(street)         
                 df.loc[p, 'addr_street'] = concatenated
-        except:
+        except Exception:
             logger.info('No Street name information be obtained.')
         
         try:
@@ -739,7 +739,7 @@ def summarize_epc_data(data):
             if nr:
                 concatenated = ', '.join(nr)
                 df.loc[p, 'addr_number'] = concatenated
-        except:
+        except Exception:
             logger.info('No Property number information be obtained.')
 
     # Create 'property_iri' column
@@ -795,15 +795,16 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             crs = kg_crs[0]['crs']
     except KGException as ex:
         logger.error('Unable to retrieve CRS from OCGML endpoint.')
-        raise KGException('Unable to retrieve CRS from OCGML endpoint.', ex)
+        raise KGException('Unable to retrieve CRS from OCGML endpoint.') from ex
     try:
         # Initialise Pyproj projection from OCGML CRS to EPSG:4326 (current Postgis default)
         ocgml_crs = CRSs[crs]
         target_crs = CRSs['EPSG:4326']
         trans = initialise_pyproj_transformer(current_crs=ocgml_crs, 
                                               target_crs=target_crs)
-    except:
+    except Exception as ex:
         logger.error('Unable to initialise Pyproj transformation object.')
+        raise RuntimeError('Unable to initialise Pyproj transformation object.') from ex
     
     #
     # 2) Query information for matched buildings
@@ -814,7 +815,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
         obe_bldg_iris = [b['obe_bldg'] for b in kg_bldgs]
     except KGException as ex:
         logger.error('Unable to retrieve matched buildings from endpoints.')
-        raise KGException('Unable to retrieve matched buildings from endpoints.', ex)
+        raise KGException('Unable to retrieve matched buildings from endpoints.') from ex
     # Check if buildings have been matched yet
     if not obe_bldg_iris:
         logger.warn('No relationships between OntoBuiltEnv and OntoCityGml buildings ' + \
@@ -841,7 +842,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                 ocgml_data = kgclient_epc.performQuery(query)
             except KGException as ex:
                 logger.error('Unable to retrieve information for matched buildings.')
-                raise KGException('Unable to retrieve information for matched buildings.', ex)
+                raise KGException('Unable to retrieve information for matched buildings.') from ex
 
             # Create DataFrame from dictionary list
             cols = ['obe_bldg', 'surf', 'datatype', 'geom', 'height', 'elevation']

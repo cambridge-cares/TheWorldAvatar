@@ -50,6 +50,6 @@ def upload_ocgml_quads(endpoint=OCGML_ENDPOINT):
         # Upload .nq file to KG
         logger.info('Uploading OntoCityGml quads to KG ...')
         kg_client.kg_client.uploadFile(temp_f)
-    except:
+    except Exception as ex:
         logger.error("Unable to upload OntoCityGml quads file.")
-        raise KGException("Unable to upload OntoCityGml quads file.")
+        raise KGException("Unable to upload OntoCityGml quads file.") from ex

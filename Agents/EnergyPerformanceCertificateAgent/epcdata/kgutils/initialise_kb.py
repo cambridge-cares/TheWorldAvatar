@@ -85,9 +85,9 @@ def initialise_kb():
     try:
         query = f'SELECT * WHERE {{ <{OBE}> <{OWL_VERSION}> ?v}}'
         res = kg_client.performQuery(query)
-    except:
+    except Exception as ex:
         logger.error("Unable to retrieve TBox version from KG.")
-        raise KGException("Unable to retrieve TBox version from KG.")
+        raise KGException("Unable to retrieve TBox version from KG.") from ex
 
     if not res:
         # Upload TBox and ABox if not already instantiated
@@ -106,6 +106,6 @@ def initialise_kb():
                 logger.info(f'Uploading {i.capitalize()} .owl file to KG ...')
                 kg_client.kg_client.uploadFile(temp_f)
                 os.remove(temp_fp)
-            except:
+            except Exception as ex:
                 logger.error("Unable to initialise knowledge base with TBox and ABox.")
-                raise KGException("Unable to initialise knowledge base with TBox and ABox.")
+                raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex

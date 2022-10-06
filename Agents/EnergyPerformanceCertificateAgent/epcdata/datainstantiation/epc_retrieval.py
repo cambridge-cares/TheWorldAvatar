@@ -57,9 +57,9 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
         elif res.status_code == 404:
             logger.info('No data available for provided certificate lodgement identifier.')
             epc = None
-    except:
+    except Exception as ex:
         logger.error('Error retrieving EPC data from API.')
-        raise APIException('Error retrieving EPC data from API.')
+        raise APIException('Error retrieving EPC data from API.') from ex
     
     # Extract relevant EPC data
     relevant = ['lmk-key', 'address1', 'address2', 'address3',
@@ -72,7 +72,7 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
     try:
         epc_data = epc['rows'][0]
         epc_data = {r:epc_data[r] for r in relevant if r in epc_data}
-    except:
+    except Exception:
         epc_data = {}
 
     return epc_data

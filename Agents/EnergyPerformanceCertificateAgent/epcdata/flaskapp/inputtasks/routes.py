@@ -81,15 +81,15 @@ def api_initialise_postcodes():
     # Get received 'query' JSON object which holds all parameters
     try:
         query = request.json['query']
-    except:
+    except Exception as ex:
         logger.error('No JSON "query" object could be identified.')
-        raise InvalidInput('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.') from ex
     # Retrieve local authority district code
     try:
         inputs['local_authority_district'] = str(query['district'])
-    except:
+    except Exception as ex:
         logger.error('Invalid local authority district code provided.')
-        raise InvalidInput('Invalid local authority district code provided.')
+        raise InvalidInput('Invalid local authority district code provided.') from ex
     try:
         # Instantiate postcodes
         response = initialise_postcodes(**inputs)
@@ -115,15 +115,15 @@ def api_instantiate_epc_data_for_certificate():
     # Get received 'query' JSON object which holds all parameters
     try:
         query = request.json['query']
-    except:
+    except Exception as ex:
         logger.error('No JSON "query" object could be identified.')
-        raise InvalidInput('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.') from ex
     # Retrieve certificate's unique lodgement identifier
     try:
         inputs['lmk_key'] = str(query['lmk_key'])
-    except:
+    except Exception as ex:
         logger.error('Invalid "lmk_key" provided.')
-        raise InvalidInput('Invalid "lmk_key" provided.')
+        raise InvalidInput('Invalid "lmk_key" provided.') from ex
     # Retrieve EPC API endpoint
     try:
         endpoint = str(query['epc_endpoint'])
@@ -131,16 +131,16 @@ def api_instantiate_epc_data_for_certificate():
             inputs['epc_endpoint'] = endpoint
         else:
             raise InvalidInput('Invalid EPC API endpoint provided.')
-    except:
+    except Exception as ex:
         logger.error('Invalid EPC API endpoint provided.')
-        raise InvalidInput('Invalid EPC API endpoint provided.')
+        raise InvalidInput('Invalid EPC API endpoint provided.') from ex
     # Retrieve endpoint to instantiated OntoCityGml instances
     ocgml_endpoint = None
     try:
         ocgml_endpoint = str(query['ocgml_endpoint'])
-    except:
+    except Exception as ex:
         logger.error('Invalid OntoCityGml endpoint provided.')
-        raise InvalidInput('Invalid OntoCityGml endpoint provided.')
+        raise InvalidInput('Invalid OntoCityGml endpoint provided.') from ex
     if not ocgml_endpoint:
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
@@ -169,9 +169,9 @@ def api_instantiate_epc_data_for_all_uprns():
     # Get received 'query' JSON object which holds all parameters
     try:
         query = request.json['query']
-    except:
+    except Exception as ex:
         logger.error('No JSON "query" object could be identified.')
-        raise InvalidInput('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.') from ex
     # Retrieve EPC API endpoint
     try:
         endpoint = str(query['epc_endpoint'])
@@ -179,16 +179,16 @@ def api_instantiate_epc_data_for_all_uprns():
             inputs['epc_endpoint'] = endpoint
         else:
             raise InvalidInput('Invalid EPC API endpoint provided.')
-    except:
+    except Exception as ex:
         logger.error('Invalid EPC API endpoint provided.')
-        raise InvalidInput('Invalid EPC API endpoint provided.')
+        raise InvalidInput('Invalid EPC API endpoint provided.') from ex
     # Retrieve endpoint to instantiated OntoCityGml instances
     ocgml_endpoint = None
     try:
         ocgml_endpoint = str(query['ocgml_endpoint'])
-    except:
+    except Exception as ex:
         logger.error('Invalid OntoCityGml endpoint provided.')
-        raise InvalidInput('Invalid OntoCityGml endpoint provided.')
+        raise InvalidInput('Invalid OntoCityGml endpoint provided.') from ex
     if not ocgml_endpoint:
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
