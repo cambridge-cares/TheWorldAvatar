@@ -4,7 +4,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>CMCLOntoPrimeSpecies</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
   <name>CMCLOntoPrimeSpecies</name>

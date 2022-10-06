@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.16.0-java11-SNAPSHOT</version>
+			<version>1.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

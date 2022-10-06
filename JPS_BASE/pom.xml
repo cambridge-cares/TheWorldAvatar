@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.cam.cares.jps</groupId>
 	<artifactId>JPS_BASE</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	
 	<packaging>war</packaging>
 
@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.6.0</version>
+			<version>1.17.0</version>
 		</dependency>
 
 		<dependency>
@@ -109,19 +109,13 @@
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>3.7.0</version>
+			<version>4.5.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-shaded-guava</artifactId>
-			<version>3.7.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-arq</artifactId>
-			<version>3.16.0</version>
+			<version>4.5.0</version>
 		</dependency>
 
 	</dependencies>
