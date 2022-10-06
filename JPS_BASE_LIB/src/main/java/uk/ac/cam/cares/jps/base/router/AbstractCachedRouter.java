@@ -41,7 +41,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	/**
 	 * Clear cache
 	 */
-	protected void clearCache() {
+	public void clearCache() {
 		LOGGER.info("Clearing cache!");
 		cache.clear();
 	}

@@ -43,12 +43,13 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  * @author csl37
  *
  */
-@WebServlet(urlPatterns = {AccessAgent.ACCESS_URL})
+@WebServlet(urlPatterns = {AccessAgent.ACCESS_URL, AccessAgent.CLEAR_CACHE_URL})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 	
 	public static final String ACCESS_URL = "/access";
+	public static final String CLEAR_CACHE_URL = "/clearcache";
 		
 	/**
      * Logger for error output.
@@ -64,28 +65,39 @@ public class AccessAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		if (!validateInput(requestParams)) {
-			throw new JSONException("AccessAgent: Input parameters not valid.\n");
-		}
-		
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		
-		JSONObject JSONresult = new JSONObject();
+		if(request.getServletPath().equals(CLEAR_CACHE_URL)) {
+			if(method.equals(HttpGet.METHOD_NAME)) {
+				StoreRouter.getInstance().clearCache();
+				JSONObject JSONresult = new JSONObject().put("result", "Cache cleared.");
+				return JSONresult;
+			}else {
+				throw new JSONException("AccessAgent: Input parameters not valid.\n");
+			}
+		}else {
 		
-		LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
-		
-		switch (method) {
-			case HttpGet.METHOD_NAME:	
-				JSONresult = performGet(requestParams);
-			    break;
-			case HttpPost.METHOD_NAME:
-				JSONresult = performPost(requestParams);
-				break;
-			case HttpPut.METHOD_NAME:
-				performPut(requestParams);
-				break;
-			}		
-	    return JSONresult;
+			if (!validateInput(requestParams)) {
+				throw new JSONException("AccessAgent: Input parameters not valid.\n");
+			}			
+			
+			JSONObject JSONresult = new JSONObject();
+			
+			LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
+			
+			switch (method) {
+				case HttpGet.METHOD_NAME:	
+					JSONresult = performGet(requestParams);
+				    break;
+				case HttpPost.METHOD_NAME:
+					JSONresult = performPost(requestParams);
+					break;
+				case HttpPut.METHOD_NAME:
+					performPut(requestParams);
+					break;
+				}		
+		    return JSONresult;
+		}
 	}
 	
 	@Override
