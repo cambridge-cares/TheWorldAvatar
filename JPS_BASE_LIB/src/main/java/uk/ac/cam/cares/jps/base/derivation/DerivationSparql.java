@@ -117,6 +117,7 @@ public class DerivationSparql {
 
 	// data properties
 	private static final Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
+	private static Iri uuidLock = p_derived.iri("uuidLock");
 
 	// the derived quantity client relies on matching rdf:type to figure out which
 	// old instances to delete
@@ -780,11 +781,16 @@ public class DerivationSparql {
 	 * also records the timestamp at the point the derivation status is marked as
 	 * InProgress:
 	 * <derivation> <retrievedInputsAt> timestamp.
+	 * A uuidLock is also added to the derivation to uniquely identify the entity that
+	 * successfully marked the derivation as InProgress:
+	 * <derivation> <uuidLock> uuid.
 	 * 
-	 * @param storeClient
+	 * This method returns a boolean value if the uuid is added to the derivation.
+	 * 
 	 * @param derivation
+	 * @return
 	 */
-	void updateStatusBeforeSetupJob(String derivation) {
+	boolean updateStatusBeforeSetupJob(String derivation) {
 		SelectQuery query = Queries.SELECT();
 		ModifyQuery modify = Queries.MODIFY();
 		Variable status = query.var();
@@ -802,14 +808,35 @@ public class DerivationSparql {
 		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
 		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt,
 				retrievedInputsAtTimestamp);
+		// add uuidLock to the derivation, so that the agent can query if the SPARQL update is successful
+		// this is to avoid the case where concurrent updates are made to the same derivation by different agent threads
+		String uuid = UUID.randomUUID().toString();
+		TriplePattern insert_tp_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		// the retrievedInputsAt data property should only be added when there's no such
 		// data property already - this will prevent duplicate timestamp in case of
 		// super fast monitoring
 		TriplePattern existingRetrievedInputsAtPattern = iri(derivation).has(retrievedInputsAt, existingTimestamp);
-		modify.delete(delete_tp).insert(insert_tp_rdf_type, insert_tp_retrieved_inputs_at)
+		modify.delete(delete_tp).insert(insert_tp_rdf_type, insert_tp_retrieved_inputs_at, insert_tp_uuid_lock)
 				.where(GraphPatterns.and(query_gp.filterNotExists(existingRetrievedInputsAtPattern)))
 				.prefix(p_derived);
 		storeClient.executeUpdate(modify.getQueryString());
+
+		// check if the uuid added to the derivation is the same one
+		query = Queries.SELECT();
+		Variable addedUUID = query.var();
+		query.prefix(p_derived).select(addedUUID).where(iri(derivation).has(uuidLock, addedUUID));
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		if (queryResult.isEmpty()) {
+			throw new JPSRuntimeException("Failed to add uuidLock to the derivation: " + derivation);
+		} else {
+			JSONObject queryResultObject = queryResult.getJSONObject(0);
+			String addedUUIDString = queryResultObject.getString(addedUUID.getQueryString().substring(1));
+			if (addedUUIDString.equals(uuid)) {
+				return true;
+			} else {
+				return false;
+	}
+		}
 	}
 
 	/**
@@ -823,13 +850,16 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		Variable status = query.var();
 		Variable statusType = query.var();
+		Variable uuid = query.var();
 
 		GraphPattern query_gp = GraphPatterns.and(
-				iri(derivation).has(hasStatus, status), status.isA(statusType));
+			iri(derivation).has(hasStatus, status), status.isA(statusType),
+			iri(derivation).has(uuidLock, uuid));
 		TriplePattern delete_tp = status.isA(statusType);
+		TriplePattern delete_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		TriplePattern insert_tp_rdf_type = status.isA(Finished);
 
-		modify.delete(delete_tp).where(query_gp).prefix(p_derived);
+		modify.delete(delete_tp, delete_uuid_lock).where(query_gp).prefix(p_derived);
 		modify.insert(insert_tp_rdf_type);
 
 		// also add all new generated triples

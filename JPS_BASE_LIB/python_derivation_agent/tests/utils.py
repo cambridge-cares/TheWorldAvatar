@@ -1,4 +1,5 @@
 from pathlib import Path
+from rdflib import Graph
 
 from pyderivationagent.kg_operations import TIME_HASTIME
 from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
@@ -16,7 +17,10 @@ def initialise_triples_assert_pure_inputs(sparql_client, derivation_client, dele
         sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
     pathlist = Path(RESOURCE_DIR).glob('**/*.ttl')
     for path in pathlist:
-        sparql_client.uploadOntology(str(path))
+        # uploadOntology is changed to uploadGraph, which seems more stable with docker as observed in tests
+        g = Graph()
+        g.parse(str(path), format='turtle')
+        sparql_client.uploadGraph(g)
 
     # Initialise the instances storage
     all_instances = AllInstances()
