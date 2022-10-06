@@ -3,6 +3,8 @@ import time
 
 import tests.utils as utils
 
+from tests.agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+
 def test_integration_test(initialise_agent):
     sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent = initialise_agent
 
@@ -92,6 +94,10 @@ def test_integration_test(initialise_agent):
     # Also check if the number of generated points matches the total number of points in the knowledge graph
     pt_in_kg = sparql_client.getPointsInKG()
     assert len(pt_in_kg) == numofpoints
+    # Also check if the points generated are attached with the correct rdfs:comment
+    pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
+    assert len(pt_comment_dict) == numofpoints
+    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
 
     # Get the max and min vlaue of the generated list of points
     all_pt_values = pt_dict.values()

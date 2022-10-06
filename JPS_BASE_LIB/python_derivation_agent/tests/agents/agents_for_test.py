@@ -1,6 +1,9 @@
 import random
 import uuid
 import time
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
 from rdflib import RDFS
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
@@ -16,6 +19,7 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
+from .sparql_client_for_test import RANDOM_STRING_WITH_SPACES
 
 class UpdateEndpoint(DerivationAgent):
     # NOTE Placeholder to enable instantiating UpdateEndpoint instance
@@ -188,12 +192,16 @@ class RNGAgent(DerivationAgent):
         derivation_outputs.createNewEntity(
             listofpoints_iri, RANDOM_EXAMPLE_LISTOFPOINTS)
 
+        # Generate random points triples in a Graph and add to derivation_outputs
+        g = Graph()
         for i in range(numofpoints):
             new_point = random.randint(lowerlimit, upperlimit)
             pt_iri = RANDOM_EXAMPLE_BASE_URL + 'Point_' + str(uuid.uuid4())
             derivation_outputs.createNewEntity(pt_iri, RANDOM_EXAMPLE_POINT)
-            derivation_outputs.addTriple(
-                listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri)
-            derivation_outputs.addLiteral(
-                pt_iri, RANDOM_EXAMPLE_HASVALUE, new_point)
-            derivation_outputs.addLiteral(pt_iri, RDFS.comment.toPython(), "this is a random comment")
+            g.add((URIRef(listofpoints_iri), URIRef(RANDOM_EXAMPLE_HASPOINT), URIRef(pt_iri)))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_HASVALUE), Literal(new_point)))
+            # this RANDOM_STRING_WITH_SPACES is to test that the agent can add a string with spaces as data property
+            g.add((URIRef(pt_iri), RDFS.comment, Literal(RANDOM_STRING_WITH_SPACES)))
+
+        # addTriple and addLiteral will be called by addGraph, therefore tested behind the scenes
+        derivation_outputs.addGraph(g)

@@ -1,6 +1,7 @@
 from pyderivationagent.kg_operations import PySparqlClient
 from pyderivationagent.kg_operations import trimIRI
 from pyderivationagent.kg_operations import PREFIX_RDF
+from pyderivationagent.kg_operations import PREFIX_RDFS
 import uuid
 
 # Random number generation TBox
@@ -16,6 +17,7 @@ RANDOM_EXAMPLE_DIFFERENCEREVERSE = 'http://www.example.com/ontology/random.owl#D
 RANDOM_EXAMPLE_HASVALUE = 'http://www.example.com/ontology/random.owl#hasValue'
 RANDOM_EXAMPLE_HASPOINT = 'http://www.example.com/ontology/random.owl#hasPoint'
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
+RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
 
 class PySparqlClientForTest(PySparqlClient):
     def getListOfPoints(self):
@@ -65,6 +67,16 @@ class PySparqlClientForTest(PySparqlClient):
 
         if len(response) > 0:
             pt_dict = {pt['pt']: int(pt['val']) for pt in response}
+            return pt_dict
+
+        return None
+
+    def getPointsRdfsCommentInKG(self) -> dict:
+        query = f"""{PREFIX_RDFS} SELECT ?pt ?comment WHERE{{ ?pt a <{RANDOM_EXAMPLE_POINT}>. ?pt rdfs:comment ?comment.}}"""
+        response = self.performQuery(query)
+
+        if len(response) > 0:
+            pt_dict = {pt['pt']: pt['comment'] for pt in response}
             return pt_dict
 
         return None
