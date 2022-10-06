@@ -7,47 +7,14 @@
 This module is used to pre-screen the protential SMR sites 
 """
 from logging import raiseExceptions
-from pyscipopt import Model
-import os, sys, json
+import os, sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-import SMRSitePreSelection.DecommissioningCost as DCost
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
-from demandingAndCentroid import demandingAndCentroid
-from sklearn.cluster import DBSCAN
+import SMRSitePreSelection.demandingAndCentroidList as dclist
 import numpy as np
-from shapely.geometry import MultiPoint
-from UK_Digital_Twin_Package import generatorCluster as genCluster
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation
-import matplotlib.pyplot as plt
-import matplotlib
-
-'''
-These are the packages of pymoo
-'''
-import numpy as np
-
-from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.core.problem import Problem
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PM
-from pymoo.operators.repair.rounding import RoundingRepair
-from pymoo.operators.sampling.rnd import IntegerRandomSampling, BinaryRandomSampling, FloatRandomSampling
-
-from pymoo.problems import get_problem
-from pymoo.optimize import minimize
-
-import matplotlib.pyplot as plt
-from pymoo.util import plotting
-
-from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.factory import get_sampling, get_crossover, get_mutation
-from pymoo.optimize import minimize
-
-from pymoo.visualization.scatter import Scatter
-
-from pymoo.operators.crossover.pntx import TwoPointCrossover
-from pymoo.operators.mutation.bitflip import BitflipMutation
 
 class siteSelector(Problem):
 
@@ -64,14 +31,10 @@ class siteSelector(Problem):
             SMRCapability:float,
             bankRate:float,
             carbonTax:float,
-            clusterFlag:bool,
             maxmumSMRUnitAtOneSite:int,
             SMRIntergratedDiscount:float, 
             startTime_of_EnergyConsumption:str,
-            genTypeSummary:list,
-            ## GA setting
-            pop_size:int = 40,
-            n_offsprings:int = 10
+            population_list:list
         ):
         ##-- Model Parameters --##  
         self.numberOfSMRToBeIntroduced = int(numberOfSMRToBeIntroduced)
@@ -87,12 +50,9 @@ class siteSelector(Problem):
         self.i = bankRate
         self.carbonTax = carbonTax
         self.N = maxmumSMRUnitAtOneSite
-        self.clusterFlag = clusterFlag
-        self.genTypeSummary = genTypeSummary
         self.ir = SMRIntergratedDiscount
-
+        self.population_list = population_list
         self.varSets = locals()  
-        self.ieq_constr_NameList = []
 
         self.startTime_of_EnergyConsumption = str(startTime_of_EnergyConsumption)
         
@@ -100,25 +60,12 @@ class siteSelector(Problem):
 
         super().__init__(
         n_var = siteSelectionBinaryVariableNumber, 
-        n_obj = 2, 
-        n_ieq_constr = len(self.generatorToBeReplacedList), 
-        n_eq_constr = 1,
+        n_obj = 2,  ## 'F'
+        n_ieq_constr = len(self.generatorToBeReplacedList), ## 'G'
+        n_eq_constr = 1, ## 'H'
         xl=0.0,
         xu=1.0, 
         vtype=int)
-        
-        self.algorithm = NSGA2(
-            pop_size = pop_size, ## the initial population size 
-            n_offsprings = n_offsprings, ## the number of the offspring of each generation 
-            sampling=IntegerRandomSampling(),
-            ##  sampling=BinaryRandomSampling(),
-            ##sampling=FloatRandomSampling(),
-            crossover=SBX(prob=1.0, eta=3.0, vtype=float, repair=RoundingRepair()),
-            mutation=PM(prob=1.0, eta=3.0, vtype=float, repair=RoundingRepair()),
-            ## crossover=TwoPointCrossover(),
-            ##mutation=BitflipMutation(),
-            eliminate_duplicates=True)
-
 
     def _evaluate(self, x, out, *args, **kwargs):
         ##-- 1. Define the iequality constraints --##
@@ -127,8 +74,7 @@ class siteSelector(Problem):
         for i in range(len(self.generatorToBeReplacedList)):
             g = 0 ## this is the initialisation of the constaint function for each site 
             g_Name = 'g_' + str(i) ## defining the name of the constraint function, the number of the ieq constraints is the number of the sites  
-            self.ieq_constr_NameList.append(g_Name) ## recording the name of each constraint function 
-            for n in self.N:
+            for n in range(self.N):
                 numOfBV = int(i * self.N + n) ## the index of the binary variable x 
                 g += x[:, numOfBV]
             self.varSets[g_Name] = g - 1 ## the constaint looks like: x1 + x2 + x3 + x4 <= 1, while the sum up equal to 0, it means that there is no SMR being placed
@@ -140,7 +86,7 @@ class siteSelector(Problem):
         ## This constraint limits the number of the SMR to be introduced to the system is equal to the value specified (self.numberOfSMRToBeIntroduced) ##
         h1 = 0
         for i in range(len(self.generatorToBeReplacedList)):
-            for n in self.N:
+            for n in range(self.N):
                 numOfBV = int(i * self.N + n) ## the index of the binary variable x 
                 h1 += x[:, numOfBV] * (n + 1)
         out["H"] = h1 - int(self.numberOfSMRToBeIntroduced) ## the constaint looks like: 1 *x1 + 2*x2 + 3*x3 + 4*x4 + 1*x5 + 2*x6 + .... == numberOfSMRToBeIntroduced
@@ -148,10 +94,10 @@ class siteSelector(Problem):
         ##--3. Define the objective function --##
         totalSMRCapitalCost = 0
         totalLifeMonetaryCost = 0
+        f2 = 0
         ## pre-calculate the cost of the SMR with integration discount
         sumUpSMRIntegratedCost = 0
         SMRIntegratedCostForDifferentInterationNumberList = []
-        f2 = 0
         for n in range(self.N):
             sumUpSMRIntegratedCost += (self.ir**n ) * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
             SMRIntegratedCostForDifferentInterationNumberList.append(sumUpSMRIntegratedCost)
@@ -160,19 +106,20 @@ class siteSelector(Problem):
         ## Objective 2: sum up of the weighted distance between the site location and the centroid of the demanding area (demanding * distance) ## 
         for i in range(len(self.generatorToBeReplacedList)):
             sumUpOfWeightedDemanding = 0
-            genIRI = self.generatorToBeReplacedList[i]["PowerGenerator"]
+            ## genIRI = self.generatorToBeReplacedList[i]["PowerGenerator"]
             latlon = self.generatorToBeReplacedList[i]["LatLon"]
             
-            for demand in demandingAndCentroid[self.startTime_of_EnergyConsumption]:
+            for demand in dclist.demandingAndCentroid[self.startTime_of_EnergyConsumption]:
                 distance = DistanceBasedOnGPSLocation(latlon + demand['Geo_InfoList'])
                 weightedDemanding = distance * float(demand['v_TotalELecConsumption'])  
                 sumUpOfWeightedDemanding += weightedDemanding
 
-            for n in self.N:
-                rs =  (self.r0/1000) * ((n + 1) * (self.Cap_SMR**(0.5))) ## where n+1 is the number of SMR units
-                print(i, genIRI)
+            for n in range(self.N):
+                # print(i, genIRI)
+                # rs =  (self.r0/1000) * ((n + 1) * (self.Cap_SMR**(0.5))) ## where n+1 is the number of SMR units
+                # population = populationDensityCalculator(latlon, rs, self.geospatialQueryEndpointLabel)
                 numOfBV = int(i * self.N + n)
-                population = populationDensityCalculator(latlon, rs, self.geospatialQueryEndpointLabel)
+                population = self.population_list[i][n]
                 totalLifeMonetaryCost += x[:, numOfBV] * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))  
                 totalSMRCapitalCost += SMRIntegratedCostForDifferentInterationNumberList[n] * x[:, numOfBV] 
 
@@ -180,5 +127,3 @@ class siteSelector(Problem):
 
         f1 = totalLifeMonetaryCost + totalSMRCapitalCost
         out["F"]  = np.column_stack([f1, f2])
-    
-    
