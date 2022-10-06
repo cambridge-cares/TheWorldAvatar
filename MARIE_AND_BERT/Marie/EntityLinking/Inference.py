@@ -1,6 +1,8 @@
 import os.path
 import sys
+
 sys.path.append("C:/Users/Shaocong/Documents/GitHub/TheWorldAvatar/MARIE_AND_BERT")
+from Marie.EntityLinking.translator.translate_smile import Translator
 from Marie.EntityLinking.blink.common.params import BlinkParser
 from Marie.EntityLinking.blink.biencoder.eval_biencoder import NEL
 from Marie.EntityLinking.elq.wrapper import NEL_ELQ
@@ -9,8 +11,7 @@ from Marie.EntityLinking.util.ParseResult import prase_inference
 from Marie.EntityLinking.chemspot.annotator import Annotator
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
 from Marie.Util.location import ENTITY_LINKING_CONF_DIR, ENTITY_LINKING_DATA_DIR
-#from STOUT import translate_forward, translate_reverse
-import re
+
 '''
 All files needed for Entity linking go to "MARIE_AND_BERT/DATA/EntityLinking"
 '''
@@ -47,6 +48,9 @@ class NELInfer():
             self.annotator = Annotator()
             self.nel = NEL(self.params)
         self.entity_dict = load_entity_dict(self.params['entity_dict_path'])
+        self.params['smile_model_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['smile_model_path'])
+        smile_translator = Translator(modelpath=self.params['smile_model_path'])
+        self.translate = smile_translator.translate
 
 
     def readconf(self, config_name):
@@ -56,10 +60,10 @@ class NELInfer():
                 for key in config:
                     self.params[key] = config[key]
 
-    def infer(self, mention_data, use_translation = False, use_ner=False ):
+    def infer(self, mention_data, use_translation = True, use_ner=False ):
         if use_translation:
             mention_data = self.translate(mention_data)
-
+        #TODO: mark before translation bounds as actual bounds
         if not self.one_pass:#Use separate NER instead
             mention_data = self.ner_tag(mention_data)
         else:#check input format
@@ -71,31 +75,7 @@ class NELInfer():
         return inferred
 
 
-    def translate(self, raw_data):
-        pass
-        '''
-        for entry in raw_data:
-            text = entry["text"]
-            tokens = [x.strip().replace('.','').replace('?', '') for x in text.split(' ')]
-            for idx, t in enumerate(tokens):
-                if self.validateSMILES(t):
-                    translated = self.translateSMILES(t)
-                    if translated:
-                        tokens[idx] = translated
-            entry['text'] = ' '.join(tokens)
-        return raw_data
-     '''
-    '''idateSMILES(self, text):
-        regchem = a = re.compile(r"^([^J][a-z0-9@+\-\[\]\(\)\\\/%=#$]{6,})$", re.I)
-        x = re.search(regchem, text)
-        return x
 
-    def translateSMILES(self, token):
-        IUPAC_name = translate_forward(token)
-        if "Could not generate IUPAC name from invalid SMILES." in IUPAC_name:
-            return None
-        return IUPAC_name
-    '''
     def ner_tag(self, raw_data):
         """Tag out possible mention from raw data.
         raw_data: data string list
@@ -133,7 +113,7 @@ if __name__ == '__main__':
     # read a test file
 
     testdata = [{"mention": "urea", "context_left": "what is the chemical formula of", "context_right": ""}]
-    rawdata = [{"text": "what is the chemical formula of ebastine."}, {"text":"what is C9H18NO4+."}]
+    rawdata = [{"text": "what is the chemical formula of 4-methyl-2-oxopentanoic acid"}, {"text":"what is C9H18NO4+."}]
     # rawdata = load_mention_entries("data/pubchem/test.jsonl")
     # rawdata = [{"text":l+' '+m+' '+r} for m,l,r in rawdata]
     model = NELInfer('base500.yaml')

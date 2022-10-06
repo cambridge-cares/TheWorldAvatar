@@ -1,9 +1,11 @@
 #path
 path_to_model: pytorch_model.bin
+path_to_model_config: training_params.txt
 #data_path: data/pubchem/test.jsonl #path for data to be inferred
 output_path: models
 cand_encode_path: embeddingbase.pt
-entity_dict_path: pubchem5000_trim3781.jsonl
+entity_dict_path: pubchem5000alt.jsonl
+smile_model_path: SMILES_NER.bin
 
 #model_spec
 encode_batch_size: 8
