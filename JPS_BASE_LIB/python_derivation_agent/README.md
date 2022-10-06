@@ -159,7 +159,7 @@ class YourAgent(DerivationAgent):
         # e.g. <http://example/ExampleClass_UUID> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example/ExampleClass>.
         # <http://example/ExampleClass_UUID> <http://example/hasValue> 5.
         derivation_outputs.createNewEntity("http://example/ExampleClass_UUID", "http://example/ExampleClass")
-        derivation_outputs.addTriple("http://example/ExampleClass_UUID", "http://example/hasValue", 5)
+        derivation_outputs.addLiteral("http://example/ExampleClass_UUID", "http://example/hasValue", 5)
 
         # Alternatively, you may create an instance of rdflib.Graph and add the whole graph to derivation_outputs
         # In which case, the above triples can be added by:
@@ -319,7 +319,15 @@ def create_app():
         app = Flask(__name__)
         flask_config = FlaskConfig(),
         register_agent = agent_config.REGISTER_AGENT,
-        logger_name = "dev"
+        logger_name = "dev",
+        # note that you can set the maximum number of threads to monitor async derivations at the same time
+        max_thread_monitor_async_derivations = agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        # note that you may choose NOT to supply below parameters if you DO NOT want email notifications
+        email_recipient = agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix = agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username = agent_config.EMAIL_USERNAME,
+        email_auth_json_path = agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations = agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     # Start listening sync/monitoring async derivations
@@ -350,6 +358,12 @@ FILE_SERVER_USERNAME=
 FILE_SERVER_PASSWORD=
 ONTOAGENT_OPERATION_HTTP_URL=http://localhost:7000/Example
 REGISTER_AGENT=false
+MAX_THREAD_MONITOR_ASYNC_DERIVATIONS=1
+EMAIL_RECIPIENT=foo.1@bar.com;foo.2@bar.com
+EMAIL_SUBJECT_PREFIX=ExampleAgent
+EMAIL_USERNAME=my.gmail.address@gmail.com
+EMAIL_AUTH_JSON_PATH=/app/secret.json
+EMAIL_START_END_ASYNC_DERIVATIONS=false
 
 YOUR_STR_CONF=
 YOUR_INT_CONF=
@@ -376,7 +390,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 7000:5000
-    # Note that "host.docker.internal" is only a placeholder string, you can replace it with anything, e.g. "localhost"
+    # Note that "host.docker.internal" is only a placeholder string, you can replace it with anything, e.g. "localhost" (HOWEVER, NOTE THAT "localhost" IS NO LONGER WORKING AS OF py4jps 1.0.23, WHEREAS ANY OTHER PLACEHOLDER STRING STILL WORKS, AS DETAILED IN ISSUE https://github.com/cambridge-cares/TheWorldAvatar/issues/347)
     # But please be aware that this can be unstable on some versions docker-desktop as noticed by other developers:
     # https://github.com/docker/for-win/issues/8861
     extra_hosts:
@@ -403,6 +417,10 @@ secrets:
 ```
 
 You may refer to [DoEAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent) for a concrete implementation of the above suggested folder structure based on `pyderivationagent`. The design of `pyderivationagent` is continually evolving, and as the project grows, we hope to make it more accessible to developers and users.
+
+## Set up email notification for exceptions
+The `DerivationAgent` class provides the feature to send email notifications to list of recipients specified by the developer. As the agent uses [yagmail](https://github.com/kootenpv/yagmail) package, a gmail account is required. The feature relies on [OAuth2](https://oauth.net/2/) for authorisation. A step-by-step instruction can be find [here](https://github.com/kootenpv/yagmail/issues/143#issuecomment-1161223461).
+
 
 ## Dockerised integration test
 The `pyderivationagent` package also provides two sets of dockerised integration tests, following the same context as [`DerivationAsynExample`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample). Interested developer may refer to the README of the Java example for more context, or `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/tests` for more technical details.

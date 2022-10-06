@@ -20,3 +20,5 @@
 :MinValue :hasValue xsd:integer .
 
 :Difference :hasValue xsd:integer .
+
+:DifferenceReverse :hasValue xsd:integer .

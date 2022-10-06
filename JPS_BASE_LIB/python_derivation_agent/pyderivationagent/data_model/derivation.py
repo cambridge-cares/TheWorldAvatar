@@ -1,5 +1,5 @@
 import ast
-from rdflib import Graph, RDF
+from rdflib import Graph, RDF, Literal
 
 class DerivationInputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationInputs.java.
@@ -26,18 +26,38 @@ class DerivationOutputs():
     def createNewEntity(self, iri, rdfType):
         self.derivation_outputs.createNewEntity(iri, rdfType)
 
+    def createNewEntityWithBaseUrl(self, baseUrl, rdfType):
+        """This method initialises an IRI with the given baseUrl and rdfType, adds the new entity to derivation outputs, then returns the initialised IRI."""
+        return self.derivation_outputs.createNewEntityWithBaseUrl(baseUrl, rdfType)
+
     def addTriple(self, s, p, o):
-        """Only one addTriple is provided here as the correct method to use will be decided by java automatically."""
+        """Only one addTriple is provided here, the two functions taking TriplePattern is NOT provided for simplicity of java-python data structure conversion."""
         self.derivation_outputs.addTriple(s, p, o)
 
-    def addTripleWithDataType(self, s, p, o, dataType):
-        self.derivation_outputs.addTriple(s, p, o, dataType)
+    def addLiteral(self, s, p, o):
+        """Only one addLiteral is provided here as the correct method to use will be decided by java automatically."""
+        self.derivation_outputs.addLiteral(s, p, o)
+
+    def addLiteralWithDataType(self, s, p, o, dataType):
+        """This method corresponds to addLiteral(String, String, String, String) in DerivationOutputs.java, but renamed in python due to limitations of overloading in python."""
+        self.derivation_outputs.addLiteral(s, p, o, dataType)
 
     def addGraph(self, g: Graph):
         """Add a whole rdflib.Graph to derivation outputs."""
         for s, p, o in g:
-            if p.toPython() == RDF.type.toPython():
-                self.createNewEntity(s.toPython(), o.toPython())
-            else:
-                # .toPython() works out what's the most suitable python class and cast to it
-                self.addTriple(s.toPython(), p.toPython(), o.toPython())
+            try:
+                if p.toPython() == RDF.type.toPython():
+                    self.createNewEntity(s.toPython(), o.toPython())
+                else:
+                    if isinstance(o, Literal):
+                        if isinstance(o.toPython(), Literal):
+                            # if o.toPython() is a Literal instance, then it's returning itself
+                            # this means the datatype provided to initialise o is NOT presented in rdflib.term.XSDToPython
+                            # therefore, it cannot be cast to native python type
+                            # but str(o) will return the lexical_or_value used
+                            self.addLiteralWithDataType(s.toPython(), p.toPython(), str(o), o._datatype.toPython())
+                        else:
+                            # .toPython() works out what's the most suitable python class and cast to it
+                            self.addLiteral(s.toPython(), p.toPython(), o.toPython())
+            except Exception as exc:
+                raise Exception(f"Failed to add: {s.n3()} {p.n3()} {o.n3()}") from exc
