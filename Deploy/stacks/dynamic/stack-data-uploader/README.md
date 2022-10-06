@@ -47,8 +47,8 @@ To load static data files into the stack please follow the instructions below:
         - `"inputDatasetOpenOptions"` implements [-oo](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo). These open options are driver specific and details on them can be found in the driver pages below.
         - `"layerCreationOptions"` implements [`-lco`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco).
         - `"outputDatasetOpenOptions"` implements [`-doo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo).
-        - `"envVars"` implements [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
-        - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/vector_common_options.html) and the [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html).
+        - `"envVars"` allows you to set environment variables.
+        - `"otherOptions"` allows you to add any other flag you wish to explicitly. You can find the options for these in the [vector common options](https://gdal.org/programs/vector_common_options.html) and the [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html).
         
         The key value pairs `"sridIn"` and `"sridOut"` can also be used inside `"ogr2ogrOptions"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), and [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) to set the input and output SRS.
             
@@ -80,11 +80,11 @@ To load static data files into the stack please follow the instructions below:
 
     - GDal Options
 
-        An `"ogr2ogrOptions"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
+        An `"options"` node within the relevant data subset in the configuration json can be added. Within that the following nodes can be added.
         - `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo). These open options are driver specific and details on them can be found in the driver pages below.
         - `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co). These creation options are driver specific and details on them can be found in the driver pages below.
-        -  `"envVars"` implements [`--env`](https://docs.docker.com/engine/reference/commandline/run/#options).
-        - `"otherOptions"` here you can add any other flag you wish to explicitly you can find the options for these in the [vector common options](https://gdal.org/programs/raster_common_options.html) and the [GDAL translate options](https://gdal.org/programs/gdal_translate.html).
+        -  `"envVars"` allows you to set environment variables.
+        - `"otherOptions"` allows you to add any other flag you wish to explicitly.
         
         The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`. These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
 
