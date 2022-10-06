@@ -245,6 +245,45 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Digitales Geländemodell",
+            "sources": [
+                {
+                    "id": "elevation-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:Elevation",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "elevation-contours-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:HoehenlinienDGM",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "elevation-layer",
+                    "name": "Elevation",
+                    "source": "elevation-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                },
+                {
+                    "id": "elevation-contours-layer",
+                    "name": "Höhenlinien",
+                    "source": "elevation-contours-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                }
+            ]
         }
     ]
 }
