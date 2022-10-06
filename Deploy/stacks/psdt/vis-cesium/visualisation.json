@@ -9,6 +9,26 @@
     },
     "groups": [
         {
+            "name": "Gebäude",
+            "sources": [
+                {
+                    "id": "buildings-lod2-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod2/qt_2_0___tileset.json"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "buildings-lod2-tiles-layer",
+                    "name": "Gebäude (3D, LoD2)",
+                    "source": "buildings-lod2-tiles-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                }
+            ]
+        },
+        {
             "name": "Digitales Landschaftsmodell",
             "sources": [
                 {
