@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='chemistry_and_robots',
@@ -11,7 +11,7 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/utils/chemistry_and_robots",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=['tests','tests.*']),
+    packages=find_namespace_packages(exclude=['tests','tests.*']),
     install_requires=['pyderivationagent==1.2.0', 'pydantic==1.9.0', 'pandas', 'xlrd', 'xlwt'],
     extras_require={
         "dev": [
