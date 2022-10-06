@@ -1,0 +1,1 @@
+from .vapourtec_schedule_conf import config_vapourtec_schedule_agent

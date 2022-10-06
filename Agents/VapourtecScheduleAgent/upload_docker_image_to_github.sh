@@ -5,7 +5,7 @@
 #
 AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-AGENT_NAME='vapourtec_execution_agent'
+AGENT_NAME='vapourtec_schedule_agent'
 CARES_GITHUB='ghcr.io/cambridge-cares/'
 STEP_NR=1
 NEXT_VERSION=''

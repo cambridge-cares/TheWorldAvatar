@@ -5,11 +5,11 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-from vtexeagent.kg_operations import *
-from vtexeagent.data_model import *
+from vapourtecscheduleagent.kg_operations import *
+from vapourtecscheduleagent.data_model import *
 
 
-class VapourtecExecutionAgent(DerivationAgent):
+class VapourtecScheduleAgent(DerivationAgent):
     def __init__(
         self,
         maximum_concurrent_experiment: int = 1,

@@ -6,7 +6,7 @@ from pyderivationagent.kg_operations import TIME_HASTIME
 from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
 from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
 
-import vtexeagent.tests.conftest as cf
+import vapourtecscheduleagent.tests.conftest as cf
 
 # ----------------------------------------------------------------------------------
 # Utility functions

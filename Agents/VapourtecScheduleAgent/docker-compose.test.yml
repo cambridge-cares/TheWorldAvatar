@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  vapourtec_execution_agent:
-    image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT
-    container_name: vapourtec_execution_agent
+  vapourtec_schedule_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_schedule_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
@@ -17,12 +17,12 @@ services:
     extra_hosts:
       - localhost:host-gateway
     env_file:
-      - ./vtexeagent/tests/env_files/agent.vapourtec.execution.env.test
+      - ./vapourtecscheduleagent/tests/env_files/agent.vapourtec.schedule.env.test
 
   # Blazegraph
   blazegraph:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    container_name: "blazegraph_vapourtec_exe_test"
+    container_name: "blazegraph_vapourtec_schedule_test"
     ports:
       - 48082:8080
     environment:
@@ -34,7 +34,7 @@ services:
   # File server
   fileserver:
     image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
-    container_name: "fileserver_vapourtec_exe_test"
+    container_name: "fileserver_vapourtec_schedule_test"
     ports:
       - 48086:8080
     # Add secret to set BASIC authentication password
@@ -52,10 +52,10 @@ services:
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
       - localhost:host-gateway
     env_file:
-      - ./vtexeagent/tests/env_files/agent.vapourtec.env.test
+      - ./vapourtecscheduleagent/tests/env_files/agent.vapourtec.env.test
     volumes:
       - type: bind
-        source: ./vtexeagent/tests/_for_docker_integration_test_vapourtec
+        source: ./vapourtecscheduleagent/tests/_for_docker_integration_test_vapourtec
         target: /app/vapourtec
 
   # HPLCAgent for three-agent integration test
@@ -69,15 +69,15 @@ services:
     extra_hosts:
       - localhost:host-gateway
     env_file:
-      - ./vtexeagent/tests/env_files/agent.hplc.env.test
+      - ./vapourtecscheduleagent/tests/env_files/agent.hplc.env.test
     volumes:
       - type: bind
-        source: ./vtexeagent/tests/_for_docker_integration_test_hplc
+        source: ./vapourtecscheduleagent/tests/_for_docker_integration_test_hplc
         target: /app/CHEM32
 
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: vtexeagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: vapourtecscheduleagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
-    file: vtexeagent/tests/dummy_services_secrets/fileserver_passwd.txt
+    file: vapourtecscheduleagent/tests/dummy_services_secrets/fileserver_passwd.txt

@@ -1,6 +1,6 @@
 from pyderivationagent.conf import config_derivation_agent
-from vtexeagent.conf import config_vapourtec_execution_agent
-from vtexeagent.agent import *
+from vapourtecscheduleagent.conf import config_vapourtec_schedule_agent
+from vapourtecscheduleagent.agent import *
 
 import logging
 
@@ -9,9 +9,9 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 def create_app():
-    exe_agent_config = config_vapourtec_execution_agent()
+    exe_agent_config = config_vapourtec_schedule_agent()
 
-    agent = VapourtecExecutionAgent(
+    agent = VapourtecScheduleAgent(
         maximum_concurrent_experiment=exe_agent_config.MAXIMUM_CONCURRENT_EXPERIMENT,
         register_agent=exe_agent_config.REGISTER_AGENT,
         agent_iri=exe_agent_config.ONTOAGENT_SERVICE_IRI,

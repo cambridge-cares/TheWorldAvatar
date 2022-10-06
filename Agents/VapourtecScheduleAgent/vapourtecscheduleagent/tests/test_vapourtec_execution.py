@@ -6,7 +6,7 @@ import pytest
 import uuid
 import time
 
-import vtexeagent.tests.utils as utils
+import vapourtecscheduleagent.tests.utils as utils
 
 
 # NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
@@ -19,7 +19,7 @@ import vtexeagent.tests.utils as utils
     ],
 )
 def test_monitor_derivation(
-    initialise_client, create_vapourtec_execution_agent, generate_random_download_path,
+    initialise_client, create_vapourtec_schedule_agent, generate_random_download_path,
     new_rxn_exp_iri, derivation_periodic_timescale
 ):
     # Initialise triples
@@ -32,13 +32,13 @@ def test_monitor_derivation(
     assert lst_unassigned_rxn_exp_instance[0].isAssignedTo is None
 
     # Create instance of agent and start monitor derivations
-    vapourtec_execution_agent = create_vapourtec_execution_agent(
+    vapourtec_schedule_agent = create_vapourtec_schedule_agent(
         maximum_concurrent_experiment=1,#maximum_concurrent_experiment,
         register_agent=True,
         random_agent_iri=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
-    vapourtec_execution_agent._start_monitoring_derivations()
+    vapourtec_schedule_agent._start_monitoring_derivations()
 
     # NOTE Add placeholder agent service iri to manage the digital twin of all hardware
     # NOTE This should actually be done by the VapourtecAgent/HPLCAgent themselves when they are deployed
@@ -47,11 +47,11 @@ def test_monitor_derivation(
     ))
 
     # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_execution_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_execution_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
 
     # Instantiate derivation instance
-    derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     hplc_derivation = None
@@ -59,7 +59,7 @@ def test_monitor_derivation(
         time.sleep(10)
         hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
 
-    # Insert placeholder triples to let the VapourtecExecutionAgent finish job
+    # Insert placeholder triples to let the VapourtecScheduleAgent finish job
     g = Graph()
     placeholder_hplcjob = "http://placeholder/" + str(uuid.uuid4())
     placeholder_hplcreport = "http://placeholder/" + str(uuid.uuid4())
@@ -86,7 +86,7 @@ def test_monitor_derivation(
     assert placeholder_hplcreport == lst_derivation_outputs[0]
 
     # Shutdown the scheduler to clean up before the next test
-    vapourtec_execution_agent.scheduler.shutdown()
+    vapourtec_schedule_agent.scheduler.shutdown()
 
 
 # NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
@@ -99,7 +99,7 @@ def test_monitor_derivation(
     ],
 )
 def test_docker_integration(
-    initialise_client, create_vapourtec_execution_agent, generate_random_download_path,
+    initialise_client, create_vapourtec_schedule_agent, generate_random_download_path,
     new_rxn_exp_iri, derivation_periodic_timescale
 ):
     # Initialise triples
@@ -112,7 +112,7 @@ def test_docker_integration(
     assert lst_unassigned_rxn_exp_instance[0].isAssignedTo is None
 
     # Create instance of agent and start monitor derivations
-    vapourtec_execution_agent = create_vapourtec_execution_agent(
+    vapourtec_schedule_agent = create_vapourtec_schedule_agent(
         maximum_concurrent_experiment=1,#maximum_concurrent_experiment,
         register_agent=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
@@ -125,11 +125,11 @@ def test_docker_integration(
     ))
 
     # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_execution_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_execution_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
 
     # Instantiate derivation instance
-    derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     hplc_derivation = None
@@ -137,7 +137,7 @@ def test_docker_integration(
         time.sleep(10)
         hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
 
-    # Insert placeholder triples to let the VapourtecExecutionAgent finish job
+    # Insert placeholder triples to let the VapourtecScheduleAgent finish job
     g = Graph()
     placeholder_hplcjob = "http://placeholder/" + str(uuid.uuid4())
     placeholder_hplcreport = "http://placeholder/" + str(uuid.uuid4())
@@ -174,7 +174,7 @@ def test_docker_integration(
     ],
 )
 def test_three_agents_docker_integration(
-    initialise_client, create_vapourtec_execution_agent, generate_random_download_path, create_test_report,
+    initialise_client, create_vapourtec_schedule_agent, generate_random_download_path, create_test_report,
     create_vapourtec_agent, create_hplc_agent,
     new_rxn_exp_iri, derivation_periodic_timescale, fcexp_file_host_folder, hplc_report_wsl_folder
 ):
@@ -188,7 +188,7 @@ def test_three_agents_docker_integration(
     assert lst_unassigned_rxn_exp_instance[0].isAssignedTo is None
 
     # Create instance of three agents
-    vapourtec_execution_agent = create_vapourtec_execution_agent(
+    vapourtec_schedule_agent = create_vapourtec_schedule_agent(
         maximum_concurrent_experiment=1,#maximum_concurrent_experiment,
         register_agent=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
@@ -218,11 +218,11 @@ def test_three_agents_docker_integration(
     old_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in old_autosampler.hasSite if site.holds.isFilledWith is not None]}
 
     # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_execution_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_execution_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
+    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
 
     # Instantiate derivation instance
-    vtexe_derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
+    vtexe_derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     vapourtec_derivation = None
@@ -316,7 +316,7 @@ def test_three_agents_docker_integration(
     assert lst_hplc_job_iri == lst_derivation_outputs_iri
 
     #######################################################
-    ## Check execution of Vapourtec Execution Derivation ##
+    ## Check execution of Vapourtec Schedule Derivation ##
     #######################################################
     # Wait until derivation update is finished
     currentTimestamp_derivation = 0
@@ -324,7 +324,7 @@ def test_three_agents_docker_integration(
         time.sleep(10)
         currentTimestamp_derivation = utils.get_timestamp(vtexe_derivation_iri, sparql_client)
 
-    # Check execution of Vapourtec Execution Derivation
+    # Check execution of Vapourtec Schedule Derivation
     # (1) reaction experiment should be assigned to a reactor
     lst_done_rxn_exp_instance = sparql_client.getReactionExperiment(new_rxn_exp_iri)
     assert len(lst_done_rxn_exp_instance) == 1

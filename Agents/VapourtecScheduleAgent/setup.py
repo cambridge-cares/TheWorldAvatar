@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='vtexeagent',
+    name='vapourtecscheduleagent',
     version='0.0.1',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
     python_requires='>=3.5',
-    description="vtexeagent is capable of executing reaction experiment on Vapourtec flow chemistry setup as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ExecutionAgent",
+    description="vapourtecscheduleagent is capable of scheduling the execution of reaction experiment on Vapourtec flow chemistry setup as part of The World Avatar project.",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecScheduleAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),

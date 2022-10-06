@@ -2,10 +2,10 @@ from pyderivationagent.conf import AgentConfig
 from pyderivationagent.conf import config_generic
 
 
-class VapourtecExecutionConfig(AgentConfig):
+class VapourtecScheduleConfig(AgentConfig):
     MAXIMUM_CONCURRENT_EXPERIMENT: int
 
 
-def config_vapourtec_execution_agent(env_file: str = None) -> VapourtecExecutionConfig:
+def config_vapourtec_schedule_agent(env_file: str = None) -> VapourtecScheduleConfig:
     """Return configurations from either environment variables or env_file."""
-    return config_generic(VapourtecExecutionConfig, env_file)
+    return config_generic(VapourtecScheduleConfig, env_file)

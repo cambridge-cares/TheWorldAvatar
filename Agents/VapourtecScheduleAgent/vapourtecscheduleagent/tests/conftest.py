@@ -8,11 +8,11 @@ import xlwt
 import os
 
 from pyderivationagent.conf import config_derivation_agent
-from vtexeagent.conf import config_vapourtec_execution_agent
+from vapourtecscheduleagent.conf import config_vapourtec_schedule_agent
 
-from vtexeagent.kg_operations import ChemistryAndRobotsSparqlClient
-from vtexeagent.data_model import *
-from vtexeagent.agent import VapourtecExecutionAgent
+from vapourtecscheduleagent.kg_operations import ChemistryAndRobotsSparqlClient
+from vapourtecscheduleagent.data_model import *
+from vapourtecscheduleagent.agent import VapourtecScheduleAgent
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -38,7 +38,7 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
-VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
+VAPOURTEC_SCHEDULE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.schedule.env.test')
 
 DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
 VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
@@ -180,32 +180,32 @@ def initialise_client(get_service_url, get_service_auth):
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def create_vapourtec_execution_agent():
-    def _create_vapourtec_execution_agent(
+def create_vapourtec_schedule_agent():
+    def _create_vapourtec_schedule_agent(
         maximum_concurrent_experiment:int=None,
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        vapourtec_execution_config = config_vapourtec_execution_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
-        vapourtec_execution_agent = VapourtecExecutionAgent(
-            maximum_concurrent_experiment=vapourtec_execution_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
-            register_agent=vapourtec_execution_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=vapourtec_execution_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=vapourtec_execution_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=vapourtec_execution_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=vapourtec_execution_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=vapourtec_execution_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=vapourtec_execution_config.KG_USERNAME,
-            kg_password=vapourtec_execution_config.KG_PASSWORD,
-            fs_url=vapourtec_execution_config.FILE_SERVER_ENDPOINT,
-            fs_user=vapourtec_execution_config.FILE_SERVER_USERNAME,
-            fs_password=vapourtec_execution_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=vapourtec_execution_config.ONTOAGENT_OPERATION_HTTP_URL,
+        vapourtec_schedule_config = config_vapourtec_schedule_agent(VAPOURTEC_SCHEDULE_AGENT_ENV)
+        vapourtec_schedule_agent = VapourtecScheduleAgent(
+            maximum_concurrent_experiment=vapourtec_schedule_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
+            register_agent=vapourtec_schedule_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=vapourtec_schedule_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=vapourtec_schedule_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=vapourtec_schedule_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=vapourtec_schedule_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=vapourtec_schedule_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=vapourtec_schedule_config.KG_USERNAME,
+            kg_password=vapourtec_schedule_config.KG_PASSWORD,
+            fs_url=vapourtec_schedule_config.FILE_SERVER_ENDPOINT,
+            fs_user=vapourtec_schedule_config.FILE_SERVER_USERNAME,
+            fs_password=vapourtec_schedule_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=vapourtec_schedule_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        return vapourtec_execution_agent
-    return _create_vapourtec_execution_agent
+        return vapourtec_schedule_agent
+    return _create_vapourtec_schedule_agent
 
 ## For three-agent integration test
 @pytest.fixture(scope="module")
