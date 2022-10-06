@@ -117,4 +117,6 @@ JPS_MARIE_AND_BERT/Dataset
 *.pt
 *.h5
 *.npy
-MARIE_AND_BERT/Marie/Util/Models/fake_entity_mapping.pickle
+MARIE_AND_BERT/Data
+MARIE_AND_BERT/archived
+MARIE_AND_BERT/**/*.log

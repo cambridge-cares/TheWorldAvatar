@@ -9,7 +9,7 @@ class Messenger:
     # seconds passed since epoch
 
     def __init__(self):
-        self.yag = yagmail.SMTP('marie.maintenance.message', 'somerandompasswordformarie')
+        self.yag = yagmail.SMTP('marie.maintenance.message', 'mariemaintenancepassword')
         self.default_receivers = ['xz378@cam.ac.uk', 'jimmyzhou.ntu@gmail.com','danieln@cmclinnovations.com']
         self.main_developer = ['xz378@cam.ac.uk', 'danieln@cmclinnovations.com']
 

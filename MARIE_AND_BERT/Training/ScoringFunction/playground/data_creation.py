@@ -7,9 +7,9 @@ import csv
 import os
 import random
 from pprint import pprint
-from Marie.Util.location import DATA_DIR
+from Marie.Util.location import TRAINING_DIR
 
-ent_label_path = os.path.join(DATA_DIR, r'ent_labels.tsv')
+ent_label_path = os.path.join(TRAINING_DIR, r'ent_labels.tsv')
 full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 
 # open pubchem csv and get all the relations
@@ -18,10 +18,10 @@ full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 
 # make 3 question template, special template for "molar weight and something"
 
-file_path = os.path.join(DATA_DIR, 'pubchem.csv')
+file_path = os.path.join(TRAINING_DIR, 'pubchem.csv')
 # how much does benenze weigh?
 
-input_file = csv.DictReader(open(file_path).readlines()[0:5000])
+input_file = csv.DictReader(open(file_path).readlines()[0:10000])
 
 species_name_mapping = {}
 entity_list = []
@@ -95,7 +95,7 @@ for r in normal_relations:
 
 import csv
 
-with open('question_set', "w", newline='') as the_file:
+with open(os.path.join(TRAINING_DIR, 'question_set'), "w", newline='') as the_file:
     csv.register_dialect("custom", delimiter=",", skipinitialspace=True)
     writer = csv.writer(the_file, dialect="custom")
     for tup in all_question:

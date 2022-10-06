@@ -13,11 +13,17 @@ class Dataset(torch.utils.data.Dataset):
     # in this case, each data unit contains a head, a rel, a tail
     # the output is the
 
-    def __init__(self, df, neg_rate=18):
+    def __init__(self, df, neg_rate=18, data_folder = None):
         # TODO: make sure the
-        e2i_path = open(os.path.join(DATA_DIR, 'entity2idx.pkl'), 'rb')
+        if data_folder is None:
+            e2i_path = open(os.path.join(DATA_DIR, f'entity2idx.pkl'), 'rb')
+            r2i_path = open(os.path.join(DATA_DIR, f'relation2idx.pkl'), 'rb')
+        else:
+            e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
+            r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
+
+
         self.entity2idx = pickle.load(e2i_path)
-        r2i_path = open(os.path.join(DATA_DIR, 'relation2idx.pkl'), 'rb')
         self.relation2idx = pickle.load(r2i_path)
         self.df = df
         self.ent_num = len(self.entity2idx.keys())
@@ -33,7 +39,8 @@ class Dataset(torch.utils.data.Dataset):
         tail = self.entity2idx[triplet[2]]
         # fake_entity = self.get_fake_tail(triplet[0], triplet[2])
         fake_entity = random.randint(0, self.ent_num)
-        fake_triple = choice([(head, rel, fake_entity), (fake_entity, rel, tail)])
+        # fake_triple = choice([(head, rel, fake_entity), (fake_entity, rel, tail)])
+        fake_triple = (head, rel, fake_entity)
         # for the neg set, just replace the tail with something starting with the same prefix
         return (head, rel, tail), fake_triple
 

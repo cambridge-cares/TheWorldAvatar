@@ -3,11 +3,11 @@
 
 # load "question_set" into dataframe
 
-
+import os
 import pandas as pd
 import random
-
-raw_question_set = pd.read_csv('question_set', sep=',', header = None)
+from Marie.Util.location import TRAINING_DIR
+raw_question_set = pd.read_csv(os.path.join(TRAINING_DIR, 'question_set'), sep=',', header = None)
 
 # add col 3 with all 1
 # extract col 2 and get the list of entities
@@ -35,6 +35,6 @@ question_set_with_neg = pd.DataFrame(columns=raw_question_set.columns)
 
 
 raw_question_set = raw_question_set.reset_index(drop=True)
-raw_question_set.to_csv(r'question_set_full', sep='\t')
+raw_question_set.to_csv(os.path.join(TRAINING_DIR, r'question_set_full'), sep='\t')
 print('exported')
 

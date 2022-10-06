@@ -33,8 +33,6 @@ class TorchBERTModel(nn.Module):
             F.log_softmax(scores, dim=1), F.normalize(targets.float(), p=1, dim=1)
         )
 
-
-
     def __init__(self, dropout=0):
         super(TorchBERTModel, self).__init__()
 
@@ -46,7 +44,6 @@ class TorchBERTModel(nn.Module):
 
         self.logsoftmax = torch.nn.LogSoftmax(dim=-1)
         self._klloss = torch.nn.KLDivLoss(reduction='sum')
-
 
         self.sigmoid = nn.Sigmoid()
 
