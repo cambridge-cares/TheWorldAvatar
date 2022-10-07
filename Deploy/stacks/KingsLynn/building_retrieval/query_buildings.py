@@ -5,7 +5,7 @@
 
 # This module retrieves building geometries from the KG and creates .geojson files
 # for visualisation. Primarily to check whether buildings with and without UPRN
-# data added by the agent differ in some relevant aspect which justifies missing
+# data added by the UPRN agent differ in some relevant aspect which justifies missing
 # UPRN information
 
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions

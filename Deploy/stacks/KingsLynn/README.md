@@ -1,4 +1,6 @@
-# Kings Lynn Flooding
+# Kings Lynn Utilities
+
+This project contains several modules with utility functions and helper scripts for the King's Lynn use case.
 
 ## Setting up a virtual environment and installing required packages
 
@@ -17,7 +19,7 @@ The above commands will create and activate the virtual environment `venv` in th
 (venv) $ python -m pip install -r requirements.txt
 ```
 
-## Using the UPRN agent scripts
+## 1) Using the UPRN Agent scripts
 
 > The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent`
 
@@ -42,6 +44,14 @@ Requirements:
 
 Assess the added UPRN information via the agent with static data once added from Ordnance Survey using FME.
 
-## Using the Building Retrieval scripts
+## 2) Using the Building Retrieval scripts
 
-The `query_buildings.py` script is used to retrieve building footprints for buildings with vs. without instantiated UPRN information to analyse potential structural differences between respective buildings. Primary focus is to understand whether the non-retrieval of UPRN information using the UPRN agent seems legit or rather erroneous. The script creates .geojson files to be overlayed with other maps in QGIS / FEM Data Inspector to visually analyse potential structural differences.
+It has been observed that not all buildings instantiated in OntoCityGml get UPRN information attached after running the UPRN agent. The scripts within the `building_retrieval` subdirectory help to assess whether there is a specific pattern for buildings with vs. without UPRN information after running the agent, i.e. the `query_buildings.py` script is used to retrieve building footprints for buildings with vs. without instantiated UPRN information to analyse potential structural differences between respective buildings. Primary focus is to understand whether the non-retrieval of UPRN information using the UPRN agent seems legit or rather erroneous. The script creates .geojson files to be overlayed with other maps in QGIS / FEM Data Inspector to visually analyse potential structural differences.
+
+## Knowledge Graph utilities
+
+The scripts within the `kg_utils` subdirectory provide functionality to interact with an online knowledge graph (i.e. SPARQL endpoint):
+
+The `export_triples.py` script can be used to export all triples from a specified Blazegraph endpoint and serialse them in NTriples format in the `outputs` folder (file name will be `triples.nt`). This script has been used to create snapshots of the knowledge base along the instantiation workflow (see `..\Data\KG snapshots` in the overall project folder).
+
+The `import_triples.py` script can be used to upload all triples from a `.nt` file to an online Blazegraph SPARQL endpoint. The specified namespace might need to be created manually beforehand.
