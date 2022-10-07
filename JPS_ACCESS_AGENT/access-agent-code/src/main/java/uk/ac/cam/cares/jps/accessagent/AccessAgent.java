@@ -70,7 +70,7 @@ public class AccessAgent extends JPSAgent{
 		if(request.getServletPath().equals(CLEAR_CACHE_URL)) {
 			if(method.equals(HttpGet.METHOD_NAME)) {
 				StoreRouter.getInstance().clearCache();
-				JSONObject JSONresult = new JSONObject().put("result", "Cache cleared.");
+				JSONObject JSONresult = new JSONObject().put(JPSConstants.RESULT_KEY, "Cache cleared.");
 				return JSONresult;
 			}else {
 				throw new JSONException("AccessAgent: Input parameters not valid.\n");
@@ -181,7 +181,7 @@ public class AccessAgent extends JPSAgent{
 			
 			//get
 			result = kbClient.get(graphIRI, accept);
-			JSONresult.put("result",result);
+			JSONresult.put(JPSConstants.RESULT_KEY,result);
 		
 			return JSONresult;
 		
@@ -245,7 +245,7 @@ public class AccessAgent extends JPSAgent{
 				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
 				//TODO change this
-				JSONresult.put("result","Update completed!");
+				JSONresult.put(JPSConstants.RESULT_KEY,"Update completed!");
 			}else if(sparqlquery!=null){
 				//query
 				logInputParams(requestParams, sparqlquery, false);
@@ -253,7 +253,7 @@ public class AccessAgent extends JPSAgent{
 				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
 				LOGGER.info("Performing SPARQL query.");
 				result = kbClient.execute(sparqlquery);
-				JSONresult.put("result",result);
+				JSONresult.put(JPSConstants.RESULT_KEY,result);
 			}else {
 				throw new JPSRuntimeException("SPARQL query or update is missing");
 			}
