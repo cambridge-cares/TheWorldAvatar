@@ -56,12 +56,13 @@ public class AccessAgent extends JPSAgent{
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
 	    
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
-		JSONObject result = processRequestParameters(requestParams,null);
-		return result;
-	}
-
+    
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+    	//Do nothing
+        return new JSONObject();
+    }
+    
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
