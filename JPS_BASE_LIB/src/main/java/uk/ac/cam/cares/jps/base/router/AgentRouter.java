@@ -122,7 +122,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	}
 	
 	@Override
-	public TripleStoreClientInterface getStoreClient() {
+	public TripleStoreClientInterface getRouterStoreClient() {
 		return new RemoteStoreClient(agentRouterEndpoint);
 	}
 	

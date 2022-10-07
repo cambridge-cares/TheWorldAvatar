@@ -59,7 +59,7 @@ public abstract class AbstractCachedRouter<K, V> {
 		V value;
 		if(!cache.contains(key)) {
 			LOGGER.info("Key= "+key.toString()+" not in cache. Get from store.");
-			TripleStoreClientInterface storeClient = getStoreClient();
+			TripleStoreClientInterface storeClient = getRouterStoreClient();
 			value = getFromStore(key, storeClient);
 			if(validate(value)) {
 				cache.put(key, value);
@@ -95,7 +95,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return storeClient
 	 */
-	abstract public TripleStoreClientInterface getStoreClient();
+	abstract public TripleStoreClientInterface getRouterStoreClient();
 	
 	/**
 	 * Extending class to implement logic for getting value(s) from triple store
