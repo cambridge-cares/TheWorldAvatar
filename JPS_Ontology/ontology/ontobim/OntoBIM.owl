@@ -97,6 +97,36 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a relationship from the operator to the derived axis direction, to get a list of mutually orthogonal, normalized vectors defining the transformation matrix in IFC. See IfcCartesianTransformationOperator3D and IfcCartesianTransformationOperator for more information.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedXAxis -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedXAxis">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a relationship from the operator to the derived x-axis direction.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedYAxis -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedYAxis">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a relationship from the operator to the derived y-axis direction.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection">
@@ -112,7 +142,18 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasLocalOrigin -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasLocalOrigin">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the required translation origin, specified as a cartesian point. The actual translation transform the geometric origin to the local origin</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -136,16 +177,6 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its angle/position relative to the Sun.</rdfs:comment>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPosition -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPosition">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the geometric position of a reference point.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -198,6 +229,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefPoint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the geometric position of a reference point.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRelativePositionTo -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRelativePositionTo">
@@ -210,6 +251,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationItem -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationItem">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the representation items that constitutes the 3D geometric model representation of an element.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope">
@@ -218,6 +270,39 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its slope angle.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSourcePlacement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSourcePlacement">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the source placement of an existing geometric representation for an element&apos;s model representaion. This relationship must be used alongside the &quot;hasTargetPlacement&quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSubContext -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSubContext">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the the representation context for which the different subtypes of model representation are valid</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTargetPlacement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTargetPlacement">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the target placement of an existing geometric representation source for an element&apos;s model representaion. This relationship must be used alongside the &quot;hasSourcePlacement&quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -238,15 +323,6 @@
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
         <rdfs:isDefinedBy rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#items_IfcRepresentation -->
-
-    <owl:ObjectProperty rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#items_IfcRepresentation">
-        <rdfs:domain rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
-        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
     </owl:ObjectProperty>
     
 
@@ -443,6 +519,26 @@
         <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Site&apos;s datum elevation relative to sea level.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationType -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship decribing the type of representation context for a 3D model representation. This is equivalent to the representation type attribute in the IfcRepresentation class.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasScale -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasScale">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a relationship from the operator to their scaling value for transformation.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -653,6 +749,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class defines a geometric transformation in two- or three-dimensional space composed of translation, rotation, mirroring and uniform scaling. Its closest equivalent is IfcCartesianTransformationOperator2D or IfcCartesianTransformationOperator3D.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling">
@@ -685,6 +789,24 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defined a solid by sweeping a bounded planar surface in a given direction. If the planar area has inner boundaries, i.e. holes defined, then those holes shall be swept into holes of the solid. Its IFC equivalent is IfcExtrudedAreaSolid</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FacetedBrep -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FacetedBrep">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a simple form of boundary representation model in which all faces are planar and all edges are straight lines. Its IFC equivalent is IfcFacetedBrep and this class has to follow the topological constraints of IfcManifoldSolidBrep.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FlatRoof -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FlatRoof">
@@ -707,6 +829,14 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Define semantically distinguished representation types for different information content, dependent on the representation view and the target scale.  This enables the control of the level of detail. As a subcontext, it inherits several attributes from the parent context.</rdfs:comment>
     </owl:Class>
     
 
@@ -747,6 +877,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The 3D geometric model representation of an element in a IFC model.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof">
@@ -769,6 +907,14 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
         <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof area of a building that is suitable for solar use.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a complete representation of an element&apos;s nominal shape such that all points in the interior are connected. There are several different types of solid model representations. Its IFC equivalent is IfcSolidModel</rdfs:comment>
     </owl:Class>
     
 
@@ -854,42 +1000,6 @@
     <owl:Class rdf:about="https://saref.etsi.org/core/Sensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel">
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeRepresentation -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeRepresentation">
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel"/>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel -->
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel">
-        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
     </owl:Class>
     
 
@@ -1100,13 +1210,13 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the roof of a building and the area it covers.</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component within the space or building and their geometric representation defined in the IFC data schema. The geometric representation is linked at the IfcFamily level with one instance for each design. Each duplicate element with the same design placed in the same model will refer to this IfcFamily instance, rather than individual instances of their geometry.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component within the space or building and their geometric representation defined according to IFC schema.</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an abstract zone or tangible element/component and their IFC ID stored in the IFC file.</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a spatial zone or a component within the space or building and their placement position within the model.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the abstract boundaries of a spatial zone or a component within the space or building and their placement position within the model. Note that this does not define their concrete geometric representation positions, which is only available in the ModelRepresentation3D class.</rdfs:comment>
     </rdf:Description>
     
 
