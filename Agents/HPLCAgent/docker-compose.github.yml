@@ -10,6 +10,3 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      labels:
-        authors: "jb2197@cam.ac.uk"
-        description: "Monitor the local report folder of the configured HPLC and upload the new reports to knowledge graph."

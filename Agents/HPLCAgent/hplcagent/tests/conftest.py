@@ -218,14 +218,14 @@ def create_hplc_agent():
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=hplc_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=hplc_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=hplc_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=hplc_agent_config.KG_USERNAME,
             kg_password=hplc_agent_config.KG_PASSWORD,
-            fs_url=hplc_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(hplc_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL, # we keep this as it is for now (start with http://host.docker.internal)
             app=Flask(__name__),
         )
         return hplc_agent
@@ -235,6 +235,10 @@ def create_hplc_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def create_hplc_xls_report(docker_integration:bool=False):
     if docker_integration:

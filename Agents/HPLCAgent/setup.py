@@ -6,13 +6,13 @@ setup(
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     description="hplcagent is capable of monitoring the local report folder of the configured HPLC and uploading the new reports to knowledge graph as part of The World Avatar project.",
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent==1.2.0', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.0.0'
+    install_requires=['pyderivationagent>=1.2.1', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.1.2'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     ],
     extras_require={

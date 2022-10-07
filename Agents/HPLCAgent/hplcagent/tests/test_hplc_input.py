@@ -183,7 +183,7 @@ def test_docker_integration(
     time.sleep(hplc_agent.hplc_report_periodic_timescale * 2)
     # Query remote file path
     # time.sleep(600)
-    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, local_file_path_in_docker)
+    remote_file_path = utils.cf.host_docker_internal_to_localhost(sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, local_file_path_in_docker))
     # Genereate random download path
     full_downloaded_path = generate_random_download_path(hplc_agent.hplc_report_file_extension)
     # Download the file and make sure all the content are the same
