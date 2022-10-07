@@ -39,6 +39,14 @@ public abstract class AbstractCachedRouter<K, V> {
 	}
 
 	/**
+	 * Clear cache
+	 */
+	protected void clearCache() {
+		LOGGER.info("Clearing cache!");
+		cache.clear();
+	}
+
+	/**
 	 * Get value mapped to the specified key. If the key is not in the cache 
 	 * then get the value from the triple store and add it to the cache.
 	 * 
@@ -83,7 +91,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	
 	/**
 	 * Extending class to implement logic for instantiating a 
-	 * {@link  uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface StoreClient}
+	 * {@link  uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClient}
 	 * 
 	 * @return storeClient
 	 */
@@ -93,7 +101,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * Extending class to implement logic for getting value(s) from triple store
 	 * 
 	 * @param key
-	 * @param storeClient see {@link uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface TripleStoreClientInterface}
+	 * @param storeClient see {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} 
 	 * 
 	 * @return value
 	 */

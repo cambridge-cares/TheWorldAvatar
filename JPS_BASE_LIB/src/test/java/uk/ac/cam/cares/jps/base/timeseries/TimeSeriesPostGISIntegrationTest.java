@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.After;
 import org.postgis.Point;
 import org.postgis.Polygon;
 
@@ -126,4 +127,12 @@ public class TimeSeriesPostGISIntegrationTest {
             Assert.assertTrue(queriedPoint.equals(point));
         }
     }
+
+    @After
+	// Clear all tables after each test to ensure clean slate
+	public void clearDatabase() throws SQLException {
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			tsClient.deleteAll(conn);
+		}
+	}
 }

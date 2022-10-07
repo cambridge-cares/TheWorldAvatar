@@ -28,7 +28,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-	private static final String dbURL = "jdbc:tc:postgresql:9.6.8:///timeseries";
+	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
 	// For easier local debugging, use the following dbURL instead of the testcontainer dbURL
 	// NOTE: Requires local postgreSQL database "timeseries" to be set up beforehand
 	//private static final String dbURL = "jdbc:postgresql:timeseries";
@@ -148,6 +148,20 @@ public class TimeSeriesRDBClientIntegrationTest {
     	// If the class is not supported, the Jooq API should throw an exception
     	client = new TimeSeriesRDBClient<>(Instant.class);
 	}
+
+	@After
+	// Clear all tables after each test to ensure clean slate
+	public void clearDatabase() throws SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			List<Table<?>> tables = context.meta().getTables();
+			for (Table<?> table : tables) {
+				context.dropTable(table).cascade().execute();
+			}
+		}
+	}
+
 
 	@Test
 	public void testInitCentralTable() throws NoSuchFieldException, IllegalAccessException, SQLException {

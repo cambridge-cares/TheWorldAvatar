@@ -59,8 +59,5 @@ def trimIRI(iri):
         for i in range(len(iri)):
             iri[i] = trimIRI(iri[i])
     else:
-        if iri.startswith("<"):
-            iri = iri[1:]
-        if iri.endswith(">"):
-            iri = iri[:-1]
+        iri = iri.strip().lstrip("<").rstrip(">")
     return iri
