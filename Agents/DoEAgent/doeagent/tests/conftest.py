@@ -151,14 +151,14 @@ def create_doe_agent():
             agent_iri=doe_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=doe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=doe_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=doe_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=doe_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(doe_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(doe_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=doe_agent_config.KG_USERNAME,
             kg_password=doe_agent_config.KG_PASSWORD,
-            fs_url=doe_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(doe_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=doe_agent_config.FILE_SERVER_USERNAME,
             fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL, # we keep this as it is for now (start with http://host.docker.internal)
             app=Flask(__name__)
         )
         return doe_agent
@@ -168,6 +168,10 @@ def create_doe_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
+
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

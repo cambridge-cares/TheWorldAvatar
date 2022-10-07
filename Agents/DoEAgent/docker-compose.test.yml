@@ -12,9 +12,10 @@ services:
     ports:
       - 7000:5000
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     env_file:
       - ./doeagent/tests/agent.doe.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "doeagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:
