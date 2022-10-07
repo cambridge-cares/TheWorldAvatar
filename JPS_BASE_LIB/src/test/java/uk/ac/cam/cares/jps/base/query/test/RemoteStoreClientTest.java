@@ -2,6 +2,10 @@ package uk.ac.cam.cares.jps.base.query.test;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -342,8 +346,31 @@ public class RemoteStoreClientTest {
 		
 		assertEquals(result, actual);
 	}
-	
-	
+
+	/**
+	 * Test connect method
+	 */
+	@Test
+	public void testConnect() throws NoSuchMethodException, NoSuchFieldException, SQLException, InvocationTargetException, IllegalAccessException {
+		queryEndpoint = "http://localhost:8080/test";
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+		Method connect = kbClient.getClass().getDeclaredMethod("connect");
+		connect.setAccessible(true);
+		Field connection = kbClient.getClass().getDeclaredField("conn");
+		connection.setAccessible(true);
+		Field statement = kbClient.getClass().getDeclaredField("stmt");
+		statement.setAccessible(true);
+		Connection conn = (Connection) connection.get(kbClient);
+		java.sql.Statement stmt = (java.sql.Statement) statement.get(kbClient);
+		assertNull(conn);
+		assertNull(stmt);
+		connect.invoke(kbClient);
+		conn = (Connection) connection.get(kbClient);
+		stmt = (java.sql.Statement) statement.get(kbClient);
+		assertFalse(conn.isClosed());
+		assertNotNull(stmt);
+	}
+
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
 	 * 
