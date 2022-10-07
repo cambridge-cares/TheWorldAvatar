@@ -167,11 +167,11 @@ def create_rogi_agent():
             agent_iri=rogi_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=rogi_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=rogi_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=rogi_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=rogi_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(rogi_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(rogi_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=rogi_agent_config.KG_USERNAME,
             kg_password=rogi_agent_config.KG_PASSWORD,
-            fs_url=rogi_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(rogi_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=rogi_agent_config.FILE_SERVER_USERNAME,
             fs_password=rogi_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
@@ -224,6 +224,9 @@ def initialise_test_triples(initialise_triple_store):
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

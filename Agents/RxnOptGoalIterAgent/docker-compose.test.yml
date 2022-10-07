@@ -9,15 +9,13 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      labels:
-        authors: "jb2197@cam.ac.uk"
-        description: "One iteration for goal-based reaction optimisation."
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     ports:
       - 7060:5000
     env_file:
       - ./rxnoptgoaliteragent/tests/agent.goal.iter.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoaliteragent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:

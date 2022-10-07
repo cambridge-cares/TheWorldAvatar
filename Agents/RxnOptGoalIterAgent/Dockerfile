@@ -1,14 +1,15 @@
 # This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
 
 # Base image is a lightweight version of Python
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-buster
 
-# Install required software
-RUN apt update && apt install -y git
+# Meta data
+LABEL authors = "jb2197@cam.ac.uk"
+LABEL description = "One iteration for goal-based reaction optimisation."
 
-# Install Java openjdk-11 to enable py4jps
+# Install required software: git and openjdk-11
 USER root
-RUN apt update && apt install -y openjdk-11-jdk-headless
+RUN apt update && apt install -y git openjdk-11-jdk-headless
 
 # Expose the port on which our server will run
 EXPOSE 5000

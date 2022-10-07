@@ -16,9 +16,9 @@ logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
     "goal_set_iri,lst_existing_result_quantity,derivation_inputs,local_agent_test",
     [
         (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, True), # local agent instance test
-        # (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, False), # deployed docker agent test
+        (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, False), # deployed docker agent test
         (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS_NO_PRIOR_DATA.value, True), # local agent instance test
-        # (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS_NO_PRIOR_DATA.value, False), # deployed docker agent test
+        (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS_NO_PRIOR_DATA.value, False), # deployed docker agent test
     ],
 )
 def test_rogi_agent(

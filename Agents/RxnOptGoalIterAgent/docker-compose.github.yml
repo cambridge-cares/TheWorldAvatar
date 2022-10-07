@@ -9,6 +9,3 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      labels:
-        authors: "jb2197@cam.ac.uk"
-        description: "One iteration for goal-based reaction optimisation."
