@@ -9,7 +9,7 @@
      xmlns:OntoUBEMMP="https://www.theworldavatar.com/kg/ontoubemmp/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 September 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 October 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -173,6 +173,8 @@
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -524,96 +526,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyCO2Savings -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyCO2Savings">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyElectricityConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyElectricityConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricityConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyElectricitySupply -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyElectricitySupply">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricitySupply"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyGridConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyGridConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/GridConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyHeatSuppy -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyHeatSuppy">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyOilConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyOilConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/OilConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailySolarIrradiation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailySolarIrradiation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarIrradiation"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyThermalConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyThermalConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/DailyWaterConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/DailyWaterConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WaterConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallPVPanels -->
 
 
@@ -720,197 +632,6 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy">
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat energy produced</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyCO2Savings -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyCO2Savings">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyElectricityConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyElectricityConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricityConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyElectricitySupply -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyElectricitySupply">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricitySupply"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyGridConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyGridConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/GridConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyHeatSuppy -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyHeatSuppy">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyOilConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyOilConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/OilConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlySolarIrradiation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlySolarIrradiation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarIrradiation"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyThermalConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyThermalConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HourlyWaterConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HourlyWaterConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WaterConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyAverageSolarIrradiation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyAverageSolarIrradiation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarIrradiation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average daily solar irradiation per month</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyCO2Savings -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyCO2Savings">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyElectricityConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyElectricityConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricityConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyElectricitySupply -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyElectricitySupply">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ElectricitySupply"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyGridConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyGridConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/GridConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyHeatSuppy -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyHeatSuppy">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyOilConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyOilConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/OilConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlySolarIrradiation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlySolarIrradiation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarIrradiation"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyThermalConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyThermalConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/MonthlyWaterConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/MonthlyWaterConsumption">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WaterConsumption"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -1376,6 +1097,20 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal tube collectors with west orientation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
     
 
 
