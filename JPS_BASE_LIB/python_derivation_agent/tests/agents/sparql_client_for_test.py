@@ -12,6 +12,7 @@ RANDOM_EXAMPLE_LISTOFPOINTS = 'http://www.example.com/ontology/random.owl#ListOf
 RANDOM_EXAMPLE_MINVALUE = 'http://www.example.com/ontology/random.owl#MinValue'
 RANDOM_EXAMPLE_MAXVALUE = 'http://www.example.com/ontology/random.owl#MaxValue'
 RANDOM_EXAMPLE_DIFFERENCE = 'http://www.example.com/ontology/random.owl#Difference'
+RANDOM_EXAMPLE_DIFFERENCEREVERSE = 'http://www.example.com/ontology/random.owl#DifferenceReverse'
 RANDOM_EXAMPLE_HASVALUE = 'http://www.example.com/ontology/random.owl#hasValue'
 RANDOM_EXAMPLE_HASPOINT = 'http://www.example.com/ontology/random.owl#hasPoint'
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
@@ -183,6 +184,12 @@ class PySparqlClientForTest(PySparqlClient):
 
         return None
 
+    def getDiffReverseIRI(self):
+        query = f"""{PREFIX_RDF} SELECT ?diff_reverse
+            WHERE {{ ?diff_reverse rdf:type <{RANDOM_EXAMPLE_DIFFERENCEREVERSE}> .}}"""
+        response = self.performQuery(query)
+        return [res['diff_reverse'] for res in response]
+
     def createDiffValue(self, value):
         diff_iri = RANDOM_EXAMPLE_BASE_URL + 'Difference_' + str(uuid.uuid4())
         update = PREFIX_RDF + """INSERT DATA {<%s> rdf:type <%s>. <%s> <%s> %s.}""" % (
@@ -197,3 +204,11 @@ class PySparqlClientForTest(PySparqlClient):
             WHERE { ?numofpoints rdf:type <%s> . ?numofpoints <%s> ?value . BIND (?value+1 AS ?increased)}""" % (
             RANDOM_EXAMPLE_HASVALUE, RANDOM_EXAMPLE_HASVALUE, RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_HASVALUE)
         self.performUpdate(update)
+
+    def getDiffReverseValues(self):
+        query = f"""{PREFIX_RDF} SELECT ?diff_reverse ?value 
+                WHERE {{?diff_reverse rdf:type <{RANDOM_EXAMPLE_DIFFERENCEREVERSE}> .
+                    ?diff_reverse <{RANDOM_EXAMPLE_HASVALUE}> ?value .}}"""
+        response = self.performQuery(query)
+
+        return {res['diff_reverse']:int(res['value']) for res in response}

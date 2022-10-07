@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cmclinnovations</groupId>
   <artifactId>CMCLABoxManagement</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
   <name>CMCLABoxManagement</name>
 
@@ -71,12 +71,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.7.0</version>
                 <configuration>     
                     <arg>-verbose</arg>
                     <arg>-Xlint:all,-options,-path, unchecked</arg>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <release>8</release>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
