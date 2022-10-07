@@ -229,17 +229,20 @@ def test_three_agents_docker_integration(
     while not vapourtec_derivation:
         time.sleep(10)
         vapourtec_derivation = utils.get_vapourtec_derivation(new_rxn_exp_iri, sparql_client)
+        print(f"Waiting for vapourtec derivation to be instantiated, current time: {time.time()}")
 
     hplc_derivation = None
     while not hplc_derivation:
         time.sleep(10)
         hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
+        print(f"Waiting for hplc derivation to be instantiated, current time: {time.time()}")
 
-    # Wait until derivations for vapourtec and hplc are instantiated
+    # Wait until derivations hplc is InProgress
     hplc_derivation_is_in_progress = False
     while not hplc_derivation_is_in_progress:
         time.sleep(20)
         hplc_derivation_is_in_progress = utils.if_hplc_derivation_is_in_progress(hplc_derivation, sparql_client)
+        print(f"Waiting for hplc derivation to be in progress, current time: {time.time()}")
 
     ################################
     ## Check Vapourtec Derivation ##
@@ -253,7 +256,7 @@ def test_three_agents_docker_integration(
     # Genereate random download path
     full_downloaded_path = generate_random_download_path('csv')
     # Download the file and make sure all the content are the same
-    sparql_client.downloadFile(remote_file_path, full_downloaded_path)
+    sparql_client.downloadFile(utils.cf.host_docker_internal_to_localhost(remote_file_path), full_downloaded_path)
     assert filecmp.cmp(local_file_path,full_downloaded_path)
 
     # Second, check if settings were generated for all reaction conditions
@@ -300,7 +303,10 @@ def test_three_agents_docker_integration(
     # Genereate random download path
     full_downloaded_path = generate_random_download_path(hplc_agent.hplc_report_file_extension)
     # Download the file and make sure all the content are the same
-    sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
+    sparql_client.download_remote_raw_hplc_report(
+        remote_file_path=utils.cf.host_docker_internal_to_localhost(remote_file_path),
+        downloaded_file_path=full_downloaded_path
+    )
     assert filecmp.cmp(generated_file_path,full_downloaded_path)
 
     ## Check if the derivation is processed and generated the desired triples

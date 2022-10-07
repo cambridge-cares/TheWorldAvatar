@@ -194,11 +194,11 @@ def create_vapourtec_schedule_agent():
             agent_iri=vapourtec_schedule_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=vapourtec_schedule_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=vapourtec_schedule_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=vapourtec_schedule_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=vapourtec_schedule_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(vapourtec_schedule_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(vapourtec_schedule_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=vapourtec_schedule_config.KG_USERNAME,
             kg_password=vapourtec_schedule_config.KG_PASSWORD,
-            fs_url=vapourtec_schedule_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(vapourtec_schedule_config.FILE_SERVER_ENDPOINT),
             fs_user=vapourtec_schedule_config.FILE_SERVER_USERNAME,
             fs_password=vapourtec_schedule_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_schedule_config.ONTOAGENT_OPERATION_HTTP_URL,
@@ -228,11 +228,11 @@ def create_vapourtec_agent():
             agent_iri=vapourtec_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=vapourtec_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=vapourtec_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=vapourtec_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=vapourtec_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(vapourtec_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(vapourtec_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=vapourtec_agent_config.KG_USERNAME,
             kg_password=vapourtec_agent_config.KG_PASSWORD,
-            fs_url=vapourtec_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(vapourtec_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=vapourtec_agent_config.FILE_SERVER_USERNAME,
             fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
@@ -264,11 +264,11 @@ def create_hplc_agent():
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=hplc_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=hplc_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=hplc_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=hplc_agent_config.KG_USERNAME,
             kg_password=hplc_agent_config.KG_PASSWORD,
-            fs_url=hplc_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(hplc_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
@@ -281,6 +281,10 @@ def create_hplc_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
+
 def create_hplc_xls_report(docker_integration:bool=False):
     if docker_integration:
         file_path = os.path.join(DOCKER_INTEGRATION_HPLC_DIR,f'{str(uuid.uuid4())}.xls')
