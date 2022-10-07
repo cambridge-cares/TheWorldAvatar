@@ -1,9 +1,10 @@
+import random
 import time
 
 import tests.utils as utils
 
 def test_integration_test(initialise_agent):
-    sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent = initialise_agent
+    sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent = initialise_agent
 
     all_instances = utils.initialise_triples_assert_pure_inputs(
         sparql_client=sparql_client,
@@ -12,12 +13,6 @@ def test_integration_test(initialise_agent):
         # Instead, the triples are deleted as part of initialise_agent fixture
         delete_all_triples=False
     )
-
-    # Start the scheduler to monitor derivations
-    rng_agent.start_all_periodical_job()
-    min_agent.start_all_periodical_job()
-    max_agent.start_all_periodical_job()
-    diff_agent.start_all_periodical_job()
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(
@@ -33,6 +28,14 @@ def test_integration_test(initialise_agent):
     diff_derivation_iri = diff_agent.derivationClient.createAsyncDerivationForNewInfo(
         diff_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
     )
+    diff_reverse_derivation_iri_lst = []
+    random_int = random.randint(1, 10)
+    for i in range(random_int):
+        diff_reverse_derivation_iri_lst.append(
+            diff_agent.derivationClient.createAsyncDerivationForNewInfo(
+                diff_reverse_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
+            )
+        )
 
     # Check if the derivation instance is created correctly
     assert sparql_client.checkInstanceClass(
@@ -51,6 +54,18 @@ def test_integration_test(initialise_agent):
         diff_derivation_iri,
         sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
     )
+    for diff_reverse_derivation_iri in diff_reverse_derivation_iri_lst:
+        assert sparql_client.checkInstanceClass(
+            diff_reverse_derivation_iri,
+            sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
+        )
+
+    # Start the scheduler to monitor derivations
+    rng_agent.start_all_periodical_job()
+    min_agent.start_all_periodical_job()
+    max_agent.start_all_periodical_job()
+    diff_agent.start_all_periodical_job()
+    diff_reverse_agent.start_all_periodical_job()
 
     ################################################################################
     ########## Stage 1: check if new information generation is successful ##########
@@ -136,6 +151,26 @@ def test_integration_test(initialise_agent):
     queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
     assert queried_diff == max_value - min_value
 
+    ################################
+    ## IV. DiffReverse derivation ##
+    ################################
+    # for DiffReverse derivation, we need to wait for all the derivations to finish
+    diff_reverse_derivation_current_timestamp = 0
+    while diff_reverse_derivation_current_timestamp == 0:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        diff_reverse_derivation_current_timestamp = min(
+            [
+                utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+            ]
+        )
+
+    # Check if the difference reverse is calculated correctly
+    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
+    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
+    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
+    assert all([queried_diff_reverse_dct[iri] == min_value - max_value for iri in queried_diff_reverse_dct])
+
     ####################################################################################
     ########## Stage 2: modify the value of pure input and request for update ##########
     ####################################################################################
@@ -151,16 +186,29 @@ def test_integration_test(initialise_agent):
     ###############################
     ## II. Request for an update ##
     ###############################
-    diff_agent.derivationClient.unifiedUpdateDerivation(diff_derivation_iri)
+    # Record the timestamp of the derivation that last updated
+    ts = max(
+        [utils.get_timestamp(diff_derivation_iri, sparql_client)] + [
+            utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+        ]
+    )
 
-    # Wait until the difference derivation is updated
-    ts = utils.get_timestamp(diff_derivation_iri, sparql_client)
-    diff_derivation_current_timestamp = ts
-    while diff_derivation_current_timestamp == ts:
+    # Request for an update
+    diff_agent.derivationClient.unifiedUpdateDerivation(diff_derivation_iri)
+    for iri in diff_reverse_derivation_iri_lst:
+        diff_reverse_agent.derivationClient.unifiedUpdateDerivation(iri)
+
+    # Wait until the difference and all difference reverse derivation are updated
+    # i.e. the timestamp of all these derivations are greater than the timestamp before the update
+    _derivation_current_timestamp = ts
+    while _derivation_current_timestamp <= ts:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        diff_derivation_current_timestamp = utils.get_timestamp(
-            diff_derivation_iri, sparql_client)
+        _derivation_current_timestamp = min(
+            [utils.get_timestamp(diff_derivation_iri, sparql_client)] + [
+                utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+            ]
+        )
 
     # Check if all the information in the knowledge graph is complete and correct
     numofpoints = sparql_client.getValue(sparql_client.getNumOfPoints())
@@ -198,3 +246,9 @@ def test_integration_test(initialise_agent):
     # Check if the difference is calculated correctly
     queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
     assert queried_diff == max_value - min_value
+
+    # Check if the difference reverse is calculated correctly
+    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
+    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
+    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
+    assert all([queried_diff_reverse_dct[iri] == min_value - max_value for iri in queried_diff_reverse_dct])
