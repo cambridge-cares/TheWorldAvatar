@@ -9,8 +9,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 7000:5000
-    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
-      - localhost:host-gateway
+    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "host.docker.internal"
+      - host.docker.internal:host-gateway
     env_file:
       - ./vapourtecagent/tests/agent.vapourtec.env.test
     volumes:
@@ -19,6 +19,7 @@ services:
       - type: bind
         source: ./vapourtecagent/tests/_for_docker_integration_test
         target: /app/vapourtec
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:

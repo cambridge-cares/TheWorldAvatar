@@ -152,7 +152,7 @@ def test_docker_integration(
     vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
     container_file_path = vapourtec_input_file.localFilePath
     local_file_path = container_file_path.replace(vapourtec_agent.fcexp_file_container_folder, fcexp_file_host_folder)
-    remote_file_path = vapourtec_input_file.remoteFilePath
+    remote_file_path = utils.cf.host_docker_internal_to_localhost(vapourtec_input_file.remoteFilePath)
     # Genereate random download path
     full_downloaded_path = generate_random_download_path('csv')
     # Download the file and make sure all the content are the same
