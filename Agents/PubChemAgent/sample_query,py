@@ -1,32 +1,34 @@
-from multiprocessing.connection import Client
+# this import starts the gateway to the server. If this gateway is deleted the communication won't happen
 from pubchem.kgoperations.javagateway import jpsBaseLibGW
-import json
+from pyderivationagent.kg_operations import PySparqlClient
 
 
-def test_data_query(osIRI):
+def test_data_query():
     query = """
-    SELECT *
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    SELECT ?z
     WHERE{
-    ?x ?y ?z . 
+    ?x dc:title ?z . 
     } LIMIT 10
     """
     return query
 
-jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+def test_data_insert():
+    query = """
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    INSERT DATA
+    { 
+      <http://example/book4> dc:title "New life" ;
+                             dc:creator "Fist Last" .
+    }
+    """
+    return query
 
-def querykg(sparqlEndPoint=None, queryStr=None):
-    # perform an example sparqle query, see the jps-base-lib docs for further details
-    StoreRouter = jpsBaseLib_view.StoreRouter
-    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
-    response = json.loads(str(StoreClient.executeQuery(queryStr)))
-    return response
 
 if __name__ == '__main__' :
-    sparqlEndPoint = 'http://www.theworldavatar.com/blazegraph/namespace/CleanPubChem'
-    # sparqlEndPoint = 'http://kb/ontospecies'
-    StoreRouter = jpsBaseLib_view.StoreRouter
-    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
-    Client = jpsBaseLib_view.RemoteStoreClient(sparqlEndPoint,sparqlEndPoint,None, None)
-    response = json.loads(str(Client.executeQuery(test_data_query('ABSC'))))
+    sparqlEndPoint = 'http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies/sparql'
+    kg_client = PySparqlClient(sparqlEndPoint,sparqlEndPoint)
+    kg_client.performUpdate(test_data_insert())
+    response = kg_client.performQuery(test_data_query()) 
     print(response)
+
