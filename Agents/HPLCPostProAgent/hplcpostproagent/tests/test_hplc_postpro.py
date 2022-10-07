@@ -59,6 +59,21 @@ def test_hplc_postpro_agent(
         remote_report_subdir=remote_report_subdir,
         hplc_digital_twin=hplc_digital_twin
     )
+    # NOTE the following sparql update is a workaround for the dockerised test
+    # This is due to the fact that the remoteFilePath of the HPLC report uploaded here will start from http://localhost:
+    # However, to make it work with the HPLCPostPro Agent, we need to change the remoteFilePath to start from http://host.docker.internal: due to issue https://github.com/cambridge-cares/TheWorldAvatar/issues/347
+    # It might worth noting tho, the original remoteFilePath has type xsd:anyURI, while the new one has type xsd:string
+    # But this doesn't seem to be a problem for the tests now...
+    if not local_agent_test:
+        sparql_client.performUpdate(
+            f"""
+            DELETE {{ <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?path. }}
+            INSERT {{ <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?new_path. }}
+            WHERE {{
+                <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?path.
+                BIND(REPLACE(str(?path), "localhost:", "host.docker.internal:") AS ?new_path)
+            }}"""
+        )
 
     # Make the below connections (note that in normal operation, this should be done as part of HPLCAgent and VapourtecExecutionAgent)
     # <hplc_report> <OntoHPLC:generatedFor> <chemical_solution>

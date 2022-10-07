@@ -19,9 +19,10 @@ services:
     # network_mode: host
     # Use extra_hosts instead
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     env_file:
       - ./hplcpostproagent/tests/agent.hplc.postpro.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcpostproagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:

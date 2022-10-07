@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent==1.2.0', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.0.0'
+    install_requires=['pyderivationagent>=1.2.1', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.1.2'
                       # TODO update chemistry_and_robots package version number after the new release due to the move of unit_conversion
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     ],
