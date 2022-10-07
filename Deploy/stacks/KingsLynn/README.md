@@ -23,13 +23,54 @@ To log in to the Container registries, please run the following commands to esta
 &nbsp;
 ## Spinning up the Stack
 
+This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and (optionally) OntoCityGml building instances.
+If using VSCode terminal, all required VSCode extensions shall be installed (on the remote machine) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
+
 ### <u>Spinning up the core Stack</u>
 
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
-### <u>Spinning up the Stack remotely via SSH</u>
+```bash
+# Start the stack (please note that this might take some time)
+bash ./stack.sh start KINGS-LYNN
+
+# Stop the stack
+bash ./stack.sh stop KINGS-LYNN
+
+# Remove stack services (incl. volumes)
+bash ./stack.sh remove KINGS-LYNN -v
+```
+
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+
+### <u>Spinning up the core Stack remotely via SSH</u>
+
+To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start deployment. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
+
+Once logged in, a remote copy of The World Avatar repository can be cloned using the following commands:
+
+```bash
+$ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
+$ cd <REPO NAME>
+$ git checkout dev-MetOfficeAgent-withinStack
+$ git pull
+```
+Once the repository clone is obtained, please follow these instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+
+To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
+
+```bash
+# Check permissions
+ls -l <REPO NAME>
+# Grant permissions
+chmod -R +rwx <REPO NAME>
+```
 
 
 ### <u>Uploading initial data</u>
+
+bash ./stack.sh start KINGS-LYNN
+from Deploy/stacks/dynamic/stack-data-uploader and wait until container stopped again
 
 &nbsp;
 ## Instantiation workflow (for building data)
@@ -59,6 +100,11 @@ To log in to the Container registries, please run the following commands to esta
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
+[Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 
 <!-- Agents -->
 [UPRN Agent in batches]: https://github.com/markushofmeister/KingsLynnUtils
