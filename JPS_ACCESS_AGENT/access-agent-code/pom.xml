@@ -89,7 +89,7 @@
   	<dependency>
     	<groupId>uk.ac.cam.cares.jps</groupId>
     	<artifactId>jps-base-lib</artifactId>
-    	<version>1.17.0-SNAPSHOT</version>
+    	<version>1.18.0-ACCESS-AGENT-CACHE-SNAPSHOT</version>
     </dependency>
    
     <!-- Java servlet API -->
