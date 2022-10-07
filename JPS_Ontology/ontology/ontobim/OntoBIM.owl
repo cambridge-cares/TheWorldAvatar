@@ -97,6 +97,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContext -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContext">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that references the project to their geometric representation context.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDerivedAxis">
@@ -177,6 +189,18 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its angle/position relative to the Sun.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasParentContext -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasParentContext">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the parent and child context to share their contextual attributes.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -262,6 +286,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRootZone -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRootZone">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that reference the root of the project&apos;s spatial structure hierarchy to a zone of either site or building level.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope">
@@ -303,6 +339,38 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianTransformationOperator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the target placement of an existing geometric representation source for an element&apos;s model representaion. This relationship must be used alongside the &quot;hasSourcePlacement&quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTargetView -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTargetView">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
+        <rdfs:range rdf:resource="http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the target IFC view of the representation which is applicable to the subcontext.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTrueNorth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTrueNorth">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the direction of the geometric representation context&apos;s true north relative to the underlying coordinate system as established by the attribute WorldCoordinateSystem.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasWorldCoordinateSystem -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasWorldCoordinateSystem">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Establishes the engineering coordinate system for all representation contexts used by the project.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -434,6 +502,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextIdentifier -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextIdentifier">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines an optional identifier of the representation sub-context as used within a project.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextType -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The description of the type of a representation context in IFC, usually a string representation of IfcGeometricProjectionEnum like Model.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate">
@@ -512,6 +600,27 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPhase -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPhase">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the current project phase. As IFC allows this attribute to be open to interpretation for all project partners, values are inexhaustible.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPrecision -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPrecision">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the geometric representation context and their model precision value, that indicates tolerance level for which two given points are still identical.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation">
@@ -551,6 +660,17 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the compound plane angle&apos;s seconds measure as an integer value.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSpaceDimension -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSpaceDimension">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining a geometric representation context and their integer dimension count of the coordinate space modeled. It is usually 2 or 3.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -686,6 +806,14 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum -->
+
+    <owl:Class rdf:about="http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 
@@ -833,6 +961,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a distinct coordinate space, that is spatially unrelated to other coordinate spaces, as the overall representation context in which geometric representation items are geometrically founded. Its IFC equivalent is IfcGeometricRepresentationContext.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext">
@@ -881,6 +1017,14 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The 3D geometric model representation of an element in a IFC model.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines an abstract container class that establishes the context for information to be exchanged or shared, and reference the root of the Zone hierarchy. Its IFC equivalent is IfcProject.</rdfs:comment>
     </owl:Class>
     
 
