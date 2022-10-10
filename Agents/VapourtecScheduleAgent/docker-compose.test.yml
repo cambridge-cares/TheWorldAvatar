@@ -6,6 +6,7 @@ services:
     container_name: vapourtec_schedule_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -15,6 +16,8 @@ services:
       - host.docker.internal:host-gateway
     env_file:
       - ./vapourtecscheduleagent/tests/env_files/agent.vapourtec.schedule.env.test
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecscheduleagent:create_app()", "--preload"]
 
   # VapourtecAgent for three-agent integration test
@@ -23,6 +26,7 @@ services:
     container_name: vapourtec_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7001:5000
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
@@ -35,6 +39,8 @@ services:
       - type: bind
         source: ./vapourtecscheduleagent/tests/_for_docker_integration_test_vapourtec
         target: /app/vapourtec
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecagent:create_app()", "--preload"]
 
   # HPLCAgent for three-agent integration test
@@ -43,6 +49,7 @@ services:
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7002:5000
     extra_hosts:
@@ -53,6 +60,8 @@ services:
       - type: bind
         source: ./vapourtecscheduleagent/tests/_for_docker_integration_test_hplc
         target: /app/CHEM32
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcagent:create_app()", "--preload"]
 
   # Blazegraph
@@ -83,3 +92,5 @@ secrets:
     file: vapourtecscheduleagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: vapourtecscheduleagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: vapourtecscheduleagent/tests/dummy_services_secrets/email_auth.json

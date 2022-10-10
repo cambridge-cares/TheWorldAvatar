@@ -6,6 +6,7 @@ services:
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -15,6 +16,8 @@ services:
       - host.docker.internal:host-gateway
     env_file:
       - ./hplcagent/tests/agent.hplc.env.test
+    secrets:
+      - email_auth
     volumes:
       - type: bind
         source: ./hplcagent/tests/_for_docker_integration_test
@@ -49,3 +52,5 @@ secrets:
     file: ./hplcagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: ./hplcagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: hplcagent/tests/dummy_services_secrets/email_auth.json

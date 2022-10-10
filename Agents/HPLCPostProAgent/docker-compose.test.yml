@@ -6,6 +6,7 @@ services:
     container_name: hplc_postpro_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -22,6 +23,8 @@ services:
       - host.docker.internal:host-gateway
     env_file:
       - ./hplcpostproagent/tests/agent.hplc.postpro.env.test
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcpostproagent:create_app()", "--preload"]
 
   # Blazegraph
@@ -52,3 +55,5 @@ secrets:
     file: hplcpostproagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: hplcpostproagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: hplcpostproagent/tests/dummy_services_secrets/email_auth.json

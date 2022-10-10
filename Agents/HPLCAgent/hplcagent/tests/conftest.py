@@ -227,6 +227,12 @@ def create_hplc_agent():
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL, # we keep this as it is for now (start with http://host.docker.internal)
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_agent
     return _create_hplc_agent

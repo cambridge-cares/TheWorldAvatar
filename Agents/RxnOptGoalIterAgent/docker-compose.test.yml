@@ -6,6 +6,7 @@ services:
     container_name: rxn_opt_goal_iter_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -15,6 +16,8 @@ services:
       - 7060:5000
     env_file:
       - ./rxnoptgoaliteragent/tests/agent.goal.iter.env.test
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoaliteragent:create_app()", "--preload"]
 
   # Blazegraph
@@ -45,3 +48,5 @@ secrets:
     file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/email_auth.json

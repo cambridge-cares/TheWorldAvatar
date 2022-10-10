@@ -203,6 +203,12 @@ def create_vapourtec_schedule_agent():
             fs_password=vapourtec_schedule_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_schedule_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=vapourtec_schedule_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=vapourtec_schedule_config.EMAIL_RECIPIENT,
+            email_subject_prefix=vapourtec_schedule_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=vapourtec_schedule_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=vapourtec_schedule_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return vapourtec_schedule_agent
     return _create_vapourtec_schedule_agent
@@ -237,6 +243,12 @@ def create_vapourtec_agent():
             fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=vapourtec_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=vapourtec_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=vapourtec_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return vapourtec_agent
     return _create_vapourtec_agent
@@ -273,6 +285,12 @@ def create_hplc_agent():
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_agent
     return _create_hplc_agent

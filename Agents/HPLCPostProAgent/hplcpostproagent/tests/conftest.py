@@ -186,7 +186,13 @@ def create_hplc_postpro_agent():
             agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
             flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-            logger_name='dev'
+            logger_name='dev',
+            max_thread_monitor_async_derivations=hplc_postpro_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_postpro_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_postpro_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_postpro_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_postpro_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_postpro_agent
     return _create_hplc_postpro_agent

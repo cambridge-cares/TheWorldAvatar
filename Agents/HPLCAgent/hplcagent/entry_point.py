@@ -29,6 +29,12 @@ def create_app():
         fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         # logger_name='prod'
+        max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=hplc_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=hplc_agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])

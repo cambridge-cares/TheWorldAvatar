@@ -20,3 +20,6 @@ dist/
 FCRemote.dll
 FCRemoteCSV.dll
 *.fcexp
+
+# email_auth
+email_auth.json

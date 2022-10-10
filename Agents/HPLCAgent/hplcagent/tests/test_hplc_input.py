@@ -112,7 +112,8 @@ def test_monitor_derivation(
     hplc_agent._start_monitoring_derivations()
 
     # Wait for some arbitrary time more then the derivation_periodic_timescale
-    time.sleep(derivation_periodic_timescale + 1)
+    # NOTE that this time is set to be "long enough" to make sure the derivation is InProgress
+    time.sleep(2*derivation_periodic_timescale + 1)
 
     # Generate random file and upload it to KG fileserver
     hplc_agent.get_dict_of_hplc_files() # perform the init check first

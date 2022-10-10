@@ -9,20 +9,26 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 def create_app():
-    exe_agent_config = config_vapourtec_schedule_agent()
+    agent_config = config_vapourtec_schedule_agent()
 
     agent = VapourtecScheduleAgent(
-        maximum_concurrent_experiment=exe_agent_config.MAXIMUM_CONCURRENT_EXPERIMENT,
-        register_agent=exe_agent_config.REGISTER_AGENT,
-        agent_iri=exe_agent_config.ONTOAGENT_SERVICE_IRI,
-        time_interval=exe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=exe_agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=exe_agent_config.SPARQL_QUERY_ENDPOINT,
-        kg_update_url=exe_agent_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user=exe_agent_config.KG_USERNAME,
-        kg_password=exe_agent_config.KG_PASSWORD,
-        agent_endpoint=exe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        logger_name="prod"
+        maximum_concurrent_experiment=agent_config.MAXIMUM_CONCURRENT_EXPERIMENT,
+        register_agent=agent_config.REGISTER_AGENT,
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_update_url=agent_config.SPARQL_UPDATE_ENDPOINT,
+        kg_user=agent_config.KG_USERNAME,
+        kg_password=agent_config.KG_PASSWORD,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        logger_name="prod",
+        max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        email_recipient=agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=agent_config.EMAIL_USERNAME,
+        email_auth_json_path=agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])

@@ -175,6 +175,12 @@ def create_rogi_agent():
             fs_user=rogi_agent_config.FILE_SERVER_USERNAME,
             fs_password=rogi_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            max_thread_monitor_async_derivations=rogi_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=rogi_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=rogi_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=rogi_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=rogi_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
             app=Flask(__name__)
         )
         return rogi_agent
