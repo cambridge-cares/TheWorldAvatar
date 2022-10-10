@@ -13,8 +13,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * updates all instances of SimulationTime to the given value
- * assumes that there is only one simulation instance for now (Plymouth)
+ * updates all instances of disp:SimulationTime to the given value
  */
 @WebServlet(urlPatterns = {"/UpdateSimulationTime"})
 public class UpdateSimulationTime extends HttpServlet {
