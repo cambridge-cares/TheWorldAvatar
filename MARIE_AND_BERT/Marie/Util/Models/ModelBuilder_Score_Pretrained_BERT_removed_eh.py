@@ -19,12 +19,13 @@ from transformers import BertModel, BertTokenizer
 from Marie.Util.Models.ScoringModel_Dataset import Dataset
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR
 from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
-
+from Marie.Util.Logging import MarieLogger
 
 class ScoreModel(nn.Module):
 
     def __init__(self, device, model_name, dropout=0.1, for_training=False):
         super(ScoreModel, self).__init__()
+        self.logger = MarieLogger()
         self.criterion = MarginRankingLoss(margin=1)  # to make sure that the positive triplet always have smaller
         # distance than negative ones
         self.device = device
@@ -71,11 +72,11 @@ class ScoreModel(nn.Module):
         return (head + projected_rel - tail).norm(p=1, dim=1).to(self.device)
 
     def predict(self, triplet):
-        print(" - predicting scores")
+        self.logger.info(" - predicting scores")
         nlp_components_pos = triplet['question']
         projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
         dist_positive = self.distance(triplet, projected_rel_pos)
-        print(" - Done predicting scores")
+        self.logger.info(" - Done predicting scores")
         return dist_positive
 
 

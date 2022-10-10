@@ -9,6 +9,7 @@ from torch import nn
 
 from Marie.Util.Models.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
+from Training.Embedding.TransE_Trainer import Trainer as TransETrainer
 
 
 class TransE(nn.Module):
