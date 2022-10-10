@@ -304,6 +304,82 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "OpenStreetMap",
+            "sources": [
+                {
+                    "id": "power_lines_lines-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_lines_lines",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_lines_points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_lines_points",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_minor_lines_lines-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_minor_lines_lines",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
+                    "id": "power_minor_lines_points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:power_minor_lines_points",
+                    "transparency": true,
+                    "format": "image/png"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "power_lines_lines-layer",
+                    "name": "Elektrische Überlandleitungen (Transmission)",
+                    "source": "power_lines_lines-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                },
+                {
+                    "id": "power_lines_points-layer",
+                    "name": "Hochspannungsmasten",
+                    "source": "power_lines_points-source",
+                    "type": "symbol",
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "education",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 8, 0.4, 18, 0.8],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "power_minor_lines_lines-layer",
+                    "name": "Elektrische Überlandleitungen (Verteilung)",
+                    "source": "power_minor_lines_lines-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                },
+                {
+                    "id": "power_minor_lines_points-layer",
+                    "name": "Mittelspannungsmasten",
+                    "source": "power_minor_lines_points-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                }
+            ]
         }
     ]
 }
