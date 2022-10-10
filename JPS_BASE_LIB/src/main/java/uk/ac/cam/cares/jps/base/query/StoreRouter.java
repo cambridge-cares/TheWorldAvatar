@@ -22,7 +22,7 @@ import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.router.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -38,9 +38,9 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  *
  */
 public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
-	
+
 	public static final Logger LOGGER = LogManager.getLogger(StoreRouter.class);
-	
+
 	public static final String FILE="file://";
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
@@ -73,10 +73,10 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * ".owl",".rdf",".nt"
 	 */
 	public static final List<String> FILE_EXTENSIONS = Arrays.asList(".owl",".rdf",".nt"); //File extensions
-	
+
 	/*
-	 * Static initialisation of the store router endpoint from environment variable 
-	 * or, if one does not exist, from the jps.properties file. 
+	 * Static initialisation of the store router endpoint from environment variable
+	 * or, if one does not exist, from the jps.properties file.
 	 */
 	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPOINT";
 	public static String storeRouterEndpoint;
@@ -91,17 +91,17 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		}
 		LOGGER.info("STOREROUTER_ENDPOINT set to "+storeRouterEndpoint);		
 	}
-		
+
 	/*
 	 * LRU Cache configuration:
-	 * key=label, value=[queryEndpoint, updateEndpoint] 
+	 * key=label, value=[queryEndpoint, updateEndpoint]
 	 */
 	private static final int CACHE_SIZE = Integer.parseInt(KeyValueMap.getInstance().get(IKeys.STOREROUTER_CACHE_SIZE));
 	private static final int QUERY_INDEX = 0;
 	private static final int UPDATE_INDEX = 1;
-	
+
 	private static StoreRouter storeRouter = null;
-		
+
 	/**
 	 * StoreRouter singleton
 	 */
@@ -117,7 +117,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	}
 	
 	/**
-	 * Returns a StoreClientInterface object based on a target resource ID
+	 * Returns a TripleStoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
 	 * supports two types of resources: <br> (a) a repository/namespace and <br>
 	 * (b) an ontology/rdf file. <br> Some examples of these resources are provided below:<br>
@@ -135,19 +135,19 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @param isQueryOperation true/false
 	 * @param isUpdateOperation true/false. 
 	 * Note: both query and update operations can be true at the same time.
-	 * @return StoreClient
+	 * @return TripleStoreClient
 	 */
-	public static StoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static TripleStoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
 		
 		String queryIRI = null;
 		String updateIRI = null;
-		StoreClientInterface kbClient = null;
+		TripleStoreClientInterface kbClient = null;
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
 			//instantiate singleton if not already done so
 			getInstance();
-			
+
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
 				String relativePath = getPathComponent(targetResourceID);
@@ -180,7 +180,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 						kbClient.setUpdateEndpoint(updateIRI);
 					}
 				}
-				
+
 				if(queryIRI==null && updateIRI==null){
 					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceID+", label:"+targetResourceLabel);
 				}
@@ -201,22 +201,22 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * Get store client for ontokgrouter
 	 */
 	@Override
-	public StoreClientInterface getRouterStoreClient() {
+	public TripleStoreClientInterface getRouterStoreClient() {
 		return new RemoteStoreClient(storeRouterEndpoint);
 	}
-	
+
 	/**
 	 * Get the query endpoint and update endpoint from the ontokgrouter triple store for the targetResourceLabel.
-	 * 
+	 *
 	 * @param targetResourceLabel
 	 * @param storeClient
 	 */
 	@Override
-	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
-		
+	public List<String> getFromStore(String targetResourceLabel, TripleStoreClientInterface storeClient){
+
 		ExprFactory exprFactory = new ExprFactory();
 		Expr exprRegex = exprFactory.regex(exprFactory.str( QUESTION_MARK.concat(LABEL)), targetResourceLabel, "");
-		
+
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -228,28 +228,28 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addOptional(QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT))
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL))
 				.addFilter(exprRegex);
-		
+
 		JSONArray results = storeClient.executeQuery(builder.toString());
-	
+
 		if(!results.isEmpty()) {
 			//Get first entry
 			//Add logic for multiple results?
 			JSONObject obj = results.getJSONObject(0);
-			String queryEndpoint = MiscUtil.optNullKey(obj, QUERY_ENDPOINT); 
-			String updateEndpoint = MiscUtil.optNullKey(obj, UPDATE_ENDPOINT); 
+			String queryEndpoint = MiscUtil.optNullKey(obj, QUERY_ENDPOINT);
+			String updateEndpoint = MiscUtil.optNullKey(obj, UPDATE_ENDPOINT);
 
 			List<String> endpoints = new ArrayList<String>();
 			endpoints.add(QUERY_INDEX,queryEndpoint);
 			endpoints.add(UPDATE_INDEX,updateEndpoint);
-			
+
 			return endpoints;
-			
+
 		}else {
 			LOGGER.error("Endpoints not found for resource="+targetResourceLabel);
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Check that the targetResourceID is either a valid IRI or namespace label for a remote resource.
 	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9) 
@@ -345,15 +345,15 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	
 	/**
 	 * Retrieve file path of the target resource/owl file.
-	 * 
+	 *
 	 * @param targetResourceName
 	 * @return
 	 */
-	private String getLocalFilePath(String targetResourceName, StoreClientInterface storeClient) {
-		
+	private String getLocalFilePath(String targetResourceName, TripleStoreClientInterface storeClient) {
+
 		ExprFactory exprFactory = new ExprFactory();
 		Expr exprRegex = exprFactory.regex(exprFactory.str( QUESTION_MARK.concat(LABEL)), targetResourceName, "");
-		
+
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -363,7 +363,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) )
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL))
 				.addFilter(exprRegex);
-		
+
 		JSONArray jsonArray = storeClient.executeQuery(builder.toString());
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);

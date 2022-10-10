@@ -354,7 +354,7 @@ public class RemoteStoreClientTest {
 	public void testConnect() throws NoSuchMethodException, NoSuchFieldException, SQLException, InvocationTargetException, IllegalAccessException {
 		queryEndpoint = "http://localhost:8080/test";
 		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
-		Method connect = kbClient.getClass().getDeclaredMethod("connect");
+		Method connect = kbClient.getClass().getDeclaredMethod("connect", String.class);
 		connect.setAccessible(true);
 		Field connection = kbClient.getClass().getDeclaredField("conn");
 		connection.setAccessible(true);
@@ -364,7 +364,7 @@ public class RemoteStoreClientTest {
 		java.sql.Statement stmt = (java.sql.Statement) statement.get(kbClient);
 		assertNull(conn);
 		assertNull(stmt);
-		connect.invoke(kbClient);
+		connect.invoke(kbClient, kbClient.getConnectionUrl());
 		conn = (Connection) connection.get(kbClient);
 		stmt = (java.sql.Statement) statement.get(kbClient);
 		assertFalse(conn.isClosed());

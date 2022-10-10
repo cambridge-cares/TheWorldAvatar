@@ -30,7 +30,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * This class contains a collection of methods to interact with a triple store/knowledge base (kb).
@@ -40,7 +40,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class TimeSeriesSparql {
 	// kbClient with the endpoint (triplestore/owl file) specified
-	private StoreClientInterface kbClient;
+	private TripleStoreClientInterface kbClient;
 	
 	// Namespaces for ontology and knowledge base
 	public static final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
@@ -65,7 +65,7 @@ public class TimeSeriesSparql {
      * Standard constructor
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
      */
-    public TimeSeriesSparql(StoreClientInterface kbClient) {
+    public TimeSeriesSparql(TripleStoreClientInterface kbClient) {
     	this.kbClient = kbClient;
     }
 
@@ -73,7 +73,7 @@ public class TimeSeriesSparql {
 	 * Setter for the knowledge base client
 	 * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
 	*/
-	public void setKBClient(StoreClientInterface kbClient) {
+	public void setKBClient(TripleStoreClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
 	

@@ -24,7 +24,7 @@ public class RemoteRDBStoreClientTest {
     @Test
     public void testNewRemoteRDBStoreClientFields(){
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, user, password);
-        assertEquals(6, rdbStoreClient.getClass().getDeclaredFields().length);
+        assertEquals(7, rdbStoreClient.getClass().getDeclaredFields().length);
     }
 
     /**
@@ -33,7 +33,7 @@ public class RemoteRDBStoreClientTest {
     @Test
     public void testNewRemoteRDBStoreClientMethods(){
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, user, password);
-        assertEquals(8, rdbStoreClient.getClass().getDeclaredMethods().length);
+        assertEquals(17, rdbStoreClient.getClass().getDeclaredMethods().length);
     }
 
     /**

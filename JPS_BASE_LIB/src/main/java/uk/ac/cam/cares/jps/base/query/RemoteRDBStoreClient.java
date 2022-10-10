@@ -1,6 +1,11 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import org.apache.jena.update.UpdateRequest;
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
+
 import java.sql.*;
 
 /**
@@ -17,7 +22,7 @@ import java.sql.*;
  *
  */
 
-public class RemoteRDBStoreClient {
+public class RemoteRDBStoreClient implements StoreClientInterface {
 
     //RDB Connection object
     private Connection conn;
@@ -26,6 +31,8 @@ public class RemoteRDBStoreClient {
     private String rdbURL;
     private String rdbUser;
     private String rdbPassword;
+
+    private String query;
     //Driver string
     static final String driver = "org.postgresql.Driver";
 
@@ -39,6 +46,21 @@ public class RemoteRDBStoreClient {
         this.rdbURL = rdbURL;
         this.rdbUser = user;
         this.rdbPassword = password;
+    }
+
+    /**
+     * A constructor defined to initialise the URL, username and password to connect to the RDB
+     * and a data retrieval or update query
+     * @param rdbURL
+     * @param user
+     * @param password
+     * @param query
+     */
+    public RemoteRDBStoreClient(String rdbURL, String user, String password, String query){
+        this.rdbURL = rdbURL;
+        this.rdbUser = user;
+        this.rdbPassword = password;
+        this.query = query;
     }
 
     /**
@@ -62,9 +84,9 @@ public class RemoteRDBStoreClient {
      * Executes the query supplied by the calling method and returns results
      * as a ResultSet
      * @param query
-     * @return the query result as a ResultSet
+     * @return query result as a ResultSet
      */
-    public ResultSet executeQuery(String query) {
+    public ResultSet executeQuerytoResultSet(String query) {
         ResultSet rs;
         try {
             if(this.conn == null || stmt==null){
@@ -78,16 +100,92 @@ public class RemoteRDBStoreClient {
     }
 
     /**
+     * Executes the query supplied by the calling method and returns results
+     * as a JSONArray.
+     * @param query
+     * @return query result as a JSONArray
+     */
+    @Override
+    public JSONArray executeQuery(String query){
+        JSONArray results;
+        try {
+            if(this.conn == null || stmt==null){
+                this.conn = getConnection();
+            }
+            java.sql.ResultSet rs = this.stmt.executeQuery(query);
+            results = StoreClientHelper.convert(rs);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+        return results;
+    }
+
+    /**
+     * Executes the query that is provided through the constructors or setter method.
+     * @return query result as a JSONArray
+     */
+    @Override
+    public JSONArray executeQuery() {
+        return executeQuery(this.query);
+    }
+
+    /**
+     * Executes query using the query variable
+     * @return JSONArray as String
+     */
+    @Override
+    public String execute() {
+        return execute(this.query);
+    }
+
+    /**
+     * Executes query supplied by the calling method.
+     * @param query
+     * @return JSONArray as String
+     */
+    @Override
+    public String execute(String query){
+        JSONArray result = executeQuery(query);
+        if (result == null) {
+            throw new JPSRuntimeException("Query result is null.");
+        } else {
+            return result.toString();
+        }
+    }
+
+    /**
      * Executes the update operation supplied by the calling method.
      * @param update
      * @return
      */
+    @Override
     public int executeUpdate(String update) {
         try {
+            if(this.conn == null || stmt==null){
+                this.conn = getConnection();
+            }
             return this.stmt.executeUpdate(update);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Executes the update request supplied by the calling method.
+     * @param update as UpdateRequest
+     */
+    @Override
+    public int executeUpdate(UpdateRequest update){
+        return executeUpdate(update.toString());
+    }
+
+    /**
+     * Executes the update operation that is provided through the constructor or setter method.
+     * @return
+     */
+    @Override
+    public int executeUpdate() {
+        return executeUpdate(this.query);
     }
 
     /**
@@ -101,16 +199,44 @@ public class RemoteRDBStoreClient {
         return rdbURL;
     }
 
+    @Override
     public void setUser(String user) {
         this.rdbUser = user;
     }
 
+    @Override
     public String getUser() {
         return rdbUser;
     }
 
+    @Override
     public void setPassword(String password) {
         this.rdbPassword = password;
+    }
+
+    @Override
+    public String getPassword() {
+        return rdbPassword;
+    }
+
+    /**
+     * Returns the available query.
+     * @return
+     */
+    @Override
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * Sets a query if provided.
+     * @param query
+     * @return
+     */
+    @Override
+    public String setQuery(String query) {
+        this.query = query;
+        return this.query;
     }
 }
 
