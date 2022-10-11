@@ -52,9 +52,16 @@ def calculate_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReac
         _yield = 0
     else:
         prod_run_conc = unit_conv.unit_conversion_return_value_dq(target_product_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
-        _yield = round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place
+        _yield = 100 * round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place, and convert to percentage
 
-    pi_yield = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _yield, unit_conv.UNIFIED_YIELD_UNIT)
+    pi_yield = create_performance_indicator_instance(
+        rxn_exp_instance,
+        reference_performance_indicator,
+        unit_conv.unit_conversion_return_value(
+            _yield, OM_PERCENT, unit_conv.UNIFIED_YIELD_UNIT
+        ),
+        unit_conv.UNIFIED_YIELD_UNIT
+    )
     pi_yield.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
 
     return pi_yield
@@ -72,9 +79,16 @@ def calculate_conversion(rxn_exp_instance: ReactionExperiment, hypo_reactor: Hyp
         yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
         unreacted_conc = unit_conv.unit_conversion_return_value_dq(_target_species_in_end_stream_for_conversion.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
 
-        _conversion = round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place
+        _conversion = 100 * round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place, and convert to percentage
 
-        pi_conversion = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _conversion, unit_conv.UNIFIED_CONVERSION_UNIT)
+        pi_conversion = create_performance_indicator_instance(
+            rxn_exp_instance,
+            reference_performance_indicator,
+            unit_conv.unit_conversion_return_value(
+                _conversion, OM_PERCENT, unit_conv.UNIFIED_CONVERSION_UNIT
+            ),
+            unit_conv.UNIFIED_CONVERSION_UNIT
+        )
         pi_conversion.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
 
         return pi_conversion
@@ -113,7 +127,8 @@ def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_rea
     """This method calculates the reaction environmental factor."""
     target_product_species = retrieve_product_species(hypo_end_stream)
     if target_product_species is None:
-        _e_factor = 0
+        # The environmental factor becomes infinity (float("inf")) as there is no product produced (div by zero)
+        _e_factor = float("inf")
     else:
         all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
         all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
@@ -122,7 +137,7 @@ def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_rea
         total_reac_n_solvent_run_mass = sum([unit_conv.unit_conversion_return_value_dq(s._run_mass, unit_conv.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
         prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
 
-        _e_factor = round(prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass), 2) # Round the decimal place # TODO double-check the formula
+        _e_factor = round((total_reac_n_solvent_run_mass - prod_run_mass) / prod_run_mass, 2) # Round the decimal place
 
     pi_e_factor = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _e_factor, unit_conv.UNIFIED_ENVIRONMENTFACTOR_UNIT)
 
