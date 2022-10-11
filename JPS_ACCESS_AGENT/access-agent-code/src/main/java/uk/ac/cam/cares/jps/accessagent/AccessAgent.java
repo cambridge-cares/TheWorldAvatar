@@ -68,24 +68,23 @@ public class AccessAgent extends JPSAgent{
 		
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		
+		// Clear cache
 		if(request.getServletPath().equals(CLEAR_CACHE_URL)) {
 			if(method.equals(HttpGet.METHOD_NAME)) {
-				StoreRouter.getInstance().clearCache();
-				JSONObject JSONresult = new JSONObject().put(JPSConstants.RESULT_KEY, "Cache cleared.");
-				return JSONresult;
+				return clearCache();
 			}else {
-				throw new JSONException("AccessAgent: Input parameters not valid.\n");
+				throw new JPSRuntimeException("AccessAgent: Input parameters not valid.\n");
 			}
+		
+		// SPARQL
 		}else {
 		
 			if (!validateInput(requestParams)) {
-				throw new JSONException("AccessAgent: Input parameters not valid.\n");
+				throw new JPSRuntimeException("AccessAgent: Input parameters not valid.\n");
 			}			
 			
 			JSONObject JSONresult = new JSONObject();
-			
-			LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
-			
+				
 			switch (method) {
 				case HttpGet.METHOD_NAME:	
 					JSONresult = performGet(requestParams);
@@ -99,6 +98,16 @@ public class AccessAgent extends JPSAgent{
 				}		
 		    return JSONresult;
 		}
+	}
+	
+	/**
+	 * Clear StoreRouter cache
+	 * @return
+	 */
+	public JSONObject clearCache() {
+		StoreRouter.getInstance().clearCache();
+		JSONObject JSONresult = new JSONObject().put(JPSConstants.RESULT_KEY, "Cache cleared.");
+		return JSONresult;
 	}
 	
 	@Override
