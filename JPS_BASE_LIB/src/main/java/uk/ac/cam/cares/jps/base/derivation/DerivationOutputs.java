@@ -196,9 +196,9 @@ public class DerivationOutputs {
 		if (o instanceof Double) {
 			if (((Double) o).isInfinite()) {
 				if (((Double) o) > 0) {
-					this.addLiteral(s, p, "INF", XSD.DOUBLE.toString());
+					this.addLiteral(s, p, "Infinity", XSD.DOUBLE.toString());
 				} else {
-					this.addLiteral(s, p, "-INF", XSD.DOUBLE.toString());
+					this.addLiteral(s, p, "-Infinity", XSD.DOUBLE.toString());
 				}
 			} else if (((Double) o).isNaN()) {
 				this.addLiteral(s, p, "NaN", XSD.DOUBLE.toString());
