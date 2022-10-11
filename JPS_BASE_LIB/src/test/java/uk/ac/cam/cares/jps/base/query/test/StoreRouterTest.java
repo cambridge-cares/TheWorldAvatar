@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
@@ -66,7 +67,7 @@ class StoreRouterTest {
 	@Test
 	void testGetFromStore() {
 			
-		StoreClientInterface mockStore = new mockOntokgrouter()
+		TripleStoreClientInterface mockStore = new mockOntokgrouter()
 				.addQueryEndpoint()
 				.addUpdateEndpoint()
 				.create();
@@ -79,7 +80,7 @@ class StoreRouterTest {
 	@Test
 	void testGetFromStoreUpdateEndpointOnly() {
 				
-		StoreClientInterface mockStore = new mockOntokgrouter()
+		TripleStoreClientInterface mockStore = new mockOntokgrouter()
 				.addUpdateEndpoint()
 				.create();
 		
@@ -91,7 +92,7 @@ class StoreRouterTest {
 	@Test
 	void testGetFromStoreQueryEndpointOnly() {
 				
-		StoreClientInterface mockStore = new mockOntokgrouter()
+		TripleStoreClientInterface mockStore = new mockOntokgrouter()
 				.addQueryEndpoint()
 				.create();
 		
@@ -103,7 +104,7 @@ class StoreRouterTest {
 	@Test
 	void testGetFromStoreNoEndpoints() {
 				
-		StoreClientInterface mockStore = new mockOntokgrouter().create();
+		TripleStoreClientInterface mockStore = new mockOntokgrouter().create();
 		
 		List<String> result = StoreRouter.getInstance().getFromStore(TEST_LABEL,mockStore);
 		assertNull(result.get(QUERY_INDEX));
@@ -117,7 +118,7 @@ class StoreRouterTest {
 		expected.add(QUERY_INDEX,TEST_QUERY_ENDPOINT);
 		expected.add(UPDATE_INDEX,TEST_UPDATE_ENDPOINT);
 		
-		StoreClientInterface mockStore = new mockOntokgrouter()
+		TripleStoreClientInterface mockStore = new mockOntokgrouter()
 				.addQueryEndpoint()
 				.addUpdateEndpoint()
 				.create();

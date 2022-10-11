@@ -16,7 +16,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -162,7 +162,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
+			TripleStoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
@@ -199,8 +199,8 @@ public class AccessAgent extends JPSAgent{
 	    
 		try {
 			logInputParams(requestParams, null, false);
-			
-			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
+
+			TripleStoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 			
 			kbClient.insert(graphIRI, body, contentType);
 		} catch (RuntimeException e) {
@@ -228,7 +228,7 @@ public class AccessAgent extends JPSAgent{
 			if (sparqlupdate!=null) {
 				//update
 				logInputParams(requestParams, sparqlupdate, false);
-				StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
+				TripleStoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 				LOGGER.info("Store client instantiated for update endpoint: "+kbClient.getUpdateEndpoint());
 				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
@@ -237,7 +237,7 @@ public class AccessAgent extends JPSAgent{
 			}else if(sparqlquery!=null){
 				//query
 				logInputParams(requestParams, sparqlquery, false);
-				StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
+				TripleStoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
 				LOGGER.info("Performing SPARQL query.");
 				result = kbClient.execute(sparqlquery);
@@ -261,9 +261,9 @@ public class AccessAgent extends JPSAgent{
 	 * @param isUpdate
 	 * @return
 	 */
-	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
+	public TripleStoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
 		try {
-			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
+			TripleStoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
 			if (storeClient == null) {
 				throw new RuntimeException();
 			}
