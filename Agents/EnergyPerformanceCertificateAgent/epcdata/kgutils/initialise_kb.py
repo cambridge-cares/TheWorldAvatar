@@ -96,7 +96,11 @@ def initialise_kb():
             try:
                 # Retrieve .owl file
                 logger.info(f'Retrieving {i.capitalize()} from TWA ...')
-                content = requests.get(i)
+                try:
+                    content = requests.get(i)
+                except Exception as ex:
+                    logger.error(f"Unable to retrieve {i.capitalize()} from TWA server.")
+                    raise KGException(f"Unable to retrieve {i.capitalize()} from TWA server.") from ex
                 logger.info(f'Writing temporary {i.capitalize()} .owl file ...')
                 with open(temp_fp, 'w') as f:
                     f.write(content.text)
