@@ -39,4 +39,3 @@ volumes:
     name: "external_maven_repo"
   logs:
     name: "logs"
-  

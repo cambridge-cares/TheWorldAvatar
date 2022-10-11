@@ -12,6 +12,7 @@ from pyderivationagent.conf import config_derivation_agent
 
 from doeagent.kg_operations import ChemistryAndRobotsSparqlClient
 from doeagent.agent import DoEAgent
+from doeagent.data_model import *
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -35,10 +36,9 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 DOEAGENT_ENV = os.path.join(THIS_DIR,'agent.doe.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOEAGENT_ENV).DERIVATION_INSTANCE_BASE_URL
-DOEAGENT_SERVICE_IRI = config_derivation_agent(DOEAGENT_ENV).ONTOAGENT_SERVICE_IRI
 
-DERIVATION_INPUTS = ['https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1']
-DOE_IRI = DERIVATION_INPUTS[0]
+DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
+DERIVATION_INPUTS = [DOE_IRI]
 
 
 # ----------------------------------------------------------------------------------
@@ -107,12 +107,7 @@ def generate_random_download_path():
         return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)
     return _generate_random_download_path
 
-# ----------------------------------------------------------------------------------
-# Module-scoped test fixtures
-# ----------------------------------------------------------------------------------
-
-# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def initialise_clients(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
@@ -123,6 +118,9 @@ def initialise_clients(get_service_url, get_service_auth):
         sparql_endpoint, sparql_endpoint,
         kg_user=sparql_user, kg_password=sparql_pwd
     )
+
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
     # Create DerivationClient for creating derivation instances
     derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
@@ -136,64 +134,34 @@ def initialise_clients(get_service_url, get_service_auth):
     clear_loggers()
 
 
-@pytest.fixture(scope="module")
-def initialise_triple_store():
-    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer(
-        'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    # the port is set as 9999 to match with the value set in the docker image
-    blazegraph.with_exposed_ports(9999)
-    yield blazegraph
-
+# ----------------------------------------------------------------------------------
+# Module-scoped test fixtures
+# ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def initialise_agent(initialise_triple_store):
-    with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-
-        # Retrieve SPARQL endpoint
-        endpoint = get_endpoint(container)
-
-        # Create SparqlClient for testing
-        sparql_client = ChemistryAndRobotsSparqlClient(endpoint, endpoint)
-
-        # Create DerivationClient for creating derivation instances
-        derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-            sparql_client.kg_client,
-            DERIVATION_INSTANCE_BASE_URL
+def create_doe_agent():
+    def _create_doe_agent(
+        register_agent:bool=False,
+        random_agent_iri:bool=False,
+    ):
+        doe_agent_config = config_derivation_agent(DOEAGENT_ENV)
+        doe_agent = DoEAgent(
+            register_agent=doe_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=doe_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=doe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=doe_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=doe_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=doe_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=doe_agent_config.KG_USERNAME,
+            kg_password=doe_agent_config.KG_PASSWORD,
+            fs_url=doe_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=doe_agent_config.FILE_SERVER_USERNAME,
+            fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            app=Flask(__name__)
         )
-
-        # Initialise Async Agent with temporary docker container endpoint
-        doe_agent = create_doe_agent(DOEAGENT_ENV, endpoint)
-
-        yield sparql_client, derivation_client, doe_agent
-
-        # Tear down scheduler of doe agent
-        doe_agent.scheduler.shutdown()
-
-        # Clear logger at the end of the test
-        clear_loggers()
-
-
-# ----------------------------------------------------------------------------------
-# Agents create functions
-# ----------------------------------------------------------------------------------
-
-def create_doe_agent(env_file: str = None, sparql_endpoint: str = None):
-    if env_file is None:
-        agent_config = config_derivation_agent()
-    else:
-        agent_config = config_derivation_agent(env_file)
-    return DoEAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
-        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        app=Flask(__name__)
-    )
+        return doe_agent
+    return _create_doe_agent
 
 
 # ----------------------------------------------------------------------------------
