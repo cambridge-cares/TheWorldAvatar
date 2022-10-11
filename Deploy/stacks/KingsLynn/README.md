@@ -111,7 +111,9 @@ FME is used to convert the shapefile from the previous step into a `.gml` file t
 
 ## 3) Importing building data into KG (CitiesKG Importer, *partially manual*)
 
-The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the latest version (at time of writing) at commit `7c378e97d268b02e0d70661257894d5bff8e3655` on the `develop` branch faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
+> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
+
+The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the latest version (at time of writing) faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
 
 It is **not** recommended to re-do step 3 and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
 
@@ -129,19 +131,41 @@ After the `.gml` file is split into smaller files, they can be manually uploaded
 
 ## 4.1) Thematic Surface Discovery Agent (CitiesKG)
 
-Set up AccessAgent locally
-                - TSD works smoothly on entire namespace
-                - UPRN agent seems unable to handle entire namespace, i.e. large amounts of buildings, due to heap space issues (even on Mehal’s 64GB RAM machine)
-                - Workaround: Python script to recurringly call agent for individual buildings
+> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
 
+The Thematic Surface Discovery Agent (TSDA) is used to enrich LOD1 building data with thematic surface information (i.e. roof, wall, floor, etc.) and also provides a `LOD0 Footprint` mode to attach an `lod0FootprintId` to each building (required for subsequent UPRN agent). The [TSDAgent] README provides details about building and using the TSDA. Please note that there are discrepancies between the Access Agent related parts in the [TSDAgent] README and the [AccessAgent] README, with the [AccessAgent] README being up-to-date.
+
+An example request to the TSD Agent in footprint mode is provided below:
+```
+PUT http://localhost:8080/agents/discovery/thematicsurface
+Content-Type: application/json
+
+{ "namespace": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/",
+  "mode": "footprint"}
+```
+
+- A KG export after successfully amended by the TSD Agent is provided in `../../Data/99 KG snapshots/2_ontocitygml_tsd`
 
 ## 4.2) UPRN Agent (in chunks)
 
+> The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` 
+
+The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. As the agent creates heap space issues when processing ~38,000 buildings for King's Lynn at once, a workaround is necessary. The Kings Lynn Utilities repository contains ascript to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
+
+- A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
+
+
 ## 4.3) Energy Performance Certificate Agent
+
+
 
 ## 4.4) Building Matching Agent
 
+
+
 ## 4.5) Property Sales Instantiation Agent
+
+
 
 ## <u>5) Additional data incorporation </u>
 
@@ -162,8 +186,12 @@ Set up AccessAgent locally
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
+[OS Features API]: https://api.os.uk/features/
 
 <!-- Agents -->
+[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
 [UPRN Agent in batches]: https://github.com/markushofmeister/KingsLynnUtils
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
+
