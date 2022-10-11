@@ -229,10 +229,27 @@ public class DockerClient extends BaseClient {
     }
 
     public long getCommandErrorCode(String execId) {
+        Long exitCode = null;
         try (InspectExecCmd inspectExecCmd = internalClient.inspectExecCmd(execId)) {
-            InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
-            Long exitCode = inspectExecResponce.getExitCodeLong();
-            return (null != exitCode) ? exitCode : 1;
+
+            boolean isRunning = true;
+            while (isRunning) {
+                InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
+                isRunning = inspectExecResponce.isRunning();
+                if (!isRunning) {
+                    exitCode = inspectExecResponce.getExitCodeLong();
+                }
+                Thread.sleep(500);
+            }
+        } catch (InterruptedException ex) {
+            LOGGER.warn("Sleep method was interrupted whilst waiting for Docker inspect exec command.", ex);
+            Thread.currentThread().interrupt();
+        }
+        if (null == exitCode) {
+            throw new RuntimeException(
+                    "Docker exec command returned 'null' exit code even after it had finshed running.");
+        } else {
+            return exitCode;
         }
     }
 
