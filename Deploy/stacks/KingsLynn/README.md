@@ -79,7 +79,7 @@ chmod -R +rwx <REPO NAME>
 To be revised/checked, incl. links in data readmes
 </span>
 
-A few datasets/files to be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
+A few datasets/files to be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.2
 The following steps explain how to upload the data to the stack:
 
 1) Copy all relevant files from the `inputs` folder of this repository into the `inputs` folder of  the stack data uploader repository:
@@ -99,25 +99,29 @@ The following steps explain how to upload the data to the stack:
 
 
 &nbsp;
-# Instantiation workflow (for building data)
+# Building instantiation workflow
 
-## <u>1) Geospatial data consolidation (QGIS)</u>
+## 1) Geospatial data consolidation (QGIS, *manual*)
 
-## <u>2) Creation of .gml input file for CKG import (FME)</u>
+QGIS is used to consolidate various geospatial data sets from Digimap (both Ordnance Survey (OS) Open data as well as Premium OS data are used, i.e. Building Height Attribute and Digital Terrain Model 5m ) into a single shapefile containing all relevant building information. The exact workflow is described in the `QGIS workflow.pptx` in the `../../Data/01 QGIS` repository, which also contains the QGIS project file. The output shapefile forms the input for the FME workflow below and can be found under `../../Data/02 FME/KingsLynn_cleaned ALL buildings_adjusted building heights_incl UPRNs_final.shp`.
+
+## 2) Creation of .gml input file for CKG import (FME, *manual*)
+
+FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input in output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
+
+## 3) Importing building data into CKG (CKG Importer, *partially manual*)
 
 Re-instantiated King’s Lynn buildings using latest CKG develop branch
                 - Encountered issues using ImportAgent, which now seems unable to handle large gml files (which is one of the actual use cases for it)
                 - Work around: Use the ImportAgent only to split the large gml file and upload them manually in chunks via the Importer GUI of 100-200 files
 
-## <u>3) Importing building data into CKG (CKG Importer)</u>
+### 1) Import Agent (CKG)
 
-### <u>1) Import Agent (CKG)</u>
-
-### <u>2) Import GUI (CKG)</u>
+### 2) Import GUI (CKG)
 
 ## <u>4) Building data enrichment</u>
 
-### <u>1) Thematic Surface Discovery Agent (CKG)</u>
+## 4.1) Thematic Surface Discovery Agent (CKG)
 
 Set up AccessAgent locally
                 - TSD works smoothly on entire namespace
@@ -125,21 +129,21 @@ Set up AccessAgent locally
                 - Workaround: Python script to recurringly call agent for individual buildings
 
 
-### <u>2) UPRN Agent (in chunks)</u>
+## 4.2) UPRN Agent (in chunks)
 
-### <u>3) Energy Performance Certificate Agent</u>
+## 4.3) Energy Performance Certificate Agent
 
-### <u>4) Building Matching Agent</u>
+## 4.4) Building Matching Agent
 
-### <u>5) Property Sales Instantiation Agent</u>
+## 4.5) Property Sales Instantiation Agent
 
 ## <u>5) Additional data incorporation </u>
 
-### <u>MetOffice Agent</u>
+### MetOffice Agent
 
-### <u>AirQuality Agent</u>
+### AirQuality Agent
 
-### <u>River Levels Agent</u>
+### River Levels Agent
 
 
 <!-- Links -->
