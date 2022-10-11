@@ -43,7 +43,7 @@ public class TimeSeriesSparql {
 	private TripleStoreClientInterface kbClient;
 	
 	// Namespaces for ontology and knowledge base
-	public static final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
 	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 	
 	// Prefixes
