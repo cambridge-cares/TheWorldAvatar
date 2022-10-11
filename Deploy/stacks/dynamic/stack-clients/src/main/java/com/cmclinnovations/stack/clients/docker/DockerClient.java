@@ -213,9 +213,16 @@ public class DockerClient extends BaseClient {
                 try (ExecStartResultCallback result = execStartCmd
                         .exec(new ExecStartResultCallback(outputStream, errorStream))) {
                     if (wait) {
-                        result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn("Docker exec command '{}' still running after the {} second execution timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     } else {
-                        result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn(
+                                    "Docker exec command '{}' still not started within the {} second initialisation timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
