@@ -105,23 +105,29 @@ The following steps explain how to upload the data to the stack:
 
 QGIS is used to consolidate various geospatial data sets from Digimap (both Ordnance Survey (OS) Open data as well as Premium OS data are used, i.e. Building Height Attribute and Digital Terrain Model 5m ) into a single shapefile containing all relevant building information. The exact workflow is described in the `QGIS workflow.pptx` in the `../../Data/01 QGIS` repository, which also contains the QGIS project file. The output shapefile forms the input for the FME workflow below and can be found under `../../Data/02 FME/KingsLynn_cleaned ALL buildings_adjusted building heights_incl UPRNs_final.shp`.
 
-## 2) Creation of .gml input file for CKG import (FME, *manual*)
+## 2) Creation of .gml input file for KG import (FME, *manual*)
 
 FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input in output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
 
-## 3) Importing building data into CKG (CKG Importer, *partially manual*)
+## 3) Importing building data into KG (CitiesKG Importer, *partially manual*)
 
-Re-instantiated King’s Lynn buildings using latest CKG develop branch
-                - Encountered issues using ImportAgent, which now seems unable to handle large gml files (which is one of the actual use cases for it)
-                - Work around: Use the ImportAgent only to split the large gml file and upload them manually in chunks via the Importer GUI of 100-200 files
+The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the latest version (at time of writing) at commit `7c378e97d268b02e0d70661257894d5bff8e3655` on the `develop` branch faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
 
-### 1) Import Agent (CKG)
+It is **not** recommended to re-do step 3 and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
 
-### 2) Import GUI (CKG)
+### 1) City Import Agent
+
+Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
+
+The current version at commit `7c378e97d268b02e0d70661257894d5bff8e3655` seems unable to handle large `.gml` files. Hence, the CityImportAgent is primarily used to split the large `.gml` file into multiple smaller `.gml` files to be manually uploaded by the Import GUI as described in the next step.
+
+### 2) Import GUI
+
+After the `.gml` file is split into smaller files, they can be manually uploaded in chunks of 100-200 files via the Importer GUI. The `Building Instantiation_short.pptx` guide contains a step-by-step description on how to achieve this with required IntelliJ run configurations also provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository.
 
 ## <u>4) Building data enrichment</u>
 
-## 4.1) Thematic Surface Discovery Agent (CKG)
+## 4.1) Thematic Surface Discovery Agent (CitiesKG)
 
 Set up AccessAgent locally
                 - TSD works smoothly on entire namespace
@@ -159,3 +165,5 @@ Set up AccessAgent locally
 
 <!-- Agents -->
 [UPRN Agent in batches]: https://github.com/markushofmeister/KingsLynnUtils
+[CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
