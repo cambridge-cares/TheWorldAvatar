@@ -172,6 +172,13 @@ public class DockerClientTest {
     }
 
     @Test
+    public void testExecuteLongCommand() {
+        Assert.assertEquals(0, dockerAPI
+                .getCommandErrorCode(dockerAPI.createComplexCommand(containerId, "sh", "-c", "sleep 2 && true")
+                        .withEvaluationTimeout(1).exec()));
+    }
+
+    @Test
     public void testExecuteCommandHereDoc() {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
