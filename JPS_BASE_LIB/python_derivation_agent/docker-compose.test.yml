@@ -11,8 +11,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7000:5000
-    extra_hosts: # added localhost so that the rng_agent can access other agents through localhost
-      - "localhost:host-gateway"
+    extra_hosts: # added host.gateway so that the rng_agent can access other agents
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./tests/env_files/agent.rng.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_rng_app()"]
@@ -25,8 +25,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7001:5000
-    extra_hosts: # added localhost so that the max_agent can access other agents through localhost
-      - "localhost:host-gateway"
+    extra_hosts: # added host-gateway so that the max_agent can access other agents
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./tests/env_files/agent.max.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_max_app()"]
@@ -39,8 +39,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7002:5000
-    extra_hosts: # added localhost so that the min_agent can access other agents through localhost
-      - "localhost:host-gateway"
+    extra_hosts: # added host-gateway so that the min_agent can access other agents
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./tests/env_files/agent.min.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_min_app()"]
@@ -53,11 +53,25 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7003:5000
-    extra_hosts: # added localhost so that the diff_agent can access other agents through localhost
-      - "localhost:host-gateway"
+    extra_hosts: # added host-gateway so that the diff_agent can access other agents
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./tests/env_files/agent.diff.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_app()"]
+
+  diff_reverse_agent:
+    image: diff_reverse_agent:1.0.0
+    container_name: diff_reverse_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7005:5000
+    extra_hosts: # added host-gateway so that the diff_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.diff.reverse.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_reverse_app()"]
 
   update_endpoint:
     image: update_endpoint:1.0.0
@@ -67,8 +81,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7004:5000
-    extra_hosts: # added localhost so that the update_endpoint can access other agents through localhost
-      - "localhost:host-gateway"
+    extra_hosts: # added host-gateway so that the update_endpoint can access other agents
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./tests/env_files/endpoint.update.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_update_endpoint()"]
@@ -88,4 +102,4 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt

@@ -158,3 +158,11 @@ class PySparqlClient:
     def uploadGraph(self, g: Graph):
         update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
         self.performUpdate(update)
+
+    def check_if_triple_exist(self, s, p, o, data_type: str = None) -> bool:
+        s = "?s" if s is None else f"<{trimIRI(s)}>"
+        p = "?p" if p is None else f"<{trimIRI(p)}>"
+        o = "?o" if o is None else f"<{trimIRI(o)}>" if data_type is None else Literal(o, datatype=trimIRI(data_type))._literal_n3()
+        query = f"""ASK {{{s} {p} {o}.}}"""
+        response = self.performQuery(query)
+        return response[0]['ASK']
