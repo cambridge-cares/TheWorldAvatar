@@ -38,6 +38,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isObservedBy">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
         <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#observes"/>
     </owl:ObjectProperty>
 
     <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#contains -->
@@ -52,6 +53,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isContainedIn">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#contains"/>
     </owl:ObjectProperty>
 
    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#sendsSignalTo -->
@@ -115,7 +117,6 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
         <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
-        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf"/>
     </owl:ObjectProperty>
 
     <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf -->
@@ -156,38 +157,7 @@
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
         <rdfs:range rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:ObjectProperty>
-
-    <!-- https://saref.etsi.org/core/relatesToMeasurement -->
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/relatesToMeasurement">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:ObjectProperty>
-
-    <!-- https://saref.etsi.org/core/relatesToProperty -->
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/relatesToProperty">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
-        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:ObjectProperty>
-
-    <!-- https://saref.etsi.org/core/hasMeasurement -->
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasMeasurement">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:ObjectProperty>
-
-    <!-- https://saref.etsi.org/core/isMeasurementOf -->
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isMeasurementOf">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
-        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+        <owl:inverseOf rdf:resource="https://saref.etsi.org/core/hasProperty"/>
     </owl:ObjectProperty>
 
 
@@ -360,14 +330,14 @@
 
     <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Fan">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
-        <rdfs:comment>a tube or passageway in a building or machine for air</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
     </owl:Class>
 
     <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ExhaustAirFan -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ExhaustAirFan">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Fan"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device for removing low quality, moist or polluted air from the building envelope and rejected to the environment</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device for removing low quality, moist or polluted air from the building envelope and rejected to the environment.</rdfs:comment>
     </owl:Class>
 
     <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#HighPlumeFan -->
@@ -381,7 +351,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Duct">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
-        <rdfs:comment>a tube or passageway in a building or machine for air</rdfs:comment>
+        <rdfs:comment>a tube or passageway in a building or machine for air.</rdfs:comment>
     </owl:Class>
 
     <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Pipe -->
@@ -395,7 +365,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Tee">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connectors between pipes to separate or combine some streams</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connectors between pipes to separate or combine some streams.</rdfs:comment>
     </owl:Class>
 
     <!-- https://saref.etsi.org/saref4bldg/FlowTreatmentDevice -->
@@ -539,26 +509,6 @@
     </owl:Class>
 
 
-
-  <!-- https://saref.etsi.org/core/Measurement -->
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Measurement">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/relatesToProperty"/>
-                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Property"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isMeasurementOf"/>
-                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
-    </owl:Class>
-
-
   <!-- https://saref.etsi.org/core/FeatureOfInterest -->
 
     <owl:Class rdf:about="https://saref.etsi.org/core/FeatureOfInterest">
@@ -566,12 +516,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasProperty"/>
                 <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Property"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasMeasurement"/>
-                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Measurement"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
@@ -604,12 +548,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://saref.etsi.org/core/isPropertyOf"/>
                 <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/relatesToMeasurement"/>
-                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Measurement"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
