@@ -3,6 +3,7 @@ from pyderivationagent.kg_operations import trimIRI
 from pyderivationagent.kg_operations import PREFIX_RDF
 from pyderivationagent.kg_operations import PREFIX_RDFS
 import uuid
+import math
 
 # Random number generation TBox
 RANDOM_EXAMPLE_NUMOFPOINTS = 'http://www.example.com/ontology/random.owl#NumOfPoints'
@@ -18,6 +19,7 @@ RANDOM_EXAMPLE_HASVALUE = 'http://www.example.com/ontology/random.owl#hasValue'
 RANDOM_EXAMPLE_HASPOINT = 'http://www.example.com/ontology/random.owl#hasPoint'
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
 RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
+RANDOM_EXAMPLE_SPECIALVALUE = 'http://www.example.com/ontology/random.owl#specialValue'
 
 class PySparqlClientForTest(PySparqlClient):
     def getListOfPoints(self):
@@ -32,6 +34,26 @@ class PySparqlClientForTest(PySparqlClient):
             return response[0]['listofpoints']
 
         return None
+
+    def pointHasAllSpecialValues(self, pt_iri):
+        query = f"""SELECT ?value WHERE {{ <{pt_iri}> <{RANDOM_EXAMPLE_SPECIALVALUE}>  ?value. }}"""
+        response = self.performQuery(query)
+        if len(response) != 3:
+            print(f"pointHasAllSpecialValues: {pt_iri} has {len(response)} special values: {response}, expected 3")
+            return False
+
+        special_values = [float(x['value']) for x in response]
+        for val in [float('inf'), float('-inf')]:
+            if val not in special_values:
+                print(f"Special value {val} not found in {special_values} for point {pt_iri}")
+                return False
+        special_values.remove(float('inf'))
+        special_values.remove(float('-inf'))
+        if not math.isnan(special_values[0]):
+            print(f"Special value NaN not found in {special_values} for point {pt_iri}")
+            return False
+
+        return True
 
     def createListOfPoints(self, points):
         listofpoints_iri = RANDOM_EXAMPLE_BASE_URL + 'ListOfPoints_' + str(uuid.uuid4())

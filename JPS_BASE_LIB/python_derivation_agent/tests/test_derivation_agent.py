@@ -31,7 +31,7 @@ def test_integration_test(initialise_agent):
         diff_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
     )
     diff_reverse_derivation_iri_lst = []
-    random_int = random.randint(1, 10)
+    random_int = random.randint(1, 5)
     for i in range(random_int):
         diff_reverse_derivation_iri_lst.append(
             diff_agent.derivationClient.createAsyncDerivationForNewInfo(
@@ -98,6 +98,8 @@ def test_integration_test(initialise_agent):
     pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
     assert len(pt_comment_dict) == numofpoints
     assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
+    # Also check if the special values are correctly generated and parsed
+    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_dict])
 
     # Get the max and min vlaue of the generated list of points
     all_pt_values = pt_dict.values()
@@ -224,6 +226,12 @@ def test_integration_test(initialise_agent):
     # Also check if the number of generated points matches the total number of points in the knowledge graph
     pt_in_kg = sparql_client.getPointsInKG()
     assert len(pt_in_kg) == numofpoints
+    # Also check if the points generated are attached with the correct rdfs:comment
+    pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
+    assert len(pt_comment_dict) == numofpoints
+    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
+    # Also check if the special values are correctly generated and parsed
+    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_dict])
 
     # Get the max and min vlaue of the generated list of points
     all_pt_values = pt_dict.values()

@@ -5,6 +5,7 @@ from rdflib import Literal
 from rdflib import URIRef
 from rdflib import Graph
 from rdflib import RDFS
+from rdflib import XSD
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
 from .sparql_client_for_test import RANDOM_EXAMPLE_NUMOFPOINTS
@@ -20,6 +21,7 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 from .sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+from .sparql_client_for_test import RANDOM_EXAMPLE_SPECIALVALUE
 
 class UpdateEndpoint(DerivationAgent):
     # NOTE Placeholder to enable instantiating UpdateEndpoint instance
@@ -202,6 +204,10 @@ class RNGAgent(DerivationAgent):
             g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_HASVALUE), Literal(new_point)))
             # this RANDOM_STRING_WITH_SPACES is to test that the agent can add a string with spaces as data property
             g.add((URIRef(pt_iri), RDFS.comment, Literal(RANDOM_STRING_WITH_SPACES)))
+            # below special numbers are added to test the python side can be correctly parsed by the java side
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("-inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("nan"))))
 
         # addTriple and addLiteral will be called by addGraph, therefore tested behind the scenes
         derivation_outputs.addGraph(g)
