@@ -112,14 +112,12 @@ public class GDALClient extends ContainerClient {
     }
 
     private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
-        if (0 != errorStream.size()) {
-            long commandErrorCode = getCommandErrorCode(execId);
-            if (0 != commandErrorCode) {
-                throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                        + "' and wrote the following to stderr:\n" + errorStream.toString());
-            } else {
-                logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-            }
+        long commandErrorCode = getCommandErrorCode(execId);
+        if (0 != commandErrorCode) {
+            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                    + "' and wrote the following to stderr:\n" + errorStream.toString());
+        } else {
+            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
         }
     }
 
