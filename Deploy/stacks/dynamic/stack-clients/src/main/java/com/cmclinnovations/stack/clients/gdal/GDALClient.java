@@ -105,6 +105,7 @@ public class GDALClient extends ContainerClient {
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .withEnvVars(options.getEnv())
+                .withEvaluationTimeout(300)
                 .exec();
 
         handleErrors(errorStream, execId);
@@ -192,6 +193,7 @@ public class GDALClient extends ContainerClient {
                         .withOutputStream(outputStream)
                         .withErrorStream(errorStream)
                         .withEnvVars(options.getEnv())
+                        .withEvaluationTimeout(300)
                         .exec();
 
                 handleErrors(errorStream, execId);
