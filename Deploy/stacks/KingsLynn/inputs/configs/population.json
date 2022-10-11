@@ -1,0 +1,13 @@
+{
+    "name": "population",
+    "database": "postgres",
+    "workspace": "population",
+    "datasetDirectory": "population",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "population",
+            "skip": false
+        }
+    ]
+}

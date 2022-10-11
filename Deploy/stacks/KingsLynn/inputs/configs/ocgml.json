@@ -1,0 +1,10 @@
+{
+    "namespace": "ocgml",
+    "datasetDirectory": "quads",
+    "dataSubsets": [
+        {
+            "type": "Triples",
+            "skip": false
+        }
+    ]
+}
