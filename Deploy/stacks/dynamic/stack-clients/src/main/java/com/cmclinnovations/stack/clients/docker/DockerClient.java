@@ -236,10 +236,11 @@ public class DockerClient extends BaseClient {
             while (isRunning) {
                 InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
                 isRunning = inspectExecResponce.isRunning();
-                if (!isRunning) {
+                if (isRunning) {
+                    Thread.sleep(500);
+                } else {
                     exitCode = inspectExecResponce.getExitCodeLong();
                 }
-                Thread.sleep(500);
             }
         } catch (InterruptedException ex) {
             LOGGER.warn("Sleep method was interrupted whilst waiting for Docker inspect exec command.", ex);
