@@ -13,6 +13,10 @@ import doeagent.kg_operations as kg
 import logging
 logger = logging.getLogger('summit_doe')
 
+TWO_POWER_31_MINUS_ONE = 2**31-1
+SYS_RES_LOWER_BOUND = -TWO_POWER_31_MINUS_ONE
+SYS_RES_UPPER_BOUND = TWO_POWER_31_MINUS_ONE
+
 def proposeNewExperiment(
     doe: dm.DesignOfExperiment,
     sparql_client: kg.ChemistryAndRobotsSparqlClient,
@@ -36,9 +40,9 @@ def proposeNewExperiment(
     # Add all system responses to domain
     for var in doe.hasSystemResponse:
         domain += ContinuousVariable_summit(
-            name=var.name, description=var.instance_iri, \
-            bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=var.maximise
-            )
+            name=var.name, description=var.instance_iri,
+            bounds=[SYS_RES_LOWER_BOUND, SYS_RES_UPPER_BOUND], is_objective=True, maximize=var.maximise
+        )
 
     # Create strategy (only supporting TSEMO at the moment)
     # TODO support LHS and other algorithms
@@ -343,7 +347,9 @@ def constructPreviousResultsTable(doe: dm.DesignOfExperiment) -> DataSet_summit:
                 raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersTo clz: {var.refersTo} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
 
             # append the collected value in the experiment
-            data.append({'rxnexp': exp.instance_iri, var.name: indi.hasValue.hasNumericalValue})
+            # NOTE here we clip the value to be within the range of [SYS_RES_LOWER_BOUND, SYS_RES_UPPER_BOUND], i.e. [-2**31-1, 2**31-1]
+            # this fixes the bug of not able to handle -inf and inf values
+            data.append({'rxnexp': exp.instance_iri, var.name: max(SYS_RES_LOWER_BOUND, min(indi.hasValue.hasNumericalValue, SYS_RES_UPPER_BOUND))})
         # the prepared data will be converted from a dict to a pandas.DataFrame and added to a list
         _to_df = {}
         for k in data[0]:

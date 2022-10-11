@@ -31,6 +31,10 @@ def initialise_triples(sparql_client, derivation_client, derivation_inputs):
         g = Graph().parse(data=data)
         sparql_client.uploadGraph(g)
 
+    # additional historical data with infinite system response for DoE test
+    g = Graph().parse(os.path.join(cf.TEST_TRIPLES_DIR, 'rxn_exp_6_inf_data.ttl'))
+    sparql_client.uploadGraph(g)
+
     # Add timestamp to pure inputs
     for input in derivation_inputs:
         derivation_client.addTimeInstance(input)
