@@ -5,12 +5,10 @@ TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/
 hasTimeSeries,Object Property,,,http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,https://www.theworldavatar.com/kg/ontotimeseries/
 hasRDB,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,https://www.theworldavatar.com/kg/ontotimeseries/
 hasTimeUnit,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,https://www.theworldavatar.com/kg/ontotimeseries/
-MeasureType,Class,,,,,,The type of data measure,https://www.theworldavatar.com/kg/ontotimeseries/
-Instantaneous,Class,MeasureType,IS-A,,,,Measure type where data is the measurement value at each time step,https://www.theworldavatar.com/kg/ontotimeseries/
-Average,Class,MeasureType,IS-A,,,,Measure type where data is the calculated average,https://www.theworldavatar.com/kg/ontotimeseries/
-Cumulative,Class,MeasureType,IS-A,,,,Measure type of cumulative data,https://www.theworldavatar.com/kg/ontotimeseries/
-CumulativeTotal,Class,Cumulative,IS-A,,,,Measure type where data is the running sum,https://www.theworldavatar.com/kg/ontotimeseries/
-StepwiseCumulative,Class,Cumulative,IS-A,,,,Measure type where data is cumulative between time steps,https://www.theworldavatar.com/kg/ontotimeseries/
+InstantaneousTimeSeries,Class,TimeSeries,IS-A,,,,Time series where data is the measurement value at each time step,https://www.theworldavatar.com/kg/ontotimeseries/
+AverageTimeSeries,Class,TimeSeries,IS-A,,,,Time series where data is the calculated average,https://www.theworldavatar.com/kg/ontotimeseries/
+CumulativeTimeSeries,Class,TimeSeries,IS-A,,,,Time series of cumulative data,https://www.theworldavatar.com/kg/ontotimeseries/
+CumulativeTotalTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series of running sum,https://www.theworldavatar.com/kg/ontotimeseries/
+StepwiseCumulativeTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series where data is cumulative between time steps,https://www.theworldavatar.com/kg/ontotimeseries/
 TimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Time interval,https://www.theworldavatar.com/kg/ontotimeseries/
-hasMeasureType,Object Property,,,TimeSeries,MeasureType,,A relationship between a time series and the measure type of the time series,https://www.theworldavatar.com/kg/ontotimeseries/
-hasAveragingPeriod,Object Property,,,Average,TimeInterval,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/
+hasAveragingPeriod,Object Property,,,AverageTimeSeries,TimeInterval,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/

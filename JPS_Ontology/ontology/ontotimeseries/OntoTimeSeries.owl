@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontotimeseries="https://www.theworldavatar.com/kg/ontotimeseries/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 October 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">11 October 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -52,20 +52,9 @@
     <!-- https://www.theworldavatar.com/kg/ontotimeseries/hasAveragingPeriod -->
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasAveragingPeriod">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Average"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/AverageTimeSeries"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeInterval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a time series of averages and the time interval considered in the average calculation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/hasMeasureType -->
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasMeasureType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/MeasureType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a time series and the measure type of the time series</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -130,60 +119,51 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/Average -->
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/AverageTimeSeries -->
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Average">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/MeasureType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure type where data is the calculated average</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/AverageTimeSeries">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time series where data is the calculated average</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/Cumulative -->
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTimeSeries -->
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Cumulative">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/MeasureType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure type of cumulative data</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTimeSeries">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time series of cumulative data</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal -->
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotalTimeSeries -->
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Cumulative"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure type where data is the running sum</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotalTimeSeries">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTimeSeries"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time series of running sum</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous -->
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/InstantaneousTimeSeries -->
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/MeasureType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure type where data is the measurement value at each time step</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/InstantaneousTimeSeries">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time series where data is the measurement value at each time step</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/MeasureType -->
+    <!-- https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulativeTimeSeries -->
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/MeasureType">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The type of data measure</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative -->
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Cumulative"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure type where data is cumulative between time steps</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulativeTimeSeries">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTimeSeries"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time series where data is cumulative between time steps</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:Class>
     
