@@ -14,7 +14,7 @@ TIME = 'https://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
-TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
+TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 UOM = 'http://theworldavatar.com/resource/ontouom/'
 OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
 OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
