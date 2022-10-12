@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -195,6 +197,10 @@ public class DockerClientTest {
     @Test
     public void testExecuteCommandIOFromString() {
 
+        Assume.assumeFalse(
+                "Passing a non-null value to ComplexCommand::withInputStream doesn't work when calling Docker via the Windows named pipe.",
+                SystemUtils.IS_OS_WINDOWS);
+
         ByteArrayInputStream inputStream = new ByteArrayInputStream(TEST_MESSAGE.getBytes());
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -210,6 +216,10 @@ public class DockerClientTest {
 
     @Test
     public void testExecuteCommandIOFromFile() {
+
+        Assume.assumeFalse(
+                "Passing a non-null value to ComplexCommand::withInputStream doesn't work when calling Docker via the Windows named pipe.",
+                SystemUtils.IS_OS_WINDOWS);
 
         InputStream inputStream = DockerClientTest.class.getResourceAsStream("testFile.txt");
 
