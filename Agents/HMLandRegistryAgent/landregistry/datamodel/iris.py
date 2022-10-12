@@ -44,6 +44,11 @@ LRPPI_DATE = LRPPI + 'transactionDate'
 
 ###--- External IRIs ---###
 
+# Concepts
+RDF_TYPE = RDF + 'type'
+RDFS_COMMENT = RDFS + 'comment'
+RDFS_LABEL = RDFS + 'label'
+
 # Data types
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
