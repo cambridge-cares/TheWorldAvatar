@@ -56,7 +56,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
 
 /**
  * This class allows to establish connection with remote knowledge
@@ -85,11 +86,15 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteStoreClient implements StoreClientInterface {
+public class RemoteStoreClient implements TripleStoreClientInterface {
 
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
+
+    //Connection and Statement objects
+    Connection conn;
+    Statement stmt;
 
     private String queryEndpoint;
     private String updateEndpoint;
@@ -318,15 +323,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is empty.");
-        }
-        if (isConnectionUpdateUrlValid(connectionUrl)) {
             return executeUpdate(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
-        }
     }
 
     /**
@@ -350,15 +347,17 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        Connection conn = null;
-        Statement stmt = null;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
-            return stmt.executeUpdate(query);
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
+            }
+            if (isConnectionUpdateUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                return stmt.executeUpdate(query);
+            } else {
+                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is not valid.");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
@@ -427,14 +426,14 @@ public class RemoteStoreClient implements StoreClientInterface {
     /**
      * Excute sparql query
      *
-     * @param sparql
+     * @param query
      * @return JSONArray as String
      */
     @Override
 	public String execute(String query) {
         JSONArray result = executeQuery(query);
         if (result == null) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: sparql query result is null.");
+            throw new JPSRuntimeException("RemoteStoreClient: sparql query result is null.");
         } else {
             return result.toString();
         }
@@ -448,15 +447,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
-        }
-        if (isConnectionQueryUrlValid(connectionUrl)) {
-            return executeQuery(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
-        }
+        return executeQuery(this.query);
     }
 
     /**
@@ -468,17 +459,19 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results = new JSONArray();
-        Connection conn = null;
-        Statement stmt = null;
+        JSONArray results;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
-            java.sql.ResultSet rs = stmt.executeQuery(query);
-            results = convert(rs);
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+            }
+            if (isConnectionQueryUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                java.sql.ResultSet rs = stmt.executeQuery(query);
+                results = StoreClientHelper.convert(rs);
+            } else {
+                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
@@ -520,7 +513,7 @@ public class RemoteStoreClient implements StoreClientInterface {
                 conn.end();
             }
         } else {
-            throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+            throw new JPSRuntimeException("RemoteStoreClient: client not initialised.");
         }
     }
 
@@ -541,6 +534,20 @@ public class RemoteStoreClient implements StoreClientInterface {
         return builder.build();
     }
 
+    /**
+     * Establishes connection to triple store and sets the Statement Object
+     */
+    protected void connect(String connectionUrl){
+        try {
+            if (this.conn == null || this.conn.isClosed()) {
+                RemoteEndpointDriver.register();
+                conn = DriverManager.getConnection(connectionUrl);
+                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            }
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
     /**
      * Generates the URL of the remote data repository's EndPoint, which<br>
      * might require authentication either to perform a data retrieval or<br>
@@ -596,56 +603,6 @@ public class RemoteStoreClient implements StoreClientInterface {
         return sb.toString();
     }
 
-    /**
-     * Converts query results into JSON.
-     *
-     * @param rs
-     * @return results in JSON format
-     * @throws SQLException
-     * @throws JSONException
-     */
-    private JSONArray convert(java.sql.ResultSet rs) throws SQLException, JSONException {
-        JSONArray json = new JSONArray();
-        java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-        while (rs.next()) {
-            int numColumns = rsmd.getColumnCount();
-            JSONObject obj = new JSONObject();
-            for (int i = 1; i < numColumns + 1; i++) {
-                String column_name = rsmd.getColumnName(i);
-                if (rsmd.getColumnType(i) == java.sql.Types.ARRAY) {
-                    obj.put(column_name, rs.getArray(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BIGINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BOOLEAN) {
-                    obj.put(column_name, rs.getBoolean(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BLOB) {
-                    obj.put(column_name, rs.getBlob(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DOUBLE) {
-                    obj.put(column_name, rs.getDouble(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.FLOAT) {
-                    obj.put(column_name, rs.getFloat(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.INTEGER) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.NVARCHAR) {
-                    obj.put(column_name, rs.getNString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.VARCHAR) {
-                    obj.put(column_name, rs.getString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TINYINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.SMALLINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DATE) {
-                    obj.put(column_name, rs.getDate(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP) {
-                    obj.put(column_name, rs.getTimestamp(column_name));
-                } else {
-                    obj.put(column_name, rs.getObject(column_name));
-                }
-            }
-            json.put(obj);
-        }
-        return json;
-    }
 
     /**
      * Checks the validity of the URL generated for connecting to a remote<p>
@@ -822,7 +779,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * Get rdf content from store. Performs a construct query on the store and
      * returns the model as a string.
      *
-     * @param graphName (if any)
+     * @param resourceUrl (if any)
      * @param accept
      * @return String
      */
