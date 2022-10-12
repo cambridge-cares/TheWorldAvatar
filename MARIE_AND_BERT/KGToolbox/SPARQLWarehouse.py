@@ -1,3 +1,19 @@
+ONTOCOMPCHEM_HANDSHAKE = """
+PREFIX oc:  <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT   ?ocIRI 
+WHERE {
+      ?ocIRI oc:hasUniqueSpecies ?species .
+} LIMIT 10 
+"""
+
+PUBCHEM_HANDSHAKE = """
+SELECT ?x 
+WHERE {
+    ?x ?y ?z . 
+} LIMIT 10 
+"""
+
+
 ONTOCOMPCHEM_ALL_SPEICES = """
 PREFIX oc:  <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
 SELECT ?species ?ocIRI 

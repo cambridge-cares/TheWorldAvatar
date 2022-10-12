@@ -6,19 +6,15 @@ $('document').ready(function(){
 	run_entity_linking_test()
 	run_score_model()
 	run_value_lookup()
-	   var promises = [];
-       make_handshake("pubchem", "json", update_status, promises);
-       make_handshake("ontocompchem", "json", update_status, promises);
+	run_handshake_pubchem()
+	run_handshake_ontocompchem()
+
     // =================== search button and enter in input field =======
     $('#btn_update').click(function (e){
     	console.log('Making handshakes')
-        make_handshake("pubchem", "json", update_status, promises);
-        make_handshake("ontocompchem", "json", update_status, promises);
-        	$.when.apply($, promises).then(function() {
-		// Revert button to search icon
-	}, function() {
-		// Error occurred, dealt with elsewhere
-	});
+ 		run_handshake_pubchem()
+		run_handshake_ontocompchem()
+
     });
 
     $('#btn_full_test').click(function (e){
@@ -70,22 +66,18 @@ function run_value_lookup(){
   	}});
 }
 
-
-
-function update_status(target, currentdate){
-	console.log('Got the handshake', target)
-	let element = $("#" + target + '_states')
-	console.log(element)
-	element.html('Running        <br/>   ' + currentdate)
-	element.css('color', 'green')
+function run_handshake_pubchem(){
+	console.log('Making handshake to pubchem')
+	$.ajax({url: "/hand_shake_pubchem", success: function(result){
+    	$("#pubchem_states").html(get_time() + "<br/>" +result);
+  	}});
 }
 
-function update_error(target){
-	console.log('Houston, we have a problem')
-	let element = $("#" + target + '_states')
-	console.log(element)
-	element.html('Not running    <br/>       ' + currentdate)
-	element.css('color', 'red')
+function run_handshake_ontocompchem(){
+	console.log('Making handshake to ontocompchem')
+	$.ajax({url: "/hand_shake_ontocompchem", success: function(result){
+    	$("#ontocompchem_states").html(get_time() + "<br/>" +result);
+  	}});
 }
 
 
@@ -99,32 +91,3 @@ function get_time(){
                 + currentdate.getSeconds();
     return datetime
 }
-
-function make_handshake(target, resultType, successFunction, promises){
-
-	let datetime = get_time()
-	let url = null
-	if (target === "pubchem"){
-		url = "http://www.theworldavatar.com/blazegraph/namespace/CleanPubChem/sparql"
-	}
-	else{
-		url = "http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql"
-	}
-
-	promises.push($.ajax({
-		url: url,
-		dataType: resultType,
-		timeout: (1000 * 60),
-		success: function (data) {
-			successFunction(target, datetime);
-			asking--;
-		},
-		error: function (xhr, ajaxOptions, thrownError) {
-			update_error(target)
-			console.log(xhr.status);
-			console.log(thrownError);
-			asking--;
-		}
-	}));
-}
-

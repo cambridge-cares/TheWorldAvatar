@@ -1,4 +1,3 @@
-
 import json
 import os
 import pickle
@@ -15,6 +14,7 @@ from Marie.Util.Models.ModelBuilder_Score_Pretrained_BERT_removed_eh import Scor
 from Marie.Util.location import DEPLOYMENT_DIR, DATA_DIR
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.Logging import MarieLogger
+import KGToolbox.SPARQLHandshake as sparqlHandshake
 
 
 class PubChemEngine:
@@ -195,8 +195,7 @@ class PubChemEngine:
             return f"<h2>The test failed! {len(wrong_questions)} out of {len(test_questions)} </h2> <br/> The failed questions are: <br/>" + "<hr/><br/> - ".join(
                 wrong_questions)
 
-    def handshake_others(self,target):
-        
+
 
 
 if __name__ == '__main__':

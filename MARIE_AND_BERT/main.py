@@ -5,6 +5,7 @@ import json
 from flask import Flask, request
 from flask import render_template, send_from_directory
 from Marie.Util.Logging import MarieLogger
+import KGToolbox.SPARQLHandshake as handshake
 
 logger = MarieLogger()
 
@@ -90,7 +91,21 @@ def test_value_lookup():
     return my_pubchem_engine.test_value_lookup()
 
 
-@app.route('/hand_shake_with')
+@app.route('/hand_shake_pubchem')
+def test_hand_shake_pubchem():
+    if handshake.handshake_pubchem():
+        return "Success: Pubchem endpoint is running properly"
+    else:
+        return "Error: Pubchem endpoint is NOT running properly"
+
+
+@app.route('/hand_shake_ontocompchem')
+def test_hand_shake_ontocompchem():
+    if handshake.handshake_ontocompochem():
+        return "Success: OntoCompchem endpoint is running properly"
+    else:
+        return "Error: OntoCompchem endpoint is NOT running properly"
+
 
 if __name__ == "__main__":
     # Only for debugging while developing
