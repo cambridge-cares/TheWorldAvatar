@@ -196,8 +196,10 @@ The following steps refer to the Building Matching agent (on branch `1376-dev-bu
     > epc_endpoint: http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql
 
 2) Build and start the agent as Docker container by running the following command within the directory where the [Building Matching Readme] is located. Please note that your github username and access token need to be provided as single-word text files `repo_username.txt` and `repo_password.txt` in the [credentials] folder of the Building Matching agent. (Maybe a `--build` flag needs to be added to the docker compose command to force agent rebuild in case a previous version has been used before.)
-    ```
+    ```bash
     docker-compose up -d
+    # To force rebuilding of image before deploying
+    docker-compose up --build -d
     ```
 
 3) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
@@ -248,8 +250,8 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- files -->
-[Dockerfile]: Dockerfile
-[docker compose file]: docker-compose.yml
-[resources]: resources
-[stack.sh]: stack.sh
-[example request]: resources\matching_agent\HTTPRequest_MatchingAgent.http
+[Dockerfile]: ./Dockerfile
+[docker compose file]: ./docker-compose.yml
+[resources]: ./resources
+[stack.sh]: ./stack.sh
+[example request]: ./resources/matching_agent/HTTPRequest_MatchingAgent.http
