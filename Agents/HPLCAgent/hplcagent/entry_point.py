@@ -29,6 +29,7 @@ def create_app():
         fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         # logger_name='prod'
+        dry_run=hplc_agent_config.DRY_RUN,
         max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
         email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
         email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX,

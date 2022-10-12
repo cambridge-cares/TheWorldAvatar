@@ -1,4 +1,5 @@
 from datetime import datetime
+import shutil
 import glob
 import time
 import os
@@ -18,6 +19,7 @@ class HPLCAgent(DerivationAgent):
         hplc_report_container_dir: str,
         current_hplc_method: str,
         hplc_report_file_extension: str,
+        dry_run: bool=True,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -26,6 +28,7 @@ class HPLCAgent(DerivationAgent):
         self.hplc_report_container_dir = hplc_report_container_dir
         self.current_hplc_method = current_hplc_method
         self.hplc_report_file_extension = hplc_report_file_extension
+        self.dry_run = dry_run
 
         # Initialise the sparql_client
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
@@ -57,6 +60,15 @@ class HPLCAgent(DerivationAgent):
             rxn_exp_iri = derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT)[0]
         except Exception as e:
             self.logger.error(e)
+
+        # If the agent in in dry_run mode, copy the dry_run_hplc_report_file to the same directory as the real report files
+        # TODO [next iteration] a better design is to separate the dry run report from the real report files
+        if self.dry_run:
+            copy_dry_run_file_to_report_folder(
+                file_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dry_run', 'dry_run_hplc_report_file.'+self.hplc_report_file_extension),
+                target_folder=self.hplc_report_container_dir,
+                extension=self.hplc_report_file_extension,
+            )
 
         hplc_report_detected = None
         while not hplc_report_detected:
@@ -162,6 +174,12 @@ class HPLCAgent(DerivationAgent):
         )
 
         self.logger.info("Monitor local report folder job is scheduled with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
+
+
+def copy_dry_run_file_to_report_folder(file_path, target_folder, extension):
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+    shutil.copy(file_path, os.path.join(target_folder,f'dry_run_{str(uuid.uuid4())}.{extension}'))
 
 
 # Show an instructional message at the HPLCInputAgent servlet root

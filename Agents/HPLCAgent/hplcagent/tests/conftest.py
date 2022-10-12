@@ -206,6 +206,7 @@ def create_hplc_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
+        dry_run:bool=False,
     ):
         hplc_agent_config = config_hplc_agent(HPLC_AGENT_ENV)
         hplc_agent = HPLCAgent(
@@ -214,6 +215,7 @@ def create_hplc_agent():
             hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
             current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
             hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
+            dry_run=dry_run,
             register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
