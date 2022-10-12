@@ -60,11 +60,11 @@ The required steps are detailed in the [py4jps] documentation and already includ
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
 # Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
-build_py4jps_resources.sh
+bash build_py4jps_resources.sh
 # Buildings the agent Docker image and pushing it
-./stack.sh build
+bash ./stack.sh build
 # Deploying the agent (using pulled image)
-./stack.sh start <STACK NAME>
+bash ./stack.sh start <STACK NAME>
 ```
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
