@@ -1,13 +1,10 @@
 import os
-from random import random
-from random import uniform
 
-import numpy as np
 import pandas
 import torch
 from torch import nn
 
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
 from Training.Embedding.TransE_Trainer import Trainer as TransETrainer
 

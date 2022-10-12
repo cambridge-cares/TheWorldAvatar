@@ -95,6 +95,9 @@ class StandAloneBERT(nn.Module):
         pooled_output = self.bert(input_ids=input_ids.to(self.device),
                                   attention_mask=attention_mask.to(self.device),
                                   return_dict=False)[1]
+
+
+
         dropout_output = self.dropout(pooled_output)
         linear_output = self.linear(dropout_output)
         distance = self.distance(linear_output, y)

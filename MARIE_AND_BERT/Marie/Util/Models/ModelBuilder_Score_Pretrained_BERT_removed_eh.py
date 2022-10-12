@@ -1,8 +1,4 @@
-import datetime
-import json
 import sys
-import time
-from itertools import permutations
 
 from torch.utils.data import Subset
 
@@ -15,8 +11,7 @@ import torch.utils.data
 from torch import nn, optim
 from torch.nn import MarginRankingLoss
 from tqdm import tqdm
-from transformers import BertModel, BertTokenizer
-from Marie.Util.Models.ScoringModel_Dataset import Dataset
+from Marie.Util.Dataset.ScoringModel_Dataset import Dataset
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR
 from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
 from Marie.Util.Logging import MarieLogger

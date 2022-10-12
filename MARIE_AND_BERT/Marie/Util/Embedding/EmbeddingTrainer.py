@@ -3,7 +3,7 @@ import random
 import torch
 from tqdm import tqdm
 
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
 
 

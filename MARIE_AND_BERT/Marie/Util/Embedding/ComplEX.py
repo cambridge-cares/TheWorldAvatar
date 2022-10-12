@@ -1,15 +1,9 @@
-import os
-import random
-
 import torch
 from torch import nn
 from torch.nn import Embedding
 from torch.nn.init import xavier_uniform_
-from tqdm import tqdm
 
 from Marie.Util.Embedding.EmbeddingTrainer import Trainer
-from Marie.Util.Models.TransE_Dataset import Dataset
-from Marie.Util.location import DATASET_DIR, DATA_DIR, EMBEDDING_DIR
 
 
 class ComplEX(nn.Module):

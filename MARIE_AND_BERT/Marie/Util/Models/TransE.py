@@ -1,13 +1,10 @@
 import os
-from random import random
-from random import uniform
 
-import numpy as np
 import pandas
 import torch
 from torch import nn
 
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
 
 
@@ -97,7 +94,7 @@ class TransE(nn.Module):
         where the loss is 0. if x2 < x1, then the value will be the drift ...
         therefore, the distance must be normalized into a [0,1] space
         '''
-
+        # CID1	charge	CID3_charge
         return (head + rel - tail).norm(p=self.norm, dim=1).to(self.device)
 
     def predict(self, triplets: torch.LongTensor):

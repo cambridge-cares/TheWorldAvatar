@@ -1,19 +1,17 @@
 import json
 import random
 import sys
-from os.path import exists
 
 sys.path.append('../../../')
 
 from torch.optim.lr_scheduler import ExponentialLR
 import os
 import torch
-import pandas as pd
 from torch.utils import tensorboard
 from tqdm import tqdm
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.TransE import TransE
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 
 
 class Trainer:
