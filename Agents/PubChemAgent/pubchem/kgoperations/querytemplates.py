@@ -113,3 +113,14 @@ def test_data_query():
     } LIMIT 10
     """
     return query
+
+def test_data_insert(OsIRI):
+    query = """
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    INSERT DATA
+    { 
+      <http://example/book10> dc:title "A very new book" ;
+                             dc:creator "Jethro Akroyd" .
+    }
+    """
+    return query
