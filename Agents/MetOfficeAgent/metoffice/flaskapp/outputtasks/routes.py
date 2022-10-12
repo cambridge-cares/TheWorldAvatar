@@ -88,7 +88,7 @@ def api_retrieve_all_stations():
     tnow = dt.datetime.today()
     tnow = dt.datetime(tnow.year, tnow.month, tnow.day, tnow.hour)
     try:
-        diff = dt.timedelta(days=int(request.args['daysBack']))
+        diff = dt.timedelta(days=int(query['daysBack']))
     except Exception:
         #logger.info('Duration to retrieve could not be determined, using default.')
         diff = dt.timedelta(days=14)
