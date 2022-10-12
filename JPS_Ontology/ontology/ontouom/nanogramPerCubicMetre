@@ -28,7 +28,7 @@
 
   <!-- Micrograms Per Cubic Metre Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/nanogramPerCubicMetre">
+  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/nanogramPerCubicMetre">
     <rdfs:label xml:lang="en">nanogram per cubic metre</rdfs:label>
     <rdfs:comment xml:lang="en">Nanogram per cubic metre is a unit of (mass) concentration defined as nanogram divided by cubic metre.</rdfs:comment>
     <om:longcomment>Nanogram per cubic metre is a unit of (mass) concentration defined as nanogram divided by cubic metre. It is a derived unit in the International System of Units.</om:longcomment>
@@ -37,7 +37,7 @@
     <om:alternativeSymbol>ng·m-3</om:alternativeSymbol>
     <om:hasNumerator rdf:resource="&om;nanogram"/>
     <om:hasDenominator rdf:resource="&om;cubicMetre"/>
-    <om:hasDimension rdf:resource="&om;MassOfSubstanceConcentration-Dimension"/>
+    https://www.theworldavatar.com/kg/ontouom/
   </om:UnitDivision>
 
 </rdf:RDF>

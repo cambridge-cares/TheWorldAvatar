@@ -28,13 +28,13 @@
 
   <!-- Amount Of Money Per Area Upper Ontology -->
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerAreaUnit">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerAreaUnit">
     <rdfs:label xml:lang="en">amount of money per area unit</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Unit"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:oneOf rdf:parseType="Collection">
-          <om:Unit rdf:about="http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm"/>
+          <om:Unit rdf:about="https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm"/>
         </owl:oneOf>
       </owl:Class>
     </owl:equivalentClass>
