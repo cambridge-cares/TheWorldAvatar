@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='epcdata',
+    name='landregistry',
     version='0.0.1',
     author='Markus Hofmeister',
     license='MIT',
@@ -14,12 +14,10 @@ setup(
     install_requires= [
         'apscheduler~=3.9',
         'docopt~=0.6',
-        'flask~=2.1',
-        'geojson-rewind~=1.0',
+        'flask~=2.2',
         'JayDeBeApi~=1.2',
         'pandas~=1.3',
-        'pyproj~=3.3',
         'py4jps>=1.0.26', 
-        'requests~=2.27'
+        'requests~=2.28'
     ]
 )
