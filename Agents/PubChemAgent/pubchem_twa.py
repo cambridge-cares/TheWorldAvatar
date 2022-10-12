@@ -1,9 +1,10 @@
 from unittest import installHandler
 from pubchem.kgoperations.getkgdata import *
 from pubchem.kgoperations.insertkgdata import *
-from pubchem.pug.pubchem_api import *
+from pubchem.pug import pug_api
 
 def query_with_inchi(inchi):
+    pug_access = pug_api()
     IRI = get_iri_data(inchi)
     print("The IRI is:", IRI)
     if IRI:
@@ -19,8 +20,8 @@ def query_with_inchi(inchi):
         print(data)
         return (data, 'TWA')
     else:
-        data = pubchem_api(inchi)
-        print(data)
+        data = pug_access.pug_request('InChI', inchi)
+        print(pug_access.get_props(data))
         return (data, 'PubChem')
         
 if __name__== '__main__':

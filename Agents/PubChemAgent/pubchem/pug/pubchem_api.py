@@ -7,7 +7,13 @@ class pug_api():
         self.input_namespace_dict = {'InChI' : 'inchi/', 'SMILES' : 'smiles/'}
         self.output_suffix_dict = {'InChI' : '?inchi=', 'SMILES' : '?smiles='}
 
-    def pug_request(self, key: str, value: str) -> Tuple[str,str]:    
+    def pug_request(self, key: str, value: str) -> Tuple[str,str]:
+        
+        # replace the # in the SMILES string with its encoing to correctly send the SMILES string via HTTP request
+        if key == 'SMILES': value=value.replace('#','%23')         
+
+        #*************PUG API Definitions****************#
+
         # https://pubchem.ncbi.nlm.nih.gov/rest/pug/<input specification>/<operation specification>/[<output specification>][?<operation_options>]
         pubchem_domain = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/'
         # <input specification>:
@@ -23,7 +29,7 @@ class pug_api():
         output= 'JSON/' # <output specification> = XML | ASNT | ASNB | JSON | JSONP [ ?callback=<callback name> ] | SDF | CSV | PNG | TXT
         suffix = self.output_suffix_dict.get(key)
         link = pubchem_domain+input_domain+input_namespace+operation_property+property_tag+output+suffix+input_identifier
-        print(link)
+
         data = requests.get(link)
         file = json.loads(data.text)
         return file
@@ -59,7 +65,7 @@ if __name__ == "__main__":
 
     for smiles in ['C1CC2=CC=CC=C2C=C1', 
                   'CCC#CC1=CC=CC=C1', 
-                  'C1=CC2C=CC3C2C1C=C3']:
+                  'C#CC1=CC(=C2C=CC3=C(C=C(C4=C3C2=C1C=C4)C#C)C#C)C#C']:
         data = pug_access.pug_request('SMILES', smiles)
         cid = pug_access.get_cid(data)
         props = pug_access.get_props(data)
