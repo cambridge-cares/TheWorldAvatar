@@ -155,12 +155,29 @@ The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml bu
 - A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
 
 
-## 4.3) Energy Performance Certificate Agent
+## 4.3) Energy Performance Certificate (EPC) Agent
 
+> The following steps refer to commit `9f432c74d09bd790251ad0e1b5d8273b81f9fecc` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent`
+
+Build and deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+
+1) Initialise namespace for EPC building data
+2) Instantiate all EPC building data
+3) Update geospatial representation of buildings in OntoBuiltEnv namespace
+   (**Please note:** This requires the Building Matching Agent to be run first!)
+
+- A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
 
 
 ## 4.4) Building Matching Agent
 
+> The following description refers to commit `79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent`
+
+The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README].
+
+After the Building instances are matched, step 3) from the EPC Agent can be performed.
+
+- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 3 from the EPC agent)
 
 
 ## 4.5) Property Sales Instantiation Agent
@@ -194,4 +211,7 @@ The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml bu
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
+[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
+
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 
