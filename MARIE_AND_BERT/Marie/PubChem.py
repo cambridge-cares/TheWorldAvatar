@@ -14,7 +14,6 @@ from Marie.Util.Models.ModelBuilder_Score_Pretrained_BERT_removed_eh import Scor
 from Marie.Util.location import DEPLOYMENT_DIR, DATA_DIR
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.Logging import MarieLogger
-import KGToolbox.SPARQLHandshake as sparqlHandshake
 
 
 class PubChemEngine:
