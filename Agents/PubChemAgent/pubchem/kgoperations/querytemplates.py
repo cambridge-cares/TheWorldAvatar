@@ -1,5 +1,4 @@
 from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
-from pubchem.kgoperations.querykg import querykg
 import json
 
 def spec_inchi_query(inchi_string):

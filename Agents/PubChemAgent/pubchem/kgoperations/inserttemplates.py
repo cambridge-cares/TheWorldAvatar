@@ -8,7 +8,7 @@ def test_data_insert():
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     INSERT DATA
     { 
-      <http://example/book2> dc:title "CoMo Book" ;
+      <http://example/book10> dc:title "CoMo Book" ;
                              dc:creator "A.Naseri" .
     }
     """

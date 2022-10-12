@@ -2,11 +2,13 @@ import requests
 from typing import Optional, Tuple
 import json
 
+
 class pug_api():
     def __init__(self):
         self.input_namespace_dict = {'InChI' : 'inchi/', 'SMILES' : 'smiles/'}
         self.output_suffix_dict = {'InChI' : '?inchi=', 'SMILES' : '?smiles='}
 
+    # HTTP request link builder and executer
     def pug_request(self, key: str, value: str) -> Tuple[str,str]:
         
         # replace the # in the SMILES string with its encoing to correctly send the SMILES string via HTTP request
@@ -33,7 +35,8 @@ class pug_api():
         data = requests.get(link)
         file = json.loads(data.text)
         return file
-    # Method for retrieving PubChem properties in a dictionary
+
+    # Method for retrieving PubChem properties
     def get_props(self, data : dict) -> dict:
         props_list = data.get('PC_Compounds')[0].get('props')
         props = {}
@@ -46,24 +49,48 @@ class pug_api():
             value = [item.get('value')[key] for key in item.get('value').keys()][0]
             props[key] = value
         return props
-    # Method for retrieving PubChem CID in a dictionary
-    def get_cid(self, data : dict) -> dict:
+
+    # Method for retrieving PubChem CID 
+    def get_cid(self, data : dict) -> dict[str, int]:
         id = data.get('PC_Compounds')[0].get('id')
         return id.get('id')
 
+    # Method for retrieving atom IDs
+    def get_atoms(self, data : dict) -> dict[str , list] :
+        atom_ids = data.get('PC_Compounds')[0].get('atoms')
+        return atom_ids
+
+    # Method for retrieving atom bonds
+    def get_bonds(data : dict) -> dict[str, list]:
+        atom_bonds = data.get('PC_Compounds')[0].get('bonds')
+        return atom_bonds 
+
+
+    #************Future Development***************#
+    # Methods for atom coordinations, charges, and counts
+    def get_coords(data : dict):
+        pass
+
+    def get_charge(data : dict):
+        pass
+
+    def get_count(data : dict):
+        pass  
 
 if __name__ == "__main__":
     pug_access = pug_api()
 
-    for inchi in ['InChI=1/C10H10/c1-2-6-10-8-4-3-7-9(10)5-1/h1-3,5-7H,4,8H2', 
+    for inchi in ['InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H', 
                   'InChI=1/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3', 
                   'InChI=1/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
         data = pug_access.pug_request('InChI', inchi)
         cid = pug_access.get_cid(data)
         props = pug_access.get_props(data)
-        print(cid['cid'], props['Preferred IUPAC Name'])
+        atom_id = pug_access.get_atoms(data)
 
-    for smiles in ['C1CC2=CC=CC=C2C=C1', 
+        print(cid['cid'], props['Preferred IUPAC Name'], '\n', atom_id)
+
+    for smiles in ['C1=CC=CC=C1', 
                   'CCC#CC1=CC=CC=C1', 
                   'C#CC1=CC(=C2C=CC3=C(C=C(C4=C3C2=C1C=C4)C#C)C#C)C#C']:
         data = pug_access.pug_request('SMILES', smiles)
