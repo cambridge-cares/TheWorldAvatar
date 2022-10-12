@@ -75,6 +75,12 @@ class VapourtecAgent(DerivationAgent):
         else:
             self.logger.info("FlowCommander instance is already connected at IP address: %s" % (self.vapourtec_ip_address))
 
+    def reconnect_flowcommander_exe(self):
+        # Disconnect first then try to connect
+        FlowCommander.Disconnect(self.fc)
+        self.fc_exe_connected = False
+        self.connect_flowcommander_exe()
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Get ReactionExperiment dataclasses instances from the KG
         list_rxn_exp_instance = self.sparql_client.getReactionExperiment(
@@ -217,6 +223,7 @@ class VapourtecAgent(DerivationAgent):
 
             # TODO [nice-to-have, limitation of current API] send warnings if the liquid level of any vials is lower than the warning level
 
+    @DerivationAgent.send_email_when_exception(func_return_value=False)
     def monitor_vapourtec_rs400_state(self):
         print("=======================")
         try:
@@ -228,8 +235,8 @@ class VapourtecAgent(DerivationAgent):
         except Exception as e:
             self.logger.error(e, stack_info=True, exc_info=True)
             try:
-                # self.fc = FlowCommander.Connect(self.vapourtec_ip_address)
-                self.connect_flowcommander_exe()
+                # Reconnect to FlowCommander instance opened at the given IP address
+                self.reconnect_flowcommander_exe()
                 self.update_flowcommander_state()
             except Exception as e1:
                 self.logger.error(e1, stack_info=True, exc_info=True)
