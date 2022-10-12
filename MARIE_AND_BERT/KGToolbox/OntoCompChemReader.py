@@ -1,19 +1,9 @@
 import json
 import os
-import urllib.request
-import urllib.response
-import logging
-from http.client import InvalidURL
-from pprint import pprint
-from urllib.error import HTTPError, URLError
-import urllib.parse
-import urllib.request
 
 import pandas
-import urllib3
 from SPARQLWrapper import SPARQLWrapper, JSON
-from KGToolbox.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, ONTOCOMPCHEM_ALL_SPEICES, \
-    ONTOCOMPCHEM_ALL_CALCULATION_QUERY
+from Marie.Util.Web.SPARQLWarehouse import ONTOCOMPCHEM_ALL_SPEICES
 from Marie.Util.location import ARCHIVE_DIR
 
 

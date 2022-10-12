@@ -1,5 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from KGToolbox.SPARQLWarehouse import ONTOCOMPCHEM_HANDSHAKE, PUBCHEM_HANDSHAKE
+from Marie.Util.Web.SPARQLWarehouse import ONTOCOMPCHEM_HANDSHAKE, PUBCHEM_HANDSHAKE
 
 
 def handshake(namespace="ontocompchem", query=ONTOCOMPCHEM_HANDSHAKE):
