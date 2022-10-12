@@ -87,7 +87,7 @@ public class DifferenceAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				diffAgent.monitorAsyncDerivations(Config.agentIriDifference);
+				diffAgent.monitorAsyncDerivations(Config.agentIriDifference, Config.periodAgentDifference);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}
