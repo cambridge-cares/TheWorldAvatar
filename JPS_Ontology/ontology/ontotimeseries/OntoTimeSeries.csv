@@ -10,4 +10,9 @@ AverageTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the cal
 CumulativeTimeSeries,Class,TimeSeries,IS-A,,,,Time series of cumulative data,https://www.theworldavatar.com/kg/ontotimeseries/
 CumulativeTotalTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series of running sum,https://www.theworldavatar.com/kg/ontotimeseries/
 StepwiseCumulativeTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series where data is cumulative between time steps,https://www.theworldavatar.com/kg/ontotimeseries/
+http://www.w3.org/2006/time#Duration,Class,http://www.w3.org/2006/time#TemporalDuration,IS-A,,,,,http://www.w3.org/2006/time#
+http://www.w3.org/2006/time#TemporalUnit,Class,http://www.w3.org/2006/time#TemporalDuration,IS-A,,,,,http://www.w3.org/2006/time#
+http://www.w3.org/2006/time#TemporalDuration,Class,,,,,,,http://www.w3.org/2006/time#
 hasAveragingPeriod,Object Property,,,AverageTimeSeries,http://www.w3.org/2006/time#TemporalDuration,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/
+http://www.w3.org/2006/time#unitType ,Object Property,,,http://www.w3.org/2006/time#GeneralDateTimeDescription UNION http://www.w3.org/2006/time#Duration,http://www.w3.org/2006/time#TemporalUnit,exactly 1,,http://www.w3.org/2006/time#
+http://www.w3.org/2006/time#numericDuration,Data Property,,,http://www.w3.org/2006/time#Duration,Decimal,exactly 1,,http://www.w3.org/2006/time#
