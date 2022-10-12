@@ -9,8 +9,8 @@
 import json
 
 import agentlogging
-from epcdata.errorhandling.exceptions import KGException
-from epcdata.kgutils.javagateway import jpsBaseLibGW
+from landregistry.errorhandling.exceptions import KGException
+from landregistry.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
