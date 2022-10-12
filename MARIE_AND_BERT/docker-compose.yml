@@ -3,6 +3,3 @@ services:
   web:
     build: .
     image: marie:test
-    container_name: marie
-    ports:
-      - "8080:80"
