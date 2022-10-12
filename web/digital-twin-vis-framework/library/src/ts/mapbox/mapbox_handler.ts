@@ -29,7 +29,9 @@ class MapHandler_MapBox extends MapHandler {
         if(!newOptions["container"]) newOptions["container"] = "map"
         if(!newOptions["center"]) newOptions["center"] = [-0.1280432939529419, 51.50805967151767];
         if(!newOptions["zoom"]) newOptions["zoom"] = 16;
-        if(!newOptions["style"]) newOptions["style"] = "mapbox://styles/mapbox/light-v10";
+
+        // Set the default style imagery
+        newOptions["style"] = getDefaultImagery();
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
             // Create new map (note the settings used here may be overriden when the map is loaded with data).
@@ -51,17 +53,10 @@ class MapHandler_MapBox extends MapHandler {
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
-            delete newOptions["style"];
             delete newOptions["container"];
 
             MapHandler.MAP.jumpTo(newOptions);
         }
-
-        // Store terrain URL
-        if(mapOptions["style"].includes("light")) window.terrain = "light";
-        if(mapOptions["style"].includes("dark")) window.terrain = "dark";
-        if(mapOptions["style"].includes("outdoors")) window.terrain = "outdoors";
-        if(mapOptions["style"].includes("satellite")) window.terrain = "satellite";
 
         // Load custom search terms
         MapBoxUtils.loadSearchTerms();

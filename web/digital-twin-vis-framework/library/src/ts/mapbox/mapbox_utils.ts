@@ -195,6 +195,26 @@ class MapBoxUtils {
         MapBoxUtils.hideBuildings();
     }
 
+     /**
+     * Generates a JSON object defining the default imagery options if none is provided
+     * by the developer in the settings.json file.
+     */
+      public static generateDefaultImagery() {
+        let imagerySettings = {};
+
+        // Add possible imagery options
+        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v10?optimize=true";
+        imagerySettings["Dark"] = "mapbox://styles/mapbox/light-v10?optimize=true";
+        imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
+        imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
+
+        // Set default imagery to Light
+        imagerySettings["default"] = "Light";
+
+        // Push settings
+        Manager.SETTINGS.putSetting("imagery", imagerySettings);
+    }
+
     /**
      * Hide building outlines provided by MapBox as these may conflict with custom
      * building data.
@@ -209,33 +229,20 @@ class MapBoxUtils {
     }
 
     /**
-     * Reset the camera to a default position.
-     * 
-     * @param {String} mode {"bird", "pitch"}
+     * Reset the camera to default position.
      */
-    public static changeCamera(mode) {
+      public static resetCamera() {
         let mapOptions = MapHandler.MAP_OPTIONS;
+        if(mapOptions == null) return;
 
-        if(mode === "bird") {
-            MapHandler.MAP.flyTo({
-                curve: 1.9,
-                speed: 1.6,
-                pitch: 0.0,
-                bearing: mapOptions["bearing"],
-                zoom: mapOptions["zoom"],
-                center: mapOptions["center"]
-            });
-
-        } else if(mode === "pitch") {
-            MapHandler.MAP.flyTo({
-                curve: 1.9,
-                speed: 1.6,
-                pitch: 65,
-                bearing: mapOptions["bearing"],
-                zoom: mapOptions["zoom"],
-                center: mapOptions["center"]
-            });
-        } 
+        MapHandler.MAP.flyTo({
+            curve: 1.9,
+            speed: 1.6,
+            pitch: mapOptions["pitch"],
+            bearing: mapOptions["bearing"],
+            zoom: mapOptions["zoom"],
+            center: mapOptions["center"]
+        });
     }
 
     /**

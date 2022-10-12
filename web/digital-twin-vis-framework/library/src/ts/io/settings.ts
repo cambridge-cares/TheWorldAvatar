@@ -21,6 +21,18 @@ class Settings {
         let self = this;
         return $.getJSON(settingsFile, function(json) {
             self.settings = json;
+
+            if(self.settings["imagery"] == null) {
+                switch(Manager.PROVIDER) {
+                    case MapProvider.MAPBOX:
+                        MapBoxUtils.generateDefaultImagery();
+                    break;
+
+                    case MapProvider.CESIUM:
+                        CesiumUtils.generateDefaultImagery();
+                    break;
+                }
+            }
         }).fail((error) => {
              throw error;
         });    
@@ -37,6 +49,13 @@ class Settings {
             return this.settings[key];
         }
         return null;
+    }
+
+    /**
+     * Overrides or adds a new setting
+     */
+    public putSetting(key: string, value: Object) {
+        this.settings[key] = value;
     }
 
 }

@@ -25,3 +25,13 @@ async function loadHTML(htmlFile: string) {
         return response.text();
     });
 }
+
+ /**
+ * 
+ * @returns 
+ */
+function getDefaultImagery() {
+    let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+    let defaultSetting = imagerySettings["default"];
+    return imagerySettings[defaultSetting];
+}

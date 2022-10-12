@@ -28,7 +28,7 @@
             "layers": [
                 {
                     "id": "aoi-layer",
-                    "name": "Area of Interest", 
+                    "name": "This layer is the area of interest and has a long name", 
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,

@@ -17,6 +17,8 @@ class CesiumUtils {
      */
     public static isVisible(layerID: string): boolean {
         let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
+        console.log("DATA SOURCES ->");
+        console.log(dataSources);
         if(dataSources === null || dataSources === undefined) return false;
 
         for(let i = 0; i < dataSources.length; i++) {
@@ -64,9 +66,12 @@ class CesiumUtils {
     /**
      * Change the underlying MapBox style.
      * 
-     * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
+     * @param {String} mode 
      */
     public static changeTerrain(mode) {
+        let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+        if(imagerySettings == null) return;
+
         // Find existing base layer
         let baseLayer = null;
         for(let i = 0; i < MapHandler.MAP.imageryLayers.length; i++) {
@@ -87,26 +92,8 @@ class CesiumUtils {
         // Remove base layer
         MapHandler.MAP.imageryLayers.remove(baseLayer, true);
 
-        // Start of URL for imagery tiles
-        let tileURL = "https://api.mapbox.com/styles/v1/" + MapHandler.MAP_USER + "/";
-        switch(mode.toLowerCase()) {
-            default:
-            case "light":
-                tileURL += "cl6p66equ000314pj8v0p60ub";
-            break;
-            case "dark":
-                tileURL += "cl6owj7v2000415q1oj9aq5zq";
-            break;
-            case "outdoors":
-                tileURL += "cl6p69s56000t14p47gpfhg1o";
-            break;
-            case "satellite":
-                tileURL += "cl6p6j16m000415tj1s4wtfi8";
-            break;
-        }
-
-        // Finish tile URL
-        tileURL += "/tiles/256/{z}/{x}/{y}?access_token=" + MapHandler.MAP_API;
+        let tileURL = imagerySettings[mode];
+        if(tileURL == null) return;
 
         // Add our own imagery provider
         let imageryProvider = new Cesium.UrlTemplateImageryProvider({
@@ -118,37 +105,51 @@ class CesiumUtils {
     }
 
     /**
-     * Reset the camera to a default position.
-     * 
-     * @param {String} mode {"bird", "pitch"}
+     * Generates a JSON object defining the default imagery options if none is provided
+     * by the developer in the settings.json file.
      */
-    public static changeCamera(mode) {
+    public static generateDefaultImagery() {
+        let imagerySettings = {};
+
+        // Add possible imagery options
+        imagerySettings["Light"] =
+            "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Dark"] =
+            "https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Outdoors"] =
+            "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Satellite (Raw)"] =
+            "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Satellite (Labelled)"] =
+            "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+
+        // Set default imagery to Dark
+        imagerySettings["default"] = "Dark";
+
+        // Push settings
+        Manager.SETTINGS.putSetting("imagery", imagerySettings);
+    }
+
+    /**
+     * Reset the camera to default position.
+     */
+    public static resetCamera() {
         let mapOptions = MapHandler.MAP_OPTIONS;
+        if(mapOptions == null) return;
 
-        if(mode === "bird") {
-            MapHandler.MAP.camera.flyTo({
-                // @ts-ignore
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
-                orientation: {
-                    // @ts-ignore
-                    heading: Cesium.Math.toRadians(0),
-                    // @ts-ignore
-                    pitch: Cesium.Math.toRadians(-90),
-                    // @ts-ignore
-                    roll: Cesium.Math.toRadians(0)
-                }
-            });
-
-        } else if(mode === "pitch") {
-            MapHandler.MAP.camera.flyTo({
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
-                orientation: {
-                    heading: Cesium.Math.toRadians(30),
-                    pitch: Cesium.Math.toRadians(-45),
-                    roll: Cesium.Math.toRadians(0)
-                }
-            });
-        } 
+        MapHandler.MAP.camera.flyTo({
+            destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
+            orientation: {
+                heading: Cesium.Math.toRadians(mapOptions["heading"]),
+                pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
+                roll: Cesium.Math.toRadians(mapOptions["roll"])
+            }
+        });
     }
 
     /**

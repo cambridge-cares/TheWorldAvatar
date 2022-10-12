@@ -30,10 +30,7 @@ class MapHandler_Cesium extends MapHandler {
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
 
             // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
-            let tileURL = "https://api.mapbox.com/styles/v1/"
-                + MapHandler.MAP_USER
-                + "/cl6owj7v2000415q1oj9aq5zq/tiles/256/{z}/{x}/{y}?access_token="
-                + MapHandler.MAP_API;
+            let tileURL = getDefaultImagery();
 
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
@@ -46,7 +43,8 @@ class MapHandler_Cesium extends MapHandler {
                 projectionPicker: false,
                 fullscreenButton: false,
                 geocoder: false,
-                selectionIndicator: false
+                selectionIndicator: false,
+                sceneModePicker: false
             }); 
 
             // Remove any existing imagery providers and add our own
@@ -74,7 +72,7 @@ class MapHandler_Cesium extends MapHandler {
             handler.setInputAction(event => this.handleMouse(event), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             MapHandler.MAP.camera.setView({
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
+                destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
                 orientation: {
                     heading: Cesium.Math.toRadians(mapOptions["heading"]),
                     pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
@@ -85,7 +83,7 @@ class MapHandler_Cesium extends MapHandler {
 
         } else {
             MapHandler.MAP.camera.setView({
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
+                destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
                 orientation: {
                     heading: Cesium.Math.toRadians(mapOptions["heading"]),
                     pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
@@ -241,27 +239,27 @@ class MapHandler_Cesium extends MapHandler {
             // 2D data from geoserver
             case "wms":
             case "geoserver": {
-                this.addGeoserver(source, layer.id);
+                this.addGeoserver(source, layer);
             }
             break;
 
             // Individual, non-tiled, KML files
             case "kml": {
-                this.addKMLFile(source, layer.id);
+                this.addKMLFile(source, layer);
             }
             break;
 
             // Individual, non-tiled, glTF/glB files
             case "glb":
             case "gltf": {
-                this.addGLTFFile(source, layer.id);
+                this.addGLTFFile(source, layer);
             }
             break;
 
             // 3D tiles
             case "tile":
             case "tiles": {
-                this.addTileset(source, layer.id);
+                this.addTileset(source, layer);
             }
             break;
 
@@ -280,8 +278,9 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data.
      * @param layerID ID of layer upon the map.
      */
-    private addKMLFile(source: Object, layerID: string) {
+    private addKMLFile(source: Object, layer: DataLayer) {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
+        sourceKML["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
 
         // TODO: Investigate if camera and canvas options are actually required here.
         MapHandler.MAP.dataSources.add(
@@ -291,13 +290,13 @@ class MapHandler_Cesium extends MapHandler {
                 canvas: MapHandler.MAP.canvas
             }
         );
-        console.info("Added KML source to map with layer ID: "+ layerID);
+        console.info("Added KML source to map with layer ID: "+ layer.id);
 
         // Cache knowledge of this source, keyed by layer id
-        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
-            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
-        MapHandler_Cesium.DATA_SOURCES[layerID].push(sourceKML);
+        MapHandler_Cesium.DATA_SOURCES[layer.id].push(sourceKML);
     }
 
     /**
@@ -306,7 +305,7 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addGLTFFile(source: Object,  layerID: string) {
+    private addGLTFFile(source: Object,  layer: DataLayer) {
         // Check the position
         let position = source["position"];
         if(position === null || position === undefined) {
@@ -335,17 +334,18 @@ class MapHandler_Cesium extends MapHandler {
             model: {
                 uri: source["uri"],
                 scale: source.hasOwnProperty("scale") ? source["scale"] : 1.0
-            }
+            },
+            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
         };
 
         MapHandler.MAP.entities.add(sourceEntity);
-        console.info("Added glTF/glB source to map with layer ID: "+ layerID);
+        console.info("Added glTF/glB source to map with layer ID: "+ layer.id);
 
         // Cache knowledge of this source, keyed by layer id
-        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
-            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
-        MapHandler_Cesium.DATA_SOURCES[layerID].push(sourceEntity);
+        MapHandler_Cesium.DATA_SOURCES[layer.id].push(sourceEntity);
     }
 
     /**
@@ -354,7 +354,7 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addTileset(source: Object,  layerID: string) {
+    private addTileset(source: Object,  layer: DataLayer) {
         // Check the position (if set)
         let position = source["position"];
         if(position !== null && position !== undefined) {
@@ -365,6 +365,7 @@ class MapHandler_Cesium extends MapHandler {
         // Define tileset options
         let options = {
             url: source["uri"],
+            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
         };
 
         if(position !== null && position !== undefined) options["modelMatrix"] = position;
@@ -372,13 +373,13 @@ class MapHandler_Cesium extends MapHandler {
 
         // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);
-        console.info("Added 3D tileset source to map with layer ID: "+ layerID);
+        console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 
         // Cache knowledge of this source, keyed by layer id
-        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
-            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
-        MapHandler_Cesium.DATA_SOURCES[layerID].push(tileset);
+        MapHandler_Cesium.DATA_SOURCES[layer.id].push(tileset);
     }
 
     /**
@@ -386,7 +387,7 @@ class MapHandler_Cesium extends MapHandler {
      * @param url 
      * @param layerID 
      */
-    private addGeoserver(source: Object, layerID: string) {
+    private addGeoserver(source: Object, layer: DataLayer) {
         // Check the geoserver layer name
         let wmsLayer = source["wmsLayer"];
         if(wmsLayer === null || wmsLayer === undefined) {
@@ -400,17 +401,24 @@ class MapHandler_Cesium extends MapHandler {
                 transparent: source.hasOwnProperty("transparency") ? source["transparency"] : false,
                 format: source.hasOwnProperty("format") ? source["format"] : "image/png"
             },
-            credit: layerID
+            credit: layer.id,
         });
 
         let layers = MapHandler.MAP.imageryLayers;
         layers.addImageryProvider(provider);
 
-        // Cache knowledge of this source, keyed by layer id
-        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
-            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        // Now that it's added, we can hide it (unfortunatly there's no constructor option for this)
+        for(let i = 0; i < layers.length; i++) {
+            if(layers.get(i).imageryProvider === provider) {
+                layers.get(i).show = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+            }
         }
-        MapHandler_Cesium.DATA_SOURCES[layerID].push(provider);
+
+        // Cache knowledge of this source, keyed by layer id
+        if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
+        }
+        MapHandler_Cesium.DATA_SOURCES[layer.id].push(provider);
     }
 
 }

@@ -107,7 +107,7 @@ class TreeHandler {
         let needDeeper = (currentGroup.dataLayers.length > 0 || currentGroup.subGroups.length > 0);
         if(needDeeper) groupHTML += "<ul>";
 
-        // Sort layers in the gropu via name (there may be duplicates)
+        // Sort layers in the group via name (there may be duplicates)
         let sortedLayers = {};
         currentGroup.dataLayers.forEach(layer => {
             if(sortedLayers[layer.name] === null || sortedLayers[layer.name] === undefined) {
@@ -155,16 +155,33 @@ class TreeHandler {
             groupHTML += layerHTML;
 
             // Store if this needs to be prechecked
+            
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    if(value[0] instanceof MapBoxLayer && (<MapBoxLayer> value[0]).isVisible()) {
-                        preCheck.push(dataID);
-                    }
+                    let mbLayer = <MapBoxLayer> value[0];
+
+                    // let dataSources = MapHandler_Cesium.DATA_SOURCES[mbLayer.id];
+                    // if(dataSources == null || dataSources.length === 0) {
+                    //     let visibility = mbLayer.definition["layout"]["visibility"];
+                    //     if(visibility === "visible") preCheck.push(dataID);
+                    // } else {
+                        if(mbLayer.isVisible()) preCheck.push(dataID);
+                    // }
+                    // TODO - CHECK IF THIS WORKS
                 break;
 
                 case MapProvider.CESIUM:
-                    // Cesium layers always visible by default
-                    preCheck.push(dataID);
+                    let csLayer = <CesiumLayer> value[0];
+                    let dataSources = MapHandler_Cesium.DATA_SOURCES[csLayer.id];
+
+                    if(dataSources == null || dataSources.length === 0) {
+                        console.log("NO SOURCE");
+                        let visibility = csLayer.definition["visibility"];
+                        console.log(visibility);
+                        if(visibility == undefined || visibility === "visible") preCheck.push(dataID);
+                    } else {
+                        if(csLayer.isVisible()) preCheck.push(dataID);
+                    }
                 break;
             }
         }
