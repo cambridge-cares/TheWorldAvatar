@@ -15,49 +15,6 @@ def spec_inchi_query(inchi_string):
     """
     return query
 
-def ontocompchem_data_query(ocIRI, osIRI):
-    query = """PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oc:  <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-        PREFIX os:  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX gc:  <http://purl.org/gc/>
-
-        SELECT ?spin_mult ?frequencies ?rot_constants ?sym_number
-        WHERE {
-            <#ocIRI#> oc:hasUniqueSpecies <#osIRI#> ;
-                gc:isCalculationOn ?geomOpt ;
-                gc:isCalculationOn ?geomType ;
-                oc:hasInitialization ?init .
-
-            ?init a oc:InitializationModule ;
-                gc:hasParameter ?method ;
-                gc:hasParameter ?basisSet .
-
-            ?geomOpt a gc:GeometryOptimization ;
-                       gc:hasMolecule ?mol .
-            ?mol oc:hasSpinMultiplicity ?spin_mult .
-
-            ?geomType a oc:GeometryType .
-            ?geomType oc:hasGeometryType ?geomTypeValue .
-
-            OPTIONAL {
-                <#ocIRI#> gc:isCalculationOn ?vibAnal ;
-                    gc:isCalculationOn ?rotConsts ;
-                    gc:isCalculationOn ?rotSym .
-
-                ?vibAnal a gc:VibrationalAnalysis ;
-                        gc:hasResult ?freqResult . 
-
-                ?freqResult oc:hasFrequencies ?frequencies .
-
-                ?rotConsts a oc:RotationalConstants ;
-                        oc:hasRotationalConstants ?rot_constants .
-                ?rotSym a oc:RotationalSymmetry ;
-                        oc:hasRotationalSymmetryNumber ?sym_number .
-            }
-        }""".replace('#ocIRI#',ocIRI).replace('#osIRI#',osIRI)
-    return query
 
 def ontospecies_data_query(osIRI):
     query = """PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -115,7 +72,7 @@ def test_data_query():
     return query
 
 def test_data_insert(OsIRI):
-    query = """
+    insert_str = """
     PREFIX dc: <http://purl.org/dc/elements/1.1/>
     INSERT DATA
     { 
@@ -123,4 +80,29 @@ def test_data_insert(OsIRI):
                              dc:creator "Jethro Akroyd" .
     }
     """
-    return query
+    return insert_str
+
+def pubchem_prop_insert(uuid, cid, props):
+    insert_str = """
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX otk: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+    
+    INSERT DATA
+    {
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> rdf:type os:Species .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_#uuid#> .
+    <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_#uuid#> os:value #Molecular Weight# .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> rdfs:label #Molecular Formula# .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:inChI #Standard InChI# .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:pubChemCID #CID# .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:SMILES #Canonical SMILES# .
+    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:inChIKey #Standard InChI# .
+    }    
+    """.replace('#CID#', cid).replace('#uuid#', uuid)
+    for item in props.keys():
+        insert_str=insert_str.replace('#'+str(item)+'#',str(props.get(item)))
+    
+    return insert_str
