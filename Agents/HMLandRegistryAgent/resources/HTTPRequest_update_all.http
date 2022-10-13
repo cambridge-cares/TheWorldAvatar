@@ -1,0 +1,5 @@
+// Example HTTP request to update transaction records for all instantiated properties, incl. property price indices
+
+POST http://128.199.197.40:5002/api/landregistry/update_all
+Content-Type: application/json
+
