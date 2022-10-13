@@ -19,12 +19,13 @@ class ModelFactor:
    
     # Renewable = ['Solar', 'Hydro', 'PumpHydro', 'Wind']
 
-    SMR = ['http://www.theworldavatar.com/kb/ontoeip/SmallModularReactor']
+    SMR = ['SMR', 'http://www.theworldavatar.com/kb/ontoeip/SmallModularReactor']
     Nuclear = ['Nuclear']
     Coal = ['Coal']
     Solar = ['Solar']
     Hydro = ['Hydro']
     PumpHydro = ['PumpHydro']
+    Wind = ['Wind']
     WindOnshore = ['http://www.theworldavatar.com/kb/ontoeip/WindOnshore']
     WindOffshore = ['http://www.theworldavatar.com/kb/ontoeip/WindOffshore']
     Waste = ['Waste_anaerobicdigestion', 'Waste_municipalsolidwaste', 'Waste']

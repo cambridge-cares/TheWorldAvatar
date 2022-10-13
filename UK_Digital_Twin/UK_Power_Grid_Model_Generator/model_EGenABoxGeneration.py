@@ -68,7 +68,7 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 ukec = UKec.UKEnergyConsumption()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_label = endpointList.ukdigitaltwin['label']
 endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Sleepycat storage path"""
@@ -342,7 +342,7 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
         cg_model_EGen.close()       
     return
 
-def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio, renewableEnergyOutputRatio):
+def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio, windOutputRatio, solarOutputRatio):
     if not isinstance (EGen_Model, UK_PG.UKEGenModel) or not isinstance (EGen_Model, UK_PG.UKEGenModel_CostFunc):
         raise Exception('The first argument should be an instence of UKEGenModel or UKEGenModel_CostFunc')
     EGen_Model.BUS = int(OrderedBusNodeIRIList.index(egen[5])) # the connected bus number of the current generator should be in line with the index of the bus list
@@ -350,14 +350,22 @@ def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_
     EGen_Model.PG_INPUT = round((capa * demand_capa_ratio), 4)   
     
     primaryFuel = egen[7]
-    if primaryFuel in ukmf.Renewable: 
-        EGen_Model.PMAX = capa * float(renewableEnergyOutputRatio)
-        # if EGen_Model.PG_INPUT * 1.1 <=capa:
-        #     EGen_Model.PMAX = EGen_Model.PG_INPUT * 1.1 
-        # else:
-        #     EGen_Model.PMAX = capa
+    if primaryFuel in ukmf.Wind: 
+        EGen_Model.PMAX = capa * float(windOutputRatio)
+    elif primaryFuel in ukmf.Solar: 
+        EGen_Model.PMAX = capa * float(solarOutputRatio)  
+    elif primaryFuel in ukmf.Nuclear: 
+        EGen_Model.PMAX = capa * 0.55
+    elif primaryFuel in ukmf.Hydro: 
+        EGen_Model.PMAX = capa * 0.3
+    elif primaryFuel in ukmf.PumpHydro: 
+        EGen_Model.PMAX = capa * 0.1
+    elif primaryFuel in ukmf.Bio: 
+        EGen_Model.PMAX = capa * 0.70
+    elif primaryFuel in ukmf.SMR:
+        EGen_Model.PMAX = capa * 0.94
     else:
-        EGen_Model.PMAX = capa
+        EGen_Model.PMAX = capa * 0.9
     
     EGen_Model.PMIN = 0
     

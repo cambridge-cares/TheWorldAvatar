@@ -340,3 +340,149 @@ function selectBranch(Name, From_Bus, To_Bus, para_R, para_X, para_B, para_RateA
 		var tenToN = 10 ** digits;
 		return (Math.round(value * tenToN)) / tenToN;
 	}
+
+	// select the retrofit result_exanct
+	function siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank) {
+		// Set title to offtake name
+		setSidePanelTitle(`
+			<h2> ` + fuel + `</h2>
+		`);
+
+		// Pretty-print location
+		var prettyLocation = "lat: " + roundN(coordinates[1], 5) + ", long: " + roundN(coordinates[0], 5);
+		prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
+
+		// Show meta data
+		var metaHTML = `
+		<table width="100%">
+			<tr>
+				<td width="25%">Fuel:</td>
+				<td width="75%" style="text-align: right;">` + fuel + `</td>
+			</tr>
+			<tr>
+				<td width="25%">Location:</td>
+				<td width="75%" style="text-align: right;">` + prettyLocation + `</td>
+			</tr>
+			<tr>
+				<td width="35%">Capacity:</td>
+				<td width="65%" style="text-align: right;">` + capacity + ` MW</td>
+			</tr>
+			<tr>
+				<td width="35%">SMR cost and risk cost:</td>
+				<td width="65%" style="text-align: right;">` + obj1 + ` 10E7 (£)</td>
+			</tr>
+			<tr>
+				<td width="35%">Weighed demanding distance:</td>
+				<td width="65%" style="text-align: right;">` + obj2 + ` 10E7 (km)</td>
+			</tr>
+
+			<tr>
+				<td width="35%">Rank:</td>
+				<td width="65%" style="text-align: right;">` + rank + ` </td>
+			</tr>
+			<tr>
+				<td width="35%">Weighter:</td>
+				<td width="65%" style="text-align: right;">` + weighter + ` </td>
+			</tr>
+		`;
+
+
+		metaHTML += "</table>";
+		setSidePanelMeta(metaHTML);
+
+		// Update text container 
+		setSidePanelText(``);
+}
+
+
+	// select the retrofit result_exanct
+	function selectRetrofit_extant(fuel, capacity, output, coordinates, status) {
+		// Set title to offtake name
+		setSidePanelTitle(`
+			<h2> ` + fuel + `</h2>
+		`);
+
+		// Pretty-print location
+		var prettyLocation = "lat: " + roundN(coordinates[1], 5) + ", long: " + roundN(coordinates[0], 5);
+		prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
+
+		// Show meta data
+		var metaHTML = `
+		<table width="100%">
+			<tr>
+				<td width="25%">Fuel:</td>
+				<td width="75%" style="text-align: right;">` + fuel + `</td>
+			</tr>
+			<tr>
+				<td width="25%">Location:</td>
+				<td width="75%" style="text-align: right;">` + prettyLocation + `</td>
+			</tr>
+			<tr>
+				<td width="35%">Capacity:</td>
+				<td width="65%" style="text-align: right;">` + capacity + ` MW</td>
+			</tr>
+			<tr>
+				<td width="35%">Output:</td>
+				<td width="65%" style="text-align: right;">` + output + ` MW</td>
+			</tr>
+			<tr>
+				<td width="35%">Status:</td>
+				<td width="65%" style="text-align: right;">` + status + ` </td>
+			</tr>
+		`;
+
+
+		metaHTML += "</table>";
+		setSidePanelMeta(metaHTML);
+
+		// Update text container 
+		setSidePanelText(``);
+}
+
+	// select the retrofit result_exanct
+	function selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status) {
+		// Set title to offtake name
+		setSidePanelTitle(`
+			<h2> ` + fuel + `</h2>
+		`);
+
+		// Pretty-print location
+		var prettyLocation = "lat: " + roundN(coordinates[1], 5) + ", long: " + roundN(coordinates[0], 5);
+		prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
+
+		// Show meta data
+		var metaHTML = `
+		<table width="100%">
+			<tr>
+				<td width="25%">Fuel:</td>
+				<td width="75%" style="text-align: right;">` + fuel + `</td>
+			</tr>
+			<tr>
+				<td width="25%">Location:</td>
+				<td width="75%" style="text-align: right;">` + prettyLocation + `</td>
+			</tr>
+			<tr>
+				<td width="35%">Capacity:</td>
+				<td width="65%" style="text-align: right;">` + capacity + ` MW</td>
+			</tr>
+			<tr>
+				<td width="35%">Number of SMR Units:</td>
+				<td width="65%" style="text-align: right;">` + numberOfUnit + ` </td>
+			</tr>
+			<tr>
+				<td width="35%">Output:</td>
+				<td width="65%" style="text-align: right;">` + output + ` MW</td>
+			</tr>
+			<tr>
+				<td width="35%">Status:</td>
+				<td width="65%" style="text-align: right;">` + status + ` </td>
+			</tr>
+		`;
+
+
+		metaHTML += "</table>";
+		setSidePanelMeta(metaHTML);
+
+		// Update text container 
+		setSidePanelText(``);
+}

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 Sept 2022         #
+# Last Update Date: 12 Oct 2022          #
 ##########################################
 
 import sys, os, json
@@ -8,8 +8,10 @@ import numpy as np
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package.queryInterface import performQuery
+from logging import raiseExceptions
 from rfc3987 import parse
 
 """This class is developed to provide different initialisation methods of the input variables of the branch model"""
@@ -122,6 +124,12 @@ class BranchPropertyInitialisation(object):
 
     """This method is called to check if the Branch Node exists in the remote triple store""" 
     def branchNodeIRIExitInRemoteStore(self, endpoint_label, branchNodeIRI): 
+        if endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+            endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+        elif parse(endpoint_label, rule='IRI'):
+            endPointIRI = endpoint_label
+        else:
+            raiseExceptions("!!!!Please provide a valid endpoint!!!!")
         queryStr = """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
@@ -129,7 +137,7 @@ class BranchPropertyInitialisation(object):
         }""" %str(branchNodeIRI).strip('\n').strip('')
 
         print('...checking the existing of the branch node iri...')
-        exitFlag = json.loads(performQuery(endpoint_label, queryStr))
+        exitFlag = json.loads(performQuery(endPointIRI, queryStr))
         return exitFlag[0]['ASK']
 
 if __name__ == '__main__':           

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 3 Oct 2022           #
+# Last Update Date: 13 Oct 2022          #
 ##########################################
 
 """
@@ -34,7 +34,8 @@ class siteSelector(Problem):
             maxmumSMRUnitAtOneSite:int,
             SMRIntergratedDiscount:float, 
             startTime_of_EnergyConsumption:str,
-            population_list:list
+            population_list:list,
+            weightedDemandingDistance_list:list
         ):
         ##-- Model Parameters --##  
         self.numberOfSMRToBeIntroduced = int(numberOfSMRToBeIntroduced)
@@ -52,6 +53,7 @@ class siteSelector(Problem):
         self.N = maxmumSMRUnitAtOneSite
         self.ir = SMRIntergratedDiscount
         self.population_list = population_list
+        self.weightedDemandingDistance_list = weightedDemandingDistance_list
         self.varSets = locals()  
 
         self.startTime_of_EnergyConsumption = str(startTime_of_EnergyConsumption)
@@ -103,16 +105,18 @@ class siteSelector(Problem):
             SMRIntegratedCostForDifferentInterationNumberList.append(sumUpSMRIntegratedCost)
 
         ## Objective 1: the total cost of SMR retrofitting: SMR investment and risk cost ## 
-        ## Objective 2: sum up of the weighted distance between the site location and the centroid of the demanding area (demanding * distance) ## 
+        ## Objective 2: demanding weighter of each potential site ## 
         for i in range(len(self.generatorToBeReplacedList)):
-            sumUpOfWeightedDemanding = 0
-            ## genIRI = self.generatorToBeReplacedList[i]["PowerGenerator"]
-            latlon = self.generatorToBeReplacedList[i]["LatLon"]
-            
-            for demand in dclist.demandingAndCentroid[self.startTime_of_EnergyConsumption]:
-                distance = DistanceBasedOnGPSLocation(latlon + demand['Geo_InfoList'])
-                weightedDemanding = distance * float(demand['v_TotalELecConsumption'])  
-                sumUpOfWeightedDemanding += weightedDemanding
+            # latlon = self.generatorToBeReplacedList[i]["LatLon"]
+            # sumUpOfWeightedDemanding = 0
+            # for demand in dclist.demandingAndCentroid[self.startTime_of_EnergyConsumption]:
+            #     LA_code  = demand["Area_LACode"]
+            #     if LA_code in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+            #                     "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+            #         continue
+            #     distance = DistanceBasedOnGPSLocation(latlon + demand['Geo_InfoList'])
+            #     weightedDemanding = distance * float(demand['v_TotalELecConsumption'])  
+            #     sumUpOfWeightedDemanding += weightedDemanding
 
             for n in range(self.N):
                 # print(i, genIRI)
@@ -123,7 +127,8 @@ class siteSelector(Problem):
                 totalLifeMonetaryCost += x[:, numOfBV] * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))  
                 totalSMRCapitalCost += SMRIntegratedCostForDifferentInterationNumberList[n] * x[:, numOfBV] 
 
-                f2 += x[:, numOfBV] * sumUpOfWeightedDemanding
-
+                f2 += x[:, numOfBV] * self.weightedDemandingDistance_list[i]
+                ## f2 += x[:, numOfBV] * sumUpOfWeightedDemanding
         f1 = totalLifeMonetaryCost + totalSMRCapitalCost
         out["F"]  = np.column_stack([f1, f2])
+

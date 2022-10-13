@@ -65,29 +65,58 @@ def getChoropleth(consumption):
         return "#006837"
     
     
+# def getBusColour(BusNum):
+# # The colour referce codes are found from ColorBrewer: https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3
+# # Setting: qualitative, 10 points
+#     if BusNum == 1:  
+#         return "#a6cee3"
+#     elif BusNum == 2:  
+#         return "#1f78b4"
+#     elif BusNum == 3:  
+#         return "#b2df8a"
+#     elif BusNum == 4:  
+#         return "#33a02c"
+#     elif BusNum == 5:  
+#         return "#fb9a99"
+#     elif BusNum == 6:  
+#         return "#e31a1c"
+#     elif BusNum == 7:  
+#         return "#fdbf6f"
+#     elif BusNum == 8:  
+#         return "#ff7f00"
+#     elif BusNum == 9: 
+#         return "#cab2d6"
+#     elif BusNum == 10: 
+#         return "#6a3d9a"
+#     elif BusNum > 10:
+#         print("The bus number is out of range.")
+#         return None
+
 def getBusColour(BusNum):
 # The colour referce codes are found from ColorBrewer: https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3
 # Setting: qualitative, 10 points
-    if BusNum == 1:  
-        return "#a6cee3"
+    if BusNum == 0:  
+        return "#ffffff"
+    elif BusNum == 1:  
+        return "#AED6F1"
     elif BusNum == 2:  
-        return "#1f78b4"
+        return "#1F618D"
     elif BusNum == 3:  
-        return "#b2df8a"
+        return "#F9E79F"
     elif BusNum == 4:  
-        return "#33a02c"
+        return "#99A3A4"
     elif BusNum == 5:  
-        return "#fb9a99"
+        return "#1B2631"
     elif BusNum == 6:  
-        return "#e31a1c"
+        return "#DC7633"
     elif BusNum == 7:  
-        return "#fdbf6f"
+        return "#F1C40F"
     elif BusNum == 8:  
-        return "#ff7f00"
+        return "#1F618D"
     elif BusNum == 9: 
-        return "#cab2d6"
+        return "#873600"
     elif BusNum == 10: 
-        return "#6a3d9a"
+        return "#c0c0c0"
     elif BusNum > 10:
         print("The bus number is out of range.")
         return None

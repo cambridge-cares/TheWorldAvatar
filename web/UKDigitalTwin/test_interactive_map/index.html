@@ -93,144 +93,999 @@
                 (enabled ? "visible" : "none")
             );
         }
-
+        
         // Triggered after layer change
         function layerCallback(layerID, enabled) {
+
             if (enabled && layerID.includes("power_")) {
                 // Show the power layers
                 toggleLayer("power_locations", true);
                 toggleLayer("power_labels", true);
 
-                // Hide the SDG layers
-                toggleLayer("sdg_locations", false);
-                toggleLayer("sdg_labels", false);
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the consumption layers
-                toggleLayer("Electricity_Consumption_region_borders", false);
-                toggleLayer("Electricity_Consumption_area_fill", false);
-                toggleLayer("Electricity_Consumption_area_borders", false);
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 10 bus model layers
-                toggleLayer("Model_10_EBus_GPSLocation", false);
-                toggleLayer("Model_10_bus_Branch", false);
-                toggleLayer("Model_10_bus_Branch_Arrow", false);
-                toggleLayer("Model_10_gen_GPS", false);
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 29 bus model layers
-                toggleLayer("Model_29_EBus_GPSLocation", false);
-                toggleLayer("Model_29_bus_Branch", false);
-                toggleLayer("Model_29_bus_Branch_Arrow", false);
-                toggleLayer("Model_29_gen_GPS", false);                
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+        
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+            }
+    
+            if (enabled && layerID.includes("retrofitting_1")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+                
             }
 
-            if (enabled && layerID.includes("sdg_")) {
-                // Show the SDG layers
-                toggleLayer("sdg_locations", true);
-                toggleLayer("sdg_labels", true);
-
-                // Hide the power layers
+            if (enabled && layerID.includes("retrofitting_2")) {
+                // Show the power layers
                 toggleLayer("power_locations", false);
-                toggleLayer("power_labels", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the consumption layers
-                toggleLayer("Electricity_Consumption_region_borders", false);
-                toggleLayer("Electricity_Consumption_area_fill", false);
-                toggleLayer("Electricity_Consumption_area_borders", false);
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 10 bus model layers
-                toggleLayer("Model_10_EBus_GPSLocation", false);
-                toggleLayer("Model_10_bus_Branch", false);
-                toggleLayer("Model_10_bus_Branch_Arrow", false);
-                toggleLayer("Model_10_gen_GPS", false);
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 29 bus model layers
-                toggleLayer("Model_29_EBus_GPSLocation", false);
-                toggleLayer("Model_29_bus_Branch", false);
-                toggleLayer("Model_29_bus_Branch_Arrow", false);
-                toggleLayer("Model_29_gen_GPS", false);
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
             }
 
-            if (enabled && layerID.includes("Electricity_")) {
-                // Show the consumption layers
-                toggleLayer("Electricity_Consumption_region_borders", true);
-                toggleLayer("Electricity_Consumption_area_fill", true);
-                toggleLayer("Electricity_Consumption_area_borders", true);
-
-                // Hide the power layers
+            if (enabled && layerID.includes("retrofitting_5")) {
+                // Show the power layers
                 toggleLayer("power_locations", false);
-                toggleLayer("power_labels", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the SDG layers
-                toggleLayer("sdg_locations", false);
-                toggleLayer("sdg_labels", false);
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 10 bus model layers
-                toggleLayer("Model_10_EBus_GPSLocation", false);
-                toggleLayer("Model_10_bus_Branch", false);
-                toggleLayer("Model_10_bus_Branch_Arrow", false);
-                toggleLayer("Model_10_gen_GPS", false);
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 29 bus model layers
-                toggleLayer("Model_29_EBus_GPSLocation", false);
-                toggleLayer("Model_29_bus_Branch", false);
-                toggleLayer("Model_29_bus_Branch_Arrow", false);
-                toggleLayer("Model_29_gen_GPS", false);
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
             }
 
-            if (enabled && layerID.includes("Model_10")) {
-                // Show the 10 bus model layers
-                toggleLayer("Model_10_EBus_GPSLocation", true);
-                toggleLayer("Model_10_bus_Branch", true);
-                toggleLayer("Model_10_bus_Branch_Arrow", true);
-                toggleLayer("Model_10_gen_GPS", true);
-
-                // Hide the power layers
+            if (enabled && layerID.includes("retrofitting_10")) {
+                // Show the power layers
                 toggleLayer("power_locations", false);
-                toggleLayer("power_labels", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the SDG layers
-                toggleLayer("sdg_locations", false);
-                toggleLayer("sdg_labels", false);
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the consumption layers
-                toggleLayer("Electricity_Consumption_region_borders", false);
-                toggleLayer("Electricity_Consumption_area_fill", false);
-                toggleLayer("Electricity_Consumption_area_borders", false);
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 29 bus model layers
-                toggleLayer("Model_29_EBus_GPSLocation", false);
-                toggleLayer("Model_29_bus_Branch", false);
-                toggleLayer("Model_29_bus_Branch_Arrow", false);
-                toggleLayer("Model_29_gen_GPS", false);
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
 
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
 
             }
 
-            if (enabled && layerID.includes("Model_29")) {
-                // Show the 29 bus model layers
-                toggleLayer("Model_29_EBus_GPSLocation", true);
-                toggleLayer("Model_29_bus_Branch", true);
-                toggleLayer("Model_29_bus_Branch_Arrow", true);
-                toggleLayer("Model_29_gen_GPS", true);
-
-                // Hide the power layers
+            if (enabled && layerID.includes("retrofitting_14")) {
+                // Show the power layers
                 toggleLayer("power_locations", false);
-                toggleLayer("power_labels", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the SDG layers
-                toggleLayer("sdg_locations", false);
-                toggleLayer("sdg_labels", false);
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                // Hide the consumption layers
-                toggleLayer("Electricity_Consumption_region_borders", false);
-                toggleLayer("Electricity_Consumption_area_fill", false);
-                toggleLayer("Electricity_Consumption_area_borders", false);
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
 
-                //Hide the 10 bus model layers
-                toggleLayer("Model_10_EBus_GPSLocation", false);
-                toggleLayer("Model_10_bus_Branch", false);
-                toggleLayer("Model_10_bus_Branch_Arrow", false);
-                toggleLayer("Model_10_gen_GPS", false);
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+                
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+
+            if (enabled && layerID.includes("retrofitting_20")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", true);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", true);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", true);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+            if (enabled && layerID.includes("ranking_1_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // open ranking_1_
+                toggleLayer("ranking_1_", true);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+            if (enabled && layerID.includes("ranking_10_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // open ranking_10_
+                toggleLayer("ranking_10_", true);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+            if (enabled && layerID.includes("ranking_100_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // open ranking_100_
+                toggleLayer("ranking_100_", true);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+
+            if (enabled && layerID.includes("ranking_1000_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // open ranking_1000_
+                toggleLayer("ranking_1000_", true);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+        
+            if (enabled && layerID.includes("ranking_10000_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // open ranking_10000_
+                toggleLayer("ranking_10000_", true);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+            if (enabled && layerID.includes("ranking_100000_")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // close ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // open ranking_100000_
+                toggleLayer("ranking_100000_", true);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", false);
+
+            }
+
+            if (enabled && layerID.includes("PP_fossil")) {
+                // Show the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);               
+                
+                // show retrofitting results --smr1
+                toggleLayer("retrofitting_1_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_1_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_1_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr2
+                toggleLayer("retrofitting_2_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_2_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_2_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr5
+                toggleLayer("retrofitting_5_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_5_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_5_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+                
+                // show retrofitting results --smr10
+                toggleLayer("retrofitting_10_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_10_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_10_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // show retrofitting results --smr14
+                toggleLayer("retrofitting_14_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_14_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_14_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true);
+
+                // show retrofitting results --smr20
+                toggleLayer("retrofitting_20_SMR_29bus_extant", false);
+                toggleLayer("retrofitting_20_SMR_29bus_SMR", false);
+                toggleLayer("retrofitting_20_SMR_29bus_closed", false);
+                // toggleLayer("retrofitting_labels_extant", true);
+                // toggleLayer("retrofitting_labels_smr", true); 
+
+                // close ranking_1_
+                toggleLayer("ranking_1_", false);
+                // toggleLayer("ranking_1_Text", false);
+
+                // close ranking_10_
+                toggleLayer("ranking_10_", false);
+
+                // open ranking_100_
+                toggleLayer("ranking_100_", false);
+
+                // close ranking_1000_
+                toggleLayer("ranking_1000_", false);
+
+                // close ranking_10000_
+                toggleLayer("ranking_10000_", false);
+
+                // close ranking_100000_
+                toggleLayer("ranking_100000_", false);
+
+                //PP_fossil
+                toggleLayer("PP_fossil", true);
 
             }
 
@@ -258,339 +1113,633 @@
             refresh();
 
 // ===== SOURCES ====
+            // PP_fossil
+            map.addSource('PP_fossil', {
+                type: 'geojson',
+                data: 'PP_fossil.geojson' 
+            });
+
+            // Add the ranking results- weight 1
+            map.addSource('ranking_1_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_1.geojson' 
+            });
+
+            // Add the ranking results- weight 10
+            map.addSource('ranking_10_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_10.geojson' 
+            });
+            // Add the ranking results- weight 100
+            map.addSource('ranking_100_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_100.geojson' 
+            });
+
+            // Add the ranking results- weight 1000
+            map.addSource('ranking_1000_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_1000.geojson' 
+            });
+
+            // Add the ranking results- weight 10000
+            map.addSource('ranking_10000_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_10000.geojson' 
+            });
+
+            // Add the ranking results- weight 100000
+            map.addSource('ranking_100000_', {
+                type: 'geojson',
+                data: 'ranking_1_SMRUnitPerSite_Weighter_100000.geojson' 
+            });
+
+
+
+            // Add the retrofitting results of 29 bus model--smr1
+            map.addSource('retrofitting_1_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_1_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_1_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_1_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_1_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_1_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            // Add the retrofitting results of 29 bus model--smr2
+             map.addSource('retrofitting_2_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_2_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_2_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_2_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_2_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_2_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            // Add the retrofitting results of 29 bus model--smr5
+            map.addSource('retrofitting_5_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_5_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_5_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_5_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_5_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_5_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            // Add the retrofitting results of 29 bus model--smr10
+            map.addSource('retrofitting_10_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_10_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_10_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_10_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_10_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_10_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            // Add the retrofitting results of 29 bus model--smr14
+            map.addSource('retrofitting_14_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_14_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_14_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_14_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_14_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_14_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            // Add the retrofitting results of 29 bus model--smr20
+            map.addSource('retrofitting_20_SMR_29bus_extant', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_20_SMRs_retrofitted_ExtantGenerator_CarbonTax60.geojson' 
+            });
+
+            map.addSource('retrofitting_20_SMR_29bus_SMR', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_20_SMRs_retrofitted_SMR_CarbonTax60.geojson'
+            });
+
+            map.addSource('retrofitting_20_SMR_29bus_closed', {
+                type: 'geojson',
+                data: 'NewSelector_29BusModel_20_SMRs_retrofitted_ClosedPlants_CarbonTax60.geojson'
+            });
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Add the powerplant data
             map.addSource('powerplants', {
                 type: 'geojson',
                 data: 'UK_PowerPlants.geojson'
             });
-
-            // Add the region boundaries geoJSON source
-            map.addSource('Electricity_Consumption_region', {
-                type: 'geojson',
-                data: 'UK_Electricity_Consumption_Regions.geojson'
-            });
-
-            // Add the sub areas boundaries geoJSON source
-            map.addSource('Electricity_Consumption_area', {
-                type: 'geojson',
-                data: 'UK_Electricity_Consumption_Areas.geojson'
-            });
-
-            // Add the bus model parameter and GPS location geoJSON source
-            map.addSource('Bus_model_GPS_Parameters', {
-                type: 'geojson',
-                data: 'UK_Grid_Model_Bus_Parameter.geojson'
-            });
-
-            // add the bus model input variables geojson source
-            map.addSource('Bus_model_input_variables', {
-                type: 'geojson',
-                data: 'UK_Grid_Model_Bus_InputVar.geojson'
-            });
-
-            // jquery for adding the geojson file for creating the animated arrow moving alongside the branch
-            $.ajax({
-                type: "get",
-                url: "/UK_Grid_Model_10_bus_Branch.geojson",
-                dataType: "json",
-                success: function (data) {
-                    console.log("querying the branch GPS locations succeeded.");                    
-                    var Branch_GPSPoints = data;
-                    map.addSource('Branch_GPSPoints', {
-                        type: 'geojson',
-                        data: Branch_GPSPoints
-                    });
-
-                    map.addLayer({
-                        id: 'Model_10_bus_Branch',
-                        type: 'line',
-                        source: 'Branch_GPSPoints',
-                        layout: {
-                            "line-miter-limit": 2,
-                            "line-join": "miter"
-                        },
-                        paint: {
-                            "line-color": "#33C9EB",
-                            "line-width": 4
-                        }
-                    });
-
-                    map.addLayer({
-                        'id': 'Model_10_bus_Branch_Arrow',
-                        'type': 'symbol',
-                        'source': 'Branch_GPSPoints',
-                        'layout': {
-                            'symbol-placement': 'line',
-                            'symbol-spacing': 1.5,
-                            // 'icon-image': 'arrow',
-                            'icon-image': 'right_arrow',
-                            'icon-size': 0.05,
-                            // 'icon-rotate': ['get', 'bearing'],
-                            'icon-rotation-alignment': 'map',
-                            'icon-allow-overlap': true,
-                            'icon-ignore-placement': true,
-                            'visibility': 'visible'
-                        }
-                    });
-
-                    map.on('click', 'Model_10_bus_Branch', function (e) {
-                        console.log("########The click event on branch is triggered")
-                        var Name = e.features[0].properties.Name;
-                        var From_Bus = e.features[0].properties.From_Bus;
-                        var To_Bus = e.features[0].properties.To_Bus;
-                        var para_R = e.features[0].properties.para_R;
-                        var para_X = e.features[0].properties.para_X;
-                        var para_B = e.features[0].properties.para_B;
-                        var para_RateA = e.features[0].properties.para_RateA;
-                        var para_RateB = e.features[0].properties.para_RateB;
-                        var para_RateC = e.features[0].properties.para_RateC;
-                        var para_RatioCoefficient = e.features[0].properties.para_RatioCoefficient;
-                        var para_Angle = e.features[0].properties.para_Angle;
-                        var para_Status = e.features[0].properties.para_Status;
-                        var para_AngleMax = e.features[0].properties.para_AngleMax;
-                        var para_AngleMin = e.features[0].properties.para_AngleMin;
-                        Name = Name.replaceAll("-", " ");
-
-                        selectBranch(Name, From_Bus, To_Bus, para_R, para_X, para_B, para_RateA, para_RateB, para_RateC, para_RatioCoefficient, para_Angle, para_Status, para_AngleMax, para_AngleMin);
-                    });
-
-                    map.on('mousemove', 'Model_10_bus_Branch', function (e) {
-
-                        // Get the human readable name of the crop
-                        // var coordinates = e.features[0].geometry.coordinates.slice();
-                        var coordinates = e.lngLat;
-                        var Name = e.features[0].properties["Name"];
-                        Name = Name.replaceAll("-", " ");
-
-                        // Make the text look a little nicer
-                        var html = `
-                            <b>` + Name + `</b><br>
-                            <span style="font-size: 85%;">Click for more details.</span>
-                        `;
-
-                        // Populate the popup and set its coordinates based on the feature found.
-                        popup.setLngLat(coordinates).setHTML(html).addTo(map);
-
-                    });
-
-                    // Triggers when the mouse enters the entire layer
-                    map.on('mouseenter', 'Model_10_bus_Branch', function (e) {
-                        map.getCanvas().style.cursor = 'pointer';
-                    });
-
-                    // Triggers when the mouse leaves the entire layer
-                    map.on('mouseleave', 'Model_10_bus_Branch', function (e) {
-                        map.getCanvas().style.cursor = '';
-                        popup.remove();
-                    });
-
-                   
-                },
-                error: function () {
-                    alert("Request failed.");
-                }
-            });
-
-            //TODO: add 29 bus model visualisations
-            // Add the 29-bus model parameter and GPS location geoJSON source
-            map.addSource('UK_Grid_29_bus_GPS_location', {
-                type: 'geojson',
-                data: 'UK_Grid_29_bus_GPS_location.geojson'
-            });
-
-            // jquery for adding the geojson file for creating the animated arrow moving alongside the branch of 29_bus model
-            $.ajax({
-                type: "get",
-                url: "/UK_Grid_29_branch_GPS.geojson",
-                dataType: "json",
-                success: function (data) {
-                    console.log("querying the branch GPS locations of 29_bus model succeeded.");
-                    var Branch_GPSPoints_29_bus_model = data;
-                    map.addSource('Branch_GPSPoints_29_bus_model', {
-                        type: 'geojson',
-                        data: Branch_GPSPoints_29_bus_model
-                    });
-
-                    map.addLayer({
-                        id: 'Model_29_bus_Branch',
-                        type: 'line',
-                        source: 'Branch_GPSPoints_29_bus_model',
-                        layout: {
-                            "line-miter-limit": 2,
-                            "line-join": "miter"
-                        },
-                        paint: {
-                            "line-color": "#33C9EB",
-                            "line-width": 2
-                        }
-                    });
-
-                    map.addLayer({
-                        'id': 'Model_29_bus_Branch_Arrow',
-                        'type': 'symbol',
-                        'source': 'Branch_GPSPoints_29_bus_model',
-                        'layout': {
-                            'symbol-placement': 'line',
-                            'symbol-spacing': 1.5,
-                            // 'icon-image': 'arrow',
-                            'icon-image': 'right_arrow',
-                            'icon-size': 0.05,
-                            // 'icon-rotate': ['get', 'bearing'],
-                            'icon-rotation-alignment': 'map',
-                            'icon-allow-overlap': true,
-                            'icon-ignore-placement': true,
-                            'visibility': 'visible'
-                        }
-                    });                   
-                },
-                error: function () {
-                    alert("Request failed.");
-                }
-            });
-
-            map.addSource('UK_Grid_29_gen_GPS', {
-                type: 'geojson',
-                data: 'UK_Grid_29_gen_GPS.geojson'
-            });
-
-            map.addSource('UK_Grid_10_gen_GPS', {
-                type: 'geojson',
-                data: 'UK_Grid_10_gen_GPS.geojson'
-            });
-
-            map.loadImage('/bus.png', (error, image) => {
+            
+            // add smr icon
+            map.loadImage('/smr.png', (error, image) => {
                 if (error) throw error;
-                map.addImage('EBus_icon', image);
+                map.addImage('SMR_icon', image);
             });
 
-            // map.loadImage('/arrow.png', (error, image) => {
-            //    if (error) throw error;
-            //    map.addImage('arrow', image);
+            // add closed icon
+            map.loadImage('/closed.png', (error, image) => {
+                if (error) throw error;
+                map.addImage('Closed_icon', image);
+            });
+
+
+        // ===== LAYERS =====
+            // PP_fossil
+            map.addLayer({
+                'id': 'PP_fossil',
+                'type': 'circle',
+                'source': 'PP_fossil',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Capacity"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_1
+            map.addLayer({
+                'id': 'ranking_1_',
+                'type': 'circle',
+                'source': 'ranking_1_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_10
+            map.addLayer({
+                'id': 'ranking_10_',
+                'type': 'circle',
+                'source': 'ranking_10_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_100
+            map.addLayer({
+                'id': 'ranking_100_',
+                'type': 'circle',
+                'source': 'ranking_100_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_1000
+            map.addLayer({
+                'id': 'ranking_1000_',
+                'type': 'circle',
+                'source': 'ranking_1000_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_10000
+            map.addLayer({
+                'id': 'ranking_10000_',
+                'type': 'circle',
+                'source': 'ranking_10000_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // ranking_100000
+            map.addLayer({
+                'id': 'ranking_100000_',
+                'type': 'circle',
+                'source': 'ranking_100000_',
+                'layout': {
+                    'visibility': 'visible',
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // map.addLayer({
+            //     'id': 'ranking_1_Text',
+            //     'type': 'symbol',
+            //     'source': 'ranking_1_',
+            //     'layout': {
+            //         'icon-image': 'Closed_icon',
+            //         'icon-opacity': 0.9,
+            //         'text-justify': 'auto',
+            //         'icon-size': 0.05,
+            //         'text-field': ['get', 'Rank number'],
+            //         'text-anchor': 'middle'
+            //     }
+            // });
+           
+            // console.log('ranking_1_Text added')
+
+            // Locations for extant power generator after retrofitting--smr1
+            map.addLayer({
+                'id': 'retrofitting_1_SMR_29bus_extant',
+                'type': 'circle',
+                'source': 'retrofitting_1_SMR_29bus_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // // add smr layer--smr1
+            // map.addLayer({
+            //     id: 'retrofitting_1_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_1_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.15
+            //     }
             // });
 
-            map.loadImage('/right_arrow.png', (error, image) => {
-                if (error) throw error;
-                map.addImage('right_arrow', image);
-            });
-
-            // ===== SOURCES ====
-
-
-// ===== LAYERS =====
-
+            // add smr layer--smr1
             map.addLayer({
-                id: 'Model_10_EBus_GPSLocation',
-                type: 'symbol',
-                source: 'Bus_model_GPS_Parameters',
-                layout: {
-                    'icon-image': 'EBus_icon',
-                    'icon-size': 0.065,
-                    'text-field': ['get', 'Bus_num'],
-                    'text-font': [
-                        'Open Sans Semibold',
-                        'Arial Unicode MS Bold'
-                    ],
-                    'text-offset': [0, 1.5],
-                    'text-anchor': 'top'
-                }
-            });
-
-            map.addLayer({
-                id: 'Model_29_EBus_GPSLocation',
-                type: 'symbol',
-                source: 'UK_Grid_29_bus_GPS_location',
-                layout: {
-                    'icon-image': 'EBus_icon',
-                    'icon-size': 0.055,
-                    'text-field': ['get', 'Bus_num'],
-                    'text-font': [
-                        'Open Sans Semibold',
-                        'Arial Unicode MS Bold'
-                    ],
-                    'text-offset': [0, 1.5],
-                    'text-anchor': 'top'
-                }
-            });
-
-            map.addLayer({
-                'id': 'Model_10_gen_GPS',
+                'id': 'retrofitting_1_SMR_29bus_SMR',
                 'type': 'circle',
-                'source': 'UK_Grid_10_gen_GPS',
+                'source': 'retrofitting_1_SMR_29bus_SMR',
                 'layout': {
                     'visibility': 'visible'
                 },
                 'paint': {
-                    'circle-radius': 4,
-                    'circle-color': ["get", "gen_colour"],
-                    'circle-opacity': 0.75,
-                    'circle-stroke-width': 0
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add closed layer--smr1
+            map.addLayer({
+                id: 'retrofitting_1_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_1_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
                 }
             });
 
 
+            // Locations for extant power generator after retrofitting--smr2
             map.addLayer({
-                'id': 'Model_29_gen_GPS',
+                'id': 'retrofitting_2_SMR_29bus_extant',
                 'type': 'circle',
-                'source': 'UK_Grid_29_gen_GPS',
+                'source': 'retrofitting_2_SMR_29bus_extant',
                 'layout': {
                     'visibility': 'visible'
                 },
                 'paint': {
-                    'circle-radius': 4,
-                    'circle-color': ["get", "gen_colour"],
-                    'circle-opacity': 0.75,
-                    'circle-stroke-width': 0
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
                 }
             });
 
+            // add smr layer--smr2
+            // map.addLayer({
+            //     id: 'retrofitting_2_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_2_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.15
+            //     }
+            // });
 
-
-            // Add the layer for visualising the regional boundaries with a mouse hover effect
             map.addLayer({
-                'id': 'Electricity_Consumption_region_borders',
-                'type': 'line',
-                'source': 'Electricity_Consumption_region',
+                'id': 'retrofitting_2_SMR_29bus_SMR',
+                'type': 'circle',
+                'source': 'retrofitting_2_SMR_29bus_SMR',
                 'layout': {
-                    'visibility': 'none'
+                    'visibility': 'visible'
                 },
                 'paint': {
-                    'line-color': '#9ecae1',
-                    'line-width': 1
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
                 }
             });
 
-            // Add the layer for visualising the filled sub areas with a mouse hover effect
+            // add closed layer--smr2
             map.addLayer({
-                'id': 'Electricity_Consumption_area_fill',
-                'type': 'fill',
-                'source': 'Electricity_Consumption_area',
-                'layout': {
-                    'visibility': 'none'
-                },
-                'paint': {
-                    'fill-color': ["get", "area-color"],
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1,
-                        1
-                    ]
+                id: 'retrofitting_2_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_2_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
                 }
             });
 
-            // Add the layer for visualising the border of sub areas
+            // Locations for extant power generator after retrofitting--smr5
             map.addLayer({
-                'id': 'Electricity_Consumption_area_borders',
-                'type': 'line',
-                'source': 'Electricity_Consumption_area', // reference the data source
+                'id': 'retrofitting_5_SMR_29bus_extant',
+                'type': 'circle',
+                'source': 'retrofitting_5_SMR_29bus_extant',
                 'layout': {
-                    'visibility': 'none'
+                    'visibility': 'visible'
                 },
                 'paint': {
-                    'line-color': '#9ecae1',
-                    'line-width': 1
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
                 }
             });
+
+            // add smr layer--smr5
+            // map.addLayer({
+            //     id: 'retrofitting_5_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_5_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.05
+            //     }
+            // });
+
+            map.addLayer({
+                'id': 'retrofitting_5_SMR_29bus_SMR',
+                'type': 'circle',
+                'source': 'retrofitting_5_SMR_29bus_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add closed layer--smr5
+            map.addLayer({
+                id: 'retrofitting_5_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_5_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+            
+            // Locations for extant power generator after retrofitting--smr10
+            map.addLayer({
+                'id': 'retrofitting_10_SMR_29bus_extant',
+                'type': 'circle',
+                'source': 'retrofitting_10_SMR_29bus_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add smr layer--smr10
+            // map.addLayer({
+            //     id: 'retrofitting_10_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_10_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.15
+            //     }
+            // });
+
+            map.addLayer({
+                'id': 'retrofitting_10_SMR_29bus_SMR',
+                'type': 'circle',
+                'source': 'retrofitting_10_SMR_29bus_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add closed layer--smr10
+            map.addLayer({
+                id: 'retrofitting_10_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_10_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // Locations for extant power generator after retrofitting--smr14
+            map.addLayer({
+                'id': 'retrofitting_14_SMR_29bus_extant',
+                'type': 'circle',
+                'source': 'retrofitting_14_SMR_29bus_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add smr layer--smr14
+            // map.addLayer({
+            //     id: 'retrofitting_14_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_14_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.15
+            //     }
+            // });
+
+            map.addLayer({
+                'id': 'retrofitting_14_SMR_29bus_SMR',
+                'type': 'circle',
+                'source': 'retrofitting_14_SMR_29bus_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add closed layer--smr14
+            map.addLayer({
+                id: 'retrofitting_14_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_14_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // Locations for extant power generator after retrofitting--smr20
+            map.addLayer({
+                'id': 'retrofitting_20_SMR_29bus_extant',
+                'type': 'circle',
+                'source': 'retrofitting_20_SMR_29bus_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add smr layer--smr20
+            // map.addLayer({
+            //     id: 'retrofitting_10_SMR_29bus_SMR',
+            //     type: 'symbol',
+            //     source: 'retrofitting_10_SMR_29bus_SMR',
+            //     layout: {
+            //         'icon-image': 'SMR_icon',
+            //         'icon-size': 0.15
+            //     }
+            // });
+
+            map.addLayer({
+                'id': 'retrofitting_20_SMR_29bus_SMR',
+                'type': 'circle',
+                'source': 'retrofitting_20_SMR_29bus_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            // add closed layer--smr20
+            map.addLayer({
+                id: 'retrofitting_20_SMR_29bus_closed',
+                type: 'symbol',
+                source: 'retrofitting_20_SMR_29bus_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
 
             // Locations for power generation
             map.addLayer({
@@ -607,195 +1756,534 @@
                     'circle-stroke-color': inner_text
                 }
             });
-
-            // Labels for power generation
-            map.addLayer({
-                id: 'power_labels',
-                type: 'symbol',
-                source: 'powerplants',
-                layout: {
-                    'visibility': 'visible',
-                    'text-field': ['concat',
-                        ['get', 'name'],
-                        '\n Capacity: ',
-                        ['get', 'capacity'],
-                        ' MW \n Fuel: ',
-                        ['get', 'fuel'],
-                        ' \n | \n | \n | \n | ']
-                    ,
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 14,
-                    'text-offset': [0, -4],
-                },
-                "paint": {
-                    "text-color": inner_text,
-                    "text-halo-color": outer_text,
-                    "text-halo-width": 0.8,
-                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
-                }
-            });
-
-            // Locations for SDG indicators
-            map.addLayer({
-                'id': 'sdg_locations',
-                'type': 'circle',
-                'source': 'powerplants',
-                'layout': {
-                    'visibility': 'none'
-                },
-                'paint': {
-                    'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-                    'circle-color': ["get", "sdgcolor"],
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': inner_text,
-                }
-            });
-
-            // Labels for SDG indicators
-            map.addLayer({
-                id: 'sdg_labels',
-                type: 'symbol',
-                source: 'powerplants',
-                layout: {
-                    'visibility': 'none',
-                    'text-field': ['concat',
-                        ['get', 'name'],
-                        '\n Capacity: ',
-                        ['get', 'capacity'],
-                        ' MW \n Fuel: ',
-                        ['get', 'fuel'],
-                        ' \n | \n | \n | \n | ']
-                    ,
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 14,
-                    'text-offset': [0, -4],
-                },
-                "paint": {
-                    "text-color": inner_text,
-                    "text-halo-color": outer_text,
-                    "text-halo-width": 0.8,
-                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
-                }
-            });
-
         });
 
-        // ===== LAYERS =====
+        // ===== LAYERS END =====
 
         // ===== MOUSE EVENTS =====
-        // Triggers when an individual area is clicked on.
 
-        map.on('click', 'Model_10_EBus_GPSLocation', function (e) {
-            console.log("The click event is triggered")
-            var Bus_num = e.features[0].properties.Bus_num;
-            var Bus_type = e.features[0].properties.Bus_type;
-            var para_Gs = e.features[0].properties.para_Gs;
-            var para_Bs = e.features[0].properties.DomesticConsumption;
-            var para_area = e.features[0].properties.para_area;
-            var para_basekV = e.features[0].properties.para_basekV;
-            var para_zone = e.features[0].properties.para_zone;
-            var para_Vmax = e.features[0].properties.para_Vmax;
-            var para_Vmin = e.features[0].properties.para_Vmin;
+        // click action of the ranking_1_ layer
 
-            selectBus(Bus_num, Bus_type, para_Gs, para_Bs, para_area, para_basekV, para_zone, para_Vmax, para_Vmin);
+        map.on('click', 'ranking_1_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
+
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        map.on('mousemove', 'Model_10_EBus_GPSLocation', function (e) {
+        // click action of the ranking_10_ layer
 
-            // Get the human readable name of the crop
-            var coordinates = e.lngLat;
-            var Bus_num = e.features[0].properties["Bus_num"];
+        map.on('click', 'ranking_10_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
 
-            // Make the text look a little nicer
-            var html = `
-                            <b> Bus ` + Bus_num + `</b><br>
-                            <span style="font-size: 85%;">Click for more details.</span>
-                        `;
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
 
-            // Populate the popup and set its coordinates based on the feature found.
-            popup.setLngLat(coordinates).setHTML(html).addTo(map);
-
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        // Triggers when the mouse enters the entire layer
-        map.on('mouseenter', 'Model_10_EBus_GPSLocation', function (e) {
-            map.getCanvas().style.cursor = 'pointer';
+        // click action of the ranking_100_ layer
+
+        map.on('click', 'ranking_100_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
+
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        // Triggers when the mouse leaves the entire layer
-        map.on('mouseleave', 'Model_10_EBus_GPSLocation', function (e) {
-            map.getCanvas().style.cursor = '';
-            popup.remove();
+        // click action of the ranking_1000_ layer
+
+        map.on('click', 'ranking_1000_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
+
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        map.on('click', 'Electricity_Consumption_area_fill', function (e) {
-            var Location = e.features[0].properties.Location;
-            var Area_LACode = e.features[0].properties.Area_LACode;
-            var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
-            var DomesticConsumption = e.features[0].properties.DomesticConsumption;
-            var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
-            Location = Location.replaceAll("_", " ");
+        // click action of the ranking_10000_ layer
 
-            selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial);
+        map.on('click', 'ranking_10000_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
+
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        // Triggers whenever the mouse is moved within the selected layer
-        map.on('mousemove', 'Electricity_Consumption_area_fill', function (e) {
+        // click action of the ranking_100000_ layer
 
-            // Get the human readable name of the crop
-            var coordinates = e.lngLat;
-            var location = e.features[0].properties["Location"];
-            var total = e.features[0].properties["TotalELecConsumption"];
-            location = location.replaceAll("_", " ");
+        map.on('click', 'ranking_100000_', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var capacity = e.features[0].properties["Capacity"];
+            var obj1 = e.features[0].properties["SMR cost and risk cost"];
+            var obj2 = e.features[0].properties["Weighed demanding distance"];
+            var weighter = e.features[0].properties["weighter"];
+            var rank = e.features[0].properties["Rank number"];
 
-            // Make the text look a little nicer
-            var html = `
-                            <b>` + location + `</b><br>
-                            Total Consumption [GWh]: ` + total + `<br><br>
-                            <span style="font-size: 85%;">Click for more details.</span>
-                        `;
+            siteRankingResult(fuel, capacity, obj1, obj2, weighter, coordinates, rank);
 
-            // Populate the popup and set its coordinates based on the feature found.
-            popup.setLngLat(coordinates).setHTML(html).addTo(map);
-
-            // TODO: Enable this when the geojson has a unique, numeric
-            //          "id" property for each feature.
-
-            // if (e.features.length > 0) {
-            // if (hoveredStateId !== null) {
-            //     map.setFeatureState(
-            //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
-            //         { hover: false }
-            //     );
-            // }
-
-            // hoveredStateId = e.features[0].Location;
-            // map.setFeatureState(
-            //     { source: 'Electricity_Consumption_area', Location: hoveredStateId },
-            //     { hover: true }
-            // );
-            // }
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        // Triggers when the mouse enters the entire layer
-        map.on('mouseenter', 'Electricity_Consumption_area_fill', function (e) {
-            map.getCanvas().style.cursor = 'pointer';
+        // click action of the retrofitting results--smr1
+        map.on('click', 'retrofitting_1_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
-        // Triggers when the mouse leaves the entire layer
-        map.on('mouseleave', 'Electricity_Consumption_area_fill', function (e) {
-            map.getCanvas().style.cursor = '';
-            popup.remove();
+        // click action of the retrofitting results--smr1
+        map.on('click', 'retrofitting_1_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
 
-            // TODO: Enable this when the geojson has a unique, numeric
-            //          "id" property for each feature.
-            // if (hoveredStateId !== null) {
-            //     map.setFeatureState(
-            //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
-            //         { hover: false }
-            //     );
-            // }
-            // hoveredStateId = null;
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_1_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_1_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+    
+        // click action of the retrofitting results--smr2
+         map.on('click', 'retrofitting_2_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_2_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_2_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--smr5
+        map.on('click', 'retrofitting_5_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_5_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_5_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--smr10
+        map.on('click', 'retrofitting_10_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_10_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_10_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--smr14
+        map.on('click', 'retrofitting_14_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_14_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_14_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--smr20
+        map.on('click', 'retrofitting_20_SMR_29bus_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_20_SMR_29bus_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', 'retrofitting_20_SMR_29bus_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
         });
 
         // On mouse enter
@@ -846,65 +2334,41 @@
             });
         });
 
-        // On mouse enter
-        map.on('mouseenter', 'sdg_locations', function (e) {
-            map.getCanvas().style.cursor = 'pointer';
-
-            if (map.getZoom() < 7.5) {
-                var coordinates = e.features[0].geometry.coordinates.slice();
-                var name = e.features[0].properties["name"];
-                name = name.replaceAll("_", " ");
-
-                var fuel = e.features[0].properties["fuel"];
-
-                var html = `
-                                <b> ` + name + `</b><br>
-                                Fuel: ` + fuel + `
-                                <br><p>Click for more details.</p>
-                            `;
-                popup.setLngLat(coordinates).setHTML(html).addTo(map);
-            }
-        });
-
-        // On mouse exit
-        map.on('mouseleave', 'sdg_locations', function (e) {
-            map.getCanvas().style.cursor = '';
-            popup.remove();
-        });
-
-        // On selection
-        map.on('click', 'sdg_locations', function (e) {
-            var coordinates = e.features[0].geometry.coordinates.slice();
-            var name = e.features[0].properties["name"];
-            name = name.replaceAll("_", " ");
-
-            var fuel = e.features[0].properties["fuel"];
-            var capacity = e.features[0].properties["capacity"];
-            var indicator = e.features[0].properties["sdg941"];
-
-            selectPlant(name, fuel, capacity, indicator, coordinates);
-
-            map.flyTo({
-                center: coordinates,
-                curve: 1.9,
-                speed: 1.6,
-                pitch: 75,
-                zoom: 14,
-                bearing: Math.random() * 90
-            });
-        });
         // ===== MOUSE EVENTS =====
         // Register the layers with the central controls
         registerLayer("Power Generation", ["power_locations", "power_labels"], null, true);
-        registerLayer("SDG Indicator", ["sdg_locations", "sdg_labels"], null, false);
-        registerLayer("Electricity Consumption", [
-            "Electricity_Consumption_area_fill",
-            "Electricity_Consumption_area_borders",
-            "Electricity_Consumption_region_borders"
-        ],
-            null, false);
-        registerLayer("10-Bus Grid Model", ["Model_10_EBus_GPSLocation", "Model_10_bus_Branch_Arrow", "Model_10_bus_Branch", "Model_10_gen_GPS"], null, false);
-        registerLayer("29-Bus Grid Model", ["Model_29_EBus_GPSLocation", "Model_29_bus_Branch_Arrow", "Model_29_bus_Branch", "Model_29_gen_GPS"], null, false);
+      
+        registerLayer("SMR 1", ["retrofitting_1_SMR_29bus_extant", "retrofitting_1_SMR_29bus_SMR", "retrofitting_1_SMR_29bus_closed"], null, false);
+
+        registerLayer("SMR 2", ["retrofitting_2_SMR_29bus_extant", "retrofitting_2_SMR_29bus_SMR", "retrofitting_2_SMR_29bus_closed"], null, false);
+        
+        registerLayer("SMR 5", ["retrofitting_5_SMR_29bus_extant", "retrofitting_5_SMR_29bus_SMR", "retrofitting_5_SMR_29bus_closed"], null, false);
+        
+        registerLayer("SMR 10", ["retrofitting_10_SMR_29bus_extant", "retrofitting_10_SMR_29bus_SMR", "retrofitting_10_SMR_29bus_closed"], null, false);
+        
+        registerLayer("SMR 14", ["retrofitting_14_SMR_29bus_extant", "retrofitting_14_SMR_29bus_SMR", "retrofitting_14_SMR_29bus_closed"], null, false);
+        
+        registerLayer("SMR 20", ["retrofitting_20_SMR_29bus_extant", "retrofitting_20_SMR_29bus_SMR", "retrofitting_20_SMR_29bus_closed"], null, false);
+        
+        registerLayer("Ranking 1", ["ranking_1_"], null, false);
+
+        registerLayer("Ranking 10", ["ranking_10_"], null, false);
+
+        registerLayer("Ranking 100", ["ranking_100_"], null, false);
+
+        registerLayer("Ranking 1000", ["ranking_1000_"], null, false);
+
+        registerLayer("Ranking 10000", ["ranking_10000_"], null, false);
+
+        registerLayer("Ranking 100000", ["ranking_100000_"], null, false);
+
+        registerLayer("UK fossil power plant", ["PP_fossil"], null, false); 
+        
+
+        // registerLayer("SMR Retrofitting Results", ["retrofitting_29bus_extant", "retrofitting_29bus_SMR", "retrofitting_labels_extant", "retrofitting_labels_smr"], null, false);
+        
+        // registerLayer("Non-Retrofitting Results", ["non_retrofitting_29bus", "non_retrofitting_labels_29bus"], null, false);
+        
 
         // Build the layer selection tree
         buildLayerTree("radio");

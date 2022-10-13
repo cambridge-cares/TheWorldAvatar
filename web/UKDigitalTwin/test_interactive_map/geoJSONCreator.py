@@ -4,6 +4,7 @@
 # Last Update Date: 14 Sept 2021                   #
 ####################################################
 
+from ast import Return
 import matplotlib.cm 
 from colourLayers import gen_fuel_col, getChoropleth, getBusColour, generatorClusteringColour
 
@@ -215,6 +216,51 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
     geojson_written.close() 
     return 
 
+def busLocationJSONCreator(ret_bus, class_label_busLocation): 
+    if ret_bus == None:
+        print("The bus query result is none. Please check the query result of the buses.")
+        return None
+        
+    geojson_file_bus_gps_para = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    busList = []
+    for r in ret_bus:
+      if not r['Bus'] in busList:
+          # creating point feature 
+          busList.append(r['Bus'])
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "bus-number": "%s",
+              "bus-color": "%s"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }          
+          },"""%(r['Bus'], getBusColour(r['Bus']), r['BusLatLon'][1], r['BusLatLon'][0])         
+          # adding new line 
+          geojson_file_bus_gps_para += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file_bus_gps_para = geojson_file_bus_gps_para[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file_bus_gps_para += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_busLocation +'.geojson','w')
+    geojson_written.write(geojson_file_bus_gps_para)
+    geojson_written.close()    
+    return 
+
 def BranchAndBusConnectionGPSLocationJSONCreator(ret_branch, class_label_branch, class_label_FromBus_Points): 
     geojson_file = """
       {
@@ -379,7 +425,46 @@ def genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS):
         "type": "FeatureCollection",
         "features": ["""
       # iterating over features (rows in results array)
-    for i in range(len(ret_genLocation)):
+    for r in ret_genLocation:
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "gen_colour": "%s"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }                     
+          },""" %(generatorClusteringColour(r['Bus']), r['GenLatLon'][1], r['GenLatLon'][0])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_29_gen_GPS + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close()
+    return
+
+
+##TODO: add geojson features
+def genAndBusLatLonJSONCreator(ret_genAndBusLocation, lable):
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_genAndBusLocation)):
           # creating point feature 
           feature = """{
             "type": "Feature",
@@ -406,7 +491,7 @@ def genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS):
       """
     geojson_file += end_geojson
     # saving as geoJSON
-    geojson_written = open(class_label_29_gen_GPS + '.geojson','w')
+    geojson_written = open(lable + '.geojson','w')
     geojson_written.write(geojson_file)
     geojson_written.close()
     return

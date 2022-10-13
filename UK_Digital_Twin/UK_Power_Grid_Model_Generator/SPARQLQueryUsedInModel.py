@@ -18,6 +18,9 @@ import geojson
 import ast
 from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryGBOrNIBoundary
 import shapely.geometry
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
+from rfc3987 import parse
+from logging import raiseExceptions
 
 qres = []
 qres_ = []
@@ -28,7 +31,13 @@ allCapacity = []
 #####UPDATED#####
 
 ####Bus information query####
-def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
+def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endpoint, rule='IRI'):
+        endPointIRI = endpoint
+    else:
+        raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
     
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -56,7 +65,7 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
     """ % (topologyNodeIRI)
     
     print('...remoteQuery queryBusTopologicalInformation...')
-    res = json.loads(performQuery(endpoint_label, queryStr))
+    res = json.loads(performQuery(endPointIRI, queryStr))
     print('...queryBusTopologicalInformation is done...')
     
     for r in res:
@@ -69,7 +78,14 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
 
 ####EGen information query####
 
-def queryEGenInfo(topologyNodeIRI, endPoint_label):
+def queryEGenInfo(topologyNodeIRI, endPoint):
+    if endPoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endPoint, rule='IRI'):
+        endPointIRI = endPoint
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint!!!!")
+
     queryStr = """
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -84,7 +100,7 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon
+    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon ?PowerPlant_LACode
     WHERE
     {
     ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
@@ -119,6 +135,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
     ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
 
+    ?PowerPlant ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
+
     }
     """% (topologyNodeIRI, topologyNodeIRI)
     
@@ -135,11 +153,11 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     """% topologyNodeIRI
 
     print('...starts queryEGenInfo...')
-    res = json.loads(performQuery(endPoint_label, queryStr))
+    res = json.loads(performQuery(endPointIRI, queryStr))
     qres = [[ str(r['PowerGenerator']), float((r['FixedMO'].split('\"^^')[0]).replace('\"','')), float((r['VarMO'].split('\"^^')[0]).replace('\"','')), \
                 float((r['FuelCost'].split('\"^^')[0]).replace('\"','')), float((r['CO2EmissionFactor'].split('\"^^')[0]).replace('\"','')), str(r['Bus']), \
                 float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1], \
-                [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])]]  for r in res]
+                [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])], str(r['PowerPlant_LACode'])] for r in res]
     print('...finishes queryEGenInfo...')
     # print('...starts querying counterBusNumber...')
     # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
@@ -148,6 +166,13 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
+    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endPoint_label, rule='IRI'):
+        endPointIRI = endPoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint!!!!")
+
     queryStr_BusAndLatlon = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -168,7 +193,7 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
     ons_label = endpointList.ONS['lable']
 
     print('remoteQuery BusAndLatlon and GBOrNIBoundary')
-    res_BusAndLatlon = json.loads(performQuery(endPoint_label, queryStr_BusAndLatlon))
+    res_BusAndLatlon = json.loads(performQuery(endPointIRI, queryStr_BusAndLatlon))
     boundaries = queryGBOrNIBoundary(ons_label)
     print('query of BusAndLatlon and GBOrNIBoundary is done')
     
@@ -226,7 +251,7 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
     """% (startTime_of_EnergyConsumption, query_Area)
     
     print('remoteQuery electricity_consumption')
-    res_electricity_consumption = json.loads(performQuery(endPoint_label, queryStr_electricity_consumption))
+    res_electricity_consumption = json.loads(performQuery(endPointIRI, queryStr_electricity_consumption))
     print('query of electricity_consumption is done')
     if str(res_electricity_consumption) == '[]':
         raise Exception('Cannot find the total consumtion of the area', query_Area)
@@ -401,8 +426,14 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
     return queryStr    
     
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
-def queryELineTopologicalInformation(topologyNodeIRI, endpoint_label):
+def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
     #  label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endpoint, rule='IRI'):
+        endPointIRI = endpoint
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint!!!!")
     
     query_branch_voltage_level = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -425,20 +456,18 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint_label):
     """ %topologyNodeIRI
     
     print('...Query the branch_voltage_level...')
-    res = json.loads(performQuery(endpoint_label, query_branch_voltage_level))
+    res = json.loads(performQuery(endPointIRI, query_branch_voltage_level))
     print('...Branch_voltage_level query is done...')
     branch_voltage_level =  [str(r['OHL_voltage_level']) for r in res]
     queryStr = branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level)
     print('...Query Branch Geometry...')
-    res = json.loads(performQuery(endpoint_label, queryStr))
+    res = json.loads(performQuery(endPointIRI, queryStr))
     print('...branchGeometryQuery is done...')
     for r in res:
         for key in r.keys():
             if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     return res, branch_voltage_level 
-    
-
 
 if __name__ == '__main__': 
     ONS_json = "http://statistics.data.gov.uk/sparql.json"

@@ -5,6 +5,7 @@
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
 
+from logging import raiseExceptions
 import os, sys, json
 from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
@@ -12,9 +13,13 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from collections import Counter
 from shapely.wkt import loads
 from shapely.geometry import mapping
+import urllib.parse
+import requests
+from rfc3987 import parse
 import geojson
 import ast
 
@@ -115,6 +120,33 @@ def queryRegionBoundaries(ONS_Endpoint_label):
     ?geometry ons_geosparql:asWKT ?areaBoundary .
     } GROUP BY ?LACode_area   
     """
+
+    encodedString_1 = urllib.parse.quote(queryStr_england_region)
+    getString_1 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_1)
+
+    encodedString_2 = urllib.parse.quote(queryStr_SWN)
+    getString_2 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_2)
+
+    print('...HTTP GET queryRegionBoundaries...')
+    r1 = requests.get(getString_1, timeout=60)
+    r2 = requests.get(getString_2, timeout=60)
+
+    print(json.loads(r1.text))
+    print(json.loads(r2.text))
+
+    res_england_region = json.loads(r1.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
+    res_SWN = json.loads(r2.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
+
+    print(len(res_england_region))
+
+    print('...HTTP GET queryRegionBoundaries is done...')
+    if int(r1.status_code) != 200 or int(r2.status_code) != 200:
+        print('The Region Boundaries cannot be found.')
+        return None
+
+    for swn in res_SWN:
+        res_england_region.append(swn)
+########################################################################################################################################
     print('...remoteQuery Region Boundaries...')
     res_england_region = json.loads(performQuery(ONS_Endpoint_label, queryStr_england_region))
     res_SWN = json.loads(performQuery(ONS_Endpoint_label, queryStr_SWN))
@@ -138,11 +170,21 @@ def queryRegionBoundaries(ONS_Endpoint_label):
           r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
       r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
     return res_england_region
+##TODO: test this method
+# if __name__ == '__main__':
+#     res = queryRegionBoundaries('ons')
 
 ## This function is designed to find the region which the given area within in 
-def queryWithinRegion(LACode, ONS_Endpoint_label):
+def queryWithinRegion(LACode:str, ONS_Endpoint):
     LACode = str(LACode)
     typeCode = int(LACode[1] + LACode[2])
+    if ONS_Endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint, rule='IRI'):
+        endPointIRI = ONS_Endpoint
+    else:
+        raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
+
     if LACode[0] == 'E':
         if not typeCode >= 11: # E11, E12 and other places whose code is larger than 11 are not included in any areas
             queryStr = """
@@ -162,14 +204,18 @@ def queryWithinRegion(LACode, ONS_Endpoint_label):
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }
             """%LACode
-            print('...remoteQuery WithinRegion of a given LA code...')
-            res = json.loads(performQuery(ONS_Endpoint_label, queryStr))
-            print('...queryWithinRegion is done...')
-            if len(res) != 1:
+
+            encodedString = urllib.parse.quote(queryStr)
+            getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+
+            print('...HTTP GET WithinRegion of a given LA code...')
+            r = requests.get(getString, timeout=60)
+            RegionOrCountry = json.loads(r.text)['results']['bindings'][0]['LACode_Region']['value']
+            print('...HTTP GET queryWithinRegion is done...')
+            if int(r.status_code) != 200:
                 # raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
                 print('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
                 return None
-            RegionOrCountry = [str(res[0]['LACode_Region'])]
         else :
             # raise Exception('The given LA coed is ', LACode,' which is not within any region of England.')
             print('The given LA coed is ', LACode,' which is not within any region of England.')
@@ -206,10 +252,16 @@ def queryGBOrNIBoundary(ONS_Endpoint_label):
     ?geometry ons_geosparql:asWKT ?areaBoundary .
     } GROUP BY ?LACode_area
     """
-    print('...query GBOrNIBoundary...')
-    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
-    print('...queryGBOrNIBoundary is done...')
-    # clear the symbols in the query results
+    encodedString = urllib.parse.quote(queryStr)
+    getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+
+    print('...HTTP GET queryGBOrNIBoundary...')
+    r = requests.get(getString, timeout=60)
+    res = json.loads(r.text)['results']['bindings']# [0]['LACode_Region']['value']
+    print('...HTTP GET queryGBOrNIBoundary is done...')
+    if int(r.status_code) != 200:
+        raise Exception('The queryGBOrNIBoundary has returned nothing from ONS server.')
+    res = [ {"LACode_area": re["LACode_area"]['value'], "Geo_InfoList": re["Geo_InfoList"]['value']}  for re in res]
     for r in res:
       for key in r.keys():
           if '\"^^' in  r[key]:
@@ -220,9 +272,16 @@ def queryGBOrNIBoundary(ONS_Endpoint_label):
       elif "***" in r['Geo_InfoList']:
           r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
       r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
-    return res         
+    return res      
 
 def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
+    if ONS_Endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint_label, rule='IRI'):
+        endPointIRI = ONS_Endpoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint IRI!!!!")
+
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -238,10 +297,15 @@ def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
     }
     """%(str(LACode_toBeCheck), str(givenLACode))
     print('...query ifWithin condition...')
-    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    res = json.loads(performQuery(endPointIRI, queryStr))  
     print('...queryifWithin is done...')
     res = res[0]['ASK']
     return res
+
+if __name__ == '__main__':
+    onsEndpoint = "http://statistics.data.gov.uk/sparql.json"
+    res = queryifWithin('E12000007', 'K03000001', 'ons')
+    print(res)   
 
 def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     queryStr = """

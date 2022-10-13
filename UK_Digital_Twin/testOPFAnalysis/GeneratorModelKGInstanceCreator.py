@@ -61,7 +61,7 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 ukec = UKec.UKEnergyConsumption()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_label = endpointList.ukdigitaltwin['label']
 endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """T-Box URI"""

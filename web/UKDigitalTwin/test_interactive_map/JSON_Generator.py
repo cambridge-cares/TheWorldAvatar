@@ -5,15 +5,17 @@
 
 from GPSLocationChecker import check_GPS_char, GPS_special_chars, check_GPS
 from queryStrings import queryPowerPlantForVisualisation, queryUKElectricityConsumptionAndAssociatedGEOInfo, queryGridModeltForVisualisation_Bus, \
-    queryGridModeltForVisualisation_Branch, queryBusGPSLocation, queryBranchConnectedGPSLocation, queryGeneratorLocation
+    queryGridModeltForVisualisation_Branch, queryBusGPSLocation, queryBranchConnectedGPSLocation, queryGeneratorLocation, queryGeneratorAndBusLocation
 from geoJSONCreator import powerPlantgeoJSONCreator, elecConsAndGEOInfogeoJSONCreator, busModelJSONCreator, BranchAndBusConnectionGPSLocationJSONCreator, \
-    BusGPSLocationJSONCreator, BranchGPSLocationJSONCreator, genLocationJSONCreator
+    BusGPSLocationJSONCreator, BranchGPSLocationJSONCreator, genLocationJSONCreator, genAndBusLatLonJSONCreator, busLocationJSONCreator
 
 """Endpoints"""
 ONS = "http://statistics.data.gov.uk/sparql.json"
-ukdigitaltwin_label = "ukdigitaltwin"
+ukdigitaltwin_label = "ukdigitaltwin_test2"
 ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
 startTime_of_EnergyConsumption = "2017-01-31"
+
+topologyIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
 
 
 """PowerPlant query"""
@@ -38,6 +40,8 @@ print("************************Start querying Grid model************************
 
 # ret_genLocation_10 = queryGeneratorLocation(ukdigitaltwin_label, 10)
 
+BusAndGenLatlon_10busmodel = queryGeneratorAndBusLocation(ukdigitaltwin_label, topologyIRI)
+
 """Labels"""
 class_label_pp = 'UK_PowerPlants'
 class_label_elec_region = "UK_Electricity_Consumption_Regions"
@@ -47,7 +51,10 @@ class_label_busInputVar = "UK_Grid_Model_Bus_InputVar"
 class_label_branch = "UK_Grid_Model_10_bus_Branch"
 class_label_FromBus = "UK_Grid_Model_Branch_FromBus_GPSPoints"
 
+## 10 bus model labels 
 class_label_10_gen_GPS = "UK_Grid_10_gen_GPS"
+BusLocation_10busmodel_label = "BusLocationWithColoredPoints_10BusModel"
+GenLocation_10busmodel_label = "GenLocationWithColoredPoints_10BusModel"
 
 #29_bus model
 class_label_29_bus_GPS_location = "UK_Grid_29_bus_GPS_location"
@@ -71,6 +78,10 @@ class_label_29_gen_GPS = "UK_Grid_29_gen_GPS"
 # BusGPSLocationJSONCreator(ret_busLocation, class_label_29_bus_GPS_location)
 # BranchGPSLocationJSONCreator(ret_branchLocation, class_label_29_bus_branch_GPS)
 # genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS)
-# genLocationJSONCreator(ret_genLocation_10, class_label_10_gen_GPS)
+##genLocationJSONCreator(ret_genLocation_10, class_label_10_gen_GPS)
+
+busLocationJSONCreator(BusAndGenLatlon_10busmodel, BusLocation_10busmodel_label)
+
+genLocationJSONCreator(BusAndGenLatlon_10busmodel, GenLocation_10busmodel_label)
 
 print("*******************The JSON_Generator.py is finished*******************")

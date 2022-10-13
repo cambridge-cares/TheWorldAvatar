@@ -57,7 +57,7 @@ lookupTable = {
 #     'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"}
 
 ukdigitaltwin = {
-    'lable': 'ukdigitaltwin_test2',
+    'label': 'ukdigitaltwin_test2',
     'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql",
     'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql",
     'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"}
@@ -71,10 +71,18 @@ ukdigitaltwin = {
 
 """ONS in Blazegraph"""
 ONS = {
-    'lable': 'ons',
+    'label': 'ons',
     'endpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
     'queryendpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
     'updateendpoint_iri' : "http://statistics.data.gov.uk/sparql.json"}
+
+
+"""ukdigitaltwin population density"""
+ukdigitaltwin_pd = {
+    'label': 'ukdigitaltwin_pd',
+    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql",
+    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql",
+    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"}
 
 
 

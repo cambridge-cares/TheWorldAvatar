@@ -24,13 +24,14 @@ class demandLoadAllocator(object):
     
     """"This allocation principle is firstly appoled in the 10-bus model (UK) as a most strightforward way. 
     which is to assign the regional demanding to the bus who locatates in the same region. 
-    However, when the same region has more than one bus, this method may not be suitable anymore."""   
+    However, when the same region has more than one bus, this method may not be suitable anymore."""  
+    ###FIXME: this method does not atach the LA code of the demanding areas to the bus who take the load, it may need in the site selection model 
     def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel):
         # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
 
         # The query endpoints
-        ons_label = endpointList.ONS['lable']
+        ons_label = endpointList.ONS['label']
         ons_iri = endpointList.ONS['queryendpoint_iri']
         ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
         # query regional consumption
@@ -87,7 +88,7 @@ class demandLoadAllocator(object):
     def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel:str = "Bus_lat_lon" ):
       # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
-      ons_label = endpointList.ONS['lable']
+      ons_label = endpointList.ONS['label']
       ons_iri = endpointList.ONS['queryendpoint_iri']
       ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
       # query the local consumption
@@ -114,7 +115,7 @@ class demandLoadAllocator(object):
         busAndDemandPair = {}  
         if len(busInGB) > 0: 
             demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'K03000001', ons_label)
-            if demandArea_within_flag == True: # deman located in GB
+            if demandArea_within_flag == True: # demanding located in GB
                 j = 0
                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
                 for bus in busInGB:
@@ -123,6 +124,7 @@ class demandLoadAllocator(object):
                   j += 1
                 bus_index = distances.index(min(distances))  
                 busAndDemandPair = {**busInGB[bus_index], **ec}
+                ec['busNodeIRI'] = busInGB[bus_index]['BusNodeIRI']
                 if len(busAndDemandPairList) != 0:
                     hitFlag = False
                     for bd in busAndDemandPairList: 
@@ -152,6 +154,7 @@ class demandLoadAllocator(object):
                 
                 bus_index = distances.index(min(distances))    
                 busAndDemandPair = {**busInNorthernIreland[bus_index], **ec}
+                ec['busNodeIRI'] = busInGB[bus_index]['BusNodeIRI']
                 if len(busAndDemandPairList) != 0:
                     hitFlag = False
                     for bd in busAndDemandPairList: 
@@ -175,7 +178,7 @@ class demandLoadAllocator(object):
 
       aggregatedBusFlag = False  
           
-      return busAndDemandPairList, aggregatedBusFlag
+      return busAndDemandPairList, res_queryElectricityConsumption_LocalArea, aggregatedBusFlag
 
     
 
@@ -185,7 +188,7 @@ class demandLoadAllocator(object):
       # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       print('****The cluster principle is closestDemandLoad_withEWSBoundCheck****')
-      ons_label = endpointList.ONS['lable']
+      ons_label = endpointList.ONS['label']
       ons_iri = endpointList.ONS['queryendpoint_iri']
       ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
       # query the local consumption
@@ -424,7 +427,7 @@ def centroidOfMultiplePoints_withAreaWeighted(PointList, arealist):
   return centroid
 
 def test_MultipolygonCentroid():
-    ons_label = endpointList.ONS['lable']
+    ons_label = endpointList.ONS['label']
     cardiffBoundary = query_topo.queryCardiffBound(ons_label)
     # arealist = []
     # polygonListOfcardiffBoundary = cardiffBoundary.geoms

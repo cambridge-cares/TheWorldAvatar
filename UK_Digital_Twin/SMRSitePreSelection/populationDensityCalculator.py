@@ -11,8 +11,18 @@ import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
+from rfc3987 import parse
+from logging import raiseExceptions
 
 def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> float:
+    if queryEndPointLabel == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin_pd['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin_pd['endpoint_iri'])
+    elif parse(queryEndPointLabel, rule='IRI'):
+        endPointIRI = queryEndPointLabel
+    else:
+        raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
+
     if not "#" in centre and type(centre) is list and len(centre) == 2:
         centre = str(centre[0]) + "#" + str(centre[1])
     elif "#" in centre:
@@ -43,7 +53,7 @@ def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> 
 """% (centre, str(radius))
     
     print('...perform geospacial query...')
-    res = json.loads(performQuery(queryEndPointLabel, queryStr_geospatial))
+    res = json.loads(performQuery(endPointIRI, queryStr_geospatial))
     print('...geospacial query is done...')
 
     populationWithinGivenCircle = 0

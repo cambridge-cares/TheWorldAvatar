@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 18 July 2022         #
+# Last Update Date: 11 Oct 2022          #
 ##########################################
 
 import os, sys, json
@@ -10,6 +10,14 @@ from UK_Digital_Twin_Package.queryInterface import performQuery
 from SMRSitePreSelection.AnnualElectricityProduction import ElectricityProductionDistribution
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
+from shapely.wkt import loads
+import urllib.parse
+import requests
+import time
+import gc
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
+from rfc3987 import parse
+from logging import raiseExceptions
 
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
@@ -135,6 +143,13 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
     return results 
 
 def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationOrFuelType:list, topologyNodeIRI:str, endPoint_label):  
+    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endPoint_label, rule='IRI'):
+        endPointIRI = endPoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint!!!!")
+    
     results = []
     genTypeSummary = []
     keys = ElectricityProductionDistribution.keys()
@@ -247,10 +262,10 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         """% (type, type)
 
         print('...starts queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType...')
-        res = json.loads(performQuery(endPoint_label, queryStr_1))
+        res = json.loads(performQuery(endPointIRI, queryStr_1))
         print('...finishes queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType...')  
         print('...starts query total capacity...')
-        Total_Capacity = json.loads(performQuery(endPoint_label, queryStr_totalGeneration))[0]["Total_Capacity"]
+        Total_Capacity = json.loads(performQuery(endPointIRI, queryStr_totalGeneration))[0]["Total_Capacity"]
         print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')   
         annualOperatingHours = round(float(annualGenerationOfGivenType)/float(Total_Capacity), 2)
         # print("The operating hours of the", type, " is", annualOperatingHours)
@@ -276,6 +291,76 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
                             })
         
     return results, genTypeSummary
+
+## Query the boundaries of the consumption areas
+## Direct Http Request without using the query client from the py4jps
+def queryAreaBoundaries(LA_code:str):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE
+    {
+    ?area ons:status "live" .
+    ?area rdf:type ons:Statistical-Geography .
+    ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
+    ?area ons_geosparql:hasGeometry ?geometry .
+    ?geometry ons_geosparql:asWKT ?areaBoundary .
+    } GROUP BY ?area
+    """% (LA_code)
+
+    encodedString = urllib.parse.quote(queryStr)
+    getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+
+    print('... HTTP GET demanding Area Boundaries...')
+    r = requests.get(getString, timeout=60)
+    res = json.loads(r.text)['results']['bindings'][0]['Geo_InfoList']['value']
+    print('...HTTP GET demanding Area Boundaries is done...')
+    
+    ## clear the symbols in the query results
+    if '\"^^' in  res :
+        res = (res.split('\"^^')[0]).replace('\"','') 
+
+    # Check the availability of the geometry of each area
+    if res == 0: 
+        raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
+    elif "***" in res:
+        res = res.split("***")[0]
+    res = loads(res) # convert wkt into shapely polygons
+    return res
+     
+def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    PREFIX foi: <http://publishmydata.com/def/ontology/foi/>
+    ASK  
+    {
+    ?areaToBeChecked <http://publishmydata.com/def/ontology/foi/code> "%s" .
+    ?areaGiven <http://publishmydata.com/def/ontology/foi/code> "%s" .
+    ?areaToBeChecked foi:within ?areaGiven .
+    }
+    """%(str(LACode_toBeCheck), str(givenLACode))
+    print('...query ifWithin condition...')
+    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    print('...queryifWithin is done...')
+    res = res[0]['ASK']
+    return res
+
+if __name__ == '__main__':
+    i = 0
+    area = ['E07000066', 'E07000128', 'W06000021', 'S12000048', 'E07000066', 'E07000128', 'W06000021', 'S12000048' ,'E07000066', 'E07000128', 'W06000021', 'S12000048']
+    for a in area:
+        r = queryAreaBoundaries(a)
+        print(r)
+        print(i)
+        i += 1     
 
 ############################################OLD####################################
 
@@ -542,6 +627,7 @@ def queryBranchModelInput(powerSystemModelIRI:str, endPointLabel, splitCharacter
         textfile.write(r + "\n")
     textfile.close()
     return ret_array
+
 
 def queryGeneratorModelInput(powerSystemModelIRI:str, endPointLabel, splitCharacter):  
     # queryStr = """

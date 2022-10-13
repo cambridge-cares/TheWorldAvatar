@@ -874,6 +874,63 @@ def queryGeneratorLocation(ukdigitaltwin_label, numOfBus):
     
     return qres_genLocation
 
+def queryGeneratorAndBusLocation(ukdigitaltwin_label, topologyNodeIRI):
+    queryStr = """
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?PowerGenerator ?GenLatLon ?Bus ?BusLatLon
+    WHERE
+    {
+    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
+    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
+    
+    ?PowerGenerator meta_model_topology:hasOutput ?Bus .
+    ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
+
+    ?Bus ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .
+
+    ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+
+    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?GenLatLon .
+
+    }
+    """% (topologyNodeIRI, topologyNodeIRI)
+          
+    start = time.time()
+    print('Querying Generator Location...')
+    res = json.loads(performQuery(ukdigitaltwin_label, queryStr))
+    # print(res_para)
+    end = time.time()  
+    print('Finished querying Generator Location in ', np.round(end-start,2),' seconds') 
+    busList = []
+    for r in res:
+        for key in r.keys():
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+        if not r['Bus'] in busList:
+          busList.append(r['Bus'])
+    
+
+    for r in res:
+        r['GenLatLon'] = [float(r['GenLatLon'].split('#')[0]), float(r['GenLatLon'].split('#')[1])]   
+        r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])]  
+        r['Bus'] = int(busList.index(r['Bus']))   
+
+    return res
 
 def queryUKSDGIndicatorForVisualisation():
 

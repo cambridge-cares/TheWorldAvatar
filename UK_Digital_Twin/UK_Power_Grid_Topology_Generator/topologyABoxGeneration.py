@@ -66,7 +66,7 @@ ukec = UKec.UKEnergyConsumption()
 # uk_egen_model = UK_PG.UKEGenModel()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_label = endpointList.ukdigitaltwin['label']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """T-Box URI"""
