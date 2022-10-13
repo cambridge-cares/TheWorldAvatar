@@ -1,6 +1,6 @@
 from unittest import installHandler
 from pubchem.kgoperations.getkgdata import *
-from pubchem.kgoperations.querykg import kg_operations 
+from pubchem.kgoperations.addkgdata import * 
 from pubchem.pug import pug_api
 
 def query_with_inchi(inchi):
