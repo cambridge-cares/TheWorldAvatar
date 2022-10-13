@@ -3,7 +3,7 @@
 	"Algorithms": [{
 			"name": "algorithm1",
 			"type": "SamplingAlg",
-			"loadSurrogate": "mods-sim-6476504040189009585",
+			"loadSurrogate": "mods-sim-8463971964970387209",
 			"variables": [{
 					"name": "var1",
 					"type": "input"
