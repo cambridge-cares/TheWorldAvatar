@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -68,31 +67,27 @@ public class InitialiseInstances extends JPSAgent {
 
 		JSONObject response = new JSONObject();
 		String path = request.getServletPath();
-		try {
-			switch (path) {
-				case API_PATTERN_1:
-					response = initialise1(sparqlClient, devClient);
-					break;
-				case API_PATTERN_2:
-					response = initialise2(sparqlClient, devClient);
-					break;
-				case API_PATTERN_3:
-					response = initialise3(sparqlClient, devClient);
-					break;
-				case API_PATTERN_4:
-					response = initialise4(sparqlClient, devClient);
-					break;
-				case API_PATTERN_5:
-					response = initialise5(sparqlClient, devClient);
-					break;
-				case API_PATTERN_6:
-					response = initialise6(sparqlClient, devClient);
-					break;
-				default:
-					response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		switch (path) {
+			case API_PATTERN_1:
+				response = initialise1(sparqlClient, devClient);
+				break;
+			case API_PATTERN_2:
+				response = initialise2(sparqlClient, devClient);
+				break;
+			case API_PATTERN_3:
+				response = initialise3(sparqlClient, devClient);
+				break;
+			case API_PATTERN_4:
+				response = initialise4(sparqlClient, devClient);
+				break;
+			case API_PATTERN_5:
+				response = initialise5(sparqlClient, devClient);
+				break;
+			case API_PATTERN_6:
+				response = initialise6(sparqlClient, devClient);
+				break;
+			default:
+				response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
 		}
 
 		// check all connections between all derivations
@@ -112,38 +107,32 @@ public class InitialiseInstances extends JPSAgent {
 		return response;
 	}
 
-	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, true);
 	}
 
-	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, false);
 	}
 
-	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, true, false);
 	}
 
-	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, false, false);
 	}
 
-	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, false, false);
 	}
 
-	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, false, false, false, false);
 	}
 
 	JSONObject basicInitialisation(SparqlClient sparqlClient, DerivationClient devClient, boolean listPt, boolean max,
-			boolean min, boolean diff) throws ClientProtocolException, IOException {
+			boolean min, boolean diff) {
 		JSONObject response = new JSONObject();
 
 		// clear KG when initialising
@@ -158,6 +147,7 @@ public class InitialiseInstances extends JPSAgent {
 		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
 		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
 		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String diff_reverse_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
 
 		// create ontoagent instances
 		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
@@ -168,6 +158,8 @@ public class InitialiseInstances extends JPSAgent {
 				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
 		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
 				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+		sparqlClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
+				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_reverse_rdf_type));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
