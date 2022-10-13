@@ -42,9 +42,9 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
         SELECT ?property_iri ?address_iri ?postcode_iri ?district_iri
         WHERE {{
         {values_statement}
-        ?property <{RDF_TYPE}> <{OBE_PROPERTY}> ;
-                  <{OBE_LOCATEDIN}> ?district_iri ;
-                  <{OBE_HAS_ADDRESS}> ?address_iri .
+        ?property_iri <{RDF_TYPE}>/<{RDFS_SUBCLASS}>* <{OBE_PROPERTY}> ;
+                      <{OBE_LOCATEDIN}> ?district_iri ;
+                      <{OBE_HAS_ADDRESS}> ?address_iri .
         ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri .                  
         }}
     """

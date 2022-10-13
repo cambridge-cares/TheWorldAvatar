@@ -19,6 +19,6 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to update transaction records for all instantiated properties as well as property price index:<BR>"
-    msg += "(Instantiates previously not instantiated sales data and updates outdated ones)"
+    msg += "(Instantiates previously not instantiated sales data and updates outdated ones)<BR>"
     msg += "&nbsp&nbsp [POST request]   /api/landregistry/update_all"
     return msg

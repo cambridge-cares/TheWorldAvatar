@@ -46,6 +46,7 @@ LRPPI_DATE = LRPPI + 'transactionDate'
 
 # Concepts
 RDF_TYPE = RDF + 'type'
+RDFS_SUBCLASS = RDFS + 'subClassOf'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 

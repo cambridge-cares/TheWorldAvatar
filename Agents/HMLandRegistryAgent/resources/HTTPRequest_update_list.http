@@ -1,14 +1,13 @@
 // Example HTTP request to update transaction records for list of instantiated properties
 
-// property_iris: IRIs of instantiated buildings to instantiate/update property sales data for delimited by comma
+// property_iris: IRIs of instantiated buildings for which to instantiate/update property sales data,
+//                delimited by comma WITHOUT line breaks!
 //                (trailing '<' and '>' are optional/not required)
 
 POST http://128.199.197.40:5002/api/landregistry/update
 Content-Type: application/json
 
 { "query": {
-      "property_iris": "https://www.theworldavatar.com/kg/ontobuiltenv/Building_21367cb9-6823-4133-9204-c88b3f8850a7,
-                        <https://www.theworldavatar.com/kg/ontobuiltenv/Building_216546bf-c9f1-424b-89b0-355a190d96a1>,
-                        https://www.theworldavatar.com/kg/ontobuiltenv/Building_21b372f7-45f0-4ce4-9578-bc165df1be86"
+      "property_iris": "https://www.theworldavatar.com/kg/ontobuiltenv/Building_21367cb9-6823-4133-9204-c88b3f8850a7, <https://www.theworldavatar.com/kg/ontobuiltenv/Building_216546bf-c9f1-424b-89b0-355a190d96a1>, https://www.theworldavatar.com/kg/ontobuiltenv/Building_21b372f7-45f0-4ce4-9578-bc165df1be86"
     }
 }
