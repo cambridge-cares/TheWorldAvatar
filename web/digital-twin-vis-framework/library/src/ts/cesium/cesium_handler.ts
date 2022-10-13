@@ -166,9 +166,10 @@ class MapHandler_Cesium extends MapHandler {
                         properties[id] = contentMetadata.getProperty(id);
                     });
                 } else {
-                    feature.getPropertyIds().forEach(id => {
-                        properties[id] = feature.getProperty(id);
-                    });
+                    // Do nothing, there's no data?
+                    // feature.getPropertyIds().forEach(id => {
+                    //     properties[id] = feature.getProperty(id);
+                    // });
                 }
 
                 if(properties.hasOwnProperty("name")) {
@@ -368,7 +369,10 @@ class MapHandler_Cesium extends MapHandler {
             show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
         };
 
-        if(position !== null && position !== undefined) options["modelMatrix"] = position;
+        if(position !== null && position !== undefined) {
+            options["modelMatrix"] = position;
+        }
+
         let tileset = new Cesium.Cesium3DTileset(options);
 
         // Add the tileset to the map
