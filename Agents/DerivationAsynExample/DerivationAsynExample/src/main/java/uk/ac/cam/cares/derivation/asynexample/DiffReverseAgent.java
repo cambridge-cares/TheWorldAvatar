@@ -31,7 +31,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 @WebServlet(urlPatterns = { DiffReverseAgent.API_PATTERN }, loadOnStartup = 1) // agent init() once deployed
 public class DiffReverseAgent extends DerivationAgent {
 
-	private static final Logger LOGGER = LogManager.getLogger(MaxValueAgent.class);
+	private static final Logger LOGGER = LogManager.getLogger(DiffReverseAgent.class);
 
 	private static final long serialVersionUID = 1L;
 
