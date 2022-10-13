@@ -3,7 +3,6 @@
 	"Algorithms": [{
 			"name": "algorithm1",
 			"type": "GenSurrogateAlg",
-			"maxNumberOfResults": 10,
 			"saveSurrogate": true,
 			"variables": [{
 					"name": "var1",
