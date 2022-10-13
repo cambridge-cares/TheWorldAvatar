@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 October 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 October 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -32,7 +32,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasAveragingPeriod">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/AverageTimeSeries"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2006/time#TemporalDuration"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Duration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a time series of averages and the time interval considered in the average calculation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -54,14 +54,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.w3.org/2006/time#unitType">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/2006/time#Duration"/>
-                    <rdf:Description rdf:about="http://www.w3.org/2006/time#GeneralDateTimeDescription"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="http://www.w3.org/2006/time#Duration"/>
         <rdfs:range rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time#</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -194,38 +187,6 @@
 
 
     <owl:Class rdf:about="http://www.w3.org/2006/time#Duration">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/2006/time#TemporalDuration"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/time#unitType"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time#</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/2006/time#GeneralDateTimeDescription -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/2006/time#GeneralDateTimeDescription">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/time#unitType"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/2006/time#TemporalDuration -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/2006/time#TemporalDuration">
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time#</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -235,7 +196,6 @@
 
 
     <owl:Class rdf:about="http://www.w3.org/2006/time#TemporalUnit">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/2006/time#TemporalDuration"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time#</rdfs:isDefinedBy>
     </owl:Class>
 </rdf:RDF>
