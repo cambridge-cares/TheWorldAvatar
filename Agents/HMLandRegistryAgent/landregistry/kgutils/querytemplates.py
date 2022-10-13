@@ -6,8 +6,6 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-import uuid
-import pandas as pd
 
 import agentlogging
 
@@ -31,7 +29,7 @@ def query_price_paid_for_postcode(postcode: str) -> str:
 # SPARQL QUERIES
 #
 def get_instantiated_properties_with_location_info(property_iris: list = None) -> str:
-    # Check if local authority district is instantiated (per OntoBuiltEnv)
+    # Retrieve instantiated properties with location information from KG
 
     values_statement = ""
     if property_iris:
@@ -50,6 +48,8 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
         ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri .                  
         }}
     """
+
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
+
     return query
