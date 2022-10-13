@@ -26,7 +26,7 @@ class HDMR extends Simulation {
 
     @Override
     protected void generateFiles() throws FileGenerationException {
-        generateInitialFile();
+        generateInitialFileFromInputs();
         generateDataAlgFiles();
         super.generateFiles();
     }
