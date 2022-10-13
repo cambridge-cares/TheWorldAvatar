@@ -251,14 +251,15 @@ public class Simulation {
         inputFile.marshal(modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
     }
 
-    protected final void generateInitialFile() throws FileGenerationException {
+    protected final void generateInitialFileFromInputs() throws FileGenerationException {
         Data inputs = getRequest().getInputs();
         Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
-        if (inputs != null)
-            new CSVDataFile(inputs.getAverages()).marshal(path);
-        else {
-            new CSVDataFile(inputMetaData.meansToData()).marshal(path);
-        }
+        new CSVDataFile(inputs.getAverages()).marshal(path);
+    }
+
+    protected final void generateInitialFileFromMetaData() throws FileGenerationException {
+        Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
+        new CSVDataFile(inputMetaData.meansToData()).marshal(path);
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
