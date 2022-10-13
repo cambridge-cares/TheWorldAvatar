@@ -53,7 +53,7 @@ public class InputMetaData {
             scaling = Collections.nCopies(varNames.size(), "linear");
         } else if (algorithm.getLoadSurrogate() != null) {
 
-            Path path = Simulation.getSurrogateDirectory(modsBackend, algorithm)
+            Path path = Simulation.getSurrogateDirectory(modsBackend)
                     .resolve(DEFAULT_INPUT_INFO_FILE_NAME);
 
             if (!Files.exists(path)) {

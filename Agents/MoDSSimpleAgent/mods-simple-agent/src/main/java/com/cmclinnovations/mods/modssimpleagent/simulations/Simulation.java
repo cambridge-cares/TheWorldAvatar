@@ -314,8 +314,8 @@ public class Simulation {
         request.getAlgorithms().stream()
                 .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
                 .forEach(algorithm -> {
-                    Path saveDirectory = getSaveDirectory(algorithm);
-                    Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
+                    Path saveDirectory = getSaveDirectory();
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
                     try {
                         copyDirectory(surrogateDirectory, saveDirectory);
@@ -333,11 +333,11 @@ public class Simulation {
                 });
     }
 
-    public static Path getSurrogateDirectory(MoDSBackend modsBackend, Algorithm algorithm) {
+    public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
         return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
-    private Path getSaveDirectory(Algorithm algorithm) {
+    private Path getSaveDirectory() {
         return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
                 .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
@@ -347,7 +347,7 @@ public class Simulation {
                 .filter(algorithm -> algorithm.getLoadSurrogate() != null)
                 .forEach(algorithm -> {
                     try {
-                        Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
+                        Path surrogateDirectory = getSurrogateDirectory(modsBackend);
                         Path loadDirectory = getLoadDirectory(algorithm);
 
                         if (!Files.exists(loadDirectory)) {
