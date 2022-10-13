@@ -1,9 +1,8 @@
 {
-	"SimulationType": "MOOonly",
+	"SimulationType": "Evaluate",
 	"Algorithms": [{
 			"name": "algorithm1",
-			"type": "MOO",
-			"maxNumberOfResults": 10,
+			"type": "SamplingAlg",
 			"loadSurrogate": "mods-sim-6476504040189009585",
 			"variables": [{
 					"name": "var1",
@@ -16,24 +15,26 @@
 					"type": "input"
 				}, {
 					"name": "var4",
-					"type": "output",
-					"objective": "Maximise",
-					"minimum": 0.5,
-					"weight": 0.5
+					"type": "output"
 				}, {
 					"name": "var5",
-					"type": "output",
-					"objective": "Minimise",
-					"maximum": 1.5,
-					"weight": 0.1
+					"type": "output"
 				}, {
 					"name": "var6",
-					"type": "output",
-					"objective": "Maximise",
-					"minimum": 2.5,
-					"weight": 0.7
+					"type": "output"
 				}
 			]
 		}
 	]
+	,
+	"Inputs": [{
+			"name": "var1",
+			"values": ["0.15", "0.35"]
+		}, {
+			"name": "var2",
+			"values": ["0.45", "0.85"]
+		}, {
+			"name": "var3",
+			"values": ["0.55", "0.15"]
+		}
 }
