@@ -39,6 +39,7 @@ public class Simulation {
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
     public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
+    public static final String DEFAULT_SAMPLING_ALGORITHM_NAME = "SamplingAlg";
 
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
