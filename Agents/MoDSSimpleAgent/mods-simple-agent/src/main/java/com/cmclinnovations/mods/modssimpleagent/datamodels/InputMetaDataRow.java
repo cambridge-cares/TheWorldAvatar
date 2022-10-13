@@ -1,13 +1,13 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
-public class InputInfoRow {
+public class InputMetaDataRow {
     private final String varName;
     private final Double minimum;
     private final Double maximum;
     private final Double mean;
     private final String scaling;
     
-    public InputInfoRow(String varName, Double minimum, Double maximum, Double mean, String scaling) {
+    public InputMetaDataRow(String varName, Double minimum, Double maximum, Double mean, String scaling) {
         this.varName = varName;
         this.minimum = minimum;
         this.maximum = maximum;

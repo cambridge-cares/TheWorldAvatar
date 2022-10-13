@@ -14,8 +14,8 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfo;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfoRow;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaDataRow;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
@@ -26,9 +26,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 class MOOonly extends Simulation {
 
-        public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputInfo inputInfo)
+        public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
                         throws IOException {
-                super(request, inputFile, modsBackend, inputInfo);
+                super(request, inputFile, modsBackend, inputMetaData);
         }
 
         @Override
@@ -68,11 +68,11 @@ class MOOonly extends Simulation {
                                 .map(MoDSAPI::getVarName)
                                 .collect(Collectors.toList());
 
-                List<Double> minimaFromData = ListUtils.filterAndSort(getInputInfo().getRows(), outputVarNames, InputInfoRow::getVarName,
-                                InputInfoRow::getMinimum);
+                List<Double> minimaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames, InputMetaDataRow::getVarName,
+                                InputMetaDataRow::getMinimum);
 
-                List<Double> maximaFromData = ListUtils.filterAndSort(getInputInfo().getRows(), outputVarNames, InputInfoRow::getVarName,
-                                InputInfoRow::getMaximum);
+                List<Double> maximaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames, InputMetaDataRow::getVarName,
+                                InputMetaDataRow::getMaximum);
 
                 List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
                                 Variable::getMinimum);

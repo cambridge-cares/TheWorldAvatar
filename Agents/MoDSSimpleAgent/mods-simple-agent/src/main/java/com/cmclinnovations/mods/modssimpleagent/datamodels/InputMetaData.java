@@ -21,14 +21,14 @@ import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationExce
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 
-public class InputInfo {
-    private List<InputInfoRow> rows;
+public class InputMetaData {
+    private List<InputMetaDataRow> rows;
 
     private static final String[] columnNames = { "variable_name", "minimum", "maximum", "mean","scaling" };
 
-    public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputInfo.csv";
+    public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
 
-    public static InputInfo createInputInfo(Request request, MoDSBackend modsBackend, Algorithm algorithm) throws IOException {
+    public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend, Algorithm algorithm) throws IOException {
         Data inputs = request.getInputs();
 
         List<String> varNames = new ArrayList<>();
@@ -80,13 +80,13 @@ public class InputInfo {
             throw new IOException("No input data or load location provided.");
         }
 
-        return new InputInfo(varNames, minima, maxima, means, scaling);
+        return new InputMetaData(varNames, minima, maxima, means, scaling);
     }
 
-    public InputInfo(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means, List<String> scaling) {
-        List<InputInfoRow> dataInfoRows = new ArrayList<>();
+    public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means, List<String> scaling) {
+        List<InputMetaDataRow> dataInfoRows = new ArrayList<>();
         for (int i = 0; i < varNames.size(); i++) {
-            dataInfoRows.add(new InputInfoRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scaling.get(i)));
+            dataInfoRows.add(new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scaling.get(i)));
         }
         this.rows = dataInfoRows;
     }
@@ -141,30 +141,30 @@ public class InputInfo {
     }
 
     public List<String> getVarNames() {
-        return rows.stream().map(InputInfoRow::getVarName).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::getVarName).collect(Collectors.toList());
     }
 
     public List<Double> getMinima() {
-        return rows.stream().map(InputInfoRow::getMinimum).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::getMinimum).collect(Collectors.toList());
     }
 
     public List<Double> getMaxima() {
-        return rows.stream().map(InputInfoRow::getMaximum).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::getMaximum).collect(Collectors.toList());
     }
 
     public List<Double> getMeans(){
-        return rows.stream().map(InputInfoRow::getMean).collect(Collectors.toList()); 
+        return rows.stream().map(InputMetaDataRow::getMean).collect(Collectors.toList()); 
     }
 
     public List<String> getScaling() {
-        return rows.stream().map(InputInfoRow::getScaling).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::getScaling).collect(Collectors.toList());
     }
 
-    public List<InputInfoRow> getRows() {
+    public List<InputMetaDataRow> getRows() {
         return rows;
     }
 
-    public void setRows(List<InputInfoRow> rows) {
+    public void setRows(List<InputMetaDataRow> rows) {
         this.rows = rows;
     }
 

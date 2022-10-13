@@ -22,7 +22,7 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackendFactory;
 import com.cmclinnovations.mods.modssimpleagent.TemplateLoader;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.InputInfo;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,7 +56,7 @@ public class Simulation {
     private final Request request;
     private final BackendInputFile inputFile;
     private final MoDSBackend modsBackend;
-    private final InputInfo inputInfo;
+    private final InputMetaData inputMetaData;
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
@@ -69,9 +69,9 @@ public class Simulation {
 
         load(request, modsBackend);
 
-        InputInfo inputInfo = InputInfo.createInputInfo(request, modsBackend, request.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend, request.getAlgorithms().get(0));
 
-        return createSimulation(request, inputFile, modsBackend, inputInfo);
+        return createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -83,24 +83,24 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        InputInfo inputInfo = InputInfo.createInputInfo(originalRequest, modsBackend,
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend,
                 originalRequest.getAlgorithms().get(0));
 
-        return createSimulation(originalRequest, inputFile, modsBackend, inputInfo);
+        return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
     }
 
     private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputInfo inputInfo)
+            InputMetaData inputMetaData)
             throws IOException {
 
         String simulationType = request.getSimulationType();
         switch (simulationType) {
             case "MOO":
-                return new MOO(request, inputFile, modsBackend, inputInfo);
+                return new MOO(request, inputFile, modsBackend, inputMetaData);
             case "HDMR":
-                return new HDMR(request, inputFile, modsBackend, inputInfo);
+                return new HDMR(request, inputFile, modsBackend, inputMetaData);
             case "MOOonly":
-                return new MOOonly(request, inputFile, modsBackend, inputInfo);
+                return new MOOonly(request, inputFile, modsBackend, inputMetaData);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -110,11 +110,11 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputInfo inputInfo) {
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
-        this.inputInfo = inputInfo;
+        this.inputMetaData = inputMetaData;
     }
 
     protected final Request getRequest() {
@@ -188,9 +188,9 @@ public class Simulation {
     }
 
     private void populateParameterNodes(List<Variable> variables) {
-        Iterator<Double> minItr = inputInfo.getMinima().iterator();
-        Iterator<Double> maxItr = inputInfo.getMaxima().iterator();
-        for (String name : inputInfo.getVarNames()) {
+        Iterator<Double> minItr = inputMetaData.getMinima().iterator();
+        Iterator<Double> maxItr = inputMetaData.getMaxima().iterator();
+        for (String name : inputMetaData.getVarNames()) {
             Variable variable = variables.stream().filter(varToTest -> varToTest.getName().equals(name))
                     .findFirst().orElseThrow();
             inputFile.addParameter(name, variable.getSubtype(), variable.getType(),
@@ -257,7 +257,7 @@ public class Simulation {
         if (inputs != null)
             new CSVDataFile(inputs.getAverages()).marshal(path);
         else {
-            new CSVDataFile(inputInfo.meansToData()).marshal(path);
+            new CSVDataFile(inputMetaData.meansToData()).marshal(path);
         }
     }
 
@@ -316,7 +316,7 @@ public class Simulation {
 
                     try {
                         copyDirectory(surrogateDirectory, saveDirectory);
-                        inputInfo.writeToCSV(saveDirectory.resolve(InputInfo.DEFAULT_INPUT_INFO_FILE_NAME));
+                        inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
                     } catch (FileGenerationException ex) {
                         throw new ResponseStatusException(
                                 HttpStatus.NO_CONTENT,
@@ -412,8 +412,8 @@ public class Simulation {
         return getResponse();
     }
 
-    public InputInfo getInputInfo() {
-        return inputInfo;
+    public InputMetaData getInputMetaData() {
+        return inputMetaData;
     }
 
 }
