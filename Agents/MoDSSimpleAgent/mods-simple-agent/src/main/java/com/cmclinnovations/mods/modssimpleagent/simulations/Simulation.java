@@ -48,6 +48,7 @@ public class Simulation {
     public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("savedsurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
+    public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
 
     private static final String REQUEST_FILE_NAME = "request.json";
 
@@ -276,6 +277,21 @@ public class Simulation {
         } catch (IOException ex) {
             throw new FileGenerationException(
                     "Failed to create subdirectory for algorithm '" + DATA_ALGORITHM_NAME + "'.", ex);
+        }
+    }
+
+    protected final void generateSamplingAlgDataFiles() throws FileGenerationException {
+        Path samplingAlgDataPath;
+        try {
+            samplingAlgDataPath = modsBackend.createSubDir(SAMPLING_ALGORITHM_FILE_NAME);
+
+            new CSVDataSeparateFiles(getRequest().getInputs(),
+                    SAMPLING_ALGORITHM_FILE_NAME + "_" + Variable.SUBTYPE_PREFIX,
+                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_")
+                    .marshal(samplingAlgDataPath);
+        } catch (IOException ex) {
+            throw new FileGenerationException(
+                    "Failed to create subdirectory for algorithm '" + SAMPLING_ALGORITHM_FILE_NAME + "'.", ex);
         }
     }
 

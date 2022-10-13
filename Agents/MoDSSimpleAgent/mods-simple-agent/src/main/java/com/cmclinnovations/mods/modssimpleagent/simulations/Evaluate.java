@@ -24,6 +24,7 @@ class Evaluate extends Simulation {
         @Override
         protected void generateFiles() throws FileGenerationException {
                 generateInitialFileFromMetaData();
+                generateSamplingAlgDataFiles();
                 super.generateFiles();
         }
 
