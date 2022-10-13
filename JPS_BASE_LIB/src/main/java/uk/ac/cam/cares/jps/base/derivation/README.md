@@ -130,7 +130,7 @@ For asynchronous agent operations, the derivation framework currently supports:
 The DerivationClient compares the timestamp of the derivation instance with its input(s) to determine whether it's out-of-date. Each derivation instance is initialised with a timestamp automatically, timestamps for inputs have to be added manually using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.addTimeInstance(String)`.
 
 # DerivationAgent
-To achieve one derivation agent that is able to handle both synchronous and asynchronous derivations, it is assumed that all agents extend the `uk.ac.cam.cares.jps.base.agent.DerivationAgent` class, which itself extends the `uk.ac.cam.cares.jps.base.agent.JPSAgent` class.
+To achieve one derivation agent that is able to handle both synchronous and asynchronous derivations, it is assumed that all agents extend the `uk.ac.cam.cares.jps.base.agent.DerivationAgent` class, which itself extends the `uk.ac.cam.cares.jps.base.agent.JPSAgent` class. Two constructor are provided in the class: `DerivationAgent()` (the default constructor) and `DerivationAgent(StoreClientInterface, String)`. The default constructor is required to allow the servlet to create the very first instance of `DerivationAgent` class before calling the `init()` method (which will be provided in the concreate agent implementation), see https://docs.oracle.com/javaee/6/tutorial/doc/bnafi.html. When extending the `DerivationAgent` class, the developer **MUST** provide both constructor in the same format as the two provided here and call the constructor of super class. For an example implementation, please refer to the links provided in [`Example`](#example).
 
 `DerivationAgent` uses two data container classes `uk.ac.cam.cares.jps.base.derivation.DerivationInputs` and `uk.ac.cam.cares.jps.base.derivation.DerivationOutputs` as a more standardised way compared to JSONObject. The serialisation and deserialisation between JSONObject and DerivationInputs/DerivationOutputs are taken care of by the DerivationAgent. Under the hood, both DerivationInputs and DerivationOutputs use `Map<String, List<String>>` that takes the rdf:type as the key and the list of instance IRIs as the values:
 ```
@@ -146,12 +146,13 @@ When developing a new derivation agent, developer only need to implement the age
 Upon receiving the inputs, developer may check the complete agent inputs by using `DerivationInputs.getInputs()`, or retrieve list of IRIs of specific rdf:type by using `DerivationInputs.getIris(String)`. Once the calculation is done, the new created instances are expected to be put in the instance of DerivationOutputs and provided as an argument to the method `uk.ac.cam.cares.jps.base.agent.DerivationAgent.processRequestParameters(DerivationInputs, DerivationOutputs)`. Developer can add the new created instances and new created triples to outputs by calling below methods:
  - `derivationOutputs.createNewEntity(String, String)`
  - `derivationOutputs.createNewEntityWithBaseUrl(String, String)`
- - `derivationOutputs.addTriple(TriplePattern)`
+ - `derivationOutputs.addTriple(TriplePattern)` _(note that this method can be used to add both IRI triple and literal triple as the s-p-o statement is now provided in TriplePattern format, the parsing will be handled behind-the-scenes)_
  - `derivationOutputs.addTriple(List<TriplePattern>)`
- - `derivationOutputs.addTriple(String, String, String)`
- - `derivationOutputs.addTriple(String, String, Number)`
- - `derivationOutputs.addTriple(String, String, Boolean)`
- - `derivationOutputs.addTriple(String, String, String, String)` _(Can be used to add triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
+ - `derivationOutputs.addTriple(String, String, String)` _(different from `addTriple(TriplePattern)` and `addTriple(List<TriplePattern>)`, this method should be used when the object in the s-p-o statement is denoted by an IRI, so called referent, see https://www.w3.org/TR/rdf11-concepts/#dfn-referent)_
+ - `derivationOutputs.addLiteral(String, String, String)` _(all `addLiteral` should be used when the object in the s-p-o statement is denoted by a literal, so called literal value, see https://www.w3.org/TR/rdf11-concepts/#dfn-literal-value)_
+ - `derivationOutputs.addLiteral(String, String, Number)`
+ - `derivationOutputs.addLiteral(String, String, Boolean)`
+ - `derivationOutputs.addLiteral(String, String, String, String)` _(Can be used to add literal triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
 
 For example, if your agent creates below information after calculation:
 
@@ -183,7 +184,7 @@ For adding triples, you can directly use below functions:
 ```java
 derivationOutputs.addTriple("<newDerivedQuantity>", "<hasValue>", "<valueIRI>");
 derivationOutputs.addTriple("<valueIRI>", "<hasUnit>", "<unit>");
-derivationOutputs.addTriple("<valueIRI>", "<hasNumericalValue>", 5);
+derivationOutputs.addLiteral("<valueIRI>", "<hasNumericalValue>", 5);
 ```
 
 or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern` and `org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri`, below lines have the same effect when adding triples:
@@ -191,6 +192,7 @@ or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePatt
 ```java
 derivationOutputs.addTriple(Rdf.iri("<newDerivedQuantity>").has(Rdf.iri("<hasValue>"), Rdf.iri("<valueIRI>")));
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasUnit>"), Rdf.iri("<unit>")));
+// NOTE below the literal is added using addTriple as the whole s-p-o statement is now provided in TriplePattern format
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasNumericalValue>"), 5));
 ```
 
