@@ -9,9 +9,19 @@ get_executables
 # This is added to prevent warning messages, these variables should not be used during the build or push processes
 export STACK_NAME="STACK NAME should only be required at runtime!"
 export EXTERNAL_PORT="EXTERNAL_PORT should only be required at runtime!"
+CACHEBUST="$(date +%s)"
+
+if [[ -f "docker-compose-build-test.yml" ]]; then
+    export IMAGE_SUFFIX=-test
+    ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml -f docker-compose-build-test.yml build --build-arg CACHEBUST="${CACHEBUST}" "$@"
+    for test_image in $(${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml -f docker-compose-build-test.yml convert --images); do
+        ${EXECUTABLE} run --rm --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock "$test_image"
+    done
+    export IMAGE_SUFFIX=
+fi
 
 # Build the images ("ARG CACHEBUST=1" can be added before a command in the Dockerfile to force it to always be rerun)
-${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml build --build-arg CACHEBUST="$(date +%s)" "$@"
+${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml build --build-arg CACHEBUST="${CACHEBUST}" "$@"
 
 # Push the images to the remote repo, docker swarm works better with pushed images
 ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml -f docker-compose-build.yml push

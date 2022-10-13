@@ -29,6 +29,10 @@ ARG CACHEBUST=1
 
 RUN mvn package --update-snapshots
 
+FROM builder as test
+
+CMD ["mvn", "test"]
+
 #==================================================================================================
 
 # Second stage: copy the output into a clean image
