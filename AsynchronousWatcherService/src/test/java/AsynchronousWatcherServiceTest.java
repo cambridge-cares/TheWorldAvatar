@@ -1,5 +1,6 @@
 import junit.framework.TestCase;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.aws.AsynchronousWatcherService;
 import uk.ac.cam.cares.jps.aws.WatcherCallback;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 
 public class AsynchronousWatcherServiceTest extends TestCase {
 
@@ -38,7 +40,11 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceReadRequestsMethod() throws IOException, NoSuchMethodException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
+        String testpath = "test/test.watch";
+        String path = System.getProperty("java.io.tmpdir");
+        File testfile = new File(path+testpath);
+        String filepath = testfile.getAbsolutePath();
+        String file = filepath.replace("\\", "\\\\");
         String badReq = "HTTP 400 Bad Request";
         File watchDir = null;
         try {
@@ -72,7 +78,7 @@ public class AsynchronousWatcherServiceTest extends TestCase {
             boolean dir = watchDir.mkdirs();
             assertTrue(dir);
             rsp.setStatus("Watching");
-            rsp.setPath(file);
+            rsp.setPath(filepath);
             assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
             assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
         } finally {
@@ -84,7 +90,11 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceWatchObjectMethod() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
+        String testpath = "test/test.watch";
+        String path = System.getProperty("java.io.tmpdir");
+        File testfile = new File(path+testpath);
+        String filepath = testfile.getAbsolutePath();
+        String file = filepath.replace("\\", "\\\\");
         File watchDir = null;
         try {
             assertNotNull(aws.getClass().getDeclaredMethod("watchObject", String.class));
@@ -115,7 +125,7 @@ public class AsynchronousWatcherServiceTest extends TestCase {
             jsonStr = "{\"watch\":\"" + file + "\", \"callback\":\"\"}";
             result = watchObject.invoke(aws, jsonStr);
             rsp.setStatus("Watching");
-            rsp.setPath(file);
+            rsp.setPath(filepath);
             assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) result).status);
             assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) result).path);
         } finally {
@@ -127,7 +137,10 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceGetPathMethod() throws NoSuchMethodException, IllegalAccessException, IOException, InvocationTargetException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
+        String testpath = "test/test.watch";
+        String path = System.getProperty("java.io.tmpdir");
+        File testfile = new File(path+testpath);
+        String file = testfile.getAbsolutePath();
         File watchDir = null;
 
         assertNotNull(aws.getClass().getDeclaredMethod("getPath", JSONObject.class));
@@ -147,7 +160,8 @@ public class AsynchronousWatcherServiceTest extends TestCase {
         } catch (InvocationTargetException e) {
             assertEquals("Directory does not exist: ", e.getTargetException().getMessage());
         }
-        args = new JSONObject("{\"watch\":\"" + file + "\"}");
+        String str = file.replace("\\", "\\\\");
+        args = new JSONObject("{\"watch\":\"" + str + "\"}");
 
         try {
             getPath.invoke(aws, args);

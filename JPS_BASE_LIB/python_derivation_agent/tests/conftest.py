@@ -4,6 +4,10 @@ from testcontainers.core.container import DockerContainer
 
 from typing import get_type_hints
 from pathlib import Path
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
+from rdflib import XSD
 import logging
 import pytest
 import random
@@ -17,11 +21,14 @@ from pyderivationagent.conf import config_generic
 from pyderivationagent.conf import AgentConfig
 from pyderivationagent.conf import Config
 
+from pyderivationagent.data_model import iris
+
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
 from tests.agents.agents_for_test import MaxValueAgent
 from tests.agents.agents_for_test import MinValueAgent
 from tests.agents.agents_for_test import DifferenceAgent
+from tests.agents.agents_for_test import DiffReverseAgent
 from tests.agents.agents_for_test import UpdateEndpoint
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -53,6 +60,7 @@ RNGAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.rng.env.test')
 MAXAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.max.env.test')
 MINAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.min.env.test')
 DIFFAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.env.test')
+DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 
 
@@ -105,6 +113,17 @@ class Config4Test2(Config4Test1):
     INT_2: int
     BOOL_2_1: bool
     BOOL_2_2: bool
+
+
+test_triples_for_check_exist = [
+    ['http://s', 'http://p0', 'http://o', None], # object property
+    ['http://s', 'http://p1', 'http://o', XSD.string], # data property
+    ['http://s', 'http://p2', 'o', XSD.string.toPython()], # data property with string
+    ['http://s', 'http://p3', 3, XSD.int.toPython()], # data property with int
+    ['http://s', 'http://p4', 3.14, XSD.double.toPython()], # data property with double
+    ['http://s', 'http://p5', True, XSD.boolean.toPython()], # data property with boolean
+    ['http://s', 'http://p6', '48.13188#11.54965#1379714400', iris.GEOSPATIAL_LAT_LON_TIME], # data property with custom datatype
+]
 
 
 # ----------------------------------------------------------------------------------
@@ -215,6 +234,32 @@ def initialise_triple_store():
 
 
 @pytest.fixture(scope="module")
+def initialise_test_triples(initialise_triple_store):
+    with initialise_triple_store as container:
+        # Wait some arbitrary time until container is reachable
+        time.sleep(3)
+
+        # Retrieve SPARQL endpoint
+        endpoint = get_endpoint(container)
+
+        # Create SparqlClient for testing
+        sparql_client = PySparqlClientForTest(endpoint, endpoint)
+
+        g = Graph()
+        for tp in test_triples_for_check_exist:
+            if tp[3] is None:
+                g.add((URIRef(tp[0]), URIRef(tp[1]), URIRef(tp[2])))
+            else:
+                g.add((URIRef(tp[0]), URIRef(tp[1]), Literal(tp[2], datatype=tp[3])))
+        sparql_client.uploadGraph(g)
+
+        yield sparql_client
+
+        # Clear logger at the end of the test
+        clear_loggers()
+
+
+@pytest.fixture(scope="module")
 def initialise_agent(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
@@ -236,18 +281,20 @@ def initialise_agent(initialise_triple_store):
         sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
         # Initialise derivation agents with temporary docker container endpoint
-        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint, True)
-        min_agent = create_min_agent(MINAGENT_ENV, endpoint, True)
-        max_agent = create_max_agent(MAXAGENT_ENV, endpoint, True)
-        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint, True)
+        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint, True, in_docker=False)
+        min_agent = create_min_agent(MINAGENT_ENV, endpoint, True, in_docker=False)
+        max_agent = create_max_agent(MAXAGENT_ENV, endpoint, True, in_docker=False)
+        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint, True, in_docker=False)
+        diff_reverse_agent = create_diff_reverse_agent(DIFFREVERSEAGENT_ENV, endpoint, True, in_docker=False)
 
-        yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
+        yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent
 
         # Tear down scheduler of derivation agents
         rng_agent.scheduler.shutdown()
         min_agent.scheduler.shutdown()
         max_agent.scheduler.shutdown()
         diff_agent.scheduler.shutdown()
+        diff_reverse_agent.scheduler.shutdown()
 
         # Clear logger at the end of the test
         clear_loggers()
@@ -295,7 +342,12 @@ def generate_random_env_file(generate_random_conf):
 # Agents create functions
 # ----------------------------------------------------------------------------------
 
-def create_rng_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
+def create_rng_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -304,14 +356,21 @@ def create_rng_agent(env_file: str = None, sparql_endpoint: str = None, register
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_max_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
+def create_max_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -320,14 +379,21 @@ def create_max_agent(env_file: str = None, sparql_endpoint: str = None, register
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_min_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
+def create_min_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -336,14 +402,21 @@ def create_min_agent(env_file: str = None, sparql_endpoint: str = None, register
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_diff_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
+def create_diff_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -352,9 +425,35 @@ def create_diff_agent(env_file: str = None, sparql_endpoint: str = None, registe
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
+        app=Flask(__name__)
+    )
+
+
+def create_diff_reverse_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
+    return DiffReverseAgent(
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
+        max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
         app=Flask(__name__)
     )
 
@@ -369,6 +468,8 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
         derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
         kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
+        kg_user=None if sparql_endpoint is not None else endpoint_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else endpoint_config.KG_PASSWORD,
         agent_endpoint=None, # not a real derivation agent should should not be provided agent_endpoint for sync derivations
         register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
@@ -377,6 +478,9 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

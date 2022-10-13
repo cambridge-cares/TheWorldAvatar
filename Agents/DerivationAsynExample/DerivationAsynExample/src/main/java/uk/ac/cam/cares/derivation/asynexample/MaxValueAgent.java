@@ -65,7 +65,10 @@ public class MaxValueAgent extends DerivationAgent {
 		derivationOutputs.addTriple(max_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
 		String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
 		derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
-		derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
+		// instead of derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
+		// we use below two lines to test both addTriple(String, String, String) and addLiteral(String, String, Number)
+		derivationOutputs.addTriple(max_iri, SparqlClient.getPropertyString(SparqlClient.hasValue), value_iri);
+		derivationOutputs.addLiteral(value_iri, SparqlClient.getPropertyString(SparqlClient.numericalValue), maxvalue);
 		LOGGER.info(
 				"Created a new max value instance <" + max_iri + ">, and its value instance <" + value_iri + ">");
 	}
