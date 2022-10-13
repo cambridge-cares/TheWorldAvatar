@@ -161,7 +161,7 @@ The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml bu
 
 Build and deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
 
-1) Initialise namespace for EPC building data
+1) Initialise namespace for EPC building data (i.e. namespace `buildings` created upon initialisation to host all building related data)
 2) Instantiate all EPC building data
 3) Update geospatial representation of buildings in OntoBuiltEnv namespace
    (**Please note:** This requires the Building Matching Agent to be run first!)
@@ -187,6 +187,8 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 ## <u>5) Additional data incorporation </u>
 
 ### MetOffice Agent
+
+- no explicit namespace is created, default `kb` is used
 
 ### AirQuality Agent
 
