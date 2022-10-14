@@ -29,7 +29,7 @@
   <!-- Kilowatt Hour Per Kilowatt Ontology -->
 
   <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/kilowattHourPerKilowatt">
-    <rdfs:label xml:lang="en">kilowatt hour per square metre</rdfs:label>
+    <rdfs:label xml:lang="en">kilowatt hour per kilowatt</rdfs:label>
     <om:symbol>kWh/kW</om:symbol>
     <om:alternativeSymbol>kWh kW-1</om:alternativeSymbol>
     <om:alternativeSymbol>kWh·kW-1</om:alternativeSymbol>
