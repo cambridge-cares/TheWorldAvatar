@@ -28,7 +28,8 @@ logger = agentlogging.get_logger("prod")
 def update_transaction_records(property_iris=None, 
                                api_endpoint=HM_SPARQL_ENDPOINT,
                                query_endpoint=QUERY_ENDPOINT, 
-                               update_endpoint=UPDATE_ENDPOINT, kgclient=None):
+                               update_endpoint=UPDATE_ENDPOINT, 
+                               kgclient_obe=None, kgclient_hm=None):
     """
     
     """
@@ -37,20 +38,33 @@ def update_transaction_records(property_iris=None,
     updated_tx = 0
 
     # Initialise KG clients
-    if not kgclient:
-        kgclient = KGClient(query_endpoint, update_endpoint)
+    if not kgclient_obe:
+        kgclient_obe = KGClient(query_endpoint, update_endpoint)
+    if not kgclient_hm:
+        kgclient_hm = KGClient(api_endpoint, api_endpoint)
 
     # 1) Retrieve location information for properties from list
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
     query = get_instantiated_properties_with_location_info(property_iris=property_iris)
-    res = kgclient.performQuery(query)
+    res = kgclient_obe.performQuery(query)
 
-    # 2) Retrieve transaction records from HM Land Registry
+    # Create DataFrame from results and condition data
+    df = create_conditioned_dataframe_obe(res)
 
-    # 3) Update transaction records in KG
+    # Query Price Paid Data postcode by postcode (compromise between query speed and number of queries)
+    for pc in df['postcodes'].unique():
+        d = df[df['postcodes'] == pc].copy()
+
+        # 2) Retrieve transaction records from HM Land Registry
+        query = get_transaction_data_for_postcodes(postcodes=[pc])
+        res = kgclient_hm.performQuery(query)
+
+        # 3) Update transaction records in KG
+        #updated_tx += update_transaction_records_in_kg(res, df, kgclient_obe)
 
     
     return updated_tx
+
 
 def update_all_transaction_records(api_endpoint=HM_SPARQL_ENDPOINT,
                                    query_endpoint=QUERY_ENDPOINT, 
@@ -89,6 +103,27 @@ def update_all_transaction_records(api_endpoint=HM_SPARQL_ENDPOINT,
     # 6) Update Property Price Index in KG
     
     return (updated_tx, updated_indices)
+
+
+def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
+        """
+            Pass SPARQL results as DataFrame and condition data to ensure proper
+            comparison with HM Land Registry Data
+
+            Arguments:
+                sparql_results - list of dicts with following keys
+                                 ['property_iri', 'postcode_iri', 'address_iri', 'district_iri',
+                                  'postcode', 'street', 'house_number']
+            Returns:
+                DataFrame with dict keys as columns
+        """
+        
+        df = pd.DataFrame(sparql_results)
+        # Ensure all strings are upper case
+        df['street'] = df['street'].str.upper()
+        df['postcode'] = df['postcode'].str.upper()
+
+        return df
 
 
 # def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',

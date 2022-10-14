@@ -3,15 +3,19 @@
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
 GEO = 'http://www.opengis.net/ont/geosparql#'
 ICONTACT = 'http://ontology.eil.utoronto.ca/icontact.owl#'
-LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
-ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
-ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
 OWL = 'http://www.w3.org/2002/07/owl#'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
+SKOS = 'http://www.w3.org/2004/02/skos/core#'
 TIME = 'https://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
+# Office for National Statistics
+ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
+ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
+# HM Land Registry
+LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
+LRCOMMON = 'http://landregistry.data.gov.uk/def/common/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
@@ -36,17 +40,27 @@ OBE_ADMIN_DISTRICT = OBE + 'AdministrativeDistrict'
 OBE_LOCATEDIN = OBE + 'locatedIn'
 OBE_HAS_IDENTIFIER = OBE + 'hasIdentifier'
 OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
-# LRPPI
-LRPPI_TRANSACTION = LRPPI + 'TransactionRecord'
+# LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
+LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
+LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
 LRPPI_PRICE = LRPPI + 'pricePaid'
 LRPPI_DATE = LRPPI + 'transactionDate'
-
+LRPPI_PROPERTY_TYPE = LRPPI + 'propertyType'
+LRPPI_TX_CATEGORY = LRPPI + 'transactionCategory'
+SKOS_LABEL = SKOS + 'prefLabel'
+LRCOMMON_PAON = LRCOMMON + 'paon'
+LRCOMMON_SAON = LRCOMMON + 'saon'
+LRCOMMON_STREET = LRCOMMON + 'street'
+LRCOMMON_TOWN = LRCOMMON + 'town'
+LRCOMMON_POSTCODE = LRCOMMON + 'postcode'
+LRCOMMON_DISTRICT = LRCOMMON + 'district'
+LRCOMMON_COUNTY = LRCOMMON + 'county'
 
 ###--- External IRIs ---###
 
 # Concepts
 RDF_TYPE = RDF + 'type'
-RDFS_SUBCLASS = RDFS + 'subClassOf'
+RDFS_SUBCLASS = RDFS + ''
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 
