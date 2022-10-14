@@ -58,7 +58,7 @@ def get_data_for_postcodes(postcodes):
         prefix skos: <http://www.w3.org/2004/02/skos/core#>
         prefix lrcommon: <http://landregistry.data.gov.uk/def/common/>
 
-        SELECT ?paon ?saon ?street ?town ?county ?postcode ?amount ?date ?category
+        SELECT *
         WHERE
         {{
         VALUES ?postcode {{ {values} }}
@@ -68,12 +68,14 @@ def get_data_for_postcodes(postcodes):
         ?transx lrppi:propertyAddress ?addr ;
                 lrppi:pricePaid ?amount ;
                 lrppi:transactionDate ?date ;
+                lrppi:propertyType/rdfs:label ?property ;
                 lrppi:transactionCategory/skos:prefLabel ?category.
-        OPTIONAL {{?addr lrcommon:county ?county}}
         OPTIONAL {{?addr lrcommon:paon ?paon}}
         OPTIONAL {{?addr lrcommon:saon ?saon}}
         OPTIONAL {{?addr lrcommon:street ?street}}
         OPTIONAL {{?addr lrcommon:town ?town}}
+        OPTIONAL {{?addr lrcommon:district ?district}}
+        OPTIONAL {{?addr lrcommon:county ?county}}
         }}
         ORDER BY ?amount
     '''
