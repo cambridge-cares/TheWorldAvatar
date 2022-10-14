@@ -49,6 +49,7 @@ class DerivationOutputs():
                 if p.toPython() == RDF.type.toPython():
                     self.createNewEntity(s.toPython(), o.toPython())
                 else:
+                    # add data properties
                     if isinstance(o, Literal):
                         if isinstance(o.toPython(), Literal):
                             # if o.toPython() is a Literal instance, then it's returning itself
@@ -59,5 +60,8 @@ class DerivationOutputs():
                         else:
                             # .toPython() works out what's the most suitable python class and cast to it
                             self.addLiteral(s.toPython(), p.toPython(), o.toPython())
+                    # add object properties
+                    else:
+                        self.addTriple(s.toPython(), p.toPython(), o.toPython())
             except Exception as exc:
                 raise Exception(f"Failed to add: {s.n3()} {p.n3()} {o.n3()}") from exc

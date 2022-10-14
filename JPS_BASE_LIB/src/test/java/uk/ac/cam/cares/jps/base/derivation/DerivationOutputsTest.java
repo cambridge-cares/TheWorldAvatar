@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
@@ -383,6 +384,23 @@ public class DerivationOutputsTest {
 		String p10 = "http://" + UUID.randomUUID().toString();
 		String o10 = "this is a string with space"; // test string with space are correctly handled when adding as literal
 
+		// add literal numbers, including special cases
+		String s11 = "http://" + UUID.randomUUID().toString();
+		String p11 = "http://" + UUID.randomUUID().toString();
+		Double o11 = Double.NaN; // test NaN
+
+		String s12 = "http://" + UUID.randomUUID().toString();
+		String p12 = "http://" + UUID.randomUUID().toString();
+		Double o12 = Double.POSITIVE_INFINITY; // test positive infinity INF
+
+		String s13 = "http://" + UUID.randomUUID().toString();
+		String p13 = "http://" + UUID.randomUUID().toString();
+		Double o13 = Double.NEGATIVE_INFINITY; // test negative infinity -INF
+
+		String s14 = "http://" + UUID.randomUUID().toString();
+		String p14 = "http://" + UUID.randomUUID().toString();
+		Double o14 = 2.3; // test a normal number
+
 		// addTriple(List<TriplePattern>) is tested automatically
 		devOutputs.addTriple(Rdf.iri(s0).has(Rdf.iri(p0), Rdf.iri(o0)));
 		devOutputs.addTriple("<" + s1, p1 + ">", o1);
@@ -397,10 +415,14 @@ public class DerivationOutputsTest {
 		devOutputs.addLiteral(s8 + ">", "<" + p8 + ">", o8);
 		devOutputs.addLiteral(s9, p9, o9, dataType);
 		devOutputs.addLiteral(s10, p10, o10);
+		devOutputs.addLiteral(s11, p11, o11);
+		devOutputs.addLiteral(s12, p12, o12);
+		devOutputs.addLiteral(s13, p13, o13);
+		devOutputs.addLiteral(s14, p14, o14);
 
 		List<TriplePattern> triples = (List<TriplePattern>) outputs.get(devOutputs);
 		// the amount of triples added must be correct, also the content must be correct
-		Assert.assertEquals(11, triples.size());
+		Assert.assertEquals(15, triples.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triples.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triples.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triples.get(2).getQueryString());
@@ -412,10 +434,14 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateLiteralTripleString(s8, p8, o8), triples.get(8).getQueryString());
 		Assert.assertEquals(formulateLiteralTripleString(s9, p9, o9, dataType), triples.get(9).getQueryString());
 		Assert.assertEquals(formulateLiteralTripleString(s10, p10, o10), triples.get(10).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s11, p11, o11), triples.get(11).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s12, p12, o12), triples.get(12).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s13, p13, o13), triples.get(13).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s14, p14, o14), triples.get(14).getQueryString());
 
 		// test the getter
 		List<TriplePattern> triplesFromGetter = devOutputs.getOutputTriples();
-		Assert.assertEquals(11, triplesFromGetter.size());
+		Assert.assertEquals(15, triplesFromGetter.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triplesFromGetter.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triplesFromGetter.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triplesFromGetter.get(2).getQueryString());
@@ -427,6 +453,10 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateLiteralTripleString(s8, p8, o8), triplesFromGetter.get(8).getQueryString());
 		Assert.assertEquals(formulateLiteralTripleString(s9, p9, o9, dataType), triplesFromGetter.get(9).getQueryString());
 		Assert.assertEquals(formulateLiteralTripleString(s10, p10, o10), triplesFromGetter.get(10).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s11, p11, o11), triplesFromGetter.get(11).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s12, p12, o12), triplesFromGetter.get(12).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s13, p13, o13), triplesFromGetter.get(13).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s14, p14, o14), triplesFromGetter.get(14).getQueryString());
 
 		// now we add triples/literals that with invalid IRIs
 		// should throw an error
@@ -546,7 +576,21 @@ public class DerivationOutputsTest {
 		if (o instanceof String) {
 			return "<" + s + "> <" + p + "> \"" + o + "\" .";
 		} else if (o instanceof Number) {
-			return "<" + s + "> <" + p + "> " + o + " .";
+			if (o instanceof Double) {
+				if (((Double) o).isInfinite()) {
+					if (((Double) o) > 0) {
+						return "<" + s + "> <" + p + "> \"Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
+					} else {
+						return "<" + s + "> <" + p + "> \"-Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
+					}
+				} else if (((Double) o).isNaN()) {
+					return "<" + s + "> <" + p + "> \"NaN\"^^<" + XSD.DOUBLE.toString() + "> .";
+				} else {
+					return "<" + s + "> <" + p + "> " + o + " .";
+				}
+			} else {
+				return "<" + s + "> <" + p + "> " + o + " .";
+			}
 		} else if (o instanceof Boolean) {
 			return "<" + s + "> <" + p + "> " + String.valueOf(o) + " .";
 		} else {
