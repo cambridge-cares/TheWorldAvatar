@@ -31,8 +31,8 @@
   <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/wattHourPerSquareMetrePerDay">
     <rdfs:label xml:lang="en">watt hour per square metre per day</rdfs:label>
     <om:symbol>Wh/m2/d</om:symbol>
-    <om:alternativeSymbol>kwh m-2 d-1</om:alternativeSymbol>
-    <om:alternativeSymbol>kwh·m-2·d-1</om:alternativeSymbol>
+    <om:alternativeSymbol>Wh m-2 d-1</om:alternativeSymbol>
+    <om:alternativeSymbol>Wh·m-2·d-1</om:alternativeSymbol>
     <om:hasNumerator rdf:resource="&om;wattHourPerSquareMetre"/>
     <om:hasDenominator rdf:resource="&om;day"/>
     <om:hasDimension rdf:resource="&om;powerDensity-Dimension"/>
