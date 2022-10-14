@@ -43,49 +43,71 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  * @author csl37
  *
  */
-@WebServlet(urlPatterns = {AccessAgent.ACCESS_URL})
+@WebServlet(urlPatterns = {AccessAgent.ACCESS_URL, AccessAgent.CLEAR_CACHE_URL})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 	
 	public static final String ACCESS_URL = "/access";
+	public static final String CLEAR_CACHE_URL = "/clearcache";
 		
 	/**
      * Logger for error output.
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
 	    
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
-		JSONObject result = processRequestParameters(requestParams,null);
-		return result;
-	}
-
+    
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+    	//Do nothing
+        return new JSONObject();
+    }
+    
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		if (!validateInput(requestParams)) {
-			throw new JSONException("AccessAgent: Input parameters not valid.\n");
-		}
-		
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		
-		JSONObject JSONresult = new JSONObject();
+		// Clear cache
+		if(request.getServletPath().equals(CLEAR_CACHE_URL)) {
+			if(method.equals(HttpGet.METHOD_NAME)) {
+				return clearCache();
+			}else {
+				throw new JPSRuntimeException("AccessAgent: Input parameters not valid.\n");
+			}
 		
-		LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
+		// SPARQL
+		}else {
 		
-		switch (method) {
-			case HttpGet.METHOD_NAME:	
-				JSONresult = performGet(requestParams);
-			    break;
-			case HttpPost.METHOD_NAME:
-				JSONresult = performPost(requestParams);
-				break;
-			case HttpPut.METHOD_NAME:
-				performPut(requestParams);
-				break;
-			}		
-	    return JSONresult;
+			if (!validateInput(requestParams)) {
+				throw new JPSRuntimeException("AccessAgent: Input parameters not valid.\n");
+			}			
+			
+			JSONObject JSONresult = new JSONObject();
+				
+			switch (method) {
+				case HttpGet.METHOD_NAME:	
+					JSONresult = performGet(requestParams);
+				    break;
+				case HttpPost.METHOD_NAME:
+					JSONresult = performPost(requestParams);
+					break;
+				case HttpPut.METHOD_NAME:
+					performPut(requestParams);
+					break;
+				}		
+		    return JSONresult;
+		}
+	}
+	
+	/**
+	 * Clear StoreRouter cache
+	 * @return
+	 */
+	public JSONObject clearCache() {
+		StoreRouter.getInstance().clearCache();
+		JSONObject JSONresult = new JSONObject().put(JPSConstants.RESULT_KEY, "Cache cleared.");
+		return JSONresult;
 	}
 	
 	@Override
@@ -169,7 +191,7 @@ public class AccessAgent extends JPSAgent{
 			
 			//get
 			result = kbClient.get(graphIRI, accept);
-			JSONresult.put("result",result);
+			JSONresult.put(JPSConstants.RESULT_KEY,result);
 		
 			return JSONresult;
 		
@@ -233,7 +255,7 @@ public class AccessAgent extends JPSAgent{
 				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
 				//TODO change this
-				JSONresult.put("result","Update completed!");
+				JSONresult.put(JPSConstants.RESULT_KEY,"Update completed!");
 			}else if(sparqlquery!=null){
 				//query
 				logInputParams(requestParams, sparqlquery, false);
@@ -241,7 +263,7 @@ public class AccessAgent extends JPSAgent{
 				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
 				LOGGER.info("Performing SPARQL query.");
 				result = kbClient.execute(sparqlquery);
-				JSONresult.put("result",result);
+				JSONresult.put(JPSConstants.RESULT_KEY,result);
 			}else {
 				throw new JPSRuntimeException("SPARQL query or update is missing");
 			}
