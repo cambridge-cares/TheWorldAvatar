@@ -35,7 +35,7 @@
     <om:alternativeSymbol>GWh·a-1</om:alternativeSymbol>
     <om:hasNumerator rdf:resource="&om;gigawattHour"/>
     <om:hasDenominator rdf:resource="&om;year"/>
-    <om:hasDimension rdf:resource="&om;powerDensity-Dimension"/>
+    <om:hasDimension rdf:resource="&om;power-Dimension"/>
   </om:UnitDivision>
 
 </rdf:RDF>
