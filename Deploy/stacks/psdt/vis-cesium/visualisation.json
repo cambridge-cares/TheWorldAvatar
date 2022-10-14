@@ -15,6 +15,11 @@
                     "id": "buildings-lod2-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod2/qt_2_0___tileset.json"
+                },
+                {
+                    "id": "erlenbrunnerstr45-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json"
                 }
             ],
             "layers": [
@@ -22,6 +27,14 @@
                     "id": "buildings-lod2-tiles-layer",
                     "name": "Gebäude (3D, LoD2)",
                     "source": "buildings-lod2-tiles-source",
+                    "layout": {
+                        "visibility": "invisible"
+                    }
+                },
+                {
+                    "id": "erlenbrunnerstr45-lod3-tiles-layer",
+                    "name": "Erlenbrunnerstr. 45 (3D, LoD3)",
+                    "source": "erlenbrunnerstr45-lod3-tiles-source",
                     "layout": {
                         "visibility": "invisible"
                     }
