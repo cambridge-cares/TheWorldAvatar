@@ -9,20 +9,20 @@
 :rxnoptplan
     a ontogoal:RxnOptPlan;
     ontogoal:hasStep :doe;
-    ontogoal:hasStep :exe;
+    ontogoal:hasStep :schedule_exe;
     ontogoal:hasStep :postpro;
 .
 
 :doe
     a ontogoal:DesignOfExperiment;
-    ontogoal:hasNextStep :exe;
+    ontogoal:hasNextStep :schedule_exe;
     ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__DoE/Service>;
 .
 
-:exe
+:schedule_exe
     a ontogoal:RxnExpExecution;
     ontogoal:hasNextStep :postpro;
-    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__Execution/Service>;
+    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service>;
 .
 
 :postpro

@@ -289,8 +289,8 @@ class IRIs(Enum):
     RXN_OPT_PLAN = PLAN_STEP_AGENT_BASE_IRI + 'rxnoptplan'
     STEP_DOE = PLAN_STEP_AGENT_BASE_IRI + 'doe'
     STEP_DOE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__DoE/Service'
-    STEP_EXE = PLAN_STEP_AGENT_BASE_IRI + 'exe'
-    STEP_EXE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__Execution/Service'
+    STEP_SCHEDULEEXE = PLAN_STEP_AGENT_BASE_IRI + 'schedule_exe'
+    STEP_SCHEDULE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service'
     STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
     STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
 
