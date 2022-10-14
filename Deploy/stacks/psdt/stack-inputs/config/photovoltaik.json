@@ -17,7 +17,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "Photovoltaik_colour",
-                    "sql": "SELECT \"OBJECTID\", \"richtung\", \"Shape\", CASE\nWHEN \"richtung\" < 0 THEN '#e8beff'\nWHEN \"richtung\" < 45 THEN '#006fff'\nWHEN \"richtung\" < 135 THEN '#00e6a9'\nWHEN \"richtung\" < 225 THEN '#ffff00'\nWHEN \"richtung\" < 315 THEN '#e600a9'\nELSE '#006fff'\nEND AS colour\nFROM \"Photovoltaik\"\n",
+                    "sql": "SELECT *, CASE\nWHEN \"richtung\" < 0 THEN '#e8beff'\nWHEN \"richtung\" < 45 THEN '#006fff'\nWHEN \"richtung\" < 135 THEN '#00e6a9'\nWHEN \"richtung\" < 225 THEN '#ffff00'\nWHEN \"richtung\" < 315 THEN '#e600a9'\nELSE '#006fff'\nEND AS colour\nFROM \"Photovoltaik\"\n",
                     "escapeSql": true,
                     "keyColumn": "OBJECTID",
                     "geometry": {
