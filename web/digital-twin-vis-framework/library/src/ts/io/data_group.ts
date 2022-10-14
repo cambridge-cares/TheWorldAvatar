@@ -29,14 +29,14 @@ class DataGroup {
     public name: string;
 
     /**
-     * Optional map settings.
-     */
-    public mapOptions: Object;
-
-    /**
      * Unique, dynamically generated, ID
      */
     public id: string;
+
+    /**
+     * 
+     */
+    public defaultExpanded: boolean = true; 
 
     /**
      * Constructor

@@ -2,9 +2,9 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.0.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.1.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
-<img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
+<img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
 
 ## Restrictions
 
@@ -42,8 +42,10 @@ Custom terrain elevation has also yet to be implemented at the time of writing. 
 
 Configuration for the visualisation is provided via a number of local JSON files. Each of these is detailed below.
 
-- `visualisation.json`:
+- `data.json`:
   - This required file contains a hierarchal specification of data groups. Each group can either house sub-groups, or individual data sources and layers for display. The structure of these groups defines the layer selection tree to the left of the visualisation. The required format for this file is listed below.
+- `settings.json`:
+  - This required file contains global settings (i.e. not specific to data sets) for the visualisation as a whole. Items like the map's starting location, available imagery layers, and fields available for feature searching are set here. For more details please see the [GitHub wiki page](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations). 
 - `icons.json`:
   - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote).
 - `links.json`:
@@ -55,18 +57,23 @@ Please note that the `index.html` file also required users to input their Mapbox
 
 ### Visualisation JSON File
 
-The `visualisation.json` file is the core configuration file for the visualisation and defines what data is loaded and shown, so it's worth explaining it's formatting a little. Each node represents a group of data. Each group can contain data sources and layers and/or sub-groups. The hierarchy of these groups is completely up to the writer of the file and is used to build the selection tree within the visualisation. The `name` parameter specifies the group's user-facing name, and the `stack` parameter is the base URL for the stack containing that group's metadata (note that if not using the metadata, this parameter can be any old URL).
+The `data.json` file is a core configuration file for the visualisation and defines what data is loaded and shown, so it's worth explaining it's formatting a little. Each node represents a group of data. Each group can contain data sources and layers and/or sub-groups. The hierarchy of these groups is completely up to the writer of the file and is used to build the selection tree within the visualisation. The `name` parameter specifies the group's user-facing name, and the `stack` parameter is the base URL for the stack containing that group's metadata (note that if not using the metadata, this parameter can be any old URL).
 
 Each group can then contain a number of `sources`, representing individual data files/endpoints that will be loaded into memory/queried by the mapping library. Each source node requires a unique `id` parameter, this is used within the DTVF to keep track of sources. In addition to `sources`, each group can define a number of `layers`. These are the visual representations of the aforementioned sources. Whilst Cesium JS does not have a internal division between data sources and visual representations, this approach is still used within the configuration file for consistency with other mapping providers.
+
+Each group can also (optionally) contain an `expanded` boolean field. If set to false, then this group (and all of its children) will be collapsed by default within the selectable layers tree; any other value, or no field at all, will default to expanded. Note that this does not affect the default selection state of individual layers.
 
 Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|tiles`), and a `uri` field pointing towards the data file to be loaded. Some types of sources also require additional parameters:
 
 - For `gltf` sources, additional `position` and `orientation` fields are required.
 - For `wms` sources, additional `wmsLayer`, `transparency`, and `format` fields are required.
+- For `tiles` sources, an optional `position` field can also be set.
 
 Layer nodes also need to provide a unique `id` field, a `source` field (listing the id of the source to use), and an public facing `name` field to use within the selection tree. Note that the `name` field can be shared with other layers, these entries will be combined into a single tree selection.
 
-For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `visualisation.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format.
+For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format. 
+
+Note that, at the time of writing, all `source` and `layer` nodes must be within a `group` (i.e. data cannot be loaded unless within a group), and a single top-level group must exist (i.e. the `data.json` file must be a JSON object, rather than a JSON array).
 
 ## Sample Data
 
@@ -93,3 +100,7 @@ Once the requirements have been addressed, the image can be built using the belo
   - `docker-compose -f ./docker/docker-compose.yml build --force-rm`
 - To generate a Container (i.e. run the Image):
   - `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
+
+## Troubleshooting
+
+For details on common issues/questions that may appear when using Cesium JS, please see the dedicated [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page on the GitHub wiki.

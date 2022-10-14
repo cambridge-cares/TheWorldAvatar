@@ -97,8 +97,8 @@ class DataStore {
             parentGroup.subGroups.push(dataGroup);
         }
         
-        // Store optional mapOptions
-        if(currentNode["mapOptions"]) dataGroup.mapOptions = currentNode["mapOptions"];
+        // Store optional expansion state
+        if(currentNode.hasOwnProperty("expanded")) dataGroup.defaultExpanded = currentNode["expanded"];
 
         // Parse sources and layers (if present)
         if(currentNode["sources"]) {

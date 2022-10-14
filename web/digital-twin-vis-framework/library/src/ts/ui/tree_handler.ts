@@ -61,10 +61,11 @@ class TreeHandler {
 
         // Rebuild recursively
         var preCheck = [];
+        var collapse = [];
         var htmlBuilder = [];
 
         for(var i = 0; i < dataStore.dataGroups.length; i++) { 
-            this.buildRecurse(htmlBuilder, dataStore.dataGroups[i], 1, preCheck);
+            this.buildRecurse(htmlBuilder, dataStore.dataGroups[i], 1, preCheck, collapse);
         }
         element.innerHTML += htmlBuilder.join("");
 
@@ -85,6 +86,12 @@ class TreeHandler {
         // @ts-ignore
         $("#treeview").hummingbird("expandAll");
 
+        // Collapse some specific layers
+        console.log("Collapsing...");
+        console.log(collapse);
+        // @ts-ignore
+        $("#treeview").hummingbird("collapseNode", {sel: "data-id", vals: collapse});
+
         this.registerEvents(dataStore);
         console.log("Finished rebuilding layer tree.");
     }
@@ -93,7 +100,7 @@ class TreeHandler {
     /**
      * Recursively build HTML elements.
      */
-    private buildRecurse(htmlBuilder: string[], currentGroup: DataGroup, depth: number, preCheck: string[]) {
+    private buildRecurse(htmlBuilder: string[], currentGroup: DataGroup, depth: number, preCheck: string[], collapse: string[]) {
         // Entry for group itself
         let groupHTML = "<li data-id='" + (depth - 1) + "'>";
         groupHTML += "<i class='fa fa-plus'></i>";
@@ -106,6 +113,11 @@ class TreeHandler {
         // Need to progress deeper into the tree?
         let needDeeper = (currentGroup.dataLayers.length > 0 || currentGroup.subGroups.length > 0);
         if(needDeeper) groupHTML += "<ul>";
+
+        // Store if this needs to be collapsed by default
+        if(!currentGroup.defaultExpanded) {
+            collapse.push(currentGroup.id);
+        }
 
         // Sort layers in the group via name (there may be duplicates)
         let sortedLayers = {};
@@ -155,19 +167,10 @@ class TreeHandler {
             groupHTML += layerHTML;
 
             // Store if this needs to be prechecked
-            
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     let mbLayer = <MapBoxLayer> value[0];
-
-                    // let dataSources = MapHandler_Cesium.DATA_SOURCES[mbLayer.id];
-                    // if(dataSources == null || dataSources.length === 0) {
-                    //     let visibility = mbLayer.definition["layout"]["visibility"];
-                    //     if(visibility === "visible") preCheck.push(dataID);
-                    // } else {
-                        if(mbLayer.isVisible()) preCheck.push(dataID);
-                    // }
-                    // TODO - CHECK IF THIS WORKS
+                    if(mbLayer.isVisible()) preCheck.push(dataID);
                 break;
 
                 case MapProvider.CESIUM:
@@ -175,9 +178,7 @@ class TreeHandler {
                     let dataSources = MapHandler_Cesium.DATA_SOURCES[csLayer.id];
 
                     if(dataSources == null || dataSources.length === 0) {
-                        console.log("NO SOURCE");
                         let visibility = csLayer.definition["visibility"];
-                        console.log(visibility);
                         if(visibility == undefined || visibility === "visible") preCheck.push(dataID);
                     } else {
                         if(csLayer.isVisible()) preCheck.push(dataID);
@@ -192,7 +193,7 @@ class TreeHandler {
         // Recurse into sub groups?
         for(var i = 0; i < currentGroup.subGroups.length; i++) {
             let subNode = currentGroup.subGroups[i];
-            this.buildRecurse(htmlBuilder, subNode, depth + 1, preCheck);
+            this.buildRecurse(htmlBuilder, subNode, depth + 1, preCheck, collapse);
         }
 
         // Close
