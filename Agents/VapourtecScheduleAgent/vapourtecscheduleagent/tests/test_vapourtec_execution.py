@@ -237,16 +237,16 @@ def test_three_agents_docker_integration(
         hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
         print(f"Waiting for hplc derivation to be instantiated, current time: {time.time()}")
 
-    # Wait until derivations hplc is InProgress
-    hplc_derivation_is_in_progress = False
-    while not hplc_derivation_is_in_progress:
-        time.sleep(20)
-        hplc_derivation_is_in_progress = utils.if_hplc_derivation_is_in_progress(hplc_derivation, sparql_client)
-        print(f"Waiting for hplc derivation to be in progress, current time: {time.time()}")
-
     ################################
     ## Check Vapourtec Derivation ##
     ################################
+    ## Check if the derivation is processed and generated the desired triples
+    # Query timestamp of the derivation for every 20 until it's updated
+    currentTimestamp_vapourtec_derivation = 0
+    while currentTimestamp_vapourtec_derivation == 0:
+        time.sleep(20)
+        currentTimestamp_vapourtec_derivation = utils.get_timestamp(vapourtec_derivation, sparql_client)
+
     # First, check if the file is generated and uploaded correctly
     vapourtec_input_file_iri = utils.get_vapourtec_input_file_iri(vapourtec_derivation, sparql_client)
     vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
@@ -289,26 +289,6 @@ def test_three_agents_docker_integration(
     ##############################
     ## Check HPLC Derivation ##
     ##############################
-    # Generate random file to the docker integration folder, the agent deployed in docker will pick it up
-    generated_file_path = create_test_report(hplc_agent.hplc_report_file_extension, True)
-    # NOTE here we need to replace the first absolute path bit with the mounted folder in docker
-    local_file_path_in_docker = generated_file_path.replace(hplc_report_wsl_folder+'/', hplc_agent.hplc_report_container_dir)
-
-    ## Check if the content of the uploaded file matches the local file
-    # Wait for a bit to let the dockerised agent upload the file
-    time.sleep(hplc_agent.hplc_report_periodic_timescale * 2)
-    # Query remote file path
-    # time.sleep(600)
-    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_agent.hplc_digital_twin, local_file_path_in_docker)
-    # Genereate random download path
-    full_downloaded_path = generate_random_download_path(hplc_agent.hplc_report_file_extension)
-    # Download the file and make sure all the content are the same
-    sparql_client.download_remote_raw_hplc_report(
-        remote_file_path=utils.cf.host_docker_internal_to_localhost(remote_file_path),
-        downloaded_file_path=full_downloaded_path
-    )
-    assert filecmp.cmp(generated_file_path,full_downloaded_path)
-
     ## Check if the derivation is processed and generated the desired triples
     # Query timestamp of the derivation for every 20 until it's updated
     currentTimestamp_derivation = 0

@@ -1,5 +1,4 @@
 from pyderivationagent.conf import config_derivation_agent
-from vapourtecscheduleagent.conf import config_vapourtec_schedule_agent
 from vapourtecscheduleagent.agent import *
 
 import logging
@@ -9,10 +8,9 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 def create_app():
-    agent_config = config_vapourtec_schedule_agent()
+    agent_config = config_derivation_agent()
 
     agent = VapourtecScheduleAgent(
-        maximum_concurrent_experiment=agent_config.MAXIMUM_CONCURRENT_EXPERIMENT,
         register_agent=agent_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,

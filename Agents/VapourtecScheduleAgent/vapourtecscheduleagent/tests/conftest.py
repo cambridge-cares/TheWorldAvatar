@@ -8,7 +8,6 @@ import xlwt
 import os
 
 from pyderivationagent.conf import config_derivation_agent
-from vapourtecscheduleagent.conf import config_vapourtec_schedule_agent
 
 from vapourtecscheduleagent.kg_operations import ChemistryAndRobotsSparqlClient
 from vapourtecscheduleagent.data_model import *
@@ -187,9 +186,8 @@ def create_vapourtec_schedule_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        vapourtec_schedule_config = config_vapourtec_schedule_agent(VAPOURTEC_SCHEDULE_AGENT_ENV)
+        vapourtec_schedule_config = config_derivation_agent(VAPOURTEC_SCHEDULE_AGENT_ENV)
         vapourtec_schedule_agent = VapourtecScheduleAgent(
-            maximum_concurrent_experiment=vapourtec_schedule_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
             register_agent=vapourtec_schedule_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=vapourtec_schedule_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=vapourtec_schedule_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
@@ -203,7 +201,7 @@ def create_vapourtec_schedule_agent():
             fs_password=vapourtec_schedule_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_schedule_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
-            max_thread_monitor_async_derivations=vapourtec_schedule_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            max_thread_monitor_async_derivations=vapourtec_schedule_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
             email_recipient=vapourtec_schedule_config.EMAIL_RECIPIENT,
             email_subject_prefix=vapourtec_schedule_config.EMAIL_SUBJECT_PREFIX+' WSL2',
             email_username=vapourtec_schedule_config.EMAIL_USERNAME,

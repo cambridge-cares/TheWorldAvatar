@@ -12,11 +12,9 @@ from vapourtecscheduleagent.data_model import *
 class VapourtecScheduleAgent(DerivationAgent):
     def __init__(
         self,
-        maximum_concurrent_experiment: int = 1,
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.maximum_concurrent_experiment = maximum_concurrent_experiment
 
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
@@ -46,8 +44,9 @@ class VapourtecScheduleAgent(DerivationAgent):
         # Check until it's the turn for the given reaction experiment
         rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
         self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
-        # TODO NOTE [when run in loop] here the maximum_concurrent_experiment is configured at agent start, move to KG in the future iterations
-        while len(rxn_exp_queue) > self.maximum_concurrent_experiment - 1:
+        # TODO NOTE [next iteration] here the maximum concurrent experiment is configured to follow max_thread_monitor_async_derivations
+        # maybe provide a better design to allow different max concurrent settings dynamically obtained from the knowledge graph
+        while len(rxn_exp_queue) > self.max_thread_monitor_async_derivations - 1:
             time.sleep(60)
             rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
             self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
