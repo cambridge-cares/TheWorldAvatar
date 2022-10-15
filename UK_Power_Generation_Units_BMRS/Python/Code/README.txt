@@ -6,3 +6,7 @@ Within this "ukpowergeneration" folder, in the "ScriptMapQuery" folder, is the A
 
 There are also other query scripts. These all generally operate via CSV / Excel files (which in turn benefit from the mapping script (noted above)'s output). 
 These are in the "ukopowerother" folder, and are noted in the README(s) within. 
+
+In "essattatchment" are scripts related to the attachment of an ESS to a VRE site (e.g. wind). Using linear optimisation to maximise profit it charges and discharges from an ESS. 
+This is also subject to further parameters for energy curtailment / export, which can work alongside the associated data inputs from "ukpowerother", which query BMRS to obtain these. 
+
