@@ -142,17 +142,19 @@ def get_children_and_parent_building_properties():
     # key information of properties to "summarize"
     query = f"""
         SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
-                        ?addr_street ?addr_number ?epc_rating ?rooms ?usage_iri ?usage_label 
-                        ?property_type_iri ?built_form_iri ?construction_start ?construction_end 
-                        ?floor_area ?floor_description ?roof_description ?wall_description 
-                        ?windows_description
+                        ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating ?rooms 
+                        ?usage_iri ?usage_label ?property_type_iri ?built_form_iri ?construction_start
+                        ?construction_end ?floor_area ?floor_description ?roof_description 
+                        ?wall_description  ?windows_description
         WHERE {{
             ?property_iri <{OBE_IS_IN}> ?parent_iri ;
                       <{OBE_HAS_ADDRESS}> ?address_iri .
             ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
                      <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
-            OPTIONAL {{ ?address_iri <{OBE_HAS_PROPERTYNUMBER}> ?addr_number }}
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?addr_number }}
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?addr_bldg_name }}
+            OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?addr_unit_name }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_USAGE}> ?usage_iri }}

@@ -714,8 +714,8 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
     summarized = summarize_epc_data(epcs_data)
 
     columns_to_instantiate = ['property_iri', 'uprn',
-        'address_iri', 'addr_street', 'addr_number', 'postcode_iri',
-        'district_iri', 'built_form_iri', 'property_type_iri',
+        'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'addr_unit_name',
+        'postcode_iri', 'district_iri', 'built_form_iri', 'property_type_iri',
         'usage_iri', 'usage_label', 'construction_start', 'construction_end',
         'floor_description', 'roof_description', 'wall_description',
         'windows_description', 'floor_area', 'epc_rating', 'rooms']
@@ -755,11 +755,11 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
 
         Returns:
             DataFrame with following columns:
-            ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
-            'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
-            'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
-            'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description', 
-            'windows_description'] 
+            ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+            'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+            'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+            'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+            'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
     """
 
     # Create KG client if not provided
@@ -771,17 +771,17 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
     res = kgclient.performQuery(query)
 
     # Unwrap results and create DataFrame
-    cols = ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
-            'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
-            'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
-            'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description', 
-            'windows_description'] 
+    cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+            'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+            'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+            'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+            'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
     df = pd.DataFrame(columns=cols, data=res)
 
     # Cast data types
-    for c in ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 
-              'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 'parent_id', 
-              'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
+    for c in ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+              'built_form_iri', 'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 
+              'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
               'usage_iri', 'usage_label', 'wall_description', 'windows_description'] :
         df[c] = df[c].astype('string')
     df['construction_start'] = pd.to_datetime(df['construction_start'], yearfirst=True, dayfirst=False)
@@ -804,16 +804,16 @@ def summarize_epc_data(data):
 
         Arguments:
             data - DataFrame with following columns:
-                  ['addr_number', 'addr_street', 'address_iri', 'built_form_iri', 'construction_end', 
-                  'construction_start', 'district_iri', 'epc_rating', 'floor_area', 'floor_description', 
-                  'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 
-                  'roof_description', 'rooms', 'usage_iri', 'usage_label', 'wall_description',
-                  'windows_description'] 
+                  ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+                  'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+                  'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+                  'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+                  'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
     """
 
     # Initialise return DataFrame
-    cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'postcode_iri', 'district_iri',
-            'built_form_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
+    cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
+            'district_iri', 'built_form_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
             'construction_start', 'construction_end', 'floor_description', 'roof_description', 
             'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms', 'created']
     df = pd.DataFrame(columns=cols)
@@ -893,7 +893,7 @@ def summarize_epc_data(data):
             address = KB + 'Address_' + str(uuid.uuid4())
         df.loc[p, 'address_iri'] = address
 
-        # Extract street and property number
+        # Extract street and property number as well as building name
         try:
             street = sorted(d['addr_street'].unique())
             street = [s for s in street if s]
@@ -905,7 +905,7 @@ def summarize_epc_data(data):
                 concatenated = '; '.join(street)         
                 df.loc[p, 'addr_street'] = concatenated
         except Exception:
-            logger.info('No Street name information be obtained.')
+            logger.info('No Street name information could be obtained.')
         
         try:
             nr = sorted(d['addr_number'].unique())
@@ -914,7 +914,20 @@ def summarize_epc_data(data):
                 concatenated = ', '.join(nr)
                 df.loc[p, 'addr_number'] = concatenated
         except Exception:
-            logger.info('No Property number information be obtained.')
+            logger.info('No Property number information could be obtained.')
+
+        try:
+            bldg = sorted(d['addr_bldg_name'].unique())
+            bldg = [n for n in bldg if n]
+            # Remove leading and trailing whitespaces and numbers, i.e. "8 King Castle", " King Castle"
+            bldg = [re.sub('^\d*\s*', '', s) for s in bldg]
+            bldg = [re.sub('\s*\d*$', '', s) for s in bldg]
+            bldg = list(set(bldg))
+            if bldg:
+                concatenated = '; '.join(nr)
+                df.loc[p, 'addr_bldg_name'] = concatenated
+        except Exception:
+            logger.info('No Building name information could be obtained.')
 
     # Create 'property_iri' column
     df['property_iri'] = df.index
