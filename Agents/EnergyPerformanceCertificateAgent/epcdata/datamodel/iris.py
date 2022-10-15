@@ -29,8 +29,8 @@ OBE_FLAT = OBE + 'Flat'
 OBE_IS_IN = OBE + 'isIn'
 OBE_HAS_ADDRESS = OBE + 'hasAddress'
 OBE_HAS_POSTALCODE = OBE + 'hasPostalCode'
+OBE_HAS_UNIT_NAME = OBE + 'hasUnitName'
 OBE_POSTALCODE = OBE + 'PostalCode'
-OBE_HAS_PROPERTYNUMBER = OBE + 'hasPropertyNumber'
 OBE_HAS_ADMIN_DISTRICT = OBE + 'hasAdministrativeDistrict'
 OBE_ADMIN_DISTRICT = OBE + 'AdministrativeDistrict'
 OBE_LOCATEDIN = OBE + 'locatedIn'
@@ -151,6 +151,8 @@ GEO_ASWKT = GEO + 'asWKT'
 # ICONTACT ontology
 ICONTACT_ADDRESS = ICONTACT + 'Address'
 ICONTACT_HAS_STREET = ICONTACT + 'hasStreet'
+ICONTACT_HAS_STREET_NUMBER = ICONTACT + 'hasStreetNumber'
+ICONTACT_HAS_BUILDING = ICONTACT + 'hasBuilding'
 
 # Office for National Statistics (ONS)
 ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
