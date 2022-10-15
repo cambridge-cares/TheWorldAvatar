@@ -13,13 +13,19 @@ HM Land Registry Price Paid Data: https://landregistry.data.gov.uk/app/root/doc/
 import re
 import numpy as np
 import pandas as pd
-from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
 
 # File paths to previously downloaded data
-epc_file = 'domestic_epcs.csv'
-ppd_file = 'housing_market.csv'
+epc_file = './input/domestic_epcs.csv'
+ppd_file = './input/housing_market.csv'
+
+# File paths to output files
+epc_extracted = './output/epc_addresses_extracted.csv'
+ppd_extracted = './output/ppd_addresses_extracted.csv'
+matched_addr = './output/epc_ppd_address_matches.csv'
+match_stats = './output/match_score_summary.csv'
+worst_matches = './output/matches_below_90.csv'
 
 
 #####################################################################################
@@ -87,7 +93,8 @@ def replace_ands(nr_string):
     return updated
 
 
-def extract_epc_addresses(df_epc, names_units, names_bldgs, names_street):
+def extract_epc_addresses(df_epc, names_units, names_bldgs, names_street,
+                          filepath):
     """
         Extracts address information from EPC data as instantiated
     """
@@ -256,12 +263,12 @@ def extract_epc_addresses(df_epc, names_units, names_bldgs, names_street):
 
     # Create dataframe from list of dicts
     df = pd.DataFrame(columns=cols, data=to_inst)    
-    df.to_csv('epc_addresses_extracted.csv', index=False)
+    df.to_csv(filepath, index=False)
 
     return df
 
 
-def condition_ppd_data(ppd_data):
+def condition_ppd_data(ppd_data, filepath):
     """"
         Condition PPD data before matching attempt
     """
@@ -271,7 +278,7 @@ def condition_ppd_data(ppd_data):
     ppd_data['saon'] = ppd_data['saon'].apply(replace_ands)
     
     # Write conditioned DataFrame to csv
-    ppd_data.to_csv('ppd_addresses_extracted.csv', index=False)
+    ppd_data.to_csv(filepath, index=False)
 
     return ppd_data
 
@@ -303,13 +310,14 @@ if __name__ == '__main__':
 
     # 1) Extract EPC and PPD data "as instantiated"
     try:
-        epc_instantiated = pd.read_csv('epc_addresses_extracted.csv')
+        epc_instantiated = pd.read_csv(epc_extracted)
     except FileNotFoundError:
-        epc_instantiated = extract_epc_addresses(df_epc, names_units, names_bldgs, names_street)
+        epc_instantiated = extract_epc_addresses(df_epc, names_units, names_bldgs, names_street,
+                                                 epc_extracted)
     try:
-        ppd_instantiated = pd.read_csv('ppd_addresses_extracted.csv')
+        ppd_instantiated = pd.read_csv(ppd_extracted)
     except FileNotFoundError:
-        ppd_instantiated = condition_ppd_data(df_ppd)
+        ppd_instantiated = condition_ppd_data(df_ppd, ppd_extracted)
 
     # 2) Create consolidated address data
     # Fill missing data with whitespace
@@ -337,14 +345,13 @@ if __name__ == '__main__':
         i += 1
         print(f'Postcode {i:>6}/{n:>6}: {pc}')
 
-        # Intialise data to instantiate
-        row_to_inst = {c: None for c in cols}
-        row_to_inst['postcode'] = pc
-
         # Extract EPC addresses for postcode
         epc_addr = epc_instantiated[epc_instantiated['postcode'] == pc]
 
         for index, row in epc_addr.iterrows():
+            # Intialise data to instantiate
+            row_to_inst = {c: None for c in cols}
+            row_to_inst['postcode'] = pc
             row_to_inst['epc_address'] = row['epc_address']
 
             prop_type = epc_properties[row['property-type']]
@@ -368,7 +375,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(to_inst)
 
     # Write to csv
-    df.to_csv('epc_ppd_address_matches.csv', index=False)
+    df.to_csv(matched_addr, index=False)
 
     # Write summary statistics
     stats = df['match_score'].describe(percentiles=[0.01, 0.05, 0.1, 0.15, 0.25, 0.5, 
@@ -377,7 +384,7 @@ if __name__ == '__main__':
     stats['Number of matches > 90'] = len(df[df['match_score'] > 90])
     stats['Number of matches > 95'] = len(df[df['match_score'] > 95])
     stats['Number of matches = 100'] = len(df[df['match_score'] == 100])
-    stats.to_csv('match_score_summary.csv')
+    stats.to_csv(match_stats)
     
     # Write worst matches
-    df[df['match_score'] < 90].to_csv('matches_below_90.csv', index=False)
+    df[df['match_score'] < 90].to_csv(worst_matches, index=False)
