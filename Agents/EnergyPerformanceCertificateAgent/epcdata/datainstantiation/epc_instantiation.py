@@ -483,7 +483,7 @@ def extract_address_information(line1, line2, line3, prop_type):
             if (line2 and not line3) or (line3 and not line2):
                 field2 = line2 if line2 else line3
                 # 1) For buildings try to extract building name + street info
-                if epc_properties[to_inst['property-type']] == BUILDING:
+                if epc_properties[to_inst['property-type'].upper()] == BUILDING:
                     # If 1st address field contains typical building name and 2nd field
                     # contains splittable street information (this should cover most cases)
                     # -> field 1: building info, field 2: street info
@@ -564,7 +564,7 @@ def extract_address_information(line1, line2, line3, prop_type):
                                 to_inst['unit_name'] = field2
                 else:
                     # If 3rd field does not contain typical street information, consider only fields 1/2
-                    if epc_properties[row['property-type']] == UNIT:
+                    if epc_properties[to_inst['property-type'].upper()] == UNIT:
                         # If 1st address field contains typical unit name and 2nd field
                         # contains splittable street information (this should cover most cases)
                         # -> field 1: unit info, field 2: street info
