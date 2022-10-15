@@ -1,0 +1,13 @@
+{
+    "database": "postgres",
+    "workspace": "super_output_areas",
+    "datasetDirectory": "super_output_areas",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "soas"
+        }
+    ]
+}
