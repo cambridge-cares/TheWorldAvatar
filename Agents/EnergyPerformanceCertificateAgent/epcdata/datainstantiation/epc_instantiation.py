@@ -362,6 +362,8 @@ def condition_epc_data(data):
         'address_iri': None, 
         'addr_street': None, 
         'addr_number': None,
+        'addr_bldg_name': None,
+        'addr_unit_name': None,
         'postcode_iri': None, 
         'district_iri': None, 
         'built_form_iri': None, 
@@ -379,14 +381,16 @@ def condition_epc_data(data):
         'rooms': None
     }
 
-    # Extract address information
-    # There are 3 address fields --> assumption that street and number are provided
-    # in same field; Street names to be stored in all capital letters
-    address_strings = [data.get('address1'), data.get('address2'), data.get('address3')]
-    street, nr = extract_street_and_number(address_strings)
+    # Extract address information from provided address fields --> assumption that address 
+    # information is provided in decreasing granularity, i.e. line 1 most detailed, etc.
+    # order: flat/unit information - building information - street information
+    addressinfo = extract_address_information(line1=data.get('address1'), line2=data.get('address2'),
+                                              line3=data.get('address3'), prop_type=data.get('property-type'))
     data_to_instantiate['address_iri'] = KB + 'Address_' + str(uuid.uuid4())
-    data_to_instantiate['addr_street'] = street
-    data_to_instantiate['addr_number'] = nr
+    data_to_instantiate['addr_street'] = addressinfo['street']
+    data_to_instantiate['addr_number'] = addressinfo['number']
+    data_to_instantiate['addr_bldg_name'] = addressinfo['bldg_name']
+    data_to_instantiate['addr_unit_name'] = addressinfo['unit_name']
   
     # Property type and built form
     data_to_instantiate['built_form_iri'] = EPC_DATA.get(data.get('built-form'))
@@ -432,23 +436,193 @@ def condition_epc_data(data):
     return data_to_instantiate
 
 
-def extract_street_and_number(address_strings):
-    # Drop None elements
-    address_strings = [a for a in address_strings if a]
+def extract_address_information(line1, line2, line3, prop_type):
+    """
+        Extracts address information from provided EPC data
 
-    street = None
-    nr = None
-    for addr in address_strings:
-        nr = re.findall(r'\d+', addr)
-        if nr: 
-            nr = nr[0]
-            street = addr.replace(nr, '')
-            street = street.replace(',', '').replace(';','')
-            street = street.strip().upper()
-        if street and nr:
-            break
+        Arguments:
+            line1 - first line of address
+            line2 - second line of address
+            line3 - third line of address
+            prop_type - property type as provided by EPC API
+        
+        Returns:
+            Dictionary of address information; keys:
+            ['street', 'number', 'bldg_name', 'unit_name', 'property-type']
+    """
 
-    return street, nr
+    # Ensure upper case letters for typical unit, property and street names
+    names_units = [i.upper() for i in NAMES_UNITS]
+    names_bldgs = [i.upper() for i in NAMES_BLDGS]
+    names_street = [i.upper() for i in NAMES_STREET]
+    # Mapping of detailed property types to simpler high level calssification
+    BUILDING = 'bldg'
+    UNIT = 'unit'
+    epc_properties = {
+        'HOUSE': BUILDING,
+        'BUNGALOW': BUILDING,
+        'PARK HOME': BUILDING,
+        'FLAT': UNIT,
+        'MAISONETTE': UNIT
+    }
+
+    # Initialise return dictionary
+    cols = ['street', 'number', 'bldg_name', 'unit_name', 'property-type']
+    to_inst = {c: None for c in cols}
+    to_inst['property-type'] = prop_type
+
+    # ASSUMPTION: Address information provided in decreasing granularity, i.e.
+    # order: flat information - building information - street information
+    field1 = line1
+    if field1:
+        # If only first address field is provided -> extract (number and) street
+        if not line2 and not line3:
+            to_inst['street'], to_inst['number'] = split_address_info(field1)
+        else:
+            # If two address fields are provided -> extract additional unit/building info
+            if (line2 and not line3) or (line3 and not line2):
+                field2 = line2 if line2 else line3
+                # 1) For buildings try to extract building name + street info
+                if epc_properties[to_inst['property-type']] == BUILDING:
+                    # If 1st address field contains typical building name and 2nd field
+                    # contains splittable street information (this should cover most cases)
+                    # -> field 1: building info, field 2: street info
+                    if any(b in field1 for b in names_bldgs) and all(split_address_info(field2)):
+                        to_inst['street'], to_inst['number'] = split_address_info(field2)
+                        to_inst['bldg_name'] = field1
+                    # If 2nd field does not contain splittable street information, but typical street name
+                    # while 1st field does not contain typical street name
+                    # -> field 1: building info, field 2: street info
+                    elif any(s in field2 for s in names_street) and not any(s in field1 for s in names_street):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['bldg_name'] = field1
+                    else:
+                        # If 2nd field does not contain typical street information
+                        # -> field 1: street info and field 2 likely neglectable (i.e. town name)
+                        to_inst['street'], to_inst['number'] = split_address_info(field1)
+                # 2) For units try to extract unit name + building name + street info
+                else:
+                    # If 1st address field contains typical unit name and 2nd field
+                    # contains splittable street information (this should cover most cases)
+                    # -> field 1: unit info, field 2: street info
+                    if any(u in field1 for u in names_units) and all(split_address_info(field2)):
+                        to_inst['street'], to_inst['number'] = split_address_info(field2)
+                        to_inst['unit_name'] = field1
+                    # If 2nd field does not contain splittable street information, but typical street name
+                    # -> field 1: unit info, field 2: street info
+                    elif any(u in field1 for u in names_units) and any(s in field2 for s in names_street):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['unit_name'] = field1
+                    # If 2nd field does not contain splittable street information, but typical building name
+                    # -> field 1: unit info, field 2: building info
+                    elif any(u in field1 for u in names_units) and any(b in field2 for b in names_bldgs):
+                            to_inst['bldg_name'] = field2
+                            to_inst['unit_name'] = field1
+                    else:
+                        # If 2nd field does not contain typical street/building information
+                        # -> field 1: street info and field 2 likely neglectable (i.e. town name)
+                        to_inst['street'], to_inst['number'] = split_address_info(field1)
+            else:
+                # If three address fields are provided -> extract additional unit/building info
+                field2 = line2 
+                field3 = line3
+                # If first 2 address fields contain typical unit and building name and 3rd field
+                # contains splittable street information (this should cover most cases)
+                # -> field 1/2: building/unit info, field 3: street info
+                if all(split_address_info(field3)):
+                    if any(u in field1 for u in names_units) and any(b in field2 for b in names_bldgs):
+                        to_inst['street'], to_inst['number'] = split_address_info(field3)
+                        to_inst['bldg_name'] = field2
+                        to_inst['unit_name'] = field1
+                    elif any(u in field2 for u in names_units) and any(b in field1 for b in names_bldgs):
+                        to_inst['street'], to_inst['number'] = split_address_info(field3)
+                        to_inst['bldg_name'] = field1
+                        to_inst['unit_name'] = field2
+                # If 3rd field does not contain splittable street information, but typical street name
+                # while 2nd field does not contain typical street name
+                # -> field 1/2: building/unit info, field 3: street info
+                elif any(s in field3 for s in names_street) and not \
+                    (any(s in field2 for s in names_street) and all(split_address_info(field2))):
+                    # Extract most granualar street information
+                    if any(s in field2 for s in names_street):
+                        if any(u in field1 for u in names_units):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['unit_name'] = field1
+                        if any(b in field1 for b in names_bldgs):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['bldg_name'] = field1
+                    else:
+                        if any(u in field1 for u in names_units):
+                            to_inst['street'], to_inst['number'] = split_address_info(field3)
+                            to_inst['unit_name'] = field1
+                            if any(b in field2 for b in names_bldgs):
+                                to_inst['bldg_name'] = field2
+                        if any(b in field1 for b in names_bldgs):
+                            to_inst['street'], to_inst['number'] = split_address_info(field3)
+                            to_inst['bldg_name'] = field1
+                            if any(u in field2 for u in names_units):
+                                to_inst['unit_name'] = field2
+                else:
+                    # If 3rd field does not contain typical street information, consider only fields 1/2
+                    if epc_properties[row['property-type']] == UNIT:
+                        # If 1st address field contains typical unit name and 2nd field
+                        # contains splittable street information (this should cover most cases)
+                        # -> field 1: unit info, field 2: street info
+                        if any(u in field1 for u in names_units) and all(split_address_info(field2)):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['unit_name'] = field1
+                        # If 2nd field does not contain splittable street information, but typical street name
+                        # -> field 1: unit info, field 2: street info
+                        elif any(u in field1 for u in names_units) and any(s in field2 for s in names_street):
+                                to_inst['street'], to_inst['number'] = split_address_info(field2)
+                                to_inst['unit_name'] = field1
+                        # If 2nd field does not contain splittable street information, but typical building name
+                        # -> field 1: unit info, field 2: building info
+                        elif any(u in field1 for u in names_units) and any(b in field2 for b in names_bldgs):
+                                to_inst['bldg_name'] = field2
+                                to_inst['unit_name'] = field1
+                        else:
+                            # If 2nd field does not contain typical street/building information
+                            # -> field 1: street info and field 2 likely neglectable (i.e. town name)
+                            to_inst['street'], to_inst['number'] = split_address_info(field1)
+                    else:
+                        # If 1st address field contains typical building name and 2nd field
+                        # contains splittable street information 
+                        # -> field 1: building info, field 2: street info
+                        if any(u in field1 for u in names_bldgs) and all(split_address_info(field2)):
+                            to_inst['street'], to_inst['number'] = split_address_info(field2)
+                            to_inst['bldg_name'] = field1
+                        # If 2nd field does not contain splittable street information, but typical street name
+                        # -> field 1: building info, field 2: street info
+                        elif any(u in field1 for u in names_bldgs) and any(s in field2 for s in names_street):
+                                to_inst['street'], to_inst['number'] = split_address_info(field2)
+                                to_inst['bldg_name'] = field1
+                        else:
+                            # If 2nd field does not contain typical street/building information
+                            # -> field 1: street info and field 2 likely neglectable (i.e. town name)
+                            to_inst['street'], to_inst['number'] = split_address_info(field1)
+    
+    return to_inst
+
+
+def split_address_info(address_info: str):
+    """
+        Splits address text with potential number into textual and numeric part
+    """
+    # If numeric parts contains '-' extract entire part as number
+    if re.search(r'\d+\s*-\s*\d+', address_info):
+        p = r'\d+\s*-*\s*\d+\w*'
+    else:
+        p = r'\d+\w*'
+    splitted = re.findall(p, address_info)
+    if splitted: 
+        number = splitted[0]
+        description = address_info.replace(number, '')
+        description = description.replace(',', '').replace(';','')
+        description = description.strip().upper()
+        return (description, number)
+    else:
+        return (address_info, None)
 
 
 def retrieve_ocgml_uprns(uprn: str = '', query_endpoint=OCGML_ENDPOINT,

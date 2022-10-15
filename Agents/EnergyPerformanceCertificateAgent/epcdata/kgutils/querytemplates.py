@@ -286,15 +286,16 @@ def instantiate_postcodes_for_district(local_authority_district: str,
 
 
 def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri: str = None,
-                 address_iri: str = None, addr_street: str = '', addr_number: str = '',
-                 postcode_iri:str = None, district_iri: str = None,
-                 built_form_iri: str = None, property_type_iri: str = None,
-                 usage_iri: str = None, usage_label: str = None,
-                 construction_start: str = None, construction_end: str = None,
-                 floor_description: str = None, roof_description: str = None, 
-                 wall_description: str = None, windows_description: str = None,  
-                 floor_area: float = None, rooms: int = None,
-                 epc_rating: str = None, epc_lmkkey: str = None) -> str:
+                         address_iri: str = None, addr_street: str = None, addr_number: str = None,
+                         addr_bldg_name: str = None, addr_unit_name: str = None,
+                         postcode_iri:str = None, district_iri: str = None,
+                         built_form_iri: str = None, property_type_iri: str = None,
+                         usage_iri: str = None, usage_label: str = None,
+                         construction_start: str = None, construction_end: str = None,
+                         floor_description: str = None, roof_description: str = None, 
+                         wall_description: str = None, windows_description: str = None,  
+                         floor_area: float = None, rooms: int = None,
+                         epc_rating: str = None, epc_lmkkey: str = None) -> str:
     # Returns triples to instantiate EPC data for single property
     
     if property_iri and uprn:
@@ -314,9 +315,11 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         # Postal code and admin district
         if address_iri: 
             triples += f"""<{property_iri}> <{OBE_HAS_ADDRESS}> <{address_iri}> . 
-                           <{address_iri}> <{RDF_TYPE}> <{ICONTACT_ADDRESS}> .  
-                           <{address_iri}> <{ICONTACT_HAS_STREET}> \"{addr_street}\"^^<{XSD_STRING}> .
-                           <{address_iri}> <{OBE_HAS_PROPERTYNUMBER}> \"{addr_number}\"^^<{XSD_STRING}> . """
+                           <{address_iri}> <{RDF_TYPE}> <{ICONTACT_ADDRESS}> . """
+            if addr_street: triples += f"<{address_iri}> <{ICONTACT_HAS_STREET}> \"{addr_street}\"^^<{XSD_STRING}> . "
+            if addr_number: triples += f"<{address_iri}> <{ICONTACT_HAS_STREET_NUMBER}> \"{addr_number}\"^^<{XSD_STRING}> . "
+            if addr_bldg_name: triples += f"<{address_iri}> <{ICONTACT_HAS_BUILDING}> \"{addr_bldg_name}\"^^<{XSD_STRING}> . "
+            if addr_unit_name: triples += f"<{address_iri}> <{OBE_HAS_UNIT_NAME}> \"{addr_unit_name}\"^^<{XSD_STRING}> . "
             if postcode_iri: triples += f"<{address_iri}> <{OBE_HAS_POSTALCODE}> <{postcode_iri}> . "
             if district_iri: triples += f"<{address_iri}> <{OBE_HAS_ADMIN_DISTRICT}> <{district_iri}> . "
         if district_iri: triples += f"<{property_iri}> <{OBE_LOCATEDIN}> <{district_iri}> . "
