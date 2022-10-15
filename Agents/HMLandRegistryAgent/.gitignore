@@ -15,6 +15,7 @@ assets
 
 output/*
 !.gitignore
+data_screening/*.csv
 
 ## User defined
 *.egg-info
