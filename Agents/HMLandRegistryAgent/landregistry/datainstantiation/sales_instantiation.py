@@ -11,6 +11,7 @@ import json
 import uuid
 import numpy as np
 import pandas as pd
+from fuzzywuzzy import process
 
 import agentlogging
 
@@ -35,6 +36,7 @@ def update_transaction_records(property_iris=None,
     """
 
     # Initialise return values
+    instantiated_tx = 0
     updated_tx = 0
 
     # Initialise KG clients
@@ -109,21 +111,34 @@ def update_all_transaction_records(api_endpoint=HM_SPARQL_ENDPOINT,
 
 def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
         """
-            Pass SPARQL results as DataFrame and condition data to ensure proper
-            comparison with HM Land Registry Data
+            Parse SPARQL results from OBE namespace (i.e. instantiated EPC data)
+            as DataFrame and condition data to ensure proper comparison with 
+            HM Land Registry Data
 
             Arguments:
                 sparql_results - list of dicts with following keys
-                                 ['property_iri', 'postcode_iri', 'address_iri', 'district_iri',
-                                  'postcode', 'street', 'house_number']
+                                 [property_iri, address_iri, postcode_iri, district_iri,
+                                  property_type, postcode, street, number, bldg_name, unit_name]
             Returns:
                 DataFrame with dict keys as columns
         """
         
         df = pd.DataFrame(sparql_results)
+
         # Ensure all strings are upper case
-        df['street'] = df['street'].str.upper()
         df['postcode'] = df['postcode'].str.upper()
+        df['street'] = df['street'].str.upper()
+        df['number'] = df['number'].str.upper()        
+        df['bldg_name'] = df['bldg_name'].str.upper()
+        df['unit_name'] = df['unit_name'].str.upper()
+
+        # Fill missing data with whitespace
+        df.fillna(' ', inplace=True)
+        # Create column with consolidated address string
+        df['epc_address'] = [' '.join(a) for a in zip(df['street'], df['number'], 
+                                                      df['bldg_name'], df['unit_name'])]
+        # Remove unnecessary whitespaces
+        df['epc_address'] = df['epc_address'].apply(lambda x: ' '.join(x.split()))
 
         return df
 

@@ -18,6 +18,8 @@ setup(
         'JayDeBeApi~=1.2',
         'pandas~=1.3',
         'py4jps>=1.0.26', 
-        'requests~=2.28'
+        'requests~=2.28',
+        'fuzzywuzzy~=0.18',
+        'python-Levenshtein~=0.20'
     ]
 )
