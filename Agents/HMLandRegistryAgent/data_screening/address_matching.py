@@ -13,7 +13,7 @@ HM Land Registry Price Paid Data: https://landregistry.data.gov.uk/app/root/doc/
 import re
 import numpy as np
 import pandas as pd
-from fuzzywuzzy import process
+from fuzzywuzzy import fuzz, process
 
 
 # File paths to previously downloaded data
@@ -23,9 +23,6 @@ ppd_file = './input/housing_market.csv'
 # File paths to output files
 epc_extracted = './output/epc_addresses_extracted.csv'
 ppd_extracted = './output/ppd_addresses_extracted.csv'
-matched_addr = './output/epc_ppd_address_matches.csv'
-match_stats = './output/match_score_summary.csv'
-worst_matches = './output/matches_below_90.csv'
 
 
 #####################################################################################
@@ -332,59 +329,67 @@ if __name__ == '__main__':
                                         ppd_instantiated['paon'], ppd_instantiated['saon'])]
     ppd_instantiated['ppd_address'] = ppd_instantiated['ppd_address'].apply(lambda x: ' '.join(x.split()))
     
-    # Initialise DataFrame to instantiate
-    cols = ['postcode', 'epc_address', 'match_score', 'ppd_address']
-    to_inst = []
 
-    # 3) Match addresses
-    # MUST MATCH: postcode + property type
-    # FUZZY MATCH: concatenated string of "street + number + building name + unit name"
-    i = 0
-    n = len(epc_instantiated['postcode'].unique())
-    for pc in epc_instantiated['postcode'].unique():
-        i += 1
-        print(f'Postcode {i:>6}/{n:>6}: {pc}')
+    # 3) Match addresses using various fuzzy match methods
+    scorer = [fuzz.ratio, fuzz.partial_ratio, fuzz.token_sort_ratio, fuzz.token_set_ratio]
+    scorer_name = ['simple_ratio', 'partial_ratio', 'token_sort_ratio', 'token_set_ratio']
+    for i in range(4):
+        s = scorer[i]
+        name = scorer_name[i]
 
-        # Extract EPC addresses for postcode
-        epc_addr = epc_instantiated[epc_instantiated['postcode'] == pc]
+        # Initialise DataFrame to instantiate
+        cols = ['postcode', 'epc_address', 'match_score', 'ppd_address']
+        to_inst = []
 
-        for index, row in epc_addr.iterrows():
-            # Intialise data to instantiate
-            row_to_inst = {c: None for c in cols}
-            row_to_inst['postcode'] = pc
-            row_to_inst['epc_address'] = row['epc_address']
+        # 3) Match addresses
+        # MUST MATCH: postcode + property type
+        # FUZZY MATCH: concatenated string of "street + number + building name + unit name"
+        i = 0
+        n = len(epc_instantiated['postcode'].unique())
+        for pc in epc_instantiated['postcode'].unique():
+            i += 1
+            print(f'Postcode {i:>6}/{n:>6}: {pc}')
 
-            prop_type = epc_properties[row['property-type']]
-            # Extract PPD addresses of same property type in same postcode
-            ppd_addr = ppd_instantiated[ppd_instantiated['postcode'] == pc]
-            ppd_addr = ppd_addr[ppd_addr['property'].map(ppd_properties) == prop_type]
+            # Extract EPC addresses for postcode
+            epc_addr = epc_instantiated[epc_instantiated['postcode'] == pc]
 
-            # Extract list of PPD addresses
-            ppd_addresses = ppd_addr['ppd_address'].tolist()
+            for index, row in epc_addr.iterrows():
+                # Intialise data to instantiate
+                row_to_inst = {c: None for c in cols}
+                row_to_inst['postcode'] = pc
+                row_to_inst['epc_address'] = row['epc_address']
 
-            # Find best match
-            best = process.extractOne(row['epc_address'], ppd_addresses)
-            if best:
-                row_to_inst['match_score'] = best[1]
-                row_to_inst['ppd_address'] = ppd_addr[ppd_addr['ppd_address'] == best[0]]['ppd_address'].values[0]
+                prop_type = epc_properties[row['property-type']]
+                # Extract PPD addresses of same property type in same postcode
+                ppd_addr = ppd_instantiated[ppd_instantiated['postcode'] == pc]
+                ppd_addr = ppd_addr[ppd_addr['property'].map(ppd_properties) == prop_type]
 
-            # Append to list
-            to_inst.append(row_to_inst)
+                # Extract list of PPD addresses
+                ppd_addresses = ppd_addr['ppd_address'].tolist()
 
-    # Create DataFrame from list of dicts
-    df = pd.DataFrame(to_inst)
+                # Find best match
+                best = process.extractOne(row['epc_address'], ppd_addresses, scorer=s)
+                if best:
+                    row_to_inst['match_score'] = best[1]
+                    row_to_inst['ppd_address'] = ppd_addr[ppd_addr['ppd_address'] == best[0]]['ppd_address'].values[0]
 
-    # Write to csv
-    df.to_csv(matched_addr, index=False)
+                # Append to list
+                to_inst.append(row_to_inst)
 
-    # Write summary statistics
-    stats = df['match_score'].describe(percentiles=[0.01, 0.05, 0.1, 0.15, 0.25, 0.5, 
-                                                    0.75, 0.85, 0.9, 0.95, 0.99])
-    stats['median'] = df['match_score'].median()
-    stats['Number of matches > 90'] = len(df[df['match_score'] > 90])
-    stats['Number of matches > 95'] = len(df[df['match_score'] > 95])
-    stats['Number of matches = 100'] = len(df[df['match_score'] == 100])
-    stats.to_csv(match_stats)
-    
-    # Write worst matches
-    df[df['match_score'] < 90].to_csv(worst_matches, index=False)
+        # Create DataFrame from list of dicts
+        df = pd.DataFrame(to_inst)
+
+        # Write to csv
+        df.to_csv('./output/' + name + '_matched_addr.csv', index=False)
+
+        # Write summary statistics
+        stats = df['match_score'].describe(percentiles=[0.01, 0.05, 0.1, 0.15, 0.25, 0.5, 
+                                                        0.75, 0.85, 0.9, 0.95, 0.99])
+        stats['median'] = df['match_score'].median()
+        stats['Number of matches > 90'] = len(df[df['match_score'] > 90])
+        stats['Number of matches > 95'] = len(df[df['match_score'] > 95])
+        stats['Number of matches = 100'] = len(df[df['match_score'] == 100])
+        stats.to_csv('./output/' + name + '_stats.csv')
+        
+        # Write worst matches
+        df[df['match_score'] < 90].to_csv('./output/' + name + '_worst_matches.csv', index=False)
