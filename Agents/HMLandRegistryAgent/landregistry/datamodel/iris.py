@@ -64,6 +64,7 @@ RDF_TYPE = RDF + 'type'
 RDFS_SUBCLASS = RDFS + 'subClassOf'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
+OWL_SAME_AS = OWL + 'sameAs'
 
 # Data types
 XSD_STRING = XSD + 'string'

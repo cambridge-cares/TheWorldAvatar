@@ -39,11 +39,21 @@ def api_update_transaction_records():
     except Exception as ex:
         logger.error('Invalid (list of) "property_iris" provided.')
         raise InvalidInput('Invalid (list of) "property_iris" provided.') from ex
+    # Retrieve minimum required confidence score
+    try:
+        min_match = int(query['min_confidence'])
+    except Exception as ex:
+        logger.info('No confidence score provided, using default.')
+        min_match = 90
+    if min_match not in range(0, 100):
+        logger.error('Invalid "min_confidence" provided. Supported range: 0-100.')
+        raise InvalidInput('Invalid "min_confidence" provided. Supported range: 0-100.')
     try:
         # Update sales transaction record for (list of) property IRIs
-        res = update_transaction_records(property_iris=iris)
+        res = update_transaction_records(property_iris=iris, min_conf_score=min_match)
         return jsonify({'status': '200', 
-                        'Updated property transactions': res})
+                        'Instantiated property transactions': res[0],
+                        'Updated property transactions': res[1]})
     except Exception as ex:
         logger.error("Unable to update property sales transactions.", ex)
         return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})
@@ -54,17 +64,32 @@ def api_update_transaction_records():
 @inputtasks_bp.route('/api/landregistry/update_all', methods=['POST'])
 def api_update_all_transaction_records():
     # Check arguments (query parameters)
-    if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        logger.warning("Query parameters provided, although not required. " \
-                       + "Provided arguments will be neglected.")
+    if len(request.args) == 0:
+        print("No query parameters provided, using default confidence score for matching.")
+        logger.warning("No query parameters provided, using default confidence score for matching.")
+        min_match = 90
+    else:
+        # Get received 'query' JSON object which holds all HTTP parameters
+        try:
+            query = request.json['query']
+        except Exception as ex:
+            logger.error('No JSON "query" object could be identified.')
+            raise InvalidInput('No JSON "query" object could be identified.') from ex
+        # Retrieve minimum required confidence score
+        try:
+            min_match = int(query['min_confidence'])
+        except Exception as ex:
+            logger.info('No confidence score provided, using default.')
+            min_match = 90
+        if min_match not in range(0, 100):
+            logger.error('Invalid "min_confidence" provided. Supported range: 0-100.')
+            raise InvalidInput('Invalid "min_confidence" provided. Supported range: 0-100.')
     try:
         # Update sales transaction record for all instantiated property IRIs
-        res = update_all_transaction_records()
+        res = update_all_transaction_records(min_conf_score=min_match)
         return jsonify({'status': '200', 
                         'Updated property transactions': res[0],
-                        'Updated property price indices': res[1],})
+                        'Updated property price indices': res[1]})
     except Exception as ex:
         logger.error("Unable to update property sales transactions.", ex)
         return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})
