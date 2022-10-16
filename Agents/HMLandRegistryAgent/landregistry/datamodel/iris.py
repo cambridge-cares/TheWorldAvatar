@@ -61,7 +61,7 @@ LRCOMMON_COUNTY = LRCOMMON + 'county'
 
 # Concepts
 RDF_TYPE = RDF + 'type'
-RDFS_SUBCLASS = RDFS + ''
+RDFS_SUBCLASS = RDFS + 'subClassOf'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 

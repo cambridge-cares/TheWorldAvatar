@@ -55,8 +55,8 @@ def update_transaction_records(property_iris=None,
     obe = create_conditioned_dataframe_obe(res)
 
     # Query Price Paid Data postcode by postcode (compromise between query speed and number of queries)
-    for pc in obe['postcodes'].unique():
-        pc_data = obe[obe['postcodes'] == pc].copy()
+    for pc in obe['postcode'].unique():
+        pc_data = obe[obe['postcode'] == pc].copy()
 
         # 2) Retrieve Price Paid Data transaction records from HM Land Registry
         query = get_transaction_data_for_postcodes(postcodes=[pc])
@@ -206,7 +206,7 @@ def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
         return df
 
 
-def get_best_matching_transactions(obe_data, ppd_data, min_match_score:None) -> list:
+def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> list:
     """
         Find best match of instantiated address (i.e. OBE address) within 
         Price Paid Data set queried from HM Land Registry and extract respective
@@ -231,7 +231,7 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score:None) -> 
     """
     
     # Initialise return data, i.e. data to instantiate
-    cols = ['tx_iri', 'price', 'date', 'match_score', 'ppd_address_iri']
+    cols = ['tx_iri', 'price', 'date', 'ppd_address_iri']
     inst_list = []
 
     for addr in obe_data['epc_address'].unique():
@@ -240,8 +240,8 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score:None) -> 
         to_inst = {c: None for c in cols}
         
         # Extract PPD addresses of same property type (in same postcode)
-        ppd_addr = ppd_data[ppd_data['property_type'].isin(
-                            obe_data['property_type'], OTHER_PROPERTY_TYPE)]
+        prop = obe_data['property_type'].values[0]
+        ppd_addr = ppd_data[ppd_data['property_type'].isin([prop, OTHER_PROPERTY_TYPE])]
 
         # Extract list of PPD addresses
         ppd_addr = ppd_addr['ppd_address'].tolist()
@@ -257,10 +257,10 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score:None) -> 
             best = process.extractOne(addr, ppd_addr, scorer=fuzz.token_set_ratio)
         if best:
             tx_data = ppd_data[ppd_data['ppd_address'] == best[0]]
-            to_inst['match_score'] = tx_data['tx_iri']
-            to_inst['price'] = tx_data['price']
-            to_inst['date'] = tx_data['date']
-            to_inst['ppd_address_iri'] = tx_data['address_iri']
+            to_inst['tx_iri'] = tx_data['tx_iri'].values[0]
+            to_inst['price'] = tx_data['price'].values[0]
+            to_inst['date'] = tx_data['date'].values[0]
+            to_inst['ppd_address_iri'] = tx_data['address_iri'].values[0]
 
         # Append to list
         inst_list.append(to_inst)
