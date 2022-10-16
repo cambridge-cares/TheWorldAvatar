@@ -97,12 +97,30 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
     return query
 
 
+def get_all_properties_with_postcode() -> str:
+    # Retrieve instantiated properties with location information from KG
+
+    query = f"""
+        SELECT ?property_iri ?postcode
+        WHERE {{
+        ?property_iri <{RDF_TYPE}> ?property_type ; 
+                      <{OBE_HAS_ADDRESS}> ?address_iri . 
+        ?address_iri <{OBE_HAS_POSTALCODE}>/<{RDFS_LABEL}> ?postcode . 
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
+
 def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None, 
                               new_tx_iri:None, price:None, date:None, 
                               ppd_address_iri:None) -> str:
     # Returns DELETE / INSERT query to instantiate/update transaction record
     
-    if property_iri and address_iri:
+    if property_iri and address_iri and price and date:
         # Create tx_iri if not provided (i.e. not instantiated yet)
         if not tx_iri:
             tx_iri = KB + 'Transaction_' + str(uuid.uuid4())

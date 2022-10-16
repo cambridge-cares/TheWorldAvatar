@@ -64,7 +64,7 @@ def api_update_transaction_records():
 @inputtasks_bp.route('/api/landregistry/update_all', methods=['POST'])
 def api_update_all_transaction_records():
     # Check arguments (query parameters)
-    if len(request.args) == 0:
+    if len(request.get_data()) == 0:
         print("No query parameters provided, using default confidence score for matching.")
         logger.warning("No query parameters provided, using default confidence score for matching.")
         min_match = 90
@@ -88,8 +88,9 @@ def api_update_all_transaction_records():
         # Update sales transaction record for all instantiated property IRIs
         res = update_all_transaction_records(min_conf_score=min_match)
         return jsonify({'status': '200', 
-                        'Updated property transactions': res[0],
-                        'Updated property price indices': res[1]})
+                        'Instantiated property transactions': res[0],
+                        'Updated property transactions': res[1],
+                        'Updated property price indices': res[2]})
     except Exception as ex:
         logger.error("Unable to update property sales transactions.", ex)
         return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})

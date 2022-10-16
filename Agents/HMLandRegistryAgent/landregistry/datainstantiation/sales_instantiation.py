@@ -27,14 +27,14 @@ from landregistry.kgutils.querytemplates import *
 logger = agentlogging.get_logger("prod")
 
 
-def update_transaction_records(property_iris=None, min_conf_score=None,
+def update_transaction_records(property_iris=None, min_conf_score=90,
                                api_endpoint=HM_SPARQL_ENDPOINT,
                                query_endpoint=QUERY_ENDPOINT, 
                                update_endpoint=UPDATE_ENDPOINT, 
                                kgclient_obe=None, kgclient_hm=None):
     """
-        Retrieves HM Land Registry's Price Paid data for provided properties from
-        given endpoint and instantiates them in the KG according to OntoBuiltEnv
+    Retrieves HM Land Registry's Price Paid data for provided properties from
+    given endpoint and instantiates them in the KG according to OntoBuiltEnv
 
     Arguments:
         property_iris - list of property IRIs for which to retrieve sales data
@@ -88,49 +88,64 @@ def update_transaction_records(property_iris=None, min_conf_score=None,
             else:
                 instantiated_tx += 1
             update_query = update_transaction_record(**tx)
-            kgclient_obe.performUpdate(update_query)
+            if update_query:
+                kgclient_obe.performUpdate(update_query)
     
     return instantiated_tx, updated_tx
 
 
-def update_all_transaction_records(min_conf_score=None,
+def update_all_transaction_records(min_conf_score=90,
                                    api_endpoint=HM_SPARQL_ENDPOINT,
                                    query_endpoint=QUERY_ENDPOINT, 
                                    update_endpoint=UPDATE_ENDPOINT):
     """
-    Retrieves EPC data for provided certificate from given endpoint and 
-    instantiates it in the KG according to OntoBuiltEnv
+    Retrieves HM Land Registry's Price Paid data for all instantiated properties from
+    given endpoint and instantiates them in the KG according to OntoBuiltEnv
 
     Arguments:
-        lmk_key - certificate id (i.e. individual lodgement identifier)
-        epc_endpoint (str) - EPC endpoint from which to retrieve data
-                             ['domestic', 'non-domestic', 'display']
-        ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
+        min_conf_score - minimum confidence score for address matching [0-100]
+        api_endpoint - SPARQL endpoint for HM Land Registry Open Data
+        query_endpoint/update_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
-        Tuple of newly instantiated and updated EPCs (new, updated)
+        Tuple of newly instantiated and updated sales transactions (new, updated)
     """
     
     # Initialise return values
+    instantiated_tx = 0
     updated_tx = 0
     updated_indices = 0
 
     # Initialise KG clients
-    kgclient = KGClient(query_endpoint, update_endpoint)
+    kgclient_obe = KGClient(query_endpoint, update_endpoint)
+    kgclient_hm = KGClient(api_endpoint, api_endpoint)
 
-    # 1) Retrieve all instantiated properties
+    # 1) Retrieve all instantiated properties with associated postcodes
+    query = get_all_properties_with_postcode()
+    res = kgclient_obe.performQuery(query)
 
-    # 2) Retrieve location information for all instantiated properties
-    #    (i.e. required for query to HM Land Registry SPARQL endpoint)
+    # 2) Update transaction records in KG in postcode batches
+    batch_size = 10
+    df = pd.DataFrame(res)
+    pcs = df['postcode'].unique().tolist()
+    postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
 
-    # 3) Retrieve transaction records from HM Land Registry
+    postcodes = postcodes[:10]
 
-    # 4) Update transaction records in KG
+    for pc in postcodes:
+        prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
 
-    # 5) Retrieve Property Price Index from HM Land Registry
+        # Update transaction records for list of property IRIs
+        tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
+                            min_conf_score=min_conf_score, api_endpoint=api_endpoint,
+                            kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
+        instantiated_tx += tx_new
+        updated_tx += tx_upd
+
+    # 3) Retrieve Property Price Index from HM Land Registry
 
     # 6) Update Property Price Index in KG
     
-    return (updated_tx, updated_indices)
+    return (instantiated_tx, updated_tx, updated_indices)
 
 
 def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
@@ -294,6 +309,7 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
         ppd_addr = ppd_addr['ppd_address'].tolist()
 
         # Find best match
+        best = None
         if min_match_score:
             matches = process.extract(addr, ppd_addr, scorer=fuzz.token_set_ratio)
             matches = [m for m in matches if m[1] >= min_match_score]
@@ -309,7 +325,7 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
             to_inst['date'] = tx_data['date'].values[0]
             to_inst['ppd_address_iri'] = tx_data['address_iri'].values[0]
 
-        # Append to list
-        inst_list.append(to_inst)
+            # Append to list
+            inst_list.append(to_inst)
 
     return inst_list
