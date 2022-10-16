@@ -66,7 +66,7 @@ def update_transaction_records(property_iris=None,
         ppd = create_conditioned_dataframe_ppd(res)
 
         # 3) Match addresses and retrieve transaction details
-        
+
 
         # 4) Update transaction records in KG
         #updated_tx += update_transaction_records_in_kg(res, df, kgclient_obe)
@@ -162,6 +162,18 @@ def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
             Returns:
                 DataFrame with dict keys as columns
         """
+
+        def replace_ands(nr_string):
+            # Align representation of multiple numbers in address
+            updated = nr_string
+            if isinstance(updated, str):
+                to_remove = ['AND', '&']
+                for t in to_remove:
+                    match = re.search(f'\d+\w*\s*{t}.\s*\d+', updated)
+                    if match: 
+                        rep = re.sub(r'[0-9]+', '', match.group())
+                        updated = updated.replace(rep, '-')    
+            return updated
         
         df = pd.DataFrame(sparql_results)
 
@@ -174,6 +186,10 @@ def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
         df['paon'] = df['paon'].str.upper()        
         df['saon'] = df['saon'].str.upper()
         df['property_type'] = df['property_type'].str.upper()
+
+        # Align representation of multiple numbers in address to 'X-Y'
+        df['paon'] = df['paon'].apply(replace_ands)
+        df['saon'] = df['saon'].apply(replace_ands)
 
         # Fill missing data with whitespace
         df.fillna(' ', inplace=True)
