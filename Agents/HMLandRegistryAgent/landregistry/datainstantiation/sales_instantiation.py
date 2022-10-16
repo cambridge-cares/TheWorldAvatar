@@ -59,7 +59,9 @@ def update_transaction_records(property_iris=None,
         query = get_transaction_data_for_postcodes(postcodes=[pc])
         res = kgclient_hm.performQuery(query)
 
-        # 3) Update transaction records in KG
+        # 3) Match addresses and retrieve transaction details
+
+        # 4) Update transaction records in KG
         #updated_tx += update_transaction_records_in_kg(res, df, kgclient_obe)
 
     

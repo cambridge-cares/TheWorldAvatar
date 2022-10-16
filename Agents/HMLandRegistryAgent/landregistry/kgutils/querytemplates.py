@@ -73,18 +73,19 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
 
     query = f"""
         SELECT ?property_iri ?address_iri ?postcode_iri ?district_iri
-               ?postcode ?street ?house_number
+               ?property_type ?postcode ?street ?number ?bldg_name ?unit_name
         WHERE {{
         {values_statement}
-        ?property_iri <{RDF_TYPE}>/<{RDFS_SUBCLASS}>* <{OBE_PROPERTY}> ; 
-                      <{OBE_LOCATEDIN}> ?district_iri ; 
+        ?property_iri <{RDF_TYPE}> ?property_type . 
+        ?property_type <{RDFS_SUBCLASS}> <{OBE_PROPERTY}> . 
+        ?property_iri <{OBE_LOCATEDIN}> ?district_iri ; 
                       <{OBE_HAS_ADDRESS}> ?address_iri . 
         ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri . 
         ?postcode_iri <{RDFS_LABEL}> ?postcode . 
         OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?street }}
         OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?number }}
         OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?bldg_name }}
-        OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?unit_name }}        
+        OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?unit_name }} 
         }}
     """
 
