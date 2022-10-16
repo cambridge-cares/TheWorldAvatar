@@ -16,6 +16,7 @@ from fuzzywuzzy import process
 import agentlogging
 
 from landregistry.datamodel.iris import *
+from landregistry.datamodel.data_mapping import *
 from landregistry.errorhandling.exceptions import KGException
 from landregistry.kgutils.kgclient import KGClient
 from landregistry.utils.api_endpoints import HM_SPARQL_ENDPOINT
@@ -51,17 +52,21 @@ def update_transaction_records(property_iris=None,
     res = kgclient_obe.performQuery(query)
 
     # Create DataFrame from results and condition data
-    df = create_conditioned_dataframe_obe(res)
+    obe = create_conditioned_dataframe_obe(res)
 
     # Query Price Paid Data postcode by postcode (compromise between query speed and number of queries)
-    for pc in df['postcodes'].unique():
-        d = df[df['postcodes'] == pc].copy()
+    for pc in obe['postcodes'].unique():
+        d = obe[obe['postcodes'] == pc].copy()
 
-        # 2) Retrieve transaction records from HM Land Registry
+        # 2) Retrieve Price Paid Data transaction records from HM Land Registry
         query = get_transaction_data_for_postcodes(postcodes=[pc])
         res = kgclient_hm.performQuery(query)
 
+        # Create DataFrame from results and condition data
+        ppd = create_conditioned_dataframe_ppd(res)
+
         # 3) Match addresses and retrieve transaction details
+        
 
         # 4) Update transaction records in KG
         #updated_tx += update_transaction_records_in_kg(res, df, kgclient_obe)
@@ -141,6 +146,48 @@ def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
         df['epc_address'] = df['epc_address'].apply(lambda x: ' '.join(x.split()))
 
         return df
+
+
+def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
+        """
+            Parse SPARQL results from HM endpoint (i.e. transaction data)
+            as DataFrame and condition data to ensure proper comparison with 
+            instantiated (address) data
+
+            Arguments:
+                sparql_results - list of dicts with following keys
+                                 [tx_iri, price, date, property_type, tx_category,
+                                  address_iri, paon, saon, street, town, postcode, 
+                                  district, county]
+            Returns:
+                DataFrame with dict keys as columns
+        """
+        
+        df = pd.DataFrame(sparql_results)
+
+        # Keep only latest transaction record per address
+        df.sort_values(by=['date'], ascending = False, inplace=True)
+        df.drop_duplicates(subset=['address_iri'], keep='first', inplace=True)
+
+        # Ensure all strings are upper case
+        df['street'] = df['street'].str.upper()
+        df['paon'] = df['paon'].str.upper()        
+        df['saon'] = df['saon'].str.upper()
+        df['property_type'] = df['property_type'].str.upper()
+
+        # Fill missing data with whitespace
+        df.fillna(' ', inplace=True)
+        # Create column with consolidated address string
+        df['ppd_address'] = [' '.join(a) for a in zip(df['street'], df['paon'],
+                                                      df['saon'])]
+        # Remove unnecessary whitespaces
+        df['ppd_address'] = df['ppd_address'].apply(lambda x: ' '.join(x.split()))
+
+        # Map property type to OBE property type
+        df['property_type'] = df['property_type'].map(PPD_PROPERTY_TYPES)
+
+        return df
+
 
 
 # def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',

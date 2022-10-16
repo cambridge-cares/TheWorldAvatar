@@ -34,19 +34,18 @@ def get_transaction_data_for_postcodes(postcodes: list) -> str:
         WHERE
         {{
         VALUES ?postcode {{ {values} }}
-        ?address_iri {LRCOMMON_POSTCODE} ?postcode.
-
-        ?tx_iri {LRPPI_PROPERTY_ADDRESS} ?address_iri ;
-                {LRPPI_PRICE} ?price ;
-                {LRPPI_DATE} ?date ;
-                {LRPPI_PROPERTY_TYPE}/{RDFS_LABEL} ?property_type ;
-                {LRPPI_TX_CATEGORY}/{SKOS_LABEL} ?tx_category.
-        OPTIONAL {{?address_iri {LRCOMMON_PAON} ?paon}}
-        OPTIONAL {{?address_iri {LRCOMMON_SAON} ?saon}}
-        OPTIONAL {{?address_iri {LRCOMMON_STREET} ?street}}
-        OPTIONAL {{?address_iri {LRCOMMON_TOWN} ?town}}
-        OPTIONAL {{?address_iri {LRCOMMON_DISTRICT} ?district}}
-        OPTIONAL {{?address_iri {LRCOMMON_DISTRICT} ?county}}
+        ?address_iri {LRCOMMON_POSTCODE} ?postcode . 
+        ?tx_iri {LRPPI_PROPERTY_ADDRESS} ?address_iri ; 
+                {LRPPI_PRICE} ?price ; 
+                {LRPPI_DATE} ?date ; 
+                {LRPPI_PROPERTY_TYPE}/{RDFS_LABEL} ?property_type ; 
+                {LRPPI_TX_CATEGORY}/{SKOS_LABEL} ?tx_category . 
+        OPTIONAL {{ ?address_iri {LRCOMMON_PAON} ?paon }} 
+        OPTIONAL {{ ?address_iri {LRCOMMON_SAON} ?saon }} 
+        OPTIONAL {{ ?address_iri {LRCOMMON_STREET} ?street }} 
+        OPTIONAL {{ ?address_iri {LRCOMMON_TOWN} ?town }} 
+        OPTIONAL {{ ?address_iri {LRCOMMON_DISTRICT} ?district }} 
+        OPTIONAL {{ ?address_iri {LRCOMMON_DISTRICT} ?county }} 
         }}
     """
     
