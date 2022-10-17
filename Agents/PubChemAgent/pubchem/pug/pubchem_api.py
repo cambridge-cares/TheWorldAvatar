@@ -11,9 +11,11 @@ class pug_api():
     # HTTP request link builder and executer
     def pug_request(self, key: str, value: str) -> Tuple[str,str]:
 
-        
+        #*************A Potential Function to Clean Up The Request String **************#        
         # replace the # in the SMILES string with its encoing to correctly send the SMILES string via HTTP request
-        if key == 'SMILES': value=value.replace('#','%23')         
+        if key == 'SMILES': value=value.replace('#','%23')
+        # replace the + in the InChI string with its encoing to correctly send the InChI string via HTTP request
+        if key == 'InChI' : value=value.replace('+','%2b')         
 
         #*************PUG API Definitions****************#
 
@@ -79,6 +81,7 @@ class pug_api():
     def get_count(data : dict):
         pass  
 
+# Testing the module itself
 if __name__ == "__main__":
     pug_access = pug_api()
 
