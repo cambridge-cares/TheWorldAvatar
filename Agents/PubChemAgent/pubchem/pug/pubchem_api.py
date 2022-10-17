@@ -98,4 +98,5 @@ if __name__ == "__main__":
         data = pug_access.pug_request('SMILES', smiles)
         cid = pug_access.get_cid(data)
         props = pug_access.get_props(data)
+        print(props)
         print(cid['cid'], props['Preferred IUPAC Name'])

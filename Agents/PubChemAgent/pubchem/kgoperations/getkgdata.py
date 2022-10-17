@@ -14,7 +14,6 @@ def get_ontospecies_data(osIRI):
 
     if data:
         data = data[0]
-
     return data
 
 

@@ -5,11 +5,12 @@ def get_iri_query(inchi_string):
     query="""
     PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT ?speciesIRI
+    SELECT ?speciesIRI ?Inchi (datatype(?Inchi) AS ?type)
     WHERE
     {
     ?speciesIRI rdf:type OntoSpecies:Species ;
-                OntoSpecies:inChI ?Inchi FILTER ( str(?Inchi) = \'#InChI#\' ) .
+                OntoSpecies:inChI ?Inchi .
+      FILTER (str(?Inchi) ="#InChI#")
     }    
     """.replace('#InChI#', inchi_string)
     return query
@@ -119,5 +120,5 @@ def pubchem_prop_insert(uuid, cid, props):
     """.replace('#CID#', cid).replace('#uuid#', uuid)
     for item in props.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(props.get(item)))
-    
+        
     return insert_str
