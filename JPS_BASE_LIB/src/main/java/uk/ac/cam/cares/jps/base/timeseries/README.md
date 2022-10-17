@@ -24,18 +24,64 @@ The namespaces used in this document:
 ```
 ts  : https://www.theworldavatar.com/kg/ontotimeseries/
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd : http://www.w3.org/2001/XMLSchema#
 kb  : http://www.theworldavatar.com/kb/ontotimeseries/
+time: http://www.w3.org/2006/time#
 ```
 
 ### Instantiation in KG ###
-Upon instantiation of a time series for any `<entity>` in the KG, the following triples will be created:
+Upon instantiation of a time series for any `<entity>` in the KG, the following triples will be created depending on the subclass of time series:
+
+<b>1. Instantaneous Time Series</b>
+```
+<entity>  ts:hasTimeSeries  kb:InstantaneousTimeSeries_UUID
+kb:InstantaneousTimeSeries_UUID  rdf:type  ts:InstantaneousTimeSeries
+kb:InstantaneousTimeSeries_UUID  ts:hasRDB  <Postgres URL>
+kb:InstantaneousTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+```
+
+<b>2. StepwiseCumulative Time Series</b>
+```
+<entity>  ts:hasTimeSeries  kb:StepwiseCumulativeTimeSeries_UUID
+kb:StepwiseCumulativeTimeSeries_UUID  rdf:type  ts:StepwiseCumulativeTimeSeries
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasRDB  <Postgres URL>
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+```
+
+<b>3. CumulativeTotal Time Series</b>
+```
+<entity>  ts:hasTimeSeries  kb:CumulativeTotalTimeSeries_UUID
+kb:CumulativeTotalTimeSeries_UUID  rdf:type  ts:CumulativeTotalTimeSeries
+kb:CumulativeTotalTimeSeries_UUID  ts:hasRDB  <Postgres URL>
+kb:CumulativeTotalTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+```
+
+<b>4. Average Time Series</b>
+```
+<entity>  ts:hasTimeSeries  kb:AverageTimeSeries_UUID
+kb:AverageTimeSeries_UUID  rdf:type  ts:AverageTimeSeries
+kb:AverageTimeSeries_UUID  ts:hasRDB  <Postgres URL>
+kb:AverageTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+kb:AverageTimeSeries_UUID  ts:hasAveragingPeriod kb:AveragingPeriod_UUID
+kb:AveragingPeriod_UUID    rdf:type  time:Duration
+kb:AveragingPeriod_UUID    time:unitType <time:temporalUnit>
+kb:AveragingPeriod_UUID    time:numericDuration <value>^^xsd:decimal
+```
+
+<b>In case time series subclass is not specified, the following triples will be created:</b>
 ```
 <entity>  ts:hasTimeSeries  kb:TimeSeries_UUID
 kb:TimeSeries_UUID  rdf:type  ts:TimeSeries
 kb:TimeSeries_UUID  ts:hasRDB  <Postgres URL>
 kb:TimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
 ```
+
 The created `UUID` denotes a UUID version 4. The data properties `Postgres URL` and `timeUnit` are Literals describing the link to the RDB and the time format in which the data is stored, respectively.
+
+The averaging period for average time series is linked to the `unit type` and the `numericDuration`.
+
+`unitType` describes the temporal unit of the averaging period and can assume one of the following values: `unitSecond`, `unitMinute`, `unitHour`, 
+`unitDay`, `unitWeek`, `unitMonth`, `unitYear`. `numericDuration` describes the numerical value of the averaging period and must be a positive decimal.
 
 ### Instantiation in RDB ###
 In PostgreSQL, the table and column names are restricted to 63 characters. Hence, a central **lookup table** is required to map any `dataIRI` to its corresponding location, i.e. `tableName` and `columnName`.
