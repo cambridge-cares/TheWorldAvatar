@@ -55,7 +55,40 @@ def get_transaction_data_for_postcodes(postcodes: list) -> str:
 
     return query
 
-# query property price index
+
+# HM Land Registry UK House Price Index (UKHPI) detailed here:
+# https://landregistry.data.gov.uk/app/ukhpi/doc
+# Returned date format is xsd:gYearMonth (YYYY-MM)
+def get_ukhpi_monthly_data_for_district(ons_local_authority_iri, 
+                                        months:int=None) -> str:
+    """
+    Retrieve UKHPI data for a given local authority ONS IRI 
+
+    Arguments:
+        ons_local_authority_iri {str} - IRI of the local authority as used by
+                                        Office for National statistics
+        months {int} - Number of months for which to retrieve date
+    """
+
+    query = f"""
+        SELECT ?month ?index_value 
+        WHERE {{
+        ?hm_region <{RDFS_SEEALSO}> <{ons_local_authority_iri}> . 
+        ?index <{UKHPI_REFREGION}> ?hm_region ; 
+               <{UKHPI_INDEX}> ?index_value ; 
+               <{UKHPI_REF_MONTH}> ?month
+        }}
+    """
+    if months:
+        query += f"""
+            ORDER BY DESC(?month)
+            LIMIT {months}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
 
 
 #
@@ -163,5 +196,26 @@ def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None,
     
     else:
         query = None
+
+    return query
+
+
+def get_all_admin_districts_with_price_indices() -> str:
+    # Retrieve instantiated administrative districts (i.e. local authorities) 
+    # including their ONS equivalent instance and (potentially) instantiated
+    # property price indices
+
+    query = f"""
+        SELECT ?local_authority ?ons_district
+        WHERE {{
+        ?local_authority <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
+                         <{OWL_SAME_AS}> ?ons_district . 
+        OPTIONAL {{ ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?index . 
+                    ?index <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . }} 
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
 
     return query

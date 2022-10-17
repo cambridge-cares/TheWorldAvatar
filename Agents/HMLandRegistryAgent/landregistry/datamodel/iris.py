@@ -16,6 +16,7 @@ ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
 # HM Land Registry
 LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 LRCOMMON = 'http://landregistry.data.gov.uk/def/common/'
+UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
@@ -41,6 +42,8 @@ OBE_ADMIN_DISTRICT = OBE + 'AdministrativeDistrict'
 OBE_LOCATEDIN = OBE + 'locatedIn'
 OBE_HAS_IDENTIFIER = OBE + 'hasIdentifier'
 OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
+OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
+OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
@@ -56,6 +59,9 @@ LRCOMMON_TOWN = LRCOMMON + 'town'
 LRCOMMON_POSTCODE = LRCOMMON + 'postcode'
 LRCOMMON_DISTRICT = LRCOMMON + 'district'
 LRCOMMON_COUNTY = LRCOMMON + 'county'
+UKHPI_REFREGION = UKHPI + 'refRegion'
+UKHPI_INDEX = UKHPI + 'housePriceIndex'
+UKHPI_REF_MONTH = UKHPI + 'refMonth'
 
 ###--- External IRIs ---###
 
@@ -64,6 +70,7 @@ RDF_TYPE = RDF + 'type'
 RDFS_SUBCLASS = RDFS + 'subClassOf'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
+RDFS_SEEALSO = RDFS + 'seeAlso'
 OWL_SAME_AS = OWL + 'sameAs'
 
 # Data types
