@@ -155,61 +155,6 @@ public class TimeSeriesSparql {
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
 
-    /**
-     * Instantiate the time series instance in the knowledge base (time unit is optional)
-     * @param timeSeriesIRI timeseries IRI provided as string
-     * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
-     * @param dbURL URL of the database where the timeseries data is stored provided as string
-     * @param timeUnit the time unit of the time series (optional)
-     */
-    protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
-    	// Construct time series IRI
-    	Iri tsIRI;
-		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
-    	// If only local name is provided, iri() function would add filepath as default prefix
-    	// Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
-		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
-			tsIRI = iri(timeSeriesIRI);
-		} else {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
-		}
-
-		// Check that the time series IRI is not yet in the Knowledge Graph
-		if (checkTimeSeriesExists(timeSeriesIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-		}
-		// Check that the data IRIs are not attached to a different time series IRI already
-		for (String iri: dataIRI) {
-			String ts = getTimeSeries(iri);
-			if(!(ts == null)) {
-				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
-			}
-		}
-
-    	ModifyQuery modify = Queries.MODIFY();
-
-    	// set prefix declarations
-    	modify.prefix(prefix_ontology, prefix_kb);
-    	// define type
-    	modify.insert(tsIRI.isA(TimeSeries));
-    	// relational database URL
-    	modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
-
-    	// link each data to time series
-    	for (String data : dataIRI) {
-    		TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
-    		modify.insert(ts_tp);
-    	}
-
-    	// optional: define time unit
-    	if (timeUnit != null) {
-    		modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
-    		//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
-    	}
-
-		kbClient.executeUpdate(modify.getQueryString());
-	}
-
 	/**
 	 * Instantiate the time series instance in the knowledge base (time unit is optional)
 	 * @param timeSeriesIRI timeseries IRI provided as string
@@ -406,33 +351,6 @@ public class TimeSeriesSparql {
 		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "StepwiseCumulativeTimeSeries"));
 		kbClient.setQuery(query);
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-	}
-
-	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb);
-
-		for (int i = 0; i < tsIRIs.size(); i++) {
-			Iri ts = iri(tsIRIs.get(i));
-			modify.insert(ts.isA(TimeSeries));
-			// relational database URL
-			modify.insert(ts.has(hasRDB, literalOf(rdbURL)));
-
-			// link each data to time series
-			for (String data : dataIRIs.get(i)) {
-				modify.insert(iri(data).has(hasTimeSeries,ts));
-			}
-
-			if (timeUnit != null) {
-				if (timeUnit.get(i) != null) {
-					modify.insert(ts.has(hasTimeUnit, literalOf(timeUnit.get(i))));
-				}
-			}
-		}
-
-		kbClient.executeUpdate(modify.getQueryString());
 	}
 
 	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
@@ -700,5 +618,89 @@ public class TimeSeriesSparql {
 		}
 
 		return instanceIRIs;
+	}
+
+	/**
+	 * Instantiate the time series instance in the knowledge base (time unit is optional)
+	 * @param timeSeriesIRI timeseries IRI provided as string
+	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
+	 * @param dbURL URL of the database where the timeseries data is stored provided as string
+	 * @param timeUnit the time unit of the time series (optional)
+	 */
+	@Deprecated
+	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+		// Construct time series IRI
+		Iri tsIRI;
+		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
+		// If only local name is provided, iri() function would add filepath as default prefix
+		// Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
+		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
+			tsIRI = iri(timeSeriesIRI);
+		} else {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
+		}
+
+		// Check that the time series IRI is not yet in the Knowledge Graph
+		if (checkTimeSeriesExists(timeSeriesIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
+		}
+		// Check that the data IRIs are not attached to a different time series IRI already
+		for (String iri: dataIRI) {
+			String ts = getTimeSeries(iri);
+			if(!(ts == null)) {
+				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
+			}
+		}
+
+		ModifyQuery modify = Queries.MODIFY();
+
+		// set prefix declarations
+		modify.prefix(prefix_ontology, prefix_kb);
+		// define type
+		modify.insert(tsIRI.isA(TimeSeries));
+		// relational database URL
+		modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
+
+		// link each data to time series
+		for (String data : dataIRI) {
+			TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
+			modify.insert(ts_tp);
+		}
+
+		// optional: define time unit
+		if (timeUnit != null) {
+			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
+			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
+		}
+
+		kbClient.executeUpdate(modify.getQueryString());
+	}
+
+	@Deprecated
+	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// set prefix declarations
+		modify.prefix(prefix_ontology, prefix_kb);
+
+		for (int i = 0; i < tsIRIs.size(); i++) {
+			Iri ts = iri(tsIRIs.get(i));
+			modify.insert(ts.isA(TimeSeries));
+			// relational database URL
+			modify.insert(ts.has(hasRDB, literalOf(rdbURL)));
+
+			// link each data to time series
+			for (String data : dataIRIs.get(i)) {
+				modify.insert(iri(data).has(hasTimeSeries,ts));
+			}
+
+			if (timeUnit != null) {
+				if (timeUnit.get(i) != null) {
+					modify.insert(ts.has(hasTimeUnit, literalOf(timeUnit.get(i))));
+				}
+			}
+		}
+
+		kbClient.executeUpdate(modify.getQueryString());
 	}
 }
