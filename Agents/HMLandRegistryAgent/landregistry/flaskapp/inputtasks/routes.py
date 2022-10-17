@@ -90,7 +90,8 @@ def api_update_all_transaction_records():
         return jsonify({'status': '200', 
                         'Instantiated property transactions': res[0],
                         'Updated property transactions': res[1],
-                        'Updated property price indices': res[2]})
+                        'Instantiated property price indices': res[2],
+                        'Updated property price indices': res[3]})
     except Exception as ex:
         logger.error("Unable to update property sales transactions.", ex)
         return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})

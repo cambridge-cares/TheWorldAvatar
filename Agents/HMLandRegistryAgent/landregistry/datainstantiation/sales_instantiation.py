@@ -115,7 +115,8 @@ def update_all_transaction_records(min_conf_score=90,
     # Initialise return values
     instantiated_tx = 0
     updated_tx = 0
-    updated_indices = 0
+    instantiated_ukhpi = 0
+    updated_ukhpi = 0
 
     # Initialise KG clients
     kgclient_obe = KGClient(query_endpoint, update_endpoint)
@@ -133,43 +134,45 @@ def update_all_transaction_records(min_conf_score=90,
     pcs = df['postcode'].unique().tolist()
     pcs.sort()
     postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
-    # TODO:REMOVE
-    postcodes = postcodes[:10]
 
-    # for pc in postcodes:
-    #     prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
+    for pc in postcodes:
+        prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
 
-    #     # Update transaction records for list of property IRIs
-    #     tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
-    #                         min_conf_score=min_conf_score, api_endpoint=api_endpoint,
-    #                         kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
-    #     instantiated_tx += tx_new
-    #     updated_tx += tx_upd
+        # Update transaction records for list of property IRIs
+        tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
+                            min_conf_score=min_conf_score, api_endpoint=api_endpoint,
+                            kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
+        instantiated_tx += tx_new
+        updated_tx += tx_upd
 
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
-    admin_ppis = get_admin_district_index_dict(kgclient_obe)
-    for d in admin_ppis: 
+    districts = get_admin_district_index_dict(kgclient_obe)
 
-        #ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
-        #ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-        #ts_client.bulkaddTimeSeriesData(ts_list)
-
-        #if not d['index']:
-            # Instantiate Property Price Index incl. TimeSeries
-        ppi_iri = KB + 'PropertyPriceIndex_' + str(uuid.uuid4())
-        insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
-                                                        ppi_iri=ppi_iri)
-        kgclient_obe.performUpdate(insert_query)
-        
-        ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
-                                          ts_client.conn)
+    for d in districts: 
+        if not d['ukhpi']:
+            # Instantiate Property Price Index (i.e. time series data IRI) if
+            # not existing + initialise TimeSeries
+            ppi_iri = KB + 'PropertyPriceIndex_' + str(uuid.uuid4())
+            d['ukhpi'] = ppi_iri
+            insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
+                                                            ppi_iri=ppi_iri)
+            kgclient_obe.performUpdate(insert_query)
+            # Initialise TimeSeries
+            ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
+                                            ts_client.conn)
+            instantiated_ukhpi += 1
+        else:
+            updated_ukhpi += 1
 
         # 4) Retrieve Property Price Index from HM Land Registry
+        ts = create_ukhpi_timeseries(local_authority_iri=d['ons_district'], 
+                                     ppi_iri=d['ukhpi'], kgclient_hm=kgclient_hm)
 
-        # 5) Update Property Price Index in KG
+        # 5) Update Property Price Index time series data in KG
+        ts_client.tsclient.addTimeSeriesData(ts, ts_client.conn)
     
-    return (instantiated_tx, updated_tx, updated_indices)
+    return (instantiated_tx, updated_tx, instantiated_ukhpi, updated_ukhpi)
 
 
 def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
@@ -358,17 +361,19 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
 def get_admin_district_index_dict(kglient) -> list:
     """
         Get dictionary of instantiated admin district IRIs and corresponding
-        Property Price Index IRIs (as used by OntoBuiltEnv)
+        Property Price Index IRIs (as used by OntoBuiltEnv) 
+        (including IRI of corresponding ONS admin district)
 
         Returns:
-            List of dictionaries with key 'local_authority' and 'index'
+            List of dictionaries with keys ['local_authority', 'ons_district', 'index']
     """
     
     # Retrieve admin districts + potentially instantiated PPIs
     query = get_all_admin_districts_with_price_indices()
     res = kglient.performQuery(query)
-    cols = ['local_authority', 'index']
+    cols = ['local_authority', 'ons_district', 'ukhpi']
     df = pd.DataFrame(columns=cols, data=res)
+    df.drop_duplicates(inplace=True)
 
     # Align missing values to None
     df = df.replace('nan', None)
@@ -380,3 +385,43 @@ def get_admin_district_index_dict(kglient) -> list:
     dict_list = df.to_dict('records')
 
     return dict_list
+
+
+def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
+                            api_endpoint=HM_SPARQL_ENDPOINT, kgclient_hm=None):
+    """
+    Retrieve UKHPI data for a given local authority ONS IRI 
+
+    Arguments:
+        local_authority_iri {str} - IRI of the local authority as used by
+                                    Office for National statistics
+        ppi_iri {str} - IRI of the property price index (i.e. dataIRI of timeseries)
+        months {int} - Number of months for which to retrieve date
+                       (default: 240 (i.e. 20 years))
+    
+    """
+
+    # Initialise KG client
+    if not kgclient_hm:
+        kgclient_hm = KGClient(api_endpoint, api_endpoint)
+
+    query = get_ukhpi_monthly_data_for_district(ons_local_authority_iri=local_authority_iri, 
+                                                months=months)
+    res = kgclient_hm.performQuery(query)
+
+    # Condition data
+    cols = ['month', 'ukhpi_value']
+    df = pd.DataFrame(columns=cols, data=res)
+    df.dropna(inplace=True)
+
+    # Assign correct data types
+    df['month'] = pd.to_datetime(df['month'])
+    df['month'] = df['month'].dt.strftime('%Y-%m-%d')
+    df['ukhpi_value'] = df['ukhpi_value'].astype(float)
+
+    # Create time series
+    time_list = df['month'].tolist()
+    value_list = df['ukhpi_value'].tolist()
+    ts = TSClient.create_timeseries(time_list, [ppi_iri], [value_list])
+
+    return ts

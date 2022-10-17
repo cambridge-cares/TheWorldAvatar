@@ -24,18 +24,19 @@ PPD_PROPERTY_TYPES = {
     'OTHER': OTHER_PROPERTY_TYPE
 }
 
-# Times are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
-TIME_FORMAT = 'YYYY-MM'
+# Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
+# However, YearMonth not supported by TimeSeriesCLient RDB implementation
+# --> Use to xsd:date, i.e. ISO 8601 YYYY-MM-DD
+TIME_FORMAT = 'YYYY-MM-DD'
 
 ### Create required JAVA classes ###
+
+# Create data class for time entries (LocalDate)
+# PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+LocalDate = jpsBaseLibView.java.time.LocalDate
+TIMECLASS = LocalDate.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
-
-# Create data class for time entries (LocalDate)
-# Dates from HM Land Registry actually xsd:gYearMonth, but YearMonth not 
-# supported by TimeSeriesCLient RDB implementation
-# PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
-LocalDate = jpsBaseLibView.java.time.LocalDate
-TIMECLASS = LocalDate.now().getClass()

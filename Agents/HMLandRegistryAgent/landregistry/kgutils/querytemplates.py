@@ -71,11 +71,11 @@ def get_ukhpi_monthly_data_for_district(ons_local_authority_iri,
     """
 
     query = f"""
-        SELECT ?month ?index_value 
+        SELECT ?month ?ukhpi_value 
         WHERE {{
         ?hm_region <{RDFS_SEEALSO}> <{ons_local_authority_iri}> . 
-        ?index <{UKHPI_REFREGION}> ?hm_region ; 
-               <{UKHPI_INDEX}> ?index_value ; 
+        ?ukhpi <{UKHPI_REFREGION}> ?hm_region ; 
+               <{UKHPI_INDEX}> ?ukhpi_value ; 
                <{UKHPI_REF_MONTH}> ?month
         }}
     """
@@ -206,12 +206,12 @@ def get_all_admin_districts_with_price_indices() -> str:
     # property price indices
 
     query = f"""
-        SELECT ?local_authority ?ons_district ?index
+        SELECT ?local_authority ?ons_district ?ukhpi
         WHERE {{
         ?local_authority <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
                          <{OWL_SAME_AS}> ?ons_district . 
-        OPTIONAL {{ ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?index . 
-                    ?index <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . }} 
+        OPTIONAL {{ ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?ukhpi . 
+                    ?ukhpi <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . }} 
         }}
     """
 
