@@ -111,4 +111,4 @@ tx_data = pd.DataFrame(columns=res['head']['vars'], data=results)
 # Extract values from dictionaries in DataFrame if not NaN
 tx_data = tx_data.applymap(lambda x: x['value'] if isinstance(x, dict) else x)
 
-tx_data.to_csv('housing_market.csv')
+tx_data.to_csv('./input/housing_market.csv')
