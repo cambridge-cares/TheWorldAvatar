@@ -206,7 +206,7 @@ def get_all_admin_districts_with_price_indices() -> str:
     # property price indices
 
     query = f"""
-        SELECT ?local_authority ?ons_district
+        SELECT ?local_authority ?ons_district ?index
         WHERE {{
         ?local_authority <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
                          <{OWL_SAME_AS}> ?ons_district . 
