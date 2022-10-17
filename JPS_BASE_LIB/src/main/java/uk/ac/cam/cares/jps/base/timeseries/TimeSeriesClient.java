@@ -107,20 +107,82 @@ public class TimeSeriesClient<T> {
     		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
     	}
     }
-    
+
+
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, String temporalUnit, Double numericValue) {
+		String tsIRI;
+		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
+		if(type=="StepwiseCumulative"){
+			tsIRI = TimeSeriesSparql.ns_kb + "StepwiseCumulativeTimeseries_" + UUID.randomUUID();
+		}
+		else if(type=="CumulativeTotal"){
+			tsIRI = TimeSeriesSparql.ns_kb + "CumulativeTotalTimeseries_" + UUID.randomUUID();
+		}
+		else if(type == "Instantaneous"){
+			tsIRI = TimeSeriesSparql.ns_kb + "InstantaneousTimeseries_" + UUID.randomUUID();
+		}
+		else if(type=="Average"){
+			tsIRI = TimeSeriesSparql.ns_kb + "AverageTimeseries_" + UUID.randomUUID();
+		}
+		else {
+			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+		}
+
+		// Step1: Initialise time series in knowledge base
+		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
+		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		try {
+			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericValue);
+		}
+		catch (Exception e_RdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		}
+
+		// Step2: Try to initialise time series in relational database
+		try {
+			rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
+		} catch (JPSRuntimeException e_RdbCreate) {
+			// For exceptions thrown when initialising RDB elements in relational database,
+			// try to revert previous knowledge base instantiation
+			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+			//		a different exception depending on what the problem was, and how it should be handled
+			try {
+				rdfClient.removeTimeSeries(tsIRI);
+			} catch (Exception e_RdfDelete) {
+				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRI +
+						" , as database related instantiation failed but KG triples were created.");
+			}
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+		}
+	}
+
 	/**
      * similar to initTimeSeries, but uploads triples in one connection
      */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, temporalUnit, numericValue);
 	} 
 
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
-    	
+		String tsIRI;
     	for (int i = 0; i < dataIRIs.size(); i++) {
-    		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			if(type.get(i)=="StepwiseCumulative"){
+				tsIRI = TimeSeriesSparql.ns_kb + "StepwiseCumulativeTimeseries_" + UUID.randomUUID();
+			}
+			else if(type.get(i)=="CumulativeTotal"){
+				tsIRI = TimeSeriesSparql.ns_kb + "CumulativeTotalTimeseries_" + UUID.randomUUID();
+			}
+			else if(type.get(i) == "Instantaneous"){
+				tsIRI = TimeSeriesSparql.ns_kb + "InstantaneousTimeseries_" + UUID.randomUUID();
+			}
+			else if(type.get(i)=="Average"){
+				tsIRI = TimeSeriesSparql.ns_kb + "AverageTimeseries_" + UUID.randomUUID();
+			}
+			else {
+				tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			}
     		tsIRIs.add(i, tsIRI);
     	}
     	
@@ -128,7 +190,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericValue);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -153,6 +215,52 @@ public class TimeSeriesClient<T> {
    	    	}
    		}	
     }
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
+	}
+
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		// create random time series IRI
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+
+		// Step1: Initialise time series in knowledge base
+		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
+		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		try {
+			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+		}
+		catch (Exception e_RdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		}
+
+		// Step2: Try to initialise time series in relational database
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			try {
+				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
+			} catch (JPSRuntimeException e_RdbCreate) {
+				// For exceptions thrown when initialising RDB elements in relational database,
+				// try to revert previous knowledge base instantiation
+				// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+				//		a different exception depending on what the problem was, and how it should be handled
+				try {
+					rdfClient.removeTimeSeries(tsIRIs.get(i));
+				} catch (Exception e_RdfDelete) {
+					throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
+							" , as database related instantiation failed but KG triples were created.");
+				}
+				throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+			}
+		}
+	}
     
     /**
      * Append time series data to an already instantiated time series
