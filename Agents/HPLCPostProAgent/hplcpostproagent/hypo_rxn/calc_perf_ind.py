@@ -214,12 +214,19 @@ def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpec
     """This method retrieves the yield limiting reactant given the instance of HypoReactor."""
     all_inlet_stream = hypo_reactor.inlet_run_stream
     all_reactant_species = {r.species_iri:r for reac in all_inlet_stream for r in reac.solute if r._is_reactant}
-    all_reactant_conc = {all_reactant_species[s].species_iri:all_reactant_species[s].run_conc for s in all_reactant_species}
-    yield_limiting_conc = min([unit_conv.unit_conversion_return_value_dq(all_reactant_conc[dq], unit_conv.UNIFIED_CONCENTRATION_UNIT) for dq in all_reactant_conc])
-    yield_limiting_species_lst = [species for species in all_reactant_conc if all_reactant_conc[species].hasNumericalValue == yield_limiting_conc]
+    all_reactant_conc_unit_converted = {s:unit_conv.unit_conversion_dq(all_reactant_species[s].run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT) for s in all_reactant_species}
+    yield_limiting_conc = min([all_reactant_conc_unit_converted[dq].hasNumericalValue for dq in all_reactant_conc_unit_converted])
+    yield_limiting_species_lst = [species for species in all_reactant_conc_unit_converted if all_reactant_conc_unit_converted[species].hasNumericalValue == yield_limiting_conc]
     if len(yield_limiting_species_lst) > 1:
-        raise NotImplementedError("Processing multiple yield limiting species in the reactor input streams is NOT yet supported, the HypoReactor: %s" % (
-            str(hypo_reactor)))
+        all_reactant_species_if_ref_pump = [r.species_iri for reac in all_inlet_stream if reac.is_ref_pump for r in reac.solute if r._is_reactant]
+        _species = [s for s in yield_limiting_species_lst if s in all_reactant_species_if_ref_pump]
+        if len(_species) == 1:
+            yield_limiting_species_iri = _species[0]
+        elif len(_species) > 1:
+            raise Exception(f"Multiple reactant species {_species} in reference pump identified, the HypoReactor: {str(hypo_reactor)}.")
+        else:
+            # NOTE here we just pick the first one if there are multiple yield limiting species but none of them is in the reference pump
+            yield_limiting_species_iri = yield_limiting_species_lst[0]
     else:
         yield_limiting_species_iri = yield_limiting_species_lst[0]
     return all_reactant_species[yield_limiting_species_iri]
