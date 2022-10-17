@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">14 October 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 October 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology defined for representing the district heating network </rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -544,7 +544,7 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/GridConnection"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between heating network and grid connection/grid points</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#h</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has part</rdfs:label>
     </owl:ObjectProperty>
     
@@ -640,7 +640,7 @@
         </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a measure or forecast and the respective time series.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time series</rdfs:label>
     </owl:ObjectProperty>
     
@@ -665,7 +665,7 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A date associated with an event in the life cycle of the resource</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/elements/1.1/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://nomisma.org/ontology#</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">date</rdfs:label>
     </owl:DatatypeProperty>
     
