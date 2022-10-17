@@ -1782,8 +1782,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         hasPeakArea=_mark_as_unidentified.get(ONTOHPLC_PEAKAREA),
                         atRetentionTime=_mark_as_unidentified.get(ONTOHPLC_RETENTIONTIME),
                         unidentified=True,
-                        rdfs_comment = f"""Species unidentified due to multiple peaks identified within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc.RETENTION_TIME_MATCH_THRESHOLD} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies},
-                        and there exist other peaks closer to the reference retention time compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
+                        rdfs_comment = f"""Species unidentified due to multiple peaks identified within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc.RETENTION_TIME_MATCH_THRESHOLD} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies}, and there exist other peaks closer to the reference retention time compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
                     )
                     list_chrom_pts.append(_unidentified_chrom_pt)
 
