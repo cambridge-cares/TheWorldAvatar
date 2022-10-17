@@ -27,7 +27,7 @@ def spec_inchi_query(inchi_string):
     FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
     }
     """
-    print(query)
+
     return query
 
 
@@ -118,6 +118,8 @@ def pubchem_prop_insert(uuid, cid, props):
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChIKey \'#Standard InChI#\' .
     }    
     """.replace('#CID#', cid).replace('#uuid#', uuid)
+    # replace "InChI=1S", "InChI=1"
+    props['Standard InChI']=props['Standard InChI'].replace("InChI=1S", "InChI=1")
     for item in props.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(props.get(item)))
         

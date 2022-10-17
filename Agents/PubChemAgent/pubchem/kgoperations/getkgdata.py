@@ -20,6 +20,7 @@ def get_ontospecies_data(osIRI):
 
 def get_iri_data(inchi):
     query = get_iri_query(inchi_string=inchi)
+    query = spec_inchi_query(inchi_string=inchi)
     sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)

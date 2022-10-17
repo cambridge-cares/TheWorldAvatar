@@ -16,12 +16,9 @@ def query_with_inchi(inchi):
         props = pug_access.get_props(data)
         CID = pug_access.get_cid(data)
         cid = CID['cid']
-        #insert_ontospecies_data(str(cid), props)      
+        insert_ontospecies_data(str(cid), props)      
         return (props, cid, 'PubChem')
 
-def insert_with_inchi(inchi):
-    IRI = None
-    insert_ontospecies_data(IRI)
         
 if __name__== '__main__':
 
