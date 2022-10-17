@@ -1,0 +1,97 @@
+[PrefixDeclaration]
+xsd:		http://www.w3.org/2001/XMLSchema#
+ub:         http://www.theworldavatar.com/kb/ontoubemmp/
+be:         http://www.theworldavatar.com/kb/ontobuiltenv/
+om:         http://www.ontology-of-units-of-measure.org/resource/om-2/
+oum:        https://www.theworldavatar.com/kg/ontouom/
+gml:        http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+db:         http://www.purl.org/oema/enaeq/
+bot:        http://w3id.org/bot#
+bim:        http://www.theworldavatar.com/ontology/ontobim/OntoBIM.owl#
+iri:        https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	solarthermie
+target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
+            iri:DABGEO/Building_{geb_id} a db:Building ;
+                be:hasOntoCityGMLRepresentation iri:OntoCityGML/Building_{geb_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofThermalPlateCollectors_{geb_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofThermalTubeCollectors_{geb_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofSolarCollectors_{geb_id} ;
+                bot:containsElement iri:OntoBIM/Roof_{geb_id} .
+            iri:OntoUBEMMP/RoofThermalPlateCollectors_{geb_id} a ub:RoofThermalPlateCollectors ;
+                db:producesEnergy  iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{geb_id} .
+            iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{geb_id} a ub:AnnualHeatSupply ;
+                om:hasDimension om:energyDensity-Dimension ;
+                om:hasValue   iri:OM/PlateAnnualHeatSupplyValue_{geb_id} ;
+            iri:OM/PlateAnnualHeatSupplyValue_{geb_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {pow_hz}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at module efficiency of 50%" .
+            iri:OntoUBEMMP/RoofThermalTubeCollectors_{geb_id} a ub:RoofThermalTubeCollectors ;
+                db:producesEnergy  iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{geb_id} .
+            iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{geb_id} a ub:AnnualHeatSupply ;
+                om:hasDimension om:energyDensity-Dimension ;
+                om:hasValue   iri:OM/TubeAnnualHeatSupplyValue_{geb_id} ;
+            iri:OM/TubeAnnualHeatSupplyValue_{geb_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {pow_th}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at module efficiency of 60%" .
+            iri:OntoUBEMMP/RoofSolarCollectors_{geb_id} a ub:RoofSolarCollectors ;
+                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{geb_id}
+                ub:receivesRadiation iri:OntoUBEMMP/RadabshzQuantity_{geb_id} .
+            iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{geb_id} a ub:AnnualCO2Savings ;
+                om:hasDimension om:density-Dimension ;
+                om:hasValue iri:OM/AnnualCO2SavingsValue_{geb_id} ;
+            iri:OM/AnnualCO2SavingsValue_{geb_id} a om:Measure ;
+                om:hasUnit om:kilogramPerSquareMetre ;
+                om:hasNumericalValue {co2_th}^^xsd:double ;
+                ub:hasCalculationBasis "CO2 savings per m² at 0.258 kg/kWh - equivalent value compared to natural gas (assuming module efficiency 50%)."^^xsd:string .
+            iri:OntoUBEMMP/RadabshzQuantity_{geb_id} a ub:Radabshz ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue  iri:OM/RadabshzValue_{geb_id} .
+            iri:OM/RadabshzValue_{geb_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerYear ;
+                om:hasNumericalValue {radabshz}^^xsd:double.
+            iri:OntoBIM/Roof_{geb_id} a bim:Roof ;
+                bim:isHeatSupportSuitable {eignghzi}^^xsd:boolean ;
+                bim:isSolarCollectorSuitable {eigngthi}^^xsd:boolean ;
+source		SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "ahrweiler"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "altenkirchen__ww_"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "alzey_worms"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "bad_dürkheim"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "bad_kreuznach"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "bernkastel_wittlich"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "birkenfeld"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "cochem_zell"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "deutsch_lux_hoheitsgebiet"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "donnersbergkreis"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "eifelkreis_bitburg_prüm"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "germersheim"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "kaiserslautern"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "kusel"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "mainz_bingen"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "mayen_koblenz"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "neuwied"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "rhein_hunsrück_kreis"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "rhein_lahn_kreis"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "rhein_pfalz_kreis"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_frankenthal__pfalz_"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_kaiserslautern"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_koblenz"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_landau_in_der_pfalz"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_ludwigshafen_a_rh"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_mainz"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_neustadt_ad_w"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_pirmasens"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_speyer"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_trier"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_worms"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "stadt_zweibrücken"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "südliche_weinstraße"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "südwestpfalz"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "trier_saarburg"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "vulkaneifel"
+                    UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "westerwaldkreis"
+]]
+
