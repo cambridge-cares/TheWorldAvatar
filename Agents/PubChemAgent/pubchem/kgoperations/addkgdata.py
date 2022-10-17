@@ -1,12 +1,12 @@
 from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from pubchem.kgoperations.querykg import kg_operations
-from pubchem.kgoperations.querytemplates import test_data_insert
+from pubchem.kgoperations.querytemplates import pubchem_prop_insert
 import uuid
    
 # a sample data addition function
-def insert_ontospecies_data(osIRI):
-    
-    insert_str = test_data_insert(osIRI)
+def insert_ontospecies_data(cid, props):
+    uuid = create_uuid()
+    insert_str = pubchem_prop_insert(uuid, cid, props)
     sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)

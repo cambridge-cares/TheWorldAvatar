@@ -10,6 +10,7 @@ class pug_api():
 
     # HTTP request link builder and executer
     def pug_request(self, key: str, value: str) -> Tuple[str,str]:
+
         
         # replace the # in the SMILES string with its encoing to correctly send the SMILES string via HTTP request
         if key == 'SMILES': value=value.replace('#','%23')         
@@ -34,6 +35,7 @@ class pug_api():
 
         data = requests.get(link)
         file = json.loads(data.text)
+
         return file
 
     # Method for retrieving PubChem properties

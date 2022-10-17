@@ -1,6 +1,19 @@
 from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 import json
 
+def get_iri_query(inchi_string):
+    query="""
+    PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    SELECT ?speciesIRI
+    WHERE
+    {
+    ?speciesIRI rdf:type OntoSpecies:Species ;
+                OntoSpecies:inChI ?Inchi FILTER ( str(?Inchi) = \'#InChI#\' ) .
+    }    
+    """.replace('#InChI#', inchi_string)
+    return query
+
 def spec_inchi_query(inchi_string):
     query = """
     PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -13,11 +26,13 @@ def spec_inchi_query(inchi_string):
     FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
     }
     """
+    print(query)
     return query
 
 
 def ontospecies_data_query(osIRI):
-    query = """PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    query = """
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -92,14 +107,14 @@ def pubchem_prop_insert(uuid, cid, props):
     
     INSERT DATA
     {
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> rdf:type os:Species .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_#uuid#> .
-    <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_#uuid#> os:value #Molecular Weight# .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> rdfs:label #Molecular Formula# .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:inChI #Standard InChI# .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:pubChemCID #CID# .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:SMILES #Canonical SMILES# .
-    <http://www.theworldavatar.com/kb/ontospecies/Species_#uuid#> os:inChIKey #Standard InChI# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_Species_#uuid#> .
+    <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_Species_#uuid#> os:value #Molecular Weight# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdfs:label \'#Molecular Formula#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChI \'#Standard InChI#\'^^xsd:string .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:pubChemCID #CID# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:SMILES \'#Canonical SMILES#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChIKey \'#Standard InChI#\' .
     }    
     """.replace('#CID#', cid).replace('#uuid#', uuid)
     for item in props.keys():
