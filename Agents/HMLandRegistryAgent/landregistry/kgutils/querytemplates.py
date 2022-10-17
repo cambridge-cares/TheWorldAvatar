@@ -219,3 +219,18 @@ def get_all_admin_districts_with_price_indices() -> str:
     query = ' '.join(query.split())
 
     return query
+
+
+def instantiate_property_price_index(district_iri, ppi_iri):
+    # Instantiate property price index for a given administrative district
+    query = f"""
+        INSERT DATA {{
+            <{ppi_iri}> <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . 
+            <{ppi_iri}> <{OBE_REPRESENTATIVE_FOR}> <{district_iri}> . 
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query

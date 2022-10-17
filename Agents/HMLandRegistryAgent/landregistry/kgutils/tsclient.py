@@ -10,6 +10,7 @@ import agentlogging
 from landregistry.errorhandling.exceptions import TSException
 from landregistry.kgutils.javagateway import jpsBaseLibGW
 from landregistry.kgutils.kgclient import KGClient
+from landregistry.datamodel.data_mapping import TIMECLASS
 from landregistry.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                              DB_URL, DB_USER, DB_PASSWORD
 
@@ -28,15 +29,11 @@ class TSClient:
         jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
         jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-        # Retrieve Java classes for time entries (Instant)
-        Instant = jpsBaseLibView.java.time.Instant
-        instant_class = Instant.now().getClass()
-
         # Initialise KG client required for TSClient constructor
         kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
         try:
-            ts_client = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, instant_class, 
+            ts_client = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, TIMECLASS, 
                                                         DB_URL, DB_USER, DB_PASSWORD)
         except Exception as ex:
             logger.error("Unable to initialise TS client.")

@@ -17,8 +17,10 @@ import agentlogging
 
 from landregistry.datamodel.iris import *
 from landregistry.datamodel.data_mapping import *
+from landregistry.datamodel.data_mapping import TIME_FORMAT, DATACLASS
 from landregistry.errorhandling.exceptions import KGException
 from landregistry.kgutils.kgclient import KGClient
+from landregistry.kgutils.tsclient import TSClient
 from landregistry.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from landregistry.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from landregistry.kgutils.querytemplates import *
@@ -118,9 +120,8 @@ def update_all_transaction_records(min_conf_score=90,
     # Initialise KG clients
     kgclient_obe = KGClient(query_endpoint, update_endpoint)
     kgclient_hm = KGClient(api_endpoint, api_endpoint)
-
     # Initialise TimeSeriesClient
-    #ts_client = TSClient.tsclient_with_default_settings()
+    ts_client = TSClient.tsclient_with_default_settings()
 
     # 1) Retrieve all instantiated properties with associated postcodes
     query = get_all_properties_with_postcode()
@@ -135,15 +136,15 @@ def update_all_transaction_records(min_conf_score=90,
     # TODO:REMOVE
     postcodes = postcodes[:10]
 
-    for pc in postcodes:
-        prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
+    # for pc in postcodes:
+    #     prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
 
-        # Update transaction records for list of property IRIs
-        tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
-                            min_conf_score=min_conf_score, api_endpoint=api_endpoint,
-                            kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
-        instantiated_tx += tx_new
-        updated_tx += tx_upd
+    #     # Update transaction records for list of property IRIs
+    #     tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
+    #                         min_conf_score=min_conf_score, api_endpoint=api_endpoint,
+    #                         kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
+    #     instantiated_tx += tx_new
+    #     updated_tx += tx_upd
 
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
@@ -154,9 +155,14 @@ def update_all_transaction_records(min_conf_score=90,
         #ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
         #ts_client.bulkaddTimeSeriesData(ts_list)
 
-        if not d['index']:
+        #if not d['index']:
             # Instantiate Property Price Index incl. TimeSeries
-            pass
+        ppi_iri = KB + 'PropertyPriceIndex_' + str(uuid.uuid4())
+        insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
+                                                        ppi_iri=ppi_iri)
+        kgclient_obe.performUpdate(insert_query)
+        
+        ts_client.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT)
 
         # 4) Retrieve Property Price Index from HM Land Registry
 
