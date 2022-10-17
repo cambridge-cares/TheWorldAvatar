@@ -108,8 +108,20 @@ public class TimeSeriesClient<T> {
     	}
     }
 
-
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, String temporalUnit, Double numericValue) {
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
+	 * @param conn connection to the RDB
+	 * @param type type of TimeSeries data to be instantiated. Allowed values: StepwiseCumulative, CumulativeTotal, Instantaneous, Average.(optional)
+	 *             If not specified, default value: TimeSeries
+	 * @param temporalUnit Required for Average Time Series. Unit type of the averaging period for Average TimeSeries. (optional)
+	 *                     Allowed values of type <http://www.w3.org/2006/time#TemporalUnit/>: unitSecond, unitMinute, unitHour, unitDay, unitWeek, unitMonth, unitYear
+	 * @param numericDuration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Double. (optional)
+	 *                        Only positive values are allowed.
+	 */
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, String temporalUnit, Double numericDuration) {
 		String tsIRI;
 		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
 		if(type=="StepwiseCumulative"){
@@ -132,7 +144,7 @@ public class TimeSeriesClient<T> {
 		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
 		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
 		try {
-			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericValue);
+			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericDuration);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -159,11 +171,11 @@ public class TimeSeriesClient<T> {
 	/**
      * similar to initTimeSeries, but uploads triples in one connection
      */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, temporalUnit, numericValue);
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, temporalUnit, numericDuration);
 	} 
 
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
 		String tsIRI;
@@ -190,7 +202,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericValue);
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericDuration);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);

@@ -210,6 +210,20 @@ public class TimeSeriesSparql {
 		kbClient.executeUpdate(modify.getQueryString());
 	}
 
+	/**
+	 * Instantiate the time series instance in the knowledge base (time unit is optional)
+	 * @param timeSeriesIRI timeseries IRI provided as string
+	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
+	 * @param dbURL URL of the database where the timeseries data is stored provided as string
+	 * @param timeUnit the time unit of the time series (optional)
+	 * @param type type of TimeSeries data to be instantiated. Allowed values: StepwiseCumulative, CumulativeTotal, Instantaneous, Average. (optional)
+	 *             If not specified, default value: TimeSeries
+	 * @param temporalUnit Required for Average Time Series. Unit type of the averaging period for Average TimeSeries. (optional)
+	 *                     Allowed values of type <http://www.w3.org/2006/time#TemporalUnit/>: unitSecond, unitMinute, unitHour, unitDay, unitWeek, unitMonth, unitYear
+	 * @param numericValue Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Double. (optional)
+	 *                     Only positive values are allowed.
+	 */
+
 	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, String type, String temporalUnit, Double numericValue) {
 		// Construct time series IRI
 		Iri tsIRI;
@@ -261,6 +275,8 @@ public class TimeSeriesSparql {
 				throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration: " + numericValue + " must be a positive value");
 			}
 
+			//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
+			//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
 			String queryString = "period";
 			SelectQuery query = Queries.SELECT();
 			Variable period = SparqlBuilder.var(queryString);
@@ -322,6 +338,11 @@ public class TimeSeriesSparql {
 		kbClient.executeUpdate(modify.getQueryString());
 	}
 
+	/**
+	 * Check if the given temporal unit is one of the allowed values. Where, allowed values are of type <http://www.w3.org/2006/time#TemporalUnit/>: unitSecond, unitMinute, unitHour, unitDay, unitWeek, unitMonth, unitYear
+	 * @param timeUnit Unit type of the averaging period for Average TimeSeries
+	 * @return True if temporal unit is of a valid type, false otherwise.
+	 */
 	private boolean isTemporalUnitValid(String timeUnit) {
 
 		if (timeUnit == "unitMinute" || timeUnit == "unitWeek" || timeUnit == "unitYear" ||timeUnit == "unitHour" ||timeUnit == "unitSecond" || timeUnit == "unitDay"  ||timeUnit == "unitMonth" ){
@@ -332,30 +353,55 @@ public class TimeSeriesSparql {
 		}
 	}
 
+	/**
+	 * Check whether given duration IRI is attached to an Average time series
+	 * @param durationIRI duration IRI provided as string
+	 * @return True if durationIRI exists and is attached to an Average time series, false otherwise
+	 */
 	private boolean checkDurationHasAverageTimeSeries(String durationIRI) {
 		String query = String.format("ask {?a <%s> <%s>}", (ns_ontology + "hasAveragingPeriod"), durationIRI);
 		kbClient.setQuery(query);
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 	}
 
+	/**
+	 * Check whether a particular Average time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI AverageTimeSeries IRI provided as string
+	 * @return True if an average time series instance with the tsIRI exists, false otherwise
+	 */
 	private boolean checkAverageTimeSeriesExists(String timeSeriesIRI) {
 		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "AverageTimeSeries"));
 		kbClient.setQuery(query);
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 	}
 
+	/**
+	 * Check whether a particular Instantaneous time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI InstantaneousTimeSeries IRI provided as string
+	 * @return True if an Instantaneous time series instance with the tsIRI exists, false otherwise
+	 */
 	private boolean checkInstantaneousTimeSeriesExists(String timeSeriesIRI) {
 		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "InstantaneousTimeSeries"));
 		kbClient.setQuery(query);
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 	}
 
+	/**
+	 * Check whether a particular CumulativeTotal time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI CumulativeTotalTimeSeries IRI provided as string
+	 * @return True if a CumulativeTotal time series instance with the tsIRI exists, false otherwise
+	 */
 	private boolean checkCumulativeTotalTimeSeriesExists(String timeSeriesIRI) {
 		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "CumulativeTotalTimeSeries"));
 		kbClient.setQuery(query);
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 	}
 
+	/**
+	 * Check whether a particular StepwiseCumulative time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI StepwiseCumulativeTimeSeries IRI provided as string
+	 * @return True if a StepwiseCumulative time series instance with the tsIRI exists, false otherwise
+	 */
 	private boolean checkStepwiseCumulativeTimeSeriesExists(String timeSeriesIRI) {
 		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "StepwiseCumulativeTimeSeries"));
 		kbClient.setQuery(query);
