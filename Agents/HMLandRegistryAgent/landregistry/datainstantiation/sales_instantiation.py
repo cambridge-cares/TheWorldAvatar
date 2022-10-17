@@ -120,8 +120,8 @@ def update_all_transaction_records(min_conf_score=90,
     # Initialise KG clients
     kgclient_obe = KGClient(query_endpoint, update_endpoint)
     kgclient_hm = KGClient(api_endpoint, api_endpoint)
-    # Initialise TimeSeriesClient
-    ts_client = TSClient.tsclient_with_default_settings()
+    # Initialise TimeSeriesClient with default settings
+    ts_client = TSClient(kg_client=kgclient_obe)
 
     # 1) Retrieve all instantiated properties with associated postcodes
     query = get_all_properties_with_postcode()
@@ -149,7 +149,7 @@ def update_all_transaction_records(min_conf_score=90,
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
     admin_ppis = get_admin_district_index_dict(kgclient_obe)
-    for d in admin_ppis:
+    for d in admin_ppis: 
 
         #ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
         #ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
@@ -162,7 +162,8 @@ def update_all_transaction_records(min_conf_score=90,
                                                         ppi_iri=ppi_iri)
         kgclient_obe.performUpdate(insert_query)
         
-        ts_client.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT)
+        ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
+                                          ts_client.conn)
 
         # 4) Retrieve Property Price Index from HM Land Registry
 
