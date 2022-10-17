@@ -26,7 +26,7 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Kilowatt Hour Per Square Metre Ontology -->
+  <!-- Megawatt Hour Per Year Ontology -->
 
   <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/megawattHourPerYear">
     <rdfs:label xml:lang="en">megawatt hour per year</rdfs:label>
