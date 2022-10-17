@@ -14,6 +14,10 @@ logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
 # 2. TODO rog agent iterates the goal derivation
 # ----------------------------------------------------------------------------------
 
+# TODO below test needs to be updated
+# as the cf.rogi_cf.create_dummy_triples_for_performance_indicator
+# doesn't create triple to declare the rdf:type of the reaction variation, which is required for the agent to detect
+# the post processing derivation
 def test_rogi_picks_up_derivation(
     initialise_test_triples,
     create_rog_agent,

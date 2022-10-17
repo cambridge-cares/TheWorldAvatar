@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 from rdflib import Graph, URIRef, Literal
 from datetime import datetime
 import pandas as pd
+import yagmail
 import base64
 import json
 import time
@@ -59,7 +60,12 @@ class RxnOptGoalAgent(ABC):
         app: Flask = Flask(__name__, template_folder="/app/templates"),
         flask_config: FlaskConfig = FlaskConfig(),
         # register_agent: bool = True,
-        logger_name: str = "dev"
+        logger_name: str = "dev",
+        email_recipient: str = '',
+        email_subject_prefix: str = '',
+        email_username: str = '',
+        email_auth_json_path: str = '',
+        email_start_end_async_derivations: bool = False,
     ):
         """
             This method initialises the instance of RxnOptGoalAgent.
@@ -154,6 +160,15 @@ class RxnOptGoalAgent(ABC):
         #         "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.agentIRI, self.kg_url, e),
         #         stack_info=True, exc_info=True)
         #     raise e
+
+        # TODO set up to send email after the goal enters next iteration, or is achieved
+        # initialise the email object and email_start_end_async_derivations flag
+        if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
+            self.yag = yagmail.SMTP(email_username, oauth2_file=email_auth_json_path)
+            self.email_recipient = email_recipient.split(';')
+            self.email_subject_prefix = email_subject_prefix if bool(email_subject_prefix) else str(self.__class__.__name__)
+        else:
+            self.yag = None
 
         self.logger.info(f"RxnOptGoalAgent initialised with IRI: {self.goal_agent_iri}")
 

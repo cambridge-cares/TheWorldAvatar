@@ -12,6 +12,10 @@ logger = logging.getLogger('test_rxn_integration')
 # NOTE this test case is for local agents, i.e. instances in memory, not dockerised
 # ----------------------------------------------------------------------------------
 
+# TODO below test needs to be updated
+# vapourtec execution -> vapourtec schedule
+# property check for the generated triples
+# hplc dry run
 @pytest.mark.parametrize(
     "vt_env_file,hplc_env_file,derivation_inputs,hplc_report_target_folder,fcexp_file_container_folder",
     [

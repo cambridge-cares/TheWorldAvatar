@@ -33,6 +33,11 @@ class RxnOptGoalAgentConfig(Config):
     FILE_SERVER_USERNAME: str
     FILE_SERVER_PASSWORD: str
     # REGISTER_AGENT: bool
+    EMAIL_RECIPIENT: str = ''
+    EMAIL_SUBJECT_PREFIX: str = ''
+    EMAIL_USERNAME: str = ''
+    EMAIL_AUTH_JSON_PATH: str = ''
+    EMAIL_START_END_ASYNC_DERIVATIONS: bool = False
 
 def config_rxn_opt_goal_agent(env_file: str = None) -> RxnOptGoalAgentConfig:
     """Return configurations from either environment variables or env_file."""

@@ -100,9 +100,9 @@ def test_handle_rxn_opt_goal_request(
             assert len(doe_step.canBePerformedBy) == 1
             assert doe_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_DOE_AGENT.value
             assert len(doe_step.hasNextStep) == 1
-            assert doe_step.hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_EXE.value
+            assert doe_step.hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_SCHEDULEEXE.value
             assert len(doe_step.hasNextStep[0].canBePerformedBy) == 1
-            assert doe_step.hasNextStep[0].canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_EXE_AGENT.value
+            assert doe_step.hasNextStep[0].canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_SCHEDULE_AGENT.value
             assert len(doe_step.hasNextStep[0].hasNextStep) == 1
             assert doe_step.hasNextStep[0].hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_POSTPRO.value
             assert len(doe_step.hasNextStep[0].hasNextStep[0].canBePerformedBy) == 1
@@ -111,9 +111,9 @@ def test_handle_rxn_opt_goal_request(
 
             # step 2 - exe
             exe_step = goal.hasPlan[0].get_step(cf.ONTOGOAL_RXNEXPEXECUTION)
-            assert exe_step.instance_iri == cf.rogi_cf.IRIs.STEP_EXE.value
+            assert exe_step.instance_iri == cf.rogi_cf.IRIs.STEP_SCHEDULEEXE.value
             assert len(exe_step.canBePerformedBy) == 1
-            assert exe_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_EXE_AGENT.value
+            assert exe_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_SCHEDULE_AGENT.value
             assert len(exe_step.hasNextStep) == 1
             assert exe_step.hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_POSTPRO.value
             assert len(exe_step.hasNextStep[0].canBePerformedBy) == 1

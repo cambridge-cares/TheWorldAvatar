@@ -6,6 +6,10 @@ import tests.utils as utils
 import logging
 logger = logging.getLogger('test_rxn_integration')
 
+# TODO below test needs to be updated
+# vapourtec execution -> vapourtec schedule
+# property check for the generated triples
+# hplc dry run
 @pytest.mark.parametrize(
     "hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
     [

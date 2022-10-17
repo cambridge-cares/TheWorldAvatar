@@ -18,8 +18,7 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
 from chemistry_and_robots.data_model import *
 
 from doeagent.agent import DoEAgent
-from vtexeagent.agent import VapourtecExecutionAgent
-from vtexeagent.conf import config_vapourtec_execution_agent
+from vapourtecscheduleagent.agent import VapourtecScheduleAgent
 from hplcpostproagent.agent import HPLCPostProAgent
 from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec_agent
@@ -64,6 +63,7 @@ HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_t
 FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test')
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 HTML_TEMPLATE_DIR = os.path.join(os.path.dirname(THIS_DIR), 'templates')
+EMAIL_AUTH_JSON_PATH = os.path.join(SECRETS_PATH, 'email_auth.json')
 
 # Raw HPLC report sample data in the test_triples folder
 HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
@@ -401,6 +401,11 @@ def create_rogi_agent():
             fs_password=rogi_agent_config.FILE_SERVER_PASSWORD if not kg_url else None,
             agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            email_recipient=rogi_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=rogi_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=rogi_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=rogi_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return rogi_agent
     return _create_rogi_agent
@@ -425,38 +430,48 @@ def create_doe_agent():
             fs_user=doe_agent_config.FILE_SERVER_USERNAME,
             fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-            app=Flask(__name__)
+            app=Flask(__name__),
+            email_recipient=doe_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=doe_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=doe_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=doe_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return doe_agent
     return _create_doe_agent
 
 @pytest.fixture(scope="module")
-def create_vapourtec_execution_agent():
-    def _create_vapourtec_execution_agent(
+def create_vapourtec_schedule_agent():
+    def _create_vapourtec_schedule_agent(
         maximum_concurrent_experiment:int=None,
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        vapourtec_execution_agent_config = config_vapourtec_execution_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
-        vapourtec_execution_agent = VapourtecExecutionAgent(
-            maximum_concurrent_experiment=vapourtec_execution_agent_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
-            register_agent=vapourtec_execution_agent_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=vapourtec_execution_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=vapourtec_execution_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=vapourtec_execution_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=vapourtec_execution_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=vapourtec_execution_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=vapourtec_execution_agent_config.KG_USERNAME,
-            kg_password=vapourtec_execution_agent_config.KG_PASSWORD,
-            fs_url=vapourtec_execution_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=vapourtec_execution_agent_config.FILE_SERVER_USERNAME,
-            fs_password=vapourtec_execution_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=vapourtec_execution_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        vapourtec_schedule_agent_config = config_derivation_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
+        vapourtec_schedule_agent = VapourtecScheduleAgent(
+            register_agent=vapourtec_schedule_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=vapourtec_schedule_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=vapourtec_schedule_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=vapourtec_schedule_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=vapourtec_schedule_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=vapourtec_schedule_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=vapourtec_schedule_agent_config.KG_USERNAME,
+            kg_password=vapourtec_schedule_agent_config.KG_PASSWORD,
+            fs_url=vapourtec_schedule_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=vapourtec_schedule_agent_config.FILE_SERVER_USERNAME,
+            fs_password=vapourtec_schedule_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=vapourtec_schedule_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=vapourtec_schedule_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
+            email_recipient=vapourtec_schedule_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=vapourtec_schedule_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=vapourtec_schedule_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=vapourtec_schedule_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
-        return vapourtec_execution_agent
-    return _create_vapourtec_execution_agent
+        return vapourtec_schedule_agent
+    return _create_vapourtec_schedule_agent
 
 @pytest.fixture(scope="module")
 def create_hplc_postpro_agent():
@@ -479,6 +494,11 @@ def create_hplc_postpro_agent():
             fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            email_recipient=hplc_postpro_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_postpro_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=hplc_postpro_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=hplc_postpro_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_postpro_agent
     return _create_hplc_postpro_agent
@@ -513,6 +533,11 @@ def create_vapourtec_agent():
             fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=vapourtec_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=vapourtec_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return vapourtec_agent
     return _create_vapourtec_agent
@@ -549,6 +574,11 @@ def create_hplc_agent():
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX,
+            email_username=hplc_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+            email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_agent
     return _create_hplc_agent
@@ -642,7 +672,7 @@ def clear_loggers():
 # Sample data
 # ----------------------------------------------------------------------------------
 sample_goal_request = {
-    "chem_rxn": "https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1",
+    "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
     "deadline": "2022-09-12T17:05",
     "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion",

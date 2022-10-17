@@ -28,6 +28,11 @@ def create_app():
         # register_agent=rxn_opt_goal_agent_config.REGISTER_AGENT,
         logger_name="dev",
         app=Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates")),
+        email_recipient=rxn_opt_goal_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=rxn_opt_goal_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=rxn_opt_goal_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=rxn_opt_goal_agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=rxn_opt_goal_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     return agent.app

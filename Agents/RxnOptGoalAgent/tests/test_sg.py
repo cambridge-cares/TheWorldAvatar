@@ -19,8 +19,7 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
 from chemistry_and_robots.data_model import *
 
 from doeagent.agent import DoEAgent
-from vtexeagent.agent import VapourtecExecutionAgent
-from vtexeagent.conf import config_vapourtec_execution_agent
+from vapourtecscheduleagent.agent import VapourtecScheduleAgent
 from hplcpostproagent.agent import HPLCPostProAgent
 from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec_agent
@@ -65,6 +64,7 @@ HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_t
 FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test')
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 HTML_TEMPLATE_DIR = os.path.join(os.path.dirname(THIS_DIR), 'templates')
+EMAIL_AUTH_JSON_PATH = os.path.join(SECRETS_PATH, 'email_auth.json')
 
 # Raw HPLC report sample data in the test_triples folder
 HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
@@ -83,7 +83,7 @@ DOCKER_COMPOSE_TEST_KG = 'docker-compose.test.kg.yml'
 # NOTE the triple store and file server URL ("localhost") provided in the agent.*.env files are made possible via:
 # "extra_hosts: - localhost:host-gateway" in the docker-compose.test.yml
 DOE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
-VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
+VAPOURTEC_SCHEDULE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.schedule.env.test')
 HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
 # VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
 # HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
@@ -148,6 +148,11 @@ def create_rogi_agent(
         fs_password=rogi_agent_config.FILE_SERVER_PASSWORD if not kg_url else None,
         agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__),
+        email_recipient=rogi_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=rogi_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=rogi_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=rogi_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
     return rogi_agent
 
@@ -169,34 +174,44 @@ def create_doe_agent(
         fs_user=doe_agent_config.FILE_SERVER_USERNAME,
         fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        app=Flask(__name__)
+        app=Flask(__name__),
+        email_recipient=doe_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=doe_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=doe_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=doe_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
     return doe_agent
 
-def create_vapourtec_execution_agent(
+def create_vapourtec_schedule_agent(
     maximum_concurrent_experiment:int=None,
     register_agent:bool=False,
     random_agent_iri:bool=False,
     derivation_periodic_timescale:int=None,
 ):
-    vapourtec_execution_agent_config = config_vapourtec_execution_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
-    vapourtec_execution_agent = VapourtecExecutionAgent(
-        maximum_concurrent_experiment=vapourtec_execution_agent_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
-        register_agent=vapourtec_execution_agent_config.REGISTER_AGENT if not register_agent else register_agent,
-        agent_iri=vapourtec_execution_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-        time_interval=vapourtec_execution_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-        derivation_instance_base_url=vapourtec_execution_agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=vapourtec_execution_agent_config.SPARQL_QUERY_ENDPOINT,
-        kg_update_url=vapourtec_execution_agent_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user=vapourtec_execution_agent_config.KG_USERNAME,
-        kg_password=vapourtec_execution_agent_config.KG_PASSWORD,
-        fs_url=vapourtec_execution_agent_config.FILE_SERVER_ENDPOINT,
-        fs_user=vapourtec_execution_agent_config.FILE_SERVER_USERNAME,
-        fs_password=vapourtec_execution_agent_config.FILE_SERVER_PASSWORD,
-        agent_endpoint=vapourtec_execution_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+    vapourtec_schedule_agent_config = config_derivation_agent(VAPOURTEC_SCHEDULE_AGENT_ENV)
+    vapourtec_schedule_agent = VapourtecScheduleAgent(
+        register_agent=vapourtec_schedule_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+        agent_iri=vapourtec_schedule_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+        time_interval=vapourtec_schedule_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+        derivation_instance_base_url=vapourtec_schedule_agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=vapourtec_schedule_agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_update_url=vapourtec_schedule_agent_config.SPARQL_UPDATE_ENDPOINT,
+        kg_user=vapourtec_schedule_agent_config.KG_USERNAME,
+        kg_password=vapourtec_schedule_agent_config.KG_PASSWORD,
+        fs_url=vapourtec_schedule_agent_config.FILE_SERVER_ENDPOINT,
+        fs_user=vapourtec_schedule_agent_config.FILE_SERVER_USERNAME,
+        fs_password=vapourtec_schedule_agent_config.FILE_SERVER_PASSWORD,
+        agent_endpoint=vapourtec_schedule_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__),
+        max_thread_monitor_async_derivations=vapourtec_schedule_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
+        email_recipient=vapourtec_schedule_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=vapourtec_schedule_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=vapourtec_schedule_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=vapourtec_schedule_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
-    return vapourtec_execution_agent
+    return vapourtec_schedule_agent
 
 def create_hplc_postpro_agent(
     register_agent:bool=False,
@@ -217,6 +232,11 @@ def create_hplc_postpro_agent(
         fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__),
+        email_recipient=hplc_postpro_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=hplc_postpro_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=hplc_postpro_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=hplc_postpro_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
     return hplc_postpro_agent
 
@@ -252,6 +272,11 @@ def create_vapourtec_agent(
         fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__),
+        email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=vapourtec_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=vapourtec_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
     return vapourtec_agent
 
@@ -264,6 +289,7 @@ def create_hplc_agent(
     register_agent:bool=False,
     random_agent_iri:bool=False,
     derivation_periodic_timescale:int=None,
+    dry_run: bool=True,
 ):
     hplc_agent_config = config_hplc_agent(env_file)
     hplc_agent = HPLCAgent(
@@ -272,6 +298,7 @@ def create_hplc_agent(
         hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
         current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
         hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
+        dry_run=dry_run, # NOTE True for testing, False for production
         register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
         agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
         time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
@@ -285,6 +312,11 @@ def create_hplc_agent(
         fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__),
+        email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=hplc_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
     return hplc_agent
 
@@ -323,7 +355,7 @@ def initialise_triples(sparql_client):
 sample_goal_request = {
     "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
     "cycleAllowance": 30,
-    "deadline": "2022-09-30T17:05",
+    "deadline": "2022-10-30T17:05",
     "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
     "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
     "first_goal_num_val": 99,
@@ -382,7 +414,7 @@ def _test_rxn_rogi(hplc_report_container_dir, clean_and_initialise_triples: bool
     doe_agent = create_doe_agent(
         register_agent=True,
     )
-    vapourtec_execution_agent = create_vapourtec_execution_agent(
+    vapourtec_schedule_agent = create_vapourtec_schedule_agent(
         register_agent=True,
     )
     hplc_postpro_agent = create_hplc_postpro_agent(
@@ -398,13 +430,14 @@ def _test_rxn_rogi(hplc_report_container_dir, clean_and_initialise_triples: bool
     hplc_agent = create_hplc_agent(
         env_file=LAB2_HPLC_AGENT_ENV,
         register_agent=True,
-        hplc_report_container_dir=hplc_report_container_dir
+        hplc_report_container_dir=hplc_report_container_dir,
+        dry_run=False,
     )
 
     # Start the scheduler to monitor derivations if it's local agent test
     rogi_agent.start_all_periodical_job()
     doe_agent.start_all_periodical_job()
-    vapourtec_execution_agent.start_all_periodical_job()
+    vapourtec_schedule_agent.start_all_periodical_job()
     hplc_postpro_agent.start_all_periodical_job()
     vapourtec_agent.start_all_periodical_job()
     hplc_agent.start_all_periodical_job()
@@ -416,7 +449,7 @@ def _test_rxn_rogi(hplc_report_container_dir, clean_and_initialise_triples: bool
     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
     rogi_agent.scheduler.shutdown()
     doe_agent.scheduler.shutdown()
-    vapourtec_execution_agent.scheduler.shutdown()
+    vapourtec_schedule_agent.scheduler.shutdown()
     hplc_postpro_agent.scheduler.shutdown()
     vapourtec_agent.scheduler.shutdown()
     hplc_agent.scheduler.shutdown()

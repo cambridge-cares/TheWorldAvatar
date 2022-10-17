@@ -40,7 +40,10 @@ logger = logging.getLogger('test_rxn_with_goal')
 #     print(fileserver_url)
 #     time.sleep(600)
 
-
+# TODO below test needs to be updated
+# vapourtec execution -> vapourtec schedule
+# property check for the generated triples
+# hplc dry run
 @pytest.mark.parametrize(
     "goal_set_iri,derivation_inputs,hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
     [

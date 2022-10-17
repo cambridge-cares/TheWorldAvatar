@@ -6,6 +6,7 @@ services:
     container_name: doe_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7000:5000
     env_file:
@@ -13,11 +14,12 @@ services:
     extra_hosts:
       - localhost:host-gateway
 
-  vapourtec_execution_agent:
-    image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT
-    container_name: vapourtec_execution_agent
+  vapourtec_schedule_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_schedule_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7001:5000
     env_file:
@@ -30,6 +32,7 @@ services:
     container_name: hplc_postpro_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7002:5000
     env_file:
@@ -42,6 +45,7 @@ services:
     container_name: vapourtec_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7003:5000
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
@@ -58,6 +62,7 @@ services:
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     ports:
       - 7004:5000
     extra_hosts:
@@ -97,3 +102,5 @@ secrets:
     file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: ./tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json
