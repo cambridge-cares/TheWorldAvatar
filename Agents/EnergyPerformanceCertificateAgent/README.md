@@ -6,7 +6,7 @@ It is designed to interact with the stack spun up by the stack manager.
 
 <span style="color:red">Tests are currently still excluded.</span>
 <br/><br/>
-<span style="color:red">The current version of the agent (i.e. commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
+<span style="color:red">The current version of the agent (i.e. commit ef61ae035f7aeb36b692eddd45188ce7231528c1) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
 
 # 1. Setup
 
