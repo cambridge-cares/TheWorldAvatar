@@ -18,7 +18,7 @@ cd ${inputDir}/input
 ~/citychem-1.3/preproc/mcwind/bin/MCWIND.exe
 
 # kinetics is using LD_LIBRARY_PATH for the lmx wrapper
-LD_LIBRARY_PATH=${HOME}/netcdf4/lib
+LD_LIBRARY_PATH=/episode/netcdf4/lib
 
 # this will generate files for point source emissions
 ~/citychem-1.3/preproc/uect2.3/bin/uect.exe
@@ -30,7 +30,7 @@ sed -i 's/'PSE'/'LSE'/g' cctapm_meta.inp
 ~/citychem-1.3/preproc/uect2.3/bin/uect.exe
 
 # receptor (Kang's code)
-gfortran ~/citychem-1.3/receptor_raster_kang/receptor_raster.f90
+gfortran-9 ~/citychem-1.3/receptor_raster_kang/receptor_raster.f90
 ./a.out
 
 # launch main program - citychem

@@ -211,16 +211,16 @@ case util:
      echo $F90
      echo $F90FLAGS
 
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/ATDSC3.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/CONST3.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/FDESC3.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/IODECL3.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NETCDF.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NOTICE.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/PARMS3.EXT
-     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/STATE3.EXT
-     chmod +x ~/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fix_src.csh
-     chmod +x ~/citychem-1.3/preproc/auxiliary/srtm_generate_hdr.sh
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/ATDSC3.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/CONST3.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/FDESC3.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/IODECL3.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NETCDF.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NOTICE.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/PARMS3.EXT
+     dos2unix /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/STATE3.EXT
+     chmod +x /episode/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fix_src.csh
+     chmod +x /episode/citychem-1.3/preproc/auxiliary/srtm_generate_hdr.sh
 #> Write the makefiles using the *.tmpl templates
 #     sed \
 #       -e "s%@{F90}%${F90}%g" \
@@ -262,10 +262,10 @@ case util:
        -e "s%@{F90}%${F90}%g" \
        -e "s%@{F90FLAGS}%${F90FLAGS}%g" \
      <./preproc/${auxil}/Makefile.zo.tmpl>./preproc/${auxil}/Makefile.zo
-     # AERMAP does only work with gfortran or g95
+     # AERMAP does only work with gfortran-9 or g95
 
 #> 5 IOAPI
-     echo "build ioapi library with gfortran or provide ioapi library for intel fortran"
+     echo "build ioapi library with gfortran-9 or provide ioapi library for intel fortran"
      echo "in config.user:"
      echo " set IOAPI (name of Makeinclude)"
      echo " set IOAPIDIR (pathname of Makeinclude file)"
@@ -315,7 +315,7 @@ case util:
 
 #> 5 IOAPI
      cd .. &&  cd ./${bconcc}/
-     if (${F90} == "gfortran") then
+     if (${F90} == "gfortran-9") then
        cd ./ioapi3.2/
        make -f Makefile.ioapi clean
        make -f Makefile.ioapi all
@@ -386,7 +386,7 @@ case uninstall:
 
 #> 5 IOAPI and CMAQ4cc
      cd .. &&  cd ./${bconcc}/ioapi3.2/
-     if (${F90} == "gfortran") then
+     if (${F90} == "gfortran-9") then
        make -f Makefile.ioapi clean
      endif 
      rm -f ./bin/*.exe
