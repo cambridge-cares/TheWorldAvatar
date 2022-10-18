@@ -5,9 +5,15 @@
     "dataSubsets": [
         {
             "type": "Vector",
-            "skip": false,
             "schema": "public",
-            "table": "soas"
+            "table": "soas",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326"
+            },    
+            "skip": true
         }
+    ],
+    "mappings": [
+        "ontop.obda"
     ]
 }

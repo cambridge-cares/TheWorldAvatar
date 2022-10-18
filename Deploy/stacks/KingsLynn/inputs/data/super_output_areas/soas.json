@@ -4,7 +4,8 @@
     {
       "type": "Feature",
       "properties": {
-        "code": "E02005557"
+        "code": "E02005557",
+		"location_iri": "http://www.theworldavatar.com/kb/ontoflood/Location_1"
       },
       "geometry": {
 		"type": "MultiPolygon",
@@ -81,7 +82,8 @@
     {
       "type": "Feature",
       "properties": {
-        "code": "E02005559"
+        "code": "E02005559",
+		"location_iri": "http://www.theworldavatar.com/kb/ontoflood/Location_2"
       },
       "geometry": {
 		"type": "Polygon",
@@ -160,7 +162,8 @@
     {
       "type": "Feature",
       "properties": {
-        "code": "E02005561"
+        "code": "E02005561",
+		"location_iri": "http://www.theworldavatar.com/kb/ontoflood/Location_3"
       },
       "geometry": {
 		"type": "MultiPolygon",

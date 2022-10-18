@@ -1,13 +1,16 @@
 {
-    "name": "population",
     "database": "postgres",
     "workspace": "population",
     "datasetDirectory": "population",
     "dataSubsets": [
         {
             "type": "Raster",
-            "name": "population",
-            "skip": false
+            "schema": "public",
+            "table": "population",
+            "options": {
+                "sridIn": "EPSG:27700"
+            },
+            "skip": true
         }
     ]
 }
