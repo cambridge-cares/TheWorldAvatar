@@ -3132,7 +3132,10 @@
     write(formstr(2),'(2(a))')trim(adjustl(msg_form)),'a,1x,a20)'
     
 !   3. current date is prior to previous date in sounding
-    write(formstr(3),'(2(a))'),'a,1x,i8,1x,a,i8)'
+    !code modified by GMM
+	!original code:-
+	!write(formstr(3),'(2(a))'),'a,1x,i8,1x,a,i8)'
+	write(formstr(3),'(2(a))') 'a,1x,i8,1x,a,i8)'
     
 !   write to screen the date and hour being processed if NOPRINT not specfied on JOB pathway
     write(adate,'(i8.8)')sdate

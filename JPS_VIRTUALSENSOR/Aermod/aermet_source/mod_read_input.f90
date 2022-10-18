@@ -479,8 +479,11 @@
 !                  if ((lpath(1) .and. .not. lpath(2) .and. .not. lpath(3) .and. .not. lpath(4) .and. .not. lpath(5) .and. .not. &
 !                      lpath(6)) .or. (.not. lpath(1)  .and. .not. lpath(2) .and. .not. lpath(3) .and. .not. lpath(4) .and. .not. &
 !                      lpath(5) .and. .not. lpath(6))) then
-                  if (curr_path==1 .or. (.not. lpath(1)  .and. .not. lpath(2) .and. .not. lpath(3) .and. .not. lpath(4) .and. .not. &
-                      lpath(5) .and. .not. lpath(6))) then
+                  !code modified by GMM
+				  !original code:-
+				  !if (curr_path==1 .or. (.not. lpath(1)  .and. .not. lpath(2) .and. .not. lpath(3) .and. .not. lpath(4) .and. .not. &
+				  if (curr_path==1 .or. (.not. lpath(1)  .and. .not. lpath(2) .and. .not. lpath(3) .and. .not. lpath(4) .and. &
+                      .not.  lpath(5) .and. .not. lpath(6))) then
                     ipath=1
                     if (trim(adjustl(inpline1(istart:ilen))) == trim(adjustl(keywrd(3)))) then
                         ikey=3

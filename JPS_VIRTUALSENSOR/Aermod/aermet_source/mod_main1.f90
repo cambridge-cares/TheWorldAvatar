@@ -539,7 +539,10 @@
 !       if current character is a quote and previous character or next character is a blank, set qindx
         if ((ichar(inpline1(j:j)) == 34 .or. ichar(inpline1(j:j)) == 39) .and. (ichar(inpline1(j-1:j-1)) == 32 .or. &
             ichar(inpline1(j+1:j+1))==32)) then
-            if (qindx(1) == 0) then
+			! code modified by GMM
+			! original line:-
+			! if(qindx(1)==0) then
+            if (.not. qindx(1)) then
                 qindx(1)=.true.
             else
                 qindx(2)=.true.

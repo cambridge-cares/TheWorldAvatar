@@ -255,7 +255,10 @@
 !               post 21DRF, only output upper air selections when upper air data read
                 if (lpath(2)) then
                     if (litems(5)) then !UASELECT
-                        if (lactions(6)) write(rpt_unit,'(1x,a,t30,a7,1x,a)'),'UPPER AIR SELECTION',actions(6),&
+                        !code modified by GMM
+						!original code:-
+						!if (lactions(6)) write(rpt_unit,'(1x,a,t30,a7,1x,a)'),'UPPER AIR SELECTION',actions(6),&
+						if (lactions(6)) write(rpt_unit,'(1x,a,t30,a7,1x,a)') 'UPPER AIR SELECTION',actions(6),&
                             'SOUNDING SELECTION BASED ON SUNRISE TIME'
                     endif 
                     if (lpblkeywords(9)) write(rpt_unit,'(1x,a,2(i3,1x))')'SOUNDING TIME WINDOW:',snding_win(1),snding_win(2)

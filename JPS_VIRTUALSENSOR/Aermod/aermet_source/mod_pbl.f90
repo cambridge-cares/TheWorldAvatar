@@ -1082,7 +1082,10 @@
                 
 !               use the subroutine DATALINE to get the AERSURFACE filename
                 call dataline(i,i1)
-                read(inpline(fileind(1):fileind(2)),'(a)'),tempfil
+                !code modified by GMM
+				!original code:-
+				!read(inpline(fileind(1):fileind(2)),'(a)'),tempfil
+				read(inpline(fileind(1):fileind(2)),'(a)') tempfil
                 if (nfield > 2) read(inpline1(formind(1):ilen),'(a)')yrstr
 !               get the AERSURF or AERSURF2 filename
                 if (isite == 1) then

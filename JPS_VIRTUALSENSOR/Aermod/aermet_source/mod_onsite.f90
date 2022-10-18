@@ -1999,7 +1999,10 @@
     endif
 
 !   have to have both direction and speed if one is read, if not issue error
-    if (osvars(wind_vars(1))%lread /= osvars(wind_vars(2))%lread) then
+    ! code modified by GMM
+	! original line:-
+	! if (osvars(wind_vars(1))%lread /= osvars(wind_vars(2))%lread) then
+    if (osvars(wind_vars(1))%lread .neqv. osvars(wind_vars(2))%lread) then
         write(msg_unit,formstr(2))adjustl(pathid(ipath)),'E60',modnam,'WIND SPEED AND DIRECTION ARE NOT PROCESSED TOGETHER'
         lbad=.true.
     endif
