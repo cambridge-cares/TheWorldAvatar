@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.router.AgentRouter;
@@ -31,7 +31,7 @@ class AgentRouterTest {
 	private static String agentName3 = "Agent3";
 	private static String agentURL3 = "http://www.example.com/agent3/location3";
 	
-	private static StoreClientInterface createMockStore() {
+	private static TripleStoreClientInterface createMockStore() {
 		
 		MockStoreClient mockStore = new MockStoreClient();
 		mockStore.addTriple(		
@@ -114,16 +114,16 @@ class AgentRouterTest {
 	    Object obj = agentRouter.getRouterStoreClient();
 		assertNotNull(obj);
 		assertTrue(obj.getClass().getClass().isInstance(RemoteStoreClient.class));
-		
-		StoreClientInterface storeClient = (RemoteStoreClient) obj;
+
+		TripleStoreClientInterface storeClient = (RemoteStoreClient) obj;
 		assertEquals(defaultEndpoint, storeClient.getQueryEndpoint());
 		assertEquals(null, storeClient.getUpdateEndpoint());
 	}
 	
 	@Test
 	void testGetFromStore() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -142,8 +142,8 @@ class AgentRouterTest {
 	
 	@Test
 	void testGetFromStoreException() {
-		
-		StoreClientInterface storeClient = null;
+
+		TripleStoreClientInterface storeClient = null;
 	
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -153,8 +153,8 @@ class AgentRouterTest {
 	
 	@Test
 	void testGetFromStoreWithNull() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -165,8 +165,8 @@ class AgentRouterTest {
 	
 	@Test
 	void testGet() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
