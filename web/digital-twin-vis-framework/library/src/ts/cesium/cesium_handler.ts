@@ -149,7 +149,7 @@ class MapHandler_Cesium extends MapHandler {
                 let properties = {...feature.data.properties};
                 let name = getName(properties);
 
-                if(name !== null && name !== "") {
+                if(name != null && name !== "") {
                     metaBox.style.display = "block";
                     metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
                     metaBox.style.left = `${event.endPosition.x - 100}px`;
@@ -171,7 +171,7 @@ class MapHandler_Cesium extends MapHandler {
                 }
 
                 let name = getName(properties);
-                if(name !== null && name !== "") {
+                if(name != null && name !== "") {
                     metaBox.style.display = "block";
                     metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
                     metaBox.style.left = `${event.endPosition.x - 100}px`;
@@ -185,22 +185,33 @@ class MapHandler_Cesium extends MapHandler {
      * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
+        // Get all layers from all groups
         let allLayers = [];
-
         dataStore.dataGroups.forEach(rootGroup => {
             let groupLayers = rootGroup.flattenDown();
-            groupLayers.forEach(layer => {
-                this.plotLayer(rootGroup, layer);
-            });
-
             allLayers = allLayers.concat(groupLayers);
         });
 
-        // Collect the WMS layers and order them
+        // Collect the WMS layers
         let wmsLayers = allLayers.filter(layer => {
             return layer.source.type === "wms" || layer.source.type === "geoserver"; 
         });
-        CesiumUtils.orderImageryLayers(wmsLayers);
+
+        // Order them
+        wmsLayers = wmsLayers.sort((a, b) => {
+            if(a.order > b.order) return 1;
+            if(a.order < b.order) return -1;
+            return 0;
+        });
+
+        // Plot them
+        wmsLayers.forEach(layer => this.plotLayer(null, layer));
+
+        // Collect the non-WMS layers and plot them
+        let otherLayers = allLayers.filter(layer => {
+            return layer.source.type !== "wms" && layer.source.type !== "geoserver"; 
+        });
+        otherLayers.forEach(layer => this.plotLayer(null, layer));
     }
 
     /**

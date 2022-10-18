@@ -235,13 +235,23 @@ class MapHandler_MapBox extends MapHandler {
      * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
+        // Get all layers from all groups
+        let allLayers = [];
         dataStore.dataGroups.forEach(rootGroup => {
-            let allLayers = rootGroup.flattenDown();
-            
-            allLayers.forEach(layer => {
-                this.plotLayer(rootGroup, layer);
-            });
+            let groupLayers = rootGroup.flattenDown();
+            allLayers = allLayers.concat(groupLayers);
         });
+
+        // Order them
+        allLayers = allLayers.sort((a, b) => {
+            if(a.order > b.order) return 1;
+            if(a.order < b.order) return -1;
+            return 0;
+        });
+        console.log(allLayers);
+
+        // Plot them
+        allLayers.forEach(layer => this.plotLayer(null, layer));
     }
 
     /**
@@ -334,6 +344,7 @@ class MapHandler_MapBox extends MapHandler {
 
             // Remove fields not required by MapBox
             delete options["name"];
+            delete options["order"];
 
             // Add to the map
             MapHandler.MAP.addLayer(options);
