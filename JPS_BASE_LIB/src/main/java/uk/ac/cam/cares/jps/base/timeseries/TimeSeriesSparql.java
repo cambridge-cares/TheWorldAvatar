@@ -380,14 +380,107 @@ public class TimeSeriesSparql {
 
 	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<String> type, List<String> temporalUnit, List<Double> numericValue) {
 		ModifyQuery modify = Queries.MODIFY();
-
 		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb);
+		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
 
 		for (int i = 0; i < tsIRIs.size(); i++) {
-			initTS(tsIRIs.get(i), dataIRIs.get(i), rdbURL, timeUnit.get(i), type.get(i), temporalUnit.get(i), numericValue.get(i));
-		}
+			Iri tsIRI;
+			if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(tsIRIs.get(i)).matches()) {
+				tsIRI = iri(tsIRIs.get(i));
+			} else {
+				throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
+			}
 
+			if(type.get(i).equalsIgnoreCase(StepwiseCumulative)){
+				if (checkStepwiseCumulativeTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Stepwise Cumulative Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				// define type
+				modify.insert(tsIRI.isA(StepwiseCumulativeTimeSeries));
+			}
+			else if(type.get(i).equalsIgnoreCase(CumulativeTotal)){
+				if (checkCumulativeTotalTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Cumulative Total Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				// define type
+				modify.insert(tsIRI.isA(CumulativeTotalTimeSeries));
+			}
+			else if(type.get(i).equalsIgnoreCase(Instantaneous)){
+				if (checkInstantaneousTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Instantaneous Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				// define type
+				modify.insert(tsIRI.isA(InstantaneousTimeSeries));
+			}
+			else if(type.get(i).equalsIgnoreCase(Average)){
+				if (checkAverageTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Average Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				//unitType
+				if(!isTemporalUnitValid(temporalUnit.get(i))){
+					throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + temporalUnit.get(i) + " of invalid type");
+				}
+
+				//numeric Duration
+				if(numericValue.get(i) <=0.0){
+					throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration: " + numericValue.get(i) + " must be a positive value");
+				}
+
+				//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
+				//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
+				String durationIRI = getDurationIRI(temporalUnit.get(i), numericValue.get(i));
+
+				if(durationIRI!=null){
+					modify.insert(tsIRI.isA(AverageTimeSeries));
+					modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+				}
+				else {
+					//Duration IRI
+					durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
+					while (checkDurationHasAverageTimeSeries(durationIRI)){
+						durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
+					}
+					modify.insert(tsIRI.isA(AverageTimeSeries));
+					modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+					modify.insert(iri(durationIRI).isA(Duration));
+					modify.insert(iri(durationIRI).has(unitType, iri(ns_time+temporalUnit.get(i))));
+					modify.insert(iri(durationIRI).has(numericDuration, numericValue.get(i)));
+				}
+			}
+			else {
+				// Check that the time series IRI is not yet in the Knowledge Graph
+				if (checkTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				// define type
+				modify.insert(tsIRI.isA(TimeSeries));
+			}
+
+			// Check that the data IRIs are not attached to a different time series IRI already
+			for (String iri: dataIRIs.get(i)) {
+				String ts = getTimeSeries(iri);
+				if(!(ts == null)) {
+					throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
+				}
+			}
+
+			// relational database URL
+			modify.insert(tsIRI.has(hasRDB, literalOf(rdbURL)));
+
+			// link each data to time series
+			for (String data : dataIRIs.get(i)) {
+				TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
+				modify.insert(ts_tp);
+			}
+
+			// optional: define time unit
+			if (timeUnit.get(i) != null) {
+				modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit.get(i))));
+				//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
+			}
+
+		}
+		kbClient.executeUpdate(modify.getQueryString());
 	}
 
 	/**
