@@ -23,7 +23,7 @@ target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
                 db:producesEnergy  iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{geb_id} .
             iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{geb_id} a ub:AnnualHeatSupply ;
                 om:hasDimension om:energyDensity-Dimension ;
-                om:hasValue   iri:OM/PlateAnnualHeatSupplyValue_{geb_id} ;
+                om:hasValue   iri:OM/PlateAnnualHeatSupplyValue_{geb_id} .
             iri:OM/PlateAnnualHeatSupplyValue_{geb_id} a om:Measure ;
                 om:hasUnit oum:kilowattHourPerSquareMetre ;
                 om:hasNumericalValue {pow_hz}^^xsd:double ;
@@ -32,17 +32,17 @@ target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
                 db:producesEnergy  iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{geb_id} .
             iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{geb_id} a ub:AnnualHeatSupply ;
                 om:hasDimension om:energyDensity-Dimension ;
-                om:hasValue   iri:OM/TubeAnnualHeatSupplyValue_{geb_id} ;
+                om:hasValue   iri:OM/TubeAnnualHeatSupplyValue_{geb_id} .
             iri:OM/TubeAnnualHeatSupplyValue_{geb_id} a om:Measure ;
                 om:hasUnit oum:kilowattHourPerSquareMetre ;
                 om:hasNumericalValue {pow_th}^^xsd:double ;
                 ub:hasCalculationBasis "Calculated at module efficiency of 60%" .
             iri:OntoUBEMMP/RoofSolarCollectors_{geb_id} a ub:RoofSolarCollectors ;
-                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{geb_id}
+                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{geb_id} ;
                 ub:receivesRadiation iri:OntoUBEMMP/RadabshzQuantity_{geb_id} .
             iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{geb_id} a ub:AnnualCO2Savings ;
                 om:hasDimension om:density-Dimension ;
-                om:hasValue iri:OM/AnnualCO2SavingsValue_{geb_id} ;
+                om:hasValue iri:OM/AnnualCO2SavingsValue_{geb_id} .
             iri:OM/AnnualCO2SavingsValue_{geb_id} a om:Measure ;
                 om:hasUnit om:kilogramPerSquareMetre ;
                 om:hasNumericalValue {co2_th}^^xsd:double ;
@@ -52,10 +52,10 @@ target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
                 om:hasValue  iri:OM/RadabshzValue_{geb_id} .
             iri:OM/RadabshzValue_{geb_id} a om:Measure ;
                 om:hasUnit oum:kilowattHourPerYear ;
-                om:hasNumericalValue {radabshz}^^xsd:double.
+                om:hasNumericalValue {radabshz}^^xsd:double .
             iri:OntoBIM/Roof_{geb_id} a bim:Roof ;
                 bim:isHeatSupportSuitable {eignghzi}^^xsd:boolean ;
-                bim:isSolarCollectorSuitable {eigngthi}^^xsd:boolean ;
+                bim:isSolarCollectorSuitable {eigngthi}^^xsd:boolean .
 source		SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "ahrweiler"
                     UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "altenkirchen__ww_"
                     UNION SELECT geb_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "alzey_worms"
