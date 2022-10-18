@@ -1,4 +1,5 @@
-# First stage: download the Java dependencies (allows them to be cached if unchanged)
+#==================================================================================================
+# Download the Java dependencies (allows them to be cached if unchanged)
 #==================================================================================================
 FROM maven:3.8.3-adoptopenjdk-11 as retriever
 
@@ -19,11 +20,10 @@ COPY pom.xml ./pom.xml
 RUN mvn clean dependency:resolve
 
 #==================================================================================================
-
-# Second stage: build war file
+# Build war file
 #==================================================================================================
 
-FROM maven:3.8.3-adoptopenjdk-11 as builder
+FROM maven:3.8.3-adoptopenjdk-11 as war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
@@ -37,15 +37,30 @@ COPY WEB-INF ./WEB-INF/
 RUN mvn package -DskipTests -U
 
 #==================================================================================================
+# Build aermet components
+#==================================================================================================
+FROM ubuntu:22.10 as aermod_builder
 
-# Third stage: copy the downloaded dependency into a new image and build into an app
+RUN apt update
+RUN apt install gfortran dos2unix -y
+
+# build AERMOD components
+COPY aermet_source /root/aermet_source/
+WORKDIR /root/aermet_source
+RUN dos2unix ./gfortran-aermod_allwarn.sh
+RUN ./gfortran-aermod_allwarn.sh
+
+#==================================================================================================
+# Copy compiled executables and war file into tomcat image
 #==================================================================================================
 FROM tomcat:9 as agent
+
+COPY --from=aermod_builder /root/aermet_source/aermet /root
 
 WORKDIR /app
 
 # Copy the compiled jar from the builder
-COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
+COPY --from=war_builder /root/code/output/* $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
