@@ -42,6 +42,10 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         response = self.performQuery(query)
         logger.debug(f"Obtained response: {response} with query: {query}")
 
+        # return None if no goal set is found with the given goal_set_iri
+        if not bool(response) or not bool(response[0]):
+            return None
+
         # get restriction
         restriction_iri = dal.get_the_unique_value_in_list_of_dict(response, "restriction")
         cycle_allowance = dal.get_the_unique_value_in_list_of_dict(response, "cycleAllowance")
@@ -356,3 +360,24 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         }}"""
         response = self.performQuery(query)
         return self.get_goal_set_instance(goal_set_iri=response[0]['goal_set'])
+
+    # TODO add unit test
+    def create_rogi_derivation_for_new_info(self, goal_iter_agent_iri, derivation_inputs, goal_set_iri, derivation_client):
+        rogi_derivation = derivation_client.createAsyncDerivationForNewInfo(goal_iter_agent_iri, derivation_inputs)
+        # Add triple <goal_set> <OntoGoal:hasROGIDerivation> <rogi_derivation>
+        # This relationship serves as the link from the goal set to the ROGI derivation
+        self.link_goal_set_to_rogi(goal_set_iri, rogi_derivation)
+        return rogi_derivation
+
+    # TODO add unit test
+    def link_goal_set_to_rogi(self, goal_set_iri: str, rogi_iri: str):
+        self.performUpdate(f"""INSERT DATA {{ <{trimIRI(goal_set_iri)}> <{ONTOGOAL_HASROGIDERIVATION}> <{trimIRI(rogi_iri)}> }}""")
+
+    # TODO add unit test
+    def get_rogi_derivations_of_goal_set(self, goal_set_iri: str) -> List[str]:
+        goal_set_iri = trimIRI(goal_set_iri)
+        query = f"""SELECT ?rogi_derivation WHERE {{
+            <{goal_set_iri}> <{ONTOGOAL_HASROGIDERIVATION}> ?rogi_derivation.
+        }}"""
+        response = self.performQuery(query)
+        return dal.get_unique_values_in_list_of_dict(response, 'rogi_derivation')

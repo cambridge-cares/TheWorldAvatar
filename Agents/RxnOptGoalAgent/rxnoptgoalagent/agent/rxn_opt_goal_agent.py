@@ -42,6 +42,7 @@ class FlaskConfig(object):
 
 class RxnOptGoalAgent(ABC):
     GOAL_SPECS_RESPONSE_KEY = "Created a RxnOptGoalIter (ROGI) Derivation"
+    GOAL_SET_IRI_KEY = ONTOGOAL_GOALSET
 
     def __init__(
         self,
@@ -308,60 +309,72 @@ class RxnOptGoalAgent(ABC):
         # which is DIFFERENT from the IRI of ROG agent (self.goal_agent_iri)
         # TODO [next iteration] in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
         # TODO [next iteration] but in the future, this information should obtained by ROG agent from the KG
-        rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
+        rogi_derivation = self.sparql_client.create_rogi_derivation_for_new_info(
+            goal_iter_agent_iri=self.goal_iter_agent_iri,
+            derivation_inputs=derivation_inputs,
+            goal_set_iri=goal_set_instance.instance_iri,
+            derivation_client=self.derivation_client
+        )
 
         # TODO [next iteration] optimise the following code that deals with the ROGI iterations
         # Add a periodical job to monitor the goal iterations for the created ROGI derivation
-        self.current_running_rogi_derivation = rogi_derivation
+        self.current_active_goal_set = goal_set_instance.instance_iri
         self.scheduler.add_job(
-            id=f'monitor_goal_{getShortName(rogi_derivation)}',
+            id=f'monitor_goal_set__{getShortName(goal_set_instance.instance_iri)}',
             func=self.monitor_goal_iterations,
             trigger='interval', seconds=self.goal_monitor_time_interval
         )
         if not self.scheduler.running:
             self.scheduler.start()
         self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
-        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: rogi_derivation})
+        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: rogi_derivation, self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
 
     def monitor_goal_iterations(self):
         """
         This function is called by the scheduler to monitor the goal iterations.
         """
-        self.logger.info("Monitoring the goal iterations...")
-        # 1. Check if the current running ROGI derivation is finished (up-to-date)
-        # 2. if no, skip
-        # 3. if yes, query the goal set instance from the KG
-        # 4. compare if the best result meet the goal
-        # 5. if yes, stop the scheduler
-        # 6. if no, check if the restriction is still okay, update the rogi derivation with new restriction and rxn exp, request for an update
-        # 7. if the restriction is not okay, stop the scheduler
-        rogi_derivation_up_to_date = self.sparql_client.check_if_rogi_complete_one_iter(self.current_running_rogi_derivation)
-        if rogi_derivation_up_to_date:
+        self.logger.info(f"Monitoring the goal iterations of GoalSet <{self.current_active_goal_set}>...")
+        # for the current active goal set, get the ROGI derivations
+        # 1. Check if any of the current running ROGI derivation is finished (up-to-date)
+        # 1.1. if no, skip all below steps
+        # 1.2. if yes, query the goal set instance from the KG, proceed to step 2
+        # 2. compare if the best result meet the goal
+        # 2.1. if yes, stop the scheduler, skip all below steps
+        # 2.2. if no, proceed to step 3
+        # 3. check if the restriction is still okay
+        # 3.1. if still okay, update goal set with new restriction, update all rogi derivation to take the rxn exp as inputs, request an update for those finished rogi derivation
+        # 3.2. if the restriction is not okay, stop the scheduler
+        rogi_derivation_lst = self.sparql_client.get_rogi_derivations_of_goal_set(self.current_active_goal_set)
+        rogi_derivation_lst_up_to_date = [rogi for rogi in rogi_derivation_lst if self.sparql_client.check_if_rogi_complete_one_iter(rogi)]
+        if bool(rogi_derivation_lst_up_to_date):
             # get the latest goal set instance
-            goal_set_instance = self.sparql_client.get_goal_set_instance_from_rogi_derivation(self.current_running_rogi_derivation)
+            goal_set_instance = self.sparql_client.get_goal_set_instance(self.current_active_goal_set)
             # check if any of the goals are met
             unmet_goals = goal_set_instance.get_unmet_goals()
             if len(unmet_goals) == 0:
                 self.logger.info("All goals are met. Stop monitoring the goal iterations.")
-                self.scheduler.remove_job(f'monitor_goal_{getShortName(self.current_running_rogi_derivation)}')
+                self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
             else:
                 # check if the restriction is still okay
                 if goal_set_instance.if_restrictions_are_okay():
                     # update the rogi derivation with new restriction and rxn exp, request for an update
-                    self.logger.info("Restrictions are still okay. Update the ROGI derivation with new restriction and rxn exp, request for an update.")
+                    self.logger.info(f"Restrictions are still okay. Updating the ROGI derivations {rogi_derivation_lst} with new restriction and rxn exp, also requesting for an update of {rogi_derivation_lst_up_to_date}.")
 
                     # update ReactionExperiment/Restriction accordingly, example SPARQL update with sub query:
                     # DELETE {
                     # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
                     # }
                     # INSERT {
-                    # <http://www.theworldavatar.com/triplestore/repository/derivedAsyn_7de8e4b9-0d6d-4fc3-ad37-09cbfa9e7cf5> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
+                    # <http://a_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
                     # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance_update.
                     # }
                     # WHERE {
                     # SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
                     # WHERE {
-                    #     ?result <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#belongsTo> <http://www.theworldavatar.com/triplestore/repository/derivedAsyn_7de8e4b9-0d6d-4fc3-ad37-09cbfa9e7cf5>;
+                    #     VALUES ?rogi_derivation { <http://a_rogi_derivation_up_to_date> <http://another_rogi_derivation_up_to_date> }
+                    #     ?result <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#belongsTo> ?rogi_derivation;
                     #             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#refersTo> ?pi.
                     #     ?pi ^<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator> ?rxn_exp.
                     #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
@@ -372,46 +385,53 @@ class RxnOptGoalAgent(ABC):
                     # delete clause: delete the old restriction
                     # insert clause: insert the new restriction, add the rxn exp as input to rogi derivation
                     # where clause: get the rxn exp, the old cycle allowance, and compute the new one
-                    self.sparql_client.performUpdate(f"""
+                    update = f"""
                         DELETE {{
                             <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance .
                         }}
                         INSERT {{
-                            <{self.current_running_rogi_derivation}> <{ONTODERIVATION_ISDERIVEDFROM}> ?rxn_exp.
+                            <{f'> <{ONTODERIVATION_ISDERIVEDFROM}> ?rxn_exp. <'.join(rogi_derivation_lst)}> <{ONTODERIVATION_ISDERIVEDFROM}> ?rxn_exp.
                             <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance_update .
                         }}
                         WHERE {{
                             SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
                             WHERE {{
-                                ?result <{ONTODERIVATION_BELONGSTO}> <{self.current_running_rogi_derivation}>; <{ONTOGOAL_REFERSTO}> ?pi.
+                                VALUES ?rogi_derivation {{ <{'> <'.join(rogi_derivation_lst_up_to_date)}> }}
+                                ?result <{ONTODERIVATION_BELONGSTO}> ?rogi_derivation; <{ONTOGOAL_REFERSTO}> ?pi.
                                 ?pi ^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn_exp.
                                 <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance .
                                 BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
                             }}
-                    }}""")
+                    }}"""
+                    self.logger.info(f"SPARQL update: {update}")
+                    self.sparql_client.performUpdate(update)
                     # update the timestamp of the goal_set instance as the restriction (cycleAllowance) is updated
                     self.derivation_client.updateTimestamp(goal_set_instance.instance_iri)
                     # finally request another round of update
-                    self.derivation_client.unifiedUpdateDerivation(self.current_running_rogi_derivation)
+                    for rogi_derivation in rogi_derivation_lst_up_to_date:
+                        self.derivation_client.unifiedUpdateDerivation(rogi_derivation)
                 else:
                     self.logger.info(f"Restrictions are not okay. Stop monitoring the goal iterations. Current best results: { goal_set_instance.get_best_results() }")
-                    self.scheduler.remove_job(f'monitor_goal_{getShortName(self.current_running_rogi_derivation)}')
+                    self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
         else:
-            self.logger.info(f"The current iteration of <{self.current_running_rogi_derivation}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
+            self.logger.info(f"The ROGI derivations {rogi_derivation_lst} of GoalSet <{self.current_active_goal_set}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
 
     def goal_result_page(self):
         """
-        Plot the ROGI results of the given ROGI derivation IRI.
+        Plot the goal iteration results of the given GoalSet IRI.
         """
-        if 'rogi' in request.args:
-            _rogi_derivation_for_plot = request.args['rogi']
-        elif hasattr(self, 'current_running_rogi_derivation'):
-            _rogi_derivation_for_plot = self.current_running_rogi_derivation
+        if 'goal_set' in request.args:
+            _goal_set_iri = request.args['goal_set']
+        elif hasattr(self, 'current_active_goal_set'):
+            _goal_set_iri = self.current_active_goal_set
         else:
-            return "No ROGI derivation IRI is provided. Nor is any RODI derivation is currently running. Please provide a ROGI derivation IRI in the URL."
+            return f"""No GoalSet IRI is provided. Nor is any GoalSet currently running.
+                       Please provide a GoalSet IRI in the URL, e.g. <br><br> {request.base_url}?goal_set=http://www.theworldavatar.com/GoalSet/GoalSet_1"""
 
         # get the goal set instance
-        goal_set_instance = self.sparql_client.get_goal_set_instance_from_rogi_derivation(_rogi_derivation_for_plot)
+        goal_set_instance = self.sparql_client.get_goal_set_instance(_goal_set_iri)
+        if goal_set_instance is None:
+            return f"""The GoalSet IRI {_goal_set_iri} is not found in the triplestore {self.kg_url}. Please check the IRI and try again."""
 
         # query the devTime of each reaction experiment that the performance indicators referring to
         _obj_dct = {}
@@ -435,7 +455,7 @@ class RxnOptGoalAgent(ABC):
         response = self.sparql_client.performQuery(query)
 
         if len(response) == 0:
-            return f"No results found for ROGI derivation {_rogi_derivation_for_plot} when executing query: {query}. Check if the derivation is finished. Or if the derivation IRI is correct. Or if the triplestore is specified correctly."
+            return f"No results found for GoalSet {_goal_set_iri} when executing query: {query}. Check if any of its ROGI derivations are finished. Or if the GoalSet IRI is correct. Or if the triplestore is specified correctly."
 
         # convert the response to a dataframe and plot
         _df = pd.DataFrame(response)
