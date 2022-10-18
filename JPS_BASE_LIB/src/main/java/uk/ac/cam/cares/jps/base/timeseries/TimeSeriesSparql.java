@@ -7,10 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -71,6 +68,15 @@ public class TimeSeriesSparql {
 
 	// Fields for class specific exceptions
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
+
+	//Time Series Type Constants
+	private final String Average = "Average";
+	private final String StepwiseCumulative = "StepwiseCumulative";
+	private final String CumulativeTotal = "CumulativeTotal";
+	private final String Instantaneous = "Instantaneous";
+
+	//List of temporal unit types
+	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList("unitSecond", "unitMinute", "unitHour", "unitDay", "unitWeek", "unitMonth", "unitYear"));
 
     /**
      * Standard constructor
@@ -185,34 +191,34 @@ public class TimeSeriesSparql {
 		// set prefix declarations
 		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
 
-		if(type=="StepwiseCumulative"){
+		if(type.equalsIgnoreCase(StepwiseCumulative)){
 			if (checkStepwiseCumulativeTimeSeriesExists(timeSeriesIRI)) {
 				throw new JPSRuntimeException(exceptionPrefix + "Stepwise Cumulative Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 			}
 			// define type
 			modify.insert(tsIRI.isA(StepwiseCumulativeTimeSeries));
 		}
-		else if(type=="CumulativeTotal"){
+		else if(type.equalsIgnoreCase(CumulativeTotal)){
 			if (checkCumulativeTotalTimeSeriesExists(timeSeriesIRI)) {
 				throw new JPSRuntimeException(exceptionPrefix + "Cumulative Total Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 			}
 			// define type
 			modify.insert(tsIRI.isA(CumulativeTotalTimeSeries));
 		}
-		else if(type == "Instantaneous"){
+		else if(type.equalsIgnoreCase(Instantaneous)){
 			if (checkInstantaneousTimeSeriesExists(timeSeriesIRI)) {
 				throw new JPSRuntimeException(exceptionPrefix + "Instantaneous Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 			}
 			// define type
 			modify.insert(tsIRI.isA(InstantaneousTimeSeries));
 		}
-		else if(type=="Average"){
+		else if(type.equalsIgnoreCase(Average)){
 			if (checkAverageTimeSeriesExists(timeSeriesIRI)) {
 				throw new JPSRuntimeException(exceptionPrefix + "Average Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 			}
 			//unitType
 			if(!isTemporalUnitValid(temporalUnit)){
-				throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + timeUnit + " of invalid type");
+				throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + temporalUnit + " of invalid type");
 			}
 
 			//numeric Duration
@@ -222,15 +228,8 @@ public class TimeSeriesSparql {
 
 			//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
 			//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
-			String queryString = "period";
-			SelectQuery query = Queries.SELECT();
-			Variable period = SparqlBuilder.var(queryString);
-			TriplePattern queryPattern = period.has(numericDuration, numericValue).andHas(unitType, iri(ns_time+temporalUnit));
+			String durationIRI = getDurationIRI(temporalUnit, numericValue);
 
-			query.select(period).where(queryPattern).prefix(prefix_time);
-
-			String durationIRI;
-			durationIRI = kbClient.executeQuery(query.getQueryString()).getJSONObject(0).getString(queryString);
 			if(durationIRI!=null){
 				modify.insert(tsIRI.isA(AverageTimeSeries));
 				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
@@ -284,13 +283,39 @@ public class TimeSeriesSparql {
 	}
 
 	/**
+	 * Check if an averaging period with given temporalUnit and numericDuration already exists in the knowledge graph.
+	 * @param temporalUnit unit type of the averaging period
+	 * @param numericValue numerical duration of the averaging period
+	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
+	 */
+	public String getDurationIRI(String temporalUnit, Double numericValue) {
+
+		String durationIRI = null;
+		String queryString = "periodIRI";
+
+		SelectQuery query = Queries.SELECT();
+		Variable periodIRI = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(ns_time+temporalUnit));
+
+		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
+
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+		if(!result.isEmpty()){
+			durationIRI = result.getJSONObject(0).getString(queryString);
+		}
+
+		return durationIRI;
+
+	}
+
+	/**
 	 * Check if the given temporal unit is one of the allowed values. Where, allowed values are of type <http://www.w3.org/2006/time#TemporalUnit/>: unitSecond, unitMinute, unitHour, unitDay, unitWeek, unitMonth, unitYear
 	 * @param timeUnit Unit type of the averaging period for Average TimeSeries
 	 * @return True if temporal unit is of a valid type, false otherwise.
 	 */
 	private boolean isTemporalUnitValid(String timeUnit) {
 
-		if (timeUnit == "unitMinute" || timeUnit == "unitWeek" || timeUnit == "unitYear" ||timeUnit == "unitHour" ||timeUnit == "unitSecond" || timeUnit == "unitDay"  ||timeUnit == "unitMonth" ){
+		if (temporalUnitType.contains(timeUnit)){
 			return true;
 		}
 		else{
