@@ -193,6 +193,8 @@ class PanelHandler {
      * @returns 
      */
     public addSupportingData(feature, properties) {
+        properties = filterNulls(properties);
+
         // Get required details
         let iri = properties["iri"];
         let stack = Manager.findStack(feature, properties);
@@ -290,6 +292,14 @@ class PanelHandler {
             if(document.getElementById("metaTimeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
+        }
+
+        if(addMeta && !addTime) {
+            document.getElementById("treeButton").style.width = "100%";
+            document.getElementById("treeButton").style.borderRadius = "10px";
+        } else if(addMeta && addTime) {
+            document.getElementById("treeButton").style.width = "50%";
+            document.getElementById("treeButton").style.borderRadius = "10px 0 0 10px";
         }
 
         let footerContent = document.getElementById("footerContainer");

@@ -90,6 +90,11 @@ class DataGroup {
                 case MapProvider.MAPBOX:
                     layer = new MapBoxLayer(layerID, node["name"], source);
 
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
+
                     // Register this layer to this connected stack
                     if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
                         Manager.STACK_LAYERS[stack] = [];
@@ -99,6 +104,11 @@ class DataGroup {
     
                 case MapProvider.CESIUM:
                     layer = new CesiumLayer(layerID, node["name"], source);
+
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
 
                     // Register this layer to this connected stack
                     if(Manager.STACK_LAYERS.hasOwnProperty(stack)) {

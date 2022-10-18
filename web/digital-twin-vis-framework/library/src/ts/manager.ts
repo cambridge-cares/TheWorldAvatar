@@ -107,7 +107,6 @@ class Manager {
 
                 if(e.altKey && e.key === "Enter") {
                     self.toggleFullscreen();
-                    console.log(MapHandler.MAP.camera.position);
                     
                     var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
                     var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
@@ -115,7 +114,6 @@ class Manager {
                     var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
                     // @ts-ignore
                     var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-                    console.log(longitudeString + ", " + latitudeString);
                 }
             });
         }
@@ -236,14 +234,9 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature, properties) {
-        console.log(feature);
-        console.log(properties);
+        let name = getName(properties);
 
-        // Title
-        let name = null;
-        if(properties.hasOwnProperty("name")) {
-            name = properties["name"];
-        } else {
+        if(name == null) {
             if(feature.hasOwnProperty("id")) {
                 name = "Feature " + feature["id"];
             } else {

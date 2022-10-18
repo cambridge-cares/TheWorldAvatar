@@ -78,7 +78,7 @@ class DataStore {
         }
 
         if(currentNode["stack"]) {
-            currentStack = currentNode["stack"];
+            currentStack = updateURL(currentNode["stack"]);
         }
 
         // Initialise data group

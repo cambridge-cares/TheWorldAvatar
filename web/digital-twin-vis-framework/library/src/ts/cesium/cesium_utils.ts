@@ -261,4 +261,73 @@ class CesiumUtils {
         }
     }
 
+    public static orderImageryLayers(incomingLayers: DataLayer[]) {
+        // Data layers by order number
+        let dataLayers = incomingLayers.sort((a, b) => {
+            if(a.order > b.order) return 1;
+            if(a.order < b.order) return -1;
+            return 0;
+        });
+
+        let imageryCollection = MapHandler.MAP.imageryLayers;
+
+        for(let i = 0; i < dataLayers.length; i++) {
+            let mapLayers = CesiumUtils.getMapLayers(dataLayers[i].id);
+
+            for(let j = 0; j < mapLayers.length; j++) {
+                let target = (i + 1) + j;
+                let current = imageryCollection.indexOf(mapLayers[j]);
+
+                while(current !== target) {
+                    if(current > target) {
+                        imageryCollection.lower(mapLayers[j]);
+                    } else if(current < target) {
+                        imageryCollection.raise(mapLayers[j]);
+                    }
+                    current = imageryCollection.indexOf(mapLayers[j]);
+                }
+            }
+        }
+        console.log("ALL REORDERED?");
+        console.log(imageryCollection);
+    }
+
+    /**
+     * 
+     * @param credit 
+     * @returns 
+     */
+    public static getMapLayers(credit: string): Object[] {
+        let matches = [];
+        let mapLayers = MapHandler.MAP.imageryLayers;
+        
+        for(let i = 0; i < mapLayers.length; i++) {
+            let mapLayer = mapLayers.get(i);
+            
+            if(mapLayer.imageryProvider.credit === credit) {
+                matches.push(mapLayer);
+            }
+        }
+        return matches;
+    }
+
+     /**
+     * 
+     */
+    public static getPopupContent(properties: Object) {
+        // Get feature details
+        let name = getName(properties);
+        let desc = getDescription(properties);
+
+        // Make HTML string
+        let html = "<b>" + name + "</b>";
+        if(desc != null) html += "<br/>" + desc; 
+
+        // Add thumbnail if present
+        if(properties["thumbnail"]) {
+            html += "<br/><br/>";
+            html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
+        }
+        return html;
+    }
 }

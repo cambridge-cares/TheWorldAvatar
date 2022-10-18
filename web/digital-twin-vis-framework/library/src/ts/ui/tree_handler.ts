@@ -87,8 +87,6 @@ class TreeHandler {
         $("#treeview").hummingbird("expandAll");
 
         // Collapse some specific layers
-        console.log("Collapsing...");
-        console.log(collapse);
         // @ts-ignore
         $("#treeview").hummingbird("collapseNode", {sel: "data-id", vals: collapse});
 

@@ -34,7 +34,7 @@ At the time of writing, the following 3D data formats are supported within the D
 
 Additional formats, provided they are supported by Cesium JS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
 
-At the time of writing, client-side styling is not implemented. Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server.
+At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
 Custom terrain elevation has also yet to be implemented at the time of writing. In theory this can be handled by loading elevation data into Geoserver, then using a [Third Party Plugin](https://github.com/kaktus40/Cesium-GeoserverTerrainProvider) to provide that data as terrain elevation to Cesium. Note that this has not yey been tried.
 

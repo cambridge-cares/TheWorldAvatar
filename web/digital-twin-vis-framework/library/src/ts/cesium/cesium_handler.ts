@@ -124,7 +124,7 @@ class MapHandler_Cesium extends MapHandler {
                         properties[id] = feature.getProperty(id);
                     });
                 }
-    
+                
                 self.manager.showFeature(feature, properties);
                 CesiumUtils.setSelectedSilhouette(feature, event);
             }
@@ -147,12 +147,13 @@ class MapHandler_Cesium extends MapHandler {
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
+                let name = getName(properties);
 
-                if(properties.hasOwnProperty("name")) {
+                if(name !== null && name !== "") {
                     metaBox.style.display = "block";
                     metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
                     metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = properties["name"];
+                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
                 } 
 
             } else {
@@ -167,16 +168,14 @@ class MapHandler_Cesium extends MapHandler {
                     });
                 } else {
                     // Do nothing, there's no data?
-                    // feature.getPropertyIds().forEach(id => {
-                    //     properties[id] = feature.getProperty(id);
-                    // });
                 }
 
-                if(properties.hasOwnProperty("name")) {
+                let name = getName(properties);
+                if(name !== null && name !== "") {
                     metaBox.style.display = "block";
                     metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
                     metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = properties["name"];
+                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
                 }
             }
         });
@@ -186,13 +185,22 @@ class MapHandler_Cesium extends MapHandler {
      * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
+        let allLayers = [];
+
         dataStore.dataGroups.forEach(rootGroup => {
-            let allLayers = rootGroup.flattenDown();
-            
-            allLayers.forEach(layer => {
+            let groupLayers = rootGroup.flattenDown();
+            groupLayers.forEach(layer => {
                 this.plotLayer(rootGroup, layer);
             });
+
+            allLayers = allLayers.concat(groupLayers);
         });
+
+        // Collect the WMS layers and order them
+        let wmsLayers = allLayers.filter(layer => {
+            return layer.source.type === "wms" || layer.source.type === "geoserver"; 
+        });
+        CesiumUtils.orderImageryLayers(wmsLayers);
     }
 
     /**

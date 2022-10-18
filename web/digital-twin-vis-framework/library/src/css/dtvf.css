@@ -1152,20 +1152,24 @@ label[for="select-feature"] {
 
 #cesiumMetaBox {
     width: 200px;
-    height: 30px;
+    min-height: 30px;
     bottom: 100px;
     left: 100px;
 
     font-family: "Inter", sans-serif !important;
-    font-size: 11pt;
+    font-size: 10pt;
     text-align: center;
     line-height: 30px;
 
     border-radius: 3px;
-    background-color: linear-gradient(#f5f5ff, #e1e1eb);
+    background-color: rgb(235, 235, 245);
     color: black;
     position: absolute;
     box-shadow: 3px 3px 3px black;
   
+    display: none;
+}
+
+.cesium-viewer-bottom {
     display: none;
 }
