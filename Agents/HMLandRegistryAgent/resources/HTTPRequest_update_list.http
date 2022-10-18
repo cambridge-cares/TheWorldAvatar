@@ -3,7 +3,7 @@
 // property_iris: IRIs of instantiated buildings for which to instantiate/update property sales data,
 //                delimited by comma WITHOUT line breaks!
 //                (trailing '<' and '>' are optional/not required)
-// min_confidence: minimum confidence score for address matching when retrieveing property sales
+// min_confidence: (optional) minimum confidence score for address matching when retrieveing property sales
 //                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
 //                 (default: 90)
 

@@ -1,6 +1,6 @@
 # HM Land Registry Property Sales Instantiation Agent
 
-The `Property Sales Instantiation` agent is an input agent which queries [HM Land Registry Open Data] and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph. More precisely, it queries the [Price Paid Linked Data] as well as the [UK House Price Index Linked Data]from the publicly availble [HM Land Registry SPARQL endpoint].
+The `Property Sales Instantiation` agent is an input agent which queries [HM Land Registry Open Data] and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph. More precisely, it queries the [Price Paid Linked Data] as well as the [UK House Price Index Linked Data] from the publicly available [HM Land Registry SPARQL endpoint].
 
 The agent is designed to be deployed with a Docker stack spun up by the stack manager. 
 
@@ -126,7 +126,8 @@ git config core.fileMode false
 
 Agent start-up will automatically register a recurring task to assimilate latest sales transaction and UK house price index data for all instantiated properties every 4 weeks (i.e. new data is published monthly). Besides this recurring background task, additional HTTP requests can be sent to the agent.
 
-The SPARQL endpoint, i.e. namespace, used to assimilate the sales data is the same as used by the [EPC agent] and is set by the [stack_configs] script.
+The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data is the same as used by the [EPC Agent] and is set by the [stack_configs] script. In case another endpoint is required, the `stack_configs` script needs to be updated accordingly (i.e. by adjusting the namespace name passed to `bg_conf.getUrl()`). Furthermore, it needs to be noted that the `Property Sales Instantiation` agent requires building instances instantiated according to `OntoBuiltEnv` to function properly.
+
 
 &nbsp;
 ## Provided functionality
@@ -136,7 +137,7 @@ An overview of all provided API endpoints and their functionality is provided af
 - POST request to update transaction record(s) for single property/list of properties:
   > `/api/landregistry/update`
 
-- POST request to update transaction records for all instantiated properties, incl. property price indices:
+- POST request to update transaction records for all instantiated properties, incl. property price indices for instantiated local authorities (i.e. most granular geography for which UK House Price Index is published):
   > `/api/landregistry/update_all`
 
 
