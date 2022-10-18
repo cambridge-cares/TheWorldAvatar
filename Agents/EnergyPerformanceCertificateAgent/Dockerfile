@@ -17,8 +17,7 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy resources required to update py4jps later
-COPY ./tmp_base ./tmp_base
+# Copy Stack-Client resource required to update py4jps later
 COPY ./tmp_stack ./tmp_stack
 
 # Set the default working directory & copy files to install Python
@@ -35,9 +34,6 @@ RUN pip install -e .
 RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Update py4jps resources
-RUN jpsrm uninstall JpsBaseLib
-RUN base_lib_jar=$(find ../tmp_base/jps-base-lib*.jar) && base_lib_jar=${base_lib_jar##*/} && \
-    jpsrm install JpsBaseLib ../tmp_base --jar $base_lib_jar
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 

@@ -67,8 +67,8 @@ This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
-bash build_py4jps_resources.sh
+# Compiling latest py4jps Stack_Clients resources
+bash build_py4jps_resource.sh
 # Buildings the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
