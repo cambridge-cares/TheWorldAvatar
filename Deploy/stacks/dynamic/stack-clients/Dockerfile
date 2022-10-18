@@ -27,7 +27,15 @@ COPY src ./src/
 # Ensure that the latest versions of SNAPSHOT dependencies are always used
 ARG CACHEBUST=1
 
-RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn deploy --update-snapshots -DskipTests
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn package --update-snapshots -DskipTests
+
+FROM builder as test
+
+CMD ["mvn", "test"]
+
+FROM builder as deploy
+
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn deploy -DskipTests
 
 #==================================================================================================
 
@@ -41,7 +49,7 @@ COPY docker/entrypoint.sh /entrypoint.sh
 WORKDIR /app
 
 # Copy the downloaded dependencies from the builder
-COPY --from=builder /root/code/target/lib /app/lib
+COPY --from=deploy /root/code/target/lib /app/lib
 
 # Port for Java debugging
 EXPOSE 5005

@@ -117,7 +117,7 @@ public class DerivationSparql {
 
 	// data properties
 	private static final Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
-	private static Iri uuidLock = p_derived.iri("uuidLock");
+	private static final Iri uuidLock = p_derived.iri("uuidLock");
 
 	// the derived quantity client relies on matching rdf:type to figure out which
 	// old instances to delete
@@ -781,7 +781,8 @@ public class DerivationSparql {
 	 * also records the timestamp at the point the derivation status is marked as
 	 * InProgress:
 	 * <derivation> <retrievedInputsAt> timestamp.
-	 * A uuidLock is also added to the derivation to uniquely identify the entity that
+	 * A uuidLock is also added to the derivation to uniquely identify the entity
+	 * that
 	 * successfully marked the derivation as InProgress:
 	 * <derivation> <uuidLock> uuid.
 	 * 
@@ -808,8 +809,10 @@ public class DerivationSparql {
 		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
 		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt,
 				retrievedInputsAtTimestamp);
-		// add uuidLock to the derivation, so that the agent can query if the SPARQL update is successful
-		// this is to avoid the case where concurrent updates are made to the same derivation by different agent threads
+		// add uuidLock to the derivation, so that the agent can query if the SPARQL
+		// update is successful
+		// this is to avoid the case where concurrent updates are made to the same
+		// derivation by different agent threads
 		String uuid = UUID.randomUUID().toString();
 		TriplePattern insert_tp_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		// the retrievedInputsAt data property should only be added when there's no such
@@ -835,7 +838,7 @@ public class DerivationSparql {
 				return true;
 			} else {
 				return false;
-	}
+			}
 		}
 	}
 
@@ -853,8 +856,8 @@ public class DerivationSparql {
 		Variable uuid = query.var();
 
 		GraphPattern query_gp = GraphPatterns.and(
-			iri(derivation).has(hasStatus, status), status.isA(statusType),
-			iri(derivation).has(uuidLock, uuid));
+				iri(derivation).has(hasStatus, status), status.isA(statusType),
+				iri(derivation).has(uuidLock, uuid));
 		TriplePattern delete_tp = status.isA(statusType);
 		TriplePattern delete_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		TriplePattern insert_tp_rdf_type = status.isA(Finished);
@@ -2714,20 +2717,20 @@ public class DerivationSparql {
 				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
 					try (CloseableHttpResponse httpResponse = ((RemoteStoreClient) storeClient)
 							.executeUpdateByPost(modify.getQueryString())) {
-					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-						String html = EntityUtils.toString(httpResponse.getEntity());
-						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-						Matcher matcher = pattern.matcher(html);
-						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-							// the parsed value is greater than 0
+						if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+							String html = EntityUtils.toString(httpResponse.getEntity());
+							Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+							Matcher matcher = pattern.matcher(html);
+							if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+								// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+								// the parsed value is greater than 0
 								LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
 										+ ") executed with mutationCount=" + matcher.group(1));
-							return true;
-						}
+								return true;
+							}
 							LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString() +
 									") executed with mutationCount=" + matcher.group(1));
-					}
+						}
 					}
 				} else {
 					storeClient.executeUpdate(modify.getQueryString());
@@ -2873,20 +2876,20 @@ public class DerivationSparql {
 				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
 					try (CloseableHttpResponse httpResponse = ((RemoteStoreClient) storeClient)
 							.executeUpdateByPost(modify.getQueryString())) {
-					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-						String html = EntityUtils.toString(httpResponse.getEntity());
-						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-						Matcher matcher = pattern.matcher(html);
-						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-							// the parsed value is greater than 0
+						if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+							String html = EntityUtils.toString(httpResponse.getEntity());
+							Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+							Matcher matcher = pattern.matcher(html);
+							if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+								// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+								// the parsed value is greater than 0
 								LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
 										+ ") executed with mutationCount=" + matcher.group(1));
-							return true;
-						}
+								return true;
+							}
 							LOGGER.debug(() -> "SPARQL update (" + modify.getQueryString()
 									+ ") executed with mutationCount=" + matcher.group(1));
-					}
+						}
 					}
 				} else {
 					storeClient.executeUpdate(modify.getQueryString());

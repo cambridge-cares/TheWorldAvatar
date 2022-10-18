@@ -29,6 +29,10 @@ ARG CACHEBUST=1
 
 RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn package --update-snapshots
 
+FROM builder as test
+
+CMD ["mvn", "test"]
+
 #==================================================================================================
 
 # Second stage: copy the output into a clean image
