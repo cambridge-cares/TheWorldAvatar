@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
@@ -35,6 +36,8 @@ public class DerivationOutputs {
 	public static final String OLD_NEW_ENTITIES_MATCHING_ERROR = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set, old set: ";
 	public static final String INVALID_IRI_ERROR = "Invalid IRI received when validating IRIs: ";
 	public static final String INVALID_IRI_FOR_GET_CLASS_NAME_ERROR = "The provided rdf:type to getClassName should NOT end with '#' or '/', received IRI: ";
+	public static final String INVALID_IRI_FOR_ADDING_TRIPLE = "Invalid IRI received when adding triple: ";
+	public static final String INVALID_IRI_FOR_ADDING_LITERAL = "Invalid IRI received when adding literal: ";
 
 	//////////////////
 	// Constructors //
@@ -164,32 +167,62 @@ public class DerivationOutputs {
 		p = trimIRI(p);
 		o = trimIRI(o);
 		try {
-			if (new URI(o).isAbsolute()) {
-				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
-			} else {
-				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
-			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			checkIfValidIri(Arrays.asList(s, p, o));
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_TRIPLE + Arrays.asList(s, p, o).toString());
 		}
+		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
 	}
 
-	public void addTriple(String s, String p, Number o) {
+	public void addLiteral(String s, String p, String o) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(Arrays.asList(s, p));
+		try {
+			checkIfValidIri(Arrays.asList(s, p));
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_LITERAL + Arrays.asList(s, p, o).toString());
+		}
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 	}
 
-	public void addTriple(String s, String p, Boolean o) {
+	public void addLiteral(String s, String p, Number o) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(Arrays.asList(s, p));
+		try {
+			checkIfValidIri(Arrays.asList(s, p));
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_LITERAL + Arrays.asList(s, p, o).toString());
+		}
+		if (o instanceof Double) {
+			if (((Double) o).isInfinite()) {
+				if (((Double) o) > 0) {
+					this.addLiteral(s, p, "Infinity", XSD.DOUBLE.toString());
+				} else {
+					this.addLiteral(s, p, "-Infinity", XSD.DOUBLE.toString());
+				}
+			} else if (((Double) o).isNaN()) {
+				this.addLiteral(s, p, "NaN", XSD.DOUBLE.toString());
+			} else {
+				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+			}
+		} else {
+			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+		}
+	}
+
+	public void addLiteral(String s, String p, Boolean o) {
+		s = trimIRI(s);
+		p = trimIRI(p);
+		try {
+			checkIfValidIri(Arrays.asList(s, p));
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_LITERAL + Arrays.asList(s, p, o).toString());
+		}
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 	}
 
 	/**
-	 * Can be used to add triples with custom data type like:
+	 * Can be used to add literal triples with custom data type like:
 	 * <http://9c9cf967-8ca8-4b44-a0c5-cad2098dd9eb>
 	 * <http://09ee9702-8f34-4b81-8d57-5f294ebeafac>
 	 * "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>
@@ -200,10 +233,14 @@ public class DerivationOutputs {
 	 * @param o
 	 * @param dataType
 	 */
-	public void addTriple(String s, String p, String o, String dataType) {
+	public void addLiteral(String s, String p, String o, String dataType) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(Arrays.asList(s, p, dataType));
+		try {
+			checkIfValidIri(Arrays.asList(s, p));
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_LITERAL + Arrays.asList(s, p, o, dataType).toString());
+		}
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOfType(o, Rdf.iri(dataType))));
 	}
 

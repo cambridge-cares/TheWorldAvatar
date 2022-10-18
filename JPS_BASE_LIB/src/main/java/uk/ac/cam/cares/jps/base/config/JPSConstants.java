@@ -36,6 +36,7 @@ public interface JPSConstants {
 	static String TARGETGRAPH = "targetgraph";
 	static String KNOWLEDGE_BASE_URL = "jps/kb";
 	
+	static String RESULT_KEY = "result";
 	static String ASK_RESULT_KEY = "ASK";
 	
 	/**
