@@ -61,6 +61,7 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
 
     # 1) Retrieve location information for properties from list
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
+    logger.info('Retrieving instantiated properties with location info ...')
     query = get_instantiated_properties_with_location_info(property_iris=property_iris)
     res = kgclient_obe.performQuery(query)
 
@@ -68,18 +69,22 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     obe = create_conditioned_dataframe_obe(res)
 
     # Query Price Paid Data postcode by postcode (compromise between query speed and number of queries)
+    logger.info('Querying HM Land Registry Price Paid Data in batches of individual postcodes ...')
     for pc in obe['postcode'].unique():
         pc_data = obe[obe['postcode'] == pc].copy()
         pc_data.drop_duplicates(inplace=True)
 
         # 2) Retrieve Price Paid Data transaction records from HM Land Registry
+        logger.info('Retrieve Price Paid Data from Open SPARQL endpoint.')
         query = get_transaction_data_for_postcodes(postcodes=[pc])
         res = kgclient_hm.performQuery(query)
 
         # Create DataFrame from results and condition data
+        logger.info('Condition retrieved Price Paid Data in DataFrame.')
         ppd = create_conditioned_dataframe_ppd(res)
 
         # 3) Match addresses and retrieve transaction details
+        logger.info('Match addresses between instantiated EPC data and Price Paid Data addresses ...')
         matched_tx = get_best_matching_transactions(obe_data=pc_data, ppd_data=ppd,
                                                     min_match_score=min_conf_score)
 
@@ -125,16 +130,18 @@ def update_all_transaction_records(min_conf_score=90,
     ts_client = TSClient(kg_client=kgclient_obe)
 
     # 1) Retrieve all instantiated properties with associated postcodes
+    logger.info('Retrieving instantiated properties with attached postcodes ...')
     query = get_all_properties_with_postcode()
     res = kgclient_obe.performQuery(query)
 
     # 2) Update transaction records in KG in postcode batches
-    batch_size = 10
+    batch_size = 100
     df = pd.DataFrame(res)
     pcs = df['postcode'].unique().tolist()
     pcs.sort()
     postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
 
+    logger.info('Updating transaction records (for batch of postcodes) ...')
     for pc in postcodes:
         prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
 
@@ -147,6 +154,7 @@ def update_all_transaction_records(min_conf_score=90,
 
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
+    logger.info('Updating UK House Price Index ...')
     districts = get_admin_district_index_dict(kgclient_obe)
 
     for d in districts: 
@@ -155,6 +163,7 @@ def update_all_transaction_records(min_conf_score=90,
             # not existing + initialise TimeSeries
             ppi_iri = KB + 'PropertyPriceIndex_' + str(uuid.uuid4())
             d['ukhpi'] = ppi_iri
+            logger.info('Instantiate UK House Price Index.')
             insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
                                                             ppi_iri=ppi_iri)
             kgclient_obe.performUpdate(insert_query)
@@ -166,6 +175,7 @@ def update_all_transaction_records(min_conf_score=90,
             updated_ukhpi += 1
 
         # 4) Retrieve Property Price Index from HM Land Registry
+        logger.info('Update UK House Price Index data.')
         ts = create_ukhpi_timeseries(local_authority_iri=d['ons_district'], 
                                      ppi_iri=d['ukhpi'], kgclient_hm=kgclient_hm)
 
