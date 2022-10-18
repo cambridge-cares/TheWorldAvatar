@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.accessagent.integrationtest;
 
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.update.UpdateRequest;
 import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -79,7 +77,9 @@ public class RDBAccessAgentIntegrationTest {
     void testPostSparqlQuery() {
 
         //Upload routing information
-        RemoteStoreClient storeClient = new RemoteStoreClient(RDB_STORE_ROUTER_ENDPOINT, RDB_STORE_ROUTER_ENDPOINT);
+        String endpoint = "http://" + RDB_STORE_ROUTER_CONTAINER.getHost()
+                + ":" + RDB_STORE_ROUTER_CONTAINER.getFirstMappedPort()+"/blazegraph/namespace/kb/sparql";
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint, endpoint);
 
         String update = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"+"INSERT DATA{"+"<http://host.docker.internal:9999/blazegraph/ontordbrouter/test> <http://www.theworldavatar.com/kg/ontordbrouter/hasUrl> \"jdbc:postgresql://localhost:5432/test\"."+"\n"+
