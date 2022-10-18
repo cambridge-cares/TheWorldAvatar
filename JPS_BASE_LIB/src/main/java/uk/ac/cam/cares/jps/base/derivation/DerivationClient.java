@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +12,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -38,6 +50,16 @@ public class DerivationClient {
 	public static final String DERIVATION_KEY = "derivation";
 	public static final String DERIVATION_TYPE_KEY = "derivation_rdftype";
 	public static final String DOWNSTREAMDERIVATION_KEY = "downstream_derivation";
+	public static final String SYNC_NEW_INFO_FLAG = "sync_new_info";
+	public static final String AGENT_IRI_KEY = "agent_service_iri";
+
+	// NOTE GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET wraps around
+	// GET_AGENT_INPUT_PARAMS defined in JPSHttpServlet.java, which is used to wrap
+	// the input parameters of an HTTP request to a JSONObject with the key "query",
+	// ideally the key in JPSHttpServlet.java should made public so that we don't
+	// need to re-implement it here
+	public static final String GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET = "?query=";
+
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
@@ -119,7 +141,7 @@ public class DerivationClient {
 	public String createDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
 		String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, inputsIRI);
 		this.sparqlClient.addTimeInstance(createdDerivation);
-		LOGGER.info("Instantiated derivation for asynchronous operation <" + createdDerivation + ">");
+		LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
 		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
@@ -157,6 +179,127 @@ public class DerivationClient {
 		this.sparqlClient.addTimeInstance(derivations);
 
 		return derivations;
+	}
+
+	/**
+	 * This method creates a new synchronous derived instance on spot via sending an
+	 * HTTP request to the agentURL queried from the knowledge graph that associated
+	 * with the given agentIRI.
+	 * 
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationType
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public Derivation createSyncDerivationForNewInfo(String agentIRI, List<String> inputsIRI, String derivationType) {
+		// retrieve agentURL for HTTP request
+		String agentURL = this.sparqlClient.getAgentUrlGivenAgentIRI(agentIRI);
+		return createSyncDerivationForNewInfo(agentIRI, agentURL, inputsIRI, derivationType);
+	}
+
+	/**
+	 * This method creates a new synchronous derived instance on spot via sending an
+	 * HTTP request to the provided agentURL, which user should make sure that it is
+	 * associated with the provided agentIRI.
+	 * 
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationType
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
+			String derivationType) {
+		// create a unique IRI for this new derived quantity
+		String derivationIRI = this.sparqlClient.createDerivationIRI();
+		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
+
+		// add mapped inputs to createdDerivation
+		JSONObject mappedInputs = this.sparqlClient.mapInstancesToAgentInputs(inputsIRI, agentIRI);
+		Iterator<String> inputTypes = mappedInputs.keys();
+		while (inputTypes.hasNext()) {
+			String rdfType = inputTypes.next();
+			mappedInputs.getJSONArray(rdfType).toList().stream().forEach(iri -> {
+				Entity inp = new Entity((String) iri);
+				inp.setRdfType(rdfType);
+				createdDerivation.addInput(inp);
+			});
+		}
+
+		// construct HTTP requestParams
+		JSONObject requestParams = new JSONObject();
+		requestParams.put(AGENT_INPUT_KEY, mappedInputs); // mapped IRIs of isDerivedFrom
+		requestParams.put(DERIVATION_KEY, derivationIRI); // IRI of this derivation
+		requestParams.put(DERIVATION_TYPE_KEY, derivationType); // rdf:type of this derivation
+		requestParams.put(SYNC_NEW_INFO_FLAG, true); // set flag to indicate the derivation is for new info
+		requestParams.put(AGENT_IRI_KEY, agentIRI); // agent IRI
+
+		// execute HTTP request to create new information
+		LOGGER.debug("Creating <" + derivationIRI + "> using agent at <" + agentURL
+				+ "> with http request " + requestParams);
+		HttpResponse httpResponse;
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET + requestParams.toString();
+		HttpGet httpGet;
+		String response;
+		try {
+			httpGet = new HttpGet(
+				agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+					+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
+			httpResponse = httpClient.execute(httpGet);
+			if (httpResponse.getStatusLine().getStatusCode() != 200) {
+				String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
+						+ originalRequest;
+				String body = EntityUtils.toString(httpResponse.getEntity());
+				LOGGER.error(msg);
+				throw new JPSRuntimeException(msg + " Error body: " + body);
+			}
+			response = EntityUtils.toString(httpResponse.getEntity());
+			LOGGER.debug("Obtained http response from agent: " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new JPSRuntimeException("Failed to update derivation <" + derivationIRI + "> with original request: "
+				+ originalRequest, e);
+		}
+
+		// process the agentResponse to add the created outputs to createdDerivation
+		JSONObject agentResponse = new JSONObject(response);
+		Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
+		while (keys.hasNext()) {
+			String iri = keys.next();
+			Entity ne = new Entity(iri);
+			ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
+			createdDerivation.addEntity(ne);
+		}
+
+		LOGGER.info("Instantiated derivation <" + createdDerivation.getIri() + "> with derivation type <"
+				+ createdDerivation.getRdfType() + ">");
+		LOGGER.debug("<" + createdDerivation.getEntitiesIri() + "> belongsTo <" + createdDerivation.getIri() + ">");
+		LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedUsing <" + agentIRI + ">");
+		return createdDerivation;
+	}
+
+	/**
+	 * This method writes triples of the new created synchronous derivation for new
+	 * information (new instances) to the knowledge graph.
+	 * 
+	 * @param outputTriples
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationIRI
+	 * @param derivationType
+	 * @param retrievedInputsAt
+	 */
+	public void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
+			String agentIRI, List<String> inputsIRI, String derivationIRI, String derivationType,
+			Long retrievedInputsAt) {
+		this.sparqlClient.writeSyncDerivationNewInfo(outputTriples, entities, agentIRI, inputsIRI, derivationIRI,
+				derivationType, retrievedInputsAt);
 	}
 
 	/**
@@ -212,6 +355,41 @@ public class DerivationClient {
 
 	public String createAsyncDerivationForNewInfo(String agentIRI, List<String> inputsAndDerivations) {
 		return createAsyncDerivation(new ArrayList<>(), agentIRI, inputsAndDerivations, true);
+	}
+
+	public List<String> bulkCreateAsyncDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
+			List<List<String>> inputsList, List<Boolean> forUpdateFlagList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList, inputsList, forUpdateFlagList);
+		LOGGER.info("Instantiated asynchronous derivations " + derivations);
+
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+
+		// mark up the derivation with current timestamp for those that not created for async update
+		// i.e. those created for markup
+		for (int i = 0; i < derivations.size(); i++) {
+			if (!forUpdateFlagList.get(i)) {
+				this.sparqlClient.updateTimeStamp(derivations.get(i));
+			}
+		}
+
+		return derivations;
+	}
+
+	public List<String> bulkCreateAsyncDerivationsForNewInfo(List<String> agentIRIList, List<List<String>> inputsAndDerivationsList) {
+		List<List<String>> entitiesList = IntStream.range(0, agentIRIList.size()).mapToObj(i -> new ArrayList<String>())
+				.collect(Collectors.toList());
+		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> true)
+				.collect(Collectors.toList());
+
+		List<String> derivations = this.sparqlClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList, inputsAndDerivationsList,
+				forAsyncUpdateFlagList);
+		LOGGER.info("Instantiated asynchronous derivations " + derivations);
+
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+
+		return derivations;
 	}
 
 	/**
@@ -535,11 +713,15 @@ public class DerivationClient {
 		JSONObject agentInputs = new JSONObject();
 		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
 
+		return agentInputs;
+	}
+
+	public boolean updateStatusBeforeSetupJob(String derivation) {
 		// mark derivation status as InProgress
 		// record timestamp at the point the derivation status is marked as InProgress
-		this.sparqlClient.updateStatusBeforeSetupJob(derivation);
-
-		return agentInputs;
+		// also add uuidLock to the derivation
+		// this method will return a boolean to indicate if the status update is successful
+		return this.sparqlClient.updateStatusBeforeSetupJob(derivation);
 	}
 
 	/**
@@ -597,6 +779,7 @@ public class DerivationClient {
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI,
 			List<TriplePattern> newTriples) {
 		// mark as Finished and add newDerivedIRI to Finished status
+		// also delete the uuidLock
 		this.sparqlClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
 	}
 
@@ -963,8 +1146,11 @@ public class DerivationClient {
 	 * 
 	 * @param derivation
 	 * @param graph
+	 * @throws IOException
+	 * @throws ClientProtocolException
 	 */
-	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
+	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph)
+			throws ClientProtocolException, IOException {
 		// inputs that are part of another derivation (for recursive call)
 		// don't need direct inputs here
 		List<Derivation> upstreamDerivations = derivation.getInputsWithBelongsTo();
@@ -1003,12 +1189,45 @@ public class DerivationClient {
 				requestParams.put(DERIVATION_KEY, derivation.getIri()); // IRI of this derivation
 				requestParams.put(DERIVATION_TYPE_KEY, derivation.getRdfType()); // rdf:type of this derivation
 				requestParams.put(DOWNSTREAMDERIVATION_KEY, derivation.getDownstreamDerivationMap()); // downstream
+				requestParams.put(SYNC_NEW_INFO_FLAG, false); // set flag to indicate the derivation is for update
 
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
 						+ "> with http request " + requestParams);
 
-				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
+				// execute update via HTTP GET, note that below block replaces the previous way
+				// of execute HTTP reqeust via calling AgentCaller.executeGetWithURLAndJSON,
+				// i.e.:
+				// String response = AgentCaller.executeGetWithURLAndJSON(agentURL,
+				// requestParams.toString());
+				// TODO we may be able to re-use AgentCaller once the dependency is resolved:
+				// this change is motivated by the fact that the Java dependency javax is not
+				// packaged in py4jps so an error will be thrown in python side when derivation
+				// agent requesting update for sync derivation when dealing with mixed
+				// derivation DAG (all the Java agents working fine as such dependency is
+				// provided in tomcat at deployment), the error message:
+				// java.lang.NoClassDefFoundError: javax/servlet/ServletInputStream
+				// at
+				// uk.ac.cam.cares.jps.base.discovery.AgentCaller.createURIWithURLandJSON(AgentCaller.java:185)
+				// at
+				// uk.ac.cam.cares.jps.base.discovery.AgentCaller.executeGetWithURLAndJSON(AgentCaller.java:178)
+				// at
+				// uk.ac.cam.cares.jps.base.derivation.DerivationClient.updatePureSyncDerivation(DerivationClient.java:1010)
+				HttpResponse httpResponse;
+				CloseableHttpClient httpClient = HttpClients.createDefault();
+				String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+						+ requestParams.toString();
+				HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
 
+				httpResponse = httpClient.execute(httpGet);
+				if (httpResponse.getStatusLine().getStatusCode() != 200) {
+					String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
+							+ originalRequest;
+					String body = EntityUtils.toString(httpResponse.getEntity());
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg + " Error body: " + body);
+				}
+				String response = EntityUtils.toString(httpResponse.getEntity());
 				LOGGER.debug("Obtained http response from agent: " + response);
 
 				// NOTE difference 3 - as the update on knowledge graph will be done by the

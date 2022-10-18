@@ -1,0 +1,24 @@
+[PrefixDeclaration]
+crops:  http://example.org/crops/
+ex:     http://example.org/
+owl:    http://www.w3.org/2002/07/owl#
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:    http://www.w3.org/XML/1998/namespace
+xsd:    http://www.w3.org/2001/XMLSchema#
+foaf:   http://xmlns.com/foaf/0.1/
+obda:   https://w3id.org/obda/vocabulary#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+geo:    http://www.opengis.net/ont/geosparql#
+    # Comment 0
+	# Comment 1
+# Comment 1 again 
+
+[MappingDeclaration] @collection [[
+mappingId	crop-map-cells
+target		crops:cropmap/cell/{id} a geo:Geometry ;# Comment 2
+                crops:hasID {id}^^xsd:int ; # Comment 3
+                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+source      SELECT cromeid AS id, ST_ASTEXT(geom) wkt
+            FROM "cropmap"
+]]
+

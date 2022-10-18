@@ -1,0 +1,20 @@
+{
+    "station1": 
+        {
+            "elevation": 100.23,
+            "latitude": 57.1574,
+            "longitude": -2.09477,
+            "station": "Aberdeen Erroll Park"
+        },
+    "station2":
+        {
+            "elevation": "nan",
+            "latitude": 55.15736,
+            "longitude": -2.094278,
+            "station": "Elsdon"
+        },
+    "station3":
+        {
+            "station": "Ballymena Ballykeel"
+        }
+}

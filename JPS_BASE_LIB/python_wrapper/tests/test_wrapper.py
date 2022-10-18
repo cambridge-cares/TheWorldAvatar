@@ -1,3 +1,5 @@
+import random
+import uuid
 import pytest
 from py4jps.resources import JpsBaseLib
 from py4j.java_gateway import GatewayParameters
@@ -89,18 +91,24 @@ def test_fileReading():
     assert "test file1" == file_str
     jpsGW.shutdown()
 
-def test_remoteKGquery():
+def test_tripleStoreQuery(initialise_triple_store):
+    endpoint = initialise_triple_store
     jpsGW = JpsBaseLib()
     jpsGW.launchGateway()
     jpsGW_view = jpsGW.createModuleView()
     jpsGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
 
-    StoreRouter = jpsGW_view.StoreRouter
-    StoreClient = StoreRouter.getStoreClient('http://kb/ontokin', True, False)
-    response = StoreClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
-                                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
-                                    WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
+    StoreClient = jpsGW_view.RemoteStoreClient(endpoint, endpoint)
+    triples = []
+    for i in range(random.randint(1,100)):
+        triples.append(f"<http://{str(uuid.uuid4())}> <http://{str(uuid.uuid4())}> <http://{str(uuid.uuid4())}>.")
+    triples.append(f"""<http://{str(uuid.uuid4())}> <http://{str(uuid.uuid4())}> "Infinity"^^<http://www.w3.org/2001/XMLSchema#double>.""")
+    triples.append(f"""<http://{str(uuid.uuid4())}> <http://{str(uuid.uuid4())}> "-Infinity"^^<http://www.w3.org/2001/XMLSchema#double>.""")
+    triples.append(f"""<http://{str(uuid.uuid4())}> <http://{str(uuid.uuid4())}> "NaN"^^<http://www.w3.org/2001/XMLSchema#double>.""")
+    StoreClient.executeUpdate(f"INSERT {{ {' '.join(triples)} }} WHERE {{}}")
+    response = StoreClient.executeQuery((f"ASK {{ {' '.join(triples)} }}"))
     response = json.loads(str(response))
+    assert response[0]['ASK']
     jpsGW.shutdown()
 
 def test_javaPythonObjConversion():

@@ -2,6 +2,8 @@ package uk.ac.cam.cares.derivation.asynexample;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,6 +35,16 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * These tests start a Docker container of blazegraph based on "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for more details.
  * For information regarding the Docker registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+ * 
+ * If one is developing in WSL2 and want to keep the container alive after the test (this will be useful when debugging if any test ran into exceptions),
+ * then please follow the instruction from [1/5] to [5/5]
+ * [1/5] - add the following line to file: ~/.testcontainers.properties
+ * testcontainers.reuse.enable=true
+ * [2/5] - comment out the line: @Testcontainers
+ * [3/5] - comment out the line: @Container
+ * [4/5] - uncomment out the line: .withReuse(true)
+ * [5/5] - comment out the lines in method stopContainers: if (blazegraph.isRunning()) { blazegraph.stop(); }
+ * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
  */
@@ -52,6 +64,7 @@ public class IntegrationTest extends TestCase {
     static MaxValueAgent maxValueAgent;
     static MinValueAgent minValueAgent;
     static DifferenceAgent differenceAgent;
+    static DiffReverseAgent diffReverseAgent;
 
     // timestamps
     static long currentTimestamp_rng_derivation;
@@ -84,11 +97,16 @@ public class IntegrationTest extends TestCase {
     // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private static GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-                                                        .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+    private static GenericContainer<?> blazegraph;
+    static {
+        blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+            // .withReuse(true)
+            .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+    }
 
     @BeforeAll
-    public static void initialise() throws NoSuchMethodException, SecurityException {
+    public static void initialise()
+            throws NoSuchMethodException, SecurityException {
         // create the container in a clean state
         try {
             blazegraph.start();
@@ -118,6 +136,7 @@ public class IntegrationTest extends TestCase {
         maxValueAgent = new MaxValueAgent(storeClient, Config.derivationInstanceBaseURL);
         minValueAgent = new MinValueAgent(storeClient, Config.derivationInstanceBaseURL);
         differenceAgent = new DifferenceAgent(storeClient, Config.derivationInstanceBaseURL);
+        diffReverseAgent = new DiffReverseAgent(storeClient, Config.derivationInstanceBaseURL);
     }
 
     @AfterAll
@@ -127,6 +146,7 @@ public class IntegrationTest extends TestCase {
         maxValueAgent.destroy();
         minValueAgent.destroy();
         differenceAgent.destroy();
+        diffReverseAgent.destroy();
 
         // close containers after all tests
         if (blazegraph.isRunning()) {
@@ -199,6 +219,7 @@ public class IntegrationTest extends TestCase {
     @Order(2)
     public void testInitialiseAgents() throws ServletException {
         // now initialise all agents
+        // except for the diffReverseAgent, which will be used individually in testMultipleAsyncDerivations
         rngAgent.init();
         maxValueAgent.init();
         minValueAgent.init();
@@ -328,5 +349,62 @@ public class IntegrationTest extends TestCase {
         // test if the value is the same as the difference value
         int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
         Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+    }
+
+    @Test
+    @Timeout(value = 300, unit = TimeUnit.SECONDS)
+    @Order(9)
+    public void testMultipleAsyncDerivations() throws InterruptedException {
+        String maxvalue_instance = sparqlClient.getMaxValueIRI();
+        String minvalue_instance = sparqlClient.getMinValueIRI();
+
+        // create two derivations, and call monitorAsyncDerivations with the periodicalTimescale of (Config.delayAgentDiffReverse - 1)
+        // so that this makes sure that only one derivation will be updated after the call
+        String diff_dev_1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check only one derivation is "Finished"
+        Map<String, StatusType> diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.FINISHED));
+        Assert.assertEquals(0, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.REQUESTED));
+
+        // call monitorAsyncDerivations again
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check that one derivation should be up-to-date and the other one is "Finished"
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.FINISHED));
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+        Assert.assertEquals(0, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.REQUESTED));
+
+        // call monitorAsyncDerivations again
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check that both derivations should be up-to-date
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(2, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+
+        // create three more derivations, and call monitorAsyncDerivations with the periodicalTimescale of (8 * Config.delayAgentDiffReverse)
+        // so that this makes sure that all derivations will be updated after the call
+        String diff_dev_3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_4 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_5 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, 8 * Config.delayAgentDiffReverse);
+        // now check that all derivations should be up-to-date
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(5, diffReverseDerivations.size());
+        Assert.assertEquals(5, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+
+        // also all values should be the same and they are the difference of min and max
+        Map<String, Integer> diffReverseValues = sparqlClient.getDiffReverseValues();
+        Assert.assertEquals(5, diffReverseValues.size());
+        int difference = sparqlClient.getValue(sparqlClient.getDifferenceIRI());
+        diffReverseValues.values().stream().forEach(val -> Assert.assertEquals(0, val + difference));
+    }
+
+    public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {
+        return (int) derivationsAndStatusType.values().stream().filter(status -> status.equals(statusType)).count();
     }
 }

@@ -28,6 +28,10 @@ public interface IKeys {
 	String URL_SCHEME = "url.scheme";
 	String LONG_NUCLEAR_GAMS="apply.longtime.nuclear.gams";
 	
+	String STOREROUTER_CACHE_SIZE = "storerouter.cache.size";
 	String URL_STOREROUTER_ENDPOINT = "url.storerouter.endpoint";
 	String URL_ACCESSAGENT_HOST = "url.accessagent.host";
+	
+	String URL_AGENTROUTER_ENDPOINT = "url.agentrouter.endpoint";
+	String AGENTROUTER_CACHE_SIZE = "agentrouter.cache.size";
 }

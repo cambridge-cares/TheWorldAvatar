@@ -1,0 +1,44 @@
+{
+    "dataSets": [
+        {
+            "name": "MIDASWind",
+            "dataType": "geojson",
+            "dataLocation": "MIDASSensors.geojson",
+            "locationType": "point",
+            "metaFiles": ["MIDASSensors-meta.json"],
+			"timeseriesFiles": ["MIDASSensors-timeseries.json"]
+        },
+        {
+            "name": "NewcastleSolar",
+            "dataType": "geojson",
+            "dataLocation": "NewcastleSolarSensors.geojson",
+            "locationType": "point",
+            "metaFiles": ["NewcastleSolarSensors-meta.json"],
+			"timeseriesFiles": ["NewcastleSolarSensors-timeseries.json"]
+        },
+        {
+            "name": "NewcastleWind",
+            "dataType": "geojson",
+            "dataLocation": "NewcastleWindSensors.geojson",
+            "locationType": "point",
+            "metaFiles": ["NewcastleWindSensors-meta.json"],
+			"timeseriesFiles": ["NewcastleWindSensors-timeseries.json"]
+        },
+        {
+            "name": "MIDASSolar",
+            "dataType": "geojson",
+            "dataLocation": "MIDASSensorsSolar.geojson",
+            "locationType": "point",
+            "metaFiles": ["MIDASSensorsSolar-meta.json"],
+			"timeseriesFiles": ["MIDASSensorsSolar-timeseries.json"]
+        },
+        {
+            "name": "PostcodeEnergy",
+            "dataType": "geojson",
+            "dataLocation": "PostcodeEnergy.geojson",
+            "locationType": "point",
+            "metaFiles": ["PostcodeEnergy-meta.json"],
+			"timeseriesFiles": ["PostcodeEnergy-timeseries.json"]
+        }
+    ]
+}

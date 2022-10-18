@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {RNGAgent.API_PATTERN})
+@WebServlet(urlPatterns = { RNGAgent.API_PATTERN }, loadOnStartup = 1) // agent init() once deployed
 public class RNGAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(RNGAgent.class);
@@ -118,7 +118,7 @@ public class RNGAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				rngAgent.monitorAsyncDerivations(Config.agentIriRNG);
+				rngAgent.monitorAsyncDerivations(Config.agentIriRNG, Config.periodAgentRNG);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

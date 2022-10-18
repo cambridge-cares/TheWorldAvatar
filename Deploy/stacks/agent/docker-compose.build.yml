@@ -53,7 +53,7 @@ services:
       
   # Flood Agent
   flood-agent:
-    image: docker.cmclinnovations.com/flood-agent-${MODE}:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/river-data-updater:1.1
     build:
       context: "../../../Agents/FloodAgent"
       dockerfile: "Dockerfile"

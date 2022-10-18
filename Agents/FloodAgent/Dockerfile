@@ -1,9 +1,10 @@
-# First stage: build war file
+# First stage: download java dependencies to allow them to be cached
 #==================================================================================================
-FROM maven:3.6-openjdk-8-slim as builder
+FROM maven:3.8.6-openjdk-11-slim as retriever
 
-# Copy all files into root's home
-ADD . /root
+# Copy in Maven settings templates and credentials 
+COPY ./docker/.m2 /root/.m2
+COPY ./docker/credentials /root/credentials
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
@@ -11,53 +12,40 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-# Build
-WORKDIR /root/FloodAgent
-RUN mvn clean install -DskipTests
+# only download dependencies
+COPY ./pom.xml /root/pom.xml
+WORKDIR /root/
+RUN mvn clean dependency:resolve
 
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM openjdk:8-jre-alpine3.9 as agent
+FROM maven:3.8.6-openjdk-11-slim as builder
 
+# copy downloaded maven dependencies
+COPY --from=retriever /root/.m2 /root/.m2
+# copy Java source files
+ADD ./src /root/FloodAgent/src
+ADD ./pom.xml /root/FloodAgent/pom.xml
+
+# Build app
+WORKDIR /root/FloodAgent
+RUN mvn clean package -DskipTests -U
+
+#==================================================================================================
+
+# Third stage: copy app into a new image
+#==================================================================================================
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8 as app
 WORKDIR /app
-
-# Copy the compiled jar from the builder
+# copy compiled jar from previous step
 COPY --from=builder /root/FloodAgent/target/*.jar /app
-# Copy the downloaded dependencies from the builder
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
+COPY --from=builder /root/FloodAgent/target/classes/ontop.obda /app/classes/ontop.obda
 
-#==================================================================================================
+COPY docker/entrypoint.sh /entrypoint.sh
+# Port for Java debugging
+EXPOSE 5005
 
-# default configuration that runs the scheduled updater and writes output files
-# to be executed at CMCL
-# docker build --target default -t [TAGNAME] .
-#==================================================================================================
-FROM agent as default
-# Copy in start up script
-# Install web server (to host json files for download)
-RUN apk update && apk add apache2 dos2unix bash
-COPY ./httpd.conf /etc/apache2/httpd.conf
-RUN mkdir -p /var/www/html/
-RUN chown -R apache:apache /var/www/
-RUN chmod -R 775 /var/www/
-
-COPY ./start-up.sh /app/start-up.sh
-RUN dos2unix /app/start-up.sh
-RUN chmod -R 775 /app/start-up.sh
-
-# Run the jar to start the agent
-ENTRYPOINT bash /app/start-up.sh
-
-#==================================================================================================
-
-# only writes output files (to be executed on DAFNI)
-# docker build --target write-only -t [TAGNAME] .
-#==================================================================================================
-FROM agent as write-only
-WORKDIR /app
-# Run the jar to start the agent
-ENTRYPOINT java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.LaunchWriterOnly
-
-#==================================================================================================
+ENTRYPOINT ["/entrypoint.sh"]

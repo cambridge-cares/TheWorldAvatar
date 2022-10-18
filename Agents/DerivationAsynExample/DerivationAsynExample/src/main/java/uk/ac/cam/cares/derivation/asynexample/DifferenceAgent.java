@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {DifferenceAgent.API_PATTERN})
+@WebServlet(urlPatterns = { DifferenceAgent.API_PATTERN }, loadOnStartup = 1) // agent init() once deployed
 public class DifferenceAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
@@ -87,7 +87,7 @@ public class DifferenceAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				diffAgent.monitorAsyncDerivations(Config.agentIriDifference);
+				diffAgent.monitorAsyncDerivations(Config.agentIriDifference, Config.periodAgentDifference);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

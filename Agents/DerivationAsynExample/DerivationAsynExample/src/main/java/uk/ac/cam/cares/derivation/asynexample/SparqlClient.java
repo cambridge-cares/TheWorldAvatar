@@ -3,6 +3,7 @@ package uk.ac.cam.cares.derivation.asynexample;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -37,6 +39,7 @@ public class SparqlClient {
 	public static Iri MaxValue = p_namespace.iri("MaxValue");
 	public static Iri MinValue = p_namespace.iri("MinValue");
 	public static Iri Difference = p_namespace.iri("Difference");
+	public static Iri DifferenceReverse = p_namespace.iri("DifferenceReverse");
 	public static Iri ListOfRandomPoints = p_namespace.iri("ListOfRandomPoints");
 	public static Iri Point = p_namespace.iri("Point");
 	public static Iri UpperLimit = p_namespace.iri("UpperLimit");
@@ -66,7 +69,7 @@ public class SparqlClient {
 	
 	// derivation realted
 	public static Prefix p_derivation = SparqlBuilder.prefix("derivation",
-			iri("https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#"));
+			iri(DerivationSparql.derivednamespace));
 	public static Iri belongsTo = p_derivation.iri("belongsTo");
 
 	public SparqlClient(StoreClientInterface storeClient) {
@@ -360,6 +363,34 @@ public class SparqlClient {
 			return new String();
 		}
     }
+
+	/**
+	 * This method queries ?x a <DifferenceReverse>, ?x <hasValue> ?v, ?v <numericalValue> ?value.
+	 * @return
+	 */
+	 public Map<String, Integer> getDiffReverseValues() {
+		SelectQuery query = Queries.SELECT();
+
+		String diffReverseKey = "diffReverse";
+		String valueKey = "value";
+		Variable ul_iri = SparqlBuilder.var(diffReverseKey);
+		Variable value_iri = query.var();
+		Variable value = SparqlBuilder.var(valueKey);
+		GraphPattern queryPattern = GraphPatterns.and(
+			ul_iri.isA(DifferenceReverse).andHas(hasValue,value_iri),
+			value_iri.has(numericalValue,value));
+
+		query.prefix(p_namespace).select(ul_iri, value).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, Integer> diffReverseValues = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			diffReverseValues.put(queryResult.getJSONObject(i).getString(diffReverseKey), queryResult.getJSONObject(i).getInt(valueKey));
+		}
+
+		return diffReverseValues;
+	}
 
 	/**
      * This method queries ?x a <ListOfRandomPoints>.
