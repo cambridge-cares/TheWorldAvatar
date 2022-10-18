@@ -166,10 +166,12 @@ public class ShipInputAgent extends HttpServlet {
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
+            LOGGER.info("Creating GeoServer layer for the average timestampe = {}", averageTimestamp);
             createGeoServerLayer(averageTimestamp);
 
             // first time adding ontop mapping
             if (initialiseObda) {
+                LOGGER.info("Initialising ontop mapping file");
                 // add ontop mapping
                 Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
                 new OntopClient().updateOBDA(obdaFile);
