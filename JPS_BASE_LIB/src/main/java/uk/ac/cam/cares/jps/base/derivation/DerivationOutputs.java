@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
@@ -192,7 +193,21 @@ public class DerivationOutputs {
 		} catch (Exception e) {
 			throw new JPSRuntimeException(INVALID_IRI_FOR_ADDING_LITERAL + Arrays.asList(s, p, o).toString());
 		}
-		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+		if (o instanceof Double) {
+			if (((Double) o).isInfinite()) {
+				if (((Double) o) > 0) {
+					this.addLiteral(s, p, "Infinity", XSD.DOUBLE.toString());
+				} else {
+					this.addLiteral(s, p, "-Infinity", XSD.DOUBLE.toString());
+				}
+			} else if (((Double) o).isNaN()) {
+				this.addLiteral(s, p, "NaN", XSD.DOUBLE.toString());
+			} else {
+				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+			}
+		} else {
+			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+		}
 	}
 
 	public void addLiteral(String s, String p, Boolean o) {

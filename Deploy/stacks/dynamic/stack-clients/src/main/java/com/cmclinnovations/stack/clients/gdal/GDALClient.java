@@ -112,20 +112,19 @@ public class GDALClient extends ContainerClient {
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .withEnvVars(options.getEnv())
+                .withEvaluationTimeout(300)
                 .exec();
 
         handleErrors(errorStream, execId);
     }
 
     private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
-        if (0 != errorStream.size()) {
-            long commandErrorCode = getCommandErrorCode(execId);
-            if (0 != commandErrorCode) {
-                throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                        + "' and wrote the following to stderr:\n" + errorStream.toString());
-            } else {
-                logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-            }
+        long commandErrorCode = getCommandErrorCode(execId);
+        if (0 != commandErrorCode) {
+            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                    + "' and wrote the following to stderr:\n" + errorStream.toString());
+        } else {
+            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
         }
     }
 
@@ -199,6 +198,7 @@ public class GDALClient extends ContainerClient {
                         .withOutputStream(outputStream)
                         .withErrorStream(errorStream)
                         .withEnvVars(options.getEnv())
+                        .withEvaluationTimeout(300)
                         .exec();
 
                 handleErrors(errorStream, execId);
@@ -212,8 +212,8 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
-                        "SET SESSION postgis.enable_outdb_rasters = True;" +
-                        "SET SESSION postgis.gdal_enabled_drivers = 'COG';")
+                        "ALTER DATABASE " + database + " SET postgis.enable_outdb_rasters = True;" +
+                        "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId);

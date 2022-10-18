@@ -9,6 +9,7 @@ from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
 from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
 from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
 from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
+from tests.agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATION
 
 from tests.conftest import create_rng_agent
@@ -103,7 +104,7 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
 
     # Now generate a few difference reverse derivations
     diff_reverse_derivation_iri_lst = []
-    random_int = random.randint(1, 10)
+    random_int = random.randint(1, 5)
     for i in range(random_int):
         diff_reverse_derivation_iri_lst.append(
             derivation_client.createAsyncDerivationForNewInfo(
@@ -229,6 +230,12 @@ def assert_all_information_are_up_to_date(all_instances, sparql_client, before_i
     # test if all values in the KG are correct
     # test if it contains correct number of points in the derivation DAG
     assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(sparql_client.getPointsInList(sparql_client.getListOfPoints()))
+    # test if the rdfs:comment of all points are correct
+    pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
+    assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(pt_comment_dict)
+    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
+    # Also check if the special values are correctly generated and parsed
+    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_comment_dict])
     # test if no duplicate information written to KG in the situation of concurrent
     # HTTP request
     assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(sparql_client.getPointsInKG())

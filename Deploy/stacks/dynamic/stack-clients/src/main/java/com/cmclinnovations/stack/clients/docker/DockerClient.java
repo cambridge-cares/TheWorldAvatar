@@ -218,9 +218,16 @@ public class DockerClient extends BaseClient {
                 try (ExecStartResultCallback result = execStartCmd
                         .exec(new ExecStartResultCallback(outputStream, errorStream))) {
                     if (wait) {
-                        result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn("Docker exec command '{}' still running after the {} second execution timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     } else {
-                        result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn(
+                                    "Docker exec command '{}' still not started within the {} second initialisation timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
@@ -234,10 +241,28 @@ public class DockerClient extends BaseClient {
     }
 
     public long getCommandErrorCode(String execId) {
+        Long exitCode = null;
         try (InspectExecCmd inspectExecCmd = internalClient.inspectExecCmd(execId)) {
-            InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
-            Long exitCode = inspectExecResponce.getExitCodeLong();
-            return (null != exitCode) ? exitCode : 1;
+
+            boolean isRunning = true;
+            while (isRunning) {
+                InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
+                isRunning = inspectExecResponce.isRunning();
+                if (isRunning) {
+                    Thread.sleep(500);
+                } else {
+                    exitCode = inspectExecResponce.getExitCodeLong();
+                }
+            }
+        } catch (InterruptedException ex) {
+            LOGGER.warn("Sleep method was interrupted whilst waiting for Docker inspect exec command.", ex);
+            Thread.currentThread().interrupt();
+        }
+        if (null == exitCode) {
+            throw new RuntimeException(
+                    "Docker exec command returned 'null' exit code even after it had finshed running.");
+        } else {
+            return exitCode;
         }
     }
 

@@ -53,7 +53,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
 
 /**
  * This class allows to establish connection with remote knowledge repositories
@@ -77,11 +78,15 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteStoreClient implements StoreClientInterface {
+public class RemoteStoreClient implements TripleStoreClientInterface {
 
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
+
+    // Connection and Statement objects
+    Connection conn;
+    Statement stmt;
 
     private String queryEndpoint;
     private String updateEndpoint;
@@ -307,15 +312,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is empty.");
-        }
-        if (isConnectionUpdateUrlValid(connectionUrl)) {
-            return executeUpdate(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
-        }
+        return executeUpdate(this.query);
     }
 
     /**
@@ -339,14 +336,18 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-
-        try (Connection conn = DriverManager.getConnection(getConnectionUrl());
-                Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-                        java.sql.ResultSet.CONCUR_READ_ONLY)) {
-            RemoteEndpointDriver.register();
-            LOGGER.debug("Connection URL = {}", getConnectionUrl());
-            LOGGER.debug("Query = {}", query);
-            return stmt.executeUpdate(query);
+        try {
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
+            }
+            if (isConnectionUpdateUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                return stmt.executeUpdate(query);
+            } else {
+                throw new JPSRuntimeException(
+                        "RemoteStoreClient: connection URL for the update operation is not valid.");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException("Failed to execute update.", e);
         }
@@ -426,14 +427,14 @@ public class RemoteStoreClient implements StoreClientInterface {
     /**
      * Excute sparql query
      *
-     * @param sparql
+     * @param query
      * @return JSONArray as String
      */
     @Override
     public String execute(String query) {
         JSONArray result = executeQuery(query);
         if (result == null) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: sparql query result is null.");
+            throw new JPSRuntimeException("RemoteStoreClient: sparql query result is null.");
         } else {
             return result.toString();
         }
@@ -447,15 +448,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery() {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
-        }
-        if (isConnectionQueryUrlValid(connectionUrl)) {
-            return executeQuery(this.query);
-        } else {
-            throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
-        }
+        return executeQuery(this.query);
     }
 
     /**
@@ -467,15 +460,19 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results = new JSONArray();
-
-        try (Connection conn = DriverManager.getConnection(getConnectionUrl());
-                Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-                        java.sql.ResultSet.CONCUR_READ_ONLY)) {
-            LOGGER.debug("Connection URL = {}", getConnectionUrl());
-            LOGGER.debug("Query = {}", query);
-            java.sql.ResultSet rs = stmt.executeQuery(query);
-            results = convert(rs);
+        JSONArray results;
+        try {
+            String connectionUrl = getConnectionUrl();
+            if (connectionUrl.isEmpty()) {
+                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+            }
+            if (isConnectionQueryUrlValid(connectionUrl)) {
+                connect(connectionUrl);
+                java.sql.ResultSet rs = stmt.executeQuery(query);
+                results = StoreClientHelper.convert(rs);
+            } else {
+                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException("Failed to execute query.", e);
         }
@@ -510,7 +507,7 @@ public class RemoteStoreClient implements StoreClientInterface {
                 conn.end();
             }
         } else {
-            throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+            throw new JPSRuntimeException("RemoteStoreClient: client not initialised.");
         }
     }
 
@@ -529,6 +526,21 @@ public class RemoteStoreClient implements StoreClientInterface {
         }
 
         return builder.build();
+    }
+
+    /**
+     * Establishes connection to triple store and sets the Statement Object
+     */
+    protected void connect(String connectionUrl) {
+        try {
+            if (this.conn == null || this.conn.isClosed()) {
+                RemoteEndpointDriver.register();
+                conn = DriverManager.getConnection(connectionUrl);
+                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            }
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -580,68 +592,6 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     private String generateEndpointProperty(String endpointType, String endpointURL) {
         return endpointType + "=" + endpointURL;
-    }
-
-    /**
-     * Converts query results into JSON.
-     *
-     * @param rs
-     * @return results in JSON format
-     * @throws SQLException
-     * @throws JSONException
-     */
-    private JSONArray convert(java.sql.ResultSet rs) throws SQLException, JSONException {
-        JSONArray json = new JSONArray();
-        java.sql.ResultSetMetaData rsmd = rs.getMetaData();
-        while (rs.next()) {
-            int numColumns = rsmd.getColumnCount();
-            JSONObject obj = new JSONObject();
-            for (int i = 1; i <= numColumns; i++) {
-                final Object value;
-                String columnName = rsmd.getColumnName(i);
-                switch (rsmd.getColumnType(i)) {
-                    case java.sql.Types.ARRAY:
-                        value = rs.getArray(columnName);
-                        break;
-                    case java.sql.Types.BOOLEAN:
-                        value = rs.getBoolean(columnName);
-                        break;
-                    case java.sql.Types.BLOB:
-                        value = rs.getBlob(columnName);
-                        break;
-                    case java.sql.Types.DOUBLE:
-                        value = rs.getDouble(columnName);
-                        break;
-                    case java.sql.Types.FLOAT:
-                        value = rs.getFloat(columnName);
-                        break;
-                    case java.sql.Types.INTEGER:
-                    case java.sql.Types.TINYINT:
-                    case java.sql.Types.SMALLINT:
-                    case java.sql.Types.BIGINT:
-                        value = rs.getInt(columnName);
-                        break;
-                    case java.sql.Types.NVARCHAR:
-                        value = rs.getNString(columnName);
-                        break;
-                    case java.sql.Types.VARCHAR:
-                        value = rs.getString(columnName);
-                        break;
-                    case java.sql.Types.DATE:
-                        value = rs.getDate(columnName);
-                        break;
-                    case java.sql.Types.TIMESTAMP:
-                        value = rs.getTimestamp(columnName);
-                        break;
-                    default:
-                        value = rs.getObject(columnName);
-                        break;
-                }
-                obj.put(columnName, value);
-            }
-            json.put(obj);
-        }
-        return json;
     }
 
     /**
@@ -815,7 +765,7 @@ public class RemoteStoreClient implements StoreClientInterface {
      * Get rdf content from store. Performs a construct query on the store and
      * returns the model as a string.
      *
-     * @param graphName (if any)
+     * @param resourceUrl (if any)
      * @param accept
      * @return String
      */
