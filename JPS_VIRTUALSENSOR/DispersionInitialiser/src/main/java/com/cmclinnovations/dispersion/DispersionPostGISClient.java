@@ -59,6 +59,22 @@ public class DispersionPostGISClient {
         }
     }
 
+    Polygon getPolygonAs4326(Polygon polygon, Connection conn) {
+        String sqlTemplate = String.format("SELECT ST_AsEWKT(ST_Transform(ST_GeomFromText('%s'), 4326))", polygon.toString());
+
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sqlTemplate);
+            while (result.next()) {
+                return new Polygon(result.getString("st_asewkt"));
+            }
+            throw new RuntimeException("Empty result from convertPolygonTo4326");
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException("Failed to convert polygon to EPSG:4326",e);
+        }
+    }
+
     boolean scopeExists(Polygon polygon, Connection conn) {         
         boolean scopeExists = false;
         if (polygon != null) {
@@ -83,15 +99,11 @@ public class DispersionPostGISClient {
     String addScope(Polygon polygon, Connection conn) {
         String scopeIri = null;
         try {
-            if (polygon.getSrid() != 4326) {
-                LOGGER.error("Unsupported SRID, only 4326 is supported");
-            } else {
-                scopeIri = QueryClient.PREFIX + UUID.randomUUID();
-                String geomIri = QueryClient.PREFIX + UUID.randomUUID();
-                InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, geomIri);
-                try (Statement stmt = conn.createStatement()) {
-                    stmt.executeUpdate(insertStep.toString());
-                }
+            scopeIri = QueryClient.PREFIX + UUID.randomUUID();
+            String geomIri = QueryClient.PREFIX + UUID.randomUUID();
+            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, geomIri);
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(insertStep.toString());
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());

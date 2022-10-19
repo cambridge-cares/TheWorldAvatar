@@ -5,8 +5,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -29,7 +27,6 @@ import org.springframework.core.io.ClassPathResource;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /**
  * a separate mapping is required for each SRID, currently only supports 4326
@@ -43,21 +40,24 @@ public class InitialiseSimulation extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // EWKT literal for the scope to create
         String ewkt = req.getParameter("ewkt");
+        int nx = Integer.parseInt(req.getParameter("nx"));
+        int ny = Integer.parseInt(req.getParameter("ny"));
 
-        Polygon polygon = null;
+        Polygon polygonProvided = null;
         try {
-            polygon = new Polygon(ewkt);
+            polygonProvided = new Polygon(ewkt);
         } catch (SQLException e) {
             LOGGER.error("Failed to parse given EWKT literal", e);
         }
 
-        if (polygon != null) {
+        if (polygonProvided != null) {
             EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
             DispersionPostGISClient dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
             RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
             QueryClient queryClient = new QueryClient(storeClient);
 
             String scopeIri = null;
+            Polygon polygon4326 = null;
             try (Connection conn = dispersionPostGISClient.getConnection()) {
                 if (!dispersionPostGISClient.tableExists(Config.SCOPE_TABLE_NAME, conn)) {
                     // first time initialisation
@@ -70,9 +70,15 @@ public class InitialiseSimulation extends HttpServlet {
                     // adds OntoAgent instance
                     queryClient.initialiseAgent();
                 }
+
+                if (polygonProvided.getSrid() != 4326) {
+                    polygon4326 = dispersionPostGISClient.getPolygonAs4326(polygonProvided, conn);
+                } else {
+                    polygon4326 = polygonProvided;
+                }
     
-                if (!dispersionPostGISClient.scopeExists(polygon, conn)) {
-                    scopeIri = dispersionPostGISClient.addScope(polygon, conn);
+                if (!dispersionPostGISClient.scopeExists(polygon4326, conn)) {
+                    scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
                 } else {
                     String responseString = "Given EWKT literal already exists in the database, or the scopeExists query failed, check logs";
                     resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
@@ -87,15 +93,10 @@ public class InitialiseSimulation extends HttpServlet {
                 LOGGER.error("Probably failed to add ontop mapping");
             }
 
-            if (scopeIri != null) {
-                String weatherStation1 = createVirtualWeatherStation(polygon);
-                String weatherStation2 = createVirtualWeatherStation(polygon);
+            if (scopeIri != null && polygon4326 != null) {
+                String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                List<String> weatherStations = new ArrayList<>();
-                weatherStations.add(weatherStation1);
-                weatherStations.add(weatherStation2);
-
-                queryClient.initialiseScopeDerivation(scopeIri, weatherStations);
+                // queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
                 try {
                     resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
                 } catch (IOException e) {
@@ -133,12 +134,8 @@ public class InitialiseSimulation extends HttpServlet {
             upperY = polygon.getPoint(2).getY();
         }
 
-        double newY = ((upperY - lowerY) * RAND.nextDouble()) + lowerY;
-        double newX = ((upperX - lowerX) * RAND.nextDouble()) + lowerX;
-
-        double[] transformedXY = CRSTransformer.transform("EPSG:" + polygon.getSrid(), "EPSG:4326", newX, newY);
-        double lon = transformedXY[0];
-        double lat = transformedXY[1];
+        double lat = ((upperY - lowerY) * RAND.nextDouble()) + lowerY;
+        double lon = ((upperX - lowerX) * RAND.nextDouble()) + lowerX;
 
         HttpPut httpPut;
         // station IRI
