@@ -327,13 +327,25 @@ class Manager {
         let titleContainer = document.getElementById("titleContainer");
         if(titleContainer.classList.contains("clickable")) {
 
-            let target = getCenter(window.currentFeature);
-            MapHandler.MAP.easeTo({
-                center: target,
-                zoom: 16,
-                duration: 3000,
-                essential: true
-            });
+            let target = window.currentFeature;
+            if(target == null) return;
+
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    target = getCenter(target);
+
+                    MapHandler.MAP.easeTo({
+                        center: target,
+                        zoom: 16,
+                        duration: 3000,
+                        essential: true
+                    });
+                break;
+
+                case MapProvider.CESIUM:
+                   CesiumUtils.flyToFeature(target);
+                break;
+            }
         };
     }
 

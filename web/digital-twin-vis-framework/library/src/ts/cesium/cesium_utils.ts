@@ -17,8 +17,6 @@ class CesiumUtils {
      */
     public static isVisible(layerID: string): boolean {
         let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
-        console.log("DATA SOURCES ->");
-        console.log(dataSources);
         if(dataSources === null || dataSources === undefined) return false;
 
         for(let i = 0; i < dataSources.length; i++) {
@@ -308,5 +306,107 @@ class CesiumUtils {
             // Cancel the default action to avoid it being handled twice
             event.preventDefault();
         }, true);
+    }
+
+    /**
+     * Flys the camera to the input feature, can be unreliable.
+     * 
+     * @param feature 
+     */
+    public static flyToFeature(feature: Object) {
+        // Is this a WMS feature?
+        if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+            const position = MapHandler.MAP.scene.globe.ellipsoid.cartographicToCartesian(
+                // @ts-ignore
+                feature.position
+            );
+
+            let offset = CesiumUtils.offsetFromHeadingPitchRange(
+                MapHandler.MAP.camera.heading,
+                MapHandler.MAP.camera.pitch,
+                50
+            );
+            const transform = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+            Cesium.Matrix4.multiplyByPoint(transform, offset, position);
+            MapHandler.MAP.camera.flyTo({
+                destination: position,
+                orientation: {
+                    heading: MapHandler.MAP.camera.heading,
+                    pitch: MapHandler.MAP.camera.pitch,
+                },
+                easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+            });
+            return;
+        }
+
+        // 3D feature
+        const positionCartographic = new Cesium.Cartographic(
+            // @ts-ignore
+            Cesium.Math.toRadians(target.getProperty("Longitude")),
+            // @ts-ignore
+            Cesium.Math.toRadians(target.getProperty("Latitude")),
+            // @ts-ignore
+            target.getProperty("Height") * 0.5
+        );
+        const position = MapHandler.MAP.scene.globe.ellipsoid.cartographicToCartesian(
+            positionCartographic
+        );
+
+        let offset = CesiumUtils.offsetFromHeadingPitchRange(
+            MapHandler.MAP.camera.heading,
+            MapHandler.MAP.camera.pitch,
+            // @ts-ignore
+            target.getProperty("Height") * 2.0
+        );
+
+        const transform = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+        Cesium.Matrix4.multiplyByPoint(transform, offset, position);
+
+        MapHandler.MAP.camera.flyTo({
+            destination: position,
+            orientation: {
+                heading: MapHandler.MAP.camera.heading,
+                pitch: MapHandler.MAP.camera.pitch,
+            },
+            easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+        });
+    }
+
+    /**
+     * https://sandcastle.cesium.com/?src=3D%20Tiles%20Interactivity.html
+     * 
+     * @param heading 
+     * @param pitch 
+     * @param range 
+     * @returns 
+     */
+    public static offsetFromHeadingPitchRange(heading, pitch, range) {
+        pitch = Cesium.Math.clamp(
+          pitch,
+          -Cesium.Math.PI_OVER_TWO,
+          Cesium.Math.PI_OVER_TWO
+        );
+        heading = Cesium.Math.zeroToTwoPi(heading) - Cesium.Math.PI_OVER_TWO;
+      
+        const pitchQuat = Cesium.Quaternion.fromAxisAngle(
+          Cesium.Cartesian3.UNIT_Y,
+          -pitch
+        );
+        const headingQuat = Cesium.Quaternion.fromAxisAngle(
+          Cesium.Cartesian3.UNIT_Z,
+          -heading
+        );
+        const rotQuat = Cesium.Quaternion.multiply(
+          headingQuat,
+          pitchQuat,
+          headingQuat
+        );
+        const rotMatrix = Cesium.Matrix3.fromQuaternion(rotQuat);
+      
+        const offset = Cesium.Cartesian3.clone(Cesium.Cartesian3.UNIT_X);
+        Cesium.Matrix3.multiplyByVector(rotMatrix, offset, offset);
+        Cesium.Cartesian3.negate(offset, offset);
+        Cesium.Cartesian3.multiplyByScalar(offset, range, offset);
+        return offset;
     }
 }

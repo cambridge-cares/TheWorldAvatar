@@ -108,6 +108,8 @@ class MapHandler_Cesium extends MapHandler {
         // Get the feature at the click point
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
+            window.currentFeature = feature;
+
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
@@ -302,23 +304,25 @@ class MapHandler_Cesium extends MapHandler {
      */
     private addKMLFile(source: Object, layer: DataLayer) {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
-        sourceKML["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
+        sourceKML.then((result) => {
+            result["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
 
-        // TODO: Investigate if camera and canvas options are actually required here.
-        MapHandler.MAP.dataSources.add(
-            sourceKML,
-            {
-                camera: MapHandler.MAP.camera,
-                canvas: MapHandler.MAP.canvas
+            // TODO: Investigate if camera and canvas options are actually required here.
+            MapHandler.MAP.dataSources.add(
+                result,
+                {
+                    camera: MapHandler.MAP.camera,
+                    canvas: MapHandler.MAP.canvas
+                }
+            );
+            console.info("Added KML source to map with layer ID: "+ layer.id);
+    
+            // Cache knowledge of this source, keyed by layer id
+            if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
+                MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
             }
-        );
-        console.info("Added KML source to map with layer ID: "+ layer.id);
-
-        // Cache knowledge of this source, keyed by layer id
-        if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
-            MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
-        }
-        MapHandler_Cesium.DATA_SOURCES[layer.id].push(sourceKML);
+            MapHandler_Cesium.DATA_SOURCES[layer.id].push(result);
+        });
     }
 
     /**
