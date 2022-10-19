@@ -10,7 +10,7 @@ It is recommended that you read the [Digital Twin Visualisations](https://github
 
 The DTVF supports a number of different data formats and representations, in the case of 2D data (visualised by Mapbox, as in this example), anything that is supported by the Mapbox GL JS library is supported through the DTVF. Rather than detailing these here, please review the [Sources](https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/) page of the Mapbox website for supported data formats, and the [Layers](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/) page for supported visual representation types. The [Mapbox examples page](https://docs.mapbox.com/mapbox-gl-js/example/) also provides a very detailed set of examples that display each of the features Mapbox provides, it's well worth looking through it.
 
-As the Mapbox API is primarily configured via JSON objects, the DTVF supports passing these through from the `visualisation.json` configuration file. This means that the majority of features supported by Mapbox (e.g. Source and Layer configuration, Filter Expressions) are already supported. At the time of writing however, use of the Lighting, Fog, and Projection features are unsupported (these can be added if there is a desire).
+As the Mapbox API is primarily configured via JSON objects, the DTVF supports passing these through from the `data.json` configuration file. This means that the majority of features supported by Mapbox (e.g. Source and Layer configuration, Filter Expressions) are already supported. At the time of writing however, use of the Lighting, Fog, and Projection features are unsupported (these can be added if there is a desire).
 
 Note that when serving data via a WMS endpoint, via a service like GeoServer, styling can actually be done on the server side. Whilst this is required for some data formats, like rastered images, we recommend serving data using the Mapbox Vector Tiles format so that styling can be done via the client-side library (solely as this is better documented).
 
@@ -45,7 +45,7 @@ In addition to `sources`, each group can define a number of `layers`. These are 
 
 Layers can also optionally include an integer `order` field (which defaults to 0 if not specified). Before visualising, all layers (across all groups) are sorted by their order; this allows users to specify the Z order of their data, regardless of grouping.
 
-For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `visualisation.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format.
+For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format.
 
 ## Sample Data
 
@@ -57,7 +57,7 @@ A small amount of sample data has been committed to demonstrate the power of the
   - No metadata or timeseries present in this data set.
 - **Singapore**:
   - Based in Singapore, this data set includes details of rail lines and stations.
-  - Shows examples of setting up data-driven styling within the `visualisation.json` file.
+  - Shows examples of setting up data-driven styling within the `data.json` file.
   - No metadata or timeseries present in this data set.
 - **India**:
   - Based in India, this data set shows rastered locations of Aqueducts and Canals

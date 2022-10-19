@@ -50,10 +50,10 @@ class DataStore {
     }
     
     /**
-     * Recursively find and load all DataGroups defined within the visualisation.json
+     * Recursively find and load all DataGroups defined within the data.json
      * file.
      * 
-     * @param visFile location of the visualisation.json file
+     * @param visFile location of the data.json file
      * 
      * @returns Promise that fulfills when all loading is complete
      */

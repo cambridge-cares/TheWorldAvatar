@@ -280,4 +280,33 @@ class CesiumUtils {
         }
         return html;
     }
+
+    /**
+     * Sets up keyboard shortcuts for the Cesium camera. This has been added so that
+     * users without a mouse (or with a non-standard touchpad) can still control the
+     * camera.
+     */
+    public static setupKeyboardShortcuts() {
+        // TODO: Add full camera controls here. This will be tricky as Cesium offers
+        // no programmatic way to pan the camera around 2D plane (mimicking the mouse
+        // movement logic).
+
+        window.addEventListener("keydown", function (event) {
+            if (event.defaultPrevented) return;
+          
+            switch (event.key) {
+                case "PageUp":
+                    MapHandler.MAP.camera.zoomIn(25);
+                    break;
+                case "PageDown":
+                    MapHandler.MAP.camera.zoomOut(25);
+                    break;
+                default:
+                    return;
+            }
+          
+            // Cancel the default action to avoid it being handled twice
+            event.preventDefault();
+        }, true);
+    }
 }

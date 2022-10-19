@@ -81,6 +81,9 @@ class MapHandler_Cesium extends MapHandler {
             });
             MapHandler.MAP.scene.requestRender();
 
+            // Setup keyboard shortcuts
+            CesiumUtils.setupKeyboardShortcuts();
+            
         } else {
             MapHandler.MAP.camera.setView({
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
