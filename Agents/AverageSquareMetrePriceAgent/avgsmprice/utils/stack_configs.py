@@ -53,8 +53,10 @@ def retrieve_settings():
 # TODO: Revert to work with the stack
 #retrieve_settings()
 
-DB_URL = 'jdbc:postgresql://165.232.172.16:3838/postgres',
-DB_USER = 'postgres',
-DB_PASSWORD = 'postgis',
-QUERY_ENDPOINT = 'http://165.232.172.16:3838/blazegraph/namespace/buildings2/sparql',
+# Local Postgres
+DB_URL = 'jdbc:postgresql:prices'
+DB_USER = 'postgres'
+DB_PASSWORD = 'postgres'
+# Stack Blazegraph
+QUERY_ENDPOINT = 'http://165.232.172.16:3838/blazegraph/namespace/buildings2/sparql'
 UPDATE_ENDPOINT = 'http://165.232.172.16:3838/blazegraph/namespace/buildings2/sparql'

@@ -74,21 +74,21 @@ class TSClient:
 
 # TODO: to be removed
 # Test connection (for local development)
-if __name__ == '__min__':
+if __name__ == '__main__':
 
     # Create a JVM module view and retrieve Java class for time entries (Instant)
     jpsBaseLibView = jpsBaseLibGW.createModuleView()
     DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
     TIME_FORMAT_TS =  "YYYY-MM-DDThh:mm:ssZ"
 
-    kgclient_1 = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-    ts_client = TSClient(kg_client=kgclient_1)
+    kgclient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    ts_client = TSClient(kg_client=kgclient)
     # init
     data_IRI = 'http://dataIRI_1'
     ts_client.tsclient.initTimeSeries([data_IRI], [DOUBLE], TIME_FORMAT_TS,
                                         ts_client.conn)
     # add data
-    time_list = ["2022-10-18T10:00:00Z", "2022-10-19T10:00:00Z"]
+    time_list = ["2022-10-18", "2022-10-19"]
     value_list = [1.0, 2.0]
     ts = TSClient.create_timeseries(time_list, [data_IRI], [value_list])
     ts_client.tsclient.addTimeSeriesData(ts, ts_client.conn)
