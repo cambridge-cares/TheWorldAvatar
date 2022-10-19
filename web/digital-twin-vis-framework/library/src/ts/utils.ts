@@ -6,7 +6,7 @@
  * @return coords [x, y]
  */
 function getCenter(feature: Object) {
-    // Convert from MapBox feature to GeoJSON
+    // Convert from Mapbox feature to GeoJSON
     let geojsonFeat = turf.feature(feature["geometry"]);
 
     // Despite documentation that center() accepts a single Feature

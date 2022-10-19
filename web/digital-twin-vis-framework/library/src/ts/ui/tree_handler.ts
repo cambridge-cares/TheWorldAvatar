@@ -38,8 +38,8 @@ class TreeHandler {
             // Update visibility
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    visible.forEach(layer => MapBoxUtils.toggleLayer(layer, true));
-                    hidden.forEach(layer => MapBoxUtils.toggleLayer(layer, false));
+                    visible.forEach(layer => MapboxUtils.toggleLayer(layer, true));
+                    hidden.forEach(layer => MapboxUtils.toggleLayer(layer, false));
                 break;
 
                 case MapProvider.CESIUM:
@@ -167,7 +167,7 @@ class TreeHandler {
             // Store if this needs to be prechecked
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    let mbLayer = <MapBoxLayer> value[0];
+                    let mbLayer = <MapboxLayer> value[0];
                     if(mbLayer.isVisible()) preCheck.push(dataID);
                 break;
 

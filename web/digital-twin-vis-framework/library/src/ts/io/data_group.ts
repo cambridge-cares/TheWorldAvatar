@@ -88,7 +88,7 @@ class DataGroup {
 
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    layer = new MapBoxLayer(layerID, node["name"], source);
+                    layer = new MapboxLayer(layerID, node["name"], source);
 
                     // Store display order if present
                     if(node.hasOwnProperty("order")) {

@@ -10,7 +10,7 @@ For more details on the framework, see the [Digital Twin Visualisations](https:/
 
 To function correctly, whichever visualisation implementation is using this framework also needs to include the following JS libraries. For more details, see the provided [example-visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-visualisation).
 
-- [MapBox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/)
+- [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/)
 - [JQuery & JQuery UI](https://jquery.com/)
 - [ChartJS](https://www.chartjs.org/)
 - [Moment & ChartJS Moment Adapter](https://momentjs.com/)

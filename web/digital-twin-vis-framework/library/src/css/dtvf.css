@@ -26,7 +26,7 @@ h6 {
     font-weight: 700;
 }
 
-/* MapBox Elements */
+/* Mapbox Elements */
 #map {
     width: calc(100% - 500px);
     height: 100%;

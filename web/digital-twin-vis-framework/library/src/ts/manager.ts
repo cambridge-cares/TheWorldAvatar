@@ -64,7 +64,7 @@ class Manager {
         // Initialise the map handler instance
         switch(mapProvider) {
             case MapProvider.MAPBOX:
-                this.mapHandler = new MapHandler_MapBox(this);
+                this.mapHandler = new MapHandler_Mapbox(this);
             break;
 
             case MapProvider.CESIUM:
@@ -178,7 +178,7 @@ class Manager {
 
             if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-                let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
+                let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
                 promises.push(iconPromise);
             }
 
@@ -511,7 +511,7 @@ class Manager {
             return null;
 
         } else {
-            // MapBox or WMS feature?
+            // Mapbox or WMS feature?
             let layer = feature["layer"]["id"];
 
             if(layer !== null && layer !== undefined) {

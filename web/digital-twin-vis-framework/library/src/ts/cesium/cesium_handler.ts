@@ -5,7 +5,7 @@
 class MapHandler_Cesium extends MapHandler {
 
     /**
-     * MapBox popup element.
+     * Mapbox popup element.
      */
     public static POPUP;
 

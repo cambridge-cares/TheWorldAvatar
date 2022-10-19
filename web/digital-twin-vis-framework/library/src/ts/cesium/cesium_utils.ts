@@ -1,5 +1,5 @@
  /**
- * Utilities specific to MapBox implementations
+ * Utilities specific to Mapbox implementations
  */
 class CesiumUtils {
     
@@ -31,9 +31,9 @@ class CesiumUtils {
     }
 
     /**
-	 * Show or hide a single (MapBox) layer on the map.
+	 * Show or hide a single (Mapbox) layer on the map.
 	 * 
-	 * @param {String} layerID MapBox layer name.
+	 * @param {String} layerID Mapbox layer name.
 	 * @param {boolean} visible desired visibility.
 	 */
     public static toggleLayer(layerID, visible) {
@@ -64,7 +64,7 @@ class CesiumUtils {
     }
 
     /**
-     * Change the underlying MapBox style.
+     * Change the underlying Mapbox style.
      * 
      * @param {String} mode 
      */

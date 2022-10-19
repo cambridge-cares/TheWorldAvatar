@@ -151,7 +151,7 @@ class ControlHandler {
 
                 switch(Manager.PROVIDER) {
                     case MapProvider.MAPBOX:
-                        buttonHTML += ` onclick="MapBoxUtils.changeTerrain(this.id)"`;
+                        buttonHTML += ` onclick="MapboxUtils.changeTerrain(this.id)"`;
                     break;
 
                     case MapProvider.CESIUM:

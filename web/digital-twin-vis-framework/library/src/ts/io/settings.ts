@@ -25,7 +25,7 @@ class Settings {
             if(self.settings["imagery"] == null) {
                 switch(Manager.PROVIDER) {
                     case MapProvider.MAPBOX:
-                        MapBoxUtils.generateDefaultImagery();
+                        MapboxUtils.generateDefaultImagery();
                     break;
 
                     case MapProvider.CESIUM:

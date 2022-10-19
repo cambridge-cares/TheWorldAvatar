@@ -48,12 +48,12 @@
                     <div id="controlTitle" class="controlTitle">
                         <p>Camera</p>
                         <div class="tooltip">
-                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
                             <span class="tooltiptext">Toggle depth of field effect</span>
                         </div>
                     </div>
                     <div class="controlContents">
-                        <a href="#" onclick="MapBoxUtils.resetCamera()">Reset to default</a><br/>
+                        <a href="#" onclick="MapboxUtils.resetCamera()">Reset to default</a><br/>
                     </div>
                 </div>
 
@@ -62,18 +62,18 @@
                     <div id="controlTitle" class="controlTitle">
                         <p>Terrain</p>
                         <div class="tooltip">
-                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
                             <span class="tooltiptext">Toggle 3D terrain</span>
                         </div>
                     </div>
                     <div id="imageryContainer" class="controlContents">
-                        <!-- <input type="radio" name="terrain" id="light" onclick="MapBoxUtils.changeTerrain('light')" checked>
+                        <!-- <input type="radio" name="terrain" id="light" onclick="MapboxUtils.changeTerrain('light')" checked>
                         <label for="light">Light</label><br/>
-                        <input type="radio" name="terrain" id="dark" onclick="MapBoxUtils.changeTerrain('dark')">
+                        <input type="radio" name="terrain" id="dark" onclick="MapboxUtils.changeTerrain('dark')">
                         <label for="dark">Dark</label><br/>
-                        <input type="radio" name="terrain" id="outdoors" onclick="MapBoxUtils.changeTerrain('outdoors')">
+                        <input type="radio" name="terrain" id="outdoors" onclick="MapboxUtils.changeTerrain('outdoors')">
                         <label for="outdoors">Outdoors</label><br/>
-                        <input type="radio" name="terrain" id="satellite" onclick="MapBoxUtils.changeTerrain('satellite')">
+                        <input type="radio" name="terrain" id="satellite" onclick="MapboxUtils.changeTerrain('satellite')">
                         <label for="satellite">Satellite</label><br/> -->
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                     <div id="controlTitle"  class="controlTitle">
                         <p>Layers</p>
                         <div class="tooltip" id="placenameContainer">
-                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
                             <span class="tooltiptext">Toggle place names, labels, and roads </span>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
             $("#sidePanelInner").tabs();
 
             // ===== CUSTOMISABLE =====
-            // Enter MapBox API key here!
+            // Enter Mapbox API key here!
             MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
             // ===== CUSTOMISABLE =====
 
