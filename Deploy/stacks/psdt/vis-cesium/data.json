@@ -323,14 +323,7 @@
                     "id": "power_lines_points-layer",
                     "name": "Hochspannungsmasten",
                     "source": "power_lines_points-source",
-                    "type": "symbol",
-                    "visibility": "none",
-                    "layout": {
-                        "icon-image": "education",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 8, 0.4, 18, 0.8],
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
-                    }
+                    "visibility": "none"
                 },
                 {
                     "id": "power_minor_lines_lines-layer",
