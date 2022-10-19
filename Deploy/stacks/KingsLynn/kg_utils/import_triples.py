@@ -52,10 +52,12 @@ if __name__ == '__main__':
 
     # Specify SPARQL query endpoint
     # NOTE: Endpoint needs to be available, i.e. manually created beforehand
-    endpoint = "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql"
+    #endpoint = "http://128.199.197.40:3838/blazegraph/namespace/buildings_new/sparql"
+    endpoint = "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql"
     # Input file for triples (relative path)
-    fp = r'inputs\triples.nt'
+    #fp = r'..\inputs\hmtest_without_sales.nt'
+    fp = r'..\inputs\hmtest_with_sales.nt'
 
     # Get all Triples and serialise as turtle
-    file_name = os.path.join(Path(__file__).parent.parent, fp)
+    file_name = os.path.join(Path(__file__).parent, fp)
     upload_all_triples(endpoint, file_name)
