@@ -32,6 +32,7 @@ A brief list of these requirements is shown below, but as the current implementa
   * The `name` field needs to contain the human readable name of the feature.
   * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.
   * The `endpoint` field needs to contain the URL of the Blazegraph namespace containing data on the feature. Note that this can be absolute or relative to the FeatureInfoAgent's location.
+* Each group within the `visualisation.json` file needs to contain a `stack` parameter with the base URL of the stack containing that group's data (at least the meta data contained within the knowledge graph).
 
 # Developing the DTVF
 
