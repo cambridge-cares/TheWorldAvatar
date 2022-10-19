@@ -128,7 +128,7 @@ hasCurrentUnitPrice,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/
 hasCumulativeEnergyCap,Object Property,,,Tier,http://www.ontology-of-units-of-measure.org/resource/om-2/Energy,,A relationship between a tier and its cumulative energy cap,https://www.theworldavatar.com/kg/ontoheatnetwork/,has cumulative energy cap
 hasUnitPrice,Object Property,,,Tier,HeatUnitPrice,,A relationship between a tier and the associated heat unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,has unit price
 hasTier,Object Property,,,TieredUnitPrice,Tier,,A relationship between tiered unit price and tier,https://www.theworldavatar.com/kg/ontoheatnetwork/,has tier
-isHoliday,Data Property,,,CalendarEffect,boolean,,Indication whether a particular date is holiday,https://www.theworldavatar.com/kg/ontoheatnetwork/,is holiday
+isPublicHoliday,Data Property,,,CalendarEffect,boolean,,Indication whether a particular date is public holiday,https://www.theworldavatar.com/kg/ontoheatnetwork/,is public holiday
 isVacation,Data Property,,,CalendarEffect,boolean,,Indication whether a particular date is vacation,https://www.theworldavatar.com/kg/ontoheatnetwork/,is vacation
 http://nomisma.org/ontology#hasDate,Data Property,,,CalendarEffect,http://www.w3.org/2001/XMLSchema#date,,A date associated with an event in the life cycle of the resource,http://nomisma.org/ontology#,date
 https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,HeatingNetwork UNION MunicipalUtility UNION HeatBoiler UNION GasTurbine UNION https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract,string,exactly 1,Textual description of instance,https://www.theworldavatar.com/kg/ontoheatnetwork/,label
