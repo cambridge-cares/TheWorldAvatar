@@ -9,7 +9,7 @@ def query_with_inchi(inchi):
     if IRI:
         # main get data
         data = get_ontospecies_data(IRI)
-        return (data, data['CID'],'TWA')
+        return (data, 'TWA')
     else:
 
         data = pug_access.pug_request('InChI', inchi)
@@ -17,7 +17,7 @@ def query_with_inchi(inchi):
         CID = pug_access.get_cid(data)
         cid = CID['cid']
         insert_ontospecies_data(str(cid), props)      
-        return (props, cid, 'PubChem')
+        return (props, 'PubChem')
 
         
 if __name__== '__main__':
@@ -28,9 +28,9 @@ if __name__== '__main__':
                   'InChI=1S/C6H8O6/c7-1-2(8)5-3(9)4(10)6(11)12-5/h2,5,7-10H,1H2/t2-,5+/m0/s1',
                   'InChI=1S/C9H10O3/c1-6-3-4-8(10)7(5-6)9(11)12-2/h3-5,10H,1-2H3',
                   'InChI=1S/C3H6O/c1-3(2)4/h1-2H3']:
-        data, CID,source = query_with_inchi(inchi)
-        #print(source, CID,'\n')
-        #print(data)
+        data, source = query_with_inchi(inchi)
+        print(source,'\n')
+        print(data)
     
 
    # A test INSERT function

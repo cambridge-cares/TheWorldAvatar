@@ -2,3 +2,6 @@ flask
 py4jps
 numpy
 pyderivationagent
+requests
+# Requirements for Flask
+Flask-RESTful==0.3.8
