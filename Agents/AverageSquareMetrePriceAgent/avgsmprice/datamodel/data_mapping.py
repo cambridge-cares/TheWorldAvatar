@@ -29,3 +29,6 @@ TIMECLASS = LocalDate.now().getClass()
 # Create data class for all time series data (i.e. all data as double)
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
+
+# OM / UOM unit symbols
+GBP_PER_SM = '£ m-2'
