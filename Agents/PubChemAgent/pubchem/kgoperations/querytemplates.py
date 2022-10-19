@@ -105,6 +105,7 @@ def pubchem_prop_insert(uuid, cid, props):
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX otk: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     
     INSERT DATA
     {
@@ -112,10 +113,13 @@ def pubchem_prop_insert(uuid, cid, props):
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_Species_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_Species_#uuid#> os:value #Molecular Weight# .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdfs:label \'#Molecular Formula#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChI \'#Standard InChI#\'^^xsd:string .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> skos:altLabel \'#Allowed IUPAC Name#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> skos:altLabel \'#Preferred IUPAC Name#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChI \'#Standard InChI#\' .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:pubChemCID #CID# .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:SMILES \'#Canonical SMILES#\' .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChIKey \'#Standard InChIKey#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdfs:comment \'The information collected here is obtained from PubChem PUG API.\' .
     }    
     """.replace('#CID#', cid).replace('#uuid#', uuid)
     # replace "InChI=1S", "InChI=1"
