@@ -399,6 +399,13 @@ class MapboxUtils {
         }
 	}
 
+    /**
+     * Given a list of features, this returns a new list without any
+     * duplicates (as defined by matching IDs).
+     * 
+     * @param features 
+     * @returns 
+     */
     public static deduplicate(features: Object[]) {
         let result = [];
 

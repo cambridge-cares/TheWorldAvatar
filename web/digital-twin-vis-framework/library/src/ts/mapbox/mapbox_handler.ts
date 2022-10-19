@@ -59,7 +59,7 @@ class MapHandler_Mapbox extends MapHandler {
         }
 
         // Load custom search terms
-        MapboxUtils.loadSearchTerms();
+        //MapboxUtils.loadSearchTerms();
     }
 
     /**

@@ -83,7 +83,7 @@ class MapHandler_Cesium extends MapHandler {
 
             // Setup keyboard shortcuts
             CesiumUtils.setupKeyboardShortcuts();
-            
+
         } else {
             MapHandler.MAP.camera.setView({
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
@@ -241,7 +241,7 @@ class MapHandler_Cesium extends MapHandler {
      * @param source data source.
      */
     private addSource(source: DataSource) {
-       // No used in Cesium implementation
+       // Not used in Cesium implementation
     }
 
     /**
@@ -262,7 +262,7 @@ class MapHandler_Cesium extends MapHandler {
             // 2D data from geoserver
             case "wms":
             case "geoserver": {
-                this.addGeoserver(source, layer);
+                this.addWMS(source, layer);
             }
             break;
 
@@ -292,7 +292,6 @@ class MapHandler_Cesium extends MapHandler {
             }
             break;
         }
-
     }
 
     /**
@@ -395,9 +394,8 @@ class MapHandler_Cesium extends MapHandler {
             options["modelMatrix"] = position;
         }
 
-        let tileset = new Cesium.Cesium3DTileset(options);
-
         // Add the tileset to the map
+        let tileset = new Cesium.Cesium3DTileset(options);
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 
@@ -409,11 +407,12 @@ class MapHandler_Cesium extends MapHandler {
     }
 
     /**
+     * Add a WMS imagery layer from geoserver.
      * 
      * @param url 
      * @param layerID 
      */
-    private addGeoserver(source: Object, layer: DataLayer) {
+    private addWMS(source: Object, layer: DataLayer) {
         // Check the geoserver layer name
         let wmsLayer = source["wmsLayer"];
         if(wmsLayer === null || wmsLayer === undefined) {

@@ -26,7 +26,8 @@ async function loadHTML(htmlFile: string) {
     });
 }
 
- /**
+/**
+ * Determines and returns the URL for the default WMS imagery.
  * 
  * @returns 
  */
@@ -37,6 +38,8 @@ function getDefaultImagery() {
 }
 
 /**
+ * Update the given URL replacing "localhost" or "127.0.0.1" with the base
+ * URL that the visualisation is currently being accessed from.
  * 
  * @param originalURL 
  * @returns 
@@ -62,6 +65,13 @@ function updateURL(originalURL: string): string {
     }
 }
 
+/**
+ * Returns a new dictionary without any properties
+ * that had null values.
+ * 
+ * @param dictionary 
+ * @returns 
+ */
 function filterNulls(dictionary: Object) {
     let result = {};
 
@@ -72,6 +82,13 @@ function filterNulls(dictionary: Object) {
     return result;
 }
 
+/**
+ * Using the custom search terms, this returns the correct name
+ * for a feature given it's properties object.
+ * 
+ * @param properties feature's property dictionary
+ * @returns name (or null) 
+ */
 function getName(properties: Object): string {
     let fieldSettings = Manager.SETTINGS.getSetting("fields");
     if(fieldSettings == null) return properties["name"];
@@ -82,6 +99,13 @@ function getName(properties: Object): string {
     return properties[nameField];
 }
 
+/**
+ * Using the custom search terms, this returns the correct description
+ * for a feature given it's properties object.
+ * 
+ * @param properties feature's property dictionary
+ * @returns description (or null) 
+ */
 function getDescription(properties: Object): string {
     let fieldSettings = Manager.SETTINGS.getSetting("fields");
     if(fieldSettings == null) return properties["description"];

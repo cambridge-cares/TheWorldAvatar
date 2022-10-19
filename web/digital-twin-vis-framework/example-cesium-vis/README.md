@@ -84,6 +84,10 @@ Note that, at the time of writing, all `source` and `layer` nodes must be within
 
 For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format. 
 
+### Global Settings & Advanced Features
+
+Configuration settings for features not directly relating to the data, such as the map's starting position, and more advanced features are detailed on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings). 
+
 ## Sample Data
 
 A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:

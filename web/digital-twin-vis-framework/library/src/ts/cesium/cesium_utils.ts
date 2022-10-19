@@ -261,8 +261,8 @@ class CesiumUtils {
         }
     }
 
-     /**
-     * 
+    /**
+     * Generates content for pop-up box displayed on hover over.
      */
     public static getPopupContent(properties: Object) {
         // Get feature details

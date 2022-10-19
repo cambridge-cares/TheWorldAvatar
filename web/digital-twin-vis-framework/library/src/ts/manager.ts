@@ -91,32 +91,32 @@ class Manager {
         this.panelHandler.toggleMode();
 
         // Override CTRL+F shortcut for feature searching (BETA)
-        let searchBox = document.getElementById("finderContainer");
-        if(searchBox !== null) {
+        // let searchBox = document.getElementById("finderContainer");
+        // if(searchBox !== null) {
 
-            let self = this;
-            document.addEventListener("keydown", function(e){
-                if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
-                    if(self.searchUp) {
-                        self.hideSearch();
-                    } else {
-                        self.showFeatureFinder();
-                    }
-                    e.preventDefault();
-                }
+        //     let self = this;
+        //     document.addEventListener("keydown", function(e){
+        //         if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
+        //             if(self.searchUp) {
+        //                 self.hideSearch();
+        //             } else {
+        //                 self.showFeatureFinder();
+        //             }
+        //             e.preventDefault();
+        //         }
 
-                if(e.altKey && e.key === "Enter") {
-                    self.toggleFullscreen();
+        //         if(e.altKey && e.key === "Enter") {
+        //             self.toggleFullscreen();
                     
-                    var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
-                    var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
-                    // @ts-ignore
-                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
-                    // @ts-ignore
-                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-                }
-            });
-        }
+        //             var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
+        //             var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
+        //             // @ts-ignore
+        //             var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
+        //             // @ts-ignore
+        //             var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
+        //         }
+        //     });
+        // }
     }
 
     private toggleFullscreen() {
