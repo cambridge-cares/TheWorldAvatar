@@ -12,8 +12,8 @@ services:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=postgres # currently ontop reads from the default database
       - SCOPE_TABLE_NAME=scopes
-      - EPISODE_AGENT_IRI=http://theworldavatar.com/EpisodeAgent 
-      - EPISODE_AGENT_URL=http://host.docker.internal:8081/EpisodeAgent
+      - AERMOD_AGENT_IRI=http://theworldavatar.com/kb/AermodAgent 
+      - AERMOD_AGENT_URL=http://host.docker.internal:8081/AermodAgent
       - WEATHER_AGENT_URL=http://host.docker.internal:8086/WeatherAgent/CreateStation
     configs:
       - postgis

@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -42,6 +43,8 @@ public class QueryClient {
     private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri SCOPE = P_DISP.iri("Scope");
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
+    private static final Iri NX = P_DISP.iri("nx");
+    private static final Iri NY = P_DISP.iri("ny");
 
     // properties
     private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
@@ -71,31 +74,47 @@ public class QueryClient {
 
         ModifyQuery modify = Queries.MODIFY();
 
-        modify.insert(iri(Config.EPISODE_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
-		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.EPISODE_AGENT_URL)).andHas(hasInput, inputIri));
+        modify.insert(iri(Config.AERMOD_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
+		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.AERMOD_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).prefix(P_DISP);
 
         storeClient.executeUpdate(modify.getQueryString());
     }
 
-    void initialiseScopeDerivation(String scopeIri, List<String> weatherStations) {
+    void initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE));
 
+        // sim time
         String simTime = PREFIX + UUID.randomUUID();
         String simTimeMeasure = PREFIX + UUID.randomUUID();
         modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(HAS_VALUE, iri(simTimeMeasure)));
         modify.insert(iri(simTimeMeasure).isA(MEASURE).andHas(HAS_NUMERICALVALUE, 0));
 
+        // nx
+        String nxIri = PREFIX + UUID.randomUUID();
+        String nxMeasureIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(nxIri).isA(NX).andHas(HAS_VALUE, iri(nxMeasureIri)));
+        modify.insert(iri(nxMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, nx));
+
+        // ny
+        String nyIri = PREFIX + UUID.randomUUID();
+        String nyMeasureIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(nyIri).isA(NY).andHas(HAS_VALUE, iri(nyMeasureIri)));
+        modify.insert(iri(nyMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, ny));
+
         modify.prefix(P_DISP,P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
-        List<String> inputs = weatherStations;
+        List<String> inputs = new ArrayList<>();
+        inputs.add(weatherStation);
         inputs.add(simTime);
         inputs.add(scopeIri);
+        inputs.add(nxIri);
+        inputs.add(nyIri);
 
-        derivationClient.createAsyncDerivationForNewInfo(Config.EPISODE_AGENT_IRI, inputs);
+        derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATION);
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
     }
