@@ -1,12 +1,6 @@
 {
     "name": "Pirmasens Daten",
     "stack": "http://localhost",
-    "mapOptions": {
-        "target": [7.614597486434046, 49.1720003877412, 2000],
-        "heading": 0,
-        "pitch": -40,
-        "roll": 0.0
-    },
     "groups": [
         {
             "name": "Gebäude",
