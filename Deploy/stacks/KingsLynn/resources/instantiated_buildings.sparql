@@ -1,0 +1,64 @@
+#
+### Queries to be run in OntoCityGml namespace ###
+#
+
+# Total number of instantiated buildings in OntoCityGml
+
+PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+SELECT (count(DISTINCT ?bldg) as ?count)
+WHERE
+  { GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/>
+      { ?bldg  ocgml:objectClassId  26}
+  }
+
+#
+### Queries to be run in OntoBuiltEnv namespace ###
+#
+
+# Total number of instantiated buildings in OntoBuiltEnv (i.e. buildings with UPRN info in OntoCityGml)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property }
+
+
+# Total number of properties with genuine EPC information (i.e. excluding parent buildings with "summarised" EPCs)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+      	?property obe:hasLatestEPC ?epc .
+       FILTER NOT EXISTS {?property ^obe:isIn ?flat}
+      }
+
+
+# Total number of properties with sales information, i.e. previous transaction record
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+      	?property obe:hasLatestTransactionRecord ?tx .
+      }
+
+
+# Total number of properties with EPC and sales information
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+        ?property obe:hasLatestEPC ?epc .
+       	FILTER NOT EXISTS {?property ^obe:isIn ?flat}
+      	?property obe:hasLatestTransactionRecord ?tx .
+      }

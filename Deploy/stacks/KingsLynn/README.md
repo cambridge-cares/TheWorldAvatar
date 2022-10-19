@@ -196,6 +196,12 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 ### River Levels Agent
 
 
+&nbsp;
+# Tracking instantiated building information
+
+The `resources` folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
+
+
 <!-- Links -->
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
@@ -215,6 +221,5 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
 [EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
-
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 
