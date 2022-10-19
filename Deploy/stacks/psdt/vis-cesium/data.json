@@ -32,6 +32,35 @@
             ]
         },
         {
+            "name": "Abwasser",
+            "sources": [
+                {
+                    "id": "main-network-kml-source",
+                    "type": "kml",
+                    "uri": "http://localhost:3838/static/ps/sewage/main_network.kml"
+                },
+                {
+                    "id": "sub-network-kml-source",
+                    "type": "kml",
+                    "uri": "http://localhost:3838/static/ps/sewage/sub_network.kml"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "main-network-kml-layer",
+                    "name": "Hauptnetz",
+                    "source": "main-network-kml-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "sub-network-kml-layer",
+                    "name": "Nebennetz",
+                    "source": "sub-network-kml-source",
+                    "visibility": "none"
+                }
+            ]
+        },
+        {
             "name": "Digitales Landschaftsmodell",
             "sources": [
                 {
