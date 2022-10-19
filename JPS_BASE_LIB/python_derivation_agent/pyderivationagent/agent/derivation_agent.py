@@ -511,7 +511,7 @@ class DerivationAgent(ABC):
                     # information
                     updated = self.derivationClient.getDerivation(derivationIRI)
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = updated.getTimestamp()
-                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = updated.getBelongsToMap()
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(updated.getBelongsToMap()))
                     self.logger.info("Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
                                      + str(res))
             else:

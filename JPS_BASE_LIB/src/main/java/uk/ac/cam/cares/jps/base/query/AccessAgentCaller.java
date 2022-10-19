@@ -123,7 +123,7 @@ public class AccessAgentCaller{
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
 		//Unpack results into JSONArray
-		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
+		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString(JPSConstants.RESULT_KEY));
 	}
 	
 	/**
