@@ -115,7 +115,7 @@ def pubchem_prop_insert(uuid, cid, props):
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChI \'#Standard InChI#\'^^xsd:string .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:pubChemCID #CID# .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:SMILES \'#Canonical SMILES#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChIKey \'#Standard InChI#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:inChIKey \'#Standard InChIKey#\' .
     }    
     """.replace('#CID#', cid).replace('#uuid#', uuid)
     # replace "InChI=1S", "InChI=1"
