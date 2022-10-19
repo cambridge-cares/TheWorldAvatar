@@ -45,6 +45,7 @@ OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HAS_TOTAL_FLOOR_AREA = OBE + 'hasTotalFloorArea'
+OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
@@ -83,7 +84,6 @@ XSD_DATETIMESTAMP = XSD + 'dateTimeStamp'
 
 # Ontology of units of measure
 OM_AREA = OM + 'Area'
-OM_HEIGHT = OM + 'Height'
 OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
 OM_HAS_VALUE = OM + 'hasValue'
 OM_MEASURE = OM + 'Measure'
@@ -91,9 +91,8 @@ OM_NUM_VALUE = OM + 'hasNumericalValue'
 OM_HAS_UNIT = OM + 'hasUnit'
 OM_UNIT = OM + 'Unit'
 OM_SYMBOL = OM + 'symbol'
-OM_M = OM + 'metre'
 OM_M2 = OM + 'squareMetre'
-OM_GBP = OM + 'poundSterling'
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
 
 # OntoTimeSeries
 TS_TIMESERIES = TS + 'TimeSeries'
