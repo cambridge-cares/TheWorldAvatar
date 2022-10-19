@@ -10,7 +10,7 @@
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326"
             },    
-            "skip": true
+            "skip": false
         }
     ],
     "mappings": [

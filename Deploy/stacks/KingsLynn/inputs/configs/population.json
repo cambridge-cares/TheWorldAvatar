@@ -10,7 +10,7 @@
             "options": {
                 "sridIn": "EPSG:27700"
             },
-            "skip": true
+            "skip": false
         }
     ]
 }

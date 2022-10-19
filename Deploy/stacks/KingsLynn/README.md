@@ -79,7 +79,8 @@ chmod -R +rwx <REPO NAME>
 To be revised/checked, incl. links in data readmes
 </span>
 
-A few datasets/files to be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.2
+A few datasets/files to be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
+
 The following steps explain how to upload the data to the stack:
 
 1) Copy all relevant files from the `inputs` folder of this repository into the `inputs` folder of  the stack data uploader repository:
@@ -90,7 +91,7 @@ The following steps explain how to upload the data to the stack:
 
     c) Copy all data sub-directories from the `inputs/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
-2) Create a quad- and geospatially-enabled Blazegraph namespace `ocgml` via the Blazegraph GUI, i.e. http://128.199.197.40:3838/blazegraph/ui/#namespaces
+2) Create a quad- and geospatially-enabled Blazegraph namespace `ocgml` via the Blazegraph GUI, i.e. http://165.232.172.16:3838/blazegraph/ui/#namespaces
 
 3) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
     ```bash
