@@ -1300,7 +1300,11 @@
         endif
         write(formstr,'(a,i6,a)')'(/a19,',ndays,'(3x,a5))'
         write(rpt_unit,formstr)yrstr,(dates(d),d=d1,d2)
-        write(formstr,'(a,i1,a)')'(2x,a18,3x,i2,',ndays-1,'(6x,i2))'
+        if (ndays .eq. 1) then
+            write(formstr,'(a,i1,a)')'(2x,a18,3x,i2,(6x,i2))'
+        else
+            write(formstr,'(a,i1,a)')'(2x,a18,3x,i2,',ndays-1,'(6x,i2))'
+        endif
     o3: do o=1,4
             write(rpt_unit,formstr)obs_lines(o),(pbl_obs(o,d),d=d1,d2)
         enddo o3
