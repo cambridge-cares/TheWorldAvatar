@@ -28,7 +28,7 @@
                     "name": "Gebäude (3D, LoD2)",
                     "source": "buildings-lod2-tiles-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -36,7 +36,7 @@
                     "name": "Erlenbrunnerstr. 45 (3D, LoD3)",
                     "source": "erlenbrunnerstr45-lod3-tiles-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 }
             ]
@@ -139,7 +139,7 @@
                     "name": "Gewässer und Bauwerke an Gewässern (Flächen)",
                     "source": "dlm-gew01f-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -147,7 +147,7 @@
                     "name": "Gewässer und Bauwerke an Gewässern (Linien)",
                     "source": "dlm-gew01l-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -155,7 +155,7 @@
                     "name": "Baulich geprägte Flächen",
                     "source": "dlm-sie02f-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -163,7 +163,7 @@
                     "name": "Bauwerke und sonstige Einrichtungen (Punkte)",
                     "source": "dlm-sie03p-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -171,7 +171,7 @@
                     "name": "Landwirtschaftliche Nutzflächen",
                     "source": "dlm-veg01f-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -179,7 +179,7 @@
                     "name": "Forstwirtschaftliche Nutzflächen",
                     "source": "dlm-veg02f-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -187,7 +187,7 @@
                     "name": "Straßenverkehr (Linien)",
                     "source": "dlm-ver01l-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -195,7 +195,7 @@
                     "name": "Wege (Linien)",
                     "source": "dlm-ver02l-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -203,7 +203,7 @@
                     "name": "Bahnverkehr (Flächen)",
                     "source": "dlm-ver03f-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -211,7 +211,7 @@
                     "name": "Bahnverkehr (Linien)",
                     "source": "dlm-ver03l-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -219,7 +219,7 @@
                     "name": "Angaben zum Straßennetz (Punkte)",
                     "source": "dlm-ver07p-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 }
             ]
@@ -258,7 +258,7 @@
                     "name": "Einstrahlungsraster",
                     "source": "solarirradiation-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -266,7 +266,7 @@
                     "name": "Photovoltaik",
                     "source": "solarpv-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -274,7 +274,7 @@
                     "name": "Solarthermie",
                     "source": "solarthermal-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 }
             ]
@@ -305,7 +305,7 @@
                     "name": "Elevation",
                     "source": "elevation-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -313,7 +313,7 @@
                     "name": "Höhenlinien",
                     "source": "elevation-contours-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 }
             ]
@@ -360,7 +360,7 @@
                     "name": "Elektrische Überlandleitungen (Transmission)",
                     "source": "power_lines_lines-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -369,7 +369,7 @@
                     "source": "power_lines_points-source",
                     "type": "symbol",
                     "layout": {
-                        "visibility": "visible",
+                        "visibility": "none",
                         "icon-image": "education",
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 8, 0.4, 18, 0.8],
                         "icon-allow-overlap": true,
@@ -381,7 +381,7 @@
                     "name": "Elektrische Überlandleitungen (Verteilung)",
                     "source": "power_minor_lines_lines-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 },
                 {
@@ -389,7 +389,7 @@
                     "name": "Mittelspannungsmasten",
                     "source": "power_minor_lines_points-source",
                     "layout": {
-                        "visibility": "invisible"
+                        "visibility": "none"
                     }
                 }
             ]
