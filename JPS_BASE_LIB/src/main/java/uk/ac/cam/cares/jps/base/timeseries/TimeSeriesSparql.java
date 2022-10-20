@@ -44,7 +44,7 @@ public class TimeSeriesSparql {
 	
 	// Namespaces for ontology and knowledge base
 	public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
-	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
+	public static final String ns_kb = "https://www.theworldavatar.com/kb/ontotimeseries/";
 	
 	// Prefixes
 	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(ns_ontology));
