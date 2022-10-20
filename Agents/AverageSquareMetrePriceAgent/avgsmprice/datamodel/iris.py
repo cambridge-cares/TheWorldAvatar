@@ -11,8 +11,8 @@ SKOS = 'http://www.w3.org/2004/02/skos/core#'
 TIME = 'https://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # Office for National Statistics
-ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
-ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
+ONS1 = 'http://statistics.data.gov.uk/def/spatialrelations/'
+ONS2 = 'http://statistics.data.gov.uk/def/postcode/'
 # HM Land Registry
 LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 LRCOMMON = 'http://landregistry.data.gov.uk/def/common/'
@@ -24,7 +24,7 @@ UOM = 'http://theworldavatar.com/resource/ontouom/'
 OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
 OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 # Knowledge base
-KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
+KB = 'https://www.theworldavatar.com/kb/ontobuiltenv/'
 
 ###--- IRIs for OntoBuiltEnv TBox ---###
 # http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
@@ -107,6 +107,7 @@ ICONTACT_HAS_STREET_NUMBER = ICONTACT + 'hasStreetNumber'
 ICONTACT_HAS_BUILDING = ICONTACT + 'hasBuilding'
 
 # Office for National Statistics (ONS)
-ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
-ONS_NAME = ONS1 + 'officialname'
-ONS_BEST_LOCAL_AUTHORITY = ONS2 + 'localauthoritydistrict'
+ONS_POSTCODE = ONS2 + 'unit'
+ONS_WITHIN_SOSA = ONS1 + 'within#superoutputarealowerlayer'
+ONS_EASTING = ONS1 + 'epsg-27700/easting'
+ONS_NORTHING = ONS1 + 'epsg-27700/northing'

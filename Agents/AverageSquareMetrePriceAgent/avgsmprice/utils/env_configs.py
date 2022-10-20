@@ -40,3 +40,4 @@ def retrieve_settings():
 # TODO: Revert to work with the stack
 #retrieve_settings()
 DATABASE = 'postgres'
+ONS_ENDPOINT = 'http://statistics.data.gov.uk/sparql'
