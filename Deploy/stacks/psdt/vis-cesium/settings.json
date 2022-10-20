@@ -4,17 +4,5 @@
         "heading": 0,
         "pitch": -40,
         "roll": 0.0
-    },
-    "imagery": {
-        "Light": "https://api.mapbox.com/styles/v1/cmclinnovations/cl6p66equ000314pj8v0p60ub/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA",
-        "Dark": "https://api.mapbox.com/styles/v1/cmclinnovations/cl6owj7v2000415q1oj9aq5zq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA",
-        "Outdoors": "https://api.mapbox.com/styles/v1/cmclinnovations/cl6p69s56000t14p47gpfhg1o/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA",
-        "Satellite (Raw)": "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token=",
-        "Satellite (Labelled)": "https://api.mapbox.com/styles/v1/mapbox/satellite-v9-streets/tiles/256/{z}/{x}/{y}?access_token=",
-        "default": "Dark"
-    },
-    "search": {
-        "Name": "name",
-        "ID": "id"
     }
 }
