@@ -13,8 +13,8 @@ services:
       - DATABASE=postgres # currently ontop reads from the default database
       - SCOPE_TABLE_NAME=scopes
       - AERMOD_AGENT_IRI=http://theworldavatar.com/kb/AermodAgent 
-      - AERMOD_AGENT_URL=http://host.docker.internal:8081/AermodAgent
-      - WEATHER_AGENT_URL=http://host.docker.internal:8086/WeatherAgent/CreateStation
+      - AERMOD_AGENT_URL=http://aermod-agent:8080/AermodAgent/
+      - WEATHER_AGENT_URL=http://weatheragent:8080/WeatherAgent/CreateStation
     configs:
       - postgis
       - blazegraph

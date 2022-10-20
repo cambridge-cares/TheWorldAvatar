@@ -96,7 +96,7 @@ public class InitialiseSimulation extends HttpServlet {
             if (scopeIri != null && polygon4326 != null) {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                // queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
+                queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
                 try {
                     resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
                 } catch (IOException e) {

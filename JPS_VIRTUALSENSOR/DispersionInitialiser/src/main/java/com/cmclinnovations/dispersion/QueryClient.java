@@ -45,6 +45,7 @@ public class QueryClient {
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
     private static final Iri NX = P_DISP.iri("nx");
     private static final Iri NY = P_DISP.iri("ny");
+    private static final Iri REPORTING_STATION = iri("https://www.theworldavatar.com/kg/ontoems/ReportingStation");
 
     // properties
     private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
@@ -77,7 +78,8 @@ public class QueryClient {
         modify.insert(iri(Config.AERMOD_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
 		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.AERMOD_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
-        modify.insert(partIri.has(hasType, SIMULATION_TIME)).prefix(P_DISP);
+        modify.insert(partIri.has(hasType, SIMULATION_TIME)).insert(partIri.has(hasType, NX)).insert(partIri.has(hasType, NY)).insert(partIri.has(hasType, SCOPE))
+        .insert(partIri.has(hasType, REPORTING_STATION)).prefix(P_DISP);
 
         storeClient.executeUpdate(modify.getQueryString());
     }
@@ -114,7 +116,7 @@ public class QueryClient {
         inputs.add(nxIri);
         inputs.add(nyIri);
 
-        derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATION);
+        derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATIONWITHTIMESERIES);
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
     }
