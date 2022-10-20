@@ -90,8 +90,13 @@ class CesiumUtils {
         // Remove base layer
         MapHandler.MAP.imageryLayers.remove(baseLayer, true);
 
-        let tileURL = imagerySettings[mode];
+        let tileURL = imagerySettings[mode] as string;
         if(tileURL == null) return;
+
+        // Add the API if missing
+        if(tileURL.endsWith("access_token=")) {
+            tileURL += MapHandler.MAP_API;
+        }
 
         // Add our own imagery provider
         let imageryProvider = new Cesium.UrlTemplateImageryProvider({
