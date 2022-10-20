@@ -12,6 +12,18 @@
                     "uri": "http://localhost:3838/static/ps/buildings/lod2/qt_2_0___tileset.json"
                 },
                 {
+                    "id": "hugo-ball-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball.json",
+                    "position": [7.621656, 49.191238, -3.72]
+                },
+                {
+                    "id": "hugo-ball-ceiling-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball_ceiling.json",
+                    "position": [7.621656, 49.191238, -3.72]
+                },
+                {
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
@@ -29,6 +41,18 @@
                     "id": "buildings-lod2-tiles-layer",
                     "name": "Gebäude (3D, LoD2)",
                     "source": "buildings-lod2-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "hugo-ball-lod3-tiles-layer",
+                    "name": "Hugo-Ball-Gymnasium (3D, LoD3)",
+                    "source": "hugo-ball-lod3-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "hugo-ball-ceiling-lod3-tiles-layer",
+                    "name": "Hugo-Ball-Gymnasium, Dach (3D, LoD3)",
+                    "source": "hugo-ball-ceiling-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
