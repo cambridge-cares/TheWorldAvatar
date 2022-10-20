@@ -13,7 +13,8 @@
                 {
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
                     "type": "tiles",
-                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json"
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
+                    "position": [7.622558286283648, 49.180524413548824, 0.0]
                 }
             ],
             "layers": [
