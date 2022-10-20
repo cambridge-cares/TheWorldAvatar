@@ -83,13 +83,13 @@ A few datasets/files to be uploaded to the stack are provided in the `inputs` fo
 
 The following steps explain how to upload the data to the stack:
 
-1) Copy all relevant files from the `inputs` folder of this repository into the `inputs` folder of  the stack data uploader repository:
+1) Copy all relevant files from the `inputs/datauploader` folder of this repository into the `inputs` folder of  the stack data uploader repository:
 
-    a) Copy the configuration files from the `inputs/configs/` directory to the matching directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/configs/`
+    a) Copy the configuration files from the `inputs/datauploader/configs/` directory to the matching directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/configs/`
 
-    b) Replace the `readme.txt` files in the `inputs/data/*` sub-folders with the referenced data files from `../../Data/...`
+    b) Replace the `readme.txt` files in the `inputs/datauploader/data/*` sub-folders with the referenced data files from `../../Data/...`
 
-    c) Copy all data sub-directories from the `inputs/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
+    c) Copy all data sub-directories from the `inputs/datauploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
 2) Create a quad- and geospatially-enabled Blazegraph namespace `ocgml` via the Blazegraph GUI, i.e. http://165.232.172.16:3838/blazegraph/ui/#namespaces
 
@@ -190,11 +190,21 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 ### MetOffice Agent
 
 - no explicit namespace is created, default `kb` is used
+All sensor data (flood, AQ, metoffice) in KB
 
 ### AirQuality Agent
 
 ### River Levels Agent
 
+
+&nbsp;
+# Visualisation
+
+The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]).
+
+## Feature Info Agent
+
+The Feature Info Agent is used to retrieve meta data for visualisation. Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. The required `.sparql` files to be placed inside the agent before building are provided in the `inputs\feature_info_agent` repository.
 
 &nbsp;
 # Tracking instantiated building information
@@ -213,6 +223,10 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [OS Features API]: https://api.os.uk/features/
+
+<!-- Visualisation -->
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent
 
 <!-- Agents -->
 [UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
