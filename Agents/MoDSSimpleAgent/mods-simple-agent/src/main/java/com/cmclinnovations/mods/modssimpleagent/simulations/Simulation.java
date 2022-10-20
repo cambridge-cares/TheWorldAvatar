@@ -374,7 +374,7 @@ public class Simulation {
                         copyDirectory(loadDirectory, surrogateDirectory);
 
                         LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                                loadDirectory.toAbsolutePath());
+                            surrogateDirectory.toAbsolutePath());
 
                     } catch (IOException ex) {
                         throw new ResponseStatusException(
