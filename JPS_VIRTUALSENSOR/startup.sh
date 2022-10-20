@@ -5,4 +5,4 @@
 (cd EmissionsAgent/ && ./stack.sh start ship-stack)
 (cd PythonService && ./stack.sh start ship-stack)
 (cd DispersionInitialiser/ && ./stack.sh start ship-stack)
-(cd Episode && ./stack.sh start ship-stack)
+(cd AermodAgent && ./stack.sh start ship-stack)
