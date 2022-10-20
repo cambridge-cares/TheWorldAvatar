@@ -12,9 +12,9 @@ The DTVF is written in [TypeScript](https://www.typescriptlang.org/) and compile
 
 At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows.
 
-* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
+* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike CesiumJS (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
 
-* CesiumJS can handle 2D raster data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support 2D vector data. This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
+* CesiumJS can handle 2D data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
 
 To use the DTVF, developers just need to provide some JSON configuration files and a `index.html` file that imports the remote DTVF library (along with other dependencies), adds some required HTML elements, then calls the startup routine. Template HTML files can be found within the visualisation examples (listed below).
 
@@ -32,7 +32,6 @@ A brief list of these requirements is shown below, but as the current implementa
   * The `name` field needs to contain the human readable name of the feature.
   * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.
   * The `endpoint` field needs to contain the URL of the Blazegraph namespace containing data on the feature. Note that this can be absolute or relative to the FeatureInfoAgent's location.
-* Each group within the `visualisation.json` file needs to contain a `stack` parameter with the base URL of the stack containing that group's data (at least the meta data contained within the knowledge graph).
 
 # Developing the DTVF
 
