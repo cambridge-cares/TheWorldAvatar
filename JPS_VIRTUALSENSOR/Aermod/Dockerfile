@@ -44,18 +44,25 @@ FROM ubuntu:22.10 as aermod_builder
 RUN apt update
 RUN apt install gfortran dos2unix -y
 
-# build AERMOD components
+# build AERMET (meteorological preprocessor)
 COPY aermet_source /root/aermet_source/
 WORKDIR /root/aermet_source
-RUN dos2unix ./gfortran-aermod_allwarn.sh
+RUN dos2unix gfortran-aermod_allwarn.sh
 RUN ./gfortran-aermod_allwarn.sh
+
+# build AERMOD
+COPY aermod_source /root/aermod_source/
+WORKDIR /root/aermod_source
+RUN dos2unix gfortran-aermod.sh
+RUN ./gfortran-aermod.sh
 
 #==================================================================================================
 # Copy compiled executables and war file into tomcat image
 #==================================================================================================
 FROM tomcat:9 as agent
 
-COPY --from=aermod_builder /root/aermet_source/aermet /root
+COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
+COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/
 
 WORKDIR /app
 
