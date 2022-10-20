@@ -4,6 +4,7 @@
     "groups": [
         {
             "name": "Gebäude",
+            "expanded": false,
             "sources": [
                 {
                     "id": "buildings-lod2-tiles-source",
@@ -34,6 +35,7 @@
         },
         {
             "name": "Abwasser",
+            "expanded": false,
             "sources": [
                 {
                     "id": "main-network-kml-source",
@@ -63,6 +65,7 @@
         },
         {
             "name": "Digitales Landschaftsmodell",
+            "expanded": false,
             "sources": [
                 {
                     "id": "dlm-gew01f-source",
@@ -224,6 +227,7 @@
         },
         {
             "name": "Solarkataster",
+            "expanded": false,
             "sources": [
                 {
                     "id": "solarirradiation-source",
@@ -273,6 +277,7 @@
         },
         {
             "name": "Digitales Geländemodell",
+            "expanded": false,
             "sources": [
                 {
                     "id": "elevation-source",
@@ -308,6 +313,7 @@
         },
         {
             "name": "OpenStreetMap",
+            "expanded": false,
             "sources": [
                 {
                     "id": "power_lines_lines-source",
