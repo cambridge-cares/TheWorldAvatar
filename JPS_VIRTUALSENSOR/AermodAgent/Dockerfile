@@ -37,7 +37,7 @@ COPY WEB-INF ./WEB-INF/
 RUN mvn package -DskipTests -U
 
 #==================================================================================================
-# Build aermet components
+# Build aermod components
 #==================================================================================================
 FROM ubuntu:22.10 as aermod_builder
 
