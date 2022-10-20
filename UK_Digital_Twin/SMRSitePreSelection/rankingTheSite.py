@@ -149,8 +149,8 @@ class Ranking():
             
             ## ranking.append([latlon, fuelOrGenType, capa, (totalLifeMonetaryCost + totalSMRCapitalCost) / (10E7), sumUpOfWeightedDemanding / (10E7)])
 
-            obj1 = (totalLifeMonetaryCost + totalSMRCapitalCost) / (10E7)
-            obj2 = sumUpOfWeightedDemanding / (10E7)
+            obj1 = (totalLifeMonetaryCost + totalSMRCapitalCost) / (10E8)
+            obj2 = sumUpOfWeightedDemanding / (10E8)
 
             obj = obj1 * weighter + obj2
 
@@ -226,7 +226,7 @@ if __name__ == '__main__':
 
     startTime_of_EnergyConsumption = "2017-01-31" 
 
-    weightList = [1, 10, 100, 1000, 10000, 100000]
+    weightList = [0.001, 0.01, 0.1] ##  [20,50,80]# [1, 2, 5, 8, 10, 20, 50, 80, 100, 1000, 10000]
 
     retrofitListBeforeSelection, _ = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationFuelOrTechType, topologyNodeIRI_29Bus, queryEndpointIRI)
     ## pre-calculation of each site surrounding population density

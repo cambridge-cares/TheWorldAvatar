@@ -190,7 +190,7 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
     ?Bus_node ontoenergysystem:hasWGS84LatitudeLongitude ?Bus_lat_lon .
     }"""% topologyNodeIRI
     
-    ons_label = endpointList.ONS['lable']
+    ons_label = endpointList.ONS['label']
 
     print('remoteQuery BusAndLatlon and GBOrNIBoundary')
     res_BusAndLatlon = json.loads(performQuery(endPointIRI, queryStr_BusAndLatlon))
@@ -349,7 +349,8 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> . }
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> . }
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K03> . }
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K02> . }
+    ## FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K02> . }
+    FILTER NOT EXISTS { ?Area rdfs:label 'K02000001' . }
     
     OPTIONAL { ?Area a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
     ?Area ont:hasGeometry ?geometry . 
@@ -361,14 +362,19 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     print('...Query ElectricityConsumption_LocalArea...')
     res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri])) 
     print('...Query ElectricityConsumption_LocalArea is done...')
-          
+
+    toBeDeletedIndex = []      
     for r in res:
-      for key in r.keys():
-          if '\"^^' in  r[key] :
-            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-      r['v_TotalELecConsumption'] = float(r['v_TotalELecConsumption'])    
-          
-    for r in res: 
+        for key in r.keys():
+            if '\"^^' in  r[key] :
+                r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+        r['v_TotalELecConsumption'] = float(r['v_TotalELecConsumption'])
+        if r["Area_LACode"] in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+            toBeDeletedIndex.append(res.index(r))
+    for i in toBeDeletedIndex:
+        del res[i]         
+    for r in res:
         if len(r["Geo_InfoList"]) == 0:
             raise Exception(r["Area_LACode"], "does't have the geographical attributes.")
         elif "***" in r['Geo_InfoList']:

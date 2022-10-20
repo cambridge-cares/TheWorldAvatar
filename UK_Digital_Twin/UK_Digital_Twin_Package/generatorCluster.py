@@ -109,7 +109,7 @@ class generatorCluster(object):
         print('****The cluster principle is closestBus****')
         # busInfoList = [Bus_node, Bus_lat_lon (LA code region) ]
         # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
-        ons_label = endpointList.ONS['lable']
+        ons_label = endpointList.ONS['label']
         # detect the location of the bus, in GB or in NI
         busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(busInfoList, ons_label, busLatLonLabel)
         
@@ -125,6 +125,7 @@ class generatorCluster(object):
                     if pp['LACode_PP'].strip() == 'K03000001':
                         pp_within_flag = True
                     else:
+                        print("---Checking if the generator/power plant located in GB (used in generator cluster of the closestBus)---")
                         pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'].strip(), 'K03000001', ons_label)
                 else: 
                     pp_within_flag = False

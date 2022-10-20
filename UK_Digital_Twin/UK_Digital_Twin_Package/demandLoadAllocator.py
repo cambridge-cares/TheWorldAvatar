@@ -26,7 +26,7 @@ class demandLoadAllocator(object):
     which is to assign the regional demanding to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this method may not be suitable anymore."""  
     ###FIXME: this method does not atach the LA code of the demanding areas to the bus who take the load, it may need in the site selection model 
-    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel):
+    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, res_queryElectricityConsumption_LocalArea, busLatLonLabel):
         # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
 
@@ -85,24 +85,24 @@ class demandLoadAllocator(object):
     However, it may generate some unpractical design. For example, a place located in Walse will be allocated to a bus across the Bristol channel,
     which is aginst the reality."""
     # This function is modified from: John Atherton (ja685@cam.ac.uk) #   
-    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, busLatLonLabel:str = "Bus_lat_lon" ):
+    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, res_queryElectricityConsumption_LocalArea, busLatLonLabel:str = "Bus_lat_lon" ):
       # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       ons_label = endpointList.ONS['label']
       ons_iri = endpointList.ONS['queryendpoint_iri']
       ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
-      # query the local consumption
-      res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+    #   # query the local consumption
+    #   res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
     
-      print('****The cluster principle is closestDemandLoad****')
-      # find the centroid of the polygon, the value of the 
-      for ec in res_queryElectricityConsumption_LocalArea:
-          if ec['Geo_InfoList'].geom_type == 'MultiPolygon':
-             ec['Geo_InfoList'] = centroidOfMultipolygon(ec['Geo_InfoList']) 
-          elif ec['Geo_InfoList'].geom_type == 'Polygon':
-              lon = ec['Geo_InfoList'].centroid.x
-              lat = ec['Geo_InfoList'].centroid.y
-              ec['Geo_InfoList'] = [lat, lon] 
+    #   print('****The cluster principle is closestDemandLoad****')
+    #   # find the centroid of the polygon, the value of the 
+    #   for ec in res_queryElectricityConsumption_LocalArea:
+    #       if ec['Geo_InfoList'].geom_type == 'MultiPolygon':
+    #          ec['Geo_InfoList'] = centroidOfMultipolygon(ec['Geo_InfoList']) 
+    #       elif ec['Geo_InfoList'].geom_type == 'Polygon':
+    #           lon = ec['Geo_InfoList'].centroid.x
+    #           lat = ec['Geo_InfoList'].centroid.y
+    #           ec['Geo_InfoList'] = [lat, lon] 
       
       # detect the location of the bus, in GB or in NI
       busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label, busLatLonLabel)   
