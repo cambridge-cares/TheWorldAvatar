@@ -10,6 +10,10 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - AERMET_EXE=./root/aermod/aermet # need to match Dockerfile
+      - AERMOD_EXE=./root/aermod/aermod # need to match Dockerfile
+      - DATABASE=postgres
     configs:
       - postgis
       - blazegraph
@@ -19,16 +23,12 @@ services:
       - postgis_password
       - geoserver_password
     ports:
-      - "8082:8080"
+      - "8081:8080"
     volumes:
       - logs:/root/.jps
-      - misc:/misc
-      - ./data:/data
     networks:
       - stack
 
 volumes:
   logs:
     name: "logs"
-  misc:
-    name: "misc"
