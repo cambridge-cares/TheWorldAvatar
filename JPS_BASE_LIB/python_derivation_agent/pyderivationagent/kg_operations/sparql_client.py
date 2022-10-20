@@ -70,7 +70,10 @@ class PySparqlClient:
             Arguments:
                 query - SPARQL Query string
         """
-        response = self.kg_client.execute(query)
+        try:
+            response = self.kg_client.execute(query)
+        except Exception as e:
+            raise Exception(f"""ERROR: SPARQL query failed, complete SPARQL: {query}""") from e
         return json.loads(response)
 
     def performUpdate(self, update):
@@ -79,7 +82,10 @@ class PySparqlClient:
             Arguments:
                 update - SPARQL Update string
         """
-        self.kg_client.executeUpdate(update)
+        try:
+            self.kg_client.executeUpdate(update)
+        except Exception as e:
+            raise Exception(f"""ERROR: SPARQL update failed, complete SPARQL: {update}""") from e
 
     def uploadOntology(self, filePath):
         """
