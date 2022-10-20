@@ -26,7 +26,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 class MOOonly extends Simulation {
 
-        public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
+        public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+                        InputMetaData inputMetaData)
                         throws IOException {
                 super(request, inputFile, modsBackend, inputMetaData);
         }
@@ -68,10 +69,12 @@ class MOOonly extends Simulation {
                                 .map(MoDSAPI::getVarName)
                                 .collect(Collectors.toList());
 
-                List<Double> minimaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames, InputMetaDataRow::getVarName,
+                List<Double> minimaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames,
+                                InputMetaDataRow::getVarName,
                                 InputMetaDataRow::getMinimum);
 
-                List<Double> maximaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames, InputMetaDataRow::getVarName,
+                List<Double> maximaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames,
+                                InputMetaDataRow::getVarName,
                                 InputMetaDataRow::getMaximum);
 
                 List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,

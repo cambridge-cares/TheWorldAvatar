@@ -71,7 +71,8 @@ public class Simulation {
 
         load(request, modsBackend);
 
-        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend, request.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend,
+                request.getAlgorithms().get(0));
 
         return createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
@@ -114,7 +115,8 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputMetaData inputMetaData) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
@@ -368,13 +370,14 @@ public class Simulation {
                         Path loadDirectory = getLoadDirectory(algorithm);
 
                         if (!Files.exists(loadDirectory)) {
-                            throw new IOException("File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                            throw new IOException(
+                                    "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
                         }
 
                         copyDirectory(loadDirectory, surrogateDirectory);
 
                         LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                            surrogateDirectory.toAbsolutePath());
+                                surrogateDirectory.toAbsolutePath());
 
                     } catch (IOException ex) {
                         throw new ResponseStatusException(
