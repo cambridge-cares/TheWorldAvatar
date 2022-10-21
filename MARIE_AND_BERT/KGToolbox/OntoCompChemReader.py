@@ -73,6 +73,7 @@ class OntoCompChemReader:
             species = row['species']['value'].split('/')[-1]
             ocIRI = row['ocIRI']['value'].split('/')[-1]
             triples.append((ocIRI, 'oc:hasUniqueSpecies', species))
+            triples.append((species, 'type', "os:Species"))
 
 
             for col_n in col_names:

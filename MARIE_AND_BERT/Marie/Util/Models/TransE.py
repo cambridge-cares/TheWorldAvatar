@@ -38,7 +38,6 @@ class TransE(nn.Module):
         pretrained_rel_embedding = torch.FloatTensor(tsv_file_rel.values)
         self.rel_embedding = nn.Embedding.from_pretrained(pretrained_rel_embedding).requires_grad_(True)
         # self.rel_embedding.weight.data[:-1, :].div_(self.rel_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
-
         return self.rel_embedding
 
     def _init_ent_embedding(self):
