@@ -170,7 +170,14 @@ class DerivationAgent(ABC):
                             self.yag.send(
                                 self.email_recipient,
                                 f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
-                                [format_current_time(), str(e), traceback.format_exc()]
+                                [
+                                    format_current_time(),
+                                    # the "<" and ">" may exist in exception message if any IRI is presented, e.g. <http://iri>
+                                    # here we replace them to HTML entities, so that the IRIs can be displayed correctly
+                                    # for more information about HTML entities, visit https://www.w3schools.com/html/html_entities.asp
+                                    str(e).replace("<", "&lt;").replace(">", "&gt;"),
+                                    traceback.format_exc()
+                                ]
                             )
                         except Exception as yag_e:
                             # if failed to send email, log the error and continue
