@@ -8,23 +8,28 @@ import torch.nn.functional as F
 from torch.nn.init import xavier_uniform_
 from Marie.Util.Embedding.EmbeddingTrainer import Trainer
 from Marie.Util.location import DATA_DIR
+from KGToolbox.NHopExtractor import HopExtractor
 
 
 class Complex(nn.Module):
 
-    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cpu'):
+    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cpu', dataset_dir=None):
         super(Complex, self).__init__()
         self.dim = dim
         self.ent_num = ent_num
         self.rel_num = rel_num
         self.device = device
-        self.re_rel = self._init_rel_embedding()
-        self.im_rel = self._init_rel_embedding()
-        self.re_ent = self._init_ent_embedding()
-        self.im_ent = self._init_ent_embedding()
+        self.dataset_dir = dataset_dir
 
-        self.criterion = nn.MarginRankingLoss(margin=0)
-        self._klloss = torch.nn.KLDivLoss(reduction='sum')
+        if resume_training:
+            self.re_ent, self.im_ent = self.load_embedding(embedding_name="ent_embedding.tsv")
+            self.re_rel, self.im_rel = self.load_embedding(embedding_name="rel_embedding.tsv")
+
+        else:
+            self.re_rel = self._init_rel_embedding()
+            self.im_rel = self._init_rel_embedding()
+            self.re_ent = self._init_ent_embedding()
+            self.im_ent = self._init_ent_embedding()
 
     def _init_ent_embedding(self):
         """
@@ -41,6 +46,14 @@ class Complex(nn.Module):
         xavier_uniform_(rel_embeddings.weight.data)
         return rel_embeddings
 
+    def load_embedding(self, embedding_name):
+        tsv_file = pandas.read_csv(os.path.join(self.dataset_dir, embedding_name), sep='\t', header=None)
+        re, im = tsv_file.iloc[:, : self.dim], tsv_file.iloc[:, self.dim:]
+        re = torch.FloatTensor(re.values)
+        im = torch.FloatTensor(im.values)
+        return nn.Embedding.from_pretrained(re).requires_grad_(True), \
+               nn.Embedding.from_pretrained(im).requires_grad_(True)
+
     def forward(self, triples):
         target = triples[3]
         pred = self.score(triples).to(self.device)
@@ -49,12 +62,9 @@ class Complex(nn.Module):
     def predict(self, triple):
         return self.score(triple)
 
-    def pointwise_logistic(self, preds, target):
-        loss = F.softplus(target * preds).mean()
-        return loss
-
     def pointwise_bce(self, preds, target):
-        loss = torch.nn.BCEWithLogitsLoss()(preds, torch.clamp(target, min=0.0, max=1.0))
+        loss = torch.nn.BCEWithLogitsLoss()(torch.clamp(preds, min=0.0, max=1.0),
+                                            target)  # torch.clamp(target, min=0.0, max=1.0))
         return loss
 
     def score(self, triple):
@@ -76,9 +86,6 @@ class Complex(nn.Module):
 
         return pred
 
-        # target = torch.tensor([-1], dtype=torch.long, device=self.device)
-        # return self.criterion(positive_distances, negative_distances, target).to(self.device)
-
 
 if __name__ == '__main__':
     full_dir = os.path.join(DATA_DIR, 'ontocompchem_calculation')
@@ -86,7 +93,8 @@ if __name__ == '__main__':
     e2i_path = open(os.path.join(full_dir, f'entity2idx.pkl'), 'rb')
     rel_num = len(pickle.load(r2i_path).keys())
     ent_num = len(pickle.load(e2i_path).keys())
-    model = Complex(dim=20, rel_num=rel_num, ent_num=ent_num)
-    trainer = Trainer(model=model, dataset_name='ontocompchem_calculation', epochs=5000, learning_rate=1,
-                      pointwise=True, batch_size=32, save_model=True, complex=True)
+    model = Complex(dim=40, rel_num=rel_num, ent_num=ent_num,
+                    dataset_dir=os.path.join(DATA_DIR, "ontocompchem_calculation"), resume_training=True)
+    trainer = Trainer(model=model, dataset_name='ontocompchem_calculation', epochs=5000, learning_rate=1e-10,
+                      pointwise=True, batch_size=32, save_model=True, complex=True, gamma=1)
     trainer.train()
