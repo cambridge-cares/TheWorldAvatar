@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,10 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.Sensitivities;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.Sensitivity;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLables;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -433,6 +438,58 @@ public class Simulation {
 
     public Request getResults() {
         return getResponse();
+    }
+
+    public Request getSensitivity() {
+
+        String simDir = getModsBackend().getSimDir().toString();
+        String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+
+        String algName = getPrimaryAlgorithm().getType();
+        List<String> xVarNames = MoDSAPI.getXVarNames(simDir, algName);
+        List<String> yVarNames = MoDSAPI.getYVarNames(simDir, algName);
+
+        List<List<List<Double>>> allSens = MoDSAPI.getHDMRSensitivities(simDir, surrogateName);
+
+        int nX = xVarNames.size();
+        int nY = allSens.size();
+
+        // Compile the labels for each term. Only defined up to second order for now
+        List<List<String>> termLabels = new ArrayList<>(2);
+        termLabels.add(xVarNames);
+        List<String> secondOrderTermLabels = new ArrayList<>(nX * (nX - 1) / 2);
+        for (int ix1 = 0; ix1 < nX; ix1++) {
+            for (int ix2 = ix1 + 1; ix2 < nX; ix2++) {
+                secondOrderTermLabels.add(xVarNames.get(ix1) + " and " + xVarNames.get(ix2));
+            }
+        }
+        termLabels.add(secondOrderTermLabels);
+
+        // /*
+        // * The number of orders shown is limited by both the data and the term
+        // * labels defined above
+        // */
+        int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
+
+        List<Sensitivity> sensitivityList = new ArrayList<>(nY);
+
+        for (int iy = 0; iy < nY; iy++) {
+            List<SensitivityLables> sensitivityLablesList = new ArrayList<>(nOrdersToShow);
+            List<SensitivityValues> sensitivityValuesList = new ArrayList<>(nOrdersToShow);
+            for (int iOrder = 0; iOrder < nOrdersToShow; iOrder++) {
+                // iOrder + 1 so ordering starts at 1 instead of 0
+                sensitivityLablesList.add(new SensitivityLables(iOrder + 1, termLabels.get(iOrder)));
+                sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
+            }
+            sensitivityList.add(new Sensitivity(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
+        }
+
+        Sensitivities sensitivities = new Sensitivities(sensitivityList);
+
+        Request results = getResponse();
+        results.setSensitivities(sensitivities);
+
+        return results;
     }
 
     public InputMetaData getInputMetaData() {
