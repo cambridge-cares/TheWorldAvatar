@@ -26,7 +26,7 @@ h6 {
     font-weight: 700;
 }
 
-/* MapBox Elements */
+/* Mapbox Elements */
 #map {
     width: calc(100% - 500px);
     height: 100%;
@@ -171,13 +171,13 @@ h6 {
 
 #contentContainer {
     width: 100%;
-    height: calc(100% - 80px);
+    height: calc(100% - 115px);
     margin-bottom: 70px;
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
 #meta-tree {
@@ -802,22 +802,28 @@ label[for="select-feature"] {
 }
 
 
+/* ===== Scrollbar CSS ===== */
 
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background-color: rgb(200, 200, 200, 0.5);
-    border-radius: 10px;
+/* Firefox */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: #4b4b4b #c8c8c8;
 }
-
-::-webkit-scrollbar {
-    width: 10px;
-    background-color: #F5F5F5;
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
 }
-
-::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-track {
+    background: transparent;
     border-radius: 10px;
-    background-color: #4b753e;
+    border: 1px solid rgb(220, 220, 220);
+}
+*::-webkit-scrollbar-thumb {
+    background-color: rgb(180, 180, 180);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 /**
@@ -1082,7 +1088,7 @@ label[for="select-feature"] {
     background-color: transparent !important;
     color: white !important;
     font-family: "Inter", sans-serif !important;
-    font-size: 9pt !important;
+    font-size: 8pt !important;
 
     display: inline-block;
     white-space: nowrap;
@@ -1101,18 +1107,18 @@ label[for="select-feature"] {
 }
 
 .fa-chevron-down {
-    font-size: 10pt !important;
+    font-size: 8pt !important;
     line-height: inherit !important;
     vertical-align: middle;
     padding-right: 4px;
-    padding-bottom: 4px;
+    translate: 0px 2px;
 }
 .fa-chevron-up {
-    font-size: 10pt !important;
+    font-size: 8pt !important;
     line-height: inherit !important;
     vertical-align: middle;
     padding-right: 4px;
-    padding-bottom: 4px;
+    translate: 0px 2px;
 }
 
 .hummingbird-treeview, .hummingbird-treeview * {
@@ -1126,8 +1132,10 @@ label[for="select-feature"] {
 }
 .hummingbird-treeview  span {
     vertical-align: middle;
-    font-size: 9pt !important;
+    font-size: 8pt !important;
 }
+
+
 
 #finderContainer {
     position: absolute;
@@ -1144,20 +1152,24 @@ label[for="select-feature"] {
 
 #cesiumMetaBox {
     width: 200px;
-    height: 30px;
+    min-height: 30px;
     bottom: 100px;
     left: 100px;
 
     font-family: "Inter", sans-serif !important;
-    font-size: 11pt;
+    font-size: 10pt;
     text-align: center;
     line-height: 30px;
 
     border-radius: 3px;
-    background-color: linear-gradient(#f5f5ff, #e1e1eb);
+    background-color: rgb(235, 235, 245);
     color: black;
     position: absolute;
     box-shadow: 3px 3px 3px black;
   
+    display: none;
+}
+
+.cesium-viewer-bottom {
     display: none;
 }

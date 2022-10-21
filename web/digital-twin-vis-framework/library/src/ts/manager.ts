@@ -24,6 +24,11 @@ class Manager {
     public static STACK_LAYERS = {};
 
     /**
+     * Global visualisation settings.
+     */
+    public static SETTINGS: Settings;
+
+    /**
      * Map handler instance.
      */
     private mapHandler: MapHandler;
@@ -59,7 +64,7 @@ class Manager {
         // Initialise the map handler instance
         switch(mapProvider) {
             case MapProvider.MAPBOX:
-                this.mapHandler = new MapHandler_MapBox(this);
+                this.mapHandler = new MapHandler_Mapbox(this);
             break;
 
             case MapProvider.CESIUM:
@@ -74,56 +79,44 @@ class Manager {
 
     /**
      * Initialise the (blank) map instance via the map handler.
-     * 
-     * @param mapOptionsOverride dictionary of default map options. If passed this will be used
-     * when initialising the map rather than any meta data stored within DataGroups.
      */
-    public initialiseMap(mapOptions: Object) {
+    public initialiseMap() {
         // Initialise the map
-
-        if(mapOptions === null || mapOptions === undefined) {
-            // Try to pick up map options from the first listed stack
-            let firstRoot = Manager.DATA_STORE.dataGroups[0];
-            if(firstRoot.mapOptions !== null) {
-                mapOptions = firstRoot.mapOptions;
-            }
-        }
-
+        let mapOptions = Manager.SETTINGS.getSetting("start");
         this.mapHandler.initialiseMap(mapOptions);
+
         this.controlHandler.showControls();
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
 
         // Override CTRL+F shortcut for feature searching (BETA)
-        let searchBox = document.getElementById("finderContainer");
-        if(searchBox !== null) {
+        // let searchBox = document.getElementById("finderContainer");
+        // if(searchBox !== null) {
 
-            let self = this;
-            document.addEventListener("keydown", function(e){
-                if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
-                    if(self.searchUp) {
-                        self.hideSearch();
-                    } else {
-                        self.showFeatureFinder();
-                    }
-                    e.preventDefault();
-                }
+        //     let self = this;
+        //     document.addEventListener("keydown", function(e){
+        //         if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
+        //             if(self.searchUp) {
+        //                 self.hideSearch();
+        //             } else {
+        //                 self.showFeatureFinder();
+        //             }
+        //             e.preventDefault();
+        //         }
 
-                if(e.altKey && e.key === "Enter") {
-                    self.toggleFullscreen();
-                    console.log(MapHandler.MAP.camera.position);
+        //         if(e.altKey && e.key === "Enter") {
+        //             self.toggleFullscreen();
                     
-                    var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
-                    var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
-                    // @ts-ignore
-                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
-                    // @ts-ignore
-                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-                    console.log(longitudeString + ", " + latitudeString);
-                }
-            });
-        }
+        //             var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
+        //             var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
+        //             // @ts-ignore
+        //             var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
+        //             // @ts-ignore
+        //             var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
+        //         }
+        //     });
+        // }
     }
 
     private toggleFullscreen() {
@@ -159,10 +152,7 @@ class Manager {
     }
 
     /**
-     * Given the location of one (or more) visualisation files, query and parse
-     * them all into object definitions. 
-     * 
-     * @param endPoints visualisation endpoints
+     * Loads the definition of data groups and the global visualisation settings.
      * 
      * @returns promise object
      */
@@ -170,8 +160,13 @@ class Manager {
         Manager.STACK_LAYERS = {};
         let promises = [];
 
-        let visFile = "./visualisation.json";
-        promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
+        // Initialise global settings
+        Manager.SETTINGS = new Settings();
+        promises.push(Manager.SETTINGS.loadSettings("./settings.json"));
+
+        // Load data definitions
+        promises.push(Manager.DATA_STORE.loadDataGroups("./data.json"));
+
         return Promise.all(promises);
     }
 
@@ -183,7 +178,7 @@ class Manager {
 
             if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-                let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
+                let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
                 promises.push(iconPromise);
             }
 
@@ -239,14 +234,9 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature, properties) {
-        console.log(feature);
-        console.log(properties);
+        let name = getName(properties);
 
-        // Title
-        let name = null;
-        if(properties.hasOwnProperty("name")) {
-            name = properties["name"];
-        } else {
+        if(name == null) {
             if(feature.hasOwnProperty("id")) {
                 name = "Feature " + feature["id"];
             } else {
@@ -337,13 +327,25 @@ class Manager {
         let titleContainer = document.getElementById("titleContainer");
         if(titleContainer.classList.contains("clickable")) {
 
-            let target = getCenter(window.currentFeature);
-            MapHandler.MAP.easeTo({
-                center: target,
-                zoom: 16,
-                duration: 3000,
-                essential: true
-            });
+            let target = window.currentFeature;
+            if(target == null) return;
+
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    target = getCenter(target);
+
+                    MapHandler.MAP.easeTo({
+                        center: target,
+                        zoom: 16,
+                        duration: 3000,
+                        essential: true
+                    });
+                break;
+
+                case MapProvider.CESIUM:
+                   CesiumUtils.flyToFeature(target);
+                break;
+            }
         };
     }
 
@@ -521,7 +523,7 @@ class Manager {
             return null;
 
         } else {
-            // MapBox or WMS feature?
+            // Mapbox or WMS feature?
             let layer = feature["layer"]["id"];
 
             if(layer !== null && layer !== undefined) {
