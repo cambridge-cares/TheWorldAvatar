@@ -49,6 +49,9 @@ class TSClient:
 
         # 2) Initiliase TimeSeriesClient
         try:
+            #TODO: fix this
+            # An error occurred while calling None.uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient. Trace:
+            # py4j.Py4JException: Constructor uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient([class uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient, class java.lang.Class])
             self.tsclient = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
             #logger.error("Unable to initialise TS client.")

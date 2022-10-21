@@ -8,14 +8,17 @@
 
 import json
 import uuid
+import urllib.parse
+import requests
 
 #import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from avgsmpriceagent.datamodel.iris import *
 from avgsmpriceagent.datamodel.data_mapping import GBP_PER_SM
-from avgsmpriceagent.errorhandling.exceptions import KGException
+from avgsmpriceagent.errorhandling.exceptions import KGException, APIException
 from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
+from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
 
 
 # Initialise logger
@@ -47,14 +50,24 @@ class KGClient(PySparqlClient):
                         <{ONS_EASTING}> ?easting . 
             }}
         """
+        query = self.remove_unnecessary_whitespace(query)
+        query = urllib.parse.quote(query)
+        # Perform GET request
+        url = ONS_ENDPOINT + '.json?query=' + query
+        res = requests.get(url)
+        if res.status_code != 200:
+            #logger.error('Error retrieving data from ONS API.')
+            raise APIException('Error retrieving data from ONS API.')
 
-        return self.remove_unnecessary_whitespace(query)
+        # Extract and unwrap results
+        data = json.loads(res.text)
+        return data
 
 
     #
     # SPARQL QUERIES
     #
-    def get_postcode_iris(self, postcodes:list) -> str:
+    def get_postcode_iris(self, postcodes:list) -> list:
         # Retrieve IRI(s) of postcode(s) with given label(s)
         values_statement = self.format_literal_values_statement(postcodes)
         query = f"""
@@ -65,10 +78,13 @@ class KGClient(PySparqlClient):
                     <{RDFS_LABEL}> ?pc . 
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        postcode_iris = [r['pc_iri'] for r in res]
+        return postcode_iris
 
 
-    def get_postcode_strings(self, postcode_iris:list) -> str:
+    def get_postcode_strings(self, postcode_iris:list) -> list:
         # Retrieve string(s)/label(s) of postcode IRI(s)
         values_statement = self.format_iris_values_statement(postcode_iris)
         query = f"""
@@ -79,10 +95,13 @@ class KGClient(PySparqlClient):
                     <{RDFS_LABEL}> ?pc . 
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        postcode_strs = [r['pc'] for r in res]
+        return postcode_strs
 
 
-    def get_tx_iris_for_postcodes(self, postcode_iris:list) -> str:
+    def get_tx_iris_for_postcodes(self, postcode_iris:list) -> list:
         # Retrieve IRIs of all transactions for postcode(s)
         values_statement = self.format_iris_values_statement(postcode_iris)
         query = f"""
@@ -94,11 +113,15 @@ class KGClient(PySparqlClient):
                     <{OBE_HAS_ADDRESS}>/<{OBE_HAS_POSTALCODE}> ?pc_iri . 
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        tx_iris = [r['tx_iri'] for r in res]
+        return tx_iris
 
 
     def get_tx_count_for_postcodes(self, postcodes:list) -> str:
-        # Retrieve number of available sales transactions for postcode(s)
+        # Retrieve number of available sales transactions for postcode(s) and
+        # return dictionary with postcode as key and number of transactions as value
         values_statement = self.format_literal_values_statement(postcodes)    
         query = f"""
             SELECT DISTINCT ?pc (count(?tx) as ?txs )
@@ -110,7 +133,10 @@ class KGClient(PySparqlClient):
             }}
             GROUP BY ?pc
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        tx_map = {r['pc']: r['txs'] for r in res}
+        return tx_map
 
 
     def get_ppi_iri(self, postcode_iri:str) -> str:
@@ -122,7 +148,13 @@ class KGClient(PySparqlClient):
             ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?ppi_iri .
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if len(res) == 1:
+            ppi = res[0]['ppi_iri']
+        else:
+            ppi = None
+        return ppi
 
 
     def get_avgsm_price_iri(self, postcode_iri:str) -> str:
@@ -134,11 +166,18 @@ class KGClient(PySparqlClient):
                             ^<{OBE_REPRESENTATIVE_FOR}> ?avg_price_iri .
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if res:
+            avg_price = res[0]['avg_price_iri']
+        else:
+            avg_price = None
+        return avg_price
 
 
-    def get_tx_details_and_floor_areas(self, tx_iris:list) -> str:
-        # Retrieve transaction details and floor area for list of transactions
+    def get_tx_details_and_floor_areas(self, tx_iris:list) -> list:
+        # Retrieve transaction details and floor areas for list of transactions
+        # Returns list of dictionaries with keys: tx_iri, price, date, floor_area
         if tx_iris:
             values_statement = self.format_iris_values_statement(tx_iris)
 
@@ -153,7 +192,9 @@ class KGClient(PySparqlClient):
             ?property <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area .
             }}
         """
-        return self.remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        return res
 
 
     def instantiate_average_price(self, postcode_iri, avg_price_iri, avg_price) -> str:
