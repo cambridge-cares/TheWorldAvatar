@@ -16,14 +16,14 @@ import requests
 
 #import agentlogging
 
-from avgsmprice.datamodel.iris import *
-from avgsmprice.datamodel.data_mapping import TIME_FORMAT, DATACLASS
-from avgsmprice.errorhandling.exceptions import TSException, APIException
-from avgsmprice.kgutils.kgclient import KGClient
-from avgsmprice.kgutils.tsclient import TSClient
-from avgsmprice.utils.env_configs import ONS_ENDPOINT
-from avgsmprice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from avgsmprice.kgutils.querytemplates import *
+from avgsmpriceagent.datamodel.iris import *
+from avgsmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
+from avgsmpriceagent.errorhandling.exceptions import TSException, APIException
+from avgsmpriceagent.kg_operations.kgclient import KGClient
+from avgsmpriceagent.kg_operations.tsclient import TSClient
+from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
+from avgsmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from avgsmpriceagent.kg_operations.querytemplates import *
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

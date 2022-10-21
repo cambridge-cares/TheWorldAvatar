@@ -9,8 +9,8 @@
 import json
 
 #import agentlogging
-from avgsmprice.errorhandling.exceptions import KGException
-from avgsmprice.kgutils.javagateway import jpsBaseLibGW
+from avgsmpriceagent.errorhandling.exceptions import KGException
+from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

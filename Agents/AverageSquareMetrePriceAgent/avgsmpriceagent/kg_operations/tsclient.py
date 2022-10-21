@@ -7,11 +7,11 @@
 # the TimeSeriesClient from the JPS_BASE_LIB
 
 #import agentlogging
-from avgsmprice.errorhandling.exceptions import TSException
-from avgsmprice.kgutils.javagateway import jpsBaseLibGW
-from avgsmprice.kgutils.kgclient import KGClient
-from avgsmprice.datamodel.data_mapping import TIMECLASS
-from avgsmprice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+from avgsmpriceagent.errorhandling.exceptions import TSException
+from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
+from avgsmpriceagent.kg_operations.kgclient import KGClient
+from avgsmpriceagent.datamodel.data_mapping import TIMECLASS
+from avgsmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                              DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger

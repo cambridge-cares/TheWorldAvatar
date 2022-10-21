@@ -1,13 +1,16 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='squaremetreprice',
+    name='avgsmprice',
     version='0.0.1',
     author='Markus Hofmeister',
+    author_email='mh807@cam.ac.uk',
     license='MIT',
+    description="The `avgsmprice` agent calculates the average square metre price of properties for a particular postcode and populates the result to knowledge graph as part of The World Avatar project.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
+    #TODO: update link to github repo
     url="",
     python_requires='>=3.7',
     include_package_data=True,
@@ -17,6 +20,6 @@ setup(
         'pandas~=1.3',
         'py4jps>=1.0.26', 
         'requests~=2.28',
-        'pyderivationagent==1.2.2'
+        'pyderivationagent>=1.2.2'
     ]
 )
