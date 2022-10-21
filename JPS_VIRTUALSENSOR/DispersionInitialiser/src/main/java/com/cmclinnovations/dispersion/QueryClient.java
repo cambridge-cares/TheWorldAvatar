@@ -10,14 +10,21 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +36,9 @@ import java.util.UUID;
 public class QueryClient {
     private StoreClientInterface storeClient;
     private DerivationClient derivationClient;
+    private TimeSeriesClient<Long> tsClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
+    private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
     static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
     static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
@@ -46,6 +56,7 @@ public class QueryClient {
     private static final Iri NX = P_DISP.iri("nx");
     private static final Iri NY = P_DISP.iri("ny");
     private static final Iri REPORTING_STATION = iri("https://www.theworldavatar.com/kg/ontoems/ReportingStation");
+    private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
 
     // properties
     private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
@@ -55,9 +66,11 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient) {
+    public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient, TimeSeriesClient<Long> tsClient) {
         this.storeClient = storeClient;
         this.derivationClient = new DerivationClient(storeClient, PREFIX);
+        this.remoteRDBStoreClient = remoteRDBStoreClient;
+        this.tsClient = tsClient;
     }
 
     void initialiseAgent() {
@@ -84,30 +97,42 @@ public class QueryClient {
         storeClient.executeUpdate(modify.getQueryString());
     }
 
-    void initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny) {
+    String initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE));
 
-        // sim time
+        // sim time (input)
         String simTime = PREFIX + UUID.randomUUID();
         String simTimeMeasure = PREFIX + UUID.randomUUID();
         modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(HAS_VALUE, iri(simTimeMeasure)));
         modify.insert(iri(simTimeMeasure).isA(MEASURE).andHas(HAS_NUMERICALVALUE, 0));
 
-        // nx
+        // nx (input)
         String nxIri = PREFIX + UUID.randomUUID();
         String nxMeasureIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(nxIri).isA(NX).andHas(HAS_VALUE, iri(nxMeasureIri)));
         modify.insert(iri(nxMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, nx));
 
-        // ny
+        // ny (input)
         String nyIri = PREFIX + UUID.randomUUID();
         String nyMeasureIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(nyIri).isA(NY).andHas(HAS_VALUE, iri(nyMeasureIri)));
         modify.insert(iri(nyMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, ny));
 
+        // dispersion matrix (output)
+        String matrixIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(matrixIri).isA(DISPERSION_MATRIX));
+
         modify.prefix(P_DISP,P_OM);
         storeClient.executeUpdate(modify.getQueryString());
+
+        // initialise time series for dispersion matrix
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            tsClient.initTimeSeries(List.of(matrixIri), List.of(String.class), null, conn);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Closing connection failed when initialising time series for dispersion matrix");
+        }
 
         List<String> inputs = new ArrayList<>();
         inputs.add(weatherStation);
@@ -116,9 +141,11 @@ public class QueryClient {
         inputs.add(nxIri);
         inputs.add(nyIri);
 
-        derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATIONWITHTIMESERIES);
+        Derivation derivation = derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATIONWITHTIMESERIES);
+        
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
+        return derivation.getIri();
     }
 
     /**

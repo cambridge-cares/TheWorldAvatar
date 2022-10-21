@@ -15,10 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.postgis.Polygon;
@@ -26,7 +28,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * a separate mapping is required for each SRID, currently only supports 4326
@@ -35,7 +39,18 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class InitialiseSimulation extends HttpServlet {
     private static final Random RAND = new Random();
     private static final Logger LOGGER = LogManager.getLogger(InitialiseSimulation.class);
+    private QueryClient queryClient;
+    private DispersionPostGISClient dispersionPostGISClient;
 
+    @Override
+    public void init() throws ServletException {
+        EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
+        dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient);
+    }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // EWKT literal for the scope to create
@@ -51,11 +66,6 @@ public class InitialiseSimulation extends HttpServlet {
         }
 
         if (polygonProvided != null) {
-            EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
-            DispersionPostGISClient dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-            RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-            QueryClient queryClient = new QueryClient(storeClient);
-
             String scopeIri = null;
             Polygon polygon4326 = null;
             try (Connection conn = dispersionPostGISClient.getConnection()) {
@@ -96,12 +106,17 @@ public class InitialiseSimulation extends HttpServlet {
             if (scopeIri != null && polygon4326 != null) {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
+                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
                 try {
-                    resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
+                    resp.getWriter().print(new JSONObject().put("derivation",derivation));
+                    resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+                    resp.setCharacterEncoding("UTF-8");
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to write HTTP response");
+                } catch (JSONException e) {
+                    LOGGER.error(e.getMessage());
+                    LOGGER.error("Failed to create JSON object for HTTP response");
                 }
             }
         }
