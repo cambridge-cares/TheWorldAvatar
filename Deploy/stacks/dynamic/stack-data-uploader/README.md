@@ -14,7 +14,7 @@ To load static data files into the stack please follow the instructions below:
 
 1. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-data-uploader` subdirectory within it in a `bash` terminal).
 
-2. To start you can follow the instructions in the [README.md](../example_datasets/README.md) file in the `example_datasets` directory to load in one of the example datasets. To load another data set, put the relevant data in the `.inputs/data/` directory. The stack uploader supports vector, raster, and non-geospatial tabular data; these can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, shapefile, and CSV.
+2. To start you can follow the instructions in the [README.md](../example_datasets/README.md) file in the `example_datasets` directory to load in one of the example datasets. To load another data set, put the relevant data in the `.inputs/data/` directory. The stack uploader supports vector, raster, and non-geospatial tabular data; these can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, Shapefile, and CSV.
 
 3. Create a JSON file in `.inputs/config/` to configure how the data is to be uploaded. The steps to create such a file are detailed in full here but it is recommended that you also look at the example configurations in the `example_datasets` directory. The following is a template for a basic config file. It is necessary that you replace the any text fields with `< >`.
     ```json
@@ -28,7 +28,7 @@ To load static data files into the stack please follow the instructions below:
                 "skip": false,
                 "schema": "public",
                 "table": "<what you wish to name your table>",
-                "subdirectory": "<subdirectoy in datasetDirectory in which the dat subset is stored>"
+                "subdirectory": "<subdirectory in datasetDirectory in which the data subset is stored>"
             },
             {
                 <... another subset>
@@ -55,7 +55,7 @@ To load static data files into the stack please follow the instructions below:
         Drivers:
         - [CSV](https://gdal.org/drivers/vector/csv.html)
         - [PostGIS](https://gdal.org/drivers/vector/pg.html)
-        - [shapefile](https://gdal.org/drivers/vector/shapefile.html)
+        - [Shapefile](https://gdal.org/drivers/vector/shapefile.html)
 
     - GeoServer Options
 
