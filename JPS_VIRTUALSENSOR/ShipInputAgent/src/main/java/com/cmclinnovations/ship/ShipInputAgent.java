@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
 
@@ -31,6 +32,7 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -166,8 +168,15 @@ public class ShipInputAgent extends HttpServlet {
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
-            LOGGER.info("Creating GeoServer layer for the average timestampe = {}", averageTimestamp);
+            LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
             createGeoServerLayer(averageTimestamp);
+
+            JSONObject responseJson = new JSONObject();
+            responseJson.put("averageTimestamp", averageTimestamp);
+
+            resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().print(responseJson);
 
             // first time adding ontop mapping
             if (initialiseObda) {
