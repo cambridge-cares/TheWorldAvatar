@@ -24,5 +24,5 @@ public class Sensitivity {
     public String getName() {
         return name;
     }
-    
+
 }

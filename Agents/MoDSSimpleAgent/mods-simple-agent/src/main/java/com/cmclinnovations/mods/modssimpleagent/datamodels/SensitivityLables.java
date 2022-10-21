@@ -19,5 +19,4 @@ public class SensitivityLables {
         return values;
     }
 
-    
 }

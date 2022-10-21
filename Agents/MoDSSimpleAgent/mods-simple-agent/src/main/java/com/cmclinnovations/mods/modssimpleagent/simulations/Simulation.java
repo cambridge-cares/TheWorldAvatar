@@ -25,7 +25,6 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.Sensitivities;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Sensitivity;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLables;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
@@ -471,7 +470,7 @@ public class Simulation {
         // */
         int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
 
-        List<Sensitivity> sensitivityList = new ArrayList<>(nY);
+        List<Sensitivity> sensitivities = new ArrayList<>(nY);
 
         for (int iy = 0; iy < nY; iy++) {
             List<SensitivityLables> sensitivityLablesList = new ArrayList<>(nOrdersToShow);
@@ -481,10 +480,8 @@ public class Simulation {
                 sensitivityLablesList.add(new SensitivityLables(iOrder + 1, termLabels.get(iOrder)));
                 sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
             }
-            sensitivityList.add(new Sensitivity(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
+            sensitivities.add(new Sensitivity(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
         }
-
-        Sensitivities sensitivities = new Sensitivities(sensitivityList);
 
         Request results = getResponse();
         results.setSensitivities(sensitivities);

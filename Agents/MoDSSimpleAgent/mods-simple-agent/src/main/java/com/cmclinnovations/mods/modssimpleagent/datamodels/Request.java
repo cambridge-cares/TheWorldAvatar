@@ -23,7 +23,7 @@ public class Request {
     private Data outputs;
     @JsonProperty("Sensitivities")
     @JsonInclude(Include.NON_NULL)
-    private Sensitivities sensitivities;
+    private List<Sensitivity> sensitivities;
 
     public String getJobID() {
         return jobID;
@@ -65,11 +65,11 @@ public class Request {
         this.outputs = outputs;
     }
 
-    public Sensitivities getSensitivities() {
+    public List<Sensitivity> getSensitivities() {
         return sensitivities;
     }
 
-    public void setSensitivities(Sensitivities sensitivities) {
+    public void setSensitivities(List<Sensitivity> sensitivities) {
         this.sensitivities = sensitivities;
     }
     

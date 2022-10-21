@@ -18,5 +18,5 @@ public class SensitivityValues {
     public List<Double> getValues() {
         return values;
     }
-    
+
 }
