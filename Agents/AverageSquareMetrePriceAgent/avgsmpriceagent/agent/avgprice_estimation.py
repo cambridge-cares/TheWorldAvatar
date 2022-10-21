@@ -52,7 +52,8 @@ class AvgSqmPriceAgent(DerivationAgent):
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
 
-    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, 
+                                   derivation_outputs: DerivationOutputs):
         """
             This method takes 
                 1 IRI of OntoBuiltEnv:PostalCode
@@ -63,14 +64,19 @@ class AvgSqmPriceAgent(DerivationAgent):
                 (actually, this includes an entire set of triples due to ontology
                  of units of measure representation of OBE:AveragePricePerSqm)
         """
+
         # Get input IRIs from the agent inputs (derivation_inputs)
         postcode_iri = derivation_inputs.getIris(OBE_POSTALCODE)[0]
         ppi_iri = derivation_inputs.getIris(OBE_PROPERTY_PRICE_INDEX)[0]
         tx_records = derivation_inputs.getIris(LRPPI_TRANSACTION_RECORD)
 
-        self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
-                                                 ppi_iri=ppi_iri,
-                                                 tx_records=tx_records)
+        # Assess average square metre price
+        g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
+                                                     ppi_iri=ppi_iri,
+                                                     tx_records=tx_records)
+        
+        # Collect the generated triples derivation_outputs
+        derivation_outputs.addGraph(g)
 
 
     #TODO: Where to best place those?
@@ -159,8 +165,13 @@ class AvgSqmPriceAgent(DerivationAgent):
                 triples = self.sparql_client.instantiate_average_price(avg_price_iri=avgsm_price_iri,
                                                     postcode_iri=postcode_iri,
                                                     avg_price=avg)
+                update_query = f'INSERT DATA {{ {triples} }}'
 
-        return triples
+                # Create rdflib graph with update triples
+                g = Graph()
+                g.update(update_query)
+
+        return g
 
 
     def get_transactions_from_nearest_postcodes(self, postcode_iri:str, threshold:int):
@@ -242,8 +253,9 @@ if __name__ == '__main__':
     kgclient = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
     # Get IRI inputs for testing
-    pcs = ['PE30 5DH', 'PE30 4XH', 'PE30 3NS', 'PE31 6XU', 
-           'PE30 4GG', 'PE34 3LS']
+    # pcs = ['PE30 5DH', 'PE30 4XH', 'PE30 3NS', 'PE31 6XU', 
+    #        'PE30 4GG', 'PE34 3LS']
+    pcs = ['PE30 5DH']
 
     # Start INSERT query
     insert_query = 'INSERT DATA {'
