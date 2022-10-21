@@ -67,6 +67,16 @@ public class ModsSimpleAgentApplication {
         return OBJECT_MAPPER.writeValueAsString(sim.getResults());
     }
 
+    @GetMapping(value = "/output/sensitivity")
+    public String getSensitivity(@RequestParam("query") String config) throws IOException, JAXBException {
+
+        Request request = OBJECT_MAPPER.readValue(config, Request.class);
+
+        Simulation sim = Simulation.retrieveSimulation(request);
+
+        return OBJECT_MAPPER.writeValueAsString(sim.getSensitivity());
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(ModsSimpleAgentApplication.class, args);
     }
