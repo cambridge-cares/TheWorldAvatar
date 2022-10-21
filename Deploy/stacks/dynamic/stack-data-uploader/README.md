@@ -16,21 +16,55 @@ Each dataset should generally contain at least one *data subset*.
 If the files in a dataset are of multiple different types, or represent different geospatial layers, they can be further divided into multiple data subsets, with one for each type/layer.
 Each data subset should then have its own subdirectory.
 
+By default all dataset configuration files in the [`inputs/configs/`](./inputs/config/) are read by the data uploader.
+When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
+
 Below is an example where there are two datasets.
 One of which (*dataset1*) contains one data subset and another (*dataset1*) that contains two data subsets, each with their own subdirectory.
+```sh
+inputs/
+  config/               # Directory in which the dataset configuration files should be stored
+    dataset1.json       # Configuration file for dataset1
+    dataset2.json       # Configuration file for dataset2
+  data/                 # Directory in which the data files should be stored
+    dataset1/           # Data directory for dataset1
+      data.csv          # Only one data subset so no need for a subdirectory
+    dataset2/           # Data directory for dataset2
+      datasubset1/      # Data directory for data subset1
+        polygon.geojson # Data file 
+      datasubset2/      # Data directory for data subset2
+        table.csv
+```
+## The Dataset configuration file
 
-    inputs/
-      config/               # Directory in which the dataset configuration files should be stored
-        dataset1.json       # Configuration file for dataset1
-        dataset2.json       # Configuration file for dataset2
-      data/                 # Directory in which the data files should be stored
-        dataset1/           # Data directory for dataset1
-          data.csv          # Only one data subset so no need for a subdirectory
-        dataset2/           # Data directory for dataset2
-          datasubset1/      # Data directory for data subset1
-            polygon.geojson # Data file 
-          datasubset2/      # Data directory for data subset2
-            table.csv
+Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
+There are several example configuration files in the [`example_datasets`](../example_datasets/) directory.
+
+### Datasets
+
+The following table shows the top level nodes allowed in a configuration file.
+
+| Key              | Required? | Default value                            | Description                                                                                                                                                                                                                                                 |
+| ---------------- | --------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name             | No        | The filename without the .json extension | The name of the dataset.                                                                                                                                                                                                                                    |
+| skip             | No        | `false`                                  | If set to `true` this dataset will be ignored by the data uploader.                                                                                                                                                                                         |
+| datasetDirectory | No        | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset.                                                                                                                                                              |
+| database         | No[^1]    | `"postgres"`                             | The name of the database within Postgres that appropriate data will be uploaded to. *The database will be created if it doesn't already exist*. ***Ontop can only access the default 'postgres' database so it is usually best not to change this value***. |
+| workspace        | No[^1]    | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to. *The workspace will be created if it doesn't already exist*.                                                                                         |
+| externalDatasets | No[^1]    | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name.                                                                                                                                                 |
+| dataSubsets      | No[^1]    | `[]`                                     | A list of *data subset* objects. See [this section](#data-subsets) for more details.                                                                                                                                                                        |
+| styles           | No[^1]    | `[]`                                     | A list of GeoServer style file definition objects. See [this section](#geoserver-style-files) for more details.                                                                                                                                             |
+| mappings         | No[^1]    | `[]`                                     | A list of Ontop mapping file definition objects. See [this section](#ontop-mapping-OBDA-files) for more details.                                                                                                                                            |
+
+[^1]: At lease one of these needs to be populated.
+
+### Data subsets
+
+### GeoServer style files
+
+### Ontop mapping (OBDA) files
+## Data types
+
 
 ## Prerequisites
 
