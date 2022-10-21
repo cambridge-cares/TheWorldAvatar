@@ -1,6 +1,32 @@
 # The Stack Data Uploader
 
-In the commands below placeholders are shown as `<STACK NAME>`, you will need to substitute in the required value when running the command.
+> In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`. You will need to substitute in appropriate values before running any commands.
+
+> Unless otherwise stated all paths listed in this readme are relative to the [`Deploy/stacks/dynamic/stack-data-uploader`](.) directory in the TheWorldAvatar repository.
+
+## Introduction
+
+The Stack Data Uploader is designed to make it easier to ingest static data files into a stack.
+
+## Datasets and subsets
+
+Data files are grouped into *datasets*, each of which has its own configuration file and data directory. Each dataset should generally contain at least one *data subset*.
+If the files in a dataset are of multiple different types, or represent different geospatial layers, they can be further divided into multiple data subsets, with one for each type/layer. Each data subset should then have its own subdirectory.
+
+Below is an example where there are two datasets. One of which (*dataset1*) contains one data subset and another (*dataset1*) that contains two data subsets, each with their own subdirectory.
+
+    inputs/
+      config/               # Directory in which the dataset configuration files should be stored
+        dataset1.json       # Configuration file for dataset1
+        dataset2.json       # Configuration file for dataset2
+      data/                 # Directory in which the data files should be stored
+        dataset1/           # Data directory for dataset1
+          data.csv          # Only one data subset so no need for a subdirectory
+        dataset2/           # Data directory for dataset2
+          datasubset1/      # Data directory for data subset1
+            polygon.geojson # Data file 
+          datasubset2/      # Data directory for data subset2
+            table.csv
 
 ## Prerequisites
 
@@ -16,7 +42,7 @@ To load static data files into the stack please follow the instructions below:
 
 2. To start you can follow the instructions in the [README.md](../example_datasets/README.md) file in the [`example_datasets`](../example_datasets/) directory to load in one of the example datasets. To load another data set, put the relevant data in the [`inputs/data/`](./inputs/data) directory. The stack uploader supports vector, raster, and non-geospatial tabular data; these can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, Shapefile, and CSV.
 
-3. Create a JSON file in [`inputs/config/`](./inputs/config/) to configure how the data is to be uploaded. The steps to create such a file are detailed in full here but it is recommended that you also look at the example configurations in the `example_datasets` directory. The following is a template for a basic config file. It is necessary that you replace the any text fields with `< >`.
+3. Create a JSON file in [`inputs/config/`](./inputs/config/) to configure how the data is to be uploaded. The steps to create such a file are detailed in full here but it is recommended that you also look at the example configurations in the `example_datasets` directory. The following is a template for a basic config file. It is necessary that you replace any placeholders, `<...>`, with values appropriate for your data.
     ```json
     {
         "database": "postgres",
