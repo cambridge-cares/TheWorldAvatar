@@ -26,7 +26,7 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Specific Yield Ontology -->
+  <!-- Specific Yield Upper Ontology -->
 
   <owl:Class rdf:about="&om;SpecificYieldUnit">
     <rdfs:label xml:lang="en">specific yield unit</rdfs:label>
