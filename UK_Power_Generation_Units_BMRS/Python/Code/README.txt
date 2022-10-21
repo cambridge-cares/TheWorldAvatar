@@ -10,3 +10,4 @@ These are in the "ukopowerother" folder, and are noted in the README(s) within.
 In "essattatchment" are scripts related to the attachment of an ESS to a VRE site (e.g. wind). Using linear optimisation to maximise profit it charges and discharges from an ESS. 
 This is also subject to further parameters for energy curtailment / export, which can work alongside the associated data inputs from "ukpowerother", which query BMRS to obtain these. 
 
+In "ukexportcurtailmentimporter" there is a script to input curtailment and export data into the KG. This corresponds to the querying in "ukopowerother", and data that can be used to run "essattatchment". 
