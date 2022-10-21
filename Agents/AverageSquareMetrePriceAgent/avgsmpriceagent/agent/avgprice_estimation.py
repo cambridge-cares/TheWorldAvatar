@@ -1,11 +1,16 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 19 Oct 2022                            #
+# Date: 21 Oct 2022                            #
 ################################################
 
 # The purpose of this module is to instantiate/update the average
 # square metre price for a postcode based on instantiated Price Paid
-# Data transactions in the KG
+# Data transactions in the KG (using asynchronous derivation framework)
+
+from pyderivationagent import DerivationAgent
+from pyderivationagent import DerivationInputs
+from pyderivationagent import DerivationOutputs
+from pyderivationagent import FlaskConfig
 
 import json
 import uuid
@@ -13,9 +18,7 @@ import pandas as pd
 import urllib.parse
 import requests
 
-
-#import agentlogging
-
+import agentlogging
 from avgsmpriceagent.datamodel.iris import *
 from avgsmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
 from avgsmpriceagent.errorhandling.exceptions import TSException, APIException
@@ -27,7 +30,6 @@ from avgsmpriceagent.kg_operations.querytemplates import *
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
-
 
 def estimate_average_square_metre_price(postcode_iri:str = None, 
                                         tx_records:list = None,
@@ -193,6 +195,16 @@ def distance(pointA, pointB):
         ((pointA[0] - pointB[0]) ** 2) +
         ((pointA[1] - pointB[1]) ** 2)
     ) ** 0.5  # fast sqrt
+
+
+def default():
+    """
+        Instructional message at the app root.
+    """
+    #TODO: update link
+    msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent#readme<BR>"
+    return msg
 
 
 if __name__ == '__main__':

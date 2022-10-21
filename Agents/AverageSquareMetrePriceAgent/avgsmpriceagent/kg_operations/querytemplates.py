@@ -7,11 +7,10 @@
 # required SPARQL queries
 
 import uuid
-from avgsmpriceagent.datamodel.data_mapping import GBP_PER_SM
 
 #import agentlogging
-
 from avgsmpriceagent.datamodel.iris import *
+from avgsmpriceagent.datamodel.data_mapping import GBP_PER_SM
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
