@@ -1,4 +1,4 @@
-from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 import json
 
 def get_iri_query(inchi_string):

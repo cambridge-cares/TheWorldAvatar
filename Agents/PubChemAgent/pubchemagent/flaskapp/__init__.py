@@ -10,11 +10,11 @@ def create_app(test_config=None):
 
     with app.app_context():
         # Import parts of our application
-        import pubchem.flaskapp.home.routes as home
-        import pubchem.flaskapp.calculator.routes as calculator
+        import pubchemagent.flaskapp.home.routes as home
+        import pubchemagent.flaskapp.query.routes as query
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
-        app.register_blueprint(calculator.calculator_bp)
+        app.register_blueprint(query.query_bp)
 
     return app

@@ -1,6 +1,6 @@
-from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
-from pubchem.kgoperations.querykg import kg_operations
-from pubchem.kgoperations.querytemplates import ontospecies_data_query, spec_inchi_query, get_iri_query
+from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from pubchemagent.kgoperations.querykg import kg_operations
+from pubchemagent.kgoperations.querytemplates import ontospecies_data_query, spec_inchi_query, get_iri_query
 
 
 def get_ontospecies_data(osIRI):

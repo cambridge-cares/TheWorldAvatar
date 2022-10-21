@@ -1,6 +1,6 @@
-from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
-from pubchem.kgoperations.querykg import kg_operations
-from pubchem.kgoperations.querytemplates import pubchem_prop_insert
+from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from pubchemagent.kgoperations.querykg import kg_operations
+from pubchemagent.kgoperations.querytemplates import pubchem_prop_insert
 import uuid
    
 # a sample data addition function

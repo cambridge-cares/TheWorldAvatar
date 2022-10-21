@@ -1,5 +1,5 @@
-from pubchem_twa import *
-from pubchem.pug import pug_api
+from pubchemagent.app import *
+from pubchemagent.pug import pug_api
 import pytest
 import os
 import json

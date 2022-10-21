@@ -1,4 +1,4 @@
-from pubchem.kgoperations.javagateway import jpsBaseLibGW
+from pubchemagent.kgoperations.javagateway import jpsBaseLibGW
 from pyderivationagent.kg_operations import PySparqlClient
 
 class kg_operations():   
