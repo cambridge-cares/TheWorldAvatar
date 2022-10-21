@@ -1,4 +1,5 @@
 import pickle
+import sys
 
 import pandas
 import os
@@ -6,6 +7,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.nn.init import xavier_uniform_
+
+sys.path.append("../../..")
+
 from Marie.Util.Embedding.EmbeddingTrainer import Trainer
 from Marie.Util.location import DATA_DIR
 from KGToolbox.NHopExtractor import HopExtractor
