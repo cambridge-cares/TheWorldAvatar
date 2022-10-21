@@ -12,10 +12,11 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'flask~=2.2',
+        'flask~=2.1',
         'JayDeBeApi~=1.2',
         'pandas~=1.3',
         'py4jps>=1.0.26', 
         'requests~=2.28',
+        'pyderivationagent==1.2.2'
     ]
 )
