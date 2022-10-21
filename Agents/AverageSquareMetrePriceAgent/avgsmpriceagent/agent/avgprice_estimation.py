@@ -53,8 +53,27 @@ class AvgSqmPriceAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        pass
+        """
+            This method takes 
+                1 IRI of OntoBuiltEnv:PostalCode
+                1 IRI of OntoBuiltEnv:PropertyPriceIndex
+                list of IRIs of LRPPI:TransactionRecord
+            and generates
+                1 IRI of OntoBuiltEnv:AveragePricePerSqm
+                (actually, this includes an entire set of triples due to ontology
+                 of units of measure representation of OBE:AveragePricePerSqm)
+        """
+        # Get input IRIs from the agent inputs (derivation_inputs)
+        postcode_iri = derivation_inputs.getIris(OBE_POSTALCODE)[0]
+        ppi_iri = derivation_inputs.getIris(OBE_PROPERTY_PRICE_INDEX)[0]
+        tx_records = derivation_inputs.getIris(LRPPI_TRANSACTION_RECORD)
 
+        self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
+                                                 ppi_iri=ppi_iri,
+                                                 tx_records=tx_records)
+
+
+    #TODO: Where to best place those?
     def estimate_average_square_metre_price(self, postcode_iri:str = None, 
                                             tx_records:list = None,
                                             ppi_iri:str = None):
