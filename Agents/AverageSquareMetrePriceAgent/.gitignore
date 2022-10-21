@@ -15,3 +15,4 @@ assets
 
 ## User defined
 *.egg-info
+*.env
