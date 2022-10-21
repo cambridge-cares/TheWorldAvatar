@@ -164,7 +164,7 @@ class PanelHandler {
 				rightButton.style.visibility = "visible";
 				sidePanelInner.style.visibility = "visible";
 
-                finderContainer.classList.replace("collapsed", "expanded");
+                //finderContainer.classList.replace("collapsed", "expanded");
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -176,7 +176,7 @@ class PanelHandler {
 				rightButton.style.visibility = "hidden";
 				sidePanelInner.style.visibility = "hidden";
 
-                finderContainer.classList.replace("expanded", "collapsed");
+                //finderContainer.classList.replace("expanded", "collapsed");
 			}
 		} 
 

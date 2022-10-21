@@ -36,8 +36,6 @@ Additional formats, provided they are supported by Cesium JS, can be added but w
 
 At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
-Custom terrain elevation has also yet to be implemented at the time of writing. In theory this can be handled by loading elevation data into Geoserver, then using a [Third Party Plugin](https://github.com/kaktus40/Cesium-GeoserverTerrainProvider) to provide that data as terrain elevation to Cesium. Note that this has not yey been tried.
-
 ## Configuration
 
 Configuration for the visualisation is provided via a number of local JSON files. Each of these is detailed below.
@@ -86,7 +84,34 @@ For developers creating their first visualisation, it is recommended to take a c
 
 ### Global Settings & Advanced Features
 
-Configuration settings for features not directly relating to the data, such as the map's starting position, and more advanced features are detailed on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings). 
+Configuration settings for features not specifically tied to an individual mapping library can be read on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings), features specific to CesiumJS are detailed in the sections below. 
+
+#### Map Position
+
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the translucency of the globe itself can also be set here.
+
+```json
+"start": {
+    "center": [7.621435, 49.180285, 50],
+    "heading": 90,
+    "pitch": -45,
+    "roll": 0.0,
+    "translucency": 0.5
+}
+```
+
+#### Terrain Elevation
+
+Terrain elevation data can also be provided via use of a `terrain` variable in the `settings.json` file. The value this variable is passed directly to a new [CesiumTerrainProvider](https://cesium.com/learn/cesiumjs/ref-doc/CesiumTerrainProvider.html) instance, as such users need to ensure that their settings conform with the CesiumJS API.
+
+An example specification of terrain elevation is shown below. Note that in this case, the data is pulled from quantized mesh tiles provided by [MapTiler](https://cloud.maptiler.com/), a service that is **not permitted for commercial use** without a paid-for licence.
+
+```json
+"terrain": {
+    "url": "https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=API_KEY",
+    "requestVertexNormals": true
+}
+```
 
 ## Sample Data
 

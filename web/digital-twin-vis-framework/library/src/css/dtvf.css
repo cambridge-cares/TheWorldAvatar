@@ -1173,3 +1173,46 @@ label[for="select-feature"] {
 .cesium-viewer-bottom {
     display: none;
 }
+
+#attributionContainer {
+    background-color: rgba(0,0,0,.4);
+    color: white;
+
+    position: absolute;
+    left: 20px;
+    bottom: 0px;
+    border-radius: 8px 8px 0px 0px;
+
+    font-size: 9pt !important;
+    font-family: "Inter", sans-serif !important;
+    text-align: center;
+    line-height: 30px;
+}
+#attributionContainer span {
+    float: left;
+    padding-left: 10px;
+    margin: 0px !important;
+}
+#attributionContainer i {
+    translate: 0px;
+    font-size: 10pt !important;
+    float: right;
+    padding-right: 10px;
+}
+#attributionContainer:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+#attributionContainer.collapsed {
+    width: 250px;
+    height: 30px;
+}
+#attributionContainer.expanded {
+    width: 500px;
+    height: 300px;
+}
+#attributionTitle {
+    height: 30px;
+    cursor: pointer;
+    font-size: 10pt !important;
+}
+

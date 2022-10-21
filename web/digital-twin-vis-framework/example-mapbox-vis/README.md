@@ -47,9 +47,23 @@ Layers can also optionally include an integer `order` field (which defaults to 0
 
 For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format.
 
+
 ### Global Settings & Advanced Features
 
-Configuration settings for features not directly relating to the data, such as the map's starting position, and more advanced features are detailed on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings). 
+Configuration settings for features not specifically tied to an individual mapping library can be read on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings), features specific to CesiumJS are detailed in the sections below. 
+
+#### Map Position
+
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the Mapbox version can be seen below.
+
+```json
+"start": {
+    "center": [60, 37],
+    "zoom": 2,
+    "bearing": 0,
+    "pitch": 45
+}
+```
 
 ## Sample Data
 

@@ -293,7 +293,6 @@ class CesiumUtils {
         // TODO: Add full camera controls here. This will be tricky as Cesium offers
         // no programmatic way to pan the camera around 2D plane (mimicking the mouse
         // movement logic).
-
         window.addEventListener("keydown", function (event) {
             if (event.defaultPrevented) return;
           

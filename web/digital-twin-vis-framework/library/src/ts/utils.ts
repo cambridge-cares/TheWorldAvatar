@@ -115,3 +115,43 @@ function getDescription(properties: Object): string {
     
     return properties[nameField];
 }
+
+/**
+ * Is attribution content has been set, show a popup box in
+ * the lower left to display it.
+ */
+function showAttributions() {
+    let container = document.getElementById("attributionContainer");
+    if(container == null) {
+        container = document.createElement("div");
+        container.id = "attributionContainer";
+        container.className = "collapsed";
+
+        container.innerHTML = "<div id='attributionTitle'><span>Attributions</span><i class='fas fa-chevron-up'></i></div>";
+        document.body.appendChild(container);
+    }
+
+    let content = Manager.SETTINGS.getSetting("attribution");
+    container.style.display = (content == null) ? "none" : "block";
+
+    if(content != null) {
+        container.innerHTML += content;
+
+        let title = container.querySelector("#attributionTitle");
+        title.addEventListener("click", function(event) {
+            let classList = container.classList;
+            
+            if(classList.contains("collapsed")) {
+                // Expand it
+                classList.remove("collapsed");
+                classList.add("expanded");
+                title.innerHTML = "<span>Attributions</span><i class='fas fa-chevron-down'></i>";
+            } else {
+                // Collapse it
+                classList.remove("expanded");
+                classList.add("collapsed");
+                title.innerHTML = "<span>Attributions</span><i class='fas fa-chevron-up'></i>";
+            }
+        });
+    }
+}

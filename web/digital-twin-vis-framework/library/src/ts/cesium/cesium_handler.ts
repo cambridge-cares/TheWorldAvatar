@@ -50,6 +50,19 @@ class MapHandler_Cesium extends MapHandler {
                 sceneModePicker: false
             }); 
 
+            // Set the underlying globe color
+            MapHandler.MAP.scene.globe.undergroundColor = Cesium.Color.GREY;
+
+            // Set the globe translucency (if provided)
+            if(mapOptions.hasOwnProperty("translucency")) {
+                MapHandler.MAP.scene.globe.translucency.enabled = true;
+
+                let value = mapOptions["translucency"];
+                MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance = 
+                    new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
+                // MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance.nearValue = value;
+                // MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance.farValue = value;
+            }
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
             let imageryProvider = new Cesium.UrlTemplateImageryProvider({
@@ -87,6 +100,9 @@ class MapHandler_Cesium extends MapHandler {
             // Setup keyboard shortcuts
             CesiumUtils.setupKeyboardShortcuts();
 
+            // Enable terrain elevations (if set)
+            this.addTerrain();
+
         } else {
             MapHandler.MAP.camera.setView({
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
@@ -98,6 +114,21 @@ class MapHandler_Cesium extends MapHandler {
             });
             MapHandler.MAP.scene.requestRender();
         }
+    }
+
+    /**
+     * Creates and adds a CesiumTerrainProvider based on the "terrain" object
+     * found in the settings.json file (if present).
+     */
+    public addTerrain() {
+        let terrainOptions = Manager.SETTINGS.getSetting("terrain");
+        console.log(terrainOptions);
+        if(terrainOptions == null) return;
+
+        // Create provider and add to map
+        let terrainProvider = new Cesium.CesiumTerrainProvider(terrainOptions);
+        MapHandler.MAP.terrainProvider = terrainProvider;
+        console.log("ADDED TERRAIN!");
     }
 
     /**
