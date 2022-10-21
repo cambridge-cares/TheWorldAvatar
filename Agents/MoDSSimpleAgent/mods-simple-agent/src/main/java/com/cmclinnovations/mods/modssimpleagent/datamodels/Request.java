@@ -21,6 +21,9 @@ public class Request {
     @JsonProperty("Outputs")
     @JsonInclude(Include.NON_NULL)
     private Data outputs;
+    @JsonProperty("Sensitivities")
+    @JsonInclude(Include.NON_NULL)
+    private Sensitivities sensitivities;
 
     public String getJobID() {
         return jobID;
@@ -61,4 +64,13 @@ public class Request {
     public void setOutputs(Data outputs) {
         this.outputs = outputs;
     }
+
+    public Sensitivities getSensitivities() {
+        return sensitivities;
+    }
+
+    public void setSensitivities(Sensitivities sensitivities) {
+        this.sensitivities = sensitivities;
+    }
+    
 }
