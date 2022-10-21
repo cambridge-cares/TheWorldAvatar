@@ -1,9 +1,9 @@
 {
 	"SimulationType": "HDMR",
+	"SaveSurrogate": true,
 	"Algorithms": [{
 			"name": "algorithm1",
 			"type": "GenSurrogateAlg",
-			"saveSurrogate": true,
 			"variables": [{
 					"name": "var1",
 					"type": "input"

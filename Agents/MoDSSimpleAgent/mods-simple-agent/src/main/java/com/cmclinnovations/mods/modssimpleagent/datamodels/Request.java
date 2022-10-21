@@ -24,6 +24,12 @@ public class Request {
     @JsonProperty("Sensitivities")
     @JsonInclude(Include.NON_NULL)
     private List<Sensitivity> sensitivities;
+    @JsonProperty("LoadSurrogate")
+    @JsonInclude(Include.NON_NULL)
+    private String loadSurrogate;
+    @JsonProperty("SaveSurrogate")
+    @JsonInclude(Include.NON_NULL)
+    private Boolean saveSurrogate;
 
     public String getJobID() {
         return jobID;
@@ -71,6 +77,22 @@ public class Request {
 
     public void setSensitivities(List<Sensitivity> sensitivities) {
         this.sensitivities = sensitivities;
+    }
+
+    public Boolean getSaveSurrogate() {
+        return saveSurrogate;
+    }
+
+    public void setSaveSurrogate(Boolean saveSurrogate) {
+        this.saveSurrogate = saveSurrogate;
+    }
+
+    public String getLoadSurrogate() {
+        return loadSurrogate;
+    }
+
+    public void setLoadSurrogate(String loadSurrogate) {
+        this.loadSurrogate = loadSurrogate;
     }
     
 }

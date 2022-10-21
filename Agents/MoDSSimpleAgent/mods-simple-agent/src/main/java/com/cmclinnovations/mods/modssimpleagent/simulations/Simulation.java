@@ -334,26 +334,20 @@ public class Simulation {
     }
 
     public void save() {
-        request.getAlgorithms().stream()
-                .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
-                .forEach(algorithm -> {
-                    Path saveDirectory = getSaveDirectory();
-                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+        if (request.getSaveSurrogate() != null && request.getSaveSurrogate()) {
+            Path saveDirectory = getSaveDirectory();
+            Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
-                    try {
-                        copyDirectory(surrogateDirectory, saveDirectory);
-                        inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
-                    } catch (FileGenerationException ex) {
-                        throw new ResponseStatusException(
-                                HttpStatus.NO_CONTENT,
-                                "Algorithm '" + algorithm.getName() + "' from job '" + getModsBackend().getJobID()
-                                        + "' failed to save.",
-                                ex);
-                    }
+            try {
+                copyDirectory(surrogateDirectory, saveDirectory);
+                inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
+            } catch (FileGenerationException ex) {
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                        "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+            }
 
-                    LOGGER.info("Algorithm '{}' from job '{}' saved at '{}'.", algorithm.getName(),
-                            getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
-                });
+            LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
+        }
     }
 
     public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
@@ -366,36 +360,31 @@ public class Simulation {
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
-        request.getAlgorithms().stream()
-                .filter(algorithm -> algorithm.getLoadSurrogate() != null)
-                .forEach(algorithm -> {
-                    try {
-                        Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-                        Path loadDirectory = getLoadDirectory(algorithm);
+        if (request.getLoadSurrogate() != null) {
+            try {
+                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                Path loadDirectory = getLoadDirectory(request);
 
-                        if (!Files.exists(loadDirectory)) {
-                            throw new IOException(
-                                    "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
-                        }
+                if (!Files.exists(loadDirectory)) {
+                    throw new IOException(
+                            "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                }
 
-                        copyDirectory(loadDirectory, surrogateDirectory);
+                copyDirectory(loadDirectory, surrogateDirectory);
 
-                        LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                                surrogateDirectory.toAbsolutePath());
+                LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                        surrogateDirectory.toAbsolutePath());
 
-                    } catch (IOException ex) {
-                        throw new ResponseStatusException(
-                                HttpStatus.NO_CONTENT,
-                                "Algorithm '" + algorithm.getName() + "' from job '" + modsBackend.getJobID()
-                                        + "' failed to load.",
-                                ex);
-                    }
-                });
+            } catch (IOException ex) {
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                        "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
+            }
+        }
     }
 
-    private static Path getLoadDirectory(Algorithm algorithm) {
+    private static Path getLoadDirectory(Request request) {
         return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+                .resolve(request.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
