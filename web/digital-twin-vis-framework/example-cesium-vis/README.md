@@ -70,7 +70,7 @@ Each group can also (optionally) contain an `expanded` boolean field. If set to 
 
 Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|tiles`), and a `uri` field pointing towards the data file to be loaded. Some types of sources also require additional parameters:
 
-- For `gltf` sources, an additional `position` field are required.
+- For `gltf` sources, an additional `position` field is required (array of [lng, lat, height] values).
 - For `wms` sources, additional `wmsLayer`, `transparency`, and `format` fields are required.
 - For `tiles` sources, an optional `position` field can also be set.
 
@@ -78,7 +78,7 @@ Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|
 
 Layer nodes also need to provide a unique `id` field, a `source` field (listing the id of the source to use), and an public facing `name` field to use within the selection tree. Note that the `name` field can be shared with other layers, these entries will be combined into a single tree selection. A `visibility` field with values of `visible|none` can also be added to change the default selection state of that layer.
 
-Layers can also optionally include an integer `order` field (which defaults to 0 if not specified). Before visualising, all layers (across all groups) are sorted by their order; this allows users to specify the Z order of their data, regardless of grouping.
+Layers can also optionally include an integer `order` field (which defaults to 0 if not specified). Before visualising, all layers (across all groups) are sorted by their order from lowest to highest; this allows users to specify the Z order of their data, regardless of grouping.
 
 Note that, at the time of writing, all `source` and `layer` nodes must be within a `group` (i.e. data cannot be loaded unless within a group), and a single top-level group must exist (i.e. the `data.json` file must be a JSON object, rather than a JSON array).
 

@@ -30,7 +30,10 @@ class MapHandler_Cesium extends MapHandler {
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
 
             // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
-            let tileURL = getDefaultImagery();
+            var tileURL = getDefaultImagery();
+            if(tileURL.endsWith("access_token=")) {
+                tileURL = tileURL + MapHandler.MAP_API;
+            }
 
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
