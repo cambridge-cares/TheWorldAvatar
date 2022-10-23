@@ -13,18 +13,14 @@ from pyderivationagent import DerivationOutputs
 from pyderivationagent import FlaskConfig
 from rdflib import Graph
 
-import json
 import uuid
 import pandas as pd
-import urllib.parse
-import requests
 
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import TIME_FORMAT, DATACLASS
 from avgsqmpriceagent.errorhandling.exceptions import TSException, APIException
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
-from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT
 from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
@@ -35,7 +31,7 @@ class AvgSqmPriceAgent(DerivationAgent):
     ):
         super().__init__(**kwargs)
 
-        # Initialise the sparql_client
+        # Initialise the Sparql_client (with defaults specified in `agent.env` file)
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
