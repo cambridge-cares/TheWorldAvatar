@@ -9,7 +9,7 @@
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
-from avgsqmpriceagent.datamodel.data_mapping import TIMECLASS
+from avgsqmpriceagent.datamodel.data import TIMECLASS
 from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                              DB_URL, DB_USER, DB_PASSWORD
 

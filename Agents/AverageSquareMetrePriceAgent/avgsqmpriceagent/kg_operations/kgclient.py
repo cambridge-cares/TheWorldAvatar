@@ -14,7 +14,7 @@ import requests
 from pyderivationagent.kg_operations import PySparqlClient
 
 from avgsqmpriceagent.datamodel.iris import *
-from avgsqmpriceagent.datamodel.data_mapping import GBP_PER_SM
+from avgsqmpriceagent.datamodel.data import GBP_PER_SM
 from avgsqmpriceagent.errorhandling.exceptions import KGException, APIException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT

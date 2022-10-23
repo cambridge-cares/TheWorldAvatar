@@ -3,9 +3,9 @@
 # Date: 21 Oct 2022                            #
 ################################################
 
-# The purpose of this module is to instantiate/update the average
-# square metre price for a postcode based on instantiated Price Paid
-# Data transactions in the KG (using asynchronous derivation framework)
+# The purpose of this module is to instantiate/update the average square metre 
+# price of properties for a postcode based on instantiated HM Land Registry's Price
+# Paid Data transactions in the KG (using asynchronous derivation framework)
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -20,7 +20,7 @@ import urllib.parse
 import requests
 
 from avgsqmpriceagent.datamodel.iris import *
-from avgsqmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
+from avgsqmpriceagent.datamodel.data import TIME_FORMAT, DATACLASS
 from avgsqmpriceagent.errorhandling.exceptions import TSException, APIException
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
