@@ -19,13 +19,13 @@ import pandas as pd
 import urllib.parse
 import requests
 
-from avgsmpriceagent.datamodel.iris import *
-from avgsmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
-from avgsmpriceagent.errorhandling.exceptions import TSException, APIException
-from avgsmpriceagent.kg_operations.kgclient import KGClient
-from avgsmpriceagent.kg_operations.tsclient import TSClient
-from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
-from avgsmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from avgsqmpriceagent.datamodel.iris import *
+from avgsqmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
+from avgsqmpriceagent.errorhandling.exceptions import TSException, APIException
+from avgsqmpriceagent.kg_operations.kgclient import KGClient
+from avgsqmpriceagent.kg_operations.tsclient import TSClient
+from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT
+from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
 class AvgSqmPriceAgent(DerivationAgent):

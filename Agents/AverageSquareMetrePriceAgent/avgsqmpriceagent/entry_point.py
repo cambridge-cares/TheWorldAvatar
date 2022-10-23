@@ -5,8 +5,8 @@ logging.getLogger("py4j").setLevel(logging.ERROR)
 
 from pyderivationagent.conf import config_derivation_agent
 
-from avgsmpriceagent.agent import AvgSqmPriceAgent
-from avgsmpriceagent.agent import default
+from avgsqmpriceagent.agent import AvgSqmPriceAgent
+from avgsqmpriceagent.agent import default
 
 
 def create_app():

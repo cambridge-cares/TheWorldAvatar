@@ -13,11 +13,11 @@ import requests
 
 from pyderivationagent.kg_operations import PySparqlClient
 
-from avgsmpriceagent.datamodel.iris import *
-from avgsmpriceagent.datamodel.data_mapping import GBP_PER_SM
-from avgsmpriceagent.errorhandling.exceptions import KGException, APIException
-from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
-from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
+from avgsqmpriceagent.datamodel.iris import *
+from avgsqmpriceagent.datamodel.data_mapping import GBP_PER_SM
+from avgsqmpriceagent.errorhandling.exceptions import KGException, APIException
+from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
+from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT
 
 
 class KGClient(PySparqlClient):

@@ -6,8 +6,8 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (i.e. for the Time Series Client) from Stack clients
 
-from avgsmpriceagent.kg_operations.javagateway import stackClientsGw
-from avgsmpriceagent.utils.env_configs import DATABASE
+from avgsqmpriceagent.kg_operations.javagateway import stackClientsGw
+from avgsqmpriceagent.utils.env_configs import DATABASE
 
 
 def retrieve_settings():
