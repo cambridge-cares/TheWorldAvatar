@@ -6,12 +6,15 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
+import agentlogging
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.datamodel.data import TIMECLASS
 from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                             DB_URL, DB_USER, DB_PASSWORD
+                                                 DB_URL, DB_USER, DB_PASSWORD
+# Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+logger = agentlogging.get_logger('prod')
 
 
 class TSClient:
@@ -40,14 +43,14 @@ class TSClient:
             connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
             self.conn = connection.getConnection()
         except Exception as ex:
-            #logger.error("Unable to initialise TS client RDB connection.")
+            logger.error("Unable to initialise TS client RDB connection.")
             raise TSException("Unable to initialise TS client RDB connection.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
             self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
-            #logger.error("Unable to initialise TS client.")
+            logger.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
 
 
@@ -58,7 +61,7 @@ class TSClient:
         try:
             timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:
-            #logger.error("Unable to create timeseries.")
+            logger.error("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
         
         return timeseries

@@ -9,6 +9,11 @@
 import os
 import warnings
 
+import agentlogging
+
+# Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+logger = agentlogging.get_logger('prod')
+
 
 def retrieve_settings():
     """

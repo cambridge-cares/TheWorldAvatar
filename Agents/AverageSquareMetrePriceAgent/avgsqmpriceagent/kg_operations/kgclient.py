@@ -13,11 +13,14 @@ import requests
 
 from pyderivationagent.kg_operations import PySparqlClient
 
+import agentlogging
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import GBP_PER_SM
-from avgsqmpriceagent.errorhandling.exceptions import KGException, APIException
-from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
+from avgsqmpriceagent.errorhandling.exceptions import APIException
 from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT
+
+# Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+logger = agentlogging.get_logger('prod')
 
 
 class KGClient(PySparqlClient):
@@ -47,7 +50,7 @@ class KGClient(PySparqlClient):
         url = ONS_ENDPOINT + '.json?query=' + query
         res = requests.get(url)
         if res.status_code != 200:
-            #logger.error('Error retrieving data from ONS API.')
+            logger.error('Error retrieving data from ONS API.')
             raise APIException('Error retrieving data from ONS API.')
 
         # Extract and unwrap results

@@ -7,14 +7,13 @@
 # price of properties for a postcode based on instantiated HM Land Registry's Price
 # Paid Data transactions in the KG (using asynchronous derivation framework)
 
+import uuid
+import pandas as pd
+
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
-from pyderivationagent import FlaskConfig
 from rdflib import Graph
-
-import uuid
-import pandas as pd
 
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
@@ -249,6 +248,7 @@ if __name__ == '__main__':
     # Initialise KG client
     avgagent = AvgSqmPriceAgent(agent_iri='http://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service',
                                 time_interval= 100,
+                                logger_name='prod',
                                 derivation_instance_base_url='https://www.theworldavatar.com/kg/derivation/',
                                 kg_url=QUERY_ENDPOINT )
 
@@ -262,8 +262,8 @@ if __name__ == '__main__':
     #        'PE30 4GG', 'PE34 3LS']
     pcs = ['PE34 3LS']
 
-    # # Start INSERT query
-    # insert_query = 'INSERT DATA {'
+    # Start INSERT query
+    insert_query = 'INSERT DATA {'
 
     for pc in pcs:
     
@@ -282,8 +282,8 @@ if __name__ == '__main__':
         deriv_iri = deriv_client.createAsyncDerivationForNewInfo(avgagent.agentIRI, deriv_inputs)
 
         # # Estimate average square metre price
-        # insert_query += avgagent.estimate_average_square_metre_price(postcode_iri=postcode, 
-        #                                 tx_records=tx_iris, ppi_iri=ppi)
+        insert_query += avgagent.estimate_average_square_metre_price(postcode_iri=postcode, 
+                                         tx_records=tx_iris, ppi_iri=ppi)
     
     # insert_query += '}'
     # insert_query = kg_client.remove_unnecessary_whitespace(insert_query)
