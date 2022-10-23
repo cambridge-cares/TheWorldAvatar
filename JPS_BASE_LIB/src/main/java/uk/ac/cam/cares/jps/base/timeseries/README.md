@@ -24,7 +24,7 @@ The namespaces used in this document:
 ```
 ts  : https://www.theworldavatar.com/kg/ontotimeseries/
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
-kb  : https://www.theworldavatar.com/kb/ontotimeseries/
+kb  : https://www.theworldavatar.com/kg/ontotimeseries/
 ```
 
 ### Instantiation in KG ###
