@@ -9,11 +9,6 @@
 import os
 import warnings
 
-#import agentlogging
-
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
-
 
 def retrieve_settings():
     """
