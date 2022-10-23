@@ -13,9 +13,9 @@ LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
-UOM = 'http://theworldavatar.com/resource/ontouom/'
+UOM = 'https://theworldavatar.com/resource/ontouom/'
 # Knowledge base
-KB = 'https://www.theworldavatar.com/kb/ontobuiltenv/'
+KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
 ###--- IRIs for OntoBuiltEnv TBox ---###
 # http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
