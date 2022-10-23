@@ -6,16 +6,12 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-#import agentlogging
 from avgsmpriceagent.errorhandling.exceptions import TSException
 from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsmpriceagent.kg_operations.kgclient import KGClient
 from avgsmpriceagent.datamodel.data_mapping import TIMECLASS
 from avgsmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                              DB_URL, DB_USER, DB_PASSWORD
-
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
 
 
 class TSClient:

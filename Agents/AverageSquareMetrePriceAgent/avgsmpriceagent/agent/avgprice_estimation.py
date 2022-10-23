@@ -19,7 +19,6 @@ import pandas as pd
 import urllib.parse
 import requests
 
-#import agentlogging
 from avgsmpriceagent.datamodel.iris import *
 from avgsmpriceagent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
 from avgsmpriceagent.errorhandling.exceptions import TSException, APIException
@@ -27,9 +26,6 @@ from avgsmpriceagent.kg_operations.kgclient import KGClient
 from avgsmpriceagent.kg_operations.tsclient import TSClient
 from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
 from avgsmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
 
 
 class AvgSqmPriceAgent(DerivationAgent):
@@ -43,6 +39,8 @@ class AvgSqmPriceAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
+        # Please note: Declared inputs/outputs need proper instantiation incl. 
+        #              RDF TYPE declarations in the KG for the derivation to work
         return [OBE_POSTALCODE, OBE_PROPERTY_PRICE_INDEX,
                 LRPPI_TRANSACTION_RECORD]
 
@@ -66,6 +64,10 @@ class AvgSqmPriceAgent(DerivationAgent):
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
+        # (returns dict of inputs with input concepts as keys and values as list)
+        inputs = derivation_inputs.getInputs()
+        #TODO: Check if inputs are valid  
+        derivation_inputs.getInputs()
         postcode_iri = derivation_inputs.getIris(OBE_POSTALCODE)[0]
         ppi_iri = derivation_inputs.getIris(OBE_PROPERTY_PRICE_INDEX)[0]
         tx_records = derivation_inputs.getIris(LRPPI_TRANSACTION_RECORD)
@@ -79,7 +81,6 @@ class AvgSqmPriceAgent(DerivationAgent):
         derivation_outputs.addGraph(g)
 
 
-    #TODO: Where to best place those?
     def estimate_average_square_metre_price(self, postcode_iri:str = None, 
                                             tx_records:list = None,
                                             ppi_iri:str = None):
@@ -104,7 +105,7 @@ class AvgSqmPriceAgent(DerivationAgent):
         
             # Initialise TS client
             #TODO:uncomment
-            #ts_client = TSClient(kg_client=self.sparql_client)
+            ts_client = TSClient(kg_client=self.sparql_client)
 
             # In case less than `threshold` transactions provided/available for current postcode,
             # include transactions from nearby postcodes
@@ -126,7 +127,7 @@ class AvgSqmPriceAgent(DerivationAgent):
                     dates = dates.strftime('%Y-%m').tolist()
                     values = [100 for d in dates]
                 except Exception as ex:
-                    #logger.error('Error retrieving/unwrapping Property Price Index time series')
+                    self.logger.error('Error retrieving/unwrapping Property Price Index time series')
                     raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
 
                 # Create UKHPI series with conditioned date index

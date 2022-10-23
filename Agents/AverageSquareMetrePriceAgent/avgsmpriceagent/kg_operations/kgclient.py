@@ -11,7 +11,6 @@ import uuid
 import urllib.parse
 import requests
 
-#import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from avgsmpriceagent.datamodel.iris import *
@@ -21,16 +20,8 @@ from avgsmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsmpriceagent.utils.env_configs import ONS_ENDPOINT
 
 
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
-
-
 class KGClient(PySparqlClient):
     
-    #NOTE: Is this actually needed to allow for "external" SPARQL client?
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     #
     # EXTERNAL SPARQL QUERIES
     #

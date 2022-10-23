@@ -1,20 +1,21 @@
+# To avoid unnecessary logging information from py4j package, set logger level before 
+# first creation of JPS_BASE_LIB module view (i.e. jpsBaseLibView = jpsBaseLibGW.createModuleView())
+import logging
+logging.getLogger("py4j").setLevel(logging.ERROR)
+
 from pyderivationagent.conf import config_derivation_agent
 
 from avgsmpriceagent.agent import AvgSqmPriceAgent
 from avgsmpriceagent.agent import default
 
-#import logging
-
-# Avoid unnecessary logging information from py4j package
-#logging.getLogger("py4j").setLevel(logging.WARNING)
 
 def create_app():
     agent_config = config_derivation_agent()
 
     agent = AvgSqmPriceAgent(
         #register_agent=agent_config.REGISTER_AGENT,
-        #agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
-        #time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        #agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
+        #time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE, (in s)
         #derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=agent_config.SPARQL_QUERY_ENDPOINT,
         kg_update_url=agent_config.SPARQL_UPDATE_ENDPOINT,
