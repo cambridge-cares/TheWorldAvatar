@@ -17,7 +17,7 @@ import uuid
 import pandas as pd
 
 from avgsqmpriceagent.datamodel.iris import *
-from avgsqmpriceagent.datamodel.data import TIME_FORMAT, DATACLASS
+from avgsqmpriceagent.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 from avgsqmpriceagent.errorhandling.exceptions import TSException, APIException
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
@@ -111,12 +111,11 @@ class AvgSqmPriceAgent(DerivationAgent):
         if postcode_iri and ppi_iri:
         
             # Initialise TS client
-            #TODO:uncomment
             ts_client = TSClient(kg_client=self.sparql_client)
 
-            # In case less than `threshold` transactions provided/available for current postcode,
-            # include transactions from nearby postcodes
-            threshold = 50
+            # In case less than `threshold` transactions are provided/available 
+            # for current postcode, include transactions from nearby postcodes
+            threshold = 5
             if len(tx_records) < threshold:
                 tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, threshold)
 
@@ -125,31 +124,26 @@ class AvgSqmPriceAgent(DerivationAgent):
                 # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
                 # (https://landregistry.data.gov.uk/app/ukhpi/doc)
                 try:
-                    #TODO: Uncomment and remove temporary workaround
-                    # ts = ts_client.tsclient.getTimeSeries([ppi_iri], ts_client.conn)
-                    # dates = [d.toString() for d in ts.getTimes()]
-                    # values = [v for v in ts.getValues(ppi_iri)]
-                    # fix:
-                    dates = pd.date_range(start='1990-01-01', freq='M', end='2022-10-01')
-                    dates = dates.strftime('%Y-%m').tolist()
-                    values = [100 for d in dates]
+                    ts = ts_client.tsclient.getTimeSeries([ppi_iri], ts_client.conn)
+                    dates = [d.toString() for d in ts.getTimes()]
+                    values = [v for v in ts.getValues(ppi_iri)]
                 except Exception as ex:
                     self.logger.error('Error retrieving/unwrapping Property Price Index time series')
                     raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
 
                 # Create UKHPI series with conditioned date index
                 ukhpi = pd.Series(index=dates, data=values)
-                ukhpi.index = pd.to_datetime(ukhpi.index, format='%Y-%m-%d')
+                ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
                 ukhpi.sort_index(ascending=False, inplace=True)
-                ukhpi.index = ukhpi.index.strftime('%Y-%m')
+                ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
 
                 # 2) Retrieve sales transaction details for transaction IRIs
                 res = self.sparql_client.get_tx_details_and_floor_areas(tx_records)
                 cols = ['tx_iri', 'price', 'date', 'floor_area']
                 df = pd.DataFrame(columns=cols, data=res)
                 # Ensure date index and value columns are in correct format
-                df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-                df['date'] = df['date'].dt.strftime('%Y-%m')
+                df['date'] = pd.to_datetime(df['date'], format=TIME_FORMAT_LONG)
+                df['date'] = df['date'].dt.strftime(TIME_FORMAT_SHORT)
                 df['price'] = df['price'].astype(float)
                 df['floor_area'] = df['floor_area'].astype(float)
 
@@ -266,7 +260,7 @@ if __name__ == '__main__':
     # Get IRI inputs for testing
     # pcs = ['PE30 5DH', 'PE30 4XH', 'PE30 3NS', 'PE31 6XU', 
     #        'PE30 4GG', 'PE34 3LS']
-    pcs = ['PE30 4XH']
+    pcs = ['PE34 3LS']
 
     # # Start INSERT query
     # insert_query = 'INSERT DATA {'

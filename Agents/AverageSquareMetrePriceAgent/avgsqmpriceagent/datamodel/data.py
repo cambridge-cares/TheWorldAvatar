@@ -15,9 +15,9 @@ from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
 # However, YearMonth not supported by TimeSeriesClient RDB implementation
-# --> Use to xsd:date, i.e. ISO 8601 YYYY-MM-DD
-# TODO: only use as fall-back and query from KG in first place
-TIME_FORMAT = 'YYYY-MM-DD'
+# --> Used xsd:date, i.e. ISO 8601 YYYY-MM-DD, during instantiation (via PropertySalesInstantiationAgent)
+TIME_FORMAT_LONG = '%Y-%m-%d'
+TIME_FORMAT_SHORT = '%Y-%m'
 
 # OM / UOM unit symbols
 GBP_PER_SM = '£ m-2'
