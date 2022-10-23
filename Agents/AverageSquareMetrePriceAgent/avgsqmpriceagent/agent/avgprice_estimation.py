@@ -34,17 +34,21 @@ class AvgSqmPriceAgent(DerivationAgent):
         # Initialise the Sparql_client (with defaults specified in `agent.env` file)
         self.sparql_client = self.get_sparql_client(KGClient)
 
+
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
         return [OBE_POSTALCODE, OBE_PROPERTY_PRICE_INDEX,
                 LRPPI_TRANSACTION_RECORD]
 
+
     def agent_output_concepts(self) -> list:
         return [OBE_AVERAGE_SM_PRICE]
 
+
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
+
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
@@ -62,19 +66,26 @@ class AvgSqmPriceAgent(DerivationAgent):
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
-        #TODO: Check if inputs are valid  
-        derivation_inputs.getInputs()
-        postcode_iri = derivation_inputs.getIris(OBE_POSTALCODE)[0]
-        ppi_iri = derivation_inputs.getIris(OBE_PROPERTY_PRICE_INDEX)[0]
-        tx_records = derivation_inputs.getIris(LRPPI_TRANSACTION_RECORD)
 
-        # Assess average square metre price
-        g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
-                                                     ppi_iri=ppi_iri,
-                                                     tx_records=tx_records)
+        postcode_iri = None if not inputs.get(OBE_POSTALCODE) else \
+                       inputs.get(OBE_POSTALCODE)[0]
+        ppi_iri = None if not inputs.get(OBE_PROPERTY_PRICE_INDEX) else \
+                  inputs.get(OBE_PROPERTY_PRICE_INDEX)[0]
+        tx_records = [] if not inputs.get(LRPPI_TRANSACTION_RECORD) else \
+                     inputs.get(LRPPI_TRANSACTION_RECORD)
         
-        # Collect the generated triples derivation_outputs
-        derivation_outputs.addGraph(g)
+        # Assess average price per sqm in case all required inputs are available
+        # (i.e. all inputs have been marked up successfully)
+        if postcode_iri and ppi_iri and tx_records:
+            # Assess average square metre price
+            g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
+                                                         ppi_iri=ppi_iri,
+                                                         tx_records=tx_records)        
+            # Collect the generated triples derivation_outputs
+            derivation_outputs.addGraph(g)
+        else:
+            self.logger.info("Not all required derivation inputs provided. \
+                              Verify everything is marked up correctly.")
 
 
     def estimate_average_square_metre_price(self, postcode_iri:str = None, 
@@ -233,45 +244,53 @@ def default():
     """
         Instructional message at the app root.
     """
-    #TODO: update link
     msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent#readme<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent<BR>"
     return msg
 
 
 if __name__ == '__main__':
 
+
     # Initialise KG client
-    avgagent = AvgSqmPriceAgent(agent_iri='http://agent_iri',
+    avgagent = AvgSqmPriceAgent(agent_iri='http://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service',
                                 time_interval= 100,
-                                derivation_instance_base_url='http://derivation_base',
+                                derivation_instance_base_url='https://www.theworldavatar.com/kg/derivation/',
                                 kg_url=QUERY_ENDPOINT )
 
-    kgclient = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+    kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+    # Derivation markup (fo testing)
+    deriv_client = avgagent.jpsBaseLib_view.DerivationClient(avgagent.storeClient,
+                            'https://www.theworldavatar.com/kg/derivation/')
 
     # Get IRI inputs for testing
     # pcs = ['PE30 5DH', 'PE30 4XH', 'PE30 3NS', 'PE31 6XU', 
     #        'PE30 4GG', 'PE34 3LS']
-    pcs = ['PE30 5DH']
+    pcs = ['PE30 4XH']
 
-    # Start INSERT query
-    insert_query = 'INSERT DATA {'
+    # # Start INSERT query
+    # insert_query = 'INSERT DATA {'
 
     for pc in pcs:
     
         # Postcode IRI
-        postcode = kgclient.get_postcode_iris([pc])[0]
+        postcode = kg_client.get_postcode_iris([pc])[0]
+        deriv_client.addTimeInstance(postcode)
+        deriv_client.updateTimestamp(postcode)
 
         # Transaction record IRI list
-        tx_iris = kgclient.get_tx_iris_for_postcodes([postcode])
+        tx_iris = kg_client.get_tx_iris_for_postcodes([postcode])
 
         # Property Price Index IRI
-        ppi = kgclient.get_ppi_iri(postcode)
+        ppi = kg_client.get_ppi_iri(postcode)
 
-        # Estimate average square metre price
-        insert_query += avgagent.estimate_average_square_metre_price(postcode_iri=postcode, 
-                                        tx_records=tx_iris, ppi_iri=ppi)
+        deriv_inputs = tx_iris + [postcode] + [ppi]
+        deriv_iri = deriv_client.createAsyncDerivationForNewInfo(avgagent.agentIRI, deriv_inputs)
+
+        # # Estimate average square metre price
+        # insert_query += avgagent.estimate_average_square_metre_price(postcode_iri=postcode, 
+        #                                 tx_records=tx_iris, ppi_iri=ppi)
     
-    insert_query += '}'
-    insert_query = kgclient.remove_unnecessary_whitespace(insert_query)
-    kgclient.performUpdate(insert_query)
+    # insert_query += '}'
+    # insert_query = kg_client.remove_unnecessary_whitespace(insert_query)
+    # kg_client.performUpdate(insert_query)
