@@ -125,13 +125,11 @@ class MapHandler_Cesium extends MapHandler {
      */
     public addTerrain() {
         let terrainOptions = Manager.SETTINGS.getSetting("terrain");
-        console.log(terrainOptions);
-        if(terrainOptions == null) return;
+        if(terrainOptions === null || terrainOptions === undefined) return;
 
         // Create provider and add to map
         let terrainProvider = new Cesium.CesiumTerrainProvider(terrainOptions);
         MapHandler.MAP.terrainProvider = terrainProvider;
-        console.log("ADDED TERRAIN!");
     }
 
     /**
