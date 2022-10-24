@@ -370,7 +370,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException(
+                "RemoteStoreClient: error when executing SPARQL update: " + System.getProperty("line.separator") + query, e);
         }
     }
 
@@ -499,7 +500,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             JSONArray results = StoreClientHelper.convert(rs);
             return results;
         } catch (Exception e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException(
+                "RemoteStoreClient: error when executing SPARQL query: " + System.getProperty("line.separator") + query, e);
         }
     }
 
