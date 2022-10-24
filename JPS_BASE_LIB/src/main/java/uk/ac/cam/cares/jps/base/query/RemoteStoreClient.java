@@ -92,10 +92,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
 
-    //Connection and Statement objects
-    Connection conn;
-    Statement stmt;
-
     private String queryEndpoint;
     private String updateEndpoint;
     private String query;
@@ -347,17 +343,32 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
+        String connectionUrl = getConnectionUrl();
+        if (connectionUrl.isEmpty()) {
+            throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
+        }
+        if (isConnectionUpdateUrlValid(connectionUrl)) {
+            try (Connection conn = DriverManager.getConnection(connectionUrl)) {
+                    return executeUpdate(query, conn);
+            } catch (SQLException e) {
+                throw new JPSRuntimeException(e.getMessage(), e);
             }
-            if (isConnectionUpdateUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                return stmt.executeUpdate(query);
-            } else {
-                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is not valid.");
-            }
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is not valid.");
+        }
+    }
+
+    /**
+     * Executes the update operation supplied by the calling method and returns
+     * results.
+     *
+     * @param query
+     * @param conn connection to the remote store
+     * @return
+     */
+    public int executeUpdate(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            return stmt.executeUpdate(query);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
@@ -459,30 +470,37 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results;
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+        String connectionUrl = getConnectionUrl();
+        if (connectionUrl.isEmpty()) {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+        }
+        if (isConnectionQueryUrlValid(connectionUrl)) {
+            try (Connection conn = DriverManager.getConnection(connectionUrl)) {
+                return executeQuery(query, conn);
+            } catch (SQLException e) {
+                throw new JPSRuntimeException(e.getMessage(), e);
             }
-            if (isConnectionQueryUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                java.sql.ResultSet rs = stmt.executeQuery(query);
-                results = StoreClientHelper.convert(rs);
-            } else {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
-            }
-        } catch (SQLException e) {
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+        }
+    }
+
+    /**
+     * Executes the query supplied by the calling method and returns results<p>
+     * as a JSONArray.
+     *
+     * @param query
+     * @param conn connection to the remote store
+     * @return
+     */
+    public JSONArray executeQuery(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            java.sql.ResultSet rs = stmt.executeQuery(query);
+            JSONArray results = StoreClientHelper.convert(rs);
+            return results;
+        } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
-        finally {
-        	try {
-				conn.close();
-			} catch (SQLException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
-        }
-        return results;
     }
 
     /**
@@ -534,20 +552,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return builder.build();
     }
 
-    /**
-     * Establishes connection to triple store and sets the Statement Object
-     */
-    protected void connect(String connectionUrl){
-        try {
-            if (this.conn == null || this.conn.isClosed()) {
-                RemoteEndpointDriver.register();
-                conn = DriverManager.getConnection(connectionUrl);
-                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            }
-        } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-    }
     /**
      * Generates the URL of the remote data repository's EndPoint, which<br>
      * might require authentication either to perform a data retrieval or<br>
