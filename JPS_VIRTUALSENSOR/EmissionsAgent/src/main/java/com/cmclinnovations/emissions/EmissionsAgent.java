@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -80,10 +81,10 @@ public class EmissionsAgent extends DerivationAgent {
     public void init() throws ServletException {
         EndpointConfig endpointConfig = new EndpointConfig(); 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
 
-        queryClient = new QueryClient(storeClient, tsClient);
+        queryClient = new QueryClient(storeClient, remoteRDBStoreClient);
     }
 
     /**
@@ -115,10 +116,10 @@ public class EmissionsAgent extends DerivationAgent {
         String temperatureMeasure = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX, QueryClient.MEASURE_STRING);
 
         derivationOutputs.addTriple(density, hasValue, densityMeasure);
-        derivationOutputs.addTriple(densityMeasure, numericalValue, chimney.getMixtureDensity());
+        derivationOutputs.addLiteral(densityMeasure, numericalValue, chimney.getMixtureDensity());
         derivationOutputs.addTriple(densityMeasure, hasUnit, kgm3);
         derivationOutputs.addTriple(temperature, hasValue, temperatureMeasure);
-        derivationOutputs.addTriple(temperatureMeasure, numericalValue, chimney.getMixtureTemperature());
+        derivationOutputs.addLiteral(temperatureMeasure, numericalValue, chimney.getMixtureTemperature());
         derivationOutputs.addTriple(temperatureMeasure, hasUnit, kelvin);
 
         String noxFlow = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX, QueryClient.MASS_FLOW);
@@ -141,7 +142,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(noxEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(noxEmission, hasQuantity, noxFlow);
         derivationOutputs.addTriple(noxFlow, hasValue, noxMeasure);
-        derivationOutputs.addTriple(noxMeasure, numericalValue, chimney.getFlowrateNOx());
+        derivationOutputs.addLiteral(noxMeasure, numericalValue, chimney.getFlowrateNOx());
         derivationOutputs.addTriple(noxMeasure, hasUnit, kgs);
 
         // hc
@@ -149,7 +150,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(uhcEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(uhcEmission, hasQuantity, uhcFlow);
         derivationOutputs.addTriple(uhcFlow, hasValue, uhcMeasure);
-        derivationOutputs.addTriple(uhcMeasure, numericalValue, chimney.getFlowrateHC());
+        derivationOutputs.addLiteral(uhcMeasure, numericalValue, chimney.getFlowrateHC());
         derivationOutputs.addTriple(uhcMeasure, hasUnit, kgs);
 
         // co
@@ -157,7 +158,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(coEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(coEmission, hasQuantity, coFlow);
         derivationOutputs.addTriple(coFlow, hasValue, coMeasure);
-        derivationOutputs.addTriple(coMeasure, numericalValue, chimney.getFlowrateCO());
+        derivationOutputs.addLiteral(coMeasure, numericalValue, chimney.getFlowrateCO());
         derivationOutputs.addTriple(coMeasure, hasUnit, kgs);
 
         // so2
@@ -165,19 +166,19 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(so2Emission, hasQuantity, temperature);
         derivationOutputs.addTriple(so2Emission, hasQuantity, so2Flow);
         derivationOutputs.addTriple(so2Flow, hasValue, so2Measure);
-        derivationOutputs.addTriple(so2Measure, numericalValue, chimney.getFlowrateSO2());
+        derivationOutputs.addLiteral(so2Measure, numericalValue, chimney.getFlowrateSO2());
         derivationOutputs.addTriple(so2Measure, hasUnit, kgs);
 
         // pm10
         derivationOutputs.addTriple(pm10Emission, hasQuantity, pm10Flow);
         derivationOutputs.addTriple(pm10Flow, hasValue, pm10Measure);
-        derivationOutputs.addTriple(pm10Measure, numericalValue, chimney.getPm10());
+        derivationOutputs.addLiteral(pm10Measure, numericalValue, chimney.getPm10());
         derivationOutputs.addTriple(pm10Measure, hasUnit, kgs);
 
         // pm25
         derivationOutputs.addTriple(pm25Emission, hasQuantity, pm25Flow);
         derivationOutputs.addTriple(pm25Flow, hasValue, pm25Measure);
-        derivationOutputs.addTriple(pm25Measure, numericalValue, chimney.getPm25());
+        derivationOutputs.addLiteral(pm25Measure, numericalValue, chimney.getPm25());
         derivationOutputs.addTriple(pm25Measure, hasUnit, kgs);
     }
  }

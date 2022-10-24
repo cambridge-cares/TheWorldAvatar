@@ -16,6 +16,8 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import org.apache.logging.log4j.LogManager;
@@ -23,20 +25,8 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.postgis.Point;
-
-import com.cmclinnovations.emissions.objects.Chimney;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * sends sparql queries
@@ -45,6 +35,7 @@ public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
     private TimeSeriesClient<Long> tsClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
@@ -70,9 +61,10 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
+    public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
-        this.tsClient = tsClient;
+        this.tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 
     /**
@@ -103,10 +95,17 @@ public class QueryClient {
             throw new RuntimeException("Incorrect number of ships queried");
         }
 
-        int shipSpeed = tsClient.getLatestData(speedMeasure).getValuesAsInteger(speedMeasure).get(0);
-        Ship ship = new Ship();
-        ship.setSpeed(shipSpeed);
-        ship.setShipType(shipTypeInt);
-        return ship;
+        int shipSpeed;
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            shipSpeed = tsClient.getLatestData(speedMeasure,conn).getValuesAsInteger(speedMeasure).get(0);
+            Ship ship = new Ship();
+            ship.setSpeed(shipSpeed);
+            ship.setShipType(shipTypeInt);
+            return ship;
+        } catch (SQLException e) {
+            LOGGER.error("Failed at getting ship time series data");
+            LOGGER.error(e.getMessage());
+            return null;
+        }
     }
 }
