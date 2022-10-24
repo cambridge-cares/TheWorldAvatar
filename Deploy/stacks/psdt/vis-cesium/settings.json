@@ -3,7 +3,8 @@
         "center": [7.614597486434046, 49.1720003877412, 2000],
         "heading": 0,
         "pitch": -40,
-        "roll": 0.0
+        "roll": 0.0,
+        "opacity": 0.8
     },
     "imagery": {
 	"Hell": "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token=",
