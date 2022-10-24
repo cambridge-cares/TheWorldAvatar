@@ -102,7 +102,7 @@ The default position of the map can be specified via the start field of the sett
     "heading": 90,
     "pitch": -45,
     "roll": 0.0,
-    "translucency": 0.5
+    "opacity": 0.5
 }
 ```
 

@@ -54,10 +54,10 @@ class MapHandler_Cesium extends MapHandler {
             MapHandler.MAP.scene.globe.undergroundColor = Cesium.Color.GREY;
 
             // Set the globe translucency (if provided)
-            if(mapOptions.hasOwnProperty("translucency")) {
+            if(mapOptions.hasOwnProperty("opacity")) {
                 MapHandler.MAP.scene.globe.translucency.enabled = true;
 
-                let value = mapOptions["translucency"];
+                let value = mapOptions["opacity"];
                 MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance = 
                         new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
             }
