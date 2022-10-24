@@ -12,9 +12,6 @@ The Stack Data Uploader is designed to make it easier to ingest static data file
 ## Datasets and subsets
 
 Data files are grouped into *datasets*, each of which has its own configuration file and data directory.
-Each dataset should generally contain at least one *data subset*.
-If the files in a dataset are of multiple different types, or represent different geospatial layers, they can be further divided into multiple data subsets, with one for each type/layer.
-Each data subset should then have its own subdirectory.
 
 By default all dataset configuration files in the [`inputs/configs/`](./inputs/config/) are read by the data uploader.
 When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
@@ -44,25 +41,93 @@ There are several example configuration files in the [`example_datasets`](../exa
 
 The following table shows the top level nodes allowed in a configuration file.
 
-| Key              | Required?                                                        | Default value                            | Description                                                                                                                                                                                                                                                 |
-| ---------------- | ---------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name             | No                                                               | The filename without the .json extension | The name of the dataset.                                                                                                                                                                                                                                    |
-| skip             | No                                                               | `false`                                  | If set to `true` this dataset will be ignored by the data uploader.                                                                                                                                                                                         |
-| datasetDirectory | No                                                               | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset.                                                                                                                                                              |
-| database         | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres that appropriate data will be uploaded to. *The database will be created if it doesn't already exist*. ***Ontop can only access the default 'postgres' database so it is usually best not to change this value***. |
-| workspace        | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to. *The workspace will be created if it doesn't already exist*.                                                                                         |
-| externalDatasets | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name.                                                                                                                                                 |
-| dataSubsets      | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects. See [this section](#data-subsets) for more details.                                                                                                                                                                        |
-| styles           | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects. See [this section](#geoserver-style-files) for more details.                                                                                                                                             |
-| mappings         | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects. See [this section](#ontop-mapping-OBDA-files) for more details.                                                                                                                                            |
+| Key                                   | Required?                                                        | Default value                            | Description                                                                                                |
+| ------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [name](#name)                         | No                                                               | The filename without the .json extension | The name of the dataset                                                                                    |
+| [datasetDirectory](#datasetDirectory) | No                                                               | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset              |
+| [skip](#skip)                         | No                                                               | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                         |
+| [database](#database)                 | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres that appropriate data will be uploaded to                         |
+| [workspace](#workspace)               | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to      |
+| [externalDatasets](#externaldatasets) | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name |
+| [dataSubsets](#dataSubsets)           | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                            |
+| [styles](#geoserver-style-files)      | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                          |
+| [mappings](#ontop-mapping-OBDA-files) | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                            |
 
-#### <sup>1</sup> At least one of these needs to be populated.
+##### <sup>1</sup> At least one of these needs to be populated.
 
-### Data subsets
+#### *name*
+This is the name of the dataset.
+If left unspecified it is set to the name of the configuration file, without the .json extension.
+This is the value that should be specified in the *externalDatasets* node of another dataset.
+If the dataset's name matches the name of the stack it is being loaded into then only that dataset and its associated external datasets will be loaded.
 
-### GeoServer style files
+#### *datasetDirectory*
+The directory within `inputs/data/` that contains the data files associated with this dataset.
 
-### Ontop mapping (OBDA) files
+#### *skip*
+Setting the *skip* value of a dataset to `true` will cause the data uploader to not load any of the data or files listed in that dataset.
+
+#### *database*
+The name of the database within Postgres that appropriate data will be uploaded to.
+>The database will be created if it doesn't already exist.
+
+>**Ontop can only access the default 'postgres' database so it is usually best not to change this value**.
+
+#### *workspace*
+The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to.
+>The workspace will be created if it doesn't already exist.
+
+#### *externalDatasets*
+Any datasets that are named under this node will be included if this dataset is loaded by name, either because the stack has the same name or because it appears in the *externalDatasets* list of another dataset that is loaded by name.
+
+#### *dataSubsets*
+This node should contain a list of data subset objects.
+Each dataset should generally contain at least one data subset.
+If the files in a dataset are of multiple different types, or represent different geospatial layers, they should be divided into multiple data subsets, with one for each type/layer.
+Each data subset should then have its own subdirectory.
+These specify how to load the data from a particular set of files.
+Each data subset must have the following values specified:
+
+| Key                           | Description                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| name                          | The name of the data subset                                                              |
+| [type](#type)                 | The type of the data                                                                     |
+| [subdirectory](#subdirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
+| skip                          | If set to `true` this data subset will be ignored by the data uploader                   |
+
+##### *type*
+This controls which functions are used to load the data.
+More information about the different data types can be found [here](#data-types).
+
+##### *subdirectory*
+If there are multiple data subsets then each one must have a separate subdirectory set.
+If there is only one data subset then this maybe left unset and the files placed directly in the dataset directory.
+
+#### *styles*
+A list of GeoServer style file definition objects.
+The styles defined here wll be loaded into the GeoServer workspace associated with the dataset.
+Each entry requires the following values to be specified:
+
+| Key  | Description                                           |
+| ---- | ----------------------------------------------------- |
+| name | The name of the style as it will be used in GeoServer |
+| file | The name of the file containing the style definition  |
+
+Currently only `.sld` style files are supported.
+If required in the future support for other style formats might be add as GeoServer does support several other formats natively and a few more if the required plugins are loaded.
+
+#### *mappings*
+A list of Ontop mapping file definition objects.
+Each entry requires the following values to be specified:
+
+| Key  | Description                                       |
+| ---- | ------------------------------------------------- |
+| name | The name of the style                             |
+| file | The name of the file containing the OBDA mappings |
+
+Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
+Ontop also supports the R2RML (.ttl) OBDA file standard but the data uploader would need changes to include matching support.
+
 ## Data types
 
 
