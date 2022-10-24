@@ -141,7 +141,7 @@ public class QueryClient {
         inputs.add(nxIri);
         inputs.add(nyIri);
 
-        Derivation derivation = derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.DERIVATIONWITHTIMESERIES);
+        Derivation derivation = derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONWITHTIMESERIES);
         
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
@@ -149,7 +149,7 @@ public class QueryClient {
     }
 
     /**
-     * 
+     * updates all instances of simulation time in the KG, since ships got updates, everything else should be out-of-date
      * @param newValue
      */
     void updateSimulationTime(long newValue) {
@@ -174,7 +174,7 @@ public class QueryClient {
         for (int i = 0; i < queryResult.length(); i++) {
             simTimes.add(queryResult.getJSONObject(i).getString(simTime.getQueryString().substring(1)));
         }
-        // update derivation timestamp to trigger update
+        // update derivation timestamp of simulation time to trigger update
         derivationClient.updateTimestamps(simTimes);
     }
 }
