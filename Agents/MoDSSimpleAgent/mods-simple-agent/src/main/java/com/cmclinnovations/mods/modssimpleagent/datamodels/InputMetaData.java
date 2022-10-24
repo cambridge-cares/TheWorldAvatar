@@ -28,7 +28,7 @@ public class InputMetaData {
 
     public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
 
-    public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend, Algorithm algorithm) throws IOException {
+    public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend) throws IOException {
         Data inputs = request.getInputs();
 
         List<String> varNames = new ArrayList<>();
@@ -63,8 +63,7 @@ public class InputMetaData {
                         "Failed to read data info load file.", ex);
             }
         } else if (inputs != null) {
-            varNames = algorithm.getVariables().stream().map(Variable::getName)
-                    .collect(Collectors.toList());
+            varNames = inputs.getHeaders().stream().collect(Collectors.toList());
 
             minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
                     DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
