@@ -2,8 +2,10 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 import com.cmclinnovations.mods.api.MoDSAPI.DataType;
@@ -69,6 +71,13 @@ class MOOonly extends Simulation {
                                 .map(MoDSAPI::getVarName)
                                 .collect(Collectors.toList());
 
+                List<String> inputVarNames = MoDSAPI.getReducedXVarIDs(simDir, algorithmName).stream()
+                                .map(MoDSAPI::getVarName)
+                                .collect(Collectors.toList());
+
+                List<String> allVarNames = Stream.concat(inputVarNames.stream(), outputVarNames.stream())
+                                .collect(Collectors.toList());
+
                 List<Double> minimaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames,
                                 InputMetaDataRow::getVarName,
                                 InputMetaDataRow::getMinimum);
@@ -88,18 +97,24 @@ class MOOonly extends Simulation {
 
                 int numResults = getPrimaryAlgorithm().getMaxNumberOfResults();
 
-                List<List<Double>> points = MoDSAPI.getMCDMSimpleWeightedPoints(simDir, algorithmName,
+                EnumMap<DataType, List<List<Double>>> allPointsMap = MoDSAPI.getMCDMSimpleWeightedPoints(simDir,
+                                algorithmName,
                                 ListUtils.replaceNulls(minimaFromAlg, minimaFromData),
                                 ListUtils.replaceNulls(maximaFromAlg, maximaFromData),
                                 ListUtils.replaceNulls(weightsFromAlg, Collections.nCopies(weightsFromAlg.size(), 1.0)),
-                                numResults, new Options().setVarIndexFirst(true)).get(DataType.OutputVariable);
+                                numResults, new Options().setVarIndexFirst(true));
 
-                Data outputValues = new Data(
-                                Streams.zip(outputVarNames.stream(), points.stream(), DataColumn::new)
+                List<List<Double>> inputPoints = allPointsMap.get(DataType.InputVariable);
+                List<List<Double>> ouputPoints = allPointsMap.get(DataType.OutputVariable);
+                List<List<Double>> points = Stream.concat(inputPoints.stream(), ouputPoints.stream())
+                                .collect(Collectors.toList());
+
+                Data values = new Data(
+                                Streams.zip(allVarNames.stream(), points.stream(), DataColumn::new)
                                                 .collect(Collectors.toList()));
 
                 Request results = super.getResults();
-                results.setOutputs(outputValues);
+                results.setOutputs(values);
 
                 return results;
         }
