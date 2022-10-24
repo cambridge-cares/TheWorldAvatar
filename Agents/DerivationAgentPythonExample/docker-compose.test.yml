@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  derivation_agent_python_example:
+    image: ghcr.io/cambridge-cares/derivation_agent_python_example:1.0.0-SNAPSHOT
+    container_name: derivation_agent_python_example
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 7000:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      - ./tests/agent.env.test
+    secrets:
+      - email_auth
+    # NOTE below entrypoint overrides the default entrypoint in the Dockerfile
+    # --preload flag is added to provide more information in the container to help with debugging
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "derivationagentpythonexample:create_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_dape_test"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json
