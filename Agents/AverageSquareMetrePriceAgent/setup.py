@@ -10,8 +10,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
-    #TODO: update link to github repo
-    url="",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent",
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
