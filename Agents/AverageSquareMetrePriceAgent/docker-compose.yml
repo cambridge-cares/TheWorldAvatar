@@ -17,7 +17,7 @@ services:
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
       - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5010/AvgSqmPrice
       - REGISTER_AGENT=false
-      - DERIVATION_PERIODIC_TIMESCALE=10
+      - DERIVATION_PERIODIC_TIMESCALE=604800
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       # Required inputs, although values retrieved from Stack clients actually used when initialising DerivationAgent
       - SPARQL_QUERY_ENDPOINT=''
