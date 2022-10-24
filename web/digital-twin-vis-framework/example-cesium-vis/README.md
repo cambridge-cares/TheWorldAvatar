@@ -94,7 +94,7 @@ These features currently include:
 
 #### Map Position
 
-The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the translucency of the globe itself can also be set here.
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the opacity of the globe itself can also be set here.
 
 ```json
 "start": {
