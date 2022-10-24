@@ -59,10 +59,13 @@ class MapHandler_Cesium extends MapHandler {
 
                 let value = mapOptions["translucency"];
                 MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance = 
-                    new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
-                // MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance.nearValue = value;
-                // MapHandler.MAP.scene.globe.translucency.frontFaceAlphaByDistance.farValue = value;
+                        new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
             }
+
+            // Include terrain in Z-index rendering (otherwise we'll be able
+            // to see other entities through it).
+            MapHandler.MAP.scene.globe.depthTestAgainstTerrain = true
+
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
             let imageryProvider = new Cesium.UrlTemplateImageryProvider({
