@@ -4,7 +4,8 @@ import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
 
 from pyderivationagent.conf import config_derivation_agent
-from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                                 THRESHOLD
 
 from avgsqmpriceagent.agent import AvgSqmPriceAgent
 from avgsqmpriceagent.agent import default
@@ -38,9 +39,10 @@ def create_app():
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        threshold=THRESHOLD,
         # Settings read from Stack Clients
         kg_url=QUERY_ENDPOINT,
-        kg_update_url=UPDATE_ENDPOINT,
+        kg_update_url=UPDATE_ENDPOINT,      
         # Miscellaneous settings
         logger_name='prod',
         max_thread_monitor_async_derivations=1

@@ -8,6 +8,9 @@ services:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
+      #--- Agent parameters ---#
+      # Minimum number of sales transactions required to assess average price
+      - THRESHOLD=5
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
       - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service

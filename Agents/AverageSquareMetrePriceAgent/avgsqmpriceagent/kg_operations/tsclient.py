@@ -9,10 +9,9 @@
 import agentlogging
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
-from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.datamodel.data import TIMECLASS
-from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                                 DB_URL, DB_USER, DB_PASSWORD
+from avgsqmpriceagent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
 

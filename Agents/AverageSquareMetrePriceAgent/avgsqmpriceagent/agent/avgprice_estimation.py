@@ -25,14 +25,15 @@ from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 class AvgSqmPriceAgent(DerivationAgent):
 
-    def __init__(self,
-        **kwargs
-    ):
+    def __init__(self, **kwargs):
+        # Set transaction threshold for average calculation
+        self.threshold = kwargs.pop('threshold')
+        # Initialise DerivationAgent parent instance
         super().__init__(**kwargs)
 
-        # Initialise the Sparql_client (with defaults specified in `agent.env` file)
+        # Initialise the Sparql_client (with defaults specified in environment variables)
         self.sparql_client = self.get_sparql_client(KGClient)
-
+        
 
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
@@ -114,9 +115,8 @@ class AvgSqmPriceAgent(DerivationAgent):
 
             # In case less than `threshold` transactions are provided/available 
             # for current postcode, include transactions from nearby postcodes
-            threshold = 5
-            if len(tx_records) < threshold:
-                tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, threshold)
+            if len(tx_records) < self.threshold:
+                tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, self.threshold)
 
             if tx_records:
                 # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)

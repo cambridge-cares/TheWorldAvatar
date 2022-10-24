@@ -7,7 +7,7 @@
 # (e.g. for the Time Series Client) from Stack clients
 
 import agentlogging
-from avgsqmpriceagent.utils.env_configs import DATABASE
+from avgsqmpriceagent.utils.env_configs import DATABASE, THRESHOLD
 from avgsqmpriceagent.kg_operations.javagateway import stackClientsGw
 
 
