@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  avgsqmprice_agent:
+    image: ghcr.io/cambridge-cares/avgsqmprice_agent_debug:1.0.0-SNAPSHOT
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      target: debug
+    ports:
+      - 7000:5000
+      - 5678:5678
+      #- "${DEBUG_PORT}:5678"
+    env_file:
+      - ./avgsqmpriceagent.env
+    volumes:
+      - ./avgsqmpriceagent:/app/avgsqmpriceagent

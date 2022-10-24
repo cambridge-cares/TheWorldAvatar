@@ -1,18 +1,23 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 12 Oct 2022                            #
+# Date: 23 Oct 2022                            #
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
-# (i.e. for the Time Series Client) from Stack clients
+# (e.g. for the Time Series Client) from Stack clients
 
-from avgsqmpriceagent.kg_operations.javagateway import stackClientsGw
+import agentlogging
 from avgsqmpriceagent.utils.env_configs import DATABASE
+from avgsqmpriceagent.kg_operations.javagateway import stackClientsGw
+
+
+# Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+logger = agentlogging.get_logger('prod')
 
 
 def retrieve_settings():
     """
-        Reads settings Stack clients (as global variables).
+        Reads settings from Stack clients (as global variables).
     """
 
     # Define global scope for global variables
@@ -23,7 +28,8 @@ def retrieve_settings():
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
+    # Ontop (at least for now) not required
+    #stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
@@ -33,9 +39,6 @@ def retrieve_settings():
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
-    # Ontop
-    ont = stackClientsView.OntopEndpointConfig("","","","","")
-    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL/PostGIS database URL
     DB_URL = pg_conf.getJdbcURL(DATABASE)
@@ -45,18 +48,16 @@ def retrieve_settings():
 
     # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
     # for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl("buildings")
+    QUERY_ENDPOINT = bg_conf.getUrl("buildings2")
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
 
 # Run when module is imported
-# TODO: Revert to work with the stack
 #retrieve_settings()
 
-# Local Postgres
-DB_URL = 'jdbc:postgresql:prices'
-DB_USER = 'postgres'
-DB_PASSWORD = 'postgres'
-# Stack Blazegraph
-QUERY_ENDPOINT = 'http://165.232.172.16:3838/blazegraph/namespace/buildings2/sparql'
-UPDATE_ENDPOINT = 'http://165.232.172.16:3838/blazegraph/namespace/buildings2/sparql'
+DB_URL = 'test'
+DB_USER = 'test'
+DB_PASSWORD = 'test'
+
+QUERY_ENDPOINT = 'test'
+UPDATE_ENDPOINT = QUERY_ENDPOINT

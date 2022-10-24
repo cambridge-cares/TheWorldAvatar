@@ -17,7 +17,7 @@ from rdflib import Graph
 
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
-from avgsqmpriceagent.errorhandling.exceptions import TSException, APIException
+from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
 from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -238,6 +238,7 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
+    msg += "<BR>"
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent<BR>"
     return msg
 

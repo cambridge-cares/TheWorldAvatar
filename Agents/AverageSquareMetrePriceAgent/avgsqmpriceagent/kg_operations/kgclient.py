@@ -17,7 +17,7 @@ import agentlogging
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import GBP_PER_SM
 from avgsqmpriceagent.errorhandling.exceptions import APIException
-from avgsqmpriceagent.utils.env_configs import ONS_ENDPOINT
+from avgsqmpriceagent.datamodel.data import ONS_ENDPOINT
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
