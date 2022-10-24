@@ -2,12 +2,12 @@ package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
 import java.util.List;
 
-public class Sensitivity {
+public class SensitivityResult {
     private final String name;
     private final List<SensitivityLables> lables;
     private final List<SensitivityValues> values;
 
-    public Sensitivity(String name, List<SensitivityLables> lables, List<SensitivityValues> values) {
+    public SensitivityResult(String name, List<SensitivityLables> lables, List<SensitivityValues> values) {
         this.lables = lables;
         this.values = values;
         this.name = name;
