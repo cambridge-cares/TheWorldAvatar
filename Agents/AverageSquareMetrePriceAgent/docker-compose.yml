@@ -37,11 +37,8 @@ services:
       - logs:/root/.jps
     configs:
       - blazegraph
-      - geoserver
-      - ontop
       - postgis
     secrets:
-      - geoserver_password
       - postgis_password
 
 volumes:
