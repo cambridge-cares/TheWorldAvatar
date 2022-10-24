@@ -25,7 +25,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.Sensitivity;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLables;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
@@ -75,8 +75,7 @@ public class Simulation {
 
         load(request, modsBackend);
 
-        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend,
-                request.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
 
         return createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
@@ -90,8 +89,7 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend,
-                originalRequest.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
 
         return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
     }
@@ -110,6 +108,8 @@ public class Simulation {
                 return new MOOonly(request, inputFile, modsBackend, inputMetaData);
             case "Evaluate":
                 return new Evaluate(request, inputFile, modsBackend, inputMetaData);
+            case "Sensitivity":
+                return new Sensitivity(request, inputFile, modsBackend, inputMetaData);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -417,7 +417,7 @@ public class Simulation {
         }
     }
 
-    public final Request getResponse() {
+    public Request getResponse() {
         Request response = new Request();
         response.setJobID(getJobID());
         response.setSimulationType(request.getSimulationType());
@@ -428,7 +428,7 @@ public class Simulation {
         return getResponse();
     }
 
-    public Request getSensitivity() {
+    public List<SensitivityResult> getSensitivity() {
 
         String simDir = getModsBackend().getSimDir().toString();
         String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
@@ -459,7 +459,7 @@ public class Simulation {
         // */
         int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
 
-        List<Sensitivity> sensitivities = new ArrayList<>(nY);
+        List<SensitivityResult> sensitivities = new ArrayList<>(nY);
 
         for (int iy = 0; iy < nY; iy++) {
             List<SensitivityLables> sensitivityLablesList = new ArrayList<>(nOrdersToShow);
@@ -469,13 +469,10 @@ public class Simulation {
                 sensitivityLablesList.add(new SensitivityLables(iOrder + 1, termLabels.get(iOrder)));
                 sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
             }
-            sensitivities.add(new Sensitivity(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
+            sensitivities.add(new SensitivityResult(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
         }
 
-        Request results = getResponse();
-        results.setSensitivities(sensitivities);
-
-        return results;
+        return sensitivities;
     }
 
     public InputMetaData getInputMetaData() {
