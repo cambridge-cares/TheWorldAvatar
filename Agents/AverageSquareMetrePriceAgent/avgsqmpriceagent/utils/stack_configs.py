@@ -53,11 +53,4 @@ def retrieve_settings():
 
 
 # Run when module is imported
-#retrieve_settings()
-
-DB_URL = 'test'
-DB_USER = 'test'
-DB_PASSWORD = 'test'
-
-QUERY_ENDPOINT = 'test'
-UPDATE_ENDPOINT = QUERY_ENDPOINT
+retrieve_settings()
