@@ -191,6 +191,7 @@ public final class BackendInputFile implements FileGenerator {
         param.setName(name);
         param.setType("active_" + type);
         param.setSubtype(subtype);
+        param.setScaling("linear");
 
         addParameterCases(param, caseNames);
         addParameterModels(param, modelNames);
