@@ -6,7 +6,7 @@
 @prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> .
 @prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> .
 @prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
-@prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/>
+@prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/> .
 
 ###########################################
 ## Average Square Metre Price TESTS TBox ##
@@ -32,7 +32,7 @@ obe:AveragePricePerSqm obe:representativeFor obe:PostalCode ;
  om:Area om:hasValue om:Measure . 
  om:Measure om:hasUnit om:Unit ;
             om:hasNumericalValue xsd:float .
-om:Unit om:symbol xsd:string
+om:Unit om:symbol xsd:string .
 
 obe:PropertyPriceIndex obe:representativeFor obe:AdministrativeDistrict ;
                        ts:hasTimeSeries ts:TimeSeries . 

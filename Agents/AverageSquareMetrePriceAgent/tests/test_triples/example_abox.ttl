@@ -6,7 +6,7 @@
 @prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> .
 @prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> .
 @prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
-@prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/>
+@prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/> .
 @prefix :			<https://www.example.com/kg/ontobuiltenv/> .
 
 ################################################
@@ -26,7 +26,7 @@
 :Building_1
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_1 ; 
-    obe:hasLatestTransactionRecord :Transaction_1 .
+    obe:hasLatestTransactionRecord :Transaction_1 ;
     obe:hasTotalFloorArea :Area_1 .
 :Transaction_1 rdf:type lrppi:TransactionRecord ;
                lrppi:transactionDate "2000-06-20"^^xsd:date ;
@@ -34,14 +34,14 @@
 :Area_1 rdf:type om:Area ;
         om:hasValue :Measure_1 .
 :Measure_1 rdf:type om:Measure ;
-           om:hasNumericalValue "280.0"^^xsd:float
+           om:hasNumericalValue "280.0"^^xsd:float .
 :Address_1 obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_2
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_2 ; 
-    obe:hasLatestTransactionRecord :Transaction_2 .
+    obe:hasLatestTransactionRecord :Transaction_2 ;
     obe:hasTotalFloorArea :Area_2 .
 :Transaction_2 rdf:type lrppi:TransactionRecord ;
                lrppi:transactionDate "2006-01-13"^^xsd:date ;
@@ -49,14 +49,14 @@
 :Area_2 rdf:type om:Area ;
         om:hasValue :Measure_2 .
 :Measure_2 rdf:type om:Measure ;
-           om:hasNumericalValue "130.0"^^xsd:float
+           om:hasNumericalValue "130.0"^^xsd:float .
 :Address_2 obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_3
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_3 ; 
-    obe:hasLatestTransactionRecord :Transaction_3 .
+    obe:hasLatestTransactionRecord :Transaction_3 ;
     obe:hasTotalFloorArea :Area_3 .
 :Transaction_3 rdf:type lrppi:TransactionRecord ;
                lrppi:transactionDate "1993-11-25"^^xsd:date ;
@@ -64,14 +64,14 @@
 :Area_3 rdf:type om:Area ;
         om:hasValue :Measure_3 .
 :Measure_3 rdf:type om:Measure ;
-           om:hasNumericalValue "220.0"^^xsd:float
+           om:hasNumericalValue "220.0"^^xsd:float .
 :Address_3 obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_4
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_4 ; 
-    obe:hasLatestTransactionRecord :Transaction_4 .
+    obe:hasLatestTransactionRecord :Transaction_4 ;
     obe:hasTotalFloorArea :Area_4 .
 :Transaction_4 rdf:type lrppi:TransactionRecord ;
                lrppi:transactionDate "1998-08-08"^^xsd:date ;
@@ -79,14 +79,14 @@
 :Area_4 rdf:type om:Area ;
         om:hasValue :Measure_4 .
 :Measure_4 rdf:type om:Measure ;
-           om:hasNumericalValue "240.0"^^xsd:float
+           om:hasNumericalValue "240.0"^^xsd:float .
 :Address_4 obe:hasPostalCode :PostalCode_2 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_5
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_5 ; 
-    obe:hasLatestTransactionRecord :Transaction_5 .
+    obe:hasLatestTransactionRecord :Transaction_5 ;
     obe:hasTotalFloorArea :Area_5 .
 :Transaction_5 rdf:type lrppi:TransactionRecord ;
                lrppi:transactionDate "2020-04-05"^^xsd:date ;
@@ -94,14 +94,14 @@
 :Area_5 rdf:type om:Area ;
         om:hasValue :Measure_5 .
 :Measure_5 rdf:type om:Measure ;
-           om:hasNumericalValue "140.0"^^xsd:float
+           om:hasNumericalValue "140.0"^^xsd:float .
 :Address_5 obe:hasPostalCode :PostalCode_2 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :PostalCode_1 rdf:type obe:PostalCode ;
               rdfs:label "ABC 123"^^xsd:string .
 :PostalCode_2 rdf:type obe:PostalCode ;
-              rdfs:label "DEF 456"^^xsd:string;
+              rdfs:label "DEF 456"^^xsd:string .
 :District_1 rdf:type obe:AdministrativeDistrict .
 
 :PropertyPriceIndex_1 rdf:type obe:PropertyPriceIndex ; 
