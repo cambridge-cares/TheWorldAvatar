@@ -63,7 +63,6 @@ public class OntoChemPlantAgent {
 
           ArrayList<PlantItem> PlantItemList = new ArrayList<>();
           PlantItemList.add(plantitem);
-//          result.put(PlantItemList);
           final_results.put("chemplant", PlantItemList);
 
         } else if (cityObject.getObjectClassId().intValue() == 26){
@@ -72,6 +71,7 @@ public class OntoChemPlantAgent {
           OntoChemPlantModel ocp_model = context.createHollowModel(OntoChemPlantModel.class, buildingIri);
           context.pullAll(ocp_model);
 
+          // Buildings and storage tanks are both represented by CityGML buildings, check if it is a storage tank
           if (ocp_model.getOntoCityGMLRepresentationOf().size() > 1) {
               for (URI element : ocp_model.getOntoCityGMLRepresentationOf()){
                   if (element.getPath().contains("storage")){
@@ -79,14 +79,12 @@ public class OntoChemPlantAgent {
                       context.recursivePullAll(tank, 2);
                       ArrayList<StorageTank> StorageTankList = new ArrayList<>();
                       StorageTankList.add(tank);
-                      result.put(StorageTankList);
-                      final_results.put("chemplant", result);
+                      final_results.put("chemplant", StorageTankList);
                       break;
                   }
               }
           }
           else {
-
               Building building = context.createHollowModel(Building.class, ocp_model.getOntoCityGMLRepresentationOf().get(0).toString());
               context.recursivePullAll(building, 3);
 
@@ -94,13 +92,6 @@ public class OntoChemPlantAgent {
               BuildingList.add(building);
               final_results.put("chemplant", BuildingList);
           }
-
-//          Building building = context.createHollowModel(Building.class, ocp_model.getOntoCityGMLRepresentationOf().toString());
-//          context.recursivePullAll(building, 3);
-//
-//          ArrayList<Building> BuildingList = new ArrayList<>();
-//          BuildingList.add(building);
-//          final_results.put("chemplant", BuildingList);
         }
 
 		else {
