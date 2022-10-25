@@ -40,7 +40,7 @@ public class QueryClient {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
-    static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
+    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
     static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
     private static final Prefix P_OM = SparqlBuilder.prefix("om",iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
 
