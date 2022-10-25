@@ -20,5 +20,12 @@ setup(
         'py4jps>=1.0.26', 
         'requests~=2.28',
         'pyderivationagent>=1.2.2'
-    ]
+    ],
+    extras_require={
+        "dev": [
+            "pytest>=6.2.3",
+            "pytest-docker-compose>=3.2.1",
+            "pytest-rerunfailures>=10.2"
+        ],
+    }
 )
