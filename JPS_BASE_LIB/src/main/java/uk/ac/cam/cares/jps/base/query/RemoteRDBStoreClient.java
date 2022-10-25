@@ -23,18 +23,14 @@ import java.sql.*;
  */
 
 public class RemoteRDBStoreClient implements StoreClientInterface {
-
-    //RDB Connection object
-    private Connection conn;
-    Statement stmt;
     // URL and credentials for the relational database
     private String rdbURL;
     private String rdbUser;
     private String rdbPassword;
 
+    private static final String ERR_PREFIX = "RemoteRDBStoreClient: ";
+
     private String query;
-    //Driver string
-    static final String driver = "org.postgresql.Driver";
 
     /**
      * A constructor defined to initialise the URL, username and password to connect to the RDB
@@ -66,18 +62,10 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
     /**
      * Establish connection to RDB and set Statement object
      * @return connection object to the RDB
+     * @throws SQLException
      */
-    public Connection getConnection(){
-        try {
-            Class.forName(driver);
-            conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-        } catch (SQLException e) {
-            throw new JPSRuntimeException("The connection attempt failed", e);
-        } catch (ClassNotFoundException e){
-            throw new JPSRuntimeException("Failed to load postgresql", e);
-        }
-        return conn;
+    public Connection getConnection() throws SQLException{
+        return DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
     }
 
     /**
@@ -87,16 +75,12 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      * @return query result as a ResultSet
      */
     public ResultSet executeQuerytoResultSet(String query) {
-        ResultSet rs;
-        try {
-            if(this.conn == null || stmt==null){
-                this.conn = getConnection();
-            }
-            rs = this.stmt.executeQuery(query);
+        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+            Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            return stmt.executeQuery(query);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException(ERR_PREFIX + "executeQuerytoResultSet failed", e);
         }
-        return rs;
     }
 
     /**
@@ -107,17 +91,13 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query){
-        JSONArray results;
-        try {
-            if(this.conn == null || stmt==null){
-                this.conn = getConnection();
-            }
-            java.sql.ResultSet rs = this.stmt.executeQuery(query);
-            results = StoreClientHelper.convert(rs);
+        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+            Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
+                java.sql.ResultSet rs = stmt.executeQuery(query);
+                return StoreClientHelper.convert(rs);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException(ERR_PREFIX + "Failure at closing statement or connection", e);
         }
-        return results;
     }
 
     /**
@@ -147,7 +127,7 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
     public String execute(String query){
         JSONArray result = executeQuery(query);
         if (result == null) {
-            throw new JPSRuntimeException("Query result is null.");
+            throw new JPSRuntimeException(ERR_PREFIX + "Query result is null.");
         } else {
             return result.toString();
         }
@@ -160,13 +140,11 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String update) {
-        try {
-            if(this.conn == null || stmt==null){
-                this.conn = getConnection();
-            }
-            return this.stmt.executeUpdate(update);
+        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+            Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            return stmt.executeUpdate(update);
         } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+            throw new JPSRuntimeException(ERR_PREFIX + "Failed at closing connection/statement while executing update", e);
         }
     }
 
