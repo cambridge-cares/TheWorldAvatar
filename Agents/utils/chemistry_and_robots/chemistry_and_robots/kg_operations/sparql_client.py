@@ -1790,7 +1790,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         try:
             internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue
         except KeyError:
-            raise Exception("InternalStandard <%s> is NOT identified in the end stream associated with HPLCReport <%s>" % (internal_standard_species, hplc_report_iri))
+            raise Exception(f"InternalStandard {internal_standard_species} is NOT identified in the end stream associated with HPLCReport {hplc_report_iri}, all ChromatogramPoint: {list_chrom_pts}")
 
         for pt in dct_points:
             # calculate concentration based on the peak area and response factor
