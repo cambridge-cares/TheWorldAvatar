@@ -309,12 +309,9 @@ class RxnOptGoalAgent(ABC):
         # which is DIFFERENT from the IRI of ROG agent (self.goal_agent_iri)
         # TODO [next iteration] in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
         # TODO [next iteration] but in the future, this information should obtained by ROG agent from the KG
-        rogi_derivation = self.sparql_client.create_rogi_derivation_for_new_info(
-            goal_iter_agent_iri=self.goal_iter_agent_iri,
-            derivation_inputs=derivation_inputs,
-            goal_set_iri=goal_set_instance.instance_iri,
-            derivation_client=self.derivation_client
-        )
+        # TODO [NOW!!!] the derivations should be created in line with the available resources
+        rogi_derivation_1 = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
+        rogi_derivation_2 = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
 
         # TODO [next iteration] optimise the following code that deals with the ROGI iterations
         # Add a periodical job to monitor the goal iterations for the created ROGI derivation
@@ -327,7 +324,7 @@ class RxnOptGoalAgent(ABC):
         if not self.scheduler.running:
             self.scheduler.start()
         self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
-        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: rogi_derivation, self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
+        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: [rogi_derivation_1, rogi_derivation_2], self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
 
     def monitor_goal_iterations(self):
         """
@@ -344,7 +341,10 @@ class RxnOptGoalAgent(ABC):
         # 3. check if the restriction is still okay
         # 3.1. if still okay, update goal set with new restriction, update all rogi derivation to take the rxn exp as inputs, request an update for those finished rogi derivation
         # 3.2. if the restriction is not okay, stop the scheduler
-        rogi_derivation_lst = self.sparql_client.get_rogi_derivations_of_goal_set(self.current_active_goal_set)
+        rogi_derivation_lst = self.sparql_client.get_rogi_derivations_of_goal_set(
+            goal_set_iri=self.current_active_goal_set,
+            rogi_agent_iri=self.goal_iter_agent_iri
+        )
         rogi_derivation_lst_up_to_date = [rogi for rogi in rogi_derivation_lst if self.sparql_client.check_if_rogi_complete_one_iter(rogi)]
         if bool(rogi_derivation_lst_up_to_date):
             # get the latest goal set instance
