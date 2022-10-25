@@ -182,7 +182,7 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
     @Test
     public void testInitCentralTable() throws NoSuchFieldException, IllegalAccessException {
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
 
@@ -231,20 +231,20 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
         Assert.assertEquals(2, context.meta().getTables().size());
 
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
         // Retrieve the value of the private field 'dataIRIcolumn' of the client
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
         dataIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
         // Retrieve the value of the private field 'tsIRIcolumn' of the client
-        Field tsIRIcolumnField = client.getClass().getDeclaredField("tsIRIcolumn");
+        Field tsIRIcolumnField = client.getClass().getDeclaredField("TS_IRI_COLUMN");
         tsIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> tsIRIcolumn = (org.jooq.Field<String>) tsIRIcolumnField.get(client);
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+        Field tsTableNameColumnField = client.getClass().getDeclaredField("TABLENAME_COLUMN");
         tsTableNameColumnField.setAccessible(true);
         org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
 
@@ -285,20 +285,20 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
         client.addTimeSeriesData(ts_list1);
 
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
         // Retrieve the value of the private field 'dataIRIcolumn' of the client
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
         dataIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+        Field tsTableNameColumnField = client.getClass().getDeclaredField("TABLENAME_COLUMN");
         tsTableNameColumnField.setAccessible(true);
         org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field columnNameColumnField = client.getClass().getDeclaredField("columnNameColumn");
+        Field columnNameColumnField = client.getClass().getDeclaredField("COLUMNNAME_COLUMN");
         columnNameColumnField.setAccessible(true);
         org.jooq.Field<String> columnNameColumn = (org.jooq.Field<String>) columnNameColumnField.get(client);
 
@@ -471,7 +471,7 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
         // Test for lower bound out of range (ts2 has time stamps after ts1)
         client.deleteAll();
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         // Verify all tables are deleted
@@ -611,20 +611,20 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
         // Add time series data
         client.addTimeSeriesData(ts_list1);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
         // Retrieve the value of the private field 'dataIRIcolumn' of the client
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
         dataIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+        Field tsTableNameColumnField = client.getClass().getDeclaredField("TABLENAME_COLUMN");
         tsTableNameColumnField.setAccessible(true);
         org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field columnNameColumnField = client.getClass().getDeclaredField("columnNameColumn");
+        Field columnNameColumnField = client.getClass().getDeclaredField("COLUMNNAME_COLUMN");
         columnNameColumnField.setAccessible(true);
         org.jooq.Field<String> columnNameColumn = (org.jooq.Field<String>) columnNameColumnField.get(client);
 
@@ -713,12 +713,12 @@ public class TimeSeriesRDBClientIntegrationTestDeprecated {
         client.addTimeSeriesData(ts_list1);
         client.addTimeSeriesData(ts_list3);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
         // Retrieve the value of the private field 'dataIRIcolumn' of the client
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
         dataIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
 

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -449,7 +450,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testAddTimeSeriesException()  throws NoSuchFieldException, IllegalAccessException {
+    public void testAddTimeSeriesException()  throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -467,7 +468,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -485,7 +486,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -503,7 +504,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -522,7 +523,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -541,7 +542,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -560,7 +561,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -578,7 +579,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -597,7 +598,7 @@ public class TimeSeriesClientTestDeprecated {
     }
 
     @Test
-    public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException {
+    public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Only tests for the first Exception to occur when called without prior initialised time series
 
         // Set-up stubbing
@@ -709,19 +710,20 @@ public class TimeSeriesClientTestDeprecated {
         rdbClientField.set(testClientWithMocks, mockRDBClient);
     }
 
-    private void setJDBCMocks() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    private void setJDBCMocks() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, SQLException {
         // Mock the JDBC API for unit testing using jOOQ's own mock API (i.e. to mock connection, context, etc.)
         // Initialise mock data provider and connection and pass mock connection to a jOOQ DSLContext
         MockDataProvider mockRDB = new PostgresMock();
         MockConnection mockConnection = new MockConnection(mockRDB);
-        DSLContext mockContext = DSL.using(mockConnection, SQLDialect.POSTGRES);
-        // Inject mock connection and context into private fields of mockRDBClient
-        Field connField = TimeSeriesRDBClient.class.getDeclaredField("conn");
-        connField.setAccessible(true);
-        connField.set(mockRDBClient, mockConnection);
-        Field contextField = TimeSeriesRDBClient.class.getDeclaredField("context");
-        contextField.setAccessible(true);
-        contextField.set(mockRDBClient, mockContext);
+        Mockito.when(mockRDBClient.getConnection()).thenReturn(mockConnection);
+        // DSLContext mockContext = DSL.using(mockConnection, SQLDialect.POSTGRES);
+        // // Inject mock connection and context into private fields of mockRDBClient
+        // Field connField = TimeSeriesRDBClient.class.getDeclaredField("conn");
+        // connField.setAccessible(true);
+        // connField.set(mockRDBClient, mockConnection);
+        // Field contextField = TimeSeriesRDBClient.class.getDeclaredField("context");
+        // contextField.setAccessible(true);
+        // contextField.set(mockRDBClient, mockContext);
 
     }
 }

@@ -41,35 +41,35 @@ public class TimeSeriesRDBClientTestDeprecated {
     public void testPrivateDatabaseRelatedFields() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'dialect' of the client to check its value
-        Field dialectField = client.getClass().getDeclaredField("dialect");
+        Field dialectField = client.getClass().getDeclaredField("DIALECT");
         dialectField.setAccessible(true);
         SQLDialect dialect = (SQLDialect) dialectField.get(client);
         Assert.assertEquals(SQLDialect.POSTGRES, dialect);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Assert.assertEquals("dbTable", tableName);
         // Retrieve the value of the private field 'dataIRIcolumn' of the client to check its value
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
         dataIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
         Assert.assertEquals("dataIRI", dataIRIcolumn.getName());
         Assert.assertEquals(String.class, dataIRIcolumn.getType());
         // Retrieve the value of the private field 'tsIRIcolumn' of the client to check its value
-        Field tsIRIcolumnField = client.getClass().getDeclaredField("tsIRIcolumn");
+        Field tsIRIcolumnField = client.getClass().getDeclaredField("TS_IRI_COLUMN");
         tsIRIcolumnField.setAccessible(true);
         org.jooq.Field<String> tsIRIcolumn = (org.jooq.Field<String>) tsIRIcolumnField.get(client);
         Assert.assertEquals("timeseriesIRI", tsIRIcolumn.getName());
         Assert.assertEquals(String.class, tsIRIcolumn.getType());
         // Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
-        Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+        Field tsTableNameColumnField = client.getClass().getDeclaredField("TABLENAME_COLUMN");
         tsTableNameColumnField.setAccessible(true);
         org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
         Assert.assertEquals("tableName", tsTableNameColumn.getName());
         Assert.assertEquals(String.class, tsTableNameColumn.getType());
         // Retrieve the value of the private field 'columnNameColumn' of the client to check its value
-        Field columnNameColumnField = client.getClass().getDeclaredField("columnNameColumn");
+        Field columnNameColumnField = client.getClass().getDeclaredField("COLUMNNAME_COLUMN");
         columnNameColumnField.setAccessible(true);
         org.jooq.Field<String> columnNameColumn = (org.jooq.Field<String>) columnNameColumnField.get(client);
         Assert.assertEquals("columnName", columnNameColumn.getName());
