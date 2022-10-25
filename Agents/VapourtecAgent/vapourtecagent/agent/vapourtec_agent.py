@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import random
 import time
 import os
 
@@ -161,6 +162,7 @@ class VapourtecAgent(DerivationAgent):
         derivation_outputs.addGraph(vapourtec_input_file_graph)
 
         # Send the experiment csv for execution, also update the autosampler liquid level
+        self.dry_run_duration = random.randint(10, 180)
         self.send_fcexp_csv_for_execution(local_file_path, list_equip_settings)
 
         # Wait until the vapourtec is running reaction (if not dry_run)
@@ -222,6 +224,8 @@ class VapourtecAgent(DerivationAgent):
             # self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
 
             # TODO [nice-to-have, limitation of current API] send warnings if the liquid level of any vials is lower than the warning level
+        else:
+            self.update_vapourtec_state_for_dry_run(self.dry_run_duration)
 
     @DerivationAgent.send_email_when_exception(func_return_value=False)
     def monitor_vapourtec_rs400_state(self):
@@ -251,6 +255,28 @@ class VapourtecAgent(DerivationAgent):
                 self.vapourtec_ip_address, self.vapourtec_state, str(timestamp)))
         except Exception as e:
             self.logger.error(e, stack_info=True, exc_info=True)
+
+    def update_vapourtec_state_for_dry_run(self, dry_run_duration: int):
+        if self.dry_run:
+            try:
+                if not self.fc_exe_connected:
+                    timestamp = datetime.now().timestamp()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_DRYRUNSTATE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} is in DryRunState at timestamp {timestamp}, updated records in knowledge graph.")
+                    time.sleep(dry_run_duration)
+                    timestamp = datetime.now().timestamp()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_IDLE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} finished DryRun timestamp {timestamp}, updated its state to {ONTOVAPOURTEC_IDLE} in knowledge graph.")
+                else:
+                    self.logger.info("Pausing monitor_vapourtec_rs400_state job for dry run.")
+                    self.scheduler.get_job('monitor_vapourtec_rs400_state').pause()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_DRYRUNSTATE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} is in DryRunState at timestamp {timestamp}, updated records in knowledge graph.")
+                    time.sleep(dry_run_duration)
+                    self.logger.info("Resuming monitor_vapourtec_rs400_state job after dry run.")
+                    self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
 
     def vapourtec_is_idle(self) -> bool:
         return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False
