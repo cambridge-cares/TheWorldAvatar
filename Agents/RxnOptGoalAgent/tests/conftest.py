@@ -67,8 +67,8 @@ FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 HTML_TEMPLATE_DIR = os.path.join(os.path.dirname(THIS_DIR), 'templates')
 EMAIL_AUTH_JSON_PATH = os.path.join(SECRETS_PATH, 'email_auth.json')
-LAB1_DIR = os.path.join(cf.THIS_DIR, '_lab1')
-LAB2_DIR = os.path.join(cf.THIS_DIR, '_lab2')
+LAB1_DIR = os.path.join(THIS_DIR, '_lab1')
+LAB2_DIR = os.path.join(THIS_DIR, '_lab2')
 
 # Raw HPLC report sample data in the test_triples folder
 HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
