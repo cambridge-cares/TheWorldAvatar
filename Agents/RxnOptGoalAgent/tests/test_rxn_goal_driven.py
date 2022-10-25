@@ -29,7 +29,7 @@ logger = logging.getLogger('test_rxn_with_goal')
 # ----------------------------------------------------------------------------------
 # Test cases for the integration of the rxn and goal
 # i.e. the connection between all reaction optimisation agents
-# RxnOptGoalAgent/RxnOptGoalIterAgent/DoEAgent/VapourtecExecutionAgent/HPLCPostProAgent/VapourtecAgent/HPLCAgent
+# RxnOptGoalAgent/RxnOptGoalIterAgent/DoEAgent/VapourtecScheduleAgent/HPLCPostProAgent/VapourtecAgent/HPLCAgent
 # 1. rogi agent and all rxn agents given pre-defined goal triples (leave the ROG agent out)
 # 2. TODO rogi agent and all rxn agents given a goal request (all seven agents are involved)
 # 3. TODO rogi agent and all rxn agents given a goal request with iteration (all seven agents are involved)
@@ -40,22 +40,17 @@ logger = logging.getLogger('test_rxn_with_goal')
 #     print(fileserver_url)
 #     time.sleep(600)
 
-# TODO below test needs to be updated
-# vapourtec execution -> vapourtec schedule
-# property check for the generated triples
-# hplc dry run
 @pytest.mark.parametrize(
     "goal_set_iri,derivation_inputs,hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
     [
-        (cf.rogi_cf.IRIs.GOALSET_1.value, cf.rogi_cf.IRIs.DERIVATION_INPUTS.value, cf.HPLC_REPORT_LOCAL_TEST_DIR, cf.FCEXP_FILE_DIR, True),
+        (cf.IRIs.GOALSET_1.value, cf.IRIs.DERIVATION_INPUTS.value, cf.HPLC_REPORT_LOCAL_TEST_DIR, cf.FCEXP_FILE_DIR, True),
         # (cf.rogi_cf.IRIs.GOALSET_1.value, cf.rogi_cf.IRIs.DERIVATION_INPUTS.value, cf.DOCKER_INTEGRATION_DIR, None, False),
     ],
 )
 def test_rxn_rogi(
     initialise_blazegraph_fileserver_with_test_triples,
     # initialise_test_triples,
-    retrieve_hplc_report, create_rogi_agent,
-    create_doe_agent, create_vapourtec_execution_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
+    create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     goal_set_iri, derivation_inputs, hplc_report_target_folder, fcexp_file_container_folder, local_agent_test
 ):
     # endpoint = initialise_test_triples
@@ -69,38 +64,34 @@ def test_rxn_rogi(
     doe_agent = create_doe_agent(
         register_agent=True,
     )
-    vapourtec_execution_agent = create_vapourtec_execution_agent(
+    vapourtec_schedule_agent = create_vapourtec_schedule_agent(
         register_agent=True,
     )
     hplc_postpro_agent = create_hplc_postpro_agent(
         register_agent=True,
     )
     vapourtec_agent = create_vapourtec_agent(
+        env_file=cf.LAB1_VAPOURTEC_AGENT_ENV,
         register_agent=True,
-        fcexp_file_container_folder=fcexp_file_container_folder
+        fcexp_file_container_folder=fcexp_file_container_folder,
+        dry_run=True,
     )
     # Set the hplc_report_container_dir to be hplc_report_target_folder (on host machine) if it's for local_agent_test
     hplc_agent = create_hplc_agent(
+        env_file=cf.LAB1_HPLC_AGENT_ENV,
         register_agent=True,
-        hplc_report_container_dir=hplc_report_target_folder
+        hplc_report_container_dir=hplc_report_target_folder,
+        dry_run=True,
     )
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
-        print("------------------------------------------------------")
-        print(rogi_agent.kgUser)
-        print(rogi_agent.kgPassword)
-        print(rogi_agent.sparql_client.getAmountOfTriples())
-        # rogi_agent.monitor_async_derivations()
-        print("------------------------------------------------------")
-
-        rogi_agent._start_monitoring_derivations()
-        doe_agent._start_monitoring_derivations()
-        vapourtec_execution_agent._start_monitoring_derivations()
-        hplc_postpro_agent._start_monitoring_derivations()
+        rogi_agent.start_all_periodical_job()
+        doe_agent.start_all_periodical_job()
+        vapourtec_schedule_agent.start_all_periodical_job()
+        hplc_postpro_agent.start_all_periodical_job()
         vapourtec_agent._start_monitoring_derivations()
-        hplc_agent._start_monitoring_derivations()
-        hplc_agent._start_monitoring_local_report_folder()
+        hplc_agent.start_all_periodical_job()
         vapourtec_agent.sparql_client.update_vapourtec_rs400_state(vapourtec_agent.vapourtec_digital_twin, cf.ONTOVAPOURTEC_IDLE, time.time())
 
     # Get the goal set instance
@@ -113,30 +104,36 @@ def test_rxn_rogi(
 
     # Create derivation instance for new information, the timestamp of this derivation is 0
     derivation_iri = derivation_client.createAsyncDerivationForNewInfo(rogi_agent.agentIRI, derivation_inputs)
-    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    print(f"Initialised successfully, created asynchronous derivation instance for ROGI agent: {derivation_iri}")
 
-    time.sleep(120)
-    # Generate random file and upload it to KG fileserver
-    hplc_agent.get_dict_of_hplc_files() # perform the init check first
-    # Generate HPLC report for test in hplc_report_target_folder
-    # For docker-integration test, the file will be mounted to docker automatically
-    logger.info("======================================================================================================================")
-    local_file_path, timestamp_last_modified = retrieve_hplc_report(hplc_agent.hplc_report_file_extension, hplc_report_target_folder)
-    logger.info("Dummy HPLC report for test generated with local file path <%s> at %s" % (local_file_path, str(timestamp_last_modified)))
-    logger.info("======================================================================================================================")
-    try:
-        hplc_agent.monitor_local_report_folder() # now the generated report can be uploaded
-    except Exception as e:
-        time.sleep(1000)
-
-    time.sleep(3600)
-    # time.sleep(10)
+    # Wait until the rogi derivation is done
+    rogi_completed_one_iter = False
+    while not rogi_completed_one_iter:
+        time.sleep(10)
+        rogi_completed_one_iter = sparql_client.check_if_rogi_complete_one_iter(derivation_iri)
+        print(f"ROGI derivation {derivation_iri} is completed: {rogi_completed_one_iter}, current time: {time.time()}")
 
     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
     if local_agent_test:
         rogi_agent.scheduler.shutdown()
         doe_agent.scheduler.shutdown()
-        vapourtec_execution_agent.scheduler.shutdown()
+        vapourtec_schedule_agent.scheduler.shutdown()
         hplc_postpro_agent.scheduler.shutdown()
         vapourtec_agent.scheduler.shutdown()
         hplc_agent.scheduler.shutdown()
+
+    try:
+        # Test all triples are correctly generated
+        cf.assert_one_rxn_iteration(
+            sparql_client,
+            doe_agent,
+            vapourtec_schedule_agent,
+            vapourtec_agent,
+            hplc_agent,
+            hplc_postpro_agent,
+            rogi_agent,
+            goal_set_iri,
+        )
+    except Exception as e:
+        print(e)
+        raise e

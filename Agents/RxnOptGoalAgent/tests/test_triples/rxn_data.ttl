@@ -196,7 +196,7 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 :RxnScale_1_Measure_1
     rdf:type om:Measure;
     om:hasUnit om:millilitre;
-    om:hasNumericalValue "1.5"^^xsd:double;
+    om:hasNumericalValue "5"^^xsd:double;
 .
 
 ## PerformanceIndicator
@@ -220,7 +220,7 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 
 :RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerLitre;
+    om:hasUnit om:poundSterling;
     om:hasNumericalValue "6.83"^^xsd:double;
 .
 

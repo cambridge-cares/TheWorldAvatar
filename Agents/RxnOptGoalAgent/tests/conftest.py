@@ -2,13 +2,14 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.compose import DockerCompose
 from pathlib import Path
 from flask import Flask
+from enum import Enum
+import requests
 import logging
-import pkgutil
+import filecmp
 import pytest
 import shutil
 import time
 import uuid
-# import xlwt
 import os
 
 from pyderivationagent.conf import config_derivation_agent
@@ -29,6 +30,8 @@ from hplcagent.conf import config_hplc_agent
 from rxnoptgoalagent.conf.rxn_opt_goal_agent_conf import config_rxn_opt_goal_agent
 from rxnoptgoalagent.agent import RxnOptGoalAgent
 from rxnoptgoalagent.data_model import *
+
+from rxnoptgoaliteragent.kg_operations import RxnOptGoalIterSparqlClient
 
 try:
     import rxnoptgoaliteragent.tests.conftest as rogi_cf
@@ -64,6 +67,8 @@ FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 HTML_TEMPLATE_DIR = os.path.join(os.path.dirname(THIS_DIR), 'templates')
 EMAIL_AUTH_JSON_PATH = os.path.join(SECRETS_PATH, 'email_auth.json')
+LAB1_DIR = os.path.join(cf.THIS_DIR, '_lab1')
+LAB2_DIR = os.path.join(cf.THIS_DIR, '_lab2')
 
 # Raw HPLC report sample data in the test_triples folder
 HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
@@ -82,7 +87,7 @@ DOCKER_COMPOSE_TEST_KG = 'docker-compose.test.kg.yml'
 # NOTE the triple store and file server URL ("localhost") provided in the agent.*.env files are made possible via:
 # "extra_hosts: - localhost:host-gateway" in the docker-compose.test.yml
 DOE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
-VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
+VAPOURTEC_SCHEDULE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.schedule.env.test')
 HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
 # VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
 # HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
@@ -96,8 +101,44 @@ LAB2_HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.lab2.hplc.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
 
-DOE_IRI = 'http://example.com/blazegraph/namespace/testlab/doe/DoE_1'
-DERIVATION_INPUTS = [DOE_IRI]
+
+class IRIs(Enum):
+    GOAL_ITER_BASE_IRI = 'http://www.example.com/triplestore/ontogoal/rxnopt/'
+    GOALSET_1 = GOAL_ITER_BASE_IRI + 'GoalSet_1'
+
+    GOAL_1 = GOAL_ITER_BASE_IRI + 'Goal_1'
+    DESIRED_QUANTITY_1 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_1'
+    DESIRED_QUANTITY_1_TYPE = ONTOREACTION_YIELD
+    DESIRED_QUANTITY_MEASURE_1 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_1'
+    DESIRED_QUANTITY_MEASURE_1_UNIT = OM_PERCENT
+    DESIRED_QUANTITY_MEASURE_1_NUMVAL = 99.9
+
+    GOAL_2 = GOAL_ITER_BASE_IRI + 'Goal_2'
+    DESIRED_QUANTITY_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_2'
+    DESIRED_QUANTITY_2_TYPE = ONTOREACTION_RUNMATERIALCOST
+    DESIRED_QUANTITY_MEASURE_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_2'
+    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERLITRE
+    DESIRED_QUANTITY_MEASURE_2_NUMVAL = 0.01
+
+    RESTRICTION_1 = GOAL_ITER_BASE_IRI + 'Restriction_1'
+    RESTRICTION_1_CYCLEALLOWANCE = 5
+    RESTRICTION_1_DEADLINE = 4102444800.0
+
+    PLAN_STEP_AGENT_BASE_IRI = 'http://www.theworldavatar.com/resource/plans/RxnOpt/'
+    RXN_OPT_PLAN = PLAN_STEP_AGENT_BASE_IRI + 'rxnoptplan'
+    STEP_DOE = PLAN_STEP_AGENT_BASE_IRI + 'doe'
+    STEP_DOE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__DoE/Service'
+    STEP_SCHEDULEEXE = PLAN_STEP_AGENT_BASE_IRI + 'schedule_exe'
+    STEP_SCHEDULE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service'
+    STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
+    STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
+
+    CHEMICAL_REACTION_IRI = 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1'
+    RXN_EXP_1 = 'https://www.example.com/triplestore/testlab/rxn_data/RxnExp_1'
+
+    DERIVATION_INPUTS = [GOALSET_1, RXN_EXP_1, CHEMICAL_REACTION_IRI]
+
+    DERIVATION_INPUTS_NO_PRIOR_DATA = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
 
 # ----------------------------------------------------------------------------------
@@ -126,6 +167,11 @@ def pytest_sessionstart(session):
     # Create folder for downloaded files
     if not os.path.exists(FCEXP_FILE_DIR):
         os.mkdir(FCEXP_FILE_DIR)
+    # Create folder for labs
+    if not os.path.exists(LAB1_DIR):
+        os.mkdir(LAB1_DIR)
+    if not os.path.exists(LAB2_DIR):
+        os.mkdir(LAB2_DIR)
 
 
 def pytest_sessionfinish(session):
@@ -140,6 +186,10 @@ def pytest_sessionfinish(session):
         shutil.rmtree(FCEXP_FILE_DIR)
     if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
         shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
+    if os.path.exists(LAB1_DIR):
+        shutil.rmtree(LAB1_DIR)
+    if os.path.exists(LAB2_DIR):
+        shutil.rmtree(LAB2_DIR)
 
 
 # ----------------------------------------------------------------------------------
@@ -151,12 +201,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url    
     return _get_service_url
 
 @pytest.fixture(scope="session")
@@ -321,7 +379,7 @@ def initialise_blazegraph_fileserver_with_test_triples(
     fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
     # Create SparqlClient for testing
-    sparql_client = ChemistryAndRobotsSparqlClient(
+    sparql_client = RxnOptGoalIterSparqlClient(
         query_endpoint=bg_url,
         update_endpoint=bg_url,
         kg_user=sparql_user,
@@ -401,6 +459,7 @@ def create_rogi_agent():
             fs_password=rogi_agent_config.FILE_SERVER_PASSWORD if not kg_url else None,
             agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=rogi_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
             email_recipient=rogi_agent_config.EMAIL_RECIPIENT,
             email_subject_prefix=rogi_agent_config.EMAIL_SUBJECT_PREFIX,
             email_username=rogi_agent_config.EMAIL_USERNAME,
@@ -448,7 +507,7 @@ def create_vapourtec_schedule_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        vapourtec_schedule_agent_config = config_derivation_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
+        vapourtec_schedule_agent_config = config_derivation_agent(VAPOURTEC_SCHEDULE_AGENT_ENV)
         vapourtec_schedule_agent = VapourtecScheduleAgent(
             register_agent=vapourtec_schedule_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=vapourtec_schedule_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -513,9 +572,11 @@ def create_vapourtec_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
+        dry_run:bool=True,
     ):
         vapourtec_agent_config = config_vapourtec_agent(env_file)
         vapourtec_agent = VapourtecAgent(
+            dry_run=dry_run,
             vapourtec_digital_twin=vapourtec_agent_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
             vapourtec_state_periodic_timescale=vapourtec_agent_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
             vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
@@ -553,9 +614,11 @@ def create_hplc_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
+        dry_run:bool=True,
     ):
         hplc_agent_config = config_hplc_agent(env_file)
         hplc_agent = HPLCAgent(
+            dry_run=dry_run,
             hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
@@ -587,62 +650,15 @@ def create_hplc_agent():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
+
+
 def get_timestamp(derivation_iri: str, sparql_client):
     query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
         derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
     # the queried results must be converted to int, otherwise it will not be comparable
     return int(sparql_client.performQuery(query_timestamp)[0]['time'])
-
-
-def initialise_triples(sparql_client):
-    # Delete all triples before initialising prepared triples
-    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
-
-    # Upload the example triples for testing
-    pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
-    for path in pathlist:
-        g = Graph()
-        g.parse(str(path), format='turtle')
-        sparql_client.uploadGraph(g)
-
-    # Upload all relevant example triples provided in the test_triples folder of 'rxnoptgoaliteragent' package to triple store
-    for f in ['goal_iter.ttl', 'plan_step_agent.ttl']:
-        data = pkgutil.get_data('rxnoptgoaliteragent', 'tests/test_triples/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
-        sparql_client.uploadGraph(g)
-
-    # TODO delete below
-    # # Add timestamp to pure inputs
-    # for input in derivation_inputs:
-    #     derivation_client.addTimeInstance(input)
-    #     derivation_client.updateTimestamp(input)
-
-
-
-# def initialise_triples(sparql_client):
-#     # Delete all triples before initialising prepared triples
-#     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
-
-# 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-#     # NOTE 'sample_data/duplicate_ontorxn.ttl' is for adding <OntoReaction:ReactionVariation> <rdfs:subClassOf> <OntoReaction:ReactionExperiment>.
-#     # So that the VapourtecExecution Derivation will be connected to the new instance of OntoReaction:ReactionVariation when DoEAgent cleaning up the Finished status
-#     # of the DoE Derivation. This is a workaround for the current way of uploading ontology TBox to the triple store. (We don't upload at all!!!)
-#     for f in [
-#         'sample_data/rxn_data.ttl',
-#         'sample_data/new_exp_data.ttl',
-#         'sample_data/dummy_lab.ttl',
-#         'sample_data/duplicate_ontorxn.ttl',
-#         'sample_data/doe_template.ttl',
-#     ]:
-#         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-#         g = Graph().parse(data=data)
-#         sparql_client.uploadGraph(g)
-
-#     # Upload all relevant example triples provided in the test_triples folder of 'rxnoptgoaliteragent' package to triple store
-#     for f in ['goal_iter.ttl', 'plan_step_agent.ttl']:
-#         data = pkgutil.get_data('rxnoptgoaliteragent', 'tests/test_triples/'+f).decode("utf-8")
-#         g = Graph().parse(data=data)
-#         sparql_client.uploadGraph(g)
 
 
 def get_endpoint(docker_container):
@@ -666,6 +682,304 @@ def clear_loggers():
             continue
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)
+
+
+def initialise_triples(sparql_client):
+    # Delete all triples before initialising prepared triples
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+    # Upload the example triples for testing
+    pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        g = Graph()
+        g.parse(str(path), format='turtle')
+        sparql_client.uploadGraph(g)
+
+
+def assert_one_rxn_iteration(
+    sparql_client: RxnOptGoalIterSparqlClient,
+    doe_agent: DoEAgent,
+    vapourtec_schedule_agent: VapourtecScheduleAgent,
+    vapourtec_agent: VapourtecAgent,
+    hplc_agent: HPLCAgent,
+    hplc_postpro_agent: HPLCPostProAgent,
+    rogi_agent: RxnOptGoalIterAgent,
+    goal_set_iri: str,
+):
+    # Check if the vapourtec agent is registered with the vapourtec hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        vapourtec_agent.vapourtec_digital_twin, ONTOLAB_ISMANAGEDBY, vapourtec_agent.agentIRI
+    ))[0]['ASK']
+
+    # Check if the hplc agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_agent.hplc_digital_twin, ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
+
+    #################################
+    ## Obtain relevant information ##
+    #################################
+    # First get the goal set
+    goal_set = sparql_client.get_goal_set_instance(goal_set_iri)
+    # Then get the reaction experiment of this iteration
+    rogi_derivation_lst = sparql_client.get_rogi_derivations_of_goal_set(
+        goal_set_iri=goal_set_iri,
+        rogi_agent_iri=rogi_agent.agentIRI,
+    )
+    assert len(rogi_derivation_lst) == 1
+    rogi_derivation = rogi_derivation_lst[0]
+    rxn_exp_iri = sparql_client.get_latest_rxn_exp_of_rogi_derivation(rogi_derivation)
+    assert rxn_exp_iri is not None
+    doe_query_response = sparql_client.performQuery(f"SELECT ?doe WHERE {{?doe <{ONTODOE_PROPOSESNEWEXPERIMENT}> <{rxn_exp_iri}>.}}")
+    assert len(doe_query_response) == 1
+    doe_iri = doe_query_response[0]['doe']
+
+    ##########################
+    ## Check DoE Derivation ##
+    ##########################
+    # Check if the DoE derivation is processed and generated the desired triples
+    # Query the iri of the new proposed NewExperiment
+    new_doe_instance = sparql_client.get_doe_instance(doe_iri)
+    assert new_doe_instance.proposesNewExperiment is not None
+    new_exp_instance = new_doe_instance.proposesNewExperiment
+    new_exp_iri = new_exp_instance.instance_iri
+    print(f"New experiment suggested successfully, suggested experiment instance: {new_exp_iri}")
+
+    # Check if all the suggested conditions are within the DoE range
+    for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
+        if isinstance(design_variable, ContinuousVariable):
+            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
+            assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
+            assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
+        else:
+            # TODO add checks for CategoricalVariable
+            pass
+    # Check if all the fixed parameters are the same as the DoE instance
+    if new_doe_instance.hasDomain.hasFixedParameter is not None:
+        for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
+            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
+            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
+
+    print("DoE Derivation checked successfully")
+
+    ################################
+    ## Check Vapourtec Derivation ##
+    ################################
+    ## Check if the derivation is processed and generated the desired triples
+    # First, check if the file is generated and uploaded correctly
+    vapourtec_derivation = get_vapourtec_derivation(new_exp_iri, vapourtec_agent.agentIRI, sparql_client)
+    vapourtec_input_file_iri = get_vapourtec_input_file_iri(vapourtec_derivation, sparql_client)
+    vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
+    # this is localised agent test, so localFilePath is already host machine path, not docker path
+    local_file_path = vapourtec_input_file.localFilePath
+    print(f"Uploaded Vapourtec input file localFilePath: {local_file_path}")
+    remote_file_path = vapourtec_input_file.remoteFilePath
+    print(f"Uploaded Vapourtec input file remoteFilePath: {remote_file_path}")
+    # Genereate random download path
+    full_downloaded_path = os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+'csv')
+    print(f"Downloading file to {full_downloaded_path}")
+    # Download the file and make sure all the content are the same
+    sparql_client.downloadFile(host_docker_internal_to_localhost(remote_file_path), full_downloaded_path)
+    assert filecmp.cmp(local_file_path,full_downloaded_path)
+
+    # Second, check if settings were generated for all reaction conditions
+    rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
+    assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != ONTOREACTION_REACTIONPRESSURE])
+
+    # Third, check there is chemical solution instance
+    chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
+    assert chemical_solution_iri is not None
+    new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin])
+    assert len(new_rs400_list) == 1
+    new_rs400 = new_rs400_list[0]
+    new_autosampler = new_rs400.get_autosampler()
+    new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
+    # NOTE below is commented out as the reactor outlet is now send to the waste tank
+    # assert chemical_solution_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+
+    print("Vapourtec Derivation checked successfully")
+
+    ###########################
+    ## Check HPLC Derivation ##
+    ###########################
+    ## Check if the derivation is processed and generated the desired triples
+    lst_hplc_job_iri = get_hplc_job(hplc_agent.hplc_digital_twin, new_exp_iri, chemical_solution_iri, sparql_client)
+    hplc_derivation = get_hplc_derivation(new_exp_iri, hplc_agent.agentIRI, sparql_client)
+    hplc_derivation_outputs = get_derivation_outputs(hplc_derivation, sparql_client)
+    assert len(lst_hplc_job_iri) == 1
+    assert len(hplc_derivation_outputs) == 1
+    assert lst_hplc_job_iri == hplc_derivation_outputs[ONTOHPLC_HPLCJOB]
+
+    print("HPLC Derivation checked successfully")
+
+    #########################################
+    ## Check Vapourtec Schedule Derivation ##
+    #########################################
+    # Check Vapourtec Schedule Derivation
+    # (1) reaction experiment should be assigned to a reactor
+    lst_done_rxn_exp_instance = sparql_client.getReactionExperiment(new_exp_iri)
+    assert len(lst_done_rxn_exp_instance) == 1
+    assert lst_done_rxn_exp_instance[0].isAssignedTo is not None
+    # (2) HPLCReport instance should added to the derivation outputs
+    lst_hplc_report_iri = get_hplc_report_of_hplc_job(lst_hplc_job_iri[0], sparql_client)
+    vapourtec_schedule_derivation = get_vapourtec_schedule_derivation(new_exp_iri, vapourtec_schedule_agent.agentIRI, sparql_client)
+    vapourtec_schedule_derivation_outputs = get_derivation_outputs(vapourtec_schedule_derivation, sparql_client)
+    assert len(lst_hplc_report_iri) == 1
+    assert len(vapourtec_schedule_derivation_outputs) == 1
+    assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
+
+    print("Vapourtec Schedule Derivation checked successfully")
+
+    ##################################
+    ## Check HPLCPostPro Derivation ##
+    ##################################
+    # Query the new derived IRI
+    hplc_postpro_derivation = get_hplc_postpro_derivation(lst_hplc_report_iri[0], hplc_postpro_agent.agentIRI, sparql_client)
+    hplc_postpro_derivation_outputs = get_derivation_outputs(hplc_postpro_derivation, sparql_client)
+
+    # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
+    reload_rxn_rxp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
+    reload_pi_dct = {pi.instance_iri:pi.clz for pi in reload_rxn_rxp_instance.hasPerformanceIndicator}
+    assert all([iri in hplc_postpro_derivation_outputs[reload_pi_dct[iri]] for iri in reload_pi_dct])
+    for pi in reload_rxn_rxp_instance.hasPerformanceIndicator:
+        if pi.hasValue is None:
+            assert False, f"PerformanceIndicator {pi.instance_iri} has no value, complete rxn_exp: {str(reload_rxn_rxp_instance.dict())}"
+        assert pi.hasValue.hasUnit is not None
+        assert pi.hasValue.hasNumericalValue is not None
+    reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
+    for oc in reload_output_chemical_lst:
+        assert oc.clz == ONTOREACTION_OUTPUTCHEMICAL
+        assert oc.instance_iri is not None
+        reload_phase_comp_lst = oc.thermodynamicBehaviour.isComposedOfSubsystem
+        for phase_comp in reload_phase_comp_lst:
+            assert phase_comp.representsOccurenceOf is not None
+            assert phase_comp.hasProperty.hasValue.hasUnitOfMeasure is not None
+            assert phase_comp.hasProperty.hasValue.numericalValue is not None
+        reload_phase_comp_conc_lst = [pc.hasProperty for pc in oc.thermodynamicBehaviour.isComposedOfSubsystem]
+        reload_conc_lst = oc.thermodynamicBehaviour.has_composition.comprisesDirectly
+        assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
+        assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
+
+    print("HPLCPostPro Derivation checked successfully")
+
+
+def get_hplc_derivation(rxn_exp_iri: str, hplc_agent_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?hplc_derivation
+        WHERE {{
+            ?hplc_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{rxn_exp_iri}>;
+                             <{ONTODERIVATION_ISDERIVEDUSING}> <{hplc_agent_iri}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['hplc_derivation'] if len(response) > 0 else None
+
+
+def get_vapourtec_derivation(rxn_exp_iri: str, vapourtec_agent_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?vapourtec_derivation
+        WHERE {{
+            ?vapourtec_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{rxn_exp_iri}>;
+                                  <{ONTODERIVATION_ISDERIVEDUSING}> <{vapourtec_agent_iri}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['vapourtec_derivation'] if len(response) > 0 else None
+
+
+def get_vapourtec_schedule_derivation(rxn_exp_iri: str, vapourtec_schedule_agent_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?vapourtec_schedule_derivation
+        WHERE {{
+            ?vapourtec_schedule_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{rxn_exp_iri}>;
+                                  <{ONTODERIVATION_ISDERIVEDUSING}> <{vapourtec_schedule_agent_iri}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['vapourtec_schedule_derivation'] if len(response) > 0 else None
+
+
+def get_hplc_postpro_derivation(hplc_report_iri: str, hplc_postpro_agent_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?hplc_postpro_derivation
+        WHERE {{
+            ?hplc_postpro_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{hplc_report_iri}>;
+                                     <{ONTODERIVATION_ISDERIVEDUSING}> <{hplc_postpro_agent_iri}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['hplc_postpro_derivation'] if len(response) > 0 else None
+
+
+def get_derivation_outputs(derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?derivation_outputs ?derivation_outputs_type
+        WHERE {{
+            ?derivation_outputs <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>.
+            ?derivation_outputs a ?derivation_outputs_type.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return {
+        rdf_type:dal.get_unique_values_in_list_of_dict(
+            dal.get_sublist_in_list_of_dict_matching_key_value(
+                response, 'derivation_outputs_type', rdf_type
+            ),
+            'derivation_outputs'
+        ) for rdf_type in dal.get_unique_values_in_list_of_dict(response, 'derivation_outputs_type')
+    }
+
+
+def if_hplc_derivation_is_in_progress(derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?status_type
+        WHERE {{
+            <{derivation_iri}> <{ONTODERIVATION_HASSTATUS}>/a ?status_type.
+        }}"""
+    response = sparql_client.performQuery(query)
+    status_type = response[0]['status_type'] if len(response) > 0 else None
+    if status_type == ONTODERIVATION_INPROGRESS:
+        return True
+    return False
+
+
+def get_vapourtec_input_file_iri(derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?vapourtec_input_file
+        WHERE {{ ?vapourtec_input_file <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOVAPOURTEC_VAPOURTECINPUTFILE}>. }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['vapourtec_input_file']
+
+
+def get_chemical_solution_iri(derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?chemical_solution
+        WHERE {{
+            ?chemical_solution <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOLAB_CHEMICALSOLUTION}>.
+        }}"""
+    return sparql_client.performQuery(query)[0]['chemical_solution']
+
+
+def get_hplc_job(
+    hplc_digital_twin,
+    rxn_exp_iri,
+    chemical_solution_iri,
+    sparql_client: PySparqlClient
+):
+    query = f"""
+        SELECT ?hplc_job
+        WHERE {{
+            ?hplc_job ^<{ONTOHPLC_HASJOB}> <{hplc_digital_twin}>;
+                      a <{ONTOHPLC_HPLCJOB}>;
+                      <{ONTOHPLC_CHARACTERISES}> <{rxn_exp_iri}>;
+                      <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_solution_iri}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return [response[i]['hplc_job'] for i in range(len(response))]
+
+
+def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?hplc_report
+        WHERE {{ <{hplc_job_iri}> <{ONTOHPLC_HASREPORT}> ?hplc_report. }}"""
+    response = sparql_client.performQuery(query)
+    return [response[i]['hplc_report'] for i in range(len(response))]
 
 
 # ----------------------------------------------------------------------------------
