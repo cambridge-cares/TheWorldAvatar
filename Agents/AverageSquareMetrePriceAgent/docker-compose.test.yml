@@ -1,24 +1,6 @@
 version: '3.8'
 
 services:
-  avgsqmprice_agent_test:
-    image: ghcr.io/cambridge-cares/avgsqmprice_agent_test:1.0.0-SNAPSHOT
-    container_name: avgsqmprice_agent_test
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    build:
-      context: .
-      target: prod
-    ports:
-      - 7000:5000
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    env_file:
-      - ./tests/agent_test.env
-    # NOTE below entrypoint overrides the default entrypoint in the Dockerfile
-    # --preload flag is added to provide more information in the container to help with debugging
-    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload"]
-
   # Blazegraph
   blazegraph_agent_test:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT

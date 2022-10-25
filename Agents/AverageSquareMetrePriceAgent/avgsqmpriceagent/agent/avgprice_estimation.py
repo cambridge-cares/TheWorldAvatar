@@ -20,7 +20,6 @@ from avgsqmpriceagent.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
-from avgsqmpriceagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
 class AvgSqmPriceAgent(DerivationAgent):
@@ -143,7 +142,6 @@ class AvgSqmPriceAgent(DerivationAgent):
             tx_records - list of sales transaction IRIs (within postcode) which to consider
                         when estimating average square metre price
             ppi_iri - Property Price Index IRI of local authority associated with postcode
-            query_endpoint/update_endpoint - SPARQL endpoint with instantiated buildings
         Returns:
             Current average square metre price for postcode    
         """

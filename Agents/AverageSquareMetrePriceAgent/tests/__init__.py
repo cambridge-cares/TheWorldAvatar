@@ -6,7 +6,8 @@
 #
 # Every import of `avgsqmpriceagent.utils.env_configs` will now obtain a reference to 
 # `avgsqmpriceagent.mockutils.env_configs_mock`. Since the import machinery already finds
-# the keys in the sys.modules dictionary, it will not begin looking for the old files.#
+# the keys in the sys.modules dictionary, it will not begin looking for the old files.
+#
 #
 # ----------------------------------------------------------------------------------
 from . import mockutils
