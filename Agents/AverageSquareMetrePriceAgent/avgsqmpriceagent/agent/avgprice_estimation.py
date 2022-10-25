@@ -43,13 +43,67 @@ class AvgSqmPriceAgent(DerivationAgent):
 
 
     def agent_output_concepts(self) -> list:
+        # Output concept (i.e. result) of the Derivation
         return [OBE_AVERAGE_SM_PRICE]
 
 
     def validate_inputs(self, http_request) -> bool:
+        # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
+        # contains derivationIRI, etc.)
         return super().validate_inputs(http_request)
 
 
+    def validate_input_values(self, inputs):
+        """
+        Check whether received input values are suitable to perform average price
+        estimation. Throw exception if data is not suitable.
+
+        Arguments:
+            inputs {dict} -- Dictionary of inputs with input concepts as keys and values as list
+
+        Returns:
+            postcode_iri {str}, ppi_iri {str}, tx_records {list}
+        """
+
+        #TODO: Potentially add derivationIRI to logger and exception message
+
+        # Check whether postcode is available
+        if inputs.get(OBE_POSTALCODE):
+            pc = inputs.get(OBE_POSTALCODE)
+            # Check whether only one postcode has been provided
+            if len(pc) == 1:
+                postcode_iri = pc[0]
+            else:
+                self.logger.error("More than one Postcode IRI provided.")
+                raise Exception("More than one Postcode IRI provided.")                
+        else:
+            self.logger.error("Postcode IRI is missing.")
+            raise Exception("Postcode IRI is missing.")
+
+        # Check whether property price index is available
+        if inputs.get(OBE_PROPERTY_PRICE_INDEX):
+            ppi = inputs.get(OBE_PROPERTY_PRICE_INDEX)
+            # Check whether only one property price index has been provided
+            if len(ppi) == 1:
+                ppi_iri = ppi[0]
+            else:
+                self.logger.error("More than one Property Price Index IRI provided.")
+                raise Exception("More than one Property Price Index IRI provided.")
+        else:
+            self.logger.error("Property Price Index IRI is missing.")
+            raise Exception("Property Price Index IRI is missing.")
+
+
+        # Check whether previous transactions are available
+        if inputs.get(LRPPI_TRANSACTION_RECORD):
+            tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
+        else:
+            self.logger.error("Previous property sales transactions are missing.")
+            raise Exception("Previous property sales transactions are missing.")
+
+        return postcode_iri, ppi_iri, tx_iris
+
+    
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         """
@@ -66,26 +120,15 @@ class AvgSqmPriceAgent(DerivationAgent):
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
-
-        postcode_iri = None if not inputs.get(OBE_POSTALCODE) else \
-                       inputs.get(OBE_POSTALCODE)[0]
-        ppi_iri = None if not inputs.get(OBE_PROPERTY_PRICE_INDEX) else \
-                  inputs.get(OBE_PROPERTY_PRICE_INDEX)[0]
-        tx_records = [] if not inputs.get(LRPPI_TRANSACTION_RECORD) else \
-                     inputs.get(LRPPI_TRANSACTION_RECORD)
+        postcode_iri, ppi_iri, tx_records = self.validate_input_values(inputs)
         
         # Assess average price per sqm in case all required inputs are available
         # (i.e. all inputs have been marked up successfully)
-        if postcode_iri and ppi_iri and tx_records:
-            # Assess average square metre price
-            g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
-                                                         ppi_iri=ppi_iri,
-                                                         tx_records=tx_records)        
-            # Collect the generated triples derivation_outputs
-            derivation_outputs.addGraph(g)
-        else:
-            self.logger.info("Not all required derivation inputs provided. \
-                              Verify everything is marked up correctly.")
+        g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
+                                                     ppi_iri=ppi_iri,
+                                                     tx_records=tx_records)        
+        # Collect the generated triples derivation_outputs
+        derivation_outputs.addGraph(g)
 
 
     def estimate_average_square_metre_price(self, postcode_iri:str = None, 
