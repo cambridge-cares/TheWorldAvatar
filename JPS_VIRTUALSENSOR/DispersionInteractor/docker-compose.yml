@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  dispersion-initialiser:
-    image: docker.cmclinnovations.com/dispersion-initialiser:1.0.0-SNAPSHOT
+  dispersion-interactor:
+    image: docker.cmclinnovations.com/dispersion-interactor:1.0.0-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
