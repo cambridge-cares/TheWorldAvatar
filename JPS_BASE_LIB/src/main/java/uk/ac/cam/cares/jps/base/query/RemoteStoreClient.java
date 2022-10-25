@@ -52,7 +52,6 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -411,17 +410,18 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
         LOGGER.info("Executing SPARQL update to " + this.updateEndpoint + ". SPARQL update string: " + query);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            // here we return HttpResponse instead of CloseableHttpResponse to avoid ConnectionClosedException when reading the returned response
+            HttpResponse response = httpClient.execute(postRequest);
             if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
                 throw new JPSRuntimeException(
                         "SPARQL update execution by HTTP POST failed. Response status code ="
                                 + response.getStatusLine().getStatusCode());
             }
             return response;
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("SPARQL update execution by HTTP POST failed.", ex);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(
+                "RemoteStoreClient: SPARQL update execution by HTTP POST failed: "+query, e);
         }
     }
 
