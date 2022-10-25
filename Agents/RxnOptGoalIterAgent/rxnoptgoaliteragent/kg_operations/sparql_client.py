@@ -362,22 +362,30 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         return self.get_goal_set_instance(goal_set_iri=response[0]['goal_set'])
 
     # TODO add unit test
-    def create_rogi_derivation_for_new_info(self, goal_iter_agent_iri, derivation_inputs, goal_set_iri, derivation_client):
-        rogi_derivation = derivation_client.createAsyncDerivationForNewInfo(goal_iter_agent_iri, derivation_inputs)
-        # Add triple <goal_set> <OntoGoal:hasROGIDerivation> <rogi_derivation>
-        # This relationship serves as the link from the goal set to the ROGI derivation
-        self.link_goal_set_to_rogi(goal_set_iri, rogi_derivation)
-        return rogi_derivation
-
-    # TODO add unit test
-    def link_goal_set_to_rogi(self, goal_set_iri: str, rogi_iri: str):
-        self.performUpdate(f"""INSERT DATA {{ <{trimIRI(goal_set_iri)}> <{ONTOGOAL_HASROGIDERIVATION}> <{trimIRI(rogi_iri)}> }}""")
-
-    # TODO add unit test
-    def get_rogi_derivations_of_goal_set(self, goal_set_iri: str) -> List[str]:
+    def get_rogi_derivations_of_goal_set(self, goal_set_iri: str, rogi_agent_iri: str) -> List[str]:
         goal_set_iri = trimIRI(goal_set_iri)
-        query = f"""SELECT ?rogi_derivation WHERE {{
-            <{goal_set_iri}> <{ONTOGOAL_HASROGIDERIVATION}> ?rogi_derivation.
-        }}"""
+        rogi_agent_iri = trimIRI(rogi_agent_iri)
+        query = f"""
+            SELECT ?rogi_derivation
+            WHERE {{
+                ?rogi_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{goal_set_iri}>; <{ONTODERIVATION_ISDERIVEDUSING}> <{rogi_agent_iri}>.
+            }}"""
         response = self.performQuery(query)
         return dal.get_unique_values_in_list_of_dict(response, 'rogi_derivation')
+
+    # TODO add unit test
+    def get_latest_rxn_exp_of_rogi_derivation(self, rogi_derivation: str):
+        rogi_derivation = trimIRI(rogi_derivation)
+        query = f"""
+            SELECT DISTINCT ?rxn
+            WHERE {{
+                ?result <{ONTODERIVATION_BELONGSTO}> <{rogi_derivation}>;
+                        <{ONTOGOAL_REFERSTO}>/^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn.
+            }}"""
+        response = self.performQuery(query)
+        if len(response) == 0:
+            return None
+        elif len(response) > 1:
+            raise Exception(f"More than one rxn found as the latest experiment for rogi derivation {rogi_derivation}: {response}")
+        else:
+            return response[0]['rxn']
