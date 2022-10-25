@@ -948,15 +948,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
         LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
-
-            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
-            }
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("Upload RDF file failed.", ex);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(postRequest)) {
+                if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+                    throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
+                }
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Failed to upload file " + file + " to " + this.updateEndpoint, e);
         }
     }
 }
