@@ -83,8 +83,17 @@ public class TimeSeriesClient<T> {
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		
+		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
+		String rdbURL;
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (Exception e) {
+			rdbURL = "";
+		}
+		
    		try {
-   			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+   			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -272,13 +281,15 @@ public class TimeSeriesClient<T> {
 			// try to revert previous knowledge base deletion
 			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
 			//		a different exception depending on what the problem was, and how it should be handled
+
+			// modification mainly to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway
+			String rdbUrl;
 			try {
-				String rdbUrl;
-				if (conn.isClosed()) {
-					rdbUrl = ""; // setting dummy url, is not used in practice anyway
-				} else {
-					rdbUrl = conn.getMetaData().getURL();
-				}
+				rdbUrl = conn.getMetaData().getURL();
+			} catch (Exception e) {
+				rdbUrl = ""; // setting dummy url, is not used in practice anyway
+			}
+			try {
 				rdfClient.initTS(tsIRI, dataIRIs, rdbUrl, timeUnit);
 			} catch (Exception e_RdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
@@ -586,7 +597,6 @@ public class TimeSeriesClient<T> {
 	 * @param user username to access relational database
 	 * @param password password to access relational database
 	 */
-	@Deprecated
 	public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password) {
 		// Initialise Sparql client with pre-defined kbClient
 		this.rdfClient = new TimeSeriesSparql(kbClient);
@@ -604,7 +614,6 @@ public class TimeSeriesClient<T> {
 	 * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
 	 * @param filepath absolute path to file with RDB configs (URL, username, password)
 	 */
-	@Deprecated
 	public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
 		// Initialise Sparql client with pre-defined kbClient
 		this.rdfClient = new TimeSeriesSparql(kbClient);
@@ -618,7 +627,6 @@ public class TimeSeriesClient<T> {
 	 * @param timeClass class type for the time values (to initialise RDB table)
 	 * @param filepath absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints)
 	 */
-	@Deprecated
 	public TimeSeriesClient(Class<T> timeClass, String filepath) throws IOException {
 		// Initialise Sparql client according to properties file
 		RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -633,7 +641,6 @@ public class TimeSeriesClient<T> {
 	 * Load properties for RDF/SPARQL client
 	 * @param filepath absolute path to properties file with respective information
 	 */
-	@Deprecated
 	private void loadSparqlConfigs(String filepath) throws IOException {
 		rdfClient.loadSparqlConfigs(filepath);
 	}
@@ -642,7 +649,6 @@ public class TimeSeriesClient<T> {
 	 * Load properties for RDB client
 	 * @param filepath absolute path to properties file with respective information
 	 */
-	@Deprecated
 	private void loadRdbConfigs(String filepath) throws IOException {
 		rdbClient.loadRdbConfigs(filepath);
 	}
@@ -653,14 +659,12 @@ public class TimeSeriesClient<T> {
 	 * @param user username to access relational database
 	 * @param password password to access relational database
 	 */
-	@Deprecated
 	public void setRDBClient(String rdbURL, String user, String password) {
 		this.rdbClient.setRdbURL(rdbURL);
 		this.rdbClient.setRdbUser(user);
 		this.rdbClient.setRdbPassword(password);
 	}
 
-	@Deprecated
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
 
 		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
@@ -694,12 +698,10 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
 		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null);
 	}
 
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
 		// create random time series IRI
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
@@ -739,30 +741,26 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	@Deprecated
 	public void addTimeSeriesData(TimeSeries<T> ts) {
 		// Add time series data to respective database table
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		List<TimeSeries<T>> ts_list = new ArrayList<>();
-		ts_list.add(ts);
-		rdbClient.addTimeSeriesData(ts_list);
+		List<TimeSeries<T>> tsList = new ArrayList<>();
+		tsList.add(ts);
+		rdbClient.addTimeSeriesData(tsList);
 	}
 
-	@Deprecated
 	public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list) {
 		// Add time series data to respective database tables
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.addTimeSeriesData(ts_list);
 	}
 
-	@Deprecated
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
 
-	@Deprecated
 	public void deleteIndividualTimeSeries(String dataIRI) {
 
 		// Check whether dataIRI is associated with any time series and
@@ -805,7 +803,6 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	@Deprecated
 	public void deleteTimeSeries(String tsIRI) {
 
 		// Check whether tsIRI exists
@@ -844,7 +841,6 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	@Deprecated
 	public void deleteAll() {
 		// Step1: Delete all time series in knowledge base
 		try {
@@ -865,73 +861,55 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	@Deprecated
 	public TimeSeries<T> getLatestData(String dataIRI) {
 		return rdbClient.getLatestData(dataIRI);
 	}
 
-	@Deprecated
 	public TimeSeries<T> getOldestData(String dataIRI) {
 		return rdbClient.getOldestData(dataIRI);
 	}
 
-	@Deprecated
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
 		// Retrieve time series data from respective database table
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
 	}
 
-	@Deprecated
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
 		return getTimeSeriesWithinBounds(dataIRIs, null, null);
 	}
 
-	@Deprecated
 	public double getAverage(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getAverage(dataIRI);
 	}
 
-	@Deprecated
 	public double getMaxValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxValue(dataIRI);
 	}
 
-	@Deprecated
 	public double getMinValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinValue(dataIRI);
 	}
 
-	@Deprecated
 	public T getMaxTime(String dataIRI) {
 		// Retrieve latest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxTime(dataIRI);
 	}
 
-	@Deprecated
 	public T getMinTime(String dataIRI) {
 		// Retrieve earliest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinTime(dataIRI);
 	}
 
-	@Deprecated
 	public boolean checkDataHasTimeSeries(String dataIRI) {
 		return rdbClient.checkDataHasTimeSeries(dataIRI);
-	}
-
-	/**
-	 * disconnects current connection to postgres
-	 */
-	@Deprecated
-	public void disconnectRDB() {
-		rdbClient.disconnect();
 	}
 }
