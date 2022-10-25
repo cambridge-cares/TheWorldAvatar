@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +45,7 @@ public class QueryClient {
     private StoreClientInterface storeClient;
     private TimeSeriesClient<Long> tsClient;
     private DerivationClient derivationClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
@@ -67,10 +71,11 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient, DerivationClient derivationClient) {
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient, DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
         this.derivationClient = derivationClient;
+        this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 
     /**
@@ -203,7 +208,11 @@ public class QueryClient {
             derivationClient.addTimeInstance(shipIriList);
 
             // time series in rdb, 4326 is the srid
-            tsClient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, 4326);
+            try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                tsClient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, 4326, conn);
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
         }
     }
 
@@ -268,20 +277,24 @@ public class QueryClient {
         // generate 1 time series object for each ship and upload to rdb
         Iterator<Ship> shipIterator = shipToMeasureIRIMap.keySet().iterator();
 
-        while(shipIterator.hasNext()) {
-            Ship ship = shipIterator.next();
-            List<String> dataIRIs = shipToMeasureIRIMap.get(ship);
-
-            // order of dataIRIs is course, speed, location, as defined in the previous loop
-            List<List<?>> values = new ArrayList<>();
-            values.add(Arrays.asList(ship.getCourse()));
-            values.add(Arrays.asList(ship.getSpeed()));
-            values.add(Arrays.asList(ship.getLocation()));
-
-            List<Long> time = Arrays.asList(ship.getTimestamp().getEpochSecond());
-
-            TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
-            tsClient.addTimeSeriesData(ts);
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            while(shipIterator.hasNext()) {
+                Ship ship = shipIterator.next();
+                List<String> dataIRIs = shipToMeasureIRIMap.get(ship);
+    
+                // order of dataIRIs is course, speed, location, as defined in the previous loop
+                List<List<?>> values = new ArrayList<>();
+                values.add(Arrays.asList(ship.getCourse()));
+                values.add(Arrays.asList(ship.getSpeed()));
+                values.add(Arrays.asList(ship.getLocation()));
+    
+                List<Long> time = Arrays.asList(ship.getTimestamp().getEpochSecond());
+    
+                TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
+                tsClient.addTimeSeriesData(ts, conn);
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
 
         derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));

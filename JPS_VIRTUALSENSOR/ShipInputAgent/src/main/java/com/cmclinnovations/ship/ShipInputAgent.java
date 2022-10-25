@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -44,17 +45,21 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
+    private QueryClient queryClient;
+
+    @Override
+    public void init() throws ServletException {
+        EndpointConfig endpointConfig = new EndpointConfig(); 
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
+        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        queryClient = new QueryClient(storeClient, tsClient, derivationClient, remoteRDBStoreClient);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.info("Received POST request to update ship data");
-        
-        EndpointConfig endpointConfig = new EndpointConfig(); 
-        RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
-        QueryClient queryClient = new QueryClient(storeClient, tsClient, derivationClient);
-
         File dataDir = new File(EnvConfig.DATA_DIR);
 
         // turn into integer list to facilitate sorting
@@ -74,7 +79,7 @@ public class ShipInputAgent extends HttpServlet {
             File timeOffsetFile = new File(EnvConfig.TIME_OFFSET_FILE);
     
             Integer lastUsedFileInt = null;
-            Integer timeOffset = null;
+            int timeOffset = 0;
     
             if (lastReadFile.exists()) {
                 // read from file
