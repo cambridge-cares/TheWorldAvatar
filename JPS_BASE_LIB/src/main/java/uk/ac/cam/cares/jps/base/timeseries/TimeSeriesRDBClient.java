@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -323,7 +324,7 @@ public class TimeSeriesRDBClient<T> {
 			List<T> timeValues = queryResult.getValues(timeColumn);
 			List<?> dataValues = queryResult.getValues(dataField);
 
-			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
+			return new TimeSeries<>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
@@ -607,8 +608,10 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	private void initCentralTable(DSLContext context) {
 		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
-		context.createTableIfNotExists(DB_TABLE_NAME).column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN)
-				.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
+		try (CreateTableColumnStep createStep = context.createTableIfNotExists(DB_TABLE_NAME)) {
+			createStep.column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN)
+			.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
+		}
 		context.createIndex().on(DSL.table(DSL.name(DB_TABLE_NAME)), Arrays.asList(DATA_IRI_COLUMN,TS_IRI_COLUMN,TABLENAME_COLUMN,COLUMNNAME_COLUMN)).execute();
 	}
 
@@ -648,34 +651,42 @@ public class TimeSeriesRDBClient<T> {
 											List<Class<?>> dataClass, Integer srid, Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
-		// Create table
-		CreateTableColumnStep createStep = context.createTableIfNotExists(tsTable);
-
-		// Create time column
-		createStep = createStep.column(timeColumn);
 
 		List<String> additionalGeomColumns = new ArrayList<>();
 		List<Class<?>> classForAdditionalGeomColumns = new ArrayList<>();
+		CreateTableColumnStep createStep = null;
+		try {
+			// Create table
+			createStep = context.createTableIfNotExists(tsTable);
 
-		// Create 1 column for each value
-		for (int i = 0; i < dataIRI.size(); i++) {
-			if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
-				// these columns will be added with their respective restrictions
-				additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
-				classForAdditionalGeomColumns.add(dataClass.get(i));
-			} else {
-				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(DIALECT, dataClass.get(i)));
+			// Create time column
+			createStep = createStep.column(timeColumn);
+
+			// Create 1 column for each value
+			for (int i = 0; i < dataIRI.size(); i++) {
+				if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
+					// these columns will be added with their respective restrictions
+					additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
+					classForAdditionalGeomColumns.add(dataClass.get(i));
+				} else {
+					createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(DIALECT, dataClass.get(i)));
+				}
+			}
+
+			// Send consolidated request to RDB
+			createStep.execute();
+		} finally {
+			if (createStep != null) {
+				createStep.close();
 			}
 		}
-
-		// Send consolidated request to RDB
-		createStep.execute();
+		
 
 		// create index on time column for quicker searches
 		context.createIndex().on(DSL.table(DSL.name(tsTable)), timeColumn).execute();
 
 		// add remaining geometry columns with restrictions
-		if (additionalGeomColumns.size() > 0) {
+		if (!additionalGeomColumns.isEmpty()) {
 			addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
 		}
 	}
@@ -687,24 +698,30 @@ public class TimeSeriesRDBClient<T> {
 	 * @throws SQLException
 	 */
 	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid, Connection conn) throws SQLException {
-		String sql = "alter table \"" + tsTable + "\" ";
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("alter table \"%s\" ", tsTable));
+
 		for (int i = 0; i < columnNames.size(); i++) {
-			sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
+			sb.append(String.format("add %s geometry(%s", columnNames.get(i), dataTypes.get(i).getSimpleName()));
 
 			// add srid if given
 			if (srid != null) {
-				sql += "," + String.valueOf(srid) + ")";
+				sb.append(String.format(", %d)", srid));
 			} else {
-				sql += ")";
+				sb.append(")");
 			}
 
 			if (i != columnNames.size() - 1) {
-				sql += ", ";
+				sb.append(", ");
 			} else {
-				sql += ";";
+				sb.append(";");
 			}
 		}
-		conn.prepareStatement(sql).executeUpdate();
+
+		String sql = sb.toString();
+		try (PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.executeUpdate();
+		}
 	}
 
 	/**
@@ -755,7 +772,9 @@ public class TimeSeriesRDBClient<T> {
 		// open source jOOQ does not support postgis, hence not using execute() directly
 		if (numRowsWithoutMatchingTime != 0) {
 			// if this gets executed when it's 0, null values will be added
-			conn.prepareStatement(insertValueStep.toString()).executeUpdate();
+			try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
+				statement.executeUpdate();
+			}
 		}
 
 		// update existing rows with matching time value
@@ -771,7 +790,9 @@ public class TimeSeriesRDBClient<T> {
 							.where(timeColumn.eq(ts.getTimes().get(rowIndex)));
 
 					// open source jOOQ does not support postgis geometries, hence not using execute() directly
-					conn.prepareStatement(updateStep.toString()).executeUpdate();
+					try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
+						statement.executeUpdate();
+					}
 				} else {
 					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex));
 				}
