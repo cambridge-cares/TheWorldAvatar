@@ -15,13 +15,15 @@ import pytest
 import time
 import uuid
 import os
+import re
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, THRESHOLD, \
                                                DATABASE, DB_USER, DB_PASSWORD
 
-from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, TIME_HASTIME, \
-                                              TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
+from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
+                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
+from avgsqmpriceagent.datamodel.iris import *
 from pyderivationagent.conf import config_derivation_agent
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
 from avgsqmpriceagent.kg_operations.tsclient import TSClient
@@ -37,6 +39,7 @@ from avgsqmpriceagent.agent import AvgSqmPriceAgent
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
+STACK_CONFIG_FILE = os.path.join(THIS_DIR, 'mockutils/stack_configs_mock.py')
 
 # Agent configuration .env file
 AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
@@ -78,8 +81,14 @@ TRANSACTION_INSTANCE_5_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_5'
 DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
                        TRANSACTION_INSTANCE_3_IRI]
+POSTCODE_1 = 'ABC 123'
+# test against previously calculated average value from Excel (rounded)
+AVGPRICE_1 = 3351
 DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
+POSTCODE_2 = 'DEF 456'
+AVGPRICE_2 = 3600
+
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
@@ -91,6 +100,12 @@ VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 DATES = dates.strftime('%Y-%m').tolist()
 DATES = [d+'-01' for d in DATES]
+
+# Expcted number of triples
+TBOX_TRIPLES = 21
+ABOX_TRIPLES = 77 # 14 per building + 7 overaching ones
+TS_TRIPLES = 4
+TIME_TRIPLES_PER_PURE_INPUT = 6
 
 
 # ----------------------------------------------------------------------------------
@@ -159,11 +174,14 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
         DERIVATION_INSTANCE_BASE_URL
     )
 
-    # Set/overwrite default values for endpoints
-    global QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL
-    QUERY_ENDPOINT = sparql_endpoint
-    UPDATE_ENDPOINT = sparql_endpoint
-    DB_URL = rdb_url
+    # Overwrite default placeholder values for endpoints in mocked stack_configs.py
+    with open(STACK_CONFIG_FILE, 'r') as f:
+        conf = f.read()
+    conf = re.sub("DB_URL=[\w\']*\\n",f"DB_URL=\'{rdb_url}\'\n", conf)
+    conf = re.sub("QUERY_ENDPOINT=[\w\']*\\n",f"QUERY_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
+    conf = re.sub("UPDATE_ENDPOINT=[\w\']*\\n",f"UPDATE_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
+    with open(STACK_CONFIG_FILE, 'w') as f:
+        f.write(conf)
 
     yield sparql_client, derivation_client, rdb_conn, rdb_url
 
@@ -264,14 +282,46 @@ def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
                          rdb_password=rdb_password)
     ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
     dates = ts.getTimes()
+    # Unwrap Java time objects
     dates = [d.toString() for d in dates]
     values = ts.getValues(dataIRI)
     return dates, values
 
 
-def initialise_timestamps(derivation_client):
+def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
+    # Returns details associated with AvgSqmPrice instance
+    query = f"""
+        SELECT ?postcode ?price ?input_iri ?input_type
+        WHERE {{
+        <{avgsqmprice_iri}> <{RDF_TYPE}> <{OBE_AVERAGE_SM_PRICE}> ; 
+                            <{OM_HAS_VALUE}> ?measure ; 
+                            <{OBE_REPRESENTATIVE_FOR}> ?postcode_iri ; 
+                            <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
+        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ;  
+                 <{OM_NUM_VALUE}> ?price . 
+        ?postcode_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
+                      <{RDFS_LABEL}> ?postcode . 
+        ?input_iri <{RDF_TYPE}> ?input_type . 
+        }}
+        """
+    response = sparql_client.performQuery(query)
+    if len(response) == 0:
+        return None
+    else:
+        # Derivation inputs (i.e. isDerivedFrom)
+        key = set([x['input_type'] for x in response])
+        inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
+        # Postcode
+        postcode = list(set([x['postcode'] for x in response]))
+        # Price
+        price = list(set([int(x['price']) for x in response]))
+
+        return inputs, postcode, price
+
+
+def initialise_timestamps(derivation_client, derivation_inputs):
     # Add timestamp to pure inputs
-    for input in DERIVATION_INPUTS:
+    for input in derivation_inputs:
         derivation_client.addTimeInstance(input)
         derivation_client.updateTimestamp(input)
 

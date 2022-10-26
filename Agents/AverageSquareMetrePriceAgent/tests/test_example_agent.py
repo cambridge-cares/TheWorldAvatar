@@ -38,9 +38,7 @@ def test_example_data_instantiation(initialise_clients):
     cf.initialise_triples(sparql_client)
 
     # Verify instantiation of expected number of triples
-    triples_tbox = 21
-    triples_abox = 77 # 14 per building + 7 overaching ones    
-    assert sparql_client.getAmountOfTriples() == (triples_tbox + triples_abox)
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES)
 
     ### POSTGRESQL ###
     # Verify that Postgres database is empty
@@ -54,7 +52,7 @@ def test_example_data_instantiation(initialise_clients):
 
     # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
     assert cf.get_number_of_rdb_tables(rdb_conn) == 2
-    assert sparql_client.getAmountOfTriples() == (triples_tbox + triples_abox + 4)
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
 
     # Verify correct retrieval of time series data
     dates, values = cf.retrieve_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
@@ -70,66 +68,87 @@ def test_example_data_instantiation(initialise_clients):
 
 
 
-# @pytest.mark.parametrize(
-#     "local_agent_test",
-#     [
-#         (True), # local agent instance test
-#         (False), # deployed docker agent test
-#     ],
-# )
-# def test_monitor_derivations(
-#     initialise_clients, create_example_agent, local_agent_test
-# ):
-#     sparql_client, derivation_client = initialise_clients
+@pytest.mark.parametrize(
+    "derivation_input_set, expected_postcode, expected_avg",
+    [
+        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1),
+        (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2), 
+    ],
+)
+def test_monitor_derivations(
+    initialise_clients, create_example_agent, derivation_input_set, expected_postcode, expected_avg
+):
 
-#     # Initialise all triples in test_triples
-#     # It first DELETES ALL TRIPLES in the specified SPARQL endpoint
-#     # It then SPARQL update all triples stated in test_triples folder to the same endpoint 
-#     cf.initialise_triples(sparql_client, derivation_client)
+    sparql_client, derivation_client, rdb_conn, rdb_url = initialise_clients
 
-#     # Create agent instance, register agent in KG
-#     # NOTE Here we always set register_agent=True even for dockerised agent test
-#     # Reason for this design is that agent and blazegraph are in the same docker-compose.yml
-#     # However, there is no guarantee that the blazegraph will be ready when the agent is initialised within the docker container
-#     # Therefore, we register the agent in the KG from the host machine to ensure that the agent in docker is initialised successfully
-#     # In a real deployment, the agent MUST be registered in the KG when spinning up the agent container, i.e. REGISTER_AGENT=true in env file
-#     agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
+    # Initialise all triples in test_triples + initialise time series in RDB
+    # It first DELETES ALL DATA in the specified SPARQL/RDB endpoint
+    # It then SPARQL updates all triples stated in test_triples folder to SPARQL endpoint +
+    # Initialises PropertyPriceIndex time series and uploads test data to RDB
+    cf.initialise_triples(sparql_client)
+    cf.initialise_database(rdb_conn)
+    cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
+                             rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
+                             dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
+                             dates=cf.DATES, values=cf.VALUES)
+    # Add time stamp to pure inputs
+    cf.initialise_timestamps(derivation_client, derivation_input_set)
+    # Verify correct number time mark up triples
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES \
+                         + cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set))
 
-#     # Start the scheduler to monitor derivations if it's local agent test
-#     if local_agent_test:
-#         agent._start_monitoring_derivations()
+    # Create agent instance and register agent in KG
+    # NOTE Successful agent registration within the KG is required to properly pick up derivations
+    # -> Here we always set `register_agent=True` to guarantee that Blazegraph will be ready when
+    # the agent is initialised. In a real deployment, the agent MUST be registered in the KG when 
+    # spinning up the agent container, i.e. REGISTER_AGENT=true in env file
+    agent = create_example_agent(register_agent=True, random_agent_iri=False)
 
-#     # Assert that there's currently no instances has rdf:type of the output signature in the KG
-#     assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE)
 
-#     # Create derivation instance for new information, the timestamp of this derivation is 0
-#     derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, cf.DERIVATION_INPUTS)
-#     print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    # Start the scheduler to monitor derivations (as this is a local agent test)
+    agent._start_monitoring_derivations()
 
-#     # Query timestamp of the derivation for every 20 seconds until it's updated
-#     currentTimestamp_derivation = 0
-#     while currentTimestamp_derivation == 0:
-#         time.sleep(20)
-#         currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
+    # Assert that there's currently no instances has rdf:type of the output signature in the KG
+    assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OBE_AVERAGE_SM_PRICE)
 
-#     # Query the input of the derivation instance
-#     min_value = sparql_client.get_min_value(cf.MINVALUE_INSTANCE_IRI)
-#     max_value = sparql_client.get_max_value(cf.MAXVALUE_INSTANCE_IRI)
+    # Create derivation instance for new information, the timestamp of this derivation is 0
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, derivation_input_set)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
 
-#     # Query the output of the derivation instance
-#     derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
-#     print(f"Generated derivation outputs that belongsTo the derivation instance: {derivation_outputs}")
-#     difference = sparql_client.get_difference(derivation_outputs[dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE][0])
-#     assert len(derivation_outputs) == 2
-#     assert dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE in derivation_outputs
-#     assert len(derivation_outputs[dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE]) == 1
-#     assert derivation_outputs[dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE][0] == difference.instance_iri
-#     assert dm.DERIVATION_AGENT_PYTHON_EXAMPLE_VALUE in derivation_outputs
-#     assert len(derivation_outputs[dm.DERIVATION_AGENT_PYTHON_EXAMPLE_VALUE]) == 1
-#     assert derivation_outputs[dm.DERIVATION_AGENT_PYTHON_EXAMPLE_VALUE][0] == difference.hasValue.instance_iri
-#     assert difference.hasValue.numVal == max_value.hasValue.numVal - min_value.hasValue.numVal
-#     print("All check passed.")
+    # Query timestamp of the derivation for every 20 seconds until it's updated
+    currentTimestamp_derivation = 0
+    while currentTimestamp_derivation == 0:
+        time.sleep(10)
+        currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
-#     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
-#     if local_agent_test:
-#         agent.scheduler.shutdown()
+    # Query the output of the derivation instance
+    derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
+    print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
+    
+    # Verify that there are 2 derivation outputs (i.e. AveragePrice and Measure IRIs)
+    assert len(derivation_outputs) == 2
+    assert dm.OBE_AVERAGE_SM_PRICE in derivation_outputs
+    assert len(derivation_outputs[dm.OBE_AVERAGE_SM_PRICE]) == 1
+    assert dm.OM_MEASURE in derivation_outputs
+    assert len(derivation_outputs[dm.OM_MEASURE]) == 1
+    
+    # Verify the values of the derivation output
+    avg_iri = derivation_outputs[dm.OBE_AVERAGE_SM_PRICE][0]
+    inputs, postcode, price = cf.get_avgsqmprice_details(sparql_client, avg_iri)
+    # Verify postcode
+    assert len(postcode) == 1
+    assert postcode[0] == expected_postcode
+    # Verify price
+    assert len(price) == 1
+    assert price[0] == expected_avg
+    # Verify inputs (i.e. derived from)
+    for i in inputs:
+        for j in inputs[i]:
+            assert j in derivation_input_set
+            derivation_input_set.remove(j)
+    assert len(derivation_input_set) == 0
+
+    print("All check passed.")
+
+    # Shutdown the scheduler to clean up
+    agent.scheduler.shutdown()
