@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * This class provides unit tests for the TimeSeriesClient class
  */
 
-public class TimeSeriesClientTestDeprecated {
+public class TimeSeriesClientWithoutConnTest {
 
     // Instance of the class to test
     private TimeSeriesClient<Instant> testClient;

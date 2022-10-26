@@ -21,7 +21,7 @@ import org.postgis.Polygon;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-public class TimeSeriesPostGISIntegrationTestDeprecated {
+public class TimeSeriesPostGISIntegrationWithoutConnTest {
     // Using special testcontainers URL that will spin up a Docker container when accessed by a driver
     // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
     private static final String dbURL = "jdbc:tc:postgis:14-3.2:///timeseries";

@@ -19,7 +19,7 @@ import java.util.List;
  * This class provides unit tests for the TimeSeriesRDBClient class
  */
 
-public class TimeSeriesRDBClientTestDeprecated {
+public class TimeSeriesRDBClientWithoutConnTest {
 
     // Temporary folder to place a properties file (same file for all potential tests)
     @ClassRule

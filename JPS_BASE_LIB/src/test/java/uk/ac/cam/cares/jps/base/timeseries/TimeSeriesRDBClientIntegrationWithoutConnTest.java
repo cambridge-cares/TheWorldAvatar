@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 //@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" +
 //		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-public class TimeSeriesRDBClientIntegrationTestDeprecated {
+public class TimeSeriesRDBClientIntegrationWithoutConnTest {
     // Define RDB database setup (analogous to a triple-store endpoint)
     // Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
     // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!

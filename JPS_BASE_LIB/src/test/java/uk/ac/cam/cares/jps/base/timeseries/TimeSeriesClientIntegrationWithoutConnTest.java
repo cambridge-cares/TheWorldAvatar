@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 //@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
 //		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
-public class TimeSeriesClientIntegrationTestDeprecated {
+public class TimeSeriesClientIntegrationWithoutConnTest {
     // TimeSeries client (with RDB and Sparql client)
     private static TimeSeriesClient<Instant> tsClient;
 
