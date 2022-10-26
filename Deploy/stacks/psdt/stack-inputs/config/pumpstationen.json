@@ -1,0 +1,36 @@
+{
+    "name": "pumpstationen",
+    "database": "psdt",
+    "workspace": "twa",
+    "datasetDirectory": "pumpstationen",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "schema": "public",
+            "name": "Pumpstationen",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "LAUNDER": "NO",
+                    "GEOMETRY_NAME": "geom"
+                },
+                "sridIn": "EPSG:25832",
+                "sridOut": "EPSG:25832",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Rechtswert",
+                    "Y_POSSIBLE_NAMES": "Hochwert",
+                    "AUTODETECT_TYPE": "YES"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pumpstationen"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "pumpstationen",
+            "file": "pumpstationen.sld"
+        }
+    ]
+}
