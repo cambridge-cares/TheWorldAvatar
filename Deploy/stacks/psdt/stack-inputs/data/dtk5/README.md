@@ -1,0 +1,1 @@
+From the dataset provided by the Landesvermessungsamt, from the folder `/61 Stadtplanung 3/DTK/DTK5_Pirmasens/`, copy files named `dtk5_32???_54??_2_rp_rel.tif` (elevation raster contours) into the present folder.
