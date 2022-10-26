@@ -27,13 +27,13 @@
                     "id": "leibniz-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz.json",
-                    "position": [7.606446, 49.202321, 0.0]
+                    "position": [7.606446, 49.202321, 408.0]
                 },
                 {
                     "id": "leibniz-ceiling-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz_ceiling.json",
-                    "position": [7.606446, 49.202321, 0.0]
+                    "position": [7.606446, 49.202321, 408.0]
                 },
                 {
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
