@@ -144,7 +144,7 @@ Once the Agent is deployed, it periodically (every week, defined by `DERIVATION_
 
 ## Prior derivation markup
 
-For the Agent to detect out of date information, a proper mark up of the relevant derivation inputs is required. The following methods from the `pyderivationagent` package shall be used to achieve that (for illustration purposes only):
+For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The following methods from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only):
 ```bash
 # Retrieve derivation client from derivation agent
 deriv_client = agent.derivationClient
@@ -159,6 +159,57 @@ deriv_inputs = [postcode_IRI, ppi_IRI, tx_IRI1, tx_IRI2, ...]
 # Create derivation markup in KG
 deriv_iri = deriv_client.createAsyncDerivationForNewInfo(agent.agentIRI, deriv_inputs)
 ```
+
+
+&nbsp;
+# 3. Agent Integration Test
+
+As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration test before deploying it for production. Two integration tests are provided in the `tests` repository. Although the agent is designed to work within the stack, those tests *only* test for correct functionality of the locally deployed agent together with Blazegraph and PostgreSQL spun up as Docker containers. This adjustment was necessary to "mock" interactions with the stack, i.e. retrieval of settings and endpoints. 
+
+To run the integration tests locally, access to the `docker.cmclinnovations.com` registry is required on the local machine (for more information regarding the registry, see the [CMCL Docker registry wiki page]). Furthermore, a few relevant files are provided in the `tests` folder.
+
+1. `mockutils` folder: Python modules to mock stack settings
+2. `test_triples` folder: test triples for derivation inputs
+3. `agent_test.env` file: agent configuration parameters
+4. `conftest.py` file for pytest: all pytest fixtures and other utility functions
+5. `test_example_agent.py`
+   - `test_example_agent.py::test_example_triples`: test if all prepared triples are valid
+   - `test_example_agent.py::test_example_data_instantiation`: test proper instantiation of all triples incl. attached time series (for property price index)
+   - `test_example_agent.py::test_monitor_derivations`: test if derivation agent performs derivation update as expected
+
+&nbsp;
+### To perform the local agent integration tests, please follow these steps:
+
+1. It is highly recommended to use a virtual environment for testing. The virtual environment can be created as follows:
+    `(Windows)`
+    ```bash
+    $ python -m venv avg_venv
+    $ avg_venv\Scripts\activate.bat
+    (avg_venv) $
+    ```
+2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
+    `(Windows)`
+    ```bash
+    $ python -m pip install --upgrade pip
+    # Install all required packages from setup.py, incl. pytest etc.
+    python -m pip install -e .[dev]
+    # Install agentlogging (separate installation required, as not possible to include in setup.py)
+    python -m pip install -r requirements.txt
+    ```
+3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Runtime Environment version >=11]):
+    ```bash
+    # Build latest Stack_Clients resource for py4jps
+    bash build_py4jps_stackclients_resource.sh
+    # Install Stack_Clients resource for py4jps
+    jpsrm install StackClients <tmp_stack> --jar <stack-clients-....jar>
+
+        pytest -s --docker-compose=./docker-compose.test.yml
+    ```
+4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers (Please note, that respective containers need to be down at the beginning of the tests):
+    ```bash
+    # Add -s flag to see live logs
+    pytest -s --docker-compose=./docker-compose.test.yml
+   ```
 
 
 &nbsp;
@@ -179,6 +230,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [VS Code via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- TWA github -->
+[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
 [Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py

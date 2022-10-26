@@ -49,7 +49,7 @@ def retrieve_settings():
     # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
     # for Blazegraph)
     #TODO: ensure alignment with EPC data endpoint
-    QUERY_ENDPOINT = bg_conf.getUrl("buildings2")
+    QUERY_ENDPOINT = bg_conf.getUrl("buildings")
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
 
