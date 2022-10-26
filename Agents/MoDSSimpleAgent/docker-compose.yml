@@ -9,10 +9,12 @@ services:
       DATA_DIR: /app/files
       CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
     ports:
-      - "58085:8080"
+      - "58085:58085"
       - "8000:8000"
     secrets:
       - mods_agent_licence
+    volumes:
+      - "./SavedSurrogates:/usr/local/mods-simple-agent/SavedSurrogates/"
 
 # Secrets
 secrets:
