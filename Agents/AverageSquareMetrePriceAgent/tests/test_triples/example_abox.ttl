@@ -35,7 +35,8 @@
         om:hasValue :Measure_1 .
 :Measure_1 rdf:type om:Measure ;
            om:hasNumericalValue "280.0"^^xsd:float .
-:Address_1 obe:hasPostalCode :PostalCode_1 ;
+:Address_1 rdf:type icontact:Address ;
+           obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_2
@@ -50,7 +51,8 @@
         om:hasValue :Measure_2 .
 :Measure_2 rdf:type om:Measure ;
            om:hasNumericalValue "130.0"^^xsd:float .
-:Address_2 obe:hasPostalCode :PostalCode_1 ;
+:Address_2 rdf:type icontact:Address ;
+           obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_3
@@ -65,7 +67,8 @@
         om:hasValue :Measure_3 .
 :Measure_3 rdf:type om:Measure ;
            om:hasNumericalValue "220.0"^^xsd:float .
-:Address_3 obe:hasPostalCode :PostalCode_1 ;
+:Address_3 rdf:type icontact:Address ;
+           obe:hasPostalCode :PostalCode_1 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_4
@@ -80,7 +83,8 @@
         om:hasValue :Measure_4 .
 :Measure_4 rdf:type om:Measure ;
            om:hasNumericalValue "240.0"^^xsd:float .
-:Address_4 obe:hasPostalCode :PostalCode_2 ;
+:Address_4 rdf:type icontact:Address ;
+           obe:hasPostalCode :PostalCode_2 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :Building_5
@@ -95,7 +99,8 @@
         om:hasValue :Measure_5 .
 :Measure_5 rdf:type om:Measure ;
            om:hasNumericalValue "140.0"^^xsd:float .
-:Address_5 obe:hasPostalCode :PostalCode_2 ;
+:Address_5 rdf:type icontact:Address ;
+           obe:hasPostalCode :PostalCode_2 ;
            obe:hasAdministrativeDistrict :District_1 .
 
 :PostalCode_1 rdf:type obe:PostalCode ;

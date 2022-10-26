@@ -8,6 +8,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
+import pandas as pd
 import requests
 import pytest
 import time
@@ -32,7 +33,8 @@ from avgsqmpriceagent.agent import AvgSqmPriceAgent
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 
-KG_SERVICE = "blazegraph"
+# needs to match docker compose file
+KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 
 
@@ -58,6 +60,13 @@ TRANSACTION_INSTANCE_4_IRI = DERIVATION_INSTANCE_BASE_URL + 'TransactionRecord_4
 DERIVATION_INPUTS = [POSTCODE_INSTANCE_IRI, PRICE_INDEX_INSTANCE_IRI,
                      TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
                      TRANSACTION_INSTANCE_3_IRI, TRANSACTION_INSTANCE_4_IRI]
+
+
+# ----------------------------------------------------------------------------------
+#Test data
+dates = pd.date_range(start='1990-01-01', freq='M', end='2022-10-01')
+dates = dates.strftime('%Y-%m').tolist()
+values = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 
 
 # ----------------------------------------------------------------------------------
@@ -142,7 +151,7 @@ def create_example_agent():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples(sparql_client, derivation_client):
+def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -153,6 +162,8 @@ def initialise_triples(sparql_client, derivation_client):
         g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
 
+
+def initialise_timestamps(derivation_client):
     # Add timestamp to pure inputs
     for input in DERIVATION_INPUTS:
         derivation_client.addTimeInstance(input)
