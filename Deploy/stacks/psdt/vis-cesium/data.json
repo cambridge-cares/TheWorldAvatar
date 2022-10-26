@@ -51,7 +51,7 @@
                     "id": "measurementstation-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_station.json",
-                    "position": [7.614597486434046, 49.1920003877412, 0.0]
+                    "position": [7.614578, 49.191995, 378.4]
                 }
             ],
             "layers": [
