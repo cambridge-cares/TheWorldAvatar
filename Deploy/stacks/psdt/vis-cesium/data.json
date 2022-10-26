@@ -15,13 +15,13 @@
                     "id": "hugo-ball-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball.json",
-                    "position": [7.621656, 49.191238, -3.72]
+                    "position": [7.621620, 49.191232, 380.0]
                 },
                 {
                     "id": "hugo-ball-ceiling-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball_ceiling.json",
-                    "position": [7.621656, 49.191238, -3.72]
+                    "position": [7.621620, 49.191232, 380.0]
                 },
                 {
                     "id": "leibniz-lod3-tiles-source",
