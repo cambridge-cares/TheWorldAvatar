@@ -1,0 +1,24 @@
+{
+    "name": "dtk5",
+    "database": "psdt",
+    "workspace": "twa",
+    "datasetDirectory": "dtk5",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "Hoehenlinien",
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "twa:dtk5_rel_elevation_raster_contours"
+                }
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "dtk5_rel_elevation_raster_contours",
+            "file": "dtk5_rel_elevation_raster_contours.sld"
+        }
+    ]
+}
