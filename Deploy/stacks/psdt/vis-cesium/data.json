@@ -110,6 +110,14 @@
             "expanded": false,
             "sources": [
                 {
+                    "id": "pumpingstations-vector-points-source",
+                    "type": "wms",
+                    "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
+                    "wmsLayer": "twa:Pumpstationen",
+                    "transparency": true,
+                    "format": "image/png"
+                },
+                {
                     "id": "main-network-kml-source",
                     "type": "kml",
                     "uri": "http://localhost:3838/static/ps/sewage/main_network.kml"
@@ -121,6 +129,12 @@
                 }
             ],
             "layers": [
+                {
+                    "id": "pumpingstations-vector-points-layer",
+                    "name": "Pumpstationen (Symbole)",
+                    "source": "pumpingstations-vector-points-source",
+                    "visibility": "visible"
+                },
                 {
                     "id": "main-network-kml-layer",
                     "name": "Hauptnetz (3D)",
