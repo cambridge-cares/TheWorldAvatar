@@ -87,7 +87,11 @@ public class TimeSeriesClient<T> {
 		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
 		String rdbURL;
 		try {
-			rdbURL = conn.getMetaData().getURL();
+			if (conn == null) {
+				rdbURL = rdbClient.getRdbURL();
+			} else {
+				rdbURL = conn.getMetaData().getURL();
+			}		
 		} catch (Exception e) {
 			rdbURL = "";
 		}
@@ -95,35 +99,53 @@ public class TimeSeriesClient<T> {
    		try {
    			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
 		}
-		catch (Exception e_RdfCreate) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		catch (Exception eRdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
 		}
     	
     	// Step2: Try to initialise time series in relational database
     	try {
-    		rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
-    	} catch (JPSRuntimeException e_RdbCreate) {
+			if (conn == null) {
+				rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
+			} else {
+				rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
+			}
+    	} catch (JPSRuntimeException eRdbCreate) {
     		// For exceptions thrown when initialising RDB elements in relational database,
 			// try to revert previous knowledge base instantiation
     		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
     		//		a different exception depending on what the problem was, and how it should be handled
     		try {
     			rdfClient.removeTimeSeries(tsIRI);
-    		} catch (Exception e_RdfDelete) {
+    		} catch (Exception eRdfDelete) {
     			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRI +
-						" , as database related instantiation failed but KG triples were created.");
+						" , as database related instantiation failed but KG triples were created.", eRdfDelete);
     		}
-    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdbCreate);
     	}
     }
     
 	/**
      * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 * @param conn
      */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
 		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
 	} 
 
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * srid is used if the time series values contain geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 * @param conn
+	 */
     public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
@@ -137,28 +159,38 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+			String rdbURL;
+			if (conn == null) {
+				rdbURL = rdbClient.getRdbURL();
+			} else {
+				rdbURL = conn.getMetaData().getURL();
+			}
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit);
 		}
-		catch (Exception e_RdfCreate) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		catch (Exception eRdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
 		}
    		
    	    // Step2: Try to initialise time series in relational database
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
-   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
-   	    	} catch (JPSRuntimeException e_RdbCreate) {
+				if (conn == null) {
+					rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid);
+				} else {
+					rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
+				}
+   	    	} catch (JPSRuntimeException eRdbCreate) {
    	    		// For exceptions thrown when initialising RDB elements in relational database,
    				// try to revert previous knowledge base instantiation
    	    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
    	    		//		a different exception depending on what the problem was, and how it should be handled
    	    		try {
    	    			rdfClient.removeTimeSeries(tsIRIs.get(i));
-   	    		} catch (Exception e_RdfDelete) {
+   	    		} catch (Exception eRdfDelete) {
    	    			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
    							" , as database related instantiation failed but KG triples were created.");
    	    		}
-   	    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+   	    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdbCreate);
    	    	}
    		}	
     }
@@ -171,9 +203,13 @@ public class TimeSeriesClient<T> {
     public void addTimeSeriesData(TimeSeries<T> ts, Connection conn) {
     	// Add time series data to respective database table
     	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		List<TimeSeries<T>> ts_list = new ArrayList<>();
-		ts_list.add(ts);
-    	rdbClient.addTimeSeriesData(ts_list, conn);
+		List<TimeSeries<T>> tsList = new ArrayList<>();
+		tsList.add(ts);
+		if (conn == null) {
+			rdbClient.addTimeSeriesData(tsList);
+		} else {
+			rdbClient.addTimeSeriesData(tsList, conn);
+		}
     }
 
 	/**
@@ -182,10 +218,10 @@ public class TimeSeriesClient<T> {
 	 * @param ts_list List of TimeSeries objects to add
 	 * @param conn connection to the RDB
      */
-    public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list, Connection conn) {
+    public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
     	// Add time series data to respective database tables
     	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-    	rdbClient.addTimeSeriesData(ts_list, conn);
+    	rdbClient.addTimeSeriesData(tsList, conn);
     }
     
 	/**
@@ -219,31 +255,39 @@ public class TimeSeriesClient<T> {
     	// If NOT: delete entire time series (i.e. whole tsIRI), if YES: delete only dataIRI time series
     	if (rdfClient.getAssociatedData(tsIRI).size() == 1) {
     		// If not, delete entire time series
-    		deleteTimeSeries(tsIRI, conn);
+			if (conn == null) {
+				deleteTimeSeries(tsIRI);
+			} else {
+				deleteTimeSeries(tsIRI, conn);
+			}
     	} else {
 	    	// Step1: Delete time series association in knowledge base
 	    	// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 	   		try {
 	   			rdfClient.removeTimeSeriesAssociation(dataIRI);
-	   		} catch (Exception e_RdfDelete) {
-				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", e_RdfDelete);
+	   		} catch (Exception eRdfDelete) {
+				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", eRdfDelete);
 	   		}
 	    	
 	    	// Step2: Try to delete corresponding time series column and central table entry in relational database
 	    	try {
-	    		rdbClient.deleteTimeSeries(dataIRI, conn);
-	    	} catch (JPSRuntimeException e_RdbDelete) {
+				if (conn == null) {
+					rdbClient.deleteTimeSeries(dataIRI);
+				} else {
+					rdbClient.deleteTimeSeries(dataIRI, conn);
+				}
+	    	} catch (JPSRuntimeException eRdbDelete) {
 				// For exceptions thrown when deleting RDB elements in relational database,
 				// try to revert previous knowledge base deletion
 	    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have insertTimeSeriesAssociation throw
 	    		//		a different exception depending on what the problem was, and how it should be handled
 	    		try {
 	    			rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
-	    		} catch (Exception e_RdfCreate) {
+	    		} catch (Exception eRdfCreate) {
 					throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series association for " + dataIRI +
 							" , as database related deletion failed but KG triples were deleted.");
 	    		}
-				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", e_RdbDelete);
+				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", eRdbDelete);
 	    	}
     	}
     }
@@ -254,7 +298,6 @@ public class TimeSeriesClient<T> {
 	 * @param conn connection to the RDB
      */
     public void deleteTimeSeries(String tsIRI, Connection conn) {
-    	
 		// Check whether tsIRI exists
 		if (!rdfClient.checkTimeSeriesExists(tsIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + tsIRI + " does not exist in KG");
@@ -268,15 +311,19 @@ public class TimeSeriesClient<T> {
 		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 		try {
 			rdfClient.removeTimeSeries(tsIRI);
-		} catch (Exception e_RdfDelete) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdfDelete);
+		} catch (Exception eRdfDelete) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", eRdfDelete);
 		}
 
 		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
 		try {
 			// Retrieve example dataIRI needed to delete RDB related information
-			rdbClient.deleteTimeSeriesTable(dataIRIs.get(0), conn);
-		} catch (JPSRuntimeException e_RdbDelete) {
+			if (conn == null) {
+				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
+			} else {
+				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0), conn);
+			}
+		} catch (JPSRuntimeException eRdbDelete) {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
 			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
@@ -285,17 +332,21 @@ public class TimeSeriesClient<T> {
 			// modification mainly to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway
 			String rdbUrl;
 			try {
-				rdbUrl = conn.getMetaData().getURL();
+				if (conn == null) {
+					rdbUrl = rdbClient.getRdbURL();
+				} else {
+					rdbUrl = conn.getMetaData().getURL();
+				}
 			} catch (Exception e) {
 				rdbUrl = ""; // setting dummy url, is not used in practice anyway
 			}
 			try {
 				rdfClient.initTS(tsIRI, dataIRIs, rdbUrl, timeUnit);
-			} catch (Exception e_RdfCreate) {
+			} catch (Exception eRdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
-						" , as database related deletion failed but KG triples were deleted.", e_RdfCreate);
+						" , as database related deletion failed but KG triples were deleted.", eRdfCreate);
 			}
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdbDelete);
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", eRdbDelete);
 		}
     }
     
@@ -310,17 +361,21 @@ public class TimeSeriesClient<T> {
 			// Removing all triples is done by repetitive deletion of time series IRIs from KG
 			// -> potentially not all time series could get deleted
 			rdfClient.removeAllTimeSeries();
-		} catch (Exception e_RdfDelete) {
+		} catch (Exception eRdfDelete) {
 			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from KG! " +
-					  "Potentially inconsistent state between KG and database", e_RdfDelete);
+					  "Potentially inconsistent state between KG and database", eRdfDelete);
 		}
 		
 		// Step2: Try to delete all time series tables and central lookup table in relational database
 		try {
-			rdbClient.deleteAll(conn);
-		} catch (JPSRuntimeException e_RdbDelete) {
+			if (conn == null) {
+				rdbClient.deleteAll();
+			} else {
+				rdbClient.deleteAll(conn);
+			}
+		} catch (JPSRuntimeException eRdbDelete) {
 			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from database! " +
-					  "Potentially inconsistent state between KG and database", e_RdbDelete);
+					  "Potentially inconsistent state between KG and database", eRdbDelete);
 		}
     }
     
@@ -514,48 +569,48 @@ public class TimeSeriesClient<T> {
 	 * @param table_header_map
 	 * @return
 	 */
-	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
-			List<Map<String,String>> units_map, List<Map<String, String>> table_header_map) {
-		JSONArray ts_array = new JSONArray();
+	public JSONArray convertToJSON(List<TimeSeries<T>> tsList, List<Integer> id,
+			List<Map<String,String>> unitsMap, List<Map<String, String>> tableHeaderMap) {
+		JSONArray tsArray = new JSONArray();
 		
-		for (int i = 0; i < ts_list.size(); i++) {
-			TimeSeries<T> ts = ts_list.get(i);
+		for (int i = 0; i < tsList.size(); i++) {
+			TimeSeries<T> ts = tsList.get(i);
 			
-			JSONObject ts_jo = new JSONObject();
+			JSONObject tsJo = new JSONObject();
 			
 			// to link this time series to a station
 			// in this application there is only 1 data per ts
 			List<String> dataIRIs = ts.getDataIRIs();
-			ts_jo.put("id", id.get(i));
+			tsJo.put("id", id.get(i));
 			
 			// classes
-			if (ts.getTimes().size() > 0) {
+			if (!ts.getTimes().isEmpty()) {
 				if (ts.getTimes().get(0) instanceof Number) {
-					ts_jo.put("timeClass", Number.class.getSimpleName());
+					tsJo.put("timeClass", Number.class.getSimpleName());
 				} else {
-					ts_jo.put("timeClass", ts.getTimes().get(0).getClass().getSimpleName());
+					tsJo.put("timeClass", ts.getTimes().get(0).getClass().getSimpleName());
 				}
 			}
 			
 			// for table headers
-			if (table_header_map != null) {
-				List<String> table_header = new ArrayList<>();
+			if (tableHeaderMap != null) {
+				List<String> tableHeader = new ArrayList<>();
 				for (String dataIRI : dataIRIs) {
-					table_header.add(table_header_map.get(i).get(dataIRI));
+					tableHeader.add(tableHeaderMap.get(i).get(dataIRI));
 				}
-				ts_jo.put("data", table_header);
+				tsJo.put("data", tableHeader);
 			} else {
-				ts_jo.put("data", dataIRIs);
+				tsJo.put("data", dataIRIs);
 			}
 	    	
 			List<String> units = new ArrayList<>();
 			for (String dataIRI : dataIRIs) {
-				units.add(units_map.get(i).get(dataIRI));
+				units.add(unitsMap.get(i).get(dataIRI));
 			}
-	    	ts_jo.put("units", units);
+	    	tsJo.put("units", units);
 	    	
 	    	// time column
-	    	ts_jo.put("time", ts.getTimes());
+	    	tsJo.put("time", ts.getTimes());
 	    	
 	    	// values columns
 	    	// values columns, one array for each data
@@ -580,13 +635,13 @@ public class TimeSeriesClient<T> {
 				valuesClass.put(vClass);
 			}
 	    	
-	    	ts_jo.put("values", values);
-	    	ts_jo.put("valuesClass", valuesClass);
+	    	tsJo.put("values", values);
+	    	tsJo.put("valuesClass", valuesClass);
 			
-			ts_array.put(ts_jo);
+			tsArray.put(tsJo);
 		}
 		
-		return ts_array;
+		return tsArray;
 	}
 
 	/**
@@ -665,200 +720,94 @@ public class TimeSeriesClient<T> {
 		this.rdbClient.setRdbPassword(password);
 	}
 
+	/**
+     * Initialise time series in triple store and relational database
+     * @param dataIRIs list of dataIRIs as Strings
+     * @param dataClass list of data classes for each dataIRI
+     * @param timeUnit time unit as (full) IRI
+     */
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
-
-		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
-		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-
-		// Step1: Initialise time series in knowledge base
-		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
-		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-		try {
-			rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
-		}
-		catch (Exception e_RdfCreate) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
-		}
-
-		// Step2: Try to initialise time series in relational database
-		try {
-			rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
-		} catch (JPSRuntimeException e_RdbCreate) {
-			// For exceptions thrown when initialising RDB elements in relational database,
-			// try to revert previous knowledge base instantiation
-			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
-			//		a different exception depending on what the problem was, and how it should be handled
-			try {
-				rdfClient.removeTimeSeries(tsIRI);
-			} catch (Exception e_RdfDelete) {
-				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRI +
-						" , as database related instantiation failed but KG triples were created.");
-			}
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
-		}
+		initTimeSeries(dataIRIs, dataClass, timeUnit, (Connection) null);
 	}
 
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null);
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, (Connection) null);
 	}
 
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection#
+	 * Provide SRID if time series data contains geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
-		// create random time series IRI
-		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
-
-		for (int i = 0; i < dataIRIs.size(); i++) {
-			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-			tsIRIs.add(i, tsIRI);
-		}
-
-		// Step1: Initialise time series in knowledge base
-		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
-		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-		try {
-			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), timeUnit);
-		}
-		catch (Exception e_RdfCreate) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
-		}
-
-		// Step2: Try to initialise time series in relational database
-		for (int i = 0; i < dataIRIs.size(); i++) {
-			try {
-				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid);
-			} catch (JPSRuntimeException e_RdbCreate) {
-				// For exceptions thrown when initialising RDB elements in relational database,
-				// try to revert previous knowledge base instantiation
-				// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
-				//		a different exception depending on what the problem was, and how it should be handled
-				try {
-					rdfClient.removeTimeSeries(tsIRIs.get(i));
-				} catch (Exception e_RdfDelete) {
-					throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
-							" , as database related instantiation failed but KG triples were created.");
-				}
-				throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
-			}
-		}
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, (Connection) null);
 	}
 
+	/**
+     * Append time series data to an already instantiated time series
+	 * @param ts TimeSeries object to add
+     */
 	public void addTimeSeriesData(TimeSeries<T> ts) {
-		// Add time series data to respective database table
+		addTimeSeriesData(ts, null);
+	}
+
+	/**
+     * Append time series data to an already instantiated time series 
+	 * (i.e. add data for several time series in a single RDB connection)
+	 * @param ts_list List of TimeSeries objects to add
+	 * @param conn connection to the RDB
+     */
+	public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList) {
+		// Add time series data to respective database tables
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		List<TimeSeries<T>> tsList = new ArrayList<>();
-		tsList.add(ts);
 		rdbClient.addTimeSeriesData(tsList);
 	}
 
-	public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list) {
-		// Add time series data to respective database tables
-		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		rdbClient.addTimeSeriesData(ts_list);
-	}
-
+	/**
+	 * Delete time series history for given dataIRI (and all dataIRIs associated with same time series) between two time stamps
+	 * @param dataIRI data IRI provided as string
+	 * @param lowerBound start timestamp from which to delete data (inclusive)
+	 * @param upperBound end timestamp until which to delete data (inclusive)
+	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
 
+	/**
+     * Delete individual time series in triple store and relational database (i.e. time series for one dataIRI)
+     * @param dataIRI dataIRIs as Strings
+     */
 	public void deleteIndividualTimeSeries(String dataIRI) {
-
-		// Check whether dataIRI is associated with any time series and
-		// Extract "backup" information (tsIRI) for potential later re-instantiation (in case RDB deletion fails)
-		String tsIRI = rdfClient.getTimeSeries(dataIRI);
-		if (tsIRI == null) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + " not associated with any timeseries.");
-		}
-
-		// Check whether associated time series has further data associated with it
-		// If NOT: delete entire time series (i.e. whole tsIRI), if YES: delete only dataIRI time series
-		if (rdfClient.getAssociatedData(tsIRI).size() == 1) {
-			// If not, delete entire time series
-			deleteTimeSeries(tsIRI);
-		} else {
-			// Step1: Delete time series association in knowledge base
-			// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
-			try {
-				rdfClient.removeTimeSeriesAssociation(dataIRI);
-			} catch (Exception e_RdfDelete) {
-				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", e_RdfDelete);
-			}
-
-			// Step2: Try to delete corresponding time series column and central table entry in relational database
-			try {
-				rdbClient.deleteTimeSeries(dataIRI);
-			} catch (JPSRuntimeException e_RdbDelete) {
-				// For exceptions thrown when deleting RDB elements in relational database,
-				// try to revert previous knowledge base deletion
-				// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have insertTimeSeriesAssociation throw
-				//		a different exception depending on what the problem was, and how it should be handled
-				try {
-					rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
-				} catch (Exception e_RdfCreate) {
-					throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series association for " + dataIRI +
-							" , as database related deletion failed but KG triples were deleted.");
-				}
-				throw new JPSRuntimeException(exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", e_RdbDelete);
-			}
-		}
+		deleteIndividualTimeSeries(dataIRI, null);
 	}
 
+	/**
+     * Delete time series and all associated dataIRI connections from triple store and relational database 
+     * @param tsIRI time series IRI as String
+	 * @param conn connection to the RDB
+     */
 	public void deleteTimeSeries(String tsIRI) {
-
-		// Check whether tsIRI exists
-		if (!rdfClient.checkTimeSeriesExists(tsIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + tsIRI + " does not exist in KG");
-		}
-
-		// Extract "backup" information (dataIRIs, TimeUnit, DBUrl) for potential later re-instantiation (in case RDB deletion fails)
-		List<String> dataIRIs = rdfClient.getAssociatedData(tsIRI);
-		String timeUnit = rdfClient.getTimeUnit(tsIRI);  // can be null
-
-		// Step1: Delete time series with all associations in knowledge base
-		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
-		try {
-			rdfClient.removeTimeSeries(tsIRI);
-		} catch (Exception e_RdfDelete) {
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdfDelete);
-		}
-
-		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
-		try {
-			// Retrieve example dataIRI needed to delete RDB related information
-			rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
-		} catch (JPSRuntimeException e_RdbDelete) {
-			// For exceptions thrown when deleting RDB elements in relational database,
-			// try to revert previous knowledge base deletion
-			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
-			//		a different exception depending on what the problem was, and how it should be handled
-			try {
-				rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
-			} catch (Exception e_RdfCreate) {
-				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
-						" , as database related deletion failed but KG triples were deleted.");
-			}
-			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdbDelete);
-		}
+		deleteTimeSeries(tsIRI, null);
 	}
 
+	/**
+     * Delete all time series and associated connections from triple store and relational database
+	 * NOTE: When trying to delete all time series information, NO restore will be tried
+	 *     	 in case any exception occurs - only errors for inconsistent states are thrown.
+     */
 	public void deleteAll() {
-		// Step1: Delete all time series in knowledge base
-		try {
-			// Removing all triples is done by repetitive deletion of time series IRIs from KG
-			// -> potentially not all time series could get deleted
-			rdfClient.removeAllTimeSeries();
-		} catch (Exception e_RdfDelete) {
-			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from KG! " +
-					"Potentially inconsistent state between KG and database", e_RdfDelete);
-		}
-
-		// Step2: Try to delete all time series tables and central lookup table in relational database
-		try {
-			rdbClient.deleteAll();
-		} catch (JPSRuntimeException e_RdbDelete) {
-			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from database! " +
-					"Potentially inconsistent state between KG and database", e_RdbDelete);
-		}
+		deleteAll(null);
 	}
 
 	public TimeSeries<T> getLatestData(String dataIRI) {
@@ -869,46 +818,90 @@ public class TimeSeriesClient<T> {
 		return rdbClient.getOldestData(dataIRI);
 	}
 
+	/** 
+     * Retrieve entire time series data history for given dataIRIs
+     * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
+	 * @param dataIRIs list of data IRIs provided as string
+	 * @return All data series from dataIRIs list as single TimeSeries object
+	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
 		// Retrieve time series data from respective database table
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
 	}
 
+	/** 
+     * Retrieve entire time series data history for given dataIRIs
+     * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
+	 * @param dataIRIs list of data IRIs provided as string
+	 * @return All data series from dataIRIs list as single TimeSeries object
+	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
 		return getTimeSeriesWithinBounds(dataIRIs, null, null);
 	}
 
+	/**
+	 * Retrieve average value of an entire time series
+	 * @param dataIRI data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
 	public double getAverage(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getAverage(dataIRI);
 	}
 
+	/**
+	 * Retrieve maximum value of an entire time series
+	 * @param dataIRI data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
 	public double getMaxValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxValue(dataIRI);
 	}
 
+	/**
+	 * Retrieve minimum value of an entire time series
+	 * @param dataIRI data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
 	public double getMinValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinValue(dataIRI);
 	}
 
+	/**
+	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum (latest) timestamp of the corresponding data series
+	 */
 	public T getMaxTime(String dataIRI) {
 		// Retrieve latest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxTime(dataIRI);
 	}
 
+	/**
+	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum (earliest) timestamp of the corresponding data series
+	 */
 	public T getMinTime(String dataIRI) {
 		// Retrieve earliest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinTime(dataIRI);
 	}
 
+	/**
+	 * Check whether given data IRI is attached to a time series in kb
+	 * @param dataIRI data IRI provided as string
+	 * @return True if dataIRI exists and is attached to a time series, false otherwise
+	 */
 	public boolean checkDataHasTimeSeries(String dataIRI) {
 		return rdbClient.checkDataHasTimeSeries(dataIRI);
 	}
