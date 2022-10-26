@@ -18,7 +18,7 @@ import os
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, THRESHOLD, \
-                                               DATABASE, DB_URL, DB_USER, DB_PASSWORD
+                                               DATABASE, DB_USER, DB_PASSWORD
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, TIME_HASTIME, \
                                               TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
@@ -30,49 +30,67 @@ from avgsqmpriceagent.agent import AvgSqmPriceAgent
 
 
 # ----------------------------------------------------------------------------------
-# Constants and configuration (to be adjusted as needed)
+# Constants and configuration
 # ----------------------------------------------------------------------------------
+# Values to be adjusted as needed:
+#
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 
-# needs to match docker compose file
-KG_SERVICE = "blazegraph_agent_test"
-KG_ROUTE = "blazegraph/namespace/kb/sparql"
-RDB_SERVICE = "postgres_agent_test"
-RDB_ROUTE = DATABASE  # default DB (created upon creation)
-
-
-# Configuration .env file
+# Agent configuration .env file
 AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # NOTE As the agent is designed to be deployed to the stack, the triple store URLs provided
 # in the agent_test.env file are just placeholders to be overwritten by a `stack_configs.py`
 # mock. However, some entry is required in the .env file to avoid Exceptions from the 
 # AgentConfig class (the same applies to other keywords left blank)
+#
+# To ensure proper mocking of the stack_configs.py module, please provide the 
+# DATABASE, DB_USER, DB_PASSWORD environment variables in the respective files:
+#   tests\mockutils\env_configs_mock.py
+#   tests\mockutils\stack_configs_mock.py
+# Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved
+# automatically from the respective Docker services
 
+# Provide names of respetive Docker services
+# NOTE These names need to match the ones given in the testing docker-compose.yml file
+KG_SERVICE = "blazegraph_agent_test"
+KG_ROUTE = "blazegraph/namespace/kb/sparql"
+RDB_SERVICE = "postgres_agent_test"
+RDB_ROUTE = DATABASE
 
+# Derivation markup
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
-
 # IRIs of derivation's (pure) inputs
 # NOTE Should be consistent with the ones in test_triples/example_abox.ttl
 TEST_TRIPLES_BASE_IRI = 'https://www.example.com/kg/ontobuiltenv/'
-POSTCODE_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'PostalCode_1'
+# PropertyPriceIndex
 PRICE_INDEX_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'PropertyPriceIndex_1'
-TRANSACTION_INSTANCE_1_IRI = DERIVATION_INSTANCE_BASE_URL + 'TransactionRecord_1'
-TRANSACTION_INSTANCE_2_IRI = DERIVATION_INSTANCE_BASE_URL + 'TransactionRecord_2'
-TRANSACTION_INSTANCE_3_IRI = DERIVATION_INSTANCE_BASE_URL + 'TransactionRecord_3'
-TRANSACTION_INSTANCE_4_IRI = DERIVATION_INSTANCE_BASE_URL + 'TransactionRecord_4'
-DERIVATION_INPUTS = [POSTCODE_INSTANCE_IRI, PRICE_INDEX_INSTANCE_IRI,
-                     TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
-                     TRANSACTION_INSTANCE_3_IRI, TRANSACTION_INSTANCE_4_IRI]
-
+# PostCodes
+POSTCODE_INSTANCE_IRI_1 = TEST_TRIPLES_BASE_IRI + 'PostalCode_1'
+POSTCODE_INSTANCE_IRI_2 = TEST_TRIPLES_BASE_IRI + 'PostalCode_2'
+# TransactionRecords
+TRANSACTION_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_1'
+TRANSACTION_INSTANCE_2_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_2'
+TRANSACTION_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_3'
+TRANSACTION_INSTANCE_4_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_4'
+TRANSACTION_INSTANCE_5_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_5'
+DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
+                       TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
+                       TRANSACTION_INSTANCE_3_IRI]
+DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
+                       TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
 
 # ----------------------------------------------------------------------------------
-#Test data
+#  Inputs which should not be changed
+#
+
+# Property price index test data
 dates = pd.date_range(start='1990-01-01', freq='M', end='2022-10-01')
+VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
+VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 DATES = dates.strftime('%Y-%m').tolist()
 DATES = [d+'-01' for d in DATES]
-VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 
 
 # ----------------------------------------------------------------------------------
@@ -140,6 +158,12 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
         sparql_client.kg_client,
         DERIVATION_INSTANCE_BASE_URL
     )
+
+    # Set/overwrite default values for endpoints
+    global QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL
+    QUERY_ENDPOINT = sparql_endpoint
+    UPDATE_ENDPOINT = sparql_endpoint
+    DB_URL = rdb_url
 
     yield sparql_client, derivation_client, rdb_conn, rdb_url
 

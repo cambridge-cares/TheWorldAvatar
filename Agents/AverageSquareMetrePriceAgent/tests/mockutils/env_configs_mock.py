@@ -1,2 +1,2 @@
-DATABASE = 'postgres'
-THRESHOLD = ''
+DATABASE='postgres'
+THRESHOLD=3
