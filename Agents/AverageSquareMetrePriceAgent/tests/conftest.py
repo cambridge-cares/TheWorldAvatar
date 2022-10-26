@@ -101,11 +101,16 @@ VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 DATES = dates.strftime('%Y-%m').tolist()
 DATES = [d+'-01' for d in DATES]
 
-# Expcted number of triples
+# Expected number of triples
 TBOX_TRIPLES = 21
 ABOX_TRIPLES = 77 # 14 per building + 7 overaching ones
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
+
+# List of all transactions (to mock ONS API call)
+ALL_TRANSACTION_RECORDS = [TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI,
+                           TRANSACTION_INSTANCE_3_IRI, TRANSACTION_INSTANCE_4_IRI,
+                           TRANSACTION_INSTANCE_5_IRI]
 
 
 # ----------------------------------------------------------------------------------

@@ -2,11 +2,13 @@ from pathlib import Path
 from rdflib import Graph
 from rdflib import RDF
 import pytest
+from unittest.mock import patch
 import time
 
 import avgsqmpriceagent.datamodel as dm
 
 from . import conftest as cf
+
 
 def test_example_triples():
     """This test checks that the example triples are correct in syntax.
@@ -67,7 +69,6 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_conn) == 0
 
 
-
 @pytest.mark.parametrize(
     "derivation_input_set, expected_postcode, expected_avg",
     [
@@ -76,9 +77,18 @@ def test_example_data_instantiation(initialise_clients):
     ],
 )
 def test_monitor_derivations(
-    initialise_clients, create_example_agent, derivation_input_set, expected_postcode, expected_avg
+    initialise_clients, create_example_agent, derivation_input_set, expected_postcode, 
+    expected_avg, mocker
+    
 ):
+    # -------------------------------------------------------------------------
+    # Mock call to ONS API and simply return all transaction records as alias
+    # for transaction records from nearby postcodes
+    mocker.patch('avgsqmpriceagent.agent.avgprice_estimation.AvgSqmPriceAgent.get_transactions_from_nearest_postcodes',
+                 return_value=cf.ALL_TRANSACTION_RECORDS)
+    # -------------------------------------------------------------------------
 
+    # Get required clients from fixtures
     sparql_client, derivation_client, rdb_conn, rdb_url = initialise_clients
 
     # Initialise all triples in test_triples + initialise time series in RDB
