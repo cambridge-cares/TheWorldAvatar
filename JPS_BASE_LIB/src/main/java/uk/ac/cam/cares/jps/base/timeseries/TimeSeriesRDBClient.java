@@ -68,6 +68,8 @@ public class TimeSeriesRDBClient<T> {
 	private static final Field<String> COLUMNNAME_COLUMN = DSL.field(DSL.name("columnName"), String.class);
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
+	// Error message
+	private static final String CONNECTION_ERROR = "Failed to connect to database";
 	// Allowed aggregation function
 	protected enum AggregateFunction {
 		AVERAGE,
@@ -1035,402 +1037,236 @@ public class TimeSeriesRDBClient<T> {
 		}
 	}
 
+	/**
+	 * Initialise RDB table for particular time series and add respective entries to central lookup table
+	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
+	 * @param dataIRI list of IRIs for the data provided as string
+	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * @param tsIRI IRI of the timeseries provided as string
+	 */
 	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, (Integer) null);
 	}
 
+	/**
+	 * similar to above, but specifically to use with PostGIS
+	 * the additional argument srid is to restrict any geometry columns to the srid
+	 * if not needed, set to null, or use above the above method
+	 * @param dataIRI
+	 * @param dataClass
+	 * @param tsIRI
+	 * @param srid
+	 * @return
+	 */
 	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid) {
-		// Generate UUID as unique RDB table name
-		String tsTableName = UUID.randomUUID().toString();
-
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-
-			String condition = String.format(TABLE_NAME_TEMPLATE, DB_TABLE_NAME);
-			if (context.select(count()).from(INFORMATION_SCHEMA_TABLES).where(condition).fetchOne(0, int.class) == 0) {
-				initCentralTable(context);
-			}
-
-			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
-			for (String s : dataIRI) {
-				if(checkDataHasTimeSeries(s, conn)) {
-					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> already has an assigned time series instance");
-				}
-			}
-
-			// Ensure that there is a class for each data IRI
-			if (dataIRI.size() != dataClass.size()) {
-				throw new JPSRuntimeException(exceptionPrefix + "Length of dataClass is different from number of data IRIs");
-			}
-
-			// Assign column name for each dataIRI; name for time column is fixed
-			Map<String,String> dataColumnNames = new HashMap<>();
-			int i = 1;
-			for (String s : dataIRI) {
-				dataColumnNames.put(s, "column"+i);
-				i++;
-			}
-
-			// Add corresponding entries in central lookup table
-			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, context);
-
-			// Initialise RDB table for storing time series data
-			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
-
-			return tsTableName;
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			return initTimeSeriesTable(dataIRI, dataClass, tsIRI, srid, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 	}
 
+	/**
+	 * Append time series data to an already existing RDB table
+	 * If certain columns within the table are not provided, they will be nulls
+	 * if a row with the equivalent time value exists, the values provided will overwrite
+	 * the existing data in the table
+	 * @param ts_list TimeSeries object to add
+	 */
 	protected void addTimeSeriesData(List<TimeSeries<T>> tsList) {
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-
-			for (TimeSeries<T> ts : tsList) {
-				List<String> dataIRI = ts.getDataIRIs();	
-				// Check if central database lookup table exists
-				String condition = String.format(TABLE_NAME_TEMPLATE, DB_TABLE_NAME);
-				if (context.select(count()).from(INFORMATION_SCHEMA_TABLES).where(condition).fetchOne(0, int.class) == 0) {
-					throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-				}
-
-				// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-				checkDataIsInSameTable(dataIRI, context);
-
-				String tsTableName = getTimeseriesTableName(dataIRI.get(0), context);
-				// Assign column name for each dataIRI; name for time column is fixed
-				Map<String,String> dataColumnNames = new HashMap<>();
-				for (String s : dataIRI) {
-					dataColumnNames.put(s, getColumnName(s, context));
-				}
-
-				// Append time series data to time series table
-				// if a row with the time value exists, that row will be updated instead of creating a new row
-				populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
-			} 
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			addTimeSeriesData(tsList, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 	}
 
+	/**
+	 * Retrieve time series within bounds from RDB (time bounds are inclusive and optional)
+	 * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
+	 * <br>Returned time series are in ascending order with respect to time (from oldest to newest)
+	 * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
+	 * @param dataIRI list of data IRIs provided as string
+	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
+	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
+	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn,DIALECT);
-			// Check if central database lookup table exists
-			String condition = String.format(TABLE_NAME_TEMPLATE, DB_TABLE_NAME);
-			if (context.select(count()).from(INFORMATION_SCHEMA_TABLES).where(condition).fetchOne(0, int.class) == 0) {
-				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-			}
-
-			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-			checkDataIsInSameTable(dataIRI, context);
-
-			// Retrieve table corresponding to the time series connected to the data IRIs
-			Table<?> table = getTimeseriesTable(dataIRI.get(0), context);
-
-			// Create map between data IRI and the corresponding column field in the table
-			Map<String, Field<Object>> dataColumnFields = new HashMap<>();
-			for (String data : dataIRI) {
-				String columnName = getColumnName(data, context);
-				Field<Object> field = DSL.field(DSL.name(columnName));
-				dataColumnFields.put(data, field);
-			}
-
-			// Retrieve list of column fields (including fixed time column)
-			List<Field<?>> columnList = new ArrayList<>();
-			columnList.add(timeColumn);
-			for (String data : dataIRI) {
-				columnList.add(dataColumnFields.get(data));
-			}
-
-			// Potentially update bounds (if no bounds were provided)
-			if (lowerBound == null) {
-				lowerBound = context.select(min(timeColumn)).from(table).fetch(min(timeColumn)).get(0);
-			}
-			if (upperBound == null) {
-				upperBound = context.select(max(timeColumn)).from(table).fetch(max(timeColumn)).get(0);
-			}
-
-			// Perform query
-			Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
-					.orderBy(timeColumn.asc()).fetch();
-
-			// Collect results and return a TimeSeries object
-			List<T> timeValues = queryResult.getValues(timeColumn);
-			List<List<?>> dataValues = new ArrayList<>();
-			for (String data : dataIRI) {
-				List<?> column = queryResult.getValues(dataColumnFields.get(data));
-				dataValues.add(column);
-			}
-
-			return new TimeSeries<>(timeValues, dataIRI, dataValues);
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			return getTimeSeriesWithinBounds(dataIRI, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 
 	}
 
+	/**
+	 * Retrieve entire time series from RDB
+	 * @param dataIRI list of data IRIs provided as string
+	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
 		return getTimeSeriesWithinBounds(dataIRI, null, null);
 	}
 
+	/**
+	 * returns a TimeSeries object with the latest value of the given IRI
+	 * @param dataIRI
+	 * @param conn connection to the RDB
+	 */
 	public TimeSeries<T> getLatestData(String dataIRI) {
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			Table<?> tsTable = getTimeseriesTable(dataIRI, context);
-			String columnName = getColumnName(dataIRI, context);
-
-			Field<Object> dataField = DSL.field(DSL.name(columnName));
-
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
-					.orderBy(timeColumn.desc()).limit(1).fetch();
-
-			List<T> timeValues = queryResult.getValues(timeColumn);
-			List<?> dataValues = queryResult.getValues(dataField);
-
-			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
-		} catch (Exception e) {
+			return getLatestData(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 	}
 
+	/**
+	 * returns a TimeSeries object with the oldest value of the given IRI
+	 * @param dataIRI
+	 */
 	public TimeSeries<T> getOldestData(String dataIRI) {
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			Table<?> tsTable = getTimeseriesTable(dataIRI, context);
-			String columnName = getColumnName(dataIRI, context);
-
-			Field<Object> dataField = DSL.field(DSL.name(columnName));
-
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
-					.orderBy(timeColumn.asc()).limit(1).fetch();
-
-			List<T> timeValues = queryResult.getValues(timeColumn);
-			List<?> dataValues = queryResult.getValues(dataField);
-
-			return new TimeSeries<>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
-		} catch (Exception e) {
+			return getOldestData(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 	}
 
+	/**
+	 * Retrieve average value of a column; stored data should be in numerics
+	 * @param dataIRI data IRI provided as string
+	 * @return The average of the provided data series as double
+	 */
 	public double getAverage(String dataIRI) {
-		return getAggregate(dataIRI, AggregateFunction.AVERAGE);
+		try (Connection conn = getConnection()) {
+			return getAggregate(dataIRI, AggregateFunction.AVERAGE, conn);
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
+	/**
+	 * Retrieve maximum value of a column; stored data should be in numerics
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum of the provided data series as double
+	 */
 	public double getMaxValue(String dataIRI) {
-		return getAggregate(dataIRI, AggregateFunction.MAX);
+		try (Connection conn = getConnection()) {
+			return getAggregate(dataIRI, AggregateFunction.MAX, conn);
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
+	/**
+	 * Retrieve minimum value of a column; stored data should be in numerics
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum of the provided data series as double
+	 */
 	public double getMinValue(String dataIRI) {
-		return getAggregate(dataIRI, AggregateFunction.MIN);
+		try (Connection conn = getConnection()) {
+			return getAggregate(dataIRI, AggregateFunction.MIN, conn);
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
+	/**
+	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum (latest) timestamp of the provided data series
+	 */
 	public T getMaxTime(String dataIRI) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
-
-			List<T> queryResult = context.select(max(timeColumn)).from(table).fetch(max(timeColumn));
-
-			return queryResult.get(0);
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			return getMaxTime(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
-
 	}
 
+	/**
+	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum (earliest) timestamp of the provided data series
+	 */
 	public T getMinTime(String dataIRI) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
-
-			List<T> queryResult = context.select(min(timeColumn)).from(table).fetch(min(timeColumn));
-
-			return queryResult.get(0);
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			return getMinTime(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
-
 	}
 
+	/**
+	 * Delete RDB time series table rows between lower and upper Bound
+	 * <p>Note that this will delete the entire rows in the corresponding table, i.e. all columns (in addition to the given data IRI)
+	 * @param dataIRI data IRI provided as string
+	 * @param lowerBound start timestamp from which to delete data
+	 * @param upperBound end timestamp until which to delete data
+	 */
 	protected void deleteRows(String dataIRI, T lowerBound, T upperBound) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Retrieve RDB table for dataIRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
-
-			// Delete rows between bounds (including bounds!)
-			context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			deleteRows(dataIRI, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
-
 	}
 
+	/**
+	 * Delete individual time series (i.e. data for one dataIRI only)
+	 * @param dataIRI data IRI provided as string
+	 * @param conn connection to the RDB
+	 */
 	protected void deleteTimeSeries(String dataIRI) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Get time series RDB table
-			String columnName = getColumnName(dataIRI, context);
-			String tsTableName = getTimeseriesTableName(dataIRI, context);
-
-			// Retrieve number of columns of time series table (i.e. number of dataIRI + time column)
-			String condition = String.format(TABLE_NAME_TEMPLATE, tsTableName);
-			if (context.select(count()).from("information_schema.columns").where(condition).fetchOne(0, int.class) > 2) {
-
-				// Delete only column for dataIRI from RDB table if further columns are present
-				context.alterTable(tsTableName).drop(columnName).execute();
-
-				// Delete entry in central lookup table
-				Table<?> dbTable = DSL.table(DSL.name(DB_TABLE_NAME));
-				context.delete(dbTable).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
-
-			} else {
-				// Delete entire RDB table for single column time series (data column + time column)
-				deleteTimeSeriesTable(dataIRI);
-			}
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			deleteTimeSeries(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
-
 	}
 
+	/**
+	 * Delete all time series information related to a dataIRI (i.e. entire RDB table and entries in central table)
+	 * @param dataIRI data IRI provided as string
+	 */
 	protected void deleteTimeSeriesTable(String dataIRI) {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-
-			// Retrieve RDB table for dataIRI
-			String tsIRI = getTimeSeriesIRI(dataIRI, context);
-			String tsTableName = getTimeseriesTableName(dataIRI, context);
-
-			// Delete time series RDB table
-			context.dropTable(DSL.table(DSL.name(tsTableName))).execute();
-
-			// Delete entries in central lookup table
-			Table<?> dbTable = DSL.table(DSL.name(DB_TABLE_NAME));
-			context.delete(dbTable).where(TS_IRI_COLUMN.equal(tsIRI)).execute();
-
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
+			deleteTimeSeriesTable(dataIRI, conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
-
 	}
 
+	/**
+	 * Delete all time series RDB tables and central lookup table
+	 */
 	protected void deleteAll() {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Check if central database lookup table exists
-			String condition = String.format(TABLE_NAME_TEMPLATE, DB_TABLE_NAME);
-			if (context.select(count()).from(INFORMATION_SCHEMA_TABLES).where(condition).fetchOne(0, int.class) == 1) {
-
-				// Retrieve all time series table names from central lookup table
-				Table<?> dbTable = DSL.table(DSL.name(DB_TABLE_NAME));
-				List<String> queryResult = context.selectDistinct(TABLENAME_COLUMN).from(dbTable).fetch(TABLENAME_COLUMN);
-
-				if (!queryResult.isEmpty()) {
-					for (String table : queryResult) {
-						// Delete time series RDB table
-						context.dropTable(DSL.table(DSL.name(table))).execute();
-					}
-					// Delete central lookup table
-					context.dropTable(dbTable).execute();
-				}
-			}
-
-		} catch (Exception e) {
+			deleteAll(conn);
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException("Error while executing SQL command", e);
-		}
-
-	}
-
-	protected double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
-		// All database interactions in try-block to ensure closure of connection
-		try (Connection conn = getConnection()) {
-			DSLContext context = DSL.using(conn, DIALECT);
-			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
-
-			// Create map between the data IRI and the corresponding column field in the table
-			String columnName = getColumnName(dataIRI, context);
-			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-
-			switch (aggregateFunction) {
-				case AVERAGE:
-					return context.select(avg(columnField)).from(table).fetch(avg(columnField)).get(0).doubleValue();
-				case MAX:
-					return context.select(max(columnField)).from(table).fetch(max(columnField)).get(0);
-				case MIN:
-					return context.select(min(columnField)).from(table).fetch(min(columnField)).get(0);
-				default:
-					throw new JPSRuntimeException(exceptionPrefix + "Aggregate function "+aggregateFunction.name()+" not valid!");
-			}
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
 	}
 
