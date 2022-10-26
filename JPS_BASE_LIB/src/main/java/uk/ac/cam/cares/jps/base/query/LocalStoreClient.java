@@ -19,7 +19,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.core.Var;
@@ -69,7 +68,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	protected void init() {
 		dataset = DatasetFactory.create();
-		conn = RDFConnectionFactory.connect(dataset);
+		conn = RDFConnection.connect(dataset);
 	}
 	
 	/**
