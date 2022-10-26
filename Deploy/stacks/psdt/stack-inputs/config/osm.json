@@ -27,6 +27,9 @@
                 "layerCreationOptions": {
                     "PRECISION": "NO"
                 }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pylons"
             }
         },
         {
@@ -52,6 +55,9 @@
                 "layerCreationOptions": {
                     "PRECISION": "NO"
                 }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "twa:pylons"
             }
         }
     ],
@@ -59,6 +65,10 @@
         {
             "name": "bdlm_ver02l",
             "file": "bdlm_ver02l.sld"
+        },
+        {
+            "name": "pylons",
+            "file": "pylons.sld"
         }
     ]
 }
