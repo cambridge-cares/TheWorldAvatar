@@ -8,6 +8,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
+import psycopg2 as pg
 import pandas as pd
 import requests
 import pytest
@@ -23,6 +24,8 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, TIME_HAS
                                               TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
 from pyderivationagent.conf import config_derivation_agent
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
+from avgsqmpriceagent.kg_operations.tsclient import TSClient
+from avgsqmpriceagent.datamodel.data import DATACLASS, TIME_FORMAT_SHORT
 from avgsqmpriceagent.agent import AvgSqmPriceAgent
 
 
@@ -36,6 +39,8 @@ TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 # needs to match docker compose file
 KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+RDB_SERVICE = "postgres_agent_test"
+RDB_ROUTE = DATABASE  # default DB (created upon creation)
 
 
 # Configuration .env file
@@ -65,8 +70,9 @@ DERIVATION_INPUTS = [POSTCODE_INSTANCE_IRI, PRICE_INDEX_INSTANCE_IRI,
 # ----------------------------------------------------------------------------------
 #Test data
 dates = pd.date_range(start='1990-01-01', freq='M', end='2022-10-01')
-dates = dates.strftime('%Y-%m').tolist()
-values = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
+DATES = dates.strftime('%Y-%m').tolist()
+DATES = [d+'-01' for d in DATES]
+VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 
 
 # ----------------------------------------------------------------------------------
@@ -75,14 +81,13 @@ values = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
-def get_service_url(session_scoped_container_getter):
+def get_blazegraph_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
 
         # This will run only once per entire test session
-        # It ensures that the services requested in docker containers are ready
-        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        # It ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
         service_available = False
         while not service_available:
             try:
@@ -97,9 +102,35 @@ def get_service_url(session_scoped_container_getter):
 
 
 @pytest.fixture(scope="session")
-def initialise_clients(get_service_url):
+def get_postgres_service_url(session_scoped_container_getter):
+    def _get_service_url(service_name, url_route):
+        service = session_scoped_container_getter.get(service_name).network_info[0]
+        service_url = f"jdbc:postgresql://localhost:{service.host_port}/{url_route}"
+
+        # This will run only once per entire test session
+        # It ensures that the requested PostgreSQL Docker service is ready to accept queries
+        service_available = False
+        while not service_available:
+            try:
+                conn = pg.connect(host='localhost', port=service.host_port,
+                                  user=DB_USER, password=DB_PASSWORD,
+                                  database=DATABASE)
+                if conn.status == pg.extensions.STATUS_READY:
+                    service_available = True
+            except Exception:
+                time.sleep(3)
+
+        return conn, service_url
+    return _get_service_url
+
+
+@pytest.fixture(scope="session")
+def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     # Retrieve endpoint for triple store
-    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    sparql_endpoint = get_blazegraph_service_url(KG_SERVICE, url_route=KG_ROUTE)
+
+    # Retrieve endpoint for postgres
+    rdb_conn, rdb_url = get_postgres_service_url(RDB_SERVICE, url_route=RDB_ROUTE)
 
     # Create SparqlClient for testing
     sparql_client = KGClient(sparql_endpoint, sparql_endpoint)
@@ -110,7 +141,7 @@ def initialise_clients(get_service_url):
         DERIVATION_INSTANCE_BASE_URL
     )
 
-    yield sparql_client, derivation_client
+    yield sparql_client, derivation_client, rdb_conn, rdb_url
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -161,6 +192,57 @@ def initialise_triples(sparql_client):
         g = Graph()
         g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
+
+
+def initialise_database(rdb_conn):
+    # Deletes all tables in the database (before initialising prepared tables)
+    with rdb_conn:
+        cur=rdb_conn.cursor()
+        sql_query = """
+            DROP SCHEMA public CASCADE;
+            CREATE SCHEMA public;
+        """
+        cur.execute(sql_query)
+
+
+def get_number_of_rdb_tables(rdb_conn):
+    # Returns total number of tables in given database
+    with rdb_conn:
+        cur=rdb_conn.cursor()
+        sql_query = """
+            SELECT table_name FROM information_schema.tables
+            WHERE table_schema = 'public'
+        """
+        cur.execute(sql_query)
+        rows = cur.fetchall()
+        return len(rows)
+
+
+def initialise_timeseries(kgclient, dataIRI, dates, values, rdb_url, 
+                          rdb_user, rdb_password):
+    # Initialise timeseries (in Blazegraph and PostgreSQL) with given dates and values
+    # Initialise time series client
+    ts_client = TSClient(kg_client=kgclient, rdb_url=rdb_url, rdb_user=rdb_user, 
+                         rdb_password=rdb_password)
+    # Create time series from test data                        
+    ts = TSClient.create_timeseries(dates, [dataIRI], [values])
+    
+    # Initialise time series in Blazegraph and PostgreSQL
+    ts_client.tsclient.initTimeSeries([dataIRI], [DATACLASS], TIME_FORMAT_SHORT,
+                                      ts_client.conn)
+    # Add test time series data
+    ts_client.tsclient.addTimeSeriesData(ts, ts_client.conn)
+
+
+def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
+    # Initialise time series client
+    ts_client = TSClient(kg_client=kgclient, rdb_url=rdb_url, rdb_user=rdb_user, 
+                         rdb_password=rdb_password)
+    ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
+    dates = ts.getTimes()
+    dates = [d.toString() for d in dates]
+    values = ts.getValues(dataIRI)
+    return dates, values
 
 
 def initialise_timestamps(derivation_client):

@@ -23,9 +23,12 @@ setup(
     ],
     extras_require={
         "dev": [
+            "testcontainers>=3.4.2",
             "pytest>=6.2.3",
             "pytest-docker-compose>=3.2.1",
-            "pytest-rerunfailures>=10.2"
+            "pytest-rerunfailures>=10.2",
+            "pytest-mock>=3.7.0",
+            "spycopg2~=2.9.5"
         ],
     }
 )

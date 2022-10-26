@@ -55,8 +55,14 @@ class TSClient:
 
     @staticmethod
     def create_timeseries(times: list, dataIRIs: list, values: list):
-        # Create Java TimeSeries object (i.e. to attach via TSClient)
-
+        """
+        Create Java TimeSeries object (i.e. to attach via TSClient)
+        
+        Arguments:
+            times (list): List of time stamps
+            dataIRIs (list): List of dataIRIs
+            values (list): List of list of values per dataIRI     
+        """
         try:
             timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:

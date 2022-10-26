@@ -48,7 +48,7 @@ class AvgSqmPriceAgent(DerivationAgent):
 
     def validate_inputs(self, http_request) -> bool:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
-        # contains derivationIRI, etc.)
+        # contains derivationIRI, etc.) -> only relevant for synchronous derivation
         return super().validate_inputs(http_request)
 
 
@@ -56,6 +56,7 @@ class AvgSqmPriceAgent(DerivationAgent):
         """
         Check whether received input values are suitable to perform average price
         estimation. Throw exception if data is not suitable.
+        -> relevant for asynchronous derivation
 
         Arguments:
             inputs {dict} -- Dictionary of inputs with input concepts as keys and values as list

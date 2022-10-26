@@ -24,14 +24,13 @@ def test_example_triples():
 
 
 def test_example_data_instantiation(initialise_clients):
-    """This test checks that the example triples are correct in syntax.
-
-    Raises:
-        e: If the example triples are not valid RDF.
+    """This test checks that all example data gets correctly instantiated,
+       including associated time series data in PostgreSQL.
     """
     # Get SPARQL client from fixture
-    sparql_client, _ = initialise_clients
+    sparql_client, _, rdb_conn, rdb_url = initialise_clients
 
+    ### TRIPPLE STORE ###
     # Verify that KG is empty
     assert sparql_client.getAmountOfTriples() == 0
 
@@ -42,6 +41,33 @@ def test_example_data_instantiation(initialise_clients):
     triples_tbox = 21
     triples_abox = 77 # 14 per building + 7 overaching ones    
     assert sparql_client.getAmountOfTriples() == (triples_tbox + triples_abox)
+
+    ### POSTGRESQL ###
+    # Verify that Postgres database is empty
+    assert cf.get_number_of_rdb_tables(rdb_conn) == 0
+
+    # Initialise and Upload time series
+    cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
+                             rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
+                             dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
+                             dates=cf.DATES, values=cf.VALUES)
+
+    # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
+    assert cf.get_number_of_rdb_tables(rdb_conn) == 2
+    assert sparql_client.getAmountOfTriples() == (triples_tbox + triples_abox + 4)
+
+    # Verify correct retrieval of time series data
+    dates, values = cf.retrieve_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
+                             rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
+                             dataIRI=cf.PRICE_INDEX_INSTANCE_IRI)
+    assert dates == cf.DATES
+    # Account for rounding errors
+    assert pytest.approx(values, rel=1e-5) == cf.VALUES
+
+    # Verify that dropping all tables works as expected
+    cf.initialise_database(rdb_conn)
+    assert cf.get_number_of_rdb_tables(rdb_conn) == 0
+
 
 
 # @pytest.mark.parametrize(
