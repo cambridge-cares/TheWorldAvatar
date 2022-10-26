@@ -123,13 +123,13 @@
             "layers": [
                 {
                     "id": "main-network-kml-layer",
-                    "name": "Hauptnetz",
+                    "name": "Hauptnetz (3D)",
                     "source": "main-network-kml-source",
                     "visibility": "none"
                 },
                 {
                     "id": "sub-network-kml-layer",
-                    "name": "Nebennetz",
+                    "name": "Nebennetz (3D)",
                     "source": "sub-network-kml-source",
                     "visibility": "none"
                 }
