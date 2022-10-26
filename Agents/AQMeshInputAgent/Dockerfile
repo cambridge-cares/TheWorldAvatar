@@ -24,7 +24,7 @@ RUN sed -i "s|USERNAME|$(sed -n 1p ../credentials/postgres_credentials.txt)|;s|P
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM openjdk:8-jre-alpine3.9 as agent
+FROM openjdk:20-ea-11-jdk-slim as agent
 
 WORKDIR /app
 
