@@ -35,7 +35,7 @@ public class OntoChemPlantAgentLauncherTest {
 		try {processRequestParameters.invoke(testLauncher, testEmptyRequestParams);
         } catch(Exception e) {
             assert e instanceof InvocationTargetException;
-            assertEquals(BadRequestException.class, ((InvocationTargetException) e).getTargetException().getClass());
+            assertEquals(RuntimeException.class, ((InvocationTargetException) e).getTargetException().getClass());
         }
 				
 		JSONObject testRequestParams = new JSONObject();
@@ -64,7 +64,7 @@ public class OntoChemPlantAgentLauncherTest {
 			validateInput.invoke(testLauncher, testRequestParams);		
 		} catch (Exception e) {
 			assert e instanceof InvocationTargetException;
-			assertEquals(BadRequestException.class, ((InvocationTargetException) e).getTargetException().getClass());
+			assertEquals(RuntimeException.class, ((InvocationTargetException) e).getTargetException().getClass());
 		}
 		
 		// Empty value in JSONobject
