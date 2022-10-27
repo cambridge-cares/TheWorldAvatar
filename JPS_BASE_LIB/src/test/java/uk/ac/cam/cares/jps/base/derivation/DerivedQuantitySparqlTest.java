@@ -302,13 +302,19 @@ public class DerivedQuantitySparqlTest {
 	public void testHasBelongsTo() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		// empty kg
-		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", String.class);
+		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", List.class);
 		hasBelongsTo.setAccessible(true);
-		Assert.assertFalse((boolean) hasBelongsTo.invoke(devClient, entity1));
+		Map<String, List<String>> belongsToMap = (Map<String, List<String>>) hasBelongsTo.invoke(devClient, allInstances);
+		Assert.assertTrue(belongsToMap.isEmpty());
 
 		// derived quantity created
-		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) hasBelongsTo.invoke(devClient, entity1));
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Map<String, List<String>> belongsToMap2 = (Map<String, List<String>>) hasBelongsTo.invoke(devClient, entities);
+		for (String entity : entities) {
+			Assert.assertTrue(belongsToMap2.containsKey(entity));
+			Assert.assertEquals(1, belongsToMap2.get(entity).size());
+			Assert.assertEquals(derivation, belongsToMap2.get(entity).get(0));
+		}
 	}
 
 	@Test

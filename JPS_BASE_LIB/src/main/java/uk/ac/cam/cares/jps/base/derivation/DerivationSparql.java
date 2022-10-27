@@ -296,15 +296,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(Derivation));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, List<String>> belongsToMap = hasBelongsTo(entities);
+		if (belongsToMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + belongsToMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -357,15 +359,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(Derivation));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, List<String>> belongsToMap = hasBelongsTo(entities);
+		if (belongsToMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + belongsToMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -443,16 +447,17 @@ public class DerivationSparql {
 		// insert all generated output triples (new information)
 		outputTriples.forEach(t -> modify.insert(t));
 
-		// add <entity> <belongsTo> <derivation> for each newIRI
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, List<String>> belongsToMap = hasBelongsTo(entities);
+		if (belongsToMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, iri(derivationIRI)));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + belongsToMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// add <derivation> <isDerivedFrom> <input> for all inputs
@@ -519,15 +524,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(DerivationWithTimeSeries));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, List<String>> belongsToMap = hasBelongsTo(entities);
+		if (belongsToMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + belongsToMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -599,15 +606,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(DerivationAsyn));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, List<String>> belongsToMap = hasBelongsTo(entities);
+		if (belongsToMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + belongsToMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -729,27 +738,42 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * check that the entity is part of another derived quantity, this is not
-	 * allowed
+	 * Query if any of the given entities belongsTo other derivations. This is
+	 * not allowed when creating a new derivation with the entities as outputs.
 	 * query triple - <entity> <belongsTo> ?x
 	 * 
-	 * @param storeClient
-	 * @param entity
+	 * @param entities
 	 * @return
 	 */
-	boolean hasBelongsTo(String entity) {
-		SelectQuery query = Queries.SELECT();
+	Map<String, List<String>> hasBelongsTo(List<String> entities) {
+		SelectQuery query = Queries.SELECT().distinct();
 
-		TriplePattern queryPattern = iri(entity).has(belongsTo, query.var());
-		query.prefix(p_derived).where(queryPattern);
+		String entityKey = "entity";
+		String derivationKey = "derivation";
+
+		Variable entity = SparqlBuilder.var(entityKey);
+		Variable derivation = SparqlBuilder.var(derivationKey);
+
+		GraphPattern entitiesValuesPattern = new ValuesPattern(entity,
+				entities.stream().map(i -> iri(i)).collect(Collectors.toList()));
+		GraphPattern entityBelongsToPattern = entity.has(belongsTo, derivation);
+
+		query.prefix(p_derived).where(entitiesValuesPattern, entityBelongsToPattern).select(entity, derivation);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
+		Map<String, List<String>> belongsToMap = new HashMap<>();
+
+		for (int i = 0; i < queryResult.length(); i++) {
+			String entityIri = queryResult.getJSONObject(i).getString(entityKey);
+			String derivationIri = queryResult.getJSONObject(i).getString(derivationKey);
+			if (belongsToMap.containsKey(entityIri)) {
+				belongsToMap.get(entityIri).add(derivationIri);
+			} else {
+				belongsToMap.put(entityIri, new ArrayList<>(Arrays.asList(derivationIri)));
+			}
 		}
+		return belongsToMap;
 	}
 
 	/**
