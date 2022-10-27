@@ -899,6 +899,18 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testCreateDerivationIRI() {
+		String derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATION);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATION + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONWITHTIMESERIES + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONASYN);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONASYN + "_"));
+	}
+
+	@Test
 	public void testWriteSyncDerivationNewInfo() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 
@@ -918,18 +930,19 @@ public class DerivedQuantitySparqlTest {
 		newTriples.add(Rdf.iri(c).has(Rdf.iri(c_p), Rdf.iri(c_v)));
 
 		// create a new derivation IRI
-		String derivation = devClient.createDerivationIRI();
+		String derivationType = DerivationSparql.ONTODERIVATION_DERIVATION;
+		String derivation = devClient.createDerivationIRI(derivationType);
 
 		// timestamp
 		long retrievedInputsAt = Instant.now().getEpochSecond();
 
 		devClient.writeSyncDerivationNewInfo(newTriples, entities, derivedAgentIRI, inputs, derivation,
-				DerivationSparql.ONTODERIVATION_DERIVATION, retrievedInputsAt);
+				derivationType, retrievedInputsAt);
 
 		// test if derivation was created correctly
 		// derivation
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation), RDF.type,
-				ResourceFactory.createResource(DerivationSparql.ONTODERIVATION_DERIVATION)));
+				ResourceFactory.createResource(derivationType)));
 		// agent
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),

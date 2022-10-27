@@ -72,12 +72,12 @@ public class DerivationSparql {
 	private static String FINISHED = "Finished";
 
 	// derivation types
-	public static String DERIVATION = "Derivation";
-	public static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
-	public static String DERIVATIONASYN = "DerivationAsyn";
-	public static String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
-	public static String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
-	public static String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
+	public static final String DERIVATION = "Derivation";
+	public static final String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
+	public static final String DERIVATIONASYN = "DerivationAsyn";
+	public static final String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
+	public static final String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
+	public static final String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
 
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",
@@ -143,6 +143,16 @@ public class DerivationSparql {
 		derivationTypeMap.put(derivednamespace.concat(DERIVATIONWITHTIMESERIES), DerivationWithTimeSeries);
 		derivationTypeMap.put(derivednamespace.concat(DERIVATIONASYN), DerivationAsyn);
 		derivationToIri = derivationTypeMap;
+	}
+
+	//
+	private static final Map<String, String> derivationToShortName;
+	static {
+		Map<String, String> derivationTypeShortNameMap = new HashMap<>();
+		derivationTypeShortNameMap.put(derivednamespace.concat(DERIVATION), DERIVATION);
+		derivationTypeShortNameMap.put(derivednamespace.concat(DERIVATIONWITHTIMESERIES), DERIVATIONWITHTIMESERIES);
+		derivationTypeShortNameMap.put(derivednamespace.concat(DERIVATIONASYN), DERIVATIONASYN);
+		derivationToShortName = derivationTypeShortNameMap;
 	}
 
 	// all possible derivation rdf:type
@@ -290,7 +300,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATION);
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -353,7 +363,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATION);
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -393,10 +403,15 @@ public class DerivationSparql {
 	 * 
 	 * @return
 	 */
-	String createDerivationIRI() {
+	String createDerivationIRI(String derivationType) {
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
-		return derivedQuantity;
+		if (derivationTypes.contains(derivationType)) {
+			return derivationInstanceBaseURL + derivationToShortName.get(derivationType) + "_" + UUID.randomUUID().toString();
+		} else {
+			String errmsg = "ERROR: derivation type " + derivationType + " is not supported";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
 	}
 
 	/**
@@ -518,7 +533,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATIONWITHTIMESERIES);
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -600,7 +615,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
+		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATIONASYN);
 
 		Iri derived_iri = iri(derivedQuantity);
 

@@ -214,7 +214,7 @@ public class DerivationClient {
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
 			String derivationType) {
 		// create a unique IRI for this new derived quantity
-		String derivationIRI = this.sparqlClient.createDerivationIRI();
+		String derivationIRI = this.sparqlClient.createDerivationIRI(derivationType);
 		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
 
 		// add mapped inputs to createdDerivation
