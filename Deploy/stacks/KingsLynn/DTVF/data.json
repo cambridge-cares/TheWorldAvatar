@@ -1,9 +1,9 @@
 {
     "name": "All Data",
-    "stack": "http://165.232.172.16:3838/KINGS-LYNN",
     "groups": [
         {
             "name": "Buildings",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
             "sources": [
                 {
                     "id": "area-of-interest",
@@ -89,6 +89,7 @@
                     "id": "buildings-outline-layer",
                     "name": "Buildings with EPC information",
                     "source": "obe_buildings",
+                    "source-layer": "buildings",
                     "type": "line",
                     "minzoom": 8, 
                     "layout": {
@@ -96,7 +97,7 @@
                     },
                     "paint": {
                         "line-color": "#000000",
-                        "line-opacity": 0.7
+                        "line-opacity": 0.5
                     }
                 },
                 {
@@ -112,6 +113,48 @@
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population data",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
+            "sources": [
+                {
+                    "id": "openpopgrid",
+                    "type": "raster",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=population:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "aoi-layer",
+                    "name": "Area of Interest", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 4,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 50, 4, 150],
+                        "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "openpopgrid",
+                    "type": "raster",
+                    "name": "OpenPopGrid",
+                    "source": "openpopgrid",
+                    "minzoom": 4,
+                    "layout": {
+                        "visibility": "visible"
                     }
                 }
             ]
