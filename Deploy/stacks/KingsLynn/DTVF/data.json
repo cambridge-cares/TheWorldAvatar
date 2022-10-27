@@ -99,18 +99,57 @@
                         "line-color": "#000000",
                         "line-opacity": 0.5
                     }
+                }
+            ]
+        },
+        {
+            "name": "Reporting Stations",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
+            "sources": [
+                {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi.geojson", 
+                    "generateId": true
                 },
                 {
-                    "id": "colleges-layer",
-                    "name": "Colleges",
-                    "source": "colleges",
+                    "id": "metoffice",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest and has a long name", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 8,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "metoffice",
+                    "name": "MetOffice Weather Stations", 
+                    "source": "metoffice",
+                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8, 
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": ["get", "icon-image"],
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
+                        "icon-image": "weather-obs",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
@@ -125,7 +164,7 @@
                     "id": "openpopgrid",
                     "type": "raster",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=population:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://165.232.172.16:3838/geoserver/population/wms?service=WMS&version=1.1.0&request=GetMap&layers=population:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 }
             ], 
