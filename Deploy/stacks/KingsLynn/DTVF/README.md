@@ -5,7 +5,17 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 &nbsp;
 ## Creating the Visualisation
 
-...
+Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation as Docker container, please run the following commands from the [DTVF] directory:
+
+```bash
+#To build the Image:
+docker-compose -f ./docker/docker-compose.yml build --force-rm
+
+#To generate a Container (i.e. run the Image):
+docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
+```
+
+**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
 
 
 &nbsp;
@@ -21,3 +31,4 @@ The Feature Info Agent is used to retrieve meta data for visualisation. Details 
 
 <!-- repositories -->
 [FeatureInfoAgent_queries]: FeatureInfoAgent_queries
+[DTVF]: DTVF

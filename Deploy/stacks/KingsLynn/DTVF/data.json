@@ -1,0 +1,91 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Cambridge",
+            "stack": "http://localhost:1234/example-cambridge-stack",
+            "sources": [
+                {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi.geojson",
+                    "generateId": true
+                },
+                {
+                    "id": "buildings",
+                    "type": "geojson",
+                    "data": "data/buildings.geojson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest and has a long name", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 8,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "buildings-layer",
+                    "name": "Buildings",
+                    "source": "buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#000000",
+                        "fill-extrusion-opacity": 0.33,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building:levels"],
+                            ["*", 10, ["to-number", ["get", "building:levels"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "buildings-outline-layer",
+                    "name": "Buildings",
+                    "source": "buildings",
+                    "type": "line",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#000000",
+                        "line-opacity": 0.4
+                    }
+                },
+                {
+                    "id": "colleges-layer",
+                    "name": "Colleges",
+                    "source": "colleges",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": ["get", "icon-image"],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+            ]
+        }
+    ]
+}
