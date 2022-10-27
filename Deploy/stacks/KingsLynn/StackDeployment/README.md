@@ -151,7 +151,7 @@ Content-Type: application/json
 
 > The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` 
 
-The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. As the agent creates heap space issues when processing ~38,000 buildings for King's Lynn at once, a workaround is necessary. The Kings Lynn Utilities repository contains ascript to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
+The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. As the agent creates heap space issues when processing ~38,000 buildings for King's Lynn at once, a workaround is necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
 
 - A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
 
@@ -217,10 +217,12 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 
 <!-- Agents -->
 [UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
-[UPRN Agent in batches]: https://github.com/markushofmeister/KingsLynnUtils
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
 [EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 
+<!-- repositories -->
+[Utilities]: ../Utilities
+[UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
