@@ -65,7 +65,12 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      * @throws SQLException
      */
     public Connection getConnection() throws SQLException{
-        return DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
+        try {
+            Class.forName("org.postgresql.Driver");
+            return DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
+        } catch (ClassNotFoundException e) {
+            throw new JPSRuntimeException("Failed to load driver for postgresql", e);
+        }
     }
 
     /**
