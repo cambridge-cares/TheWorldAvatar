@@ -1,5 +1,10 @@
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 08 Apr 2022                            #
+################################################
+
 # The purpose of this module is to provide functionality to execute
-# KG queries and updates using the StoreRouter from the JPB_BASE_LIB
+# KG queries and updates using the StoreRouter from the JPS_BASE_LIB
 
 import json
 
@@ -20,8 +25,7 @@ class KGClient:
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its
-        # tested and
+        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
         # # Get StoreClientInterface Java object to sparqlEndPoint with
         # # query operations enabled (True) and update operations disabled (False)

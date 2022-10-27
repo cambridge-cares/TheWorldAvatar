@@ -299,19 +299,6 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testHasBelongsTo() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// empty kg
-		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", String.class);
-		hasBelongsTo.setAccessible(true);
-		Assert.assertFalse((boolean) hasBelongsTo.invoke(devClient, entity1));
-
-		// derived quantity created
-		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) hasBelongsTo.invoke(devClient, entity1));
-	}
-
-	@Test
 	public void testMarkAsRequested() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
