@@ -102,9 +102,6 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error(e.getMessage());
                 }
             } else {
-                // this adds the OntoAgent triples, only do this once
-                queryClient.initialiseAgent();
-
                 // write the first file
                 updateFile(timeOffsetFile, String.valueOf(0));
                 timeOffset = 0;
@@ -158,6 +155,9 @@ public class ShipInputAgent extends HttpServlet {
                 }
                 postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
                 initialiseObda = true;
+
+                // this adds the OntoAgent triples, only do this once
+                queryClient.initialiseAgent();
             }
             // initialise both triples and time series if ship is new
             List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
@@ -173,8 +173,8 @@ public class ShipInputAgent extends HttpServlet {
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
-            LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
-            createGeoServerLayer(averageTimestamp);
+            // LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
+            // createGeoServerLayer(averageTimestamp);
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("averageTimestamp", averageTimestamp);
