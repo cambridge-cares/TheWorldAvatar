@@ -170,13 +170,14 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition -->
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasLocalPosition -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasLocalPosition">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the abstract boundaries of a spatial zone or a component within the space or building and their placement position within the model. Note that this does not define their concrete geometric representation positions, which is only available in the ModelRepresentation3D class.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -625,9 +626,11 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Storey"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Site&apos;s datum elevation relative to sea level.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Site&apos;s datum elevation or the Building&apos;s reference height relative to sea level, as well as the elevation from the base of one storey, relative to the internal reference height of the building.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -671,6 +674,16 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining a geometric representation context and their integer dimension count of the coordinate space modeled. It is usually 2 or 3.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTerrainElevation -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasTerrainElevation">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the elevation of the terrain around the building footprint, relative to the sea level.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -1358,9 +1371,6 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an abstract zone or tangible element/component and their IFC ID stored in the IFC file.</rdfs:comment>
-    </rdf:Description>
-    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the abstract boundaries of a spatial zone or a component within the space or building and their placement position within the model. Note that this does not define their concrete geometric representation positions, which is only available in the ModelRepresentation3D class.</rdfs:comment>
     </rdf:Description>
     
 
