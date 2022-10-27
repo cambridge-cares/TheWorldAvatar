@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
@@ -108,7 +106,7 @@ public class IntegrationTest extends TestCase {
 
     @BeforeAll
     public static void initialise()
-            throws NoSuchMethodException, SecurityException, ClientProtocolException, IOException {
+            throws NoSuchMethodException, SecurityException {
         // create the container in a clean state
         try {
             blazegraph.start();

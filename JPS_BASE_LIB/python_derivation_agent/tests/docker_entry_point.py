@@ -32,6 +32,14 @@ def create_diff_app():
     return diff_agent.app
 
 
+def create_diff_reverse_app():
+    diff_reverse_agent = cft.create_diff_reverse_agent()
+
+    diff_reverse_agent.start_all_periodical_job()
+
+    return diff_reverse_agent.app
+
+
 def create_update_endpoint():
     update_agent = cft.create_update_endpoint()
 
