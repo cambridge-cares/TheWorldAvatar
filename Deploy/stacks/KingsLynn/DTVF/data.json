@@ -12,6 +12,11 @@
                     "generateId": true
                 },
                 {
+                    "id": "ocgml_buildings",
+                    "type": "geojson",
+                    "data": "data/buildings/os_bha_buildings.geojson"
+                },
+                {
                     "id": "obe_buildings",  
                     "type": "vector",
                     "tiles": [
@@ -38,6 +43,27 @@
                     }
                 },
                 {
+                    "id": "ocgml_buildings-layer",
+                    "name": "OS BHA Buildings",
+                    "source": "ocgml_buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#303030",
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "fill-extrusion-height"],
+                            ["to-number", ["get", "fill-extrusion-height"]],
+                            8
+                        ]
+                    }
+                },
+                {
                     "id": "obe_buildings-layer",
                     "name": "Buildings with EPC information",
                     "source": "obe_buildings",
@@ -54,14 +80,14 @@
                         "fill-extrusion-height": [
                             "case",
                             ["has", "building height"],
-                            ["to-number", ["get", "building height"]],
+                            ["*", 1.5, ["to-number", ["get", "building height"]]],
                             8
                         ]
                     }
                 },
                 {
                     "id": "buildings-outline-layer",
-                    "name": "Buildings",
+                    "name": "Buildings with EPC information",
                     "source": "obe_buildings",
                     "type": "line",
                     "minzoom": 8, 
@@ -70,7 +96,7 @@
                     },
                     "paint": {
                         "line-color": "#000000",
-                        "line-opacity": 0.6
+                        "line-opacity": 0.7
                     }
                 },
                 {
