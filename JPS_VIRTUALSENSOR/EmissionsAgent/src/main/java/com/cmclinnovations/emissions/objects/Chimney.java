@@ -14,6 +14,8 @@ public class Chimney {
 	private double mixtureTemperature; // K
 	private double mixtureMassFlux = 0.0192143028723584; // kg/s, constant in python script anyway, probably violates mass balance
 	private double mixtureDensity; // kg/m3
+
+	private double particleDensity; // kg/m3
 	
 	private double flowrateNOx;
 	private double flowrateSO2;
@@ -51,6 +53,9 @@ public class Chimney {
 				this.pm10 += particles[i].getFlowrate();
 			}
     	}
+
+		// they're all the same
+		this.particleDensity = particles[0].getDensity();
     	
     	// gas phase pollutants
     	JSONArray pollutantsArray = result.getJSONArray("pollutants");
@@ -118,5 +123,8 @@ public class Chimney {
 	}
 	public double getMixtureCp() {
 		return this.mixtureCp;
+	}
+	public double getParticleDensity() {
+		return this.particleDensity;
 	}
 }
