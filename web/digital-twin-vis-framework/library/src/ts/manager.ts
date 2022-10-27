@@ -44,9 +44,9 @@ class Manager {
     private panelHandler: PanelHandler;
 
     /**
-     * Is the feature search bar currently up?
+     * Handles feature searching.
      */
-    private searchUp: boolean = false;
+    private searchHandler: SearchHandler;
 
     /**
      * Currently in full screen mode?
@@ -92,34 +92,30 @@ class Manager {
 
         // Show attributions if present
         showAttributions();
-        
-        // Override CTRL+F shortcut for feature searching (BETA)
-        // let searchBox = document.getElementById("finderContainer");
-        // if(searchBox !== null) {
 
-        //     let self = this;
-        //     document.addEventListener("keydown", function(e){
-        //         if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
-        //             if(self.searchUp) {
-        //                 self.hideSearch();
-        //             } else {
-        //                 self.showFeatureFinder();
-        //             }
-        //             e.preventDefault();
-        //         }
+        // Listen for CTRL+F 
+        let self = this;
+        document.addEventListener("keydown", function(e){
+            if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+                if(self.searchHandler === null || self.searchHandler === undefined) {
 
-        //         if(e.altKey && e.key === "Enter") {
-        //             self.toggleFullscreen();
-                    
-        //             var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
-        //             var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
-        //             // @ts-ignore
-        //             var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
-        //             // @ts-ignore
-        //             var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-        //         }
-        //     });
-        // }
+
+                    // Initialise the seach handler instance
+                    switch(Manager.PROVIDER) {
+                        case MapProvider.MAPBOX:
+                            self.searchHandler = new SearchHandler_Mapbox();
+                        break;
+
+                        case MapProvider.CESIUM:
+                            // NOT YET IMPLEMENTED
+                        break;
+                    }
+                }
+
+                if(self.searchHandler !== null) self.searchHandler.toggle();
+                e.preventDefault();
+            }
+        });
     }
 
     private toggleFullscreen() {
@@ -376,40 +372,6 @@ class Manager {
     }
 
     /**
-     * Show the feature finder panel (BETA).
-     */
-    public showFeatureFinder() {
-        let finderContainer = document.getElementById("finderContainer");
-        let sidePanel = document.getElementById("sidePanel");
-
-        // No feature if side panel in large mode
-        if(sidePanel.classList.contains("large")) return;
-
-        // Adjust for current width state
-        if(sidePanel.classList.contains("expanded")) {
-            finderContainer.classList.remove("collapsed");
-            finderContainer.classList.add("expanded");
-        } else {
-            finderContainer.classList.remove("expanded");
-            finderContainer.classList.add("collapsed");
-        }
-
-        finderContainer.style.display = "block";
-        this.searchUp = true;
-
-        document.getElementById("findInput").focus();
-    }
-
-    /**
-     * Hide the feature finder panel (BETA).
-     */
-    public hideSearch() {
-        let finderContainer = document.getElementById("finderContainer");
-        finderContainer.style.display = "none";
-        this.searchUp = false;
-    }
-
-    /**
      * Clear the current feature finder seach (BETA).
      */
     public cancelSearch() {
@@ -441,11 +403,6 @@ class Manager {
                 }
             });
         });
-
-        // Hide search bar
-        let finderContainer = document.getElementById("finderContainer");
-        finderContainer.style.display = "none";
-        this.searchUp = false;
     }
 
     /**

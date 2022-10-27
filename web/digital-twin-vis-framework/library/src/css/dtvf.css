@@ -274,7 +274,7 @@ h6 {
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
-    background-color: #808080;
+    background-color: #232323;
     color: #fff;
     text-align: center;
     padding: 5px 0;
@@ -1138,16 +1138,48 @@ label[for="select-feature"] {
 
 
 #finderContainer {
+    display: table;
     position: absolute;
-    bottom: 30;
+    bottom: 40;
     left: 20;
     height: 40px;
+    width: calc(100% - 540px);
+    border: 1px solid red;
+
+    background-color: rgba(0,0,0,.4);
+    border-radius: 8px;
 }
-#finderContainer.expanded {
-    width: calc(100% - 560px);
+#finderContainer label {
+    color: #fff;
+    padding-left: 10px;
+    font-weight: 700;
+    font-size: 12pt;
+    display: table-cell;
+    height: 40px;
+    width: 15%;
+    min-width: 175px;
+    vertical-align: middle;
 }
-#finderContainer.collapsed {
-    width: calc(100% - 90px);
+.finderSelectClass {
+    height: 30px;
+    font-size: 10pt;
+    background-color: rgba(0, 0, 0, 0.25);
+    color: white;
+    text-align: center;
+    display: table-cell;
+    width: 20%;
+    margin-top: 5px;
+}
+#finderRangeSelect {
+    margin-left: 10px;
+}
+#finderField {
+    display: table-cell;
+    height: 30px;
+    margin-top: 5px;
+    margin-left: 10px;
+    width: 44%;
+    padding-left: 10px;
 }
 
 #cesiumMetaBox {
@@ -1169,6 +1201,31 @@ label[for="select-feature"] {
   
     display: none;
 }
+
+.searchButton {
+    color: #fff;
+    float: right;
+    height: 40px;
+    margin-right: 10px;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+    display: table-cell;
+    width: 20px;
+}
+.searchButton i {
+    line-height: 40px;  
+}
+.tooltiptext.lower {
+    position: absolute;
+    z-index: 1;
+    top: -100%;
+    right: 50%;
+    width: 175px;
+    height: 20px;
+    line-height: 20px;
+}
+
 
 .cesium-viewer-bottom {
     display: none;

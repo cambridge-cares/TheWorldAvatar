@@ -5,8 +5,21 @@
         "bearing": 0,
         "pitch": 45
     },
-    "search": {
-        "Name": "name",
-        "ID": "id"
-    }
+    "search": [
+        {
+            "description": "Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Year Founded",
+            "property": "founded",
+            "type": "number"
+        },
+        {
+            "description": "Undergraduates Admitted?",
+            "property": "undergraduates",
+            "type": "boolean"
+        }  
+    ]
 }

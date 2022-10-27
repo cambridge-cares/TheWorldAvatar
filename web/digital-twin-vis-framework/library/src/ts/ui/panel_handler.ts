@@ -150,6 +150,7 @@ class PanelHandler {
 		var sidePanelInner = document.getElementById("sidePanelInner");
 		var leftButton = document.getElementById("slideButton");
         var rightButton = document.getElementById("expandButton");
+
         var finderContainer = document.getElementById("finderContainer");
 
 		if(sidePanel.classList.contains("small")) {
@@ -164,7 +165,7 @@ class PanelHandler {
 				rightButton.style.visibility = "visible";
 				sidePanelInner.style.visibility = "visible";
 
-                //finderContainer.classList.replace("collapsed", "expanded");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 540px)";
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -176,7 +177,7 @@ class PanelHandler {
 				rightButton.style.visibility = "hidden";
 				sidePanelInner.style.visibility = "hidden";
 
-                //finderContainer.classList.replace("expanded", "collapsed");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 80px)";
 			}
 		} 
 
