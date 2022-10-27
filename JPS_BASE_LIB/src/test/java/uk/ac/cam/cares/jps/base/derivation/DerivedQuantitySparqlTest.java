@@ -980,6 +980,17 @@ public class DerivedQuantitySparqlTest {
 						ResourceFactory.createResource(input)));
 			}
 		}
+
+		// an instance cannot be part of two derivations
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList));
+		Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+		for (String d : derivations) {
+			Assert.assertTrue(e.getMessage().contains(d));
+		}
+		for (String en : entitiesList.stream().flatMap(List::stream).collect(Collectors.toList())) {
+			Assert.assertTrue(e.getMessage().contains(en));
+		}
 	}
 
 	@Test

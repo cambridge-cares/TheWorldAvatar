@@ -233,6 +233,14 @@ public class DerivationSparql {
 			throw new JPSRuntimeException(errmsg);
 		}
 
+		Map<String, String> entityDerivationMap = getDerivationsOf(
+			entitiesList.stream().flatMap(List::stream).collect(Collectors.toList()));
+		if (!entityDerivationMap.isEmpty()) {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+
 		List<String> derivations = new ArrayList<>();
 
 		for (int i = 0; i < entitiesList.size(); i++) {
