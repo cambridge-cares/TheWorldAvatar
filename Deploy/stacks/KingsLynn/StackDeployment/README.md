@@ -1,6 +1,6 @@
 # Kings Lynn Stack
 
-This project contains a step-by-step guide on how to spin up the Stack for the King's Lynn use case and instantiate all  relevant data. It links to other projects and helper scripts where appropriate.
+This project contains a step-by-step guide on how to spin up the Docker Stack (developed by CMCL) for the King's Lynn use case and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
 
 &nbsp;
 ## Prerequisites
@@ -198,15 +198,6 @@ All sensor data (flood, AQ, metoffice) in KB
 
 
 &nbsp;
-# Visualisation
-
-The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]).
-
-## Feature Info Agent
-
-The Feature Info Agent is used to retrieve meta data for visualisation. Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. The required `.sparql` files to be placed inside the agent before building are provided in the `inputs\feature_info_agent` repository.
-
-&nbsp;
 # Tracking instantiated building information
 
 The `resources` folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
@@ -223,10 +214,6 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [OS Features API]: https://api.os.uk/features/
-
-<!-- Visualisation -->
-[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
-[FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent
 
 <!-- Agents -->
 [UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
