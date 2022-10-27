@@ -3,7 +3,7 @@ OntoRaster,TBox,http://www.theworldavatar.com/ontology/OntoRaster.owl,https://ww
 OntoRaster,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoRaster,TBox,OntoRaster is an ontology developed for creating a comprehensive description for the Raster data,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoRaster,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-RasterData,Class,,,,,,,,
+RasterData,Class,,,,,,Raster data is a grid of regularly sized pixels storing continually varying information.,,
 Tile,Class,,,,,,,,
 Pixel,Class,,,,,,,,
 Band,Class,,,,,,,,
