@@ -58,7 +58,9 @@ dist/
 Thumbs.db
 
 # Directories
-outputs/*
+*/outputs/*
+!.gitkeep
+*/inputs/*
 !.gitkeep
 */secrets/*
 !.gitkeep
