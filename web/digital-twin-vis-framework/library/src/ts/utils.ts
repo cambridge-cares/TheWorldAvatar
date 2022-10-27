@@ -91,10 +91,10 @@ function filterNulls(dictionary: Object) {
  */
 function getName(properties: Object): string {
     let fieldSettings = Manager.SETTINGS.getSetting("fields");
-    if(fieldSettings == null) return properties["name"];
+    if(fieldSettings === null || fieldSettings === undefined) return properties["name"];
 
     let nameField = fieldSettings["name"];
-    if(nameField == null) return properties["name"];
+    if(nameField === null || nameField === undefined) return properties["name"];
     
     return properties[nameField];
 }

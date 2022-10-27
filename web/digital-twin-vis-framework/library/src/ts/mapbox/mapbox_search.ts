@@ -66,8 +66,6 @@ class SearchHandler_Mapbox extends SearchHandler {
          // Build filter based on type and range
         if(typeof searchTerm === "boolean") {
             // Is a boolean
-            console.log("BOOLEAN");
-
             switch(rangeSelect.value) {
                 case "true": {
                     filter = [
@@ -88,8 +86,6 @@ class SearchHandler_Mapbox extends SearchHandler {
             }
         } else if(!isNaN(searchTerm)) {
             // Is a number
-            console.log("NUMBER");
-
             switch(rangeSelect.value) {
                 case "equals": {
                     filter = [
@@ -119,7 +115,6 @@ class SearchHandler_Mapbox extends SearchHandler {
 
         } else if(String(searchTerm)) {
             // Is a string
-            console.log("STRING");
             searchTerm = searchTerm.toLowerCase();
 
             switch(rangeSelect.value) {
@@ -152,8 +147,6 @@ class SearchHandler_Mapbox extends SearchHandler {
                 filter
             ];
         }
-
-        console.log(filter);
         return filter;
     }
 

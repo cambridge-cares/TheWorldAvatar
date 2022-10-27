@@ -7,7 +7,7 @@ import os
 import pytest
 
 # Import module under test from gasgridagent
-import metoffice.utils.properties as utils
+import metoffice.utils.env_configs as utils
 
 
 def test_read_properties_file(tmp_path):

@@ -1144,7 +1144,6 @@ label[for="select-feature"] {
     left: 20;
     height: 40px;
     width: calc(100% - 540px);
-    border: 1px solid red;
 
     background-color: rgba(0,0,0,.4);
     border-radius: 8px;
