@@ -28,7 +28,12 @@ def rdf_diff(old, new):
     iso2 = to_isomorphic(graph2)
 
     # Diff both graphs
-    in_both, in_first, in_second = graph_diff(iso1, iso2)
+    # As graph_diff uses graph canonization this can be very time consuming!
+    # Hence, a simpler, but potentially less accurate diff of the non-canonizated graphs is used
+    #in_both, in_first, in_second = graph_diff(iso1, iso2)
+    in_both = iso2 * iso1
+    in_first = iso1 - iso2
+    in_second = iso2 - iso1
 
     # Write differences to files
     fp1 = os.path.join(old[:old.rfind('\\')], 'common_triples.ttl')
