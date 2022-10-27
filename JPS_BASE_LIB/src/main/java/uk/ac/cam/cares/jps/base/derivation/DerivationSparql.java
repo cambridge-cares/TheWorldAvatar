@@ -305,45 +305,9 @@ public class DerivationSparql {
 	 * @param inputs
 	 */
 	String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// create a unique IRI for this new derived quantity
-		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATION);
-
-		Iri derived_iri = iri(derivedQuantity);
-
-		modify.insert(derived_iri.isA(Derivation));
-
-		// add belongsTo
-		// first check if the entities are already belongsTo other derivation
-		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
-		if (entityDerivationMap.isEmpty()) {
-			for (String entity : entities) {
-				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			}
-		} else {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		// link to agent
-		// here it is assumed that an agent only has one operation
-		modify.insert(derived_iri.has(isDerivedUsing, iri(agentIRI)));
-		String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
-		// add agent url
-		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
-		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-
-		// link to each input
-		for (String input : inputs) {
-			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-		}
-
-		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
-		storeClient.executeUpdate();
-
-		return derivedQuantity;
+		List<String> derivations = bulkCreateDerivations(
+				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
+		return derivations.get(0);
 	}
 
 	/**
@@ -368,42 +332,9 @@ public class DerivationSparql {
 	 * @return
 	 */
 	String createDerivation(List<String> entities, String agentIRI, List<String> inputs) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// create a unique IRI for this new derived quantity
-		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATION);
-
-		Iri derived_iri = iri(derivedQuantity);
-
-		modify.insert(derived_iri.isA(Derivation));
-
-		// add belongsTo
-		// first check if the entities are already belongsTo other derivation
-		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
-		if (entityDerivationMap.isEmpty()) {
-			for (String entity : entities) {
-				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			}
-		} else {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		// link to agent
-		// here it is assumed that an agent only has one operation
-		modify.insert(derived_iri.has(isDerivedUsing, iri(agentIRI)));
-
-		// link to each input
-		for (String input : inputs) {
-			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-		}
-
-		modify.prefix(p_time, p_derived, p_agent);
-
-		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
-		storeClient.executeUpdate();
-		return derivedQuantity;
+		List<String> derivations = bulkCreateDerivations(
+			Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(PLACEHOLDER), Arrays.asList(inputs));
+		return derivations.get(0);
 	}
 
 	/**
@@ -538,46 +469,9 @@ public class DerivationSparql {
 	 */
 	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL,
 			List<String> inputs) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// create a unique IRI for this new derived quantity
-		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATIONWITHTIMESERIES);
-
-		Iri derived_iri = iri(derivedQuantity);
-
-		modify.insert(derived_iri.isA(DerivationWithTimeSeries));
-
-		// add belongsTo
-		// first check if the entities are already belongsTo other derivation
-		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
-		if (entityDerivationMap.isEmpty()) {
-			for (String entity : entities) {
-				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			}
-		} else {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		// link to agent
-		modify.insert(derived_iri.has(isDerivedUsing, iri(agentIRI)));
-		String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
-		// add agent url
-		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
-		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-
-		// link to each input
-		for (String input : inputs) {
-			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-		}
-
-		modify.prefix(p_time, p_derived, p_agent);
-
-		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
-		storeClient.executeUpdate();
-
-		return derivedQuantity;
+		List<String> derivations = bulkCreateDerivationsWithTimeSeries(
+				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
+		return derivations.get(0);
 	}
 
 	/**
@@ -620,53 +514,9 @@ public class DerivationSparql {
 	 * @return
 	 */
 	String createDerivationAsync(List<String> entities, String agentIRI, List<String> inputs, boolean forUpdate) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// create a unique IRI for this new derived quantity
-		String derivedQuantity = createDerivationIRI(ONTODERIVATION_DERIVATIONASYN);
-
-		Iri derived_iri = iri(derivedQuantity);
-
-		modify.insert(derived_iri.isA(DerivationAsyn));
-
-		// add belongsTo
-		// first check if the entities are already belongsTo other derivation
-		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
-		if (entityDerivationMap.isEmpty()) {
-			for (String entity : entities) {
-				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			}
-		} else {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		// link to agent
-		// here it is assumed that an agent only has one operation
-		modify.insert(derived_iri.has(isDerivedUsing, iri(agentIRI)));
-
-		// link to each input
-		for (String input : inputs) {
-			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-		}
-
-		// if the derivation is created for update, mark it as Requested
-		if (forUpdate) {
-			String statusIRI = derivationInstanceBaseURL + "status_" + UUID.randomUUID().toString();
-
-			TriplePattern insert_tp = derived_iri.has(hasStatus, iri(statusIRI));
-			TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
-
-			modify.insert(insert_tp);
-			modify.insert(insert_tp_rdf_type);
-		}
-
-		modify.prefix(p_time, p_derived, p_agent);
-
-		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
-		storeClient.executeUpdate();
-		return derivedQuantity;
+		List<String> derivations = bulkCreateDerivationsAsync(
+				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(inputs), Arrays.asList(forUpdate));
+		return derivations.get(0);
 	}
 
 	/**
