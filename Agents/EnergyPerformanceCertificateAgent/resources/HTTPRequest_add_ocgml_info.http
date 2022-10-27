@@ -1,0 +1,4 @@
+// Example HTTP request to instantiate relevant OntoCityGml building data according to OntoBuiltEnv
+
+GET http://128.199.197.40:5001/api/epcagent/add/ocgml_info
+Content-Type: application/json

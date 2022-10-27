@@ -7,6 +7,7 @@
 # required SPARQL queries
 
 from metoffice.datamodel import *
+from metoffice.kgutils.stackclients import PostGISClient
 
 
 def all_metoffice_station_ids() -> str:
@@ -22,97 +23,101 @@ def all_metoffice_station_ids() -> str:
     return query
 
 
+def filter_stations_in_circle(circle_center: str, circle_radius: str):
+    # Retrieve stationIRIs for stations of interest
+    lat, lon = circle_center.split('#')
+    lat = float(lat)
+    lon = float(lon)
+    circle_radius = float(circle_radius)
+    postgis_client = PostGISClient()
+    iris = postgis_client.get_feature_iris_in_circle(lat, lon, circle_radius)
+    iris = ', '.join(f'<{iri}>' for iri in iris)
+    filter_expression = f'FILTER ( ?station IN ({iris}) )'
+    
+    return filter_expression
+
+
 def instantiated_metoffice_stations(circle_center: str = None,
                                     circle_radius: str = None) -> str:
-    # Returns query to retrieve identifiers and IRIs of instantiated stations
-    if not circle_center and not circle_radius:
-        # Retrieve all stations
-        query = f"""
-            SELECT ?id ?station
-            WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?id 
-                }}
-        """
-    else:
+    if circle_center and circle_radius:
         # Retrieve only stations in provided circle (radius in km)
-        query = f"""
-            {create_sparql_prefix('geo')}
-            SELECT ?id ?station
-            WHERE {{
-                  SERVICE geo:search {{
-                    ?station geo:search "inCircle" .
-                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
-                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
-                    ?station geo:spatialCircleCenter "{circle_center}" .
-                    ?station geo:spatialCircleRadius "{circle_radius}" . 
-                }}
-                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                         <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                         <{EMS_HAS_IDENTIFIER}> ?id 
-                }}
-        """
+        filter_expression = filter_stations_in_circle(circle_center, circle_radius)
+    else:
+        # Returns query to retrieve all instantiated station details
+        filter_expression = ''
+    
+    # Construct query
+    query = f"""
+        SELECT ?stationID ?station
+        WHERE {{
+        {filter_expression}
+        ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                    <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                    <{EMS_HAS_IDENTIFIER}> ?stationID .
+            }}
+    """
     
     return query
 
 
 def instantiated_metoffice_stations_with_details(circle_center: str = None,
-                                                 circle_radius: str = None) -> str:
-    # Returns query to retrieve all instantiated station details
-    if not circle_center and not circle_radius:
-        # Retrieve all stations
-        query = f"""
-            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
-            WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID .
-            OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
-            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
-            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
-
-                }}
-        """
-    else:
+                                                 circle_radius: str = None) -> str:   
+    if circle_center and circle_radius:
         # Retrieve only stations in provided circle (radius in km)
-        query = f"""
-            {create_sparql_prefix('geo')}
-            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
-            WHERE {{
-                  SERVICE geo:search {{
-                    ?station geo:search "inCircle" .
-                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
-                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
-                    ?station geo:spatialCircleCenter "{circle_center}" .
-                    ?station geo:spatialCircleRadius "{circle_radius}" . 
-                }}
-                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                         <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                         <{EMS_HAS_IDENTIFIER}> ?stationID .
-                OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
-                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
-                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
-                }}
-        """
+        filter_expression = filter_stations_in_circle(circle_center, circle_radius)
+    else:
+        # Returns query to retrieve all instantiated station details
+        filter_expression = ''
+    
+    # Construct query
+    query = f"""
+        SELECT ?stationID ?station ?label ?elevation ?dataIRI_obs ?dataIRI_fc
+        WHERE {{
+        {filter_expression}
+        ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                    <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                    <{EMS_HAS_IDENTIFIER}> ?stationID .
+        OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
+        OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
+        OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
+        OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
+
+            }}
+    """
     
     return query
 
 
+def geospatial_station_info(station_iris: list = None):
+    # Returns query to retrieve geospatial station information (via Ontop)
+    if station_iris:
+        # Use FILTER IN expression
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        filter_expression = f'FILTER (?station IN ({iris}) ) '
+        # Use VALUES expression
+        # iris = ' '.join(['<'+iri+'>' for iri in station_iris])
+        # filter_expression = f'VALUES ?station {{ {iris} }} '
+    else:
+        filter_expression = ''
+    query = f"""
+        SELECT ?station ?wkt
+        WHERE {{
+           {filter_expression}
+           ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
+                    <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
+        }}
+    """
+    return query
+
+
 def add_station_data(station_iri: str = None, dataSource: str = None, 
-                     label: str = None, id: str = None, location: str = None,
-                     elevation: float = None) -> str:
+                     label: str = None, id: str = None, elevation: float = None) -> str:
     if station_iri:
         # Returns triples to instantiate a measurement station according to OntoEMS
         triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
         if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
-        if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
     else:
         triples = None
