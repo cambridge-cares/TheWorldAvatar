@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Geometry;
 
+import com.cmclinnovations.aermod.objects.Ship;
+
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -27,11 +29,11 @@ public class AermodAgent extends DerivationAgent {
 
     @Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {   
-        String weatherStationIri = derivationInputs.getIris(Constants.REPORTING_STATION).get(0);
-        String nxIri = derivationInputs.getIris(Constants.NX).get(0);
-        String nyIri = derivationInputs.getIris(Constants.NY).get(0);
-        String scopeIri = derivationInputs.getIris(Constants.SCOPE).get(0);
-        String simulationTimeIri = derivationInputs.getIris(Constants.SIMULATION_TIME).get(0);
+        String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
+        String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
+        String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
+        String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
+        String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
         
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
 
@@ -45,11 +47,14 @@ public class AermodAgent extends DerivationAgent {
 
         // get ships within a scope and time
         Geometry scope = queryClient.getScopeFromOntop(scopeIri);
-        List<String> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
+        List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfShips(ships);
         updateDerivations(derivationsToUpdate);
+
+        // get emissions
+        queryClient.setEmissions(ships);
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {
@@ -83,6 +88,6 @@ public class AermodAgent extends DerivationAgent {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 
         queryClient = new QueryClient(storeClient, ontopStoreClient, rdbStoreClient);
-        super.devClient = new DerivationClient(storeClient, Constants.PREFIX_DISP);
+        super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX_DISP);
     }
 }
