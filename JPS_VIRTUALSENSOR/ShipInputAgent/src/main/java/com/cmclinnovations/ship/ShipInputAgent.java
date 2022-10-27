@@ -10,7 +10,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -162,8 +164,9 @@ public class ShipInputAgent extends HttpServlet {
             // initialise both triples and time series if ship is new
             List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
 
-            // query ship IRIs from the KG and set the IRIs in the object
-            queryClient.setShipIRIs(ships);
+            // query ship IRI and location measure IRI from the KG and set the IRIs in the object
+            // location measure IRI needed for geoserver layer
+            queryClient.setIRIs(ships);
 
             // add a row in RDB time series data, also updates derivation timestamps
             queryClient.updateTimeSeriesData(ships);
@@ -173,8 +176,8 @@ public class ShipInputAgent extends HttpServlet {
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
-            // LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
-            // createGeoServerLayer(averageTimestamp);
+            LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
+            createGeoServerLayer(averageTimestamp, ships);
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("averageTimestamp", averageTimestamp);
@@ -201,13 +204,17 @@ public class ShipInputAgent extends HttpServlet {
         }
     }
 
-    void createGeoServerLayer(long averageTimestamp) {
+    void createGeoServerLayer(long averageTimestamp, List<Ship> ships) {
         // build sql query to get points within 30 minutes of average timestamp
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
-        sb.append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
-        sb.append(String.format("WHERE \"dbTable\".type='geometry' and timeseries.time > %d and timeseries.time < %d", averageTimestamp-1800, averageTimestamp+1800));
-        String sqlQuery = sb.toString();
+        Set<String> shipSet = new HashSet<>();
+        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
+        String shipList = shipSet.stream().collect(Collectors.joining(","));
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
+        queryBuilder.append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
+        queryBuilder.append(String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d", shipList, averageTimestamp-1800, averageTimestamp+1800));
+        String sqlQuery = queryBuilder.toString();
 
         GeoServerClient geoserverClient = new GeoServerClient();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);

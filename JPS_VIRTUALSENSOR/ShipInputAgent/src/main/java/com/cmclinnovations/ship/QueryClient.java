@@ -216,13 +216,16 @@ public class QueryClient {
         }
     }
 
-    void setShipIRIs(List<Ship> ships) {
+    void setIRIs(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 
         Variable ship = query.var();
         Variable mmsiValue = query.var();
+        Variable locationMeasure = query.var();
+
         ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
-        GraphPattern gp = ship.has(PropertyPaths.path(HAS_MMSI,HAS_VALUE,HAS_NUMERICALVALUE), mmsiValue);
+        GraphPattern gp = ship.has(PropertyPaths.path(HAS_MMSI,HAS_VALUE,HAS_NUMERICALVALUE), mmsiValue).
+        andHas(PropertyPaths.path(HAS_LOCATION, HAS_VALUE), locationMeasure);
 
         query.prefix(P_OM,P_DISP).where(gp,vp);
 
@@ -235,9 +238,11 @@ public class QueryClient {
         for (int i = 0; i < queryResult.length(); i++) {
             int mmsi = queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1));
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
+            String locationMeasureIri = queryResult.getJSONObject(i).getString(locationMeasure.getQueryString().substring(1));
 
             // obtain ship object from map and set IRI
             mmsiToShipMap.get(mmsi).setIri(shipIri);
+            mmsiToShipMap.get(mmsi).setLocationMeasureIri(locationMeasureIri);
         }
     }
 
