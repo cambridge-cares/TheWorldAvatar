@@ -244,8 +244,15 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature, properties) {
-        let name = getName(properties);
+        // Bug out if no properties at all
+        if((properties === null || properties === undefined) && feature.hasOwnProperty["properties"]) {
+            properties = feature["properties"];
+        } else if(properties == null) {
+            console.warn("Selected feature has no properties, cannot show any side panel content!");
+        }
 
+        // Get the correct name for the feature
+        let name = getName(properties);
         if(name == null) {
             if(feature.hasOwnProperty("id")) {
                 name = "Feature " + feature["id"];
