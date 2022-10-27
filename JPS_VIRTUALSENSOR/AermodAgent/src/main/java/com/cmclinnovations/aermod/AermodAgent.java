@@ -53,7 +53,7 @@ public class AermodAgent extends DerivationAgent {
         List<String> derivationsToUpdate = queryClient.getDerivationsOfShips(ships);
         updateDerivations(derivationsToUpdate);
 
-        // get emissions
+        // get emissions and set the values in the ships
         queryClient.setEmissions(ships);
     }
     
