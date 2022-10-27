@@ -20,6 +20,11 @@
                     "X_POSSIBLE_NAMES": "Rechtswert",
                     "Y_POSSIBLE_NAMES": "Hochwert",
                     "AUTODETECT_TYPE": "YES"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, CONCAT('https://www.theworldavatar.com/kg/ps/pumpstation-',\"Bauw. Nr.\") as iri FROM \"Hebewerke-PS-2022-bereinigt\""
+                    ]
                 }
             },
             "geoServerSettings": {
