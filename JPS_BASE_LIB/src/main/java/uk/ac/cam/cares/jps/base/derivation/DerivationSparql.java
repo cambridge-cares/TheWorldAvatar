@@ -200,7 +200,7 @@ public class DerivationSparql {
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<Iri> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
+			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		if (entitiesList.size() != agentIRIList.size()) {
@@ -241,13 +241,13 @@ public class DerivationSparql {
 			String agentIRI = agentIRIList.get(i);
 			String agentURL = agentURLList.get(i);
 			Boolean forUpdateFlag = forAsyncUpdateFlagList.get(i);
-			Iri derivationType = derivationTypeList.get(i);
+			String derivationType = derivationTypeList.get(i);
 			// create a unique IRI for this new derived quantity
-			String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+			String derivedQuantity = createDerivationIRI(derivationType);
 			derivations.add(derivedQuantity);
 			Iri derived_iri = iri(derivedQuantity);
 
-			modify.insert(derived_iri.isA(derivationType));
+			modify.insert(derived_iri.isA(derivationToIri.get(derivationType)));
 
 			// add belongsTo
 			for (String entity : entities) {
@@ -509,7 +509,7 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList) {
-		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> Derivation)
+		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATION)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
@@ -582,7 +582,7 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList) {
-		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationWithTimeSeries)
+		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONWITHTIMESERIES)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
@@ -677,7 +677,7 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
-		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationAsyn)
+		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
 				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
@@ -701,7 +701,7 @@ public class DerivationSparql {
 			List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
 		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
 				.collect(Collectors.toList());
-		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationAsyn)
+		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
 				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
@@ -723,10 +723,8 @@ public class DerivationSparql {
 	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationRdfTypeList,
 			List<Boolean> forAsyncUpdateFlagList) {
-		List<Iri> derivationTypeList = derivationRdfTypeList.stream().map(iri -> derivationToIri.get(iri))
-				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationTypeList, forAsyncUpdateFlagList);
+				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
 	/**
@@ -746,10 +744,8 @@ public class DerivationSparql {
 			List<List<String>> inputsList, List<String> derivationRdfTypeList, List<Boolean> forAsyncUpdateFlagList) {
 		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
 				.collect(Collectors.toList());
-		List<Iri> derivationTypeList = derivationRdfTypeList.stream().map(iri -> derivationToIri.get(iri))
-				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationTypeList, forAsyncUpdateFlagList);
+				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
 	/**
