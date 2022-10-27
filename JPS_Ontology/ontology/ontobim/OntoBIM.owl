@@ -153,6 +153,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
     </owl:ObjectProperty>
@@ -174,6 +175,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasLocalPosition">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
@@ -361,6 +363,16 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the direction of the geometric representation context&apos;s true north relative to the underlying coordinate system as established by the attribute WorldCoordinateSystem.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasVoid -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasVoid">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the voids in any element&apos;s geometry.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -688,6 +700,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasVoidType -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasVoidType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the type of geometric void, usually opening or recess.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXCoordinate -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXCoordinate">
@@ -986,6 +1008,14 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Define semantically distinguished representation types for different information content, dependent on the representation view and the target scale.  This enables the control of the level of detail. As a subcontext, it inherits several attributes from the parent context.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricVoid">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A class that modifies (usually subtracts from) the shape and appearance of the host elements, such as walls, floors, ceilings, and roofs. It is equivalent to the IfcFeatureElementSubtraction or IfcOpeningElement class.</rdfs:comment>
     </owl:Class>
     
 
@@ -1367,7 +1397,7 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the roof of a building and the area it covers.</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component within the space or building and their geometric representation defined according to IFC schema.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an element or void within the space or building and their geometric representation defined according to IFC schema.</rdfs:comment>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an abstract zone or tangible element/component and their IFC ID stored in the IFC file.</rdfs:comment>
