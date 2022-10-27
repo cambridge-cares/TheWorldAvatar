@@ -12,7 +12,7 @@
                     "generateId": true
                 },
                 {
-                    "id": "buildings",
+                    "id": "obe_buildings",  
                     "type": "vector",
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=buildings:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
@@ -38,9 +38,9 @@
                     }
                 },
                 {
-                    "id": "buildings-layer",
-                    "name": "Buildings",
-                    "source": "buildings",
+                    "id": "obe_buildings-layer",
+                    "name": "Buildings with EPC information",
+                    "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
@@ -49,7 +49,7 @@
                     },
                     "paint": {
                         "fill-extrusion-color": "#000000",
-                        "fill-extrusion-opacity": 0.33,
+                        "fill-extrusion-opacity": 0.4,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
@@ -62,7 +62,7 @@
                 {
                     "id": "buildings-outline-layer",
                     "name": "Buildings",
-                    "source": "buildings",
+                    "source": "obe_buildings",
                     "type": "line",
                     "minzoom": 8, 
                     "layout": {
@@ -70,7 +70,7 @@
                     },
                     "paint": {
                         "line-color": "#000000",
-                        "line-opacity": 0.4
+                        "line-opacity": 0.6
                     }
                 },
                 {
