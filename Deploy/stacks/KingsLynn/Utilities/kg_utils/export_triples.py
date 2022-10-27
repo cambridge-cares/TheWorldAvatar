@@ -29,9 +29,9 @@ if __name__ == '__main__':
     #endpoint = "http://128.199.197.40:3838/blazegraph/namespace/buildings_new/sparql"
     endpoint = "http://165.232.172.16:3838/blazegraph/namespace/buildings_test/sparql"
     # Output file for triples (relative path)
-    #fp = r'..\outputs\hmtest_without_sales.nt'
-    #fp = r'..\outputs\hmtest_with_sales.nt'
-    fp = r'..\outputs\data_uploader_export.nt'
+    #fp = r'..\data\outputs\hmtest_without_sales.nt'
+    #fp = r'..\data\outputs\hmtest_with_sales.nt'
+    fp = r'..\data\outputs\data_uploader_export.nt'
 
     # Get all Triples and serialise as turtle
     file_name = os.path.join(Path(__file__).parent, fp)

@@ -48,8 +48,8 @@ def rdf_diff(old, new):
 if __name__ == '__main__':
 
     # Specify file paths (relative path)
-    fp1 = r'..\outputs\hmtest_with_sales.nt'
-    fp2 = r'..\outputs\data_uploader_export.nt'
+    fp1 = r'..\data\outputs\hmtest_with_sales.nt'
+    fp2 = r'..\data\outputs\data_uploader_export.nt'
 
     old_triples = os.path.join(Path(__file__).parent, fp1)
     new_triples = os.path.join(Path(__file__).parent, fp2)

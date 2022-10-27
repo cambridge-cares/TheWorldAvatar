@@ -262,6 +262,6 @@ if __name__ == '__main__':
 
     # Write output to file
     postfix = 'without_UPRNs' if missing_uprn else 'with_UPRNs'
-    file_name = f'outputs/Buildings_{postfix}.geojson'
+    file_name = f'data/outputs/Buildings_{postfix}.geojson'
     with open(file_name, 'w') as f:
         f.write(output)
