@@ -341,10 +341,11 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     if variables is None:
         print('Time series could not be created for the following asset:', assetIRI)
         return
-    times = power_data['time']
-    powers = power_data['power']
+    times, values = ExcelToTimeseries.excelToKG(power_data, assetIRI)
     #Reformat times. 
-    times = times.values.reshape(-1,).tolist()
+    #times = times.values.reshape(-1,).tolist()
+    #New(not required)
+
     #Reformat variables (or just a single variable), could already be in this form. 
     if type(variables) == str:
         a = measurementIRI #a is just a temporary variable for this. 
@@ -352,7 +353,9 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
         variables.append(a)
     
     #Reformat values. 
-    values = powers.values.reshape(-1,).tolist() #tolist is noted in some older posts online to convert to float, but it does not seem to here, so conversion from float64 (numpy) to float. 
+    #values = powers.values.reshape(-1,).tolist() #tolist is noted in some older posts online to convert to float, but it does not seem to here, so conversion from float64 (numpy) to float. 
+    #New(not required)
+    
     a = [] #a is just a temporary variable for this. 
     for value in values:
         a.append(float(value))
@@ -418,20 +421,32 @@ def update_triple_store():
     kg.read_properties_file(kg.PROPERTIES_FILE)
 
     # Get the power data from National Grid csv as DataFrame
-    powerplant_power_data, generator_power_data = get_power_data_from_api()
+    #powerplant_power_data, generator_power_data = get_power_data_from_api()
+    #New (just get the files)
+    export_data = "CopyExcels\Template-Powerplant-Export.xlsx"
+    curtailment_data = "CopyExcels\Template-Powerplant-Curtailment.xlsx"
 
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
-    powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
-
+    #powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
+    #New (EICs)
+    plants_with_data_full = ["48WSTN0000ABRBON", "48WSTN0000ABRTWR", "48WSTN0000ACHRWV", "48WSTN0000ANSUWY", "48WSTN0000ARCHW6", "48WSTN0000ASHWWA", "48WSTN1000BABAWQ", "48WSTN0000BEATOG", "48WSTN0000BEINWN", "48WSTN0000BETHWY", "48WSTN0000BHLAWZ", "48WSTN0000BLKWWR", "48WSTN00000BLLAV", "48WSTN00000BLLXM", "48WSTN0000BNAKWJ", "48WSTN0000BNWKW5", "48WSTN0000BOWLWY", "48WSTN0000BRBEOT", "48WSTN0000BRDUWV", "48WSTN0000BRYBW4", "48WSTN0000BTUIWQ", "48WSTN0000BURBWH", "48WSTN0000CAUSWB", "48WSTN0000CGTHWI", "48WSTN0000CLDCWZ", "48WSTN0000CLDNW2", "48WSTN0000CLDRWR", "48WSTN0000CLDSWO", "48WSTN0000COUWW3", "48WSTN0000CRMLWG", "48WSTN0000CRYRBT", "48WSTN0000CRYRWO", "48WSTN0000DALSW4", "48WSTN0000DDGNO3", "48WSTN0000DEUCWX", "PLACEHOLDER1", "48WSTN0000DRDGWO", "48WSTN0000DRSLWN", "48WSTN0000DUNGW6", "48WSTN00000EAAOS", "48WSTN0000EARBWP", "48WSTN0000EDINWA", "48WSTN1000EWHLWQ", "48WSTN0000FAARW2", "48WSTN0000FALGWS", "48WSTN1000FDUNTQ", "48WSTN0000FSDLWT", "48WSTN0000GAOFOT", "48WSTN0000GDSTWE", "48WSTN0000GFLDW6", "48WSTN0000GLOFWW", "48WSTN0000GLWSWZ", "48WSTN0000GNFSWJ", "48WSTN0000GRGBW9", "48WSTN0000GRIFWQ", "PLACEHOLDER2", "48WSTN0000HADHW8", "48WSTN0000HLTWWT", "48WSTN0000HMGTOR", "48WSTN0000HOWAOA", "48WSTN0000HRSTWC", "48WSTN0000HYWDW9", "48WSTN0000KILBWA", "48WSTN0000KLGLWM", "48WSTN0000LARYWP", "48WSTN0000LCLTWH", "48WSTN0000MDHLW9", "48WSTN0000MILWW9", "48WSTN0000MINSWD", "48WSTN0000MKHLWB", "48WSTN0000MOWEO5", "48WSTN0000NHOYWR", "48WSTN1000NOVAWQ", "48WSTN0000OMNDWQ", "48WSTN0000PAUHW3", "48WSTN0000RCBKOV", "48WSTN0000RHYFWK", "48WSTN0000RMPNON", "48WSTN00000RREWF", "48WSTN00000RRWWZ", "48WSTN0000RSHLWF", "48WSTN0000SHRSW3", "48WSTN0000STLGW3", "48WSTN0000STRNWW", "48WSTN0000TDBNWM", "48WSTN0000THNTWA", "48WSTN0000TULWBN", "48WSTN0000TULWWI", "48WSTN0000WDNSWF", "48WSTN1000WHILWQ", "48WSTN0000WLNYWV", "48WSTN0000WLNY3F", "48WSTN0000WLNY4D", "48WSTN0000WTMSOT"]
+    plants_with_data_checked = ["48WSTN0000ABRBON", "48WSTN0000ARCHW6", "48WSTN1000BABAWQ", "48WSTN0000BEATOG", "48WSTN0000BEINWN", "48WSTN0000BHLAWZ", "48WSTN0000BLKWWR", "48WSTN00000BLLAV", "48WSTN00000BLLXM", "48WSTN0000BOWLWY", "48WSTN0000BRBEOT", "48WSTN0000BRDUWV", "48WSTN0000BRYBW4", "48WSTN0000CGTHWI", "48WSTN0000CLDCWZ", "48WSTN0000CLDNW2", "48WSTN0000CLDSWO", "48WSTN0000CRYRBT", "48WSTN0000DDGNO3", "48WSTN0000DRSLWN", "48WSTN0000DUNGW6", "48WSTN00000EAAOS", "48WSTN0000FALGWS", "48WSTN0000GLWSWZ", "48WSTN0000GNFSWJ", "48WSTN0000GRGBW9", "48WSTN0000GRIFWQ", "48WSTN0000HADHW8", "48WSTN0000HMGTOR", "48WSTN0000HOWAOA", "48WSTN0000HRSTWC", "48WSTN0000KILBWA", "48WSTN0000KLGLWM", "48WSTN0000LCLTWH", "48WSTN0000MILWW9", "48WSTN0000MKHLWB", "48WSTN0000RCBKOV", "48WSTN0000RMPNON", "48WSTN00000RREWF", "48WSTN00000RRWWZ", "48WSTN0000STLGW3", "48WSTN0000STRNWW", "48WSTN1000WHILWQ", "48WSTN0000WLNYWV", "48WSTN0000WLNY3F", "48WSTN0000WLNY4D", "48WSTN0000WTMSOT"]
+    
     # Retrieve all instantiated powerplants in KG
     powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
     powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
 
     # Potentially create new powerplant instances for powerplants with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
+    #new_powerplants = False
+    #for gt in powerplants_with_data:
+    #    if (gt not in powerplants_instantiated.keys()) and (gt != ""):
+    #        instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
+    #        new_powerplants = True
+    #New (update)
     new_powerplants = False
-    for gt in powerplants_with_data:
+    for gt in plants_with_data_full:
         if (gt not in powerplants_instantiated.keys()) and (gt != ""):
             instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
@@ -449,10 +464,14 @@ def update_triple_store():
         else:
             print("Instantiated time series detected!")
         # Retrieve power time series data for respective powerplant from overall DataFrame
-        new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == pp][['time', 'power']]
-        # Add time series data using Java TimeSeriesClient
-        add_time_series_data(powerplants_instantiated[pp], new_data, pp)
+        #new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == pp][['time', 'power']]
+        #New (not required)
 
+        # Add time series data using Java TimeSeriesClient
+        #add_time_series_data(powerplants_instantiated[pp], new_data, pp)
+        #New (file name), also using the EIC as pp. 
+        add_time_series_data(powerplants_instantiated[pp], export_data, pp)
+    
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
     # Retrieve all instantiated generators in KG
