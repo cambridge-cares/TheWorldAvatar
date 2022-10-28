@@ -27,6 +27,7 @@ public class UpdateStation extends HttpServlet{
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStation.class);
 	WeatherQueryClient weatherClient;
 
+	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		LOGGER.info("Received update request");   
 		new Config().initProperties(); 	
@@ -40,11 +41,12 @@ public class UpdateStation extends HttpServlet{
 		}
 		
 		String station = req.getParameter("iri");
+		String timestampAsString = req.getParameter("timestamp");
 		
 		String response;
 		// this will ensure the servlet will always return a response even if the API call fails
 		try {
-			weatherClient.updateStation(station);
+			weatherClient.updateStation(station, timestampAsString);
 			response = "Updated station: <" + station + "> with latest data";
 		} catch (Exception e) {
 			response = "Weather update failed";
