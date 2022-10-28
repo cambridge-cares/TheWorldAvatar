@@ -23,7 +23,7 @@
                 },
                 "otherOptions": {
                     "-sql": [
-                        "SELECT *, CONCAT('https://www.theworldavatar.com/kg/ps/pumpstation-',\"Bauw. Nr.\") as iri FROM \"Hebewerke-PS-2022-bereinigt\""
+                        "SELECT CONCAT('https://www.theworldavatar.com/kg/ps/pumpstation-',\"Bauw. Nr.\") as iri, CONCAT(\"Bezeichnung\",', ',\"Straße\") as name, * FROM \"Hebewerke-PS-2022-bereinigt\""
                     ]
                 }
             },
