@@ -11,11 +11,9 @@ import metoffer
 
 import agentlogging
 from agent.kgutils.querytemplates import *
-from agent.datamodel.utils import create_sparql_prefix
 from agent.dataretrieval.stations import get_all_metoffice_station_ids
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import APIException
-from agent.datamodel.utils import PREFIXES
 from agent.utils.env_configs import DATAPOINT_API_KEY
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
@@ -44,13 +42,12 @@ def instantiate_stations(station_data: list,
     
     # Initialise update SPARQL query
     query_string = f"""
-        {create_sparql_prefix('kb')}
         INSERT DATA {{
     """
 
     # Add station details
     for data in station_data:
-        station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
+        station_IRI = KB + 'ReportingStation_' + str(uuid.uuid4())
         # Extract station information from API result
         to_instantiate = _condition_metoffer_data(data)
         to_instantiate['station_iri'] = station_IRI
@@ -150,7 +147,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     available_ids = [s['id'] for s in available]
 
     # TODO: remove
-    available_ids = available_ids[:100]
+    available_ids = available_ids[:10]
 
     # Get already instantiated stations
     instantiated_ids = get_all_metoffice_station_ids(query_endpoint=query_endpoint)

@@ -6,24 +6,7 @@
 import pytest
 
 # Import module(s) under test from metoffice
-import agent.datamodel.utils as prefix
 import agent.kgutils.querytemplates as templates
-
-
-def test_create_sparql_prefix():
-    # Check for proper exception for not defined prefixes
-    test_abbreviation = 'test'
-    with pytest.raises(KeyError) as exc_info:
-        # Check correct exception type
-        prefix.create_sparql_prefix(test_abbreviation)
-    # Check correct exception message
-    assert 'Prefix: "test" has not been specified' in str(exc_info.value)
-
-    # Check for correct creation of defined prefixes
-    test_abbreviation = 'ems'
-    test_prefix = prefix.create_sparql_prefix(test_abbreviation)
-    assert test_prefix == \
-           'PREFIX ems: <https://www.theworldavatar.com/kg/ontoems/> '
 
 
 def test_add_station_data():
