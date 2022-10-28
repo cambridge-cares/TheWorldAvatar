@@ -423,8 +423,8 @@ def update_triple_store():
     # Get the power data from National Grid csv as DataFrame
     #powerplant_power_data, generator_power_data = get_power_data_from_api()
     #New (just get the files)
-    export_data = "CopyExcels\Template-Powerplant-Export.xlsx"
-    curtailment_data = "CopyExcels\Template-Powerplant-Curtailment.xlsx"
+    export_data = "CopyExcels/Template-Powerplant-Export.xlsx"
+    curtailment_data = "CopyExcels/Template-Powerplant-Curtailment.xlsx"
 
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
