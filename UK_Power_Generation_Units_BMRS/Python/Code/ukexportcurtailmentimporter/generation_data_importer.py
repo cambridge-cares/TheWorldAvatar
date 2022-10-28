@@ -344,7 +344,7 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     times, values = ExcelToTimeseries.excelToKG(power_data, assetIRI)
     #Reformat times. 
     #times = times.values.reshape(-1,).tolist()
-    #New(not required)
+    #New (not required)
 
     #Reformat variables (or just a single variable), could already be in this form. 
     if type(variables) == str:
@@ -354,7 +354,7 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     
     #Reformat values. 
     #values = powers.values.reshape(-1,).tolist() #tolist is noted in some older posts online to convert to float, but it does not seem to here, so conversion from float64 (numpy) to float. 
-    #New(not required)
+    #New (not required)
     
     a = [] #a is just a temporary variable for this. 
     for value in values:
@@ -471,7 +471,7 @@ def update_triple_store():
         #add_time_series_data(powerplants_instantiated[pp], new_data, pp)
         #New (file name), also using the EIC as pp. 
         add_time_series_data(powerplants_instantiated[pp], export_data, pp)
-    
+
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
     # Retrieve all instantiated generators in KG
