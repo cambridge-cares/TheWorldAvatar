@@ -31,14 +31,8 @@
   <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerArea">
     <rdfs:label xml:lang="en">energy per area</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Quantity"/>
-  </owl:Class>
-
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerArea">
     <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/wattHourPerSquareMetre"/>
     <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/kilowattHourPerSquareMetre"/>
-  </owl:Class>
-
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerArea">
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasValue"/>
