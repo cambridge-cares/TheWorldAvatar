@@ -55,7 +55,7 @@ public class TimeSeriesPostGISIntegrationTest {
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
             tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class), "http://ts1", 4326, conn);
             // 1 for time column and 1 for the geometry column
-            Assert.assertTrue(context.meta().getTables(tableName).get(0).fields().length == 2);
+            Assert.assertEquals(2, context.meta().getTables(tableName).get(0).fields().length);
         }
 
     }
