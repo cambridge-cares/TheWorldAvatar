@@ -34,3 +34,8 @@
 .hummingbird-treeview label {
     font-size: 8pt !important;
 }
+
+#search-select {
+    width: 200px;
+    height: 40px;
+}

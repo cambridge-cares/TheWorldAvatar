@@ -37,7 +37,7 @@ public class InputMetaData {
         List<Double> means = new ArrayList<>();
         List<String> scaling = new ArrayList<>();
 
-        if (request.getLoadSurrogate() != null) {
+        if (request.getSurrogateToLoad() != null) {
 
             Path path = Simulation.getSurrogateDirectory(modsBackend)
                     .resolve(DEFAULT_INPUT_INFO_FILE_NAME);

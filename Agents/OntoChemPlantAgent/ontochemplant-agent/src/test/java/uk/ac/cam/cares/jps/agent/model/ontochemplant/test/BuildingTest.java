@@ -41,21 +41,6 @@ public class BuildingTest {
     assertEquals("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isOwnerOf", ownedBy.getAnnotation(FieldAnnotation.class).value());
     assertEquals(Model.class, ownedBy.getAnnotation(FieldAnnotation.class).innerType());   
     assertTrue(ownedBy.getAnnotation(FieldAnnotation.class).backward());
-    
-    Field stores = testbuilding.getClass().getDeclaredField("stores");
-    assertEquals("http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#stores", stores.getAnnotation(FieldAnnotation.class).value());
-    assertEquals(Model.class, stores.getAnnotation(FieldAnnotation.class).innerType());   
-    assertFalse(stores.getAnnotation(FieldAnnotation.class).backward());
-    
-    Field storagecapacity = testbuilding.getClass().getDeclaredField("StorageCapacity");
-    assertEquals("http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasStorageCapacity", storagecapacity.getAnnotation(FieldAnnotation.class).value());
-    assertEquals(StorageCapacity.class, storagecapacity.getAnnotation(FieldAnnotation.class).innerType());   
-    assertFalse(storagecapacity.getAnnotation(FieldAnnotation.class).backward());
-
-    Field ownedby = testbuilding.getClass().getDeclaredField("ownedBy");
-    assertEquals("http://www.opengis.net/ont/geosparql#ehContains", ownedby.getAnnotation(FieldAnnotation.class).value());
-    assertEquals(Model.class, ownedby.getAnnotation(FieldAnnotation.class).innerType());   
-    assertTrue(ownedby.getAnnotation(FieldAnnotation.class).backward());
 	
 	}
 
