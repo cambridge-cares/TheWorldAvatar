@@ -25,7 +25,6 @@
   <owl:Ontology rdf:about="">
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
-  </owl:Ontology>
 
   <!-- Mass Per Energy Upper Ontology -->
 
