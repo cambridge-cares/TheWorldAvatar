@@ -64,3 +64,6 @@ Thumbs.db
 !.gitkeep
 **/secrets/*
 !.gitkeep
+
+# Data files
+*.geojson

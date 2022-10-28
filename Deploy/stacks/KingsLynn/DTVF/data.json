@@ -80,7 +80,7 @@
                         "fill-extrusion-height": [
                             "case",
                             ["has", "building height"],
-                            ["*", 1.5, ["to-number", ["get", "building height"]]],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
                             8
                         ]
                     }
@@ -161,6 +161,12 @@
             "stack": "http://165.232.172.16:3838/KINGS-LYNN",
             "sources": [
                 {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi.geojson", 
+                    "generateId": true
+                },
+                {
                     "id": "openpopgrid",
                     "type": "raster",
                     "tiles": [
@@ -189,9 +195,9 @@
                 {
                     "id": "openpopgrid",
                     "type": "raster",
+                    "minzoom": 8,
                     "name": "OpenPopGrid",
                     "source": "openpopgrid",
-                    "minzoom": 4,
                     "layout": {
                         "visibility": "visible"
                     }
