@@ -20,7 +20,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import static org.mockito.Mockito.*;
 
 /**
- * This class provides integration tests for the TimeSeriesClient class
+ * This class provides integration tests for the TimeSeriesClient class, particularly for the methods that do not 
+ * have connection in their argument
  */
 
 //@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +

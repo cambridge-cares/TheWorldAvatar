@@ -22,7 +22,8 @@ import static org.jooq.impl.DSL.selectFrom;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * This class provides integration tests for the TimeSeriesRDBClient class
+ * This class provides integration tests for the TimeSeriesRDBClient class, particularly for methods that do not 
+ * have connection in the argument
  */
 
 //@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" +

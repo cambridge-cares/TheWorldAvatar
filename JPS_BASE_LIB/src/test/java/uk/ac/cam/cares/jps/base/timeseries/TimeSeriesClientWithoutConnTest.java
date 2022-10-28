@@ -23,13 +23,10 @@ import java.util.Objects;
 
 
 /**
- * This class provides unit tests for the TimeSeriesClient class
+ * This class provides unit tests for the TimeSeriesClient class, particularly for methods that do not have connection in the argument
  */
 
 public class TimeSeriesClientWithoutConnTest {
-
-    // Instance of the class to test
-    private TimeSeriesClient<Instant> testClient;
     // Instance of the class to test with mocked sub-clients
     private TimeSeriesClient<Instant> testClientWithMocks;
     // Time series test data
@@ -46,8 +43,6 @@ public class TimeSeriesClientWithoutConnTest {
 
     @Before
     public void setUpClient() throws URISyntaxException, IOException {
-        testClient = new TimeSeriesClient<>(Instant.class,
-                Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
         testClientWithMocks = new TimeSeriesClient<>(Instant.class,
                 Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
     }

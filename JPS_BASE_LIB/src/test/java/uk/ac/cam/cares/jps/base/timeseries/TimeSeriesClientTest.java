@@ -54,11 +54,10 @@ public class TimeSeriesClientTest {
 
     @Before
     public void setUpClient() throws URISyntaxException, IOException {
-        RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setQueryEndpoint("sparql_query");
-        kbClient.setUpdateEndpoint("sparql_update");
-        testClient = new TimeSeriesClient<>(kbClient, Instant.class);
-        testClientWithMocks = new TimeSeriesClient<>(kbClient, Instant.class);
+        testClient = new TimeSeriesClient<>(Instant.class,
+                Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
+        testClientWithMocks = new TimeSeriesClient<>(Instant.class,
+                Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
     }
     
     @Before
