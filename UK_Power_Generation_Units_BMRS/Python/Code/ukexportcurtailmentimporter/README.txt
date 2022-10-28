@@ -7,4 +7,4 @@ This process requires excel files to be copied from:
 
 "\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\data\ukexportcurtailmentimporter\CopyExcels"
 
-Into the "CopyExcels" folder. 
+Into the "data" folder. 
