@@ -619,19 +619,52 @@ public class DerivedQuantityClientTest {
 	@Test
 	public void testUpdateTimestamps() {
 		String namespace = "http://www.w3.org/2006/time#";
+		// add timestamp to inputs (timestamp will be added as 0)
+		devClient.addTimeInstance(input1);
+		devClient.addTimeInstance(input2);
 		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI,
-				derivedAgentURL, inputs);
+				derivedAgentURL, Arrays.asList(input1, input2));
 		OntModel testKG = mockClient.getKnowledgeBase();
-		long oldtime = testKG.getIndividual(devInstance)
+		long oldtimeDevInstance = testKG.getIndividual(devInstance)
 				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
-		devClient.updateTimestamps(Arrays.asList(entity1));
-		long newtime = testKG.getIndividual(devInstance)
+		long oldtimeInput1 = testKG.getIndividual(input1)
 				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
-		Assert.assertTrue(newtime > oldtime);
+		long oldtimeInput2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+
+		// update the timestamp, this tests five folds of the function:
+		// 1. update the timestamp of the derivation instance given the IRI of the output - newtime > oldtime for devInstance
+		devClient.updateTimestamps(Arrays.asList(devInstance, entity1, entity2, derivedAgentIRI, input1, input2));
+		long newtimeDevInstance = testKG.getIndividual(devInstance)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeDevInstance > oldtimeDevInstance);
+		// 2. no timestamp is added to the output instance
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
+				ResourceFactory.createProperty(namespace + "hasTime")));
+		// 3. update the timestamp of the pure input given its IRI - newtime > oldtime for both inputs
+		long newtimeInput1 = testKG.getIndividual(input1)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeInput1 > oldtimeInput1);
+		long newtimeInput2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeInput2 > oldtimeInput2);
+		// 4. do nothing for the non-exist IRI - entity2 is not in the triple store
+		Assert.assertNull(testKG.getIndividual(entity2));
+		// 5. do nothing for the IRI that doesn't have a timestamp accociated with it - no timestamp instances exist for derivedAgentIRI
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivedAgentIRI),
+				ResourceFactory.createProperty(namespace + "hasTime")));
 	}
 
 	@Test

@@ -2924,62 +2924,40 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * Updates timestamps of the given instances in two stages
-	 * Query 1: get the corresponding time IRI
-	 * query 2: delete/insert appropriate triples
+	 * Updates timestamps of the given instances in one-go via SPARQL update with sub-query.
+	 * Nothing happen to the instances that do not have timestamp.
 	 * 
-	 * @param derivationTimestamp_map
+	 * @param instanceTimestampMap
 	 */
-	void updateTimestamps(Map<String, Long> instanceTimestamp_map) {
-		List<String> instances = new ArrayList<>(instanceTimestamp_map.keySet());
-
-		// query 1: get corresponding time IRI for each instance if it exists
-		SelectQuery query = Queries.SELECT();
-		Variable inst = query.var();
-		ValuesPattern instValuesPattern = new ValuesPattern(inst,
-				instances.stream().map(i -> iri(i)).collect(Collectors.toList()));
-
-		Variable time_unix = query.var();
-
-		GraphPattern gp1 = inst.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
-
-		query.select(inst, time_unix).where(gp1, instValuesPattern).prefix(p_time);
-
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-		Map<String, String> instance_timeiri_map = new HashMap<>();
-
-		for (int i = 0; i < queryResult.length(); i++) {
-			instance_timeiri_map.put(
-					queryResult.getJSONObject(i).getString(inst.getQueryString().substring(1)),
-					queryResult.getJSONObject(i).getString(time_unix.getQueryString().substring(1)));
-		}
-
-		// some instances provided by the user may not exist, update list here
-		instances = new ArrayList<>(instance_timeiri_map.keySet());
-
-		// query 2: update query, delete and insert appropriate triples
+	void updateTimestamps(Map<String, Long> instanceTimestampMap) {
 		ModifyQuery modify = Queries.MODIFY();
+		SubSelect sub = GraphPatterns.select();
 
-		Variable timestamp = query.var();
+		// complete SPARQL update with sub query string (assuming three instances in the Map):
+		// PREFIX time: <http://www.w3.org/2006/time#>
+		// DELETE { ?x1 time:numericPosition ?x2 . }
+		// INSERT { ?x1 time:numericPosition ?x3 . }
+		// WHERE { { SELECT ?x1 ?x2 ?x3
+		// WHERE {  VALUES ( ?x0 ?x3 )
+		//	{ (<http://instance1> 1666969105) (<http://instance2> 1666969105) (<http://instance3> 1666969105) } 
+		// ?x0 time:hasTime/time:inTimePosition ?x1 .
+		// ?x1 time:numericPosition ?x2 . }
+		// } }
 
-		TriplePattern[] insert_tp = new TriplePattern[instances.size()];
-		List<Iri> timeIRIList = new ArrayList<>();
-
-		for (int i = 0; i < instances.size(); i++) {
-			String instance = instances.get(i);
-			Iri timeIRI = iri(instance_timeiri_map.get(instance));
-			insert_tp[i] = timeIRI.has(numericPosition, instanceTimestamp_map.get(instance));
-			timeIRIList.add(timeIRI);
-		}
-
-		TriplePattern delete_tp = time_unix.has(numericPosition, timestamp);
-		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix,
-				// somehow we need to stream and collect timeIRIList
-				// otherwise reporting constructor not found error for ValuesPattern
-				timeIRIList.stream().map(i -> i).collect(Collectors.toList()));
-
-		modify.delete(delete_tp).where(timeValuesPattern, delete_tp).insert(insert_tp).prefix(p_time);
+		Variable entity = sub.var();
+		Variable timePosition = sub.var();
+		Variable oldTimestamp = sub.var();
+		Variable newTimestamp = sub.var();
+		ValuesPattern entityNewTimestampVP = new ValuesPattern(entity, newTimestamp);
+		instanceTimestampMap.forEach((en, ts) -> entityNewTimestampVP.addValuePairForMultipleVariables(
+				iri(en), Rdf.literalOf(ts)));
+		sub.select(timePosition, oldTimestamp, newTimestamp).where(entityNewTimestampVP,
+				entity.has(PropertyPaths.path(hasTime, inTimePosition), timePosition),
+				timePosition.has(numericPosition, oldTimestamp));
+		modify.delete(timePosition.has(numericPosition, oldTimestamp));
+		modify.insert(timePosition.has(numericPosition, newTimestamp));
+		modify.where(sub);
+		modify.prefix(p_time);
 
 		storeClient.executeUpdate(modify.getQueryString());
 	}
