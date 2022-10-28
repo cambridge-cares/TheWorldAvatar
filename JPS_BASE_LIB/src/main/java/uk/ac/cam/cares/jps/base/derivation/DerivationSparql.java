@@ -30,6 +30,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
@@ -2045,7 +2046,10 @@ public class DerivationSparql {
 		// added so that one may only query the specific types of derivation, e.g.
 		// DerivationAsyn, the triple about retrievedInputsAt is also added
 		GraphPattern derivationPattern = GraphPatterns.and(
-				new ValuesPattern(derivationType, targetDerivationTypeIriList),
+				new ValuesPattern(derivationType,
+						// somehow we need to stream and collect derivationTypes
+						// otherwise reporting constructor not found error for ValuesPattern
+						targetDerivationTypeIriList.stream().map(i -> i).collect(Collectors.toList())),
 				derivation.has(isDerivedFrom, input)
 						.andHas(PropertyPaths.path(isDerivedUsing, hasOperation, hasHttpUrl), agentURL)
 						.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
@@ -2809,7 +2813,10 @@ public class DerivationSparql {
 		// - this applies when async derivation were generated when no instances about
 		// OntoAgent were written to the KG
 		GraphPattern queryPattern = GraphPatterns.and(
-				new ValuesPattern(derivationType, derivationTypes),
+				new ValuesPattern(derivationType,
+						// somehow we need to stream and collect derivationTypes
+						// otherwise reporting constructor not found error for ValuesPattern
+						derivationTypes.stream().map(i -> i).collect(Collectors.toList())),
 				isDerivedFromTp, timestampTp1, timeTpAll1, timeTpAll2,
 				agentTp1, derivationTypeTp, agentTp2.optional(), agentTp3.optional(),
 				belongsToTp.optional(), asyncStatusGP);
@@ -2876,7 +2883,10 @@ public class DerivationSparql {
 		// point we would like to drop all derivations
 
 		GraphPattern queryPattern = GraphPatterns.and(
-				new ValuesPattern(derivationType, derivationTypes),
+				new ValuesPattern(derivationType,
+						// somehow we need to stream and collect derivationTypes
+						// otherwise reporting constructor not found error for ValuesPattern
+						derivationTypes.stream().map(i -> i).collect(Collectors.toList())),
 				isDerivedFromTp, timestampTp1, timeTpAll1, timeTpAll2,
 				agentTp1, derivationTypeTp, belongsToTp.optional(), asyncStatusGP);
 
@@ -2958,7 +2968,10 @@ public class DerivationSparql {
 		}
 
 		TriplePattern delete_tp = time_unix.has(numericPosition, timestamp);
-		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix, timeIRIList);
+		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix,
+				// somehow we need to stream and collect timeIRIList
+				// otherwise reporting constructor not found error for ValuesPattern
+				timeIRIList.stream().map(i -> i).collect(Collectors.toList()));
 
 		modify.delete(delete_tp).where(timeValuesPattern, delete_tp).insert(insert_tp).prefix(p_time);
 
