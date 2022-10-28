@@ -19,18 +19,16 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * It uses the TimeSeriesRDBClient class to interact with a relational database and the
  * TimeSeriesSparql class to interact with a Triple Store.
  * 
- * @author Markus Hofmeister, Niklas Kasenburg
- * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
- *
- * Updates:
- *
- * An instance of the TimeSeriesClient can only be created with a pre-defined kbClient and the class type
- * for the time values.
- * The methods used to interact with the RDB require a java.sql.Connection object containing the
- * connection to the RDB to be passed as an argument.
+ * The methods in this class are roughly separated into two categories:
+ * 1) methods that receive a connection object in the argument, e.g. initTimeSeries(List<String>, List<Class<?>>, String, Connection)
+ * 2) methods that do not need a connection object initTimeSeries(List<String>, List<Class<?>>, String)
+ * 
+ * The main motivation for the methods with the connection object is to improve performance in codes that need to interact with the RDB
+ * repetitively, as closing the connection each time causes performance issues.
  * To create a connection object: create an instance of {@link uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient RemoteRDBStoreClient}
  * and use {@link RemoteRDBStoreClient#getConnection()} method to obtain the connection object.
  * Example:
+ * TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
  * RDBStoreClient rdbStoreClient = new RDBStoreClient(url, user, password);
  * try (Connection conn = rdbStoreClient.getConnection()) {
  *     TimeSeries ts = TimeSeriesClient.getTimeSeriesWithinBounds(dataIRIs, lowerbound, upperbound, conn);
@@ -39,7 +37,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * }
  * Note: The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources)
  * as shown in the example above. This is to ensure the connection is closed automatically by Java.
- * @author Mehal Agarwal (ma988@cam.ac.uk)
+ * 
+ * To use the methods without the connection argument, you must use the constructors with the RDB endpoint in it, e.g.
+ * TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password).
+ * These methods open a single connection with try-with-resources for each call.
+ * @author 
+ * @author Markus Hofmeister, Niklas Kasenburg, Mehal Agarwal (ma988@cam.ac.uk), Kok Foong Lee
+ * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  */
 
 public class TimeSeriesClient<T> {
