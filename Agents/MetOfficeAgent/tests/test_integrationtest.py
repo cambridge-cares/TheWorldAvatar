@@ -7,15 +7,15 @@ import copy
 import pytest
 from math import nan
 
-from metoffice.dataretrieval.stations import *
-from metoffice.dataretrieval.readings import *
-from metoffice.utils.env_configs import QUERY_ENDPOINT
-from metoffice.flaskapp import create_app
+from agent.dataretrieval.stations import *
+from agent.dataretrieval.readings import *
+from agent.utils.env_configs import QUERY_ENDPOINT
+from agent.flaskapp import create_app
 from tests.utils import *
 
 # Import modules under test from gasgridagent
-from metoffice.datainstantiation.stations import *
-from metoffice.datainstantiation.readings import *
+from agent.datainstantiation.stations import *
+from agent.datainstantiation.readings import *
 
 
 @pytest.fixture

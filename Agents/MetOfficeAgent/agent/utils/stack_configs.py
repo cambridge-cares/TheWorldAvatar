@@ -8,8 +8,8 @@
 
 #import agentlogging
 
-from metoffice.kgutils.javagateway import stackClientsGw
-from metoffice.utils.env_configs import DATABASE
+from agent.kgutils.javagateway import stackClientsGw
+from agent.utils.env_configs import DATABASE
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

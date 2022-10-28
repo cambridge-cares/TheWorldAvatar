@@ -14,14 +14,14 @@ import pathlib
 import pandas as pd
 
 #import agentlogging
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.tsclient import TSClient
-from metoffice.kgutils.stackclients import OntopClient
-from metoffice.kgutils.querytemplates import *
-from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.errorhandling.exceptions import InvalidInput
-from metoffice.dataretrieval.readings import get_time_series_data
-from metoffice.utils.output_formatting import create_geojson_output, create_metadata_output
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
+from agent.kgutils.stackclients import OntopClient
+from agent.kgutils.querytemplates import *
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.errorhandling.exceptions import InvalidInput
+from agent.dataretrieval.readings import get_time_series_data
+from agent.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

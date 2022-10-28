@@ -6,10 +6,10 @@
 from flask import Blueprint, request, jsonify
 
 #import agentlogging
-from metoffice.datainstantiation.stations import instantiate_all_stations
-from metoffice.datainstantiation.readings import instantiate_all_station_readings
-from metoffice.datainstantiation.readings import add_all_readings_timeseries
-from metoffice.datainstantiation.readings import update_all_stations
+from agent.datainstantiation.stations import instantiate_all_stations
+from agent.datainstantiation.readings import instantiate_all_station_readings
+from agent.datainstantiation.readings import add_all_readings_timeseries
+from agent.datainstantiation.readings import update_all_stations
 
 
 # Initialise logger

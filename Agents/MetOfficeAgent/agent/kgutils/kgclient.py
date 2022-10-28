@@ -9,8 +9,8 @@
 import json
 
 #import agentlogging
-from metoffice.errorhandling.exceptions import KGException
-from metoffice.kgutils.javagateway import jpsBaseLibGW
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

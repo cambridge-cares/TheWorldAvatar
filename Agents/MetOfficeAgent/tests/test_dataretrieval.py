@@ -7,13 +7,13 @@ import time
 import pytest
 from testcontainers.core.container import DockerContainer
 
-from metoffice.datainstantiation.stations import *
-from metoffice.dataretrieval.readings import *
-from metoffice.errorhandling.exceptions import InvalidInput
+from agent.datainstantiation.stations import *
+from agent.dataretrieval.readings import *
+from agent.errorhandling.exceptions import InvalidInput
 from tests.utils import *
 
 # Import module under test from gasgridagent
-from metoffice.dataretrieval.stations import *
+from agent.dataretrieval.stations import *
 
 
 @pytest.fixture()

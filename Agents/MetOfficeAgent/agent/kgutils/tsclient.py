@@ -7,10 +7,10 @@
 # the TimeSeriesClient from the JPS_BASE_LIB
 
 #import agentlogging
-from metoffice.errorhandling.exceptions import TSException
-from metoffice.kgutils.javagateway import jpsBaseLibGW
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+from agent.errorhandling.exceptions import TSException
+from agent.kgutils.javagateway import jpsBaseLibGW
+from agent.kgutils.kgclient import KGClient
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                           DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger

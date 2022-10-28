@@ -6,8 +6,8 @@
 import pytest
 
 # Import module(s) under test from metoffice
-import metoffice.datamodel.utils as prefix
-import metoffice.kgutils.querytemplates as templates
+import agent.datamodel.utils as prefix
+import agent.kgutils.querytemplates as templates
 
 
 def test_create_sparql_prefix():

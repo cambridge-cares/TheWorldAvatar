@@ -7,7 +7,7 @@ import pytest
 import pandas as pd
 
 # Import modules under test from gasgridagent
-from metoffice.utils.output_formatting import create_geojson_output
+from agent.utils.output_formatting import create_geojson_output
 
 
 def test_output_data():

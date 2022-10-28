@@ -9,16 +9,16 @@ import datetime as dt
 import pytest
 from testcontainers.core.container import DockerContainer
 
-from metoffice.dataretrieval.stations import *
-from metoffice.dataretrieval.readings import *
-from metoffice.errorhandling.exceptions import APIException
-from metoffice.utils.env_configs import QUERY_ENDPOINT
-from metoffice.flaskapp import create_app
+from agent.dataretrieval.stations import *
+from agent.dataretrieval.readings import *
+from agent.errorhandling.exceptions import APIException
+from agent.utils.env_configs import QUERY_ENDPOINT
+from agent.flaskapp import create_app
 from tests.utils import *
 
 # Import modules under test from gasgridagent
-from metoffice.datainstantiation.stations import *
-from metoffice.datainstantiation.readings import *
+from agent.datainstantiation.stations import *
+from agent.datainstantiation.readings import *
 
 
 @pytest.fixture()

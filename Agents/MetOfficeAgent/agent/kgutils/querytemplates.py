@@ -6,8 +6,8 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-from metoffice.datamodel import *
-from metoffice.kgutils.stackclients import PostGISClient
+from agent.datamodel import *
+from agent.kgutils.stackclients import PostGISClient
 
 
 def all_metoffice_station_ids() -> str:

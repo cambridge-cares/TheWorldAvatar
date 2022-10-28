@@ -9,9 +9,9 @@
 
 from math import nan
 
-from metoffice.datamodel.observation_types import *
-from metoffice.datamodel.iris import *
-from metoffice.kgutils.javagateway import jpsBaseLibGW
+from agent.datamodel.observation_types import *
+from agent.datamodel.iris import *
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 
 # Mapping of observation variables to OntoEMS concepts

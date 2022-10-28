@@ -12,10 +12,10 @@ import json
 
 
 #import agentlogging
-from metoffice.errorhandling.exceptions import StackException
-from metoffice.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
-from metoffice.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
-from metoffice.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
+from agent.errorhandling.exceptions import StackException
+from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
+from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

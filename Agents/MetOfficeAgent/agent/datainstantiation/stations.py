@@ -10,15 +10,15 @@ import uuid
 import metoffer
 
 #import agentlogging
-from metoffice.kgutils.querytemplates import *
-from metoffice.datamodel.utils import create_sparql_prefix
-from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.errorhandling.exceptions import APIException
-from metoffice.datamodel.utils import PREFIXES
-from metoffice.utils.env_configs import DATAPOINT_API_KEY
-from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
+from agent.kgutils.querytemplates import *
+from agent.datamodel.utils import create_sparql_prefix
+from agent.dataretrieval.stations import get_all_metoffice_station_ids
+from agent.kgutils.kgclient import KGClient
+from agent.errorhandling.exceptions import APIException
+from agent.datamodel.utils import PREFIXES
+from agent.utils.env_configs import DATAPOINT_API_KEY
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
                                            GeoserverClient, create_geojson_for_postgis
 
 # Initialise logger

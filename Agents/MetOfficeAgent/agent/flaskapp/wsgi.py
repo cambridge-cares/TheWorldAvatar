@@ -9,13 +9,13 @@
 import os
 from pathlib import Path
 
-from metoffice.flaskapp import create_app
+from agent.flaskapp import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
-from metoffice.datainstantiation.readings import update_all_stations
+from agent.datainstantiation.readings import update_all_stations
 #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
-from metoffice.dataretrieval.stations import create_json_output_files
+from agent.dataretrieval.stations import create_json_output_files
 
 # Add recurring background tasks
 # 1) Assimilate latest time series data once per day

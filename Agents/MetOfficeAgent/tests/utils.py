@@ -10,8 +10,8 @@ import json
 import requests
 from pathlib import Path
 
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.utils.env_configs import QUERY_ENDPOINT
+from agent.kgutils.kgclient import KGClient
+from agent.utils.env_configs import QUERY_ENDPOINT
 
 
 def get_sparql_endpoint(docker_container):

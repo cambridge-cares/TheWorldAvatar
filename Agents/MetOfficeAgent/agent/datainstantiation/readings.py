@@ -13,16 +13,16 @@ import time
 from math import nan
 
 #import agentlogging
-from metoffice.dataretrieval.readings import *
-from metoffice.dataretrieval.stations import *
-from metoffice.datainstantiation.stations import *
-from metoffice.kgutils.querytemplates import *
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.tsclient import TSClient
-from metoffice.errorhandling.exceptions import APIException
-from metoffice.utils.env_configs import DATAPOINT_API_KEY
-from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
+from agent.dataretrieval.readings import *
+from agent.dataretrieval.stations import *
+from agent.datainstantiation.stations import *
+from agent.kgutils.querytemplates import *
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
+from agent.errorhandling.exceptions import APIException
+from agent.utils.env_configs import DATAPOINT_API_KEY
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
                                              TIME_FORMAT, DATACLASS, VISIBILITY
 
 # Initialise logger

@@ -11,12 +11,12 @@ import datetime as dt
 import pandas as pd
 
 #import agentlogging
-from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.tsclient import TSClient
-from metoffice.kgutils.querytemplates import *
-from metoffice.errorhandling.exceptions import InvalidInput, TSException
-from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.utils.readings_mapping import TIME_FORMAT
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
+from agent.kgutils.querytemplates import *
+from agent.errorhandling.exceptions import InvalidInput, TSException
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
