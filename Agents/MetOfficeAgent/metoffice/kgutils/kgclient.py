@@ -36,9 +36,9 @@ class KGClient:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
             else:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise KG client")
-            raise KGException("Unable to initialise KG client")
+            raise KGException("Unable to initialise KG client.") from ex
 
     
     def performQuery(self, query):
@@ -49,9 +49,9 @@ class KGClient:
         """
         try:
             response = self.kg_client.execute(query)
-        except:
+        except Exception as ex:
             #logger.error("SPARQL query not successful")
-            raise KGException("SPARQL query not successful")
+            raise KGException("SPARQL query not successful.") from ex
         return json.loads(response)
 
 
@@ -63,6 +63,6 @@ class KGClient:
         """
         try:
             self.kg_client.executeUpdate(update)
-        except:
+        except Exception as ex:
             #logger.error("SPARQL update not successful")
-            raise KGException("SPARQL update not successful")
+            raise KGException("SPARQL update not successful.") from ex
