@@ -854,49 +854,55 @@ public class DerivationSparql {
 	 * @param input
 	 */
 	void addTimeInstance(String entity) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// add time stamp instance for the given entity
-		String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
-		String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
-
-		long timestamp = 0;
-		Iri time_instant_iri = iri(time_instant);
-		Iri time_unix_iri = iri(time_unix);
-
-		// unix time following the w3c standard
-		modify.insert(iri(entity).has(hasTime, time_instant_iri));
-		modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
-		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
-				iri("http://dbpedia.org/resource/Unix_time")));
-
-		storeClient.setQuery(modify.prefix(p_time).getQueryString());
-		storeClient.executeUpdate();
+		addTimeInstance(Arrays.asList(entity));
 	}
 
 	/**
-	 * same method as above, but update in bulk
+	 * This method adds timestamp to the given entities in bulk. It skips entities
+	 * who already have a timestamp.
 	 * 
 	 * @param entities
 	 */
 	void addTimeInstance(List<String> entities) {
+		// example complete SPARQL update string for two entities
+		// PREFIX time: <http://www.w3.org/2006/time#>
+		// INSERT { ?instance time:hasTime ?timeInstant .
+		// ?timeInstant a time:Instant ;
+		// 	time:inTimePosition ?timeUnix .
+		// ?timeUnix a time:TimePosition ;
+		// 	time:numericPosition ?timestamp ;
+		// 	time:hasTRS <http://dbpedia.org/resource/Unix_time> . }
+		// WHERE { { SELECT ?instance ?timeInstant ?timeUnix ?timestamp
+		// WHERE {  VALUES ( ?instance ?timeInstant ?timeUnix ?timestamp )
+		//	{ (<http://entity1> <http://time_uuid1> <http://time_uuid2> 0)
+		//	(<http://entity2> <http://time_uuid3> <http://time_uuid4> 0) }
+		// FILTER NOT EXISTS { ?instance time:hasTime/time:inTimePosition/time:numericPosition ?existingTime . } }
+		// } }
 		ModifyQuery modify = Queries.MODIFY();
+		SubSelect sub = GraphPatterns.select();
+		Variable instance = SparqlBuilder.var("instance");
+		Variable timeInstant = SparqlBuilder.var("timeInstant");
+		Variable timeUnix = SparqlBuilder.var("timeUnix");
+		Variable timestamp = SparqlBuilder.var("timestamp");
 
+		modify.insert(instance.has(hasTime, timeInstant));
+		modify.insert(timeInstant.isA(InstantClass).andHas(inTimePosition, timeUnix));
+		modify.insert(timeUnix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
+				iri("http://dbpedia.org/resource/Unix_time")));
+		ValuesPattern vp = new ValuesPattern(instance, timeInstant, timeUnix, timestamp);
 		for (String entity : entities) {
-			// add time stamp instance for the given entity
-			String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
-			String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
+			// create timestamp value pairs for the given entity
+			long ts = 0;
+			Iri time_instant_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
+			Iri time_unix_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
 
-			long timestamp = 0;
-			Iri time_instant_iri = iri(time_instant);
-			Iri time_unix_iri = iri(time_unix);
-
-			// unix time following the w3c standard
-			modify.insert(iri(entity).has(hasTime, time_instant_iri));
-			modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
-			modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
-					iri("http://dbpedia.org/resource/Unix_time")));
+			vp.addValuePairForMultipleVariables(iri(entity), time_instant_iri, time_unix_iri, Rdf.literalOf(ts));
 		}
+		GraphPattern existTimestampGP = instance.has(
+				PropertyPaths.path(hasTime, inTimePosition, numericPosition),
+				SparqlBuilder.var("existingTime"));
+		sub.select(instance, timeInstant, timeUnix, timestamp).where(vp.filterNotExists(existTimestampGP));
+		modify.where(sub);
 
 		storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
 	}

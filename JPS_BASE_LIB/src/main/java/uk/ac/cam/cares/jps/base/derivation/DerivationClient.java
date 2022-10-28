@@ -400,7 +400,8 @@ public class DerivationClient {
 	 * @param entity
 	 */
 	public void addTimeInstance(String entity) {
-		this.sparqlClient.addTimeInstance(entity);
+		// calls the method that adds timestamp in bulk
+		addTimeInstance(Arrays.asList(entity));
 		LOGGER.info("Added timestamp to <" + entity + ">");
 	}
 

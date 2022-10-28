@@ -18,6 +18,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -569,6 +570,8 @@ public class DerivedQuantityClientTest {
 
 	@Test
 	public void testAddTimeInstance() {
+		// both addTimeInstance(String) and addTimeInstance(List<String>) are tested here
+		// first test the case where the timestamp is not in the triple store
 		String namespace = "http://www.w3.org/2006/time#";
 		devClient.addTimeInstance(input1);
 		OntModel testKG = mockClient.getKnowledgeBase();
@@ -581,6 +584,36 @@ public class DerivedQuantityClientTest {
 		RDFNode timestamp = testKG.getIndividual(timeposition.toString())
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
 		Assert.assertTrue(timestamp.isLiteral());
+
+		// then try to add timestamp to a list of entities, including the first one
+		// check that nothing happens to the instance if its timestamp already exists
+		// the other instances should have their timestamp added
+		devClient.addTimeInstance(Arrays.asList(input1, input2));
+		// check that the timestamp of the first instance is not changed
+		JSONArray resultsForInput1 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			input1, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForInput1.length());
+		Assert.assertEquals(timeInstance.toString(), resultsForInput1.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition.toString(), resultsForInput1.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp.asLiteral().getLong(), resultsForInput1.getJSONObject(0).getLong("timestamp"));
+		// check that the timestamp of the second instance is added
+		RDFNode timeInstance2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance2.isResource());
+		RDFNode timeposition2 = testKG.getIndividual(timeInstance2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition2.isResource());
+		RDFNode timestamp2 = testKG.getIndividual(timeposition2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp2.isLiteral());
+		JSONArray resultsForInput2 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			input2, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForInput2.length());
+		Assert.assertEquals(timeInstance2.toString(), resultsForInput2.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition2.toString(), resultsForInput2.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp2.asLiteral().getLong(), resultsForInput2.getJSONObject(0).getLong("timestamp"));
 	}
 
 	@Test
