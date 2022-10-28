@@ -425,7 +425,7 @@ def update_triple_store():
     #New (just get the files)
     export_data = "data/Template-Powerplant-Export.xlsx"
     curtailment_data = "data/Template-Powerplant-Curtailment.xlsx"
-
+    
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
     #powerplants_with_data = powerplant_power_data['powerplanteic'].unique()

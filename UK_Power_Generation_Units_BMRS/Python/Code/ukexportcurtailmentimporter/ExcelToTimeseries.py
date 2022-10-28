@@ -48,7 +48,3 @@ def excelToKG(excelPath, EIC):
     return times, values
 
 
-###Main###
-#Example
-#The purpose of the below function is to read curtailment or export data from excel for a specified wind farm, and returning two arrays (of equal length) comprising the timestamps and curtailment/export values at those times. 
-print(excelToKG(curtailmentPath, "48WSTN0000ABRBON"))
