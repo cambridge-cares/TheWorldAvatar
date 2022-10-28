@@ -12,27 +12,17 @@ import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 
-import os
-from pathlib import Path
 from agent.flaskapp import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
 from agent.datainstantiation.readings import update_all_stations
-#TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
-from agent.dataretrieval.stations import create_json_output_files
 
 
-# Add recurring background tasks
-# 1) Assimilate latest time series data once per day
-# 2) Write latest output files once per day
+# Add recurring background task to assimilate latest time series data once per day
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(update_all_stations, trigger='cron', hour='3', timezone=utc)
-# Create path to output directory
-# (dependent on whether called from Docker container or as local agent)
-outdir = os.path.join(Path(__file__).parent.parent.parent, 'output')
-sched.add_job(create_json_output_files, trigger='cron', hour='4',
-              kwargs={'outdir': str(outdir)}, timezone=utc)
+
 sched.start()
 
 app = create_app()

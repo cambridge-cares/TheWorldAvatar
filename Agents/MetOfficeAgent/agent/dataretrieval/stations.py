@@ -127,6 +127,8 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
 
     for iris in station_iris:
         # Set query and execute
+        # NOTE This query tends to fail if 1) Ontop has been running for a while
+        #      and/or 2) recurring requests have been made to it
         ontop_query = geospatial_station_info(iris)        
         res = ontop_client.performQuery(ontop_query)
         # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
