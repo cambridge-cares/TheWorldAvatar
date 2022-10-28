@@ -255,10 +255,12 @@ class WeatherQueryClient {
 		// build coordinate query
 		SelectQuery query2 = Queries.SELECT();
 		Variable wkt = query2.var();
-		query2.select(wkt).where(iri(station_iri).has(PropertyPaths.path(hasGeometry, asWKT),wkt));
+
+		ServiceEndpoint ontop = new ServiceEndpoint(Config.ontop_url);
+		query2.select(wkt).where(ontop.service(iri(station_iri).has(PropertyPaths.path(hasGeometry, asWKT),wkt)));
 		
-		// submit coordinate query to ontop
-		String wkt_string = ontopClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
+		// submit coordinate query to ontop via blazegraph
+		String wkt_string = kgClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
 		
 		// parse wkt literal
 		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wkt_string);
