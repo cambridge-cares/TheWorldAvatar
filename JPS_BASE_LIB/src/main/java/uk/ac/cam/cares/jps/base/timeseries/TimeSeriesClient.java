@@ -90,11 +90,7 @@ public class TimeSeriesClient<T> {
 		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
 		String rdbURL;
 		try {
-			if (conn == null) {
-				rdbURL = rdbClient.getRdbURL();
-			} else {
-				rdbURL = conn.getMetaData().getURL();
-			}		
+			rdbURL = conn.getMetaData().getURL();		
 		} catch (Exception e) {
 			rdbURL = "";
 		}
