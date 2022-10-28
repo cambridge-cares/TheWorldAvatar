@@ -7,12 +7,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.jooq.SQLDialect;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.postgis.Point;
 import org.postgis.Polygon;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -20,14 +25,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * this class contains tests for methods that do not have a connection object in its argument
  */
 public class TimeSeriesPostGISIntegrationWithoutConnTest {
-    // Using special testcontainers URL that will spin up a Docker container when accessed by a driver
-    // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-    private static final String dbURL = "jdbc:tc:postgis:14-3.2:///timeseries";
-    private static final String user = "postgres";
-    private static final String password = "postgres";
+    // Will create two Docker containers for Blazegraph and postgreSQL
+    // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on
 
-    private static Connection conn;
-    private static DSLContext context;
+    // Create Docker container with postgis image from Docker Hub
+    DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.3").asCompatibleSubstituteFor("postgres");
+    @Container
+    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
 
     private String tableName;
 
@@ -36,26 +40,33 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
 
     @Before
     public void initialiseRDBClientAndTable() {
+        postgres.start();
         tsClient = new TimeSeriesRDBClient<>(Integer.class);
-        tsClient.setRdbURL(dbURL);
-        tsClient.setRdbUser(user);
-        tsClient.setRdbPassword(password);
+        tsClient.setRdbURL(postgres.getJdbcUrl());
+        tsClient.setRdbUser(postgres.getUsername());
+        tsClient.setRdbPassword(postgres.getPassword());
 
         tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class), "http://ts1", 4326);
     }
 
     @After
-    public void clearDatabase() {
-        tsClient.deleteAll();
+    public void clearDatabase() throws SQLException {
+        try (Connection conn = tsClient.getConnection()) {
+            tsClient.deleteAll(conn);
+        }
     }
 
     /**
      * simple test that checks the number of columns is correct
+     * @throws SQLException
      */
     @Test
-    public void testInitTimeSeriesTable() {
+    public void testInitTimeSeriesTable() throws SQLException {
         // 1 for time column and 1 for the geometry column
-        Assert.assertTrue(context.meta().getTables(tableName).get(0).fields().length == 2);
+        try (Connection conn = tsClient.getConnection()) {
+            DSLContext context = DSL.using(tsClient.getConnection(), SQLDialect.POSTGRES);
+            Assert.assertEquals(context.meta().getTables(tableName).get(0).fields().length, 2);
+        }
     }
     /**
      * uploading a geometry with the wrong srid will throw an exception
@@ -74,7 +85,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
 
         // upload to database
-        Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));;
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
+        Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
     }
 
     /**
@@ -91,7 +103,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
 
         TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
         // upload to database
-        Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));;
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
+        Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
     }
 
     /**
