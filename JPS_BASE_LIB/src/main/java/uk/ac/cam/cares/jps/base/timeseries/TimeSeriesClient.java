@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -47,6 +48,8 @@ public class TimeSeriesClient<T> {
 	private TimeSeriesSparql rdfClient;
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
+	private static final String CONNECTION_ERROR = "Failed to connect to database. If you are using the methods without the connection argument, " +
+	"the RDB endpoint (URL, username and password) needs to be set in the constructor of TimeSeriesClient";
 	
     /**
      * Constructor with pre-defined kbClient
@@ -105,11 +108,7 @@ public class TimeSeriesClient<T> {
     	
     	// Step2: Try to initialise time series in relational database
     	try {
-			if (conn == null) {
-				rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
-			} else {
-				rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
-			}
+			rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
     	} catch (JPSRuntimeException eRdbCreate) {
     		// For exceptions thrown when initialising RDB elements in relational database,
 			// try to revert previous knowledge base instantiation
@@ -159,12 +158,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-			String rdbURL;
-			if (conn == null) {
-				rdbURL = rdbClient.getRdbURL();
-			} else {
-				rdbURL = conn.getMetaData().getURL();
-			}
+			String rdbURL = conn.getMetaData().getURL();
    			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit);
 		}
 		catch (Exception eRdfCreate) {
@@ -174,11 +168,7 @@ public class TimeSeriesClient<T> {
    	    // Step2: Try to initialise time series in relational database
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
-				if (conn == null) {
-					rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid);
-				} else {
-					rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
-				}
+				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
    	    	} catch (JPSRuntimeException eRdbCreate) {
    	    		// For exceptions thrown when initialising RDB elements in relational database,
    				// try to revert previous knowledge base instantiation
@@ -205,11 +195,7 @@ public class TimeSeriesClient<T> {
     	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		List<TimeSeries<T>> tsList = new ArrayList<>();
 		tsList.add(ts);
-		if (conn == null) {
-			rdbClient.addTimeSeriesData(tsList);
-		} else {
-			rdbClient.addTimeSeriesData(tsList, conn);
-		}
+		rdbClient.addTimeSeriesData(tsList, conn);
     }
 
 	/**
@@ -255,11 +241,7 @@ public class TimeSeriesClient<T> {
     	// If NOT: delete entire time series (i.e. whole tsIRI), if YES: delete only dataIRI time series
     	if (rdfClient.getAssociatedData(tsIRI).size() == 1) {
     		// If not, delete entire time series
-			if (conn == null) {
-				deleteTimeSeries(tsIRI);
-			} else {
-				deleteTimeSeries(tsIRI, conn);
-			}
+			deleteTimeSeries(tsIRI, conn);
     	} else {
 	    	// Step1: Delete time series association in knowledge base
 	    	// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
@@ -271,11 +253,7 @@ public class TimeSeriesClient<T> {
 	    	
 	    	// Step2: Try to delete corresponding time series column and central table entry in relational database
 	    	try {
-				if (conn == null) {
-					rdbClient.deleteTimeSeries(dataIRI);
-				} else {
-					rdbClient.deleteTimeSeries(dataIRI, conn);
-				}
+				rdbClient.deleteTimeSeries(dataIRI, conn);
 	    	} catch (JPSRuntimeException eRdbDelete) {
 				// For exceptions thrown when deleting RDB elements in relational database,
 				// try to revert previous knowledge base deletion
@@ -318,11 +296,7 @@ public class TimeSeriesClient<T> {
 		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
 		try {
 			// Retrieve example dataIRI needed to delete RDB related information
-			if (conn == null) {
-				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
-			} else {
-				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0), conn);
-			}
+			rdbClient.deleteTimeSeriesTable(dataIRIs.get(0), conn);
 		} catch (JPSRuntimeException eRdbDelete) {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
@@ -332,11 +306,7 @@ public class TimeSeriesClient<T> {
 			// modification mainly to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway
 			String rdbUrl;
 			try {
-				if (conn == null) {
-					rdbUrl = rdbClient.getRdbURL();
-				} else {
-					rdbUrl = conn.getMetaData().getURL();
-				}
+				rdbUrl = conn.getMetaData().getURL();
 			} catch (Exception e) {
 				rdbUrl = ""; // setting dummy url, is not used in practice anyway
 			}
@@ -368,11 +338,7 @@ public class TimeSeriesClient<T> {
 		
 		// Step2: Try to delete all time series tables and central lookup table in relational database
 		try {
-			if (conn == null) {
-				rdbClient.deleteAll();
-			} else {
-				rdbClient.deleteAll(conn);
-			}
+			rdbClient.deleteAll(conn);
 		} catch (JPSRuntimeException eRdbDelete) {
 			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from database! " +
 					  "Potentially inconsistent state between KG and database", eRdbDelete);
@@ -727,7 +693,11 @@ public class TimeSeriesClient<T> {
      * @param timeUnit time unit as (full) IRI
      */
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
-		initTimeSeries(dataIRIs, dataClass, timeUnit, (Connection) null);
+		try (Connection conn = rdbClient.getConnection()) {
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -737,7 +707,11 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, (Connection) null);
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -749,7 +723,11 @@ public class TimeSeriesClient<T> {
 	 * @param srid
 	 */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, (Connection) null);
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -757,7 +735,11 @@ public class TimeSeriesClient<T> {
 	 * @param ts TimeSeries object to add
      */
 	public void addTimeSeriesData(TimeSeries<T> ts) {
-		addTimeSeriesData(ts, null);
+		try (Connection conn = rdbClient.getConnection()) {
+			addTimeSeriesData(ts, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -769,7 +751,11 @@ public class TimeSeriesClient<T> {
 	public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList) {
 		// Add time series data to respective database tables
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		rdbClient.addTimeSeriesData(tsList);
+		try (Connection conn = rdbClient.getConnection()) {
+			rdbClient.addTimeSeriesData(tsList, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -781,7 +767,11 @@ public class TimeSeriesClient<T> {
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
+		try (Connection conn = rdbClient.getConnection()) {
+			rdbClient.deleteRows(dataIRI, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -789,7 +779,11 @@ public class TimeSeriesClient<T> {
      * @param dataIRI dataIRIs as Strings
      */
 	public void deleteIndividualTimeSeries(String dataIRI) {
-		deleteIndividualTimeSeries(dataIRI, null);
+		try (Connection conn = rdbClient.getConnection()) {
+			deleteIndividualTimeSeries(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -798,7 +792,11 @@ public class TimeSeriesClient<T> {
 	 * @param conn connection to the RDB
      */
 	public void deleteTimeSeries(String tsIRI) {
-		deleteTimeSeries(tsIRI, null);
+		try (Connection conn = rdbClient.getConnection()) {
+			deleteTimeSeries(tsIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -807,15 +805,27 @@ public class TimeSeriesClient<T> {
 	 *     	 in case any exception occurs - only errors for inconsistent states are thrown.
      */
 	public void deleteAll() {
-		deleteAll(null);
+		try (Connection conn = rdbClient.getConnection()) {
+			deleteAll(conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	public TimeSeries<T> getLatestData(String dataIRI) {
-		return rdbClient.getLatestData(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getLatestData(dataIRI,conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	public TimeSeries<T> getOldestData(String dataIRI) {
-		return rdbClient.getOldestData(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getOldestData(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/** 
@@ -828,7 +838,11 @@ public class TimeSeriesClient<T> {
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
 		// Retrieve time series data from respective database table
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/** 
@@ -850,7 +864,11 @@ public class TimeSeriesClient<T> {
 	public double getAverage(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getAverage(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getAverage(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -861,7 +879,11 @@ public class TimeSeriesClient<T> {
 	public double getMaxValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getMaxValue(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getMaxValue(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -872,7 +894,11 @@ public class TimeSeriesClient<T> {
 	public double getMinValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getMinValue(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getMinValue(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -883,7 +909,11 @@ public class TimeSeriesClient<T> {
 	public T getMaxTime(String dataIRI) {
 		// Retrieve latest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getMaxTime(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getMaxTime(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -894,7 +924,11 @@ public class TimeSeriesClient<T> {
 	public T getMinTime(String dataIRI) {
 		// Retrieve earliest time entry from database
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-		return rdbClient.getMinTime(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.getMinTime(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 
 	/**
@@ -903,6 +937,10 @@ public class TimeSeriesClient<T> {
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
 	public boolean checkDataHasTimeSeries(String dataIRI) {
-		return rdbClient.checkDataHasTimeSeries(dataIRI);
+		try (Connection conn = rdbClient.getConnection()) {
+			return rdbClient.checkDataHasTimeSeries(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
 	}
 }
