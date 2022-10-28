@@ -4,7 +4,7 @@
 			"name": "algorithm1",
 			"type": "MOO",
 			"maxNumberOfResults": 10,
-			"loadSurrogate": "mods-sim-6476504040189009585",
+			"surrogateToLoad": "mods-sim-6476504040189009585",
 			"variables": [{
 					"name": "var1",
 					"type": "input"
