@@ -37,7 +37,7 @@
     <om:alternativeSymbol>ng·m-3</om:alternativeSymbol>
     <om:hasNumerator rdf:resource="&om;nanogram"/>
     <om:hasDenominator rdf:resource="&om;cubicMetre"/>
-    https://www.theworldavatar.com/kg/ontouom/
+    <om:hasDimension rdf:resource="&om;MassOfSubstanceConcentration-Dimension"/>
   </om:UnitDivision>
 
 </rdf:RDF>
