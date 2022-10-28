@@ -52,11 +52,11 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/metoffice/flaskapp/wsgi.py
+ENV FLASK_APP=app/agent/flaskapp/wsgi.py
 ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/metoffice/flaskapp/
+WORKDIR /app/agent/flaskapp/
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
@@ -69,7 +69,7 @@ RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./metoffice ./metoffice
+COPY ./agent ./agent
 COPY ./app_entry_point.sh .
 
 # Set the entrypoint
