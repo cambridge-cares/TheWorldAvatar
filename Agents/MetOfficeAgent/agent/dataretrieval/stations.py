@@ -13,7 +13,7 @@ import time
 import pathlib
 import pandas as pd
 
-#import agentlogging
+import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.stackclients import OntopClient
@@ -24,7 +24,7 @@ from agent.dataretrieval.readings import get_time_series_data
 from agent.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 def get_all_metoffice_station_ids(query_endpoint: str = QUERY_ENDPOINT,
@@ -60,12 +60,12 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geospatial search.")
+        logger.error("Circle center or radius is missing for geospatial search.")
         raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
-            #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
+            logger.error("Circle center coordinates shall be provided as " \
+                          +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
@@ -100,12 +100,12 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geospatial search.")
+        logger.error("Circle center or radius is missing for geospatial search.")
         raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
-            #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
+            logger.error("Circle center coordinates shall be provided as " \
+                          +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
@@ -184,7 +184,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
 
     # Validate input
     if not pathlib.Path.exists(pathlib.Path(outdir)):
-        #logger.error('Provided output directory does not exist.')
+        logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
     else:
         if not split_obs_fcs:
@@ -218,15 +218,16 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     ###---  Retrieve KG data  ---###
     #
     # 1) Get details for instantiated stations
-    print('Retrieving instantiated stations from KG ...')
-    #logger.info('Retrieving instantiated stations from KG ...')
+    #print('Retrieving instantiated stations from KG ...')
+    logger.info('Retrieving instantiated stations from KG ...')
     t1 = time.time()
     station_details = get_all_stations_with_details(query_endpoint, update_endpoint,
                                                     circle_center, circle_radius)
     t2 = time.time()
     diff = t2-t1
-    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    #logger.info('Stations successfully retrieved.')
+    #print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info('Stations successfully retrieved.')
     
     # Extract station IRIs of interest
     station_iris = list(station_details['station'].unique())
@@ -235,8 +236,8 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
    
     # 2) Get time series data
-    print('Retrieving time series data from KG ...')
-    #logger.info('Retrieving time series data from KG ...')
+    #print('Retrieving time series data from KG ...')
+    logger.info('Retrieving time series data from KG ...')
     t1 = time.time()
     # Potentially split stations into forecast and observation station sets
     if split_obs_fcs:
@@ -258,8 +259,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         ts_data.append(obs_fcs[0]); ts_names.append(obs_fcs[1]); ts_units.append(obs_fcs[2])
     t2 = time.time()
     diff = t2-t1
-    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    #logger.info('Time series successfully retrieved.')
+    #print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info('Time series successfully retrieved.')
 
     #
     ###---  Create output files  ---###
@@ -281,8 +283,8 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         for u in units:
             u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
 
-        print('Creating output files (geojson, metadata, timeseries) ...')
-        #logger.info('Creating output files (geojson, metadata, timeseries) ...')
+        #print('Creating output files (geojson, metadata, timeseries) ...')
+        logger.info('Creating output files (geojson, metadata, timeseries) ...')
         t1 = time.time()
 
         # 1) Create GeoJSON file for ReportingStations
@@ -301,8 +303,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         timeseries.append(json.loads(tsjson.toString()))
         t2 = time.time()
         diff = t2-t1
-        print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-        #logger.info('Output files successfully created.')
+        #print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+        logger.info(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+        logger.info('Output files successfully created.')
     # Create output files for stations without any time series data
     stations = station_details[(station_details['obs_station'] == 0) & 
                                (station_details['fcs_station'] == 0)]
@@ -313,8 +316,8 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     #
     ###---  Write output files  ---###
     #
-    print('Writing output files ...')
-    #logger.info('Writing output files ...')
+    #print('Writing output files ...')
+    logger.info('Writing output files ...')
     for i in range(len(fp_geojson)):
         with open(fp_geojson[i], 'w') as f:
             json.dump(geojson[i], indent=4, fp=f)

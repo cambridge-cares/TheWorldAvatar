@@ -1,14 +1,19 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 18 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 18 Apr 2022                            #
+################################################
 
 # Start Web Server Gateway Interface (WSGI) as simple web server to forward
 # requests to actual application and initialise recurring tasks
 
+# To avoid unnecessary logging information from py4j package, set logger level before 
+# first creation of JPS_BASE_LIB module view (i.e. jpsBaseLibView = jpsBaseLibGW.createModuleView())
+import logging
+logging.getLogger("py4j").setLevel(logging.INFO)
+
+
 import os
 from pathlib import Path
-
 from agent.flaskapp import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
@@ -16,6 +21,7 @@ from pytz import utc
 from agent.datainstantiation.readings import update_all_stations
 #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
 from agent.dataretrieval.stations import create_json_output_files
+
 
 # Add recurring background tasks
 # 1) Assimilate latest time series data once per day

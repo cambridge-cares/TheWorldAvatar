@@ -6,13 +6,13 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (i.e. for the Time Series Client) from Stack clients
 
-#import agentlogging
+import agentlogging
 
 from agent.kgutils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 # Initialise global variables to be read from properties file
