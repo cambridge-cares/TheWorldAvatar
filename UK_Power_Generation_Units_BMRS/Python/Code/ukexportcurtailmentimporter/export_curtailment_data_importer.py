@@ -450,7 +450,7 @@ def update_triple_store():
         if (gt not in powerplants_instantiated.keys()) and (gt != ""):
             instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
-
+    print("Location Check!")
     # Retrieve update of instantiated powerplants in KG (in case any new powerplants were added)
     if new_powerplants:
         powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
