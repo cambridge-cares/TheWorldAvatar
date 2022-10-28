@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.cmclinnovations.mods</groupId>
 	<artifactId>mods-simple-agent</artifactId>
-	<version>0.1.0-dev-mods-agent-saving-surrogates-SNAPSHOT</version>
+	<version>0.2.0-dev-mods-agent-evaluating-surrogates-SNAPSHOT</version>
 	<name>mods-simple-agent</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
