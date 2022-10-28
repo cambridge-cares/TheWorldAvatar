@@ -1271,6 +1271,11 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	protected Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
+		try {
+			Class.forName("org.postgresql.Driver");
+			return DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
+		} catch (ClassNotFoundException e) {
+			throw new JPSRuntimeException(exceptionPrefix + "driver not found", e);
+		}
 	}
 }
