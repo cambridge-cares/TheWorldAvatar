@@ -5,6 +5,7 @@ prefix dabgeo:    <http://www.purl.org/oema/infrastructure/>
 prefix icontact:  <http://ontology.eil.utoronto.ca/icontact.owl#>
 prefix time:      <https://www.w3.org/2006/time#>
 prefix om:        <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix lrppi:     <http://landregistry.data.gov.uk/def/ppi/>
 
 SELECT ?label ?value ?unit
 WHERE {
@@ -16,10 +17,18 @@ WHERE {
     BIND ("Postcode" AS ?label )
     <PROPERTY_IRI> obe:hasAddress/obe:hasPostalCode/rdfs:label ?value .
   } UNION { 
+    BIND ("Building" AS ?label )
+    <PROPERTY_IRI> obe:hasAddress/icontact:hasBuilding ?value . 
+  } UNION { 
     BIND ("Address" AS ?label )
-    <PROPERTY_IRI> obe:hasAddress/icontact:hasStreet ?street ;
-                   obe:hasAddress/obe:hasPropertyNumber ?nr .
-    BIND (concat(concat(str(?street), ' '), str(?nr)) as ?value)
+    <PROPERTY_IRI> obe:hasAddress ?address .
+    OPTIONAL {?address icontact:hasStreet ?street . }
+    BIND( IF( EXISTS{ ?address icontact:hasStreet ?street }, str(?street), "") AS ?street ) 
+    OPTIONAL {?address icontact:hasStreetNumber ?nr . } 
+    BIND( IF( EXISTS{ ?address icontact:hasStreetNumber ?nr }, str(?nr), "") AS ?nr ) 
+    OPTIONAL {?address obe:hasUnitName ?unit_name . }
+    BIND( IF( EXISTS{ ?address obe:hasUnitName ?unit_name }, concat(", ", str(?unit_name)), "") AS ?unit_name ) 
+    BIND (concat(?street, " ", ?nr, " ", ?unit_name) as ?value)
   }
   # General building information
   UNION
@@ -95,4 +104,12 @@ WHERE {
           rdfs:comment ?value .
   } 
   # Value estimations
+  UNION { 
+    BIND ("Last sold" AS ?label )
+    <PROPERTY_IRI> obe:hasLatestTransactionRecord/lrppi:transactionDate ?value
+  } UNION { 
+    BIND ("Last sold for" AS ?label )
+    <PROPERTY_IRI> obe:hasLatestTransactionRecord/lrppi:pricePaid ?value .
+    BIND ("GBP" AS ?unit )
+  }
 }
