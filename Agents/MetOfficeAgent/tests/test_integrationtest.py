@@ -9,7 +9,7 @@ from math import nan
 
 from metoffice.dataretrieval.stations import *
 from metoffice.dataretrieval.readings import *
-from metoffice.utils.properties import QUERY_ENDPOINT
+from metoffice.utils.env_configs import QUERY_ENDPOINT
 from metoffice.flaskapp import create_app
 from tests.utils import *
 

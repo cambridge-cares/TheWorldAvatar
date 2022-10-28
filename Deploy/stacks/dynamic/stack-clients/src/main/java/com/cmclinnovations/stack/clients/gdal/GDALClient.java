@@ -205,8 +205,8 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
-                        "SET SESSION postgis.enable_outdb_rasters = True;" +
-                        "SET SESSION postgis.gdal_enabled_drivers = 'COG';")
+                        "ALTER DATABASE " + database + " SET postgis.enable_outdb_rasters = True;" +
+                        "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId);

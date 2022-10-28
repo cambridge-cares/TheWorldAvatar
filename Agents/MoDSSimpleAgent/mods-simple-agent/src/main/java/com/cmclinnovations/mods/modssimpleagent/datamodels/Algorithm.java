@@ -47,11 +47,11 @@ public class Algorithm {
         this.saveSurrogate = saveSurrogate;
     }
 
-    public String getLoadSurrogate() {
+    public String getSurrogateToLoad() {
         return surrogateToLoad;
     }
 
-    public void getLoadSurrogate(String surrogateToLoad) {
+    public void getSurrogateToLoad(String surrogateToLoad) {
         this.surrogateToLoad = surrogateToLoad;
     }
 

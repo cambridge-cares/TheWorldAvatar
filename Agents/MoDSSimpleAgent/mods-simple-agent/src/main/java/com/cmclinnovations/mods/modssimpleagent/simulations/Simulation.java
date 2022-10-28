@@ -361,7 +361,7 @@ public class Simulation {
 
     public static void load(Request request, MoDSBackend modsBackend) {
         request.getAlgorithms().stream()
-                .filter(algorithm -> algorithm.getLoadSurrogate() != null)
+                .filter(algorithm -> algorithm.getSurrogateToLoad() != null)
                 .forEach(algorithm -> {
                     try {
                         Path surrogateDirectory = getSurrogateDirectory(modsBackend);
@@ -388,7 +388,7 @@ public class Simulation {
 
     private static Path getLoadDirectory(Algorithm algorithm) {
         return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                .resolve(algorithm.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+                .resolve(algorithm.getSurrogateToLoad()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {

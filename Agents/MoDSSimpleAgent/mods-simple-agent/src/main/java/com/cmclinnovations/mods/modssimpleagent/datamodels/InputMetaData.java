@@ -37,7 +37,19 @@ public class InputMetaData {
         List<Double> means = new ArrayList<>();
         List<String> scaling = new ArrayList<>();
 
-        if (algorithm.getLoadSurrogate() != null) {
+        if (algorithm.getSurrogateToLoad() != null) {
+
+            minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            maxima = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            scaling = Collections.nCopies(varNames.size(), "linear");
+        } else if (algorithm.getSurrogateToLoad() != null) {
 
             Path path = Simulation.getSurrogateDirectory(modsBackend)
                     .resolve(DEFAULT_INPUT_INFO_FILE_NAME);
