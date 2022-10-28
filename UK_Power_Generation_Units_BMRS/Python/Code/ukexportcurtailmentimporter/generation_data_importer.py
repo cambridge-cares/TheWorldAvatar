@@ -24,6 +24,10 @@ import csv
 import pandas as pd
 import py4j.protocol as pyprotocol
 
+#New Supplementary Components
+import ExcelToTimeseries
+import TimeStampFunctions
+
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils_generation module
