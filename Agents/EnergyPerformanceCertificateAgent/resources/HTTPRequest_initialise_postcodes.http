@@ -1,0 +1,12 @@
+// Example HTTP request to instantiate given local authority district with postcodes based on Office for National Statistics data
+
+// Local authority district codes: https://epc.opendatacommunities.org/docs/api/domestic#domestic-local-authority
+// King's Lynn and West Norfolk: E07000146
+
+POST http://165.232.172.16:5001/api/epcagent/instantiate/postcodes
+Content-Type: application/json
+
+{ "query": {
+      "district": "E07000146"
+    }
+}

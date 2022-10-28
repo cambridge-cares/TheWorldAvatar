@@ -1,6 +1,6 @@
 {
 	"SimulationType": "Evaluate",
-	"LoadSurrogate": "mods-sim-13239911731462719501",
+	"SurrogateToLoad": "mods-sim-13239911731462719501",
 	"Algorithms": [{
 			"name": "algorithm1",
 			"type": "SamplingAlg",

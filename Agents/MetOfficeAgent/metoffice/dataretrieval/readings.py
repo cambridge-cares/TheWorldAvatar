@@ -12,10 +12,10 @@ import pandas as pd
 
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.timeseries import TSClient
+from metoffice.kgutils.tsclient import TSClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.errorhandling.exceptions import InvalidInput, TSException
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
@@ -213,15 +213,15 @@ def get_time_series_data(station_iris: list = None,
     if tmin:
         try:
             tmin = _validate_time_format(tmin)
-        except:
+        except Exception as ex:
             #logger.info(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
-            raise InvalidInput(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
+            raise InvalidInput(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}') from ex
     if tmax:
         try:
             tmax = _validate_time_format(tmax)
-        except:
+        except Exception as ex:
             #logger.info(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
-            raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
+            raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}') from ex
 
     # Get DataFrames for observation and forecast time series
     if observations and forecasts:
@@ -258,9 +258,9 @@ def get_time_series_data(station_iris: list = None,
         # Get time series within desired bounds
         try:
             ts_data.append(ts_client.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax))
-        except:
+        except Exception as ex:
             #logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
-            raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
+            raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}') from ex
         
         # Get time series names and units (as dict with dataIRIs as key)
         df_sub = df.loc[df['dataIRI'].isin(dataIRIs), ['dataIRI','unit', 'reading', 'reading_type']]

@@ -360,7 +360,7 @@ public class Simulation {
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
-        if (request.getLoadSurrogate() != null) {
+        if (request.getSurrogateToLoad() != null) {
             try {
                 Path surrogateDirectory = getSurrogateDirectory(modsBackend);
                 Path loadDirectory = getLoadDirectory(request);
@@ -384,7 +384,7 @@ public class Simulation {
 
     private static Path getLoadDirectory(Request request) {
         return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                .resolve(request.getLoadSurrogate()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+                .resolve(request.getSurrogateToLoad()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
