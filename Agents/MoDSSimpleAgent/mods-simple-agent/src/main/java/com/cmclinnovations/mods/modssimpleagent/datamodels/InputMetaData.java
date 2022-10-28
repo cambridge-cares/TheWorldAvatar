@@ -51,7 +51,7 @@ public class InputMetaData {
                     DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
 
             scaling = Collections.nCopies(varNames.size(), "linear");
-        } else if (algorithm.getLoadSurrogate() != null) {
+        } else if (algorithm.getSurrogateToLoad() != null) {
 
             Path path = Simulation.getSurrogateDirectory(modsBackend, algorithm)
                     .resolve(DEFAULT_INPUT_INFO_FILE_NAME);
