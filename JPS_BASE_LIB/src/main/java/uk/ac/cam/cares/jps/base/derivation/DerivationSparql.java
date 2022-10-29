@@ -305,8 +305,8 @@ public class DerivationSparql {
 		ValuesPattern pureInputTimestampVP = new ValuesPattern(pureInput, pureInputTimeInstant, pureInputTimePosition);
 		inputsList.stream().flatMap(List::stream).collect(Collectors.toList()).forEach(pureInputIri -> {
 			// create timestamp value pairs for the given entity
-			Iri time_instant_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
-			Iri time_unix_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
+			Iri time_instant_iri = iri(createTimeIRI());
+			Iri time_unix_iri = iri(createTimeIRI());
 			pureInputTimestampVP.addValuePairForMultipleVariables(iri(pureInputIri), time_instant_iri, time_unix_iri);
 		});
 		// construct the sub query
@@ -389,6 +389,14 @@ public class DerivationSparql {
 	}
 
 	/**
+	 * This method creates a new IRI for timestamp related instances.
+	 * @return
+	 */
+	String createTimeIRI() {
+		return derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString();
+	}
+
+	/**
 	 * This method queries the agentURL given agentIRI.
 	 * 
 	 * @param agentIRI
@@ -459,10 +467,8 @@ public class DerivationSparql {
 
 		// add timestamp instance for the created derivation, unix time following the
 		// w3c standard
-		String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
-		String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
-		Iri time_instant_iri = iri(time_instant);
-		Iri time_unix_iri = iri(time_unix);
+		Iri time_instant_iri = iri(createTimeIRI());
+		Iri time_unix_iri = iri(createTimeIRI());
 		modify.insert(iri(derivationIRI).has(hasTime, time_instant_iri));
 		modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
 		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, retrievedInputsAt).andHas(hasTRS,
@@ -927,8 +933,8 @@ public class DerivationSparql {
 		for (String entity : entities) {
 			// create timestamp value pairs for the given entity
 			long ts = 0;
-			Iri time_instant_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
-			Iri time_unix_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
+			Iri time_instant_iri = iri(createTimeIRI());
+			Iri time_unix_iri = iri(createTimeIRI());
 
 			vp.addValuePairForMultipleVariables(iri(entity), time_instant_iri, time_unix_iri, Rdf.literalOf(ts));
 		}
