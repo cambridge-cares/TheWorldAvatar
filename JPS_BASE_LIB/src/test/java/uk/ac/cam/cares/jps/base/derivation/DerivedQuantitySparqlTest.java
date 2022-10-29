@@ -313,13 +313,15 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testMarkAsRequestedIfOutdated() {
+	public void testMarkAsRequestedIfOutdated() throws InterruptedException {
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		// add timestamp to inputs and derivations
-		devClient.addTimeInstance(inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
 		devClient.addTimeInstance(derivation);
+		// here we also need to updateTimeStamp to make derivation up-to-date
+		// as the timestamp of inputs is added as current timestamp
+		devClient.updateTimeStamp(derivation);
 
-		// case 1: as all timestamp will be 0, the derivation should be deemed as
+		// case 1: as all timestamp will be current timestamp, the derivation should be deemed as
 		// up-to-date, thus nothing should happen if execute
 		devClient.markAsRequestedIfOutdated(derivation);
 		OntModel testKG = mockClient.getKnowledgeBase();
@@ -327,7 +329,8 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
 
 		// case 2: if now we make the derivation to be outdated, then the status should
-		// be mark as requested
+		// be mark as requested, here we sleep for 1 sec to be sure
+		TimeUnit.SECONDS.sleep(1);
 		for (String input : inputs) {
 			devClient.updateTimeStamp(input);
 		}
@@ -788,12 +791,7 @@ public class DerivedQuantitySparqlTest {
 		newTriples2.add(Rdf.iri("http://c/new2").isA(Rdf.iri("http://c/rdftype")));
 		String derivation = devClient.createDerivation(oldInstances, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
-
-		// add timestamp to all inputs with current timestamp
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp for all inputs should already be added automatically when createDerivation
 
 		// test if derivation was created correctly
 		// agent
@@ -2453,11 +2451,7 @@ public class DerivedQuantitySparqlTest {
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN),
 				Arrays.asList(false, false, false, false, true, false));
-		// add timestamp to pure inputs with current timestamp
-		for (String input : inputs0) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp should already be added to all pure inputs with current timestamp in bulkCreateMixedDerivations
 		// add timestamp to all derivation with 0 timestamp, also mark them as Requested
 		// --> this is the same as the status of derivations after call
 		// unifiedUpdateDerivations
