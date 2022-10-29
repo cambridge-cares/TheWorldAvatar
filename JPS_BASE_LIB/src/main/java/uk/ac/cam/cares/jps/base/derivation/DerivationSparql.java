@@ -235,13 +235,7 @@ public class DerivationSparql {
 			throw new JPSRuntimeException(errmsg);
 		}
 
-		Map<String, String> entityDerivationMap = getDerivationsOf(
-			entitiesList.stream().flatMap(List::stream).collect(Collectors.toList()));
-		if (!entityDerivationMap.isEmpty()) {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
+		allowedAsDerivationOutputs(entitiesList.stream().flatMap(List::stream).collect(Collectors.toList()));
 
 		List<String> derivations = new ArrayList<>();
 
@@ -445,16 +439,12 @@ public class DerivationSparql {
 		outputTriples.forEach(t -> modify.insert(t));
 
 		// add belongsTo
-		// first check if the entities are already belongsTo other derivation
-		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
-		if (entityDerivationMap.isEmpty()) {
-			for (String entity : entities) {
-				modify.insert(iri(entity).has(belongsTo, iri(derivationIRI)));
-			}
-		} else {
-			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
+		// first check if the entities are allowed to be marked as derivation outputs
+		// (1) they do not already belongsTo other derivation
+		// (2) they do not have timestamp, i.e. not pure inputs
+		allowedAsDerivationOutputs(entities);
+		for (String entity : entities) {
+			modify.insert(iri(entity).has(belongsTo, iri(derivationIRI)));
 		}
 
 		// add <derivation> <isDerivedFrom> <input> for all inputs
@@ -2544,6 +2534,8 @@ public class DerivationSparql {
 		// insert all output triples
 		outputTriples.forEach(t -> modify.insert(t));
 
+		// check if all new derived IRI are allowed to be marked as derivation outputs
+		allowedAsDerivationOutputs(new ArrayList<>(newIriDownstreamDerivationMap.keySet()));
 		// insert triples of new derived IRI and the derivations that it should be
 		// connected to
 		newIriDownstreamDerivationMap.forEach((newIRI, downstreamDerivations) -> {
@@ -2683,6 +2675,8 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		SubSelect sub = GraphPatterns.select();
 
+		// check if all new derived IRI are allowed to be marked as derivation outputs
+		allowedAsDerivationOutputs(new ArrayList<>(newIriDownstreamDerivationMap.keySet()));
 		// insert triples of new derived IRI and the derivations that it should be
 		// connected to
 		newIriDownstreamDerivationMap.forEach((newIRI, downstreamDerivations) -> {
@@ -3001,6 +2995,60 @@ public class DerivationSparql {
 		modify.prefix(p_time);
 
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * This method checks if the provided list of entities are allowed to be marked as derivation outputs.
+	 * The performed checks ensure no circular dependency can be created.
+	 * It throws an exception if any of the entities:
+	 * (1) already belongsTo another derivation;
+	 * (2) has timestamp, i.e. is pure inputs
+	 *
+	 * @param entities
+	 */
+	void allowedAsDerivationOutputs(List<String> entities) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		Variable derivation = query.var();
+		Variable timestamp = query.var();
+
+		ValuesPattern valuesPattern = new ValuesPattern(entity,
+				entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		// OPTIONAL { ?x0 derived:belongsTo ?x1 . }
+		GraphPattern belongsToDerivationGP = entity.has(belongsTo, derivation).optional();
+		// OPTIONAL { ?x0 time:hasTime/time:inTimePosition/time:numericPosition ?x2 . }
+		GraphPattern tsGP = entity.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), timestamp).optional();
+
+		query.prefix(p_derived, p_time).select(entity, derivation, timestamp)
+				.where(valuesPattern, belongsToDerivationGP, tsGP);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, String> enMap = new HashMap<>();
+		List<String> enList = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (queryResult.getJSONObject(i).has(derivation.getQueryString().substring(1))) {
+				enMap.put(queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(timestamp.getQueryString().substring(1))) {
+				enList.add(queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)));
+			}
+		}
+
+		// (1) they do not already belongsTo other derivation
+		if (!enMap.isEmpty()) {
+			String errmsg = "ERROR: some entities are already part of another derivation" + enMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+
+		// (2) they do not have timestamp, i.e. not pure inputs
+		if (!enList.isEmpty()) {
+			String errmsg = "ERROR: some entities have time instances and cannot be marked as derivation outputs" + enList.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
 	}
 
 	Map<String, String> getDerivationsOf(List<String> entities) {
