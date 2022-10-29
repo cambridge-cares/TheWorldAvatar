@@ -898,12 +898,14 @@ public class DerivationSparql {
 
 	/**
 	 * This method adds timestamp to the given entities in bulk. It skips entities
-	 * who already have a timestamp.
+	 * who already have a timestamp or is a derived data.
 	 * 
 	 * @param entities
 	 */
 	void addTimeInstance(List<String> entities) {
 		// example complete SPARQL update string for two entities
+		// PREFIX derived:
+		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// INSERT { ?instance time:hasTime ?timeInstant .
 		// ?timeInstant a time:Instant ;
@@ -915,6 +917,7 @@ public class DerivationSparql {
 		// WHERE {  VALUES ( ?instance ?timeInstant ?timeUnix ?timestamp )
 		//	{ (<http://entity1> <http://time_uuid1> <http://time_uuid2> 0)
 		//	(<http://entity2> <http://time_uuid3> <http://time_uuid4> 0) }
+		// FILTER NOT EXISTS { ?instance derived:belongsTo ?anyDerivation . } }
 		// FILTER NOT EXISTS { ?instance time:hasTime/time:inTimePosition/time:numericPosition ?existingTime . } }
 		// } }
 		ModifyQuery modify = Queries.MODIFY();
@@ -930,19 +933,19 @@ public class DerivationSparql {
 		ValuesPattern vp = new ValuesPattern(instance, timeInstant, timeUnix, timestamp);
 		for (String entity : entities) {
 			// create timestamp value pairs for the given entity
-			long ts = 0;
-			Iri time_instant_iri = iri(createTimeIRI());
-			Iri time_unix_iri = iri(createTimeIRI());
-
-			vp.addValuePairForMultipleVariables(iri(entity), time_instant_iri, time_unix_iri, Rdf.literalOf(ts));
+			vp.addValuePairForMultipleVariables(iri(entity), iri(createTimeIRI()), iri(createTimeIRI()), Rdf.literalOf(0));
 		}
+		GraphPattern belongsToAnyDerivationGP = instance.has(belongsTo, SparqlBuilder.var("anyDerivation"));
 		GraphPattern existTimestampGP = instance.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition),
 				SparqlBuilder.var("existingTime"));
-		sub.select(instance, timeInstant, timeUnix, timestamp).where(vp.filterNotExists(existTimestampGP));
-		modify.where(sub);
+		sub.select(instance, timeInstant, timeUnix, timestamp)
+				.where(GraphPatterns.and(vp,
+						GraphPatterns.filterNotExists(belongsToAnyDerivationGP),
+						GraphPatterns.filterNotExists(existTimestampGP)));
+		modify.prefix(p_derived, p_time).where(sub);
 
-		storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 
 	/**
