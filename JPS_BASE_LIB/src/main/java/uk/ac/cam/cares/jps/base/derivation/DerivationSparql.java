@@ -98,6 +98,7 @@ public class DerivationSparql {
 	private static Iri InProgress = p_derived.iri(INPROGRESS);
 	private static Iri Finished = p_derived.iri(FINISHED);
 	private static Iri InstantClass = p_time.iri("Instant");
+	private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
 
 	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
@@ -298,8 +299,7 @@ public class DerivationSparql {
 		long ts = Instant.now().getEpochSecond(); // get current epoch as timestamp
 		modify.insert(pureInput.has(hasTime, pureInputTimeInstant));
 		modify.insert(pureInputTimeInstant.isA(InstantClass).andHas(inTimePosition, pureInputTimePosition));
-		modify.insert(pureInputTimePosition.isA(TimePosition).andHas(numericPosition, ts).andHas(hasTRS,
-				iri("http://dbpedia.org/resource/Unix_time")));
+		modify.insert(pureInputTimePosition.isA(TimePosition).andHas(numericPosition, ts).andHas(hasTRS, UnixTime));
 
 		// prepare values clause for the input timestamps
 		ValuesPattern pureInputTimestampVP = new ValuesPattern(pureInput, pureInputTimeInstant, pureInputTimePosition);
@@ -471,8 +471,7 @@ public class DerivationSparql {
 		Iri time_unix_iri = iri(createTimeIRI());
 		modify.insert(iri(derivationIRI).has(hasTime, time_instant_iri));
 		modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
-		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, retrievedInputsAt).andHas(hasTRS,
-				iri("http://dbpedia.org/resource/Unix_time")));
+		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, retrievedInputsAt).andHas(hasTRS, UnixTime));
 
 		// execute SPARQL update
 		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
@@ -927,8 +926,7 @@ public class DerivationSparql {
 
 		modify.insert(instance.has(hasTime, timeInstant));
 		modify.insert(timeInstant.isA(InstantClass).andHas(inTimePosition, timeUnix));
-		modify.insert(timeUnix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
-				iri("http://dbpedia.org/resource/Unix_time")));
+		modify.insert(timeUnix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, UnixTime));
 		ValuesPattern vp = new ValuesPattern(instance, timeInstant, timeUnix, timestamp);
 		for (String entity : entities) {
 			// create timestamp value pairs for the given entity
