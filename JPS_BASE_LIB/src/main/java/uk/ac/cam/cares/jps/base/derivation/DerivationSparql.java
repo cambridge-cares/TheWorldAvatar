@@ -288,7 +288,41 @@ public class DerivationSparql {
 			}
 		}
 
-		modify.prefix(p_derived, p_agent);
+		// put sub query to retrieve the pure inputs whose timestamp is missing and add timestamp in insert clause
+		SubSelect sub = GraphPatterns.select();
+		Variable pureInput = sub.var();
+		Variable pureInputTimeInstant = sub.var();
+		Variable pureInputTimePosition = sub.var();
+		Variable existingTimestamp = sub.var();
+		Variable anyDerivation = sub.var();
+		long ts = Instant.now().getEpochSecond(); // get current epoch as timestamp
+		modify.insert(pureInput.has(hasTime, pureInputTimeInstant));
+		modify.insert(pureInputTimeInstant.isA(InstantClass).andHas(inTimePosition, pureInputTimePosition));
+		modify.insert(pureInputTimePosition.isA(TimePosition).andHas(numericPosition, ts).andHas(hasTRS,
+				iri("http://dbpedia.org/resource/Unix_time")));
+
+		// prepare values clause for the input timestamps
+		ValuesPattern pureInputTimestampVP = new ValuesPattern(pureInput, pureInputTimeInstant, pureInputTimePosition);
+		inputsList.stream().flatMap(List::stream).collect(Collectors.toList()).forEach(pureInputIri -> {
+			// create timestamp value pairs for the given entity
+			Iri time_instant_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
+			Iri time_unix_iri = iri(derivationInstanceBaseURL + "time_" + UUID.randomUUID().toString());
+			pureInputTimestampVP.addValuePairForMultipleVariables(iri(pureInputIri), time_instant_iri, time_unix_iri);
+		});
+		// construct the sub query
+		// NOTE that the whole graph pattern (GraphPatterns) in the where clause of sub query is made OPTIONAL
+		// so that the sub query always return something even when no pure inputs are missing timestamp, i.e. [{}]
+		// this ensures the above insert clause still proceed to add other triples of derivation
+		sub.select(pureInput, pureInputTimeInstant, pureInputTimePosition)
+				.where(GraphPatterns.and(pureInputTimestampVP,
+						// filter out input as derived data
+						GraphPatterns.filterNotExists(pureInput.has(belongsTo, anyDerivation)),
+						 // filter out pure inputs already have timestamp
+						GraphPatterns.filterNotExists(pureInput.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition),
+								existingTimestamp))).optional());
+
+		// execute the update
+		modify.prefix(p_derived, p_agent, p_time).where(sub);
 		storeClient.executeUpdate(modify.getQueryString());
 		return derivations;
 	}
