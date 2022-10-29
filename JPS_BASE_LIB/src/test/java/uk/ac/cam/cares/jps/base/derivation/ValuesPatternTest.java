@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.BooleanLiteral;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.NumericLiteral;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import junit.framework.TestCase;
@@ -59,13 +58,12 @@ public class ValuesPatternTest extends TestCase {
     static StringLiteral var7Value3 = Rdf.literalOf("NaN");
 
     static List<Variable> varList = Arrays.asList(var1, var2, var3, var4, var5);
-    static List<RdfObject[]> valuePairs = new ArrayList<>();
-
-    @BeforeAll
-    public static void initialise() {
-        valuePairs.add(new RdfObject[] {var1Value1, var2Value1, var3Value1, var4Value1, var5Value1});
-        valuePairs.add(new RdfObject[] {var1Value2, var2Value2, var3Value2, var4Value2, var5Value2});
-    }
+    static List<RdfObject[]> valuePairs = new ArrayList<>(
+        Arrays.asList(
+            new RdfObject[] {var1Value1, var2Value1, var3Value1, var4Value1, var5Value1},
+            new RdfObject[] {var1Value2, var2Value2, var3Value2, var4Value2, var5Value2}
+        )
+    );
 
     @Test
 	public void testConstructor1() {
