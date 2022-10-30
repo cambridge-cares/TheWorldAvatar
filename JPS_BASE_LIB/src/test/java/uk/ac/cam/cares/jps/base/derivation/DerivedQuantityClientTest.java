@@ -695,28 +695,46 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
 
-		// 1. inputs do not have timestamps yet
+		// 1. if any pure inputs don't have timestamp - in theory this should not be possible, unless someone deleted manually
 		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI,
 				derivedAgentURL, inputs);
 		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2,
 				derivedAgentURL2, Arrays.asList(entity1));
+		// the first check should pass as the timestamp for pure inputs are added automatically
+		Assert.assertTrue(devClient.validateDerivations());
+
+		// now delete timestamp of one pure input, and the derivations should not be valid anymore
+		mockClient.executeUpdate(String.format("delete where {<%s> <%s> ?time.}",
+				inputs.get(0), "http://www.w3.org/2006/time#hasTime"));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
-
-		// test should pass after added timestamp to pure inputs
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
-
-		Assert.assertTrue(devClient.validateDerivations());
 
 		devClient.dropAllDerivations();
 		devClient.dropAllTimestamps();
 
 		// 2. intentionally create a circular dependency
-		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
-		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
-		devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
+		// case i: e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at validate
+		List<String> derivations = devClient.sparqlClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1)),
+				Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+				Arrays.asList(derivedAgentURL, derivedAgentURL2),
+				Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1)));
+		devClient.addTimeInstance(derivations);
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("Circular dependency likely occurred"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// case ii: e2 --> e1. e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at validate
+		derivations = devClient.sparqlClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(entity1), Arrays.asList(entity2), Arrays.asList(input1)),
+				Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+				Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+				Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1), Arrays.asList(entity1)));
+		devClient.addTimeInstance(derivations);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 
@@ -724,10 +742,19 @@ public class DerivedQuantityClientTest {
 		devClient.dropAllTimestamps();
 
 		// 3. pure inputs part of a derivation
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
-		devClient.createDerivation(inputs, derivedAgentIRI, derivedAgentURL, inputs);
+		// with the latest design, this should not be possible (nothing happens when trying to add timestamp to derived data)
+		// but here we just create the situation manually
+		String namespace = "http://www.w3.org/2006/time#";
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
+		mockClient.executeUpdate(
+			String.format(
+				"insert data {" +
+					"<%s> <%s> <http://time_instant>." +
+					"<http://time_instant> a <%s>; <%s> <http://time_position>. " +
+					"<http://time_position> a <%s>; <%s> 123; <%s> <http://dbpedia.org/resource/Unix_time>.}",
+				entity1, namespace + "hasTime", namespace + "Instant", namespace + "inTimePosition",
+				namespace + "TimePosition", namespace + "numericPosition", namespace + "hasTRS")
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(
 				e.getMessage().contains("Entities belonging to a derivation should not have timestamps attached"));
@@ -770,13 +797,19 @@ public class DerivedQuantityClientTest {
 		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
 				inputsOfDownstreamDerivation);
 
-		// validation should fail as no timestamp were added for the pure inputs
+		// validation should pass as timestamp were automatically added for the pure inputs
+		Assert.assertTrue(devClient.validateDerivations());
+		// if now we manually remove the timestamp of one pure input, it should fail
 		// this is also to check the validateDerivations actually pulled derivaitons
 		// from KG and performed the checks (i.e. entered the recursive loop)
+		mockClient.executeUpdate("PREFIX time: <http://www.w3.org/2006/time#>" +
+			"DELETE WHERE { <" + inputs.get(0) + "> time:hasTime ?timeInstant . ?timeInstant a time:Instant ; time:inTimePosition ?timeUnix ." +
+				"?timeUnix a time:TimePosition ; time:numericPosition ?timestamp ; time:hasTRS <http://dbpedia.org/resource/Unix_time> . }"
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
-		// after added timestamps for pure inputs, validateDerivations should also work
+		// after added timestamps for pure inputs, validateDerivations should pass again
 		// for this type of derivation structure
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
@@ -808,18 +841,69 @@ public class DerivedQuantityClientTest {
 		// and third derivation given the two upstream derivation
 		String d3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI3, Arrays.asList(d1, d2));
 
-		// validation should fail as no timestamp were added for the pure inputs
+		// validation should pass as timestamp were automatically added for the pure inputs
+		Assert.assertTrue(devClient.validateDerivations());
+
+		// if now we manually remove the timestamp of one pure input, it should fail
 		// this is also to check the validateDerivations actually pulled derivaitons
 		// from KG and performed the checks (i.e. entered the recursive loop)
+		mockClient.executeUpdate("PREFIX time: <http://www.w3.org/2006/time#>" +
+			"DELETE WHERE { <" + inputs.get(0) + "> time:hasTime ?timeInstant . ?timeInstant a time:Instant ; time:inTimePosition ?timeUnix ." +
+				"?timeUnix a time:TimePosition ; time:numericPosition ?timestamp ; time:hasTRS <http://dbpedia.org/resource/Unix_time> . }"
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
-		// after added timestamps for pure inputs, validateDerivations should also work
+		// after added timestamps for pure inputs, validateDerivations should pass again
 		// for this type of derivation structure
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
 		}
 		Assert.assertTrue(devClient.validateDerivations());
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+	}
+
+	@Test
+	public void testBulkCreateDerivationsDetectCircularDependency() {
+		// this test focuses on those situations where DerivationSparql::bulkCreateDerivations works fine
+		// but DerivationClient::bulkCreateDerivations should fail thanks to DerivationClient::validateDerivations
+		// this will happen if there's something potentiall create a circular dependencies in the list of derivation
+		// markup provided as arguments to the DerivationSparql::bulkCreateDerivations
+		// but won't be identified with the current design, a better design might be provided in the future to identify
+		// any circular dependency at creation, e.g. create a DAG in local memory for all the provided markup and validate
+
+		// initialise rdf:type of all instances, so that derivations can be cached
+		OntModel testKG = mockClient.getKnowledgeBase();
+		initRdfType(testKG);
+
+		// below test cases are same to [2. intentionally create a circular dependency]
+		// in DerivedQuantityClientTest::testValidateDerived
+		// case i: e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at DerivationClient::bulkCreateDerivations
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Circular dependency likely occurred"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// case ii: e2 --> e1. e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at DerivationClient::bulkCreateDerivations
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(entity2), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1), Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 
 		devClient.dropAllDerivations();
 		devClient.dropAllTimestamps();

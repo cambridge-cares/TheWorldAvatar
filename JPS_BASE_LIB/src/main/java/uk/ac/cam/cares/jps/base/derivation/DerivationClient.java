@@ -123,6 +123,12 @@ public class DerivationClient {
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
 
+		// validate derivations if more than one derivations are marked up
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (derivations.size() > 1) {
+			validateDerivations();
+		}
+
 		return derivations;
 	}
 
@@ -177,6 +183,12 @@ public class DerivationClient {
 
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
+
+		// validate derivations if more than one derivations are marked up
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (derivations.size() > 1) {
+			validateDerivations();
+		}
 
 		return derivations;
 	}
@@ -373,6 +385,12 @@ public class DerivationClient {
 			}
 		}
 
+		// validate derivations if more than one derivations are marked up
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (derivations.size() > 1) {
+			validateDerivations();
+		}
+
 		return derivations;
 	}
 
@@ -388,6 +406,12 @@ public class DerivationClient {
 
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
+
+		// validate derivations if more than one derivations are marked up
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (derivations.size() > 1) {
+			validateDerivations();
+		}
 
 		return derivations;
 	}
@@ -686,6 +710,16 @@ public class DerivationClient {
 					topNodes.add(derivation);
 				}
 			}
+		}
+
+		// if there are derivations exist in the triple store, but no topNodes identified
+		// then it will be considered as circular dependency
+		// e.g. no topNodes will be identified for below situation
+		// e1 <belongsTo> d1. d1 <isDerivedFrom> i1.
+		// i1 <belongsTo> d2. d2 <isDerivedFrom> e1.
+		if (!derivations.isEmpty() && topNodes.isEmpty()) {
+			throw new JPSRuntimeException(
+				"Derivations exist in triple store but no top nodes identified. Circular dependency likely occurred.");
 		}
 
 		// the graph object makes sure that there is no circular dependency

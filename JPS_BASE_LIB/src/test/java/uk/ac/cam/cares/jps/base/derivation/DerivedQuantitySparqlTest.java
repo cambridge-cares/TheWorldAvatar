@@ -57,6 +57,7 @@ public class DerivedQuantitySparqlTest {
 	private MockDevStoreClient mockClient;
 	private DerivationSparql devClient;
 	private final String derivationInstanceBaseURL = "http://derivationsparql/test/";
+	private String p_time = "http://www.w3.org/2006/time#";
 	private String entity1 = "http://entity1";
 	private String entity2 = "http://entity2";
 	private String entity3 = "http://entity3";
@@ -957,6 +958,12 @@ public class DerivedQuantitySparqlTest {
 
 		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "Derivation");
 
+		// add timestamp to all pure inputs first
+		devClient.addTimeInstance(inputsList.stream().flatMap(List::stream).collect(Collectors.toList()));
+		// then create derivation, as all pure inputs already have timestamp in KG
+		// the sub query that retrieves the pure inputs whose timestamp is missing will return empty results
+		// but due to the optional clause, the insert clause should still be able to proceed to mark up derivation
+		// thus if the below tests passes, the optional clause is tested automatically
 		List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
 				inputsList);
 		for (int i = 0; i < derivations.size(); i++) {
@@ -976,6 +983,8 @@ public class DerivedQuantitySparqlTest {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
 						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
 						ResourceFactory.createResource(input)));
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(input),
+						ResourceFactory.createProperty(p_time + "hasTime")));
 			}
 		}
 
@@ -989,6 +998,74 @@ public class DerivedQuantitySparqlTest {
 		for (String en : entitiesList.stream().flatMap(List::stream).collect(Collectors.toList())) {
 			Assert.assertTrue(e.getMessage().contains(en));
 		}
+
+		// an instance cannot be marked belongsTo more than one derivation
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(entities3, entities3),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(inputs1, inputs3)
+				));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
+	}
+
+	@Test
+	public void testBulkCreateDerivationsExceptions() {
+		// some errors for potential circular dependency will be detected at creation
+		// NOTE however that there will be situations that the creation is okay in DerivationSparql
+		// but circular dependency still exist, these can be detected by DerivationClient::validateDerivations
+		// this is the reason that derivations are always validated behind-the-secenes when creating derivation in bulk by developer
+		// check out DerivedQuantityClientTest::testValidateDerived and
+		// DerivedQuantityClientTest::testBulkCreateDerivationsDetectCircularDependency
+
+		// inputs cancelled out
+		// e1 --> d1 --> i1. i1 --> d2 --> e1.
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(input1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1. i1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1, i2. i1, i2 --> e1.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1, input2)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1, input2), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// same IRI exist in both inputs and outputs
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI),
+						Arrays.asList(derivedAgentURL),
+						Arrays.asList(Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Intersection between inputs and outputs for the same derivation markup"));
+
+		// entity will be belongsTo more than one derivation
+		// e2 --> e1. e1 --> i1. e1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
 	}
 
 	@Test

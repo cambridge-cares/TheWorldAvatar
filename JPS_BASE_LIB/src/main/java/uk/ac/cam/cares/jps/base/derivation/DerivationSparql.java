@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -238,10 +239,27 @@ public class DerivationSparql {
 		allowedAsDerivationOutputs(entitiesList.stream().flatMap(List::stream).collect(Collectors.toList()));
 
 		List<String> derivations = new ArrayList<>();
+		Map<String, List<String>> entityInput = new HashMap<>();
 
 		for (int i = 0; i < entitiesList.size(); i++) {
 			List<String> entities = entitiesList.get(i);
 			List<String> inputs = inputsList.get(i);
+			// throw error if any of the IRIs appear in both inputs and entities
+			Set<String> intersection = entities.stream().distinct().filter(inputs::contains).collect(Collectors.toSet());
+			if (!intersection.isEmpty()) {
+				throw new JPSRuntimeException(
+						"Intersection between inputs and outputs for the same derivation markup: " + intersection);
+			}
+			// add pair of output entity and input
+			// this will help to detect same IRI been marked as belongsTo more than one derivation
+			entities.stream().forEach(en -> {
+				if (entityInput.containsKey(en)) {
+					throw new JPSRuntimeException("Entity will be marked belongsTo more than one derivations: " +
+							en + ". Inputs: " + entityInput.get(en) + "; and inputs: " + inputs);
+				} else {
+					entityInput.put(en, inputs);
+				}
+			});
 			String agentIRI = agentIRIList.get(i);
 			String agentURL = agentURLList.get(i);
 			Boolean forUpdateFlag = forAsyncUpdateFlagList.get(i);
@@ -296,8 +314,19 @@ public class DerivationSparql {
 		modify.insert(pureInputTimePosition.isA(TimePosition).andHas(numericPosition, ts).andHas(hasTRS, UnixTime));
 
 		// prepare values clause for the input timestamps
+		// should only add timestamp to potential pure inputs, i.e. those in inputsList and not in entitiesList
+		List<String> allOutputs = entitiesList.stream().flatMap(List::stream).collect(Collectors.toList());
+		List<String> potentialPureInputs = inputsList.stream().flatMap(List::stream).collect(Collectors.toList())
+				.stream().filter(e -> !allOutputs.contains(e)).collect(Collectors.toList());
+		// if the potentialPureInputs is empty, then means all inputs/entities cancels out
+		// this will lead to a circular dependency of the derivations to be created in bulk
+		if (potentialPureInputs.isEmpty()) {
+			throw new JPSRuntimeException(
+				"All inputs are cancelled out by outputs of derivation, resulting a circular dependency, inputs: " +
+				inputsList + "; outputs: " + entitiesList);
+		}
 		ValuesPattern pureInputTimestampVP = new ValuesPattern(pureInput, pureInputTimeInstant, pureInputTimePosition);
-		inputsList.stream().flatMap(List::stream).collect(Collectors.toList()).forEach(pureInputIri -> {
+		potentialPureInputs.stream().forEach(pureInputIri -> {
 			// create timestamp value pairs for the given entity
 			Iri time_instant_iri = iri(createTimeIRI());
 			Iri time_unix_iri = iri(createTimeIRI());
