@@ -922,9 +922,39 @@ public class DerivationSparql {
 	 * @param entities
 	 */
 	void addTimeInstance(List<String> entities) {
-		// get none duplicate entities
-		Set<String> entitiesNoDuplicate = entities.stream().collect(Collectors.toSet());
+		Map<String, Long> entitiesTimestamp = new HashMap<>();
+		entities.stream().forEach(en -> {
+			if (!entitiesTimestamp.containsKey(en)) {
+				entitiesTimestamp.put(en, (long) 0);
+			}
+		});
+		addTimeInstance(entitiesTimestamp);
+	}
 
+	/**
+	 * This method adds current timestamp to the given entities in bulk. It skips entities
+	 * who already have a timestamp or is a derived data.
+	 *
+	 * @param entities
+	 */
+	void addTimeInstanceCurrentTimestamp(List<String> entities) {
+		Map<String, Long> entitiesTimestamp = new HashMap<>();
+		long timestamp = Instant.now().getEpochSecond();
+		entities.stream().forEach(en -> {
+			if (!entitiesTimestamp.containsKey(en)) {
+				entitiesTimestamp.put(en, timestamp);
+			}
+		});
+		addTimeInstance(entitiesTimestamp);
+	}
+
+	/**
+	 * This method adds timestamp to the given entities in bulk. It skips entities
+	 * who already have a timestamp or is a derived data.
+	 *
+	 * @param entities
+	 */
+	private void addTimeInstance(Map<String, Long> entitiesTimestamp) {
 		// example complete SPARQL update string for two entities
 		// PREFIX derived:
 		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
@@ -953,10 +983,10 @@ public class DerivationSparql {
 		modify.insert(timeInstant.isA(InstantClass).andHas(inTimePosition, timeUnix));
 		modify.insert(timeUnix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, UnixTime));
 		ValuesPattern vp = new ValuesPattern(instance, timeInstant, timeUnix, timestamp);
-		for (String entity : entitiesNoDuplicate) {
+		entitiesTimestamp.forEach((en, ts) -> {
 			// create timestamp value pairs for the given entity
-			vp.addValuePairForMultipleVariables(iri(entity), iri(createTimeIRI()), iri(createTimeIRI()), Rdf.literalOf(0));
-		}
+			vp.addValuePairForMultipleVariables(iri(en), iri(createTimeIRI()), iri(createTimeIRI()), Rdf.literalOf(ts));
+		});
 		GraphPattern belongsToAnyDerivationGP = instance.has(belongsTo, SparqlBuilder.var("anyDerivation"));
 		GraphPattern existTimestampGP = instance.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition),

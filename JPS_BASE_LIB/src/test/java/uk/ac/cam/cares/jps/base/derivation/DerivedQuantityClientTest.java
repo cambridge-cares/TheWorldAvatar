@@ -659,6 +659,42 @@ public class DerivedQuantityClientTest {
 	}
 
 	@Test
+	public void testAddTimeInstanceCurrentTimestamp() {
+		long currentTs = Instant.now().getEpochSecond();
+		String namespace = "http://www.w3.org/2006/time#";
+		// first add time instance to input1 with 0 as default
+		devClient.addTimeInstance(input1);
+		// then add timestamp to both input1 and input2
+		// nothing should happen to input1, but input2 will be added current timestamp
+		devClient.addTimeInstanceCurrentTimestamp(Arrays.asList(input1, input2));
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		// check timestamp for input1, should be 0
+		RDFNode timeInstance = testKG.getIndividual(input1)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance.isResource());
+		RDFNode timeposition = testKG.getIndividual(timeInstance.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition.isResource());
+		RDFNode timestamp = testKG.getIndividual(timeposition.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp.isLiteral());
+		Assert.assertEquals(0, timestamp.asLiteral().getLong());
+
+		// check timestamp for input2, should no less than currentTs
+		RDFNode timeInstance2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance2.isResource());
+		RDFNode timeposition2 = testKG.getIndividual(timeInstance2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition2.isResource());
+		RDFNode timestamp2 = testKG.getIndividual(timeposition2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp2.isLiteral());
+		Assert.assertTrue(timestamp2.asLiteral().getLong() >= currentTs);
+	}
+
+	@Test
 	public void testUpdateTimestamps() throws InterruptedException {
 		String namespace = "http://www.w3.org/2006/time#";
 		// create derivation, the timestamp of the pure inputs will be added automatically

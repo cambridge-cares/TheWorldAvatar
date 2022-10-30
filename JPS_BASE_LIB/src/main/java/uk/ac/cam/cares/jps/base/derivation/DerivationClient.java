@@ -229,6 +229,10 @@ public class DerivationClient {
 		String derivationIRI = this.sparqlClient.createDerivationIRI(derivationType);
 		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
 
+		// add time instance to inputs in case any of them is pure inputs but haven't got timestamp attached
+		// nothing happens if the inputs are derived data, or there're already timestamps attached
+		this.sparqlClient.addTimeInstanceCurrentTimestamp(inputsIRI);
+
 		// add mapped inputs to createdDerivation
 		JSONObject mappedInputs = this.sparqlClient.mapInstancesToAgentInputs(inputsIRI, agentIRI);
 		Iterator<String> inputTypes = mappedInputs.keys();
@@ -426,7 +430,7 @@ public class DerivationClient {
 	public void addTimeInstance(String entity) {
 		// calls the method that adds timestamp in bulk
 		addTimeInstance(Arrays.asList(entity));
-		LOGGER.info("Added timestamp to <" + entity + ">");
+		LOGGER.info("Added timestamp to <" + entity + "> if it doesn't have a timestamp already");
 	}
 
 	/**
@@ -436,7 +440,29 @@ public class DerivationClient {
 	 */
 	public void addTimeInstance(List<String> entities) {
 		this.sparqlClient.addTimeInstance(entities);
-		LOGGER.info("Added timestamps to <" + entities + ">");
+		LOGGER.info("Added timestamps to <" + entities + "> if they don't have a timestamp already");
+	}
+
+	/**
+	 * adds a timestamp to your input following the w3c standard for unix timestamp
+	 * https://www.w3.org/TR/owl-time/
+	 * <entity> <hasTime> <time>, <time> <numericPosition> current_timestamp
+	 *
+	 * @param entity
+	 */
+	public void addTimeInstanceCurrentTimestamp(String entity) {
+		addTimeInstanceCurrentTimestamp(Arrays.asList(entity));
+		LOGGER.info("Added time instances with current timestamps to <" + entity + "> if it doesn't have a timestamp already");
+	}
+
+	/**
+	 * same method as above but in bulk
+	 *
+	 * @param entities
+	 */
+	public void addTimeInstanceCurrentTimestamp(List<String> entities) {
+		this.sparqlClient.addTimeInstanceCurrentTimestamp(entities);
+		LOGGER.info("Added time instances with current timestamps to <" + entities + "> if they don't have a timestamp already");
 	}
 
 	/**
