@@ -164,22 +164,16 @@ public class InitialiseInstances extends JPSAgent {
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
 		String ul_value = sparqlClient.addValueInstance(upperLimit, upper_limit_value);
-		devClient.addTimeInstance(upperLimit);
-		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
 		response.put(upper_limit_instance_key, upperLimit);
 
 		String lowerLimit = sparqlClient.createLowerLimit();
 		String ll_value = sparqlClient.addValueInstance(lowerLimit, lower_limit_value);
-		devClient.addTimeInstance(lowerLimit);
-		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
 		response.put(lower_limit_instance_key, lowerLimit);
 
 		String numOfPoints = sparqlClient.createNumberOfPoints();
 		String np_value = sparqlClient.addValueInstance(numOfPoints, number_of_points);
-		devClient.addTimeInstance(numOfPoints);
-		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		response.put(num_of_pts_instance_key, numOfPoints);
 
