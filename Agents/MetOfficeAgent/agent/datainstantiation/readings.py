@@ -21,9 +21,9 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.errorhandling.exceptions import APIException
 from agent.utils.env_configs import DATAPOINT_API_KEY
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
 from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
-                                             TIME_FORMAT, DATACLASS, VISIBILITY
+                                         TIME_FORMAT, DATACLASS, VISIBILITY
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -97,8 +97,10 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # Initialise update query for creation time
     query_string = update_forecast_creation_datetime(issue_time)
 
-    # Initialise TimeSeriesClient
-    ts_client = TSClient.tsclient_with_default_settings()
+    # Initialise KG and TimeSeries Clients
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
 
     added_obs = 0
     added_fcs = 0
@@ -128,7 +130,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                 added_obs += len(dataIRIs_list[i])
                 ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
                 ts_list.append(ts)
-    ts_client.bulkaddTimeSeriesData(ts_list)
+    ts_client.tsclient.bulkaddTimeSeriesData(ts_list, ts_client.conn)
     #print(f'Time series data for {added_obs} observations successfully added to KG.')
     logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
@@ -159,14 +161,13 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                 ts_list.append(ts)
                 for iri in dataIRIs_list[i]:
                     query_string += f"<{iri}> , "
-    ts_client.bulkaddTimeSeriesData(ts_list)
+    ts_client.tsclient.bulkaddTimeSeriesData(ts_list, ts_client.conn)
     #print(f'Time series data for {added_fcs} forecasts successfully added.')
     logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
 
     # Strip trailing comma and close & perform creation date update query
     query_string = query_string[:-2]
     query_string += f") ) }}"
-    kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
     logger.info('Creation time triples successfully updated.')
 
@@ -323,8 +324,10 @@ def instantiate_station_readings(instantiated_sites_list: list,
         #print('Instantiate static time series triples ...')
         logger.info('Instantiate static time series triples ...')
         # Instantiate all time series triples
-        ts_client = TSClient.tsclient_with_default_settings()
-        ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+        ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                             rdb_password=DB_PASSWORD)
+        ts_client.tsclient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, 
+                                              ts_client.conn)
         #print('Time series triples successfully added.')
         logger.info('Time series triples successfully added.')
 

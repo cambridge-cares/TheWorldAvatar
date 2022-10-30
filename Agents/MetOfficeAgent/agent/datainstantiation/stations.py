@@ -60,6 +60,7 @@ def instantiate_stations(station_data: list,
         # Create GeoJSON file for upload to PostGIS
         lat = float(lat)
         lon = float(lon)
+        #TODO: add KG endpoint + station type (obs/fcs)
         station_name = feature_type + f' at {lat},{lon}' if not \
                        to_instantiate.get('label') else to_instantiate.get('label')
         geojson = create_geojson_for_postgis(station_IRI, station_name, feature_type,
@@ -147,7 +148,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     available_ids = [s['id'] for s in available]
 
     # TODO: remove
-    available_ids = available_ids[:10]
+    available_ids = available_ids[10:20]
 
     # Get already instantiated stations
     instantiated_ids = get_all_metoffice_station_ids(query_endpoint=query_endpoint)

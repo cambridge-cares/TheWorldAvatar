@@ -15,7 +15,7 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import InvalidInput, TSException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
 from agent.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
@@ -250,14 +250,17 @@ def get_time_series_data(station_iris: list = None,
     ts_names = []
     ts_units = []
     
-    # Initialise TimeSeriesClient
-    ts_client = TSClient.tsclient_with_default_settings()
+    # Initialise KG and TimeSeries Clients
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
 
     for dataIRIs in dataIRIs_list:
 
         # Get time series within desired bounds
         try:
-            ts_data.append(ts_client.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax))
+            ts_data.append(ts_client.tsclient.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax, 
+                                                                        ts_client.conn))
         except Exception as ex:
             logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
             raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}') from ex

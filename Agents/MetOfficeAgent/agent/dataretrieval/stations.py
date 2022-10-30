@@ -18,7 +18,7 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.stackclients import OntopClient
 from agent.kgutils.querytemplates import *
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
 from agent.errorhandling.exceptions import InvalidInput
 from agent.dataretrieval.readings import get_time_series_data
 from agent.utils.output_formatting import create_geojson_output, create_metadata_output
@@ -268,8 +268,10 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     #
     ###---  Create output files  ---###
     #
-    # Initialise time series client   
-    ts_client = TSClient.tsclient_with_default_settings()
+    # Initialise KG and TimeSeries Clients
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
     # Create output files for each set of retrieved time series data
     for i in range(len(ts_data)):
         # Get output data
@@ -300,7 +302,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         # (to assign time series output to correct station in DTVF)
         dataIRIs = [t.getDataIRIs()[0] for t in ts]
         id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
-        tsjson = ts_client.convertToJSON(ts, id_list, units, names)
+        tsjson = ts_client.tsclient.convertToJSON(ts, id_list, units, names)
         # Make JSON file readable in Python
         timeseries.append(json.loads(tsjson.toString()))
         t2 = time.time()
