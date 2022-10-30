@@ -12,7 +12,6 @@ import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,7 +19,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.LogManager;
 
 public class HeatNetworkInputAgent {
@@ -76,13 +74,25 @@ public class HeatNetworkInputAgent {
     public static String XSD_DATE = XSD + "date";
     public static String XSD_BOOLEAN = XSD + "Boolean";
 
+    // The time series client to interact with the knowledge graph and data storage
     private TimeSeriesClient<OffsetDateTime> tsClient;
+
+    // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
     private static List<JSONKeyToIRIMapper> mappings;
+
+    // The JSON key for the timestamp
     public static final String timestampKey = "obsTimeUtc";
+
+    // The prefix to use when no IRI exists for a JSON key originally
     public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "heat";
+
+    // The time unit used for all time series maintained by the heating network input agent
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
+
+    // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(HeatNetworkInputAgentLauncher.class);
 
+   // The instantiation of static data
     public void dataInstantiation() {
 
         String staticData = System.getenv("CSVPATH");
@@ -244,10 +254,10 @@ public class HeatNetworkInputAgent {
 
 
         // For HeatGenerator Part
-        HeatHeneratorUpdate("HeatGeneratorGT", Value_ThermalLoad_GT, Value_HCV_GT, Value_LCV_GT, Value_CO2Factor_GT);
-        HeatHeneratorUpdate("HeatGeneratorBoil4", Value_ThermalLoad_HB4, Value_HCV_HB4, Value_LCV_HB4, Value_CO2Factor_HB4);
-        HeatHeneratorUpdate("HeatGeneratorBoil5", Value_ThermalLoad_HB5, Value_HCV_HB5, Value_LCV_HB5, Value_CO2Factor_HB5);
-        HeatHeneratorUpdate("HeatGeneratorBoil6", Value_ThermalLoad_HB6, Value_HCV_HB6, Value_LCV_HB6, Value_CO2Factor_HB6);
+        HeatGeneratorUpdate("HeatGeneratorGT", Value_ThermalLoad_GT, Value_HCV_GT, Value_LCV_GT, Value_CO2Factor_GT);
+        HeatGeneratorUpdate("HeatGeneratorBoil4", Value_ThermalLoad_HB4, Value_HCV_HB4, Value_LCV_HB4, Value_CO2Factor_HB4);
+        HeatGeneratorUpdate("HeatGeneratorBoil5", Value_ThermalLoad_HB5, Value_HCV_HB5, Value_LCV_HB5, Value_CO2Factor_HB5);
+        HeatGeneratorUpdate("HeatGeneratorBoil6", Value_ThermalLoad_HB6, Value_HCV_HB6, Value_LCV_HB6, Value_CO2Factor_HB6);
 
 
         // For the IncinerationPlant part
@@ -361,8 +371,8 @@ public class HeatNetworkInputAgent {
         omHasValueTS("DemandDrivenWearCost", "EuroPerMegaWattHour");
     }
 
-
-    public void HeatHeneratorUpdate(String HeatGenerator_instance, float Value_ThermalLoad, float Value_HCV, float Value_LCV, float Value_CO2Factor) {
+    // For the instance of HeatGenerator part
+    public void HeatGeneratorUpdate(String HeatGenerator_instance, float Value_ThermalLoad, float Value_HCV, float Value_LCV, float Value_CO2Factor) {
         UpdateBuilder HeatGenerator_instance_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasOperatingAvailability"), NodeFactory.createURI(KB + "Availability" + HeatGenerator_instance))
@@ -447,12 +457,13 @@ public class HeatNetworkInputAgent {
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", omHasValueTS_ur.toString());
     }
 
-
+   // Setter for the time series client.
+   // @param tsClient The time series client to use.
     public void setTsClient(TimeSeriesClient<OffsetDateTime> tsClient) {
         this.tsClient = tsClient;
     }
 
-
+    // Update the TS database with new readings.
     public void updateTSData(Map<String, List<?>> HeatingNetworkReadings) throws IllegalArgumentException {
         if (!HeatingNetworkReadings.isEmpty()) {
             List<TimeSeries<OffsetDateTime>> timeSeries;
@@ -479,6 +490,8 @@ public class HeatNetworkInputAgent {
     }
 
 
+    // Converts the readings in form of maps to time series' using the mappings to IRI.
+    // @return A list of time series objects (one per mapping) that can be used with the time series client.
     private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> HeatingNetworkReadings)
             throws NoSuchElementException, IOException {
         List<OffsetDateTime> HeatingNetworkTimestamps = HeatingNetworkReadings.get(HeatNetworkInputAgent.timestampKey).stream()
@@ -510,12 +523,20 @@ public class HeatNetworkInputAgent {
         return timeSeries;
     }
 
+
+
+    // Converts a string into a datetime object with zone information using the zone globally define for the agent.
+    // The format should be equal to 2008-12-03T10:15:30.
+    // Return The resulting datetime object.
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime localTime = LocalDateTime.parse(timestamp, dtf);
         return OffsetDateTime.of(localTime, ZoneOffset.UTC);
     }
 
+
+    // Reads the JSON key to IRI mappings from files in the provided folder
+    // MappingFolder The path to the folder in which the mapping files are located
     private static void readMappings(String mappingFolder) throws IOException, java.io.IOException {
         mappings = new ArrayList<>();
         File folder = new File(mappingFolder);
@@ -535,6 +556,8 @@ public class HeatNetworkInputAgent {
     }
 
 
+    // Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do no exist
+    // using the time series client.
     public void initializeTimeSeriesIfNotExist() {
         //String mappingFolder = "/Users/HXUE01/Documents/GitHub/TheWorldAvatar/Agents/DistrictHeatingNetworkAgent/config/mappings";
         String mappingFolder = System.getenv("MAPPINGSPATH");
@@ -560,6 +583,11 @@ public class HeatNetworkInputAgent {
         }
     }
 
+
+    // Checks whether a time series exists by checking whether any of the IRIs that should be attached to
+    // the time series is not initialised in the central RDB lookup table using the time series client
+    // The IRIs that should be attached to the same time series provided as list of strings
+    // Return true if all IRIs have a time series attached, false otherwise
     private boolean timeSeriesExist(List<String> iris) {
         for (String iri : iris) {
             try {
@@ -579,6 +607,9 @@ public class HeatNetworkInputAgent {
         return true;
     }
 
+
+    // Returns the class (datatype) corresponding to a JSON key
+    // Return The corresponding class as Class<?> object.
     private Class<?> getClassFromJSONKey(String jsonKey) {
         if (jsonKey.contains("sample1") || jsonKey.contains("sample2") || jsonKey.contains("sample3")) {
             return Double.class;
@@ -589,6 +620,7 @@ public class HeatNetworkInputAgent {
         }
     }
 
+    // Extract the column from an input csv file
     public static String[] ReadColInput(int col, String filepath, String delimiter) {
         String currentLine;
         String[] data;

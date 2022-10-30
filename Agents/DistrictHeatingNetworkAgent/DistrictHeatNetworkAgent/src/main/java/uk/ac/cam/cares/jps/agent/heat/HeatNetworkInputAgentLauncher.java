@@ -21,16 +21,27 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import org.json.JSONObject;
 import com.ibm.icu.text.SimpleDateFormat;
 
+/**
+ * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
+ * @author Hansong Xue
+ */
+
 @Controller
 @WebServlet(urlPatterns = {"/performheatupdate"})
 public class HeatNetworkInputAgentLauncher extends JPSAgent {
 
     private static final long serialVersionUID = 1L;
+
+    // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(HeatNetworkInputAgentLauncher.class);
+
+    // Logging / error messages
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String DATAINSTANTIATION = "Could not update static data";
     private static final String UPDATETSDATA = "Could not update time series data";
+
+    // Data format string pattern for converting the time format for TS client
     private static final SimpleDateFormat inSDF = new SimpleDateFormat("dd/mm/yyyyhh:ss");
     private static final SimpleDateFormat outSDF = new SimpleDateFormat("yyyy-mm-dd hh:ss:00");
 
@@ -39,10 +50,8 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
         JSONObject jsonMessage = new JSONObject();
-
         String TsData = System.getenv("TSPATHTEST");
         String propertiesFile = System.getenv("CLIENTPROPERTY");
-
         String[] numericValue_date = ReadCol(0,TsData,",");
         Map<String, List<?>> data_TS = new HashMap<String, List<?>>();
         List<String> Date_Utc = new ArrayList<String>();
@@ -99,11 +108,10 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
             LOGGER.error(UPDATETSDATA, e);
             throw new JPSRuntimeException(UPDATETSDATA, e);
         }
-
         return jsonMessage;
     }
 
-
+    // Extract the column from a TS data csv file
     public static String[] ReadCol(int col, String filepath, String delimiter) {
         String currentLine;
         String[] data;
@@ -122,7 +130,7 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
         return colData.toArray(new String[0]);
     }
 
-
+    // Find the column length of an input csv file
     public static int ColNum(String filepath, String delimiter) throws java.io.IOException {
         FileReader fr_col;
         String[] currentLine;
@@ -133,6 +141,7 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
         return col_length;
     }
 
+    // Convert the TS time data into a suitable format for TS client
     public static String formatDate(String inDate) {
         String outDate = "";
         if (inDate != null) {

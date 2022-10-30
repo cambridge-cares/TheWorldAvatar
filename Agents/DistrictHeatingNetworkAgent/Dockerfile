@@ -31,10 +31,13 @@ COPY ./config/. /root/
 # Set the required environment variables
 ENV CSVPATH="/root/StaticDataHeatingNetwork.csv"
 
+# Set the required environment variable
 ENV TSPATHTEST="/root/TSDataHeatingNetworkTest.csv"
 
+# Set the required environment variable
 ENV CLIENTPROPERTY="/root/client.properties"
 
+# Set the required environment variable
 ENV MAPPINGSPATH="/root/mappings"
 
 COPY --from=builder /root/DistrictHeatNetworkAgent/output/heatnetwork-agent##1.0.0.war $CATALINA_HOME/webapps/
