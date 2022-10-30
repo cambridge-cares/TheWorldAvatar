@@ -71,6 +71,10 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
     """
     Uploads TBox and ABox to KG namespace
 
+    NOTE: Uploading .owl files seems to create blank nodes when "collections" are
+    used in the .owl file. This behaviour has been observed using both the fileUpload
+    method of the RemoteStoreClient and using the owlready2 Python library.
+
     Arguments:
         tbox_url - URL to TBox
         abox_url - URL to ABox
