@@ -922,6 +922,9 @@ public class DerivationSparql {
 	 * @param entities
 	 */
 	void addTimeInstance(List<String> entities) {
+		// get none duplicate entities
+		Set<String> entitiesNoDuplicate = entities.stream().collect(Collectors.toSet());
+
 		// example complete SPARQL update string for two entities
 		// PREFIX derived:
 		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
@@ -950,7 +953,7 @@ public class DerivationSparql {
 		modify.insert(timeInstant.isA(InstantClass).andHas(inTimePosition, timeUnix));
 		modify.insert(timeUnix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, UnixTime));
 		ValuesPattern vp = new ValuesPattern(instance, timeInstant, timeUnix, timestamp);
-		for (String entity : entities) {
+		for (String entity : entitiesNoDuplicate) {
 			// create timestamp value pairs for the given entity
 			vp.addValuePairForMultipleVariables(iri(entity), iri(createTimeIRI()), iri(createTimeIRI()), Rdf.literalOf(0));
 		}

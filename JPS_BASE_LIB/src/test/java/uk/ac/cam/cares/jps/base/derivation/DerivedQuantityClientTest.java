@@ -573,10 +573,11 @@ public class DerivedQuantityClientTest {
 	@Test
 	public void testAddTimeInstance() {
 		// both addTimeInstance(String) and addTimeInstance(List<String>) are tested here
-		// we test three aspect of the method:
+		// we test four aspect of the method:
 		// (1) do nothing if timestamp exist for instance already
 		// (2) do nothing if the instance is derived data
 		// (3) add time instance only if the instance is NOT derived data and do NOT have timestamp already
+		// (4) only one timestamp added to the duplicated instances in the input argument
 
 		// first test the case where the timestamp is not in the triple store and we add it
 		String namespace = "http://www.w3.org/2006/time#";
@@ -635,6 +636,26 @@ public class DerivedQuantityClientTest {
 		// check that the derived data doesn't have time instance
 		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
 				ResourceFactory.createProperty(namespace + "hasTime")));
+
+		// only one timestamp is added to the duplicated instance in input arguments
+		devClient.addTimeInstance(Arrays.asList(entity3, entity3, entity3));
+		// check that only one instance of timestamp is added to entity3
+		RDFNode timeInstance3 = testKG.getIndividual(entity3)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance3.isResource());
+		RDFNode timeposition3 = testKG.getIndividual(timeInstance3.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition3.isResource());
+		RDFNode timestamp3 = testKG.getIndividual(timeposition3.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp3.isLiteral());
+		JSONArray resultsForEntity3 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			entity3, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForEntity3.length());
+		Assert.assertEquals(timeInstance3.toString(), resultsForEntity3.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition3.toString(), resultsForEntity3.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp3.asLiteral().getLong(), resultsForEntity3.getJSONObject(0).getLong("timestamp"));
 	}
 
 	@Test
