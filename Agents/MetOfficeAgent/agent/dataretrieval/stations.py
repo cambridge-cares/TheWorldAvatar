@@ -234,7 +234,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     # Extract station IRIs of interest
     station_iris = list(station_details['station'].unique())
     # Assign ids to stations (required for DTVF)
-    dtvf_ids =dict(zip(station_iris, range(len(station_iris))))
+    dtvf_ids = dict(zip(station_iris, range(len(station_iris))))
     station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
    
     # 2) Get time series data
@@ -272,6 +272,11 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     kg_client = KGClient(query_endpoint, update_endpoint)
     ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
                          rdb_password=DB_PASSWORD)
+
+    #print('Creating output files (geojson, metadata, timeseries) ...')
+    logger.info('Creating output files (geojson, metadata, timeseries) ...')
+    t1 = time.time()
+
     # Create output files for each set of retrieved time series data
     for i in range(len(ts_data)):
         # Get output data
@@ -283,33 +288,37 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         co = colors[i]
         op = opacities[i]
 
-        # Convert unintelligible ontology of units of measure symbols for DTVF
-        for u in units:
-            u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
+        if stations.empty:
+            geojson.append(create_geojson_output(stations, co, op))
+            metadata.append(create_metadata_output(stations))
+            timeseries.append([])
+        else:
+            # Convert unintelligible ontology of units of measure symbols for DTVF
+            for u in units:
+                u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
 
-        #print('Creating output files (geojson, metadata, timeseries) ...')
-        logger.info('Creating output files (geojson, metadata, timeseries) ...')
-        t1 = time.time()
+            # 1) Create GeoJSON file for ReportingStations
+            geojson.append(create_geojson_output(stations, co, op))
 
-        # 1) Create GeoJSON file for ReportingStations
-        geojson.append(create_geojson_output(stations, co, op))
+            # 2) Create JSON file for ReportingStations metadata
+            metadata.append(create_metadata_output(stations))
 
-        # 2) Create JSON file for ReportingStations metadata
-        metadata.append(create_metadata_output(stations))
+            # 3) Create Time series output    
+            # Get List of corresponding dtvf ids for list of time series
+            # (to assign time series output to correct station in DTVF)
+            
+            dataIRIs = [t.getDataIRIs()[0] for t in ts]
+            id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
+            tsjson = ts_client.tsclient.convertToJSON(ts, id_list, units, names)
+            # Make JSON file readable in Python
+            timeseries.append(json.loads(tsjson.toString()))
 
-        # 3) Create Time series output    
-        # Get List of corresponding dtvf ids for list of time series
-        # (to assign time series output to correct station in DTVF)
-        dataIRIs = [t.getDataIRIs()[0] for t in ts]
-        id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
-        tsjson = ts_client.tsclient.convertToJSON(ts, id_list, units, names)
-        # Make JSON file readable in Python
-        timeseries.append(json.loads(tsjson.toString()))
-        t2 = time.time()
-        diff = t2-t1
-        #print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-        logger.info(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-        logger.info('Output files successfully created.')
+    t2 = time.time()
+    diff = t2-t1
+    #print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info('Output files successfully created.')
+
     # Create output files for stations without any time series data
     stations = station_details[(station_details['obs_station'] == 0) & 
                                (station_details['fcs_station'] == 0)]

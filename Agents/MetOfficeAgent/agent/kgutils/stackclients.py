@@ -3,13 +3,12 @@
 # Date: 09 Sep 2022                            #
 ################################################
 
-# The purpose of this module is to provide functionality to execute
-# KG queries and updates using the StoreRouter from the JPS_BASE_LIB
+# The purpose of this module is to provide functionality to interact with the
+# overarching Docker Stack using the Stack Clients wrapped by py4jps
 
 import glob
 import jaydebeapi
 import json
-
 
 import agentlogging
 from agent.errorhandling.exceptions import StackException
@@ -21,21 +20,34 @@ from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ON
 logger = agentlogging.get_logger("prod")
 
 
-class OntopClient:
+class StackClient:
+    # Define parent class for all Stack Clients to minimise number of required
+    # JAVA resource views and import the required java classes
+
+    # Create ONE JPS_BASE_LIB view
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+    # Create ONE Stack Clients view
+    stackClients_view = stackClientsGw.createModuleView()
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.GDALClient")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.ontop.OntopClient")
+
+
+class OntopClient(StackClient):
 
     def __init__(self, query_endpoint=ONTOP_URL):
-
-        # create a JVM module view and use it to import the required java classes
-        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
-
+        # Initialise OntopClient as RemoteStoreClient
         try:
-            # Initialise OntopClient as RemoteStoreClient
             self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise OntopClient.")
             raise StackException("Unable to initialise OntopClient.") from ex
     
+
     def performQuery(self, query):
         """
             This function performs query to Ontop endpoint.
@@ -52,19 +64,13 @@ class OntopClient:
     
     @staticmethod
     def upload_ontop_mapping():
-        # Initialise ONTOP client and upload mapping file using default properties
-        # from environment variables
-
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopClient")
-
+        # Upload mapping file using default properties from environment variables
         try:
-            # Create JAVA path object to mapping file
-            f = stackClientsView.java.io.File(ONTOP_FILE)
+            # Create JAVA path object to mapping file            
+            f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
             fp = f.toPath()
             # Update ONTOP mapping (requires JAVA path object)
-            stackClientsView.OntopClient().updateOBDA(fp)
+            OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
         except Exception as ex:
             logger.error("Unable to update OBDA mapping.")
             raise StackException("Unable to update OBDA mapping.") from ex
@@ -145,6 +151,7 @@ class PostGISClient:
             logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException('Unsuccessful JDBC interaction.') from ex
 
+
     def get_feature_iris_in_circle(self, lat: float, lon: float, radius: float,
                                    table=LAYERNAME):
         """
@@ -173,17 +180,13 @@ class PostGISClient:
             raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
-class GdalClient:
+class GdalClient(StackClient):
     
     def __init__(self):
-
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.GDALClient")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
+        # Initialise GdalClient with default upload/conversion settings
         try:
-            self.client = stackClientsView.GDALClient()
-            self.orgoptions = stackClientsView.Ogr2OgrOptions()
+            self.client = self.stackClients_view.GDALClient()
+            self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
         except Exception as ex:
             logger.error("Unable to initialise GdalClient.")
             raise StackException("Unable to initialise GdalClient.") from ex
@@ -197,17 +200,14 @@ class GdalClient:
                                                 self.orgoptions, True)
 
 
-class GeoserverClient:
+class GeoserverClient(StackClient):
 
     def __init__(self):
 
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
+        # Initialise Geoserver with default settings
         try:
-            self.client = stackClientsView.GeoServerClient()
-            self.vectorsettings = stackClientsView.GeoServerVectorSettings()
+            self.client = self.stackClients_view.GeoServerClient()
+            self.vectorsettings = self.stackClients_view.GeoServerVectorSettings()
         except Exception as ex:
             logger.error("Unable to initialise GeoServerClient.")
             raise StackException("Unable to initialise GeoServerClient.") from ex   
@@ -232,13 +232,20 @@ class GeoserverClient:
 def create_geojson_for_postgis(station_iri: str, station_name: str, 
                                station_type: str, lat: float, long: float, ):
     """
-
+    Create GeoJSON object for upload to PostGIS database
+    Needs to contain at least the following properties for FeatureInfoAgent to work:
+        "name" - human readable name of the feature 
+        "iri" - full IRI of the feature as represented in the knowledge graph
+        "endpoint" - URL of the Blazegraph namespace containing data on the feature,
+                     i.e. from where shall FeatureInfoAgent retrieve data about "iri"
+    Further properties can be added as needed, i.e. for styling purposes
     """
     # Initialise GeoJSON
     geojson = {'type': 'Feature'}
 
     # Define properties
     props = {
+        # TODO extend with other properties
         'iri': station_iri,
         'name': station_name,
         'geom_iri': station_iri + '/geometry',

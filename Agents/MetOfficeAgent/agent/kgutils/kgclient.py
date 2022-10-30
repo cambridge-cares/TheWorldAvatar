@@ -4,7 +4,7 @@
 ################################################
 
 # The purpose of this module is to provide functionality to execute
-# KG queries and updates using the StoreRouter from the JPS_BASE_LIB
+# KG queries and updates using the RemoteStoreClient from the JPS_BASE_LIB
 
 import json
 
