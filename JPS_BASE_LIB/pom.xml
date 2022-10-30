@@ -8,7 +8,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.21.0</version>
+    <version>1.22.0-180-dev-derivation-pure-inputs-timestamp-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
