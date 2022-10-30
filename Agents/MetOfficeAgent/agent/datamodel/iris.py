@@ -1,5 +1,9 @@
 from agent.datamodel.observation_types import *
 
+# URLs to ontology .owl files
+TBOX_URL = 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl'
+ABOX_URL = 'http://www.theworldavatar.com/kb/ontoems/OntoEMS.owl'
+
 ###--- Common Base URLs ---###
 # External ontologies
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
@@ -76,3 +80,6 @@ XSD_DATETIME = XSD + 'dateTime'
 GEO_FEATURE = GEO + 'Feature'
 GEO_HAS_GEOMETRY = GEO + 'hasGeometry'
 GEO_ASWKT = GEO + 'asWKT'
+# OWL
+OWL_VERSION = OWL + 'versionInfo'
+OWL_SAMEAS = OWL + 'sameAs'

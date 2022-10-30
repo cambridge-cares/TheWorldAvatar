@@ -2,9 +2,15 @@
 
 from flask import Flask
 
+from agent.utils.stack_configs import UPDATE_ENDPOINT
+from agent.kgutils.initialise_kg import create_blazegraph_namespace, upload_ontology
+
 
 def create_app(test_config=None):
-    """Create and configure an instance of the Flask application."""
+    """
+    Create and configure an instance of the Flask application.
+    """
+
     app = Flask(__name__, instance_relative_config=True)
     app.config['JSON_SORT_KEYS'] = False
     if test_config is not None:
@@ -15,13 +21,19 @@ def create_app(test_config=None):
         # Import parts of application
         import agent.flaskapp.home.routes as home
         import agent.flaskapp.inputtasks.routes as inputtasks
-        #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
-        import agent.flaskapp.outputtasks.routes as outputtasks
-
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
-        #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
+        
+        # Data retrieval only kept as "backup" to create geojson files on demand
+        # Regular visualisation now handled via Postgis/Geoserver
+        import agent.flaskapp.outputtasks.routes as outputtasks
         app.register_blueprint(outputtasks.outputtasks_bp)
+
+    # Create Blazegraph namespace if not exists (on app startup)
+    create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
+
+    # Upload ontology if not exists (on app startup)
+    upload_ontology()
 
     return app
