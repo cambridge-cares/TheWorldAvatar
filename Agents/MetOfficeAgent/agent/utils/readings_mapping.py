@@ -9,10 +9,21 @@
 
 from math import nan
 
-from agent.datamodel.observation_types import *
 from agent.datamodel.iris import *
+from agent.datamodel.observation_types import *
 from agent.kgutils.javagateway import jpsBaseLibGW
 
+
+# Create Java classes for all time series data
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+# Time entries (Instant)
+Instant = jpsBaseLibView.java.time.Instant
+TIMECLASS = Instant.now().getClass()
+# Data class (i.e. all data as double)
+DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
+
+# Times are reported in ISO 8601 dateTime (UTC)
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Mapping of observation variables to OntoEMS concepts
 READINGS_MAPPING = {
@@ -78,10 +89,3 @@ VISIBILITY = {
     'VG': 40000.0,   # Very good - Between 20-40 km
     'EX': 60000.0    # Excellent - More than 40 km
 }
-
-# Times are reported in ISO 8601 dateTime (UTC)
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-# Create data class for all time series data (i.e. all data as double)
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
-DATACLASS = jpsBaseLibView.java.lang.Double.TYPE

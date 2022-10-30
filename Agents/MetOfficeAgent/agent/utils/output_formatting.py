@@ -1,10 +1,12 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 11 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 11 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functionality to structure
-# output information retrieved from the KG in DTVF suitable formats
+# output information retrieved from the KG in DTVF suitable (geo)json formats
+# (i.e. this is mainly deprecated due to DTVF visualisation mainly served via
+# Postgis and Geoserver; however, this functionality is kept as "backup")
 
 from math import nan
 
