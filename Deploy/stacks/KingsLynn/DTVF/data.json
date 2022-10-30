@@ -148,7 +148,15 @@
                     "minzoom": 8, 
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": "weather-obs",
+                        "icon-image": [
+                            "match",
+                            ["get", "subtype"],
+                            "observation",
+                            "weather-obs",
+                            "forecast",
+                            "weather-for",
+                            "weather"
+                        ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
