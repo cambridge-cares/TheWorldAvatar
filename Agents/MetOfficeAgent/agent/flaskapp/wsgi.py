@@ -11,18 +11,17 @@
 import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
+from pytz import utc
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from agent.flaskapp import create_app
-from apscheduler.schedulers.background import BackgroundScheduler
-from pytz import utc
-
 from agent.datainstantiation.readings import update_all_stations
 
 
-# Add recurring background task to assimilate latest time series data once per day
+# Initialise background scheduler and add recurring background task to 
+# assimilate latest time series data once per day
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(update_all_stations, trigger='cron', hour='3', timezone=utc)
-
 sched.start()
 
 app = create_app()

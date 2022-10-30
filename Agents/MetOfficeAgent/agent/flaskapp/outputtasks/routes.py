@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 14 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 14 Apr 2022                            #
+######################################~#########
 
 import pathlib
 import datetime as dt
@@ -12,9 +12,9 @@ from agent.dataretrieval.stations import create_json_output_files
 from agent.utils.readings_mapping import TIME_FORMAT
 from agent.errorhandling.exceptions import InvalidInput
 
-
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+
 
 outputtasks_bp = Blueprint(
     'outputtasks_bp', __name__

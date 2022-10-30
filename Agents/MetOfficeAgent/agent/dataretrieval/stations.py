@@ -6,22 +6,24 @@
 # The purpose of this module is to provide functions to retrieve 
 # station data from the KG
 
-import os
-import re
 import json
-import time
+import os
 import pathlib
+import re
+import time
 import pandas as pd
 
 import agentlogging
-from agent.kgutils.kgclient import KGClient
-from agent.kgutils.tsclient import TSClient
-from agent.kgutils.stackclients import OntopClient
-from agent.kgutils.querytemplates import *
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
-from agent.errorhandling.exceptions import InvalidInput
 from agent.dataretrieval.readings import get_time_series_data
-from agent.utils.output_formatting import create_geojson_output, create_metadata_output
+from agent.errorhandling.exceptions import InvalidInput
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import *
+from agent.kgutils.stackclients import OntopClient
+from agent.kgutils.tsclient import TSClient
+from agent.utils.output_formatting import (create_geojson_output,
+                                           create_metadata_output)
+from agent.utils.stack_configs import (DB_PASSWORD, DB_URL, DB_USER,
+                                       QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 08 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 08 Apr 2022                            #
+################################################
 
 from flask import Blueprint, request, jsonify
 
@@ -11,9 +11,9 @@ from agent.datainstantiation.readings import instantiate_all_station_readings
 from agent.datainstantiation.readings import add_all_readings_timeseries
 from agent.datainstantiation.readings import update_all_stations
 
-
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+
 
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__

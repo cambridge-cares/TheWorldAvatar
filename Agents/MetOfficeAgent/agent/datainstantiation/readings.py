@@ -1,29 +1,31 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 05 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 05 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functions to retrieve 
 # readings data from the API and instantiate it in the KG
 
-import uuid
 import metoffer
-import datetime as dt
 import time
+import uuid
+import datetime as dt
 from math import nan
 
 import agentlogging
+from agent.datainstantiation.stations import *
 from agent.dataretrieval.readings import *
 from agent.dataretrieval.stations import *
-from agent.datainstantiation.stations import *
-from agent.kgutils.querytemplates import *
-from agent.kgutils.kgclient import KGClient
-from agent.kgutils.tsclient import TSClient
 from agent.errorhandling.exceptions import APIException
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import *
+from agent.kgutils.tsclient import TSClient
 from agent.utils.env_configs import DATAPOINT_API_KEY
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
-from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
-                                         TIME_FORMAT, DATACLASS, VISIBILITY
+from agent.utils.readings_mapping import (COMPASS, DATACLASS, READINGS_MAPPING,
+                                          TIME_FORMAT, UNITS_MAPPING,
+                                          VISIBILITY)
+from agent.utils.stack_configs import (DB_PASSWORD, DB_URL, DB_USER,
+                                       QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

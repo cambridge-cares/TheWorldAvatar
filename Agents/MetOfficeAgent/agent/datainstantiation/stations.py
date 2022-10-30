@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 01 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 01 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functions to retrieve 
 # station data from the API and instantiate it in the KG
@@ -10,14 +10,15 @@ import uuid
 import metoffer
 
 import agentlogging
-from agent.kgutils.querytemplates import *
 from agent.dataretrieval.stations import get_all_metoffice_station_ids
-from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import APIException
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import *
+from agent.kgutils.stackclients import (GdalClient, GeoserverClient,
+                                        OntopClient, PostGISClient,
+                                        create_geojson_for_postgis)
 from agent.utils.env_configs import DATAPOINT_API_KEY
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
-                                           GeoserverClient, create_geojson_for_postgis
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

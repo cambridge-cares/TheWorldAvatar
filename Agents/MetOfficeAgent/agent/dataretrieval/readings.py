@@ -11,12 +11,13 @@ import datetime as dt
 import pandas as pd
 
 import agentlogging
-from agent.kgutils.kgclient import KGClient
-from agent.kgutils.tsclient import TSClient
-from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import InvalidInput, TSException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_URL, DB_PASSWORD, DB_USER
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import *
+from agent.kgutils.tsclient import TSClient
 from agent.utils.readings_mapping import TIME_FORMAT
+from agent.utils.stack_configs import (DB_PASSWORD, DB_URL, DB_USER,
+                                       QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
