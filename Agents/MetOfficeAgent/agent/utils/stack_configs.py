@@ -4,21 +4,15 @@
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
-# (i.e. for the Time Series Client) from Stack clients
+# (e.g. for the Time Series Client) from Stack clients
 
 import agentlogging
 
 from agent.kgutils.javagateway import stackClientsGw
-from agent.utils.env_configs import DATABASE
+from agent.utils.env_configs import DATABASE, NAMESPACE
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
-
-
-# Initialise global variables to be read from properties file
-global DB_URL, DB_USER, DB_PASSWORD
-global QUERY_ENDPOINT, UPDATE_ENDPOINT
-global ONTOP_URL
 
 
 def retrieve_settings():
@@ -55,9 +49,9 @@ def retrieve_settings():
     DB_USER = pg_conf.getUsername()
     DB_PASSWORD = pg_conf.getPassword()
 
-    # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
-    # for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl("kb")
+    # Extract SPARQL endpoints of KG 
+    # (i.e. Query and Update endpoints are equivalent for Blazegraph)
+    QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
     # Extract ONTOP endpoint

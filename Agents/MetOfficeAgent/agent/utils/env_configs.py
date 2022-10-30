@@ -4,7 +4,7 @@
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
-# (i.e. for the Time Series Client) from environment variables
+# (e.g. for the Time Series Client) from environment variables
 
 import os
 import warnings
@@ -15,18 +15,14 @@ import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
-
-# Initialise global variables to be read from properties file
-global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
-
-
 def retrieve_settings():
     """
         Reads settings from environment variables (as global variables).
     """
 
     # Define global scope for global variables
-    global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
+    global DATAPOINT_API_KEY, NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
+           ONTOP_FILE
 
     # Retrieve MetOffice API key
     DATAPOINT_API_KEY = os.getenv('API_KEY')    
@@ -37,7 +33,16 @@ def retrieve_settings():
         logger.error('No "API_KEY" value has been provided in environment variables.')
         raise ValueError('No "API_KEY" value has been provided in environment variables.')
 
-    # Retrieve PostgreSQL/PostGIS database name
+    # Retrieve target Blazegraph name for data to instantiate
+    NAMESPACE = os.getenv('NAMESPACE')
+    if NAMESPACE is None:
+        logger.error('"NAMESPACE" name is missing in environment variables.')
+        raise ValueError('"NAMESPACE" name is missing in environment variables.')
+    if NAMESPACE == '':
+        logger.error('No "NAMESPACE" value has been provided in environment variables.')
+        raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+
+    # Retrieve target PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
     if DATABASE is None:
         logger.error('"DATABASE" name is missing in environment variables.')
@@ -46,10 +51,10 @@ def retrieve_settings():
         logger.error('No "DATABASE" value has been provided in environment variables.')
         raise ValueError('No "DATABASE" value has been provided in environment variables.')
     if DATABASE != 'postgres':
-        logger.warning(f'Provided "DATABASE" name {db_name} does not match default database name "postgres".')
+        logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         warnings.warn(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
 
-    # Retrieve PostgreSQL/PostGIS table name for geospatial information
+    # Retrieve target PostgreSQL/PostGIS table name for geospatial information
     # PostGIS table and Geoserver layer will have same name
     LAYERNAME = os.getenv('LAYERNAME')
     if LAYERNAME is None:
