@@ -229,8 +229,8 @@ class GeoserverClient(StackClient):
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(station_iri: str, station_name: str, 
-                               station_type: str, lat: float, long: float, ):
+def create_geojson_for_postgis(station_iri: str, station_name: str, station_type: str,
+                               station_subtype: str, lat: float, long: float, kg_endpoint: str):
     """
     Create GeoJSON object for upload to PostGIS database
     Needs to contain at least the following properties for FeatureInfoAgent to work:
@@ -245,11 +245,12 @@ def create_geojson_for_postgis(station_iri: str, station_name: str,
 
     # Define properties
     props = {
-        # TODO extend with other properties
         'iri': station_iri,
         'name': station_name,
+        'endpoint': kg_endpoint,
         'geom_iri': station_iri + '/geometry',
         'type': station_type,
+        'subtype': station_subtype,
     }
 
     # Define geometry

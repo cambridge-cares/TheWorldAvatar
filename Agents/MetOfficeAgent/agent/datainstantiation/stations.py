@@ -39,7 +39,7 @@ def instantiate_stations(station_data: list,
     postgis_client = PostGISClient()
     gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
-    feature_type = 'MetOffice Reporting station'
+    station_type = 'MetOffice Reporting station'
     
     # Initialise update SPARQL query
     query_string = f"""
@@ -52,8 +52,9 @@ def instantiate_stations(station_data: list,
         # Extract station information from API result
         to_instantiate = _condition_metoffer_data(data)
         to_instantiate['station_iri'] = station_IRI
-        # Remove location info to be handled separately
+        # Remove location and subtype info to be handled separately
         lat, lon = to_instantiate.pop('location').split('#')
+        station_subtype = to_instantiate.pop('subtype')
 
         # Create SPARQL update for Blazegraph
         query_string += add_station_data(**to_instantiate)
@@ -61,11 +62,11 @@ def instantiate_stations(station_data: list,
         # Create GeoJSON file for upload to PostGIS
         lat = float(lat)
         lon = float(lon)
-        #TODO: add KG endpoint + station type (obs/fcs)
-        station_name = feature_type + f' at {lat},{lon}' if not \
-                       to_instantiate.get('label') else to_instantiate.get('label')
-        geojson = create_geojson_for_postgis(station_IRI, station_name, feature_type,
-                                             lat, lon)
+        station_name = station_type + f' at {lat},{lon}' if not \
+                       to_instantiate.get('label') else to_instantiate.get('label')        
+        geojson = create_geojson_for_postgis(station_iri=station_IRI, station_name=station_name,
+                                             station_type=station_type, station_subtype=station_subtype,
+                                             lat=lat, long=lon, kg_endpoint=query_endpoint)
 
         # Upload OBDA mapping and create Geoserver layer when first geospatial
         # data is uploaded to PostGIS
@@ -80,7 +81,7 @@ def instantiate_stations(station_data: list,
             geoserver_client.create_postgis_layer()
         else:        
             # Upload new geospatial information
-            if not postgis_client.check_point_feature_exists(lat, lon, feature_type):
+            if not postgis_client.check_point_feature_exists(lat, lon, station_type):
                 logger.info('Uploading GeoJSON to PostGIS ...')
                 gdal_client.uploadGeoJSON(geojson)
 
@@ -127,9 +128,15 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
         sites = []
         sites += obs_sites 
         sites += fcs_sites
-        # Remove potential duplicates
+        # Remove potential station duplicates
         unique_sites = [s for n, s in enumerate(sites) if s not in sites[n + 1:]]
-    
+
+        # Add observation type to stations, i.e. use 'forecast' station for stations which 
+        # report both (as there are much more forecast stations than observation stations)
+        obs_ids = set([site['id'] for site in obs_sites])
+        unique_sites = [dict(site, **{'type':'observation'}) if site['id'] in obs_ids else \
+                        dict(site, **{'type':'forecast'}) for site in unique_sites]
+
     return unique_sites
 
 
@@ -182,7 +189,9 @@ def _condition_metoffer_data(station_data: dict) -> dict:
                    'id': None,
                    'label': None,
                    'location': None,
-                   'elevation': None
+                   'elevation': None,
+                   # Station subtype defaults to Forecast station (as there are much more of them)
+                   'subtype': 'forecast'
     }
     # Extract relevant data
     if 'id' in station_data.keys(): conditioned['id'] = station_data['id']
@@ -190,6 +199,7 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     if 'elevation' in station_data.keys(): conditioned['elevation'] = station_data['elevation']
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
+    if 'type' in station_data.keys(): conditioned['subtype'] = station_data['type']
     else:
         logger.warning(f"Station {station_data['id']} does not have location data.")
         #print(f"Station {station_data['id']} does not have location data.")
