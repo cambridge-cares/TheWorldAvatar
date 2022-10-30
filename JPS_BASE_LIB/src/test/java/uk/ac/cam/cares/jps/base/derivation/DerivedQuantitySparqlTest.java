@@ -951,6 +951,26 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testAllowedAsDerivationOutputs() {
+		// case 1: entities allowed to be added as outputs
+		// the function should execute fine
+		devClient.allowedAsDerivationOutputs(entities);
+
+		// case 2: entity already belongsTo other derivations
+		// mark derivation now, then the function should throw error
+		devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(entities));
+		Assert.assertTrue(e.getMessage().contains("already part of another derivation"));
+
+		// case 3: entity already has timestamp, is pure input
+		// should throw error
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+		Assert.assertTrue(e.getMessage().contains("have time instances"));
+	}
+
+	@Test
 	public void testBulkCreateDerivations() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
