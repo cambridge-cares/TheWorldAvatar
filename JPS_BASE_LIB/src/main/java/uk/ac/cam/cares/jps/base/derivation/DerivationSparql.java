@@ -230,7 +230,23 @@ public class DerivationSparql {
 
 		// SPARQL update by insert-where clause to ensure one agent service don't get duplicated entries in KG
 		// NOTE this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
-		modify.where(GraphPatterns.filterNotExists(iri(ontoAgentServiceIRI).isA(Service)));
+		// NOTE that below we are using a work-around to achieve the where clause
+		// in practice, "WHERE { FILTER NOT EXISTS { <http://agent> a ontoagent:Service } }" should be sufficient
+		// however, if the where clause is constructed using below line of code
+		// modify.where(GraphPatterns.filterNotExists(iri(ontoAgentServiceIRI).isA(Service)));
+		// one can only get "WHERE { <http://agent> a ontoagent:Service }" due to the implementation of SparqlBuilder
+		// therefore, here we make it SPARQL update with sub query to determine if the agent service IRI already exist
+		// the complete where clause looks like:
+		// WHERE { { SELECT *
+		// WHERE {  VALUES ( ?x0 )   { (<http://b6b6f047-8ee5-4ee8-8d6a-dd2c23a8c944>) }
+		// FILTER NOT EXISTS { ?x0 a agent:Service . } }
+		// } }
+		SubSelect sub = GraphPatterns.select();
+		Variable servicePlaceholder = sub.var();
+		ValuesPattern serviceVP = new ValuesPattern(servicePlaceholder);
+		serviceVP.addValuePairForMultipleVariables(iri(ontoAgentServiceIRI));
+		sub.where(serviceVP, GraphPatterns.filterNotExists(servicePlaceholder.isA(Service)));
+		modify.where(sub);
 
 		storeClient.executeUpdate(modify.prefix(prefixAgent).getQueryString());
 	}
