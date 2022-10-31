@@ -5,11 +5,14 @@
 
 import pytest
 
-# Import module(s) under test from metoffice
-import agent.kgutils.querytemplates as templates
+# Import module(s) under test from agent
+from agent.kgutils.querytemplates import add_station_data
 
 
 def test_add_station_data():
+    # Test creation of correct SPARQL update triples to instantiate MetOffice 
+    # station according to OntoEMS
+
     # Define test data
     data1 = {'station_iri': None}
     data2 = {'station_iri': 'test_iri',
@@ -35,9 +38,9 @@ def test_add_station_data():
             + "<test_iri> <http://www.w3.org/2000/01/rdf-schema#label> \"test_label\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
             + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/hasIdentifier> \"test_id\"^^<http://www.w3.org/2001/XMLSchema#string> . " 
     # Tests
-    test1 = templates.add_station_data(**data1)
+    test1 = add_station_data(**data1)
     assert test1 == result1
-    test2 = templates.add_station_data(**data2)
+    test2 = add_station_data(**data2)
     assert test2 == result2
-    test3 = templates.add_station_data(**data3)
+    test3 = add_station_data(**data3)
     assert test3 == result3

@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 04 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 04 Apr 2022                            #
+################################################
 
 import time
 import copy
@@ -12,9 +12,9 @@ from testcontainers.core.container import DockerContainer
 from agent.dataretrieval.stations import *
 from agent.dataretrieval.readings import *
 from agent.errorhandling.exceptions import APIException
-from agent.utils.env_configs import QUERY_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT
 from agent.flaskapp import create_app
-from tests.utils import *
+from tests.conftest import *
 
 # Import modules under test from gasgridagent
 from agent.datainstantiation.stations import *
@@ -36,13 +36,21 @@ def client():
         yield client
 
 
-def test_instantiate_stations(initialise_triple_store):
+def test_instantiate_stations(initialise_triple_store, mocker):
 
     # Read test station data
     station_data = read_station_data()
     data1 = [station_data['station1']]
     data2 = [station_data['station1'], station_data['station2']]
     data3 = [station_data['station3']]
+
+    # Mock Stack client initialisations)
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GdalClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GeoserverClient.__init__', return_value=None)
+    # Mock PostGIS client methods
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_table_exists', return_value=True)
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_point_feature_exists', return_value=True)
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
@@ -61,21 +69,21 @@ def test_instantiate_stations(initialise_triple_store):
         res = get_all_metoffice_station_ids(query_endpoint=endpoint)
         assert res[0] == station_data['station1']['id']
         triples = get_number_of_triples(endpoint)
-        assert triples == 6
+        assert triples == 5
 
         # Instantiate second station   
         instantiate_stations(data2, query_endpoint=endpoint, update_endpoint=endpoint)           
         res = get_all_metoffice_station_ids(query_endpoint=endpoint)
         assert len(res) == 3
         triples = get_number_of_triples(endpoint)
-        assert triples == 17
+        assert triples == 14
 
         # Instantiate third station   
         instantiate_stations(data3, query_endpoint=endpoint, update_endpoint=endpoint)           
         res = get_all_metoffice_station_ids(query_endpoint=endpoint)
         assert len(res) == 4
         triples = get_number_of_triples(endpoint)
-        assert triples == 21
+        assert triples == 17
 
 
 def test_retrieve_station_data_from_api_exceptions():
@@ -93,9 +101,18 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
     # Read test station data
     station_data = read_station_data()
     station_data = [station_data[i] for i in station_data]
+
+    # Mock Stack client initialisations)
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GdalClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GeoserverClient.__init__', return_value=None)
+    # Mock PostGIS client methods
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_table_exists', return_value=True)
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_point_feature_exists', return_value=True)
+
     # Mock call to Met Office DataPoint API
-    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
-                     return_value=station_data)
+    mocker.patch('agent.datainstantiation.stations.retrieve_station_data_from_api',
+                  return_value=station_data)
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
@@ -116,7 +133,7 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         res = get_all_metoffice_station_ids(query_endpoint=endpoint)
         assert len(res) == 3
         triples = get_number_of_triples(endpoint)
-        assert triples == 15
+        assert triples == 12
 
         # Instantiate all stations
         instantiate_all_stations('test_api_key', query_endpoint=endpoint,
@@ -125,38 +142,38 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         res = get_all_metoffice_station_ids(query_endpoint=endpoint)
         assert len(res) == 3
         triples = get_number_of_triples(endpoint)
-        assert triples == 15
+        assert triples == 12
 
 
-@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
-                          as TimeSeriesClient reads required inputs directly from properties file")
-def test_instantiate_all_stations_webapp(client, mocker):
-    # Integration test for expected behavior of instantiation of all stations
-    # via webapp (requires (local) blazegraph running at endpoints specified
-    # in 'metoffice.properties'; namespace MUST be empty)
+# @pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
+#                           as TimeSeriesClient reads required inputs directly from properties file")
+# def test_instantiate_all_stations_webapp(client, mocker):
+#     # Integration test for expected behavior of instantiation of all stations
+#     # via webapp (requires (local) blazegraph running at endpoints specified
+#     # in 'metoffice.properties'; namespace MUST be empty)
 
-    # Read test station data
-    station_data = read_station_data()
-    station_data = [station_data[i] for i in station_data]
-    # Mock call to Met Office DataPoint API
-    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
-                     return_value=station_data)
+#     # Read test station data
+#     station_data = read_station_data()
+#     station_data = [station_data[i] for i in station_data]
+#     # Mock call to Met Office DataPoint API
+#     m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
+#                      return_value=station_data)
 
-    # Verify that knowledge base is empty
-    res = get_all_metoffice_station_ids(query_endpoint=QUERY_ENDPOINT)
-    assert len(res) == 0
+#     # Verify that knowledge base is empty
+#     res = get_all_metoffice_station_ids(query_endpoint=QUERY_ENDPOINT)
+#     assert len(res) == 0
    
-    # Instantiate all stations
-    route = '/api/metofficeagent/instantiate/stations'
-    response = client.get(route)
-    new_stations = response.json['stations']
-    assert new_stations == 3
+#     # Instantiate all stations
+#     route = '/api/metofficeagent/instantiate/stations'
+#     response = client.get(route)
+#     new_stations = response.json['stations']
+#     assert new_stations == 3
 
-    # Instantiate all stations (2nd time)
-    route = '/api/metofficeagent/instantiate/stations'
-    response = client.get(route)
-    new_stations = response.json['stations']
-    assert new_stations == 0
+#     # Instantiate all stations (2nd time)
+#     route = '/api/metofficeagent/instantiate/stations'
+#     response = client.get(route)
+#     new_stations = response.json['stations']
+#     assert new_stations == 0
 
 
 def test_condition_readings_data():
@@ -237,7 +254,7 @@ def test_add_readings_for_station(mocker):
     expected_fc2 =    '<http://Station/1> <https://www.theworldavatar.com/kg/ontoems/reports> <https://www.theworldavatar.com/kg/ontoems/DewPoint_1> . <https://www.theworldavatar.com/kg/ontoems/DewPoint_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.theworldavatar.com/kg/ontoems/DewPoint> . <https://www.theworldavatar.com/kg/ontoems/Forecast_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.theworldavatar.com/kg/ontoems/Forecast> . <https://www.theworldavatar.com/kg/ontoems/Forecast_1> <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius> . <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.ontology-of-units-of-measure.org/resource/om-2/Unit> . <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius> <http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> "&#x00B0;C"^^<http://www.w3.org/2001/XMLSchema#string> . <https://www.theworldavatar.com/kg/ontoems/DewPoint_1> <https://www.theworldavatar.com/kg/ontoems/hasForecastedValue> <https://www.theworldavatar.com/kg/ontoems/Forecast_1> .'
 
     # Mock call to uuid function
-    m = mocker.patch('uuid.uuid4', return_value=str(1))
+    mocker.patch('uuid.uuid4', return_value=str(1))
         
     station_iri = 'http://Station/1'
 
