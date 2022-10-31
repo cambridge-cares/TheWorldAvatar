@@ -3,7 +3,6 @@
 # Date: 04 Apr 2022                            #
 ################################################
 
-import time
 import pytest
 
 from agent.datainstantiation.stations import *

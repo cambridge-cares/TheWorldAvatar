@@ -11,8 +11,8 @@
 # -> Mock all modules, which depend on Stack deployment and/or run of Flask App startup
 # ----------------------------------------------------------------------------------
 
-from .mockutils import env_configs_mock, stack_configs_mock, initialise_kg_mock
 import sys
+from .mockutils import env_configs_mock, stack_configs_mock, initialise_kg_mock
 
 sys.modules['agent.utils.env_configs'] = env_configs_mock
 sys.modules['agent.utils.stack_configs'] = stack_configs_mock

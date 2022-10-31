@@ -3,12 +3,8 @@
 # Date: 04 Apr 2022                            #
 ################################################
 
-import time
-import copy
-import importlib
 import datetime as dt
 import pytest
-from testcontainers.core.container import DockerContainer
 
 from agent.dataretrieval.stations import *
 from agent.dataretrieval.readings import *
@@ -16,7 +12,7 @@ from agent.errorhandling.exceptions import APIException
 
 from tests.conftest import *
 
-# Import modules under test from gasgridagent
+# Import module(s) under test from agent
 from agent.datainstantiation.stations import *
 from agent.datainstantiation.readings import *
 
