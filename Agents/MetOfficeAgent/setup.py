@@ -27,7 +27,8 @@ setup(
         "dev": [
             "pytest>=6.2.3",
             "pytest-mock>=3.7.0",
-            "testcontainers>=3.4.2"
+            "testcontainers>=3.4.2",
+            "psycopg2~=2.9.5"
         ]
     }
 )

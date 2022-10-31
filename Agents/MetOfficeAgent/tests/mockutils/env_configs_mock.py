@@ -1,6 +1,6 @@
 DATAPOINT_API_KEY='test_token'
 NAMESPACE='kb'
-DATABASE='metoffice'
+DATABASE='postgres'
 LAYERNAME='metoffice'
 GEOSERVER_WORKSPACE='metoffice'
 ONTOP_FILE='/app/resources/ontop.obda'

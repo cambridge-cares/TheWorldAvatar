@@ -13,13 +13,15 @@ import os
 import json
 import time
 import requests
-from pathlib import Path
 import pytest
+import psycopg2 as pg
+from pathlib import Path
 from testcontainers.core.container import DockerContainer
 
 from agent.flaskapp import create_app
 from agent.kgutils.kgclient import KGClient
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                      DB_URL, DB_USER, DB_PASSWORD
 
 
 # ----------------------------------------------------------------------------------
@@ -52,6 +54,35 @@ def clear_triple_store():
         DELETE WHERE {?s ?p ?o}
         """
     kg_client.performUpdate(query_string)
+
+
+
+@pytest.fixture()
+def clear_database():
+    # Delete all tables from database (to ensure that tests are independent)
+    # 1) Ensure access to database
+    service_available = False
+    while not service_available:
+        try:
+            # Retrieve host, port, and database from RDB URL
+            host = DB_URL.split(':')[2].replace('//', '')
+            port = DB_URL.split(':')[3].split('/')[0]
+            database = DB_URL.split('/')[-1]
+            conn = pg.connect(host=host, port=port, database=database,
+                              user=DB_USER, password=DB_PASSWORD)
+            if conn.status == pg.extensions.STATUS_READY:
+                service_available = True
+        except Exception:
+            time.sleep(3)
+    
+    # 2) Drop all tables
+    with conn:
+        cur=conn.cursor()
+        sql_query = """
+            DROP SCHEMA public CASCADE;
+            CREATE SCHEMA public;
+        """
+        cur.execute(sql_query)
 
 
 # ----------------------------------------------------------------------------------
