@@ -22,13 +22,4 @@ public class Building extends OntoChemPlantModel {
     @Getter @Setter @FieldAnnotation(value = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isOwnerOf", backward = true)
             protected URI OwnedBy;
 
-    @Getter @Setter @FieldAnnotation("http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#stores") protected URI stores;
-
-    @Getter @Setter @FieldAnnotation(value = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasStorageCapacity",
-            innerType = StorageCapacity.class) private ArrayList<StorageCapacity> StorageCapacity;
-
-    @Getter @Setter @FieldAnnotation(value = "http://www.opengis.net/ont/geosparql#ehContains", backward = true)
-            protected URI ownedBy;
-
-
 }

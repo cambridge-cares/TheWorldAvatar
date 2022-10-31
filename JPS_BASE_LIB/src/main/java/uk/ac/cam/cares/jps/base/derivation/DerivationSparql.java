@@ -117,6 +117,7 @@ public class DerivationSparql {
 
 	// data properties
 	private static Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
+	private static Iri uuidLock = p_derived.iri("uuidLock");
 
 	// the derived quantity client relies on matching rdf:type to figure out which
 	// old instances to delete
@@ -295,15 +296,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(Derivation));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
+		if (entityDerivationMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -356,15 +359,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(Derivation));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
+		if (entityDerivationMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -442,16 +447,17 @@ public class DerivationSparql {
 		// insert all generated output triples (new information)
 		outputTriples.forEach(t -> modify.insert(t));
 
-		// add <entity> <belongsTo> <derivation> for each newIRI
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
+		if (entityDerivationMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, iri(derivationIRI)));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// add <derivation> <isDerivedFrom> <input> for all inputs
@@ -518,15 +524,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(DerivationWithTimeSeries));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
+		if (entityDerivationMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -598,15 +606,17 @@ public class DerivationSparql {
 
 		modify.insert(derived_iri.isA(DerivationAsyn));
 
-		for (String entity : entities) {
-			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(entity)) {
+		// add belongsTo
+		// first check if the entities are already belongsTo other derivation
+		Map<String, String> entityDerivationMap = getDerivationsOf(entities);
+		if (entityDerivationMap.isEmpty()) {
+			for (String entity : entities) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
-			} else {
-				String errmsg = "<" + entity + "> is already part of another derivation";
-				LOGGER.fatal(errmsg);
-				throw new JPSRuntimeException(errmsg);
 			}
+		} else {
+			String errmsg = "ERROR: some entities are already part of another derivation" + entityDerivationMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
 		}
 
 		// link to agent
@@ -728,30 +738,6 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * check that the entity is part of another derived quantity, this is not
-	 * allowed
-	 * query triple - <entity> <belongsTo> ?x
-	 * 
-	 * @param storeClient
-	 * @param entity
-	 * @return
-	 */
-	boolean hasBelongsTo(String entity) {
-		SelectQuery query = Queries.SELECT();
-
-		TriplePattern queryPattern = iri(entity).has(belongsTo, query.var());
-		query.prefix(p_derived).where(queryPattern);
-
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
 	 * This method marks the status of the derivation as "Requested".
 	 * 
 	 * @param storeClient
@@ -779,11 +765,16 @@ public class DerivationSparql {
 	 * also records the timestamp at the point the derivation status is marked as
 	 * InProgress:
 	 * <derivation> <retrievedInputsAt> timestamp.
+	 * A uuidLock is also added to the derivation to uniquely identify the entity that
+	 * successfully marked the derivation as InProgress:
+	 * <derivation> <uuidLock> uuid.
 	 * 
-	 * @param storeClient
+	 * This method returns a boolean value if the uuid is added to the derivation.
+	 * 
 	 * @param derivation
+	 * @return
 	 */
-	void updateStatusBeforeSetupJob(String derivation) {
+	boolean updateStatusBeforeSetupJob(String derivation) {
 		SelectQuery query = Queries.SELECT();
 		ModifyQuery modify = Queries.MODIFY();
 		Variable status = query.var();
@@ -801,14 +792,35 @@ public class DerivationSparql {
 		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
 		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt,
 				retrievedInputsAtTimestamp);
+		// add uuidLock to the derivation, so that the agent can query if the SPARQL update is successful
+		// this is to avoid the case where concurrent updates are made to the same derivation by different agent threads
+		String uuid = UUID.randomUUID().toString();
+		TriplePattern insert_tp_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		// the retrievedInputsAt data property should only be added when there's no such
 		// data property already - this will prevent duplicate timestamp in case of
 		// super fast monitoring
 		TriplePattern existingRetrievedInputsAtPattern = iri(derivation).has(retrievedInputsAt, existingTimestamp);
-		modify.delete(delete_tp).insert(insert_tp_rdf_type, insert_tp_retrieved_inputs_at)
+		modify.delete(delete_tp).insert(insert_tp_rdf_type, insert_tp_retrieved_inputs_at, insert_tp_uuid_lock)
 				.where(GraphPatterns.and(query_gp.filterNotExists(existingRetrievedInputsAtPattern)))
 				.prefix(p_derived);
 		storeClient.executeUpdate(modify.getQueryString());
+
+		// check if the uuid added to the derivation is the same one
+		query = Queries.SELECT();
+		Variable addedUUID = query.var();
+		query.prefix(p_derived).select(addedUUID).where(iri(derivation).has(uuidLock, addedUUID));
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		if (queryResult.isEmpty()) {
+			throw new JPSRuntimeException("Failed to add uuidLock to the derivation: " + derivation);
+		} else {
+			JSONObject queryResultObject = queryResult.getJSONObject(0);
+			String addedUUIDString = queryResultObject.getString(addedUUID.getQueryString().substring(1));
+			if (addedUUIDString.equals(uuid)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	/**
@@ -822,13 +834,16 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		Variable status = query.var();
 		Variable statusType = query.var();
+		Variable uuid = query.var();
 
 		GraphPattern query_gp = GraphPatterns.and(
-			iri(derivation).has(hasStatus, status), status.isA(statusType));
+			iri(derivation).has(hasStatus, status), status.isA(statusType),
+			iri(derivation).has(uuidLock, uuid));
 		TriplePattern delete_tp = status.isA(statusType);
+		TriplePattern delete_uuid_lock = iri(derivation).has(uuidLock, uuid);
 		TriplePattern insert_tp_rdf_type = status.isA(Finished);
 
-		modify.delete(delete_tp).where(query_gp).prefix(p_derived);
+		modify.delete(delete_tp, delete_uuid_lock).where(query_gp).prefix(p_derived);
 		modify.insert(insert_tp_rdf_type);
 
 		// also add all new generated triples

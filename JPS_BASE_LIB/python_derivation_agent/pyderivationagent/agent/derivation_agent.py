@@ -5,6 +5,8 @@ from flask import Flask
 from flask import request
 from urllib.parse import unquote
 from urllib.parse import urlparse
+import traceback
+import yagmail
 import json
 import time
 
@@ -41,6 +43,12 @@ class DerivationAgent(ABC):
         flask_config: FlaskConfig = FlaskConfig(),
         agent_endpoint: str = "http://localhost:5000/sync_derivation",
         register_agent: bool = True,
+        max_thread_monitor_async_derivations: int = 1,
+        email_recipient: str = '',
+        email_subject_prefix: str = '',
+        email_username: str = '',
+        email_auth_json_path: str = '',
+        email_start_end_async_derivations: bool = False,
         logger_name: str = "dev"
     ):
         """
@@ -74,9 +82,10 @@ class DerivationAgent(ABC):
         self.app = app
         self.app.config.from_object(flask_config)
 
-        # initialise flask scheduler and assign time interval for monitorDerivations job
+        # initialise flask scheduler and assign time interval for monitor_async_derivations job
         self.scheduler = APScheduler(app=self.app)
         self.time_interval = time_interval
+        self.max_thread_monitor_async_derivations = max_thread_monitor_async_derivations
 
         # assign IRI and HTTP URL of the agent
         self.agentIRI = agent_iri
@@ -85,16 +94,20 @@ class DerivationAgent(ABC):
         # assign KG related information
         self.kgUrl = kg_url
         self.kgUpdateUrl = kg_update_url if kg_update_url is not None else kg_url
-        self.kgUser = kg_user
-        self.kgPassword = kg_password
+        # NOTE that we check first if below are empty string first
+        # as the config_derivation_agent will read as '' if the value is not provided in env file
+        self.kgUser = kg_user if kg_user != '' else None
+        self.kgPassword = kg_password if kg_password != '' else None
 
         # assign file server related information
-        self.fs_url = fs_url
-        self.fs_user = fs_user
-        self.fs_password = fs_password
+        # NOTE that we check first if below are empty string first
+        # as the config_derivation_agent will read as '' if the value is not provided in env file
+        self.fs_url = fs_url if fs_url != '' else None
+        self.fs_user = fs_user if fs_user != '' else None
+        self.fs_password = fs_password if fs_password != '' else None
 
         # initialise the derivationClient with SPARQL Query and Update endpoint
-        if kg_user is None:
+        if self.kgUser is None:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(
                 self.kgUrl, self.kgUpdateUrl)
         else:
@@ -108,6 +121,15 @@ class DerivationAgent(ABC):
 
         # initialise the logger
         self.logger = agentlogging.get_logger(logger_name)
+
+        # initialise the email object and email_start_end_async_derivations flag
+        if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
+            self.yag = yagmail.SMTP(email_username, oauth2_file=email_auth_json_path)
+            self.email_recipient = email_recipient.split(';')
+            self.email_subject_prefix = email_subject_prefix if bool(email_subject_prefix) else str(self.__class__.__name__)
+        else:
+            self.yag = None
+        self.email_start_end_async_derivations = email_start_end_async_derivations
 
         # register the agent to the KG if required
         self.register_agent = register_agent
@@ -133,6 +155,54 @@ class DerivationAgent(ABC):
                 self.logger.info("Scheduler is started.")
         inner.__is_periodical_job__ = True
         return inner
+
+    def send_email_when_exception(func_return_value=False):
+        def decorator(func):
+            def inner(self, *args, **kwargs):
+                try:
+                    if not func_return_value:
+                        func(self, *args, **kwargs)
+                    else:
+                        return func(self, *args, **kwargs)
+                except Exception as e:
+                    if self.yag is not None:
+                        try:
+                            self.yag.send(
+                                self.email_recipient,
+                                f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
+                                [format_current_time(), str(e), traceback.format_exc()]
+                            )
+                        except Exception as yag_e:
+                            # if failed to send email, log the error and continue
+                            self.logger.error(f"Failed to send email. Error: {yag_e}",
+                                stack_info=True, exc_info=True)
+                    raise e
+            return inner
+        return decorator
+
+    def send_email_when_async_derivation_up_to_date(self, derivation_iri):
+        if self.yag is not None and self.email_start_end_async_derivations:
+            try:
+                self.yag.send(
+                    self.email_recipient,
+                    f"[{self.email_subject_prefix}] async derivation up-to-date",
+                    [format_current_time(), f"{derivation_iri}"]
+                )
+            except Exception as e:
+                # if failed to send email, log the error and continue
+                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
+
+    def send_email_when_async_derivation_started(self, derivation_iri):
+        if self.yag is not None and self.email_start_end_async_derivations:
+            try:
+                self.yag.send(
+                    self.email_recipient,
+                    f"[{self.email_subject_prefix}] async derivation now-in-progress",
+                    [format_current_time(), f"{derivation_iri}"]
+                )
+            except Exception as e:
+                # if failed to send email, log the error and continue
+                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
 
     def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
         """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
@@ -188,6 +258,7 @@ class DerivationAgent(ABC):
                               function, methods=methods, *args, **kwargs)
         self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
 
+    @send_email_when_exception(func_return_value=False)
     def monitor_async_derivations(self):
         """
             This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
@@ -206,86 +277,130 @@ class DerivationAgent(ABC):
         """
 
         # Below codes follow the logic as defined in DerivationAgent.java in JPS_BASE_LIB
-        # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java
+        # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java
 
-        # Retrieves a list of derivations and their status type that "isDerivedUsing" DerivationAgent
-        derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(
-            self.agentIRI)
-        if bool(derivationAndStatusType):
-            self.logger.info("A list of asynchronous derivations that <isDerivedUsing> <%s> are retrieved: %s." % (
-                self.agentIRI, {d: str(derivationAndStatusType[d]) for d in derivationAndStatusType}))
+        # Initialise two conditions for the while loop
+        # 1. break_out_time is the timestamp when the next round of monitoring should be started
+        break_out_time = time.time() + self.time_interval
+        # 2. query_again is the flag to indicate whether the derivation status should be updated in memory
+        query_again = False
 
-            # Iterate over the list of derivation, and do different things depend on the derivation status
-            for derivation in derivationAndStatusType:
-                statusType = str(derivationAndStatusType[derivation])
-                self.logger.info("Asynchronous derivation <%s> has status type: %s." % (
-                    derivation, statusType))
+        # There is no do-while loop in Python, so we use a while loop with a break statement
+        # "while True" makes sure the loop is executed at least once
+        while True:
+            # Retrieves a list of derivations and their status type that "isDerivedUsing" DerivationAgent
+            derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(
+                self.agentIRI)
+            if bool(derivationAndStatusType):
+                self.logger.info("A list of asynchronous derivations that <isDerivedUsing> <%s> are retrieved: %s." % (
+                    self.agentIRI, {d: str(derivationAndStatusType[d]) for d in derivationAndStatusType}))
 
-                # If "Requested", check the immediate upstream derivations if they are up-to-date
-                # if any of the asynchronous derivations are still outdated, skip, otherwise, request update of all synchronous derivations
-                # then retrieve inputs, marks as "InProgress", start job, update status at job completion
-                if statusType == 'REQUESTED':
-                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkImmediateUpstreamDerivation(derivation)
-                    if self.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN in immediateUpstreamDerivationToUpdate:
-                        self.logger.info("Asynchronous derivation <" + derivation
-                                         + "> has a list of immediate upstream asynchronous derivations to be updated: "
-                                         + str(immediateUpstreamDerivationToUpdate))
-                    else:
-                        syncDerivationsToUpdate = self.derivationClient.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate)
-                        if bool(syncDerivationsToUpdate):
+                # Iterate over the list of derivation, and do different things depend on the derivation status
+                for derivation in derivationAndStatusType:
+                    statusType = str(derivationAndStatusType[derivation])
+
+                    # If "Requested", check the immediate upstream derivations if they are up-to-date
+                    # if any of the asynchronous derivations are still outdated, skip, otherwise, request update of all synchronous derivations
+                    # then retrieve inputs, marks as "InProgress", start job, update status at job completion
+                    if statusType == 'REQUESTED':
+                        immediateUpstreamDerivationToUpdate = self.derivationClient.checkImmediateUpstreamDerivation(derivation)
+                        if self.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN in immediateUpstreamDerivationToUpdate:
                             self.logger.info("Asynchronous derivation <" + derivation
-                                             + "> has a list of immediate upstream synchronous derivations to be updated: "
-                                             + str(syncDerivationsToUpdate))
-                            self.derivationClient.updatePureSyncDerivations(syncDerivationsToUpdate)
-                            self.logger.info("Update of synchronous derivation is done for: " + str(syncDerivationsToUpdate))
-                        if not bool(self.derivationClient.checkImmediateUpstreamDerivation(derivation)):
-                            agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
-                            self.logger.info("Agent <%s> retrieved inputs of asynchronous derivation <%s>: %s." % (
-                                self.agentIRI, derivation, agentInputs))
-                            self.logger.info("Asynchronous derivation <%s> is in progress." % (derivation))
+                                            + "> has a list of immediate upstream asynchronous derivations to be updated: "
+                                            + str(immediateUpstreamDerivationToUpdate))
+                            # set flag to false to skips this "Requested" derivation until next time
+                            # this is to avoid the agent flooding the KG with queries of the status over a short period of time
+                            query_again = False
+                        else:
+                            syncDerivationsToUpdate = self.derivationClient.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate)
+                            if bool(syncDerivationsToUpdate):
+                                self.logger.info("Asynchronous derivation <" + derivation
+                                                + "> has a list of immediate upstream synchronous derivations to be updated: "
+                                                + str(syncDerivationsToUpdate))
+                                self.derivationClient.updatePureSyncDerivations(syncDerivationsToUpdate)
+                                self.logger.info("Update of synchronous derivation is done for: " + str(syncDerivationsToUpdate))
+                            if not bool(self.derivationClient.checkImmediateUpstreamDerivation(derivation)):
+                                agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
+                                # Mark the status as "InProgress"
+                                # if another agent thread is updating the same derivation concurrently
+                                # and successed before this thread, then this method will return false
+                                progressToJob = self.derivationClient.updateStatusBeforeSetupJob(derivation)
+                                # only progress to job if the status is updated successfully
+                                # otherwise, the other thread will handle the job
+                                if not progressToJob:
+                                    self.logger.info(f"Asynchronous derivation <{derivation}> is already in progress by another agent thread.")
+                                else:
+                                    self.logger.info("Agent <%s> retrieved inputs of asynchronous derivation <%s>: %s." % (
+                                        self.agentIRI, derivation, agentInputs))
+                                    self.logger.info("Asynchronous derivation <%s> is in progress." % (derivation))
+                                    # send email to indicate the derivation is handled in this thread and started, i.e. now-in-progress
+                                    self.send_email_when_async_derivation_started(derivation)
 
-                            # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
-                            agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
-                            agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
-                            if agent_input_key in agent_input_json:
-                                inputs_to_send = agent_input_json[agent_input_key]
-                            else:
-                                self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (
-                                    agent_input_key, agent_input_json.__dict__))
-                            # The inputs_to_send should be a key-values pair format,
-                            # for example: {'OntoXX:Concept_A': ['Instance_A'], 'OntoXX:Concept_B': ['Instance_B']}
-                            derivationInputs = self.jpsBaseLib_view.DerivationInputs(inputs_to_send)
-                            derivation_inputs = DerivationInputs(derivationInputs)
-                            derivationOutputs = self.jpsBaseLib_view.DerivationOutputs()
-                            derivation_outputs = DerivationOutputs(derivationOutputs)
-                            self.process_request_parameters(derivation_inputs, derivation_outputs)
+                                    # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
+                                    agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
+                                    agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+                                    if agent_input_key in agent_input_json:
+                                        inputs_to_send = agent_input_json[agent_input_key]
+                                    else:
+                                        self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (
+                                            agent_input_key, agent_input_json.__dict__))
+                                    # The inputs_to_send should be a key-values pair format,
+                                    # for example: {'OntoXX:Concept_A': ['Instance_A'], 'OntoXX:Concept_B': ['Instance_B']}
+                                    derivationInputs = self.jpsBaseLib_view.DerivationInputs(inputs_to_send)
+                                    derivation_inputs = DerivationInputs(derivationInputs)
+                                    derivationOutputs = self.jpsBaseLib_view.DerivationOutputs()
+                                    derivation_outputs = DerivationOutputs(derivationOutputs)
+                                    self.process_request_parameters(derivation_inputs, derivation_outputs)
 
-                            newDerivedIRI = derivationOutputs.getNewDerivedIRI()
-                            newTriples = derivationOutputs.getOutputTriples()
-                            self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples)
-                            self.logger.info("Asynchronous derivation <%s> generated new derived IRI: <%s>." % (
-                                derivation, ">, <".join(newDerivedIRI)))
-                            self.logger.info("Asynchronous derivation <" + derivation +
-                                             "> has all new generated triples: " + str([t.getQueryString() for t in newTriples]))
-                            self.logger.info("Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.")
+                                    newDerivedIRI = derivationOutputs.getNewDerivedIRI()
+                                    newTriples = derivationOutputs.getOutputTriples()
+                                    self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples)
+                                    self.logger.info("Asynchronous derivation <%s> generated new derived IRI: <%s>." % (
+                                        derivation, ">, <".join(newDerivedIRI)))
+                                    self.logger.info("Asynchronous derivation <" + derivation +
+                                                    "> has all new generated triples: " + str([t.getQueryString() for t in newTriples]))
+                                    self.logger.info("Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.")
 
-                # If "InProgress", pass
-                elif statusType == 'INPROGRESS':
-                    pass
+                            # set flag to true as either (1) the agent has been process this derivation for some time
+                            # and status of other derivations in KG might have changed by other processes during this time
+                            # or (2) the derivation is processed by another agent therefore needs a record update
+                            query_again = True
 
-                # If "Finished", do all the clean-up steps
-                elif statusType == 'FINISHED':
-                    self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
-                    self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
+                    # If "InProgress", pass
+                    elif statusType == 'INPROGRESS':
+                        # the query_again flag is set as false to let agent carry on to next derivation in the list
+                        query_again = False
 
-                # If anything else, pass
-                else:
-                    self.logger.info("Asynchronous derivation <%s> has unhandled status type: %s." % (
-                        derivation, statusType))
-                    pass
+                    # If "Finished", do all the clean-up steps
+                    elif statusType == 'FINISHED':
+                        self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
+                        self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
+                        # set flag to false as this cleaning up process is fast and no need to query again
+                        query_again = False
+                        # send email to indicate the derivation is now finished and cleaned up, i.e. up-to-date
+                        self.send_email_when_async_derivation_up_to_date(derivation)
 
-        else:
-            self.logger.info("Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
+                    elif statusType == 'NOSTATUS':
+                        # no need to query_again as the derivation is considered as up-to-date
+                        query_again = False
+
+                    # If anything else, pass
+                    else:
+                        self.logger.info("Asynchronous derivation <%s> has unhandled status type: %s." % (
+                            derivation, statusType))
+                        query_again = False
+
+                    # Break out the for loop and query again the list of derivations and their status
+                    if query_again:
+                        break
+
+            else:
+                self.logger.info("Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
+
+            # Check if the two flags are still met, if not, break out the while loop
+            # i.e. process until the time is up and if have not gone through all derivations
+            if time.time() > break_out_time or not query_again:
+                break
 
     @abstractmethod
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
@@ -313,7 +428,8 @@ class DerivationAgent(ABC):
             This method starts the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
         """
         self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations,
-                               trigger='interval', seconds=self.time_interval)
+                               trigger='interval', seconds=self.time_interval,
+                               max_instances=self.max_thread_monitor_async_derivations) # enable multiple threads if needed, default is 1
         self.logger.info("Monitor asynchronous derivations job is scheduled with a time interval of %d seconds." % (
             self.time_interval))
 
@@ -328,6 +444,7 @@ class DerivationAgent(ABC):
         for func in all_periodical_jobs:
             func()
 
+    @send_email_when_exception(func_return_value=True)
     def handle_sync_derivations(self):
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
         requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
@@ -394,7 +511,7 @@ class DerivationAgent(ABC):
                     # information
                     updated = self.derivationClient.getDerivation(derivationIRI)
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = updated.getTimestamp()
-                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = updated.getBelongsToMap()
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(updated.getBelongsToMap()))
                     self.logger.info("Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
                                      + str(res))
             else:
@@ -445,3 +562,6 @@ class DerivationAgent(ABC):
             This method runs the flask app as an HTTP servlet.
         """
         self.app.run(**kwargs)
+
+def format_current_time() -> str:
+    return str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + f" {str(time.localtime().tm_zone)}"

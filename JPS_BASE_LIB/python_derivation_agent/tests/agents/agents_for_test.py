@@ -1,6 +1,11 @@
 import random
 import uuid
-
+import time
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
+from rdflib import RDFS
+from rdflib import XSD
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
 from .sparql_client_for_test import RANDOM_EXAMPLE_NUMOFPOINTS
@@ -11,9 +16,12 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
 from .sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
+from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
+from .sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+from .sparql_client_for_test import RANDOM_EXAMPLE_SPECIALVALUE
 
 class UpdateEndpoint(DerivationAgent):
     # NOTE Placeholder to enable instantiating UpdateEndpoint instance
@@ -35,11 +43,18 @@ class UpdateEndpoint(DerivationAgent):
     def update_derivations(self):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
-        diff_iri = sparql_client.getDifferenceIRI()
-        diff_derivation = self.derivationClient.getDerivationsOf([diff_iri])[diff_iri]
-        self.derivationClient.unifiedUpdateDerivation(diff_derivation)
-        return {"status": "successfully requested update derivation <" + diff_derivation + ">, will be done in due course"}
-
+        try:
+            diff_iri = sparql_client.getDifferenceIRI()
+            diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
+            self.logger.info("Difference IRI: %s", diff_iri)
+            self.logger.info("Difference Reverse IRI List: %s", diff_reverse_iri_list)
+            derivations = list(self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
+            self.logger.info("Derivations: %s", derivations)
+            for derivation in derivations:
+                self.derivationClient.unifiedUpdateDerivation(derivation)
+            return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
+        except Exception as e:
+            raise f"Difference IRI: {diff_iri}; DifferenceReverse IRI list: {diff_reverse_iri_list}; Requested Derivations: {derivations}; Error in update_derivations: {str(e)}"
 
 class DifferenceAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
@@ -64,7 +79,37 @@ class DifferenceAgent(DerivationAgent):
         diff = max - min
         diff_iri = RANDOM_EXAMPLE_BASE_URL + 'Difference_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(diff_iri, RANDOM_EXAMPLE_DIFFERENCE)
-        derivation_outputs.addTriple(diff_iri, RANDOM_EXAMPLE_HASVALUE, diff)
+        derivation_outputs.addLiteral(diff_iri, RANDOM_EXAMPLE_HASVALUE, diff)
+
+
+class DiffReverseAgent(DerivationAgent):
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_MAXVALUE, RANDOM_EXAMPLE_MINVALUE]
+
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_DIFFERENCEREVERSE]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # DiffReverseAgent will sleep for a few seconds before it runs
+        # This is to simulate an agent running long jobs
+        time.sleep(self.time_interval)
+
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
+
+        # Get min and max value
+        max_iri = derivation_inputs.getIris(RANDOM_EXAMPLE_MAXVALUE)[0]
+        max = sparql_client.getValue(max_iri)
+        min_iri = derivation_inputs.getIris(RANDOM_EXAMPLE_MINVALUE)[0]
+        min = sparql_client.getValue(min_iri)
+
+        # Compute difference, write to derivation_outputs
+        diff_reverse = min - max
+        diff_reverse_iri = RANDOM_EXAMPLE_BASE_URL + 'DifferenceReverse_' + str(uuid.uuid4())
+        derivation_outputs.createNewEntity(diff_reverse_iri, RANDOM_EXAMPLE_DIFFERENCEREVERSE)
+        derivation_outputs.addLiteral(diff_reverse_iri, RANDOM_EXAMPLE_HASVALUE, diff_reverse)
 
 
 class MaxValueAgent(DerivationAgent):
@@ -88,7 +133,7 @@ class MaxValueAgent(DerivationAgent):
         # Compute max value, write to derivation_outputs
         max_iri = RANDOM_EXAMPLE_BASE_URL + 'MaxValue_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(max_iri, RANDOM_EXAMPLE_MAXVALUE)
-        derivation_outputs.addTriple(max_iri, RANDOM_EXAMPLE_HASVALUE, max)
+        derivation_outputs.addLiteral(max_iri, RANDOM_EXAMPLE_HASVALUE, max)
 
 
 class MinValueAgent(DerivationAgent):
@@ -112,7 +157,7 @@ class MinValueAgent(DerivationAgent):
         # Compute min value, write to derivation_outputs
         min_iri = RANDOM_EXAMPLE_BASE_URL + 'MinValue_' + str(uuid.uuid4())
         derivation_outputs.createNewEntity(min_iri, RANDOM_EXAMPLE_MINVALUE)
-        derivation_outputs.addTriple(min_iri, RANDOM_EXAMPLE_HASVALUE, min)
+        derivation_outputs.addLiteral(min_iri, RANDOM_EXAMPLE_HASVALUE, min)
 
 
 class RNGAgent(DerivationAgent):
@@ -149,11 +194,20 @@ class RNGAgent(DerivationAgent):
         derivation_outputs.createNewEntity(
             listofpoints_iri, RANDOM_EXAMPLE_LISTOFPOINTS)
 
+        # Generate random points triples in a Graph and add to derivation_outputs
+        g = Graph()
         for i in range(numofpoints):
             new_point = random.randint(lowerlimit, upperlimit)
             pt_iri = RANDOM_EXAMPLE_BASE_URL + 'Point_' + str(uuid.uuid4())
             derivation_outputs.createNewEntity(pt_iri, RANDOM_EXAMPLE_POINT)
-            derivation_outputs.addTriple(
-                listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri)
-            derivation_outputs.addTriple(
-                pt_iri, RANDOM_EXAMPLE_HASVALUE, new_point)
+            g.add((URIRef(listofpoints_iri), URIRef(RANDOM_EXAMPLE_HASPOINT), URIRef(pt_iri)))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_HASVALUE), Literal(new_point)))
+            # this RANDOM_STRING_WITH_SPACES is to test that the agent can add a string with spaces as data property
+            g.add((URIRef(pt_iri), RDFS.comment, Literal(RANDOM_STRING_WITH_SPACES)))
+            # below special numbers are added to test the python side can be correctly parsed by the java side
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("-inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("nan"))))
+
+        # addTriple and addLiteral will be called by addGraph, therefore tested behind the scenes
+        derivation_outputs.addGraph(g)

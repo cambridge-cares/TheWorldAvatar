@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyderivationagent',
-    version='1.1.0',
+    version='1.2.2',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['py4jps>=1.0.22', 'flask==2.1.0', 'gunicorn==20.0.4', 'Flask-APScheduler', 'rdflib', 'python-dotenv'
+    install_requires=['py4jps>=1.0.26', 'flask==2.1.0', 'gunicorn==20.0.4', 'Flask-APScheduler', 'rdflib', 'python-dotenv', 'yagmail'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
     ],
     extras_require={
