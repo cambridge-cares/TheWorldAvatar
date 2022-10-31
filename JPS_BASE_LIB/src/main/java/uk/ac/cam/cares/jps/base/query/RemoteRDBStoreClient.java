@@ -97,8 +97,8 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
     @Override
     public JSONArray executeQuery(String query){
         try (Connection conn = getConnection();
-            Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
-                java.sql.ResultSet rs = stmt.executeQuery(query);
+            Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            java.sql.ResultSet rs = stmt.executeQuery(query)) {
                 return StoreClientHelper.convert(rs);
         } catch (SQLException e) {
             throw new JPSRuntimeException(ERR_PREFIX + "Failure at closing statement or connection", e);
