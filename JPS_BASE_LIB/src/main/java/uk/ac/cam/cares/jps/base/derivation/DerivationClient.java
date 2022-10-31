@@ -94,30 +94,9 @@ public class DerivationClient {
 		this.sparqlClient = new DerivationSparql(kbClient, derivationInstanceBaseURL);
 	}
 
-	/**
-	 * This creates a new derived instance and adds the following statements
-	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>,
-	 * <agentIRI> <hasHttpUrl> <agentURL>, <derived> <isDerivedFrom> <inputsIRI>
-	 * Use this for instances that get replaced by agents
-	 * 
-	 * @param derivedQuantityIRI
-	 * @param inputsIRI
-	 * @param agentIRI
-	 */
-	public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-		String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, agentURL, inputsIRI);
-		this.sparqlClient.addTimeInstance(createdDerivation);
-		LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
-		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
-		return createdDerivation;
-	}
-
 	public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
-		List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
-				inputsList);
+			List<List<String>> inputsList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, inputsList);
 		LOGGER.info("Instantiated derivations " + derivations);
 
 		// add timestamp to each derivation
@@ -160,25 +139,22 @@ public class DerivationClient {
 	 * 
 	 * @param entity
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputsIRI
 	 */
-	public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL,
-			List<String> inputsIRI) {
-		String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, agentURL,
-				inputsIRI);
+	public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, List<String> inputsIRI) {
+		String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, inputsIRI);
 		this.sparqlClient.addTimeInstance(createdDerivation);
 		LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
 		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
 		return createdDerivation;
 	}
 
 	public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+			List<List<String>> inputsList) {
 		List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList,
-				agentURLList, inputsList);
+				inputsList);
 		LOGGER.info("Instantiated derivations with time series " + derivations);
 
 		// add timestamp to each derivation

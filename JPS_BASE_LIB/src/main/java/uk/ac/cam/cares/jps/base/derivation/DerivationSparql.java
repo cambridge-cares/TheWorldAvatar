@@ -196,24 +196,17 @@ public class DerivationSparql {
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
-	 * @param agentURLList
 	 * @param inputsList
 	 * @param derivationTypeList
 	 * @param forAsyncUpdateFlagList
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
+			List<List<String>> inputsList, List<String> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		if (entitiesList.size() != agentIRIList.size()) {
 			String errmsg = "Size of entities list is different from agent IRI list";
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		if (entitiesList.size() != agentURLList.size()) {
-			String errmsg = "Size of entities list is different from agent URL list";
 			LOGGER.fatal(errmsg);
 			throw new JPSRuntimeException(errmsg);
 		}
@@ -261,7 +254,6 @@ public class DerivationSparql {
 				}
 			});
 			String agentIRI = agentIRIList.get(i);
-			String agentURL = agentURLList.get(i);
 			Boolean forUpdateFlag = forAsyncUpdateFlagList.get(i);
 			String derivationType = derivationTypeList.get(i);
 			// create a unique IRI for this new derived quantity
@@ -291,14 +283,6 @@ public class DerivationSparql {
 			// link to agent
 			// here it is assumed that an agent only has one operation
 			modify.insert(derivedIri.has(isDerivedUsing, iri(agentIRI)));
-			// only add information about ontoagent:Operation to knowledge graph if the
-			// agent url is provided and is NOT PLACEHOLDER string
-			if (!agentURL.contentEquals(PLACEHOLDER)) {
-				String operationIri = derivationInstanceBaseURL + UUID.randomUUID().toString();
-				// add agent url
-				modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operationIri)));
-				modify.insert(iri(operationIri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-			}
 		}
 
 		// put sub query to retrieve the pure inputs whose timestamp is missing and add timestamp in insert clause
@@ -349,34 +333,12 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * creates a new instance of derived quantity, grouping the given entities under
-	 * this instance
-	 * whenever this derived quantity gets updated, the provided entities will get
-	 * deleted by the client
-	 * 
-	 * @param kbClient
-	 * @param entities
-	 * @param agentIRI
-	 * @param agentURL
-	 * @param inputs
-	 */
-	String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
-		List<String> derivations = bulkCreateDerivations(
-				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
-		return derivations.get(0);
-	}
-
-	/**
 	 * This method creates a new instance of derived quantity, grouping the given
 	 * entities under this instance,
 	 * whenever this derived quantity gets updated, the provided entities will get
 	 * deleted by the client.
-	 * This method primarily follows createDerivation(StoreClientInterface kbClient,
-	 * List<String> entities,
-	 * String agentIRI, String agentURL, List<String> inputs), except that this
-	 * method does NOT create statements
-	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method
-	 * assumes the triples
+	 * This method does NOT create statements about the OntoAgent:Operation and
+	 * OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
 	 * <URL>}
 	 * already exist in respective OntoAgent instances.
@@ -389,7 +351,7 @@ public class DerivationSparql {
 	 */
 	String createDerivation(List<String> entities, String agentIRI, List<String> inputs) {
 		List<String> derivations = bulkCreateDerivations(
-			Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(PLACEHOLDER), Arrays.asList(inputs));
+			Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(inputs));
 		return derivations.get(0);
 	}
 
@@ -500,16 +462,14 @@ public class DerivationSparql {
 	 * 
 	 * @param entities
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputs
 	 */
-	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<List<String>> inputsList) {
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATION)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
 	}
 
@@ -521,13 +481,11 @@ public class DerivationSparql {
 	 * @param kbClient
 	 * @param entities
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputs
 	 */
-	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL,
-			List<String> inputs) {
+	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, List<String> inputs) {
 		List<String> derivations = bulkCreateDerivationsWithTimeSeries(
-				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
+				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(inputs));
 		return derivations.get(0);
 	}
 
@@ -536,16 +494,14 @@ public class DerivationSparql {
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
-	 * @param agentURLList
 	 * @param inputsList
 	 */
-	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<List<String>> inputsList) {
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONWITHTIMESERIES)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
 	}
 
@@ -554,12 +510,8 @@ public class DerivationSparql {
 	 * the given entities under this instance,
 	 * whenever this derived quantity gets updated, the provided entities will get
 	 * deleted by the client.
-	 * This method primarily follows createDerivation(StoreClientInterface kbClient,
-	 * List<String> entities,
-	 * String agentIRI, String agentURL, List<String> inputs), except that this
-	 * method does NOT create statements
-	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method
-	 * assumes the triples
+	 * This method does NOT create statements about the OntoAgent:Operation and
+	 * OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
 	 * <URL>}
 	 * already exist in respective OntoAgent instances.
@@ -578,28 +530,6 @@ public class DerivationSparql {
 
 	/**
 	 * This method enables creating multiple asynchronous derivations in one go.
-	 * Note that this method DOES create statements about OntoAgent:Operation
-	 * and OntoAgent:hasHttpUrl, i.e. below triples
-	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
-	 * <URL>}
-	 * 
-	 * @param entitiesList
-	 * @param agentIRIList
-	 * @param agentURLList
-	 * @param inputsList
-	 * @param forAsyncUpdateFlagList
-	 * @return
-	 */
-	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
-				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationTypeList, forAsyncUpdateFlagList);
-	}
-
-	/**
-	 * This method enables creating multiple asynchronous derivations in one go.
 	 * Note that this method does NOT create statements about OntoAgent:Operation
 	 * and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
@@ -614,32 +544,10 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
-				.collect(Collectors.toList());
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
-	}
-
-	/**
-	 * This method enables creating multiple derivations with potentially mixed
-	 * derivation type in one go.
-	 * Note that this method DOES create statements about OntoAgent:Operation
-	 * and OntoAgent:hasHttpUrl, i.e. below triples
-	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
-	 * <URL>}
-	 * 
-	 * @param entitiesList
-	 * @param agentIRIList
-	 * @param agentURLList
-	 * @param inputsList
-	 */
-	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationRdfTypeList,
-			List<Boolean> forAsyncUpdateFlagList) {
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
 	/**
@@ -657,9 +565,7 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<List<String>> inputsList, List<String> derivationRdfTypeList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
-				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
