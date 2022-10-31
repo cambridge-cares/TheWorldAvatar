@@ -182,9 +182,9 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     # Overwrite default placeholder values for endpoints in mocked stack_configs.py
     with open(STACK_CONFIG_FILE, 'r') as f:
         conf = f.read()
-    conf = re.sub("DB_URL=[\w\']*\\n",f"DB_URL=\'{rdb_url}\'\n", conf)
-    conf = re.sub("QUERY_ENDPOINT=[\w\']*\\n",f"QUERY_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
-    conf = re.sub("UPDATE_ENDPOINT=[\w\']*\\n",f"UPDATE_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
+    conf = re.sub("DB_URL=.*\n",f"DB_URL=\'{rdb_url}\'\n", conf)
+    conf = re.sub("QUERY_ENDPOINT=.*\n",f"QUERY_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
+    conf = re.sub("UPDATE_ENDPOINT=.*\n",f"UPDATE_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
     with open(STACK_CONFIG_FILE, 'w') as f:
         f.write(conf)
 

@@ -28,7 +28,7 @@ setup(
             "pytest-docker-compose>=3.2.1",
             "pytest-rerunfailures>=10.2",
             "pytest-mock>=3.7.0",
-            "spycopg2~=2.9.5"
+            "psycopg2~=2.9.5"
         ],
     }
 )
