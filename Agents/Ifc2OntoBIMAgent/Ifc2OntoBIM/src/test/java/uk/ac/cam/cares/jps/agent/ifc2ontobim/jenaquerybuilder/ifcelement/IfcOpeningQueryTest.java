@@ -45,7 +45,7 @@ class IfcOpeningQueryTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?hostelement bot:hasSubElement ?element .\n")
+                .append("    ?hostelement bim:hasWallSubElement ?element .\n")
                 .append("  }\n")
                 .append("WHERE\n")
                 .append("  { ?relfillselement\n")
@@ -96,7 +96,8 @@ class IfcOpeningQueryTest {
                 .append("        ?voidshaperep ifc:representationType_IfcRepresentation/express:hasString ?voidreptype .\n")
                 .append("        ?voidshaperep\n")
                 .append("                  ifc:contextOfItems_IfcRepresentation  ?voidsubcontext .\n")
-                .append("        ?subcontext  rdf:type           ifc:IfcGeometricRepresentationSubContext .\n")
+                .append("        ?voidsubcontext\n")
+                .append("                  rdf:type              ifc:IfcGeometricRepresentationSubContext .\n")
                 .append("        ?voidshaperep\n")
                 .append("                  ifc:items_IfcRepresentation  ?voidgeometry .\n")
                 .append("        ?voidgeometry\n")

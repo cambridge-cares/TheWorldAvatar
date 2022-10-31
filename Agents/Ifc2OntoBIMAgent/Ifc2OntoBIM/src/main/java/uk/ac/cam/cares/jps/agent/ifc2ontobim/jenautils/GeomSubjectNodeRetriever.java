@@ -51,7 +51,7 @@ public class GeomSubjectNodeRetriever {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         String sparqlVariable = "?" + this.geomVariable;
         selectBuilder.addVar(sparqlVariable);
-        selectBuilder.addWhere(sparqlVariable, "rdf:type", this.geomClass);
+        selectBuilder.addWhere(sparqlVariable, QueryHandler.RDF_TYPE, this.geomClass);
         return selectBuilder.buildString();
     }
 

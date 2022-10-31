@@ -6,6 +6,11 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
  * @author qhouyee
  */
 public class StringUtils {
+    public static final String SEMICOLON = ":";
+    public static final String WHITESPACE = " ";
+    public static final String UNDERSCORE = "_";
+    public static final String HASHMARK = "#";
+
     /**
      * Retrieve the substring from the starting character to the first appearance of a specified character.
      * Eg for "string utils" and character " ", this will retrieve "string".

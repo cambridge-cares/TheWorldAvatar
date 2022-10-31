@@ -14,6 +14,8 @@ import java.util.Set;
  * @author qhouyee
  */
 class JenaStatementParser {
+    private static final String listNamespace = "https://w3id.org/list#";
+
     /**
      * An overloaded method that calls the standard method with a null for the third parameter.
      * Parses the triples into valid TTL node format as String.
@@ -47,9 +49,9 @@ class JenaStatementParser {
             Node object = statement.asTriple().getObject();
             if (checkIfAppendStatement(predicate, object, ignoreSet)) {
                 parseNodeAsString(subject, sbuilder, inverseNsMap, true);
-                sbuilder.append(" ");
+                sbuilder.append(StringUtils.WHITESPACE);
                 parseNodeAsString(predicate, sbuilder, inverseNsMap);
-                sbuilder.append(" ");
+                sbuilder.append(StringUtils.WHITESPACE);
                 parseNodeAsString(object, sbuilder, inverseNsMap, true);
                 sbuilder.append("\n");
                 // Remove this statement from the Set to free memory once appended
@@ -114,7 +116,7 @@ class JenaStatementParser {
             // Append non-string literals in the format "value"^^xsd:datatype
             if (!dataTypeURI.contains("string")) {
                 builder.append("^^xsd:"); // Assumes that the namespace is always the xsd namespace, which is true for IfcOwl literals
-                String dataType = StringUtils.getStringAfterLastCharacterOccurrence(dataTypeURI, "#");
+                String dataType = StringUtils.getStringAfterLastCharacterOccurrence(dataTypeURI, StringUtils.HASHMARK);
                 builder.append(dataType);
             }
         } else if (node.isURI()) {
@@ -127,17 +129,17 @@ class JenaStatementParser {
             // To circumvent this limitation, the below if condition statement checks if the namespace ends in a digit.
             // If it does, it will manually retrieve the namespaces and local names with a custom solution rather than using Jena
             if (Character.isDigit(namespace.charAt(namespace.length() - 1))) {
-                int hashIndex = namespace.lastIndexOf("#"); // The problematic URI namespaces end with #, but / may be an issue for other uses
+                int hashIndex = namespace.lastIndexOf(StringUtils.HASHMARK); // The problematic URI namespaces end with #, but / may be an issue for other uses
                 namespace = namespace.substring(0, hashIndex + 1);
                 localName = node.toString().substring(namespace.length());
             }
             // Renames the instance to their respective ontoBIM class and namespace if available
             localName = isSubjectOrObjectNode ? renameInstance(localName) : renameListPredicate(localName, namespace);
             namespace = isSubjectOrObjectNode ? namespace :
-                    (namespace.equals("https://w3id.org/list#") ? "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#" : namespace);
+                    (namespace.equals(listNamespace) ? "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#" : namespace);
 
             builder.append(inverseNsMap.get(namespace)) // Append the namespace prefix, not full URI
-                    .append(":")
+                    .append(StringUtils.SEMICOLON)
                     .append(localName); // Append the name
         }
     }
@@ -149,12 +151,12 @@ class JenaStatementParser {
      * @return The required local name in the right namespace.
      */
     private static String renameInstance(String localName) {
-        String ifcClass = StringUtils.getStringBeforeLastCharacterOccurrence(localName, "_");
+        String ifcClass = StringUtils.getStringBeforeLastCharacterOccurrence(localName, StringUtils.UNDERSCORE);
         String replacementName = OntoBIMInstance.retrieveOntoBimName(ifcClass);
 
         if (replacementName != "NA") {
-            String identifier = StringUtils.getStringAfterLastCharacterOccurrence(localName, "_");
-            localName = replacementName + "_" + identifier;
+            String identifier = StringUtils.getStringAfterLastCharacterOccurrence(localName, StringUtils.UNDERSCORE);
+            localName = replacementName + StringUtils.UNDERSCORE + identifier;
         }
         return localName;
     }
@@ -168,9 +170,9 @@ class JenaStatementParser {
      */
     private static String renameListPredicate(String localName, String namespace) {
         // Note that there is no need to rename hasContents as it is the same
-        localName = namespace.equals("https://w3id.org/list#") ?
+        localName = namespace.equals(listNamespace) ?
                 (localName.equals("hasNext") ? "hasNextVertex" :
-                        (localName.equals("hasContents") ? "hasLocalPosition" : localName))
+                        (localName.equals("hasContents") ? "hasRefPoint" : localName))
                 : localName;
         return localName;
     }
