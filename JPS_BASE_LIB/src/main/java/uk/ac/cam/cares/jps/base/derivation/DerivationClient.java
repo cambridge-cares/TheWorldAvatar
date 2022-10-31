@@ -123,9 +123,9 @@ public class DerivationClient {
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
 
-		// validate derivations if more than one derivations are marked up
+		// validate derivations
 		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
-		if (derivations.size() > 1) {
+		if (!derivations.isEmpty()) {
 			validateDerivations();
 		}
 
@@ -184,9 +184,9 @@ public class DerivationClient {
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
 
-		// validate derivations if more than one derivations are marked up
+		// validate derivations
 		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
-		if (derivations.size() > 1) {
+		if (!derivations.isEmpty()) {
 			validateDerivations();
 		}
 
@@ -389,9 +389,9 @@ public class DerivationClient {
 			}
 		}
 
-		// validate derivations if more than one derivations are marked up
+		// validate derivations
 		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
-		if (derivations.size() > 1) {
+		if (!derivations.isEmpty()) {
 			validateDerivations();
 		}
 
@@ -411,9 +411,9 @@ public class DerivationClient {
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
 
-		// validate derivations if more than one derivations are marked up
+		// validate derivations
 		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
-		if (derivations.size() > 1) {
+		if (!derivations.isEmpty()) {
 			validateDerivations();
 		}
 
