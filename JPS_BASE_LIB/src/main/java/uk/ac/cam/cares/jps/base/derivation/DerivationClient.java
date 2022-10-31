@@ -397,6 +397,17 @@ public class DerivationClient {
 	}
 
 	/**
+	 * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+	 * @param ontoAgentServiceIRI
+	 * @param ontoAgentOperationHttpUrl
+	 * @param inputTypes
+	 * @param outputTypes
+	 */
+	public void createOntoAgentInstance(String ontoAgentServiceIRI, String ontoAgentOperationHttpUrl, List<String> inputTypes, List<String> outputTypes) {
+		this.sparqlClient.createOntoAgentInstance(ontoAgentServiceIRI, ontoAgentOperationHttpUrl, inputTypes, outputTypes);
+	}
+
+	/**
 	 * adds a timestamp to your input following the w3c standard for unix timestamp
 	 * https://www.w3.org/TR/owl-time/
 	 * <entity> <hasTime> <time>, <time> <numericPosition> 123

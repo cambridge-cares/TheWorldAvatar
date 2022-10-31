@@ -35,6 +35,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,6 +91,8 @@ public class DerivationSparql {
 	// classes
 	private static Iri Service = prefixAgent.iri("Service");
 	private static Iri Operation = prefixAgent.iri("Operation");
+	private static Iri MessageContent = prefixAgent.iri("MessageContent");
+	private static Iri MessagePart = prefixAgent.iri("MessagePart");
 	private static Iri TimePosition = prefixTime.iri("TimePosition");
 	private static Iri Derivation = prefixDerived.iri(DERIVATION);
 	private static Iri DerivationWithTimeSeries = prefixDerived.iri(DERIVATIONWITHTIMESERIES);
@@ -105,6 +108,7 @@ public class DerivationSparql {
 	private static Iri hasHttpUrl = prefixAgent.iri("hasHttpUrl");
 	private static Iri hasOperation = prefixAgent.iri("hasOperation");
 	private static Iri hasInput = prefixAgent.iri("hasInput");
+	private static Iri hasOutput = prefixAgent.iri("hasOutput");
 	private static Iri hasMandatoryPart = prefixAgent.iri("hasMandatoryPart");
 	private static Iri hasType = prefixAgent.iri("hasType");
 	private static Iri hasName = prefixAgent.iri("hasName");
@@ -189,6 +193,46 @@ public class DerivationSparql {
 	public DerivationSparql(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
 		this.storeClient = storeClient;
 		this.derivationInstanceBaseURL = derivationInstanceBaseURL;
+	}
+
+	/**
+	 * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+	 * @param ontoAgentServiceIRI
+	 * @param ontoAgentOperationHttpUrl
+	 * @param inputTypes
+	 * @param outputTypes
+	 */
+	public void createOntoAgentInstance(String ontoAgentServiceIRI, String ontoAgentOperationHttpUrl, List<String> inputTypes, List<String> outputTypes) {
+		String operationIRI = getNameSpace(ontoAgentServiceIRI) + "Operation_" + UUID.randomUUID().toString();
+		String mcInputIRI = getNameSpace(ontoAgentServiceIRI) + "MessageContent_" + UUID.randomUUID().toString();
+		String mcOutputIRI = getNameSpace(ontoAgentServiceIRI) + "MessageContent_" + UUID.randomUUID().toString();
+
+		ModifyQuery modify = Queries.MODIFY();
+
+		modify.insert(iri(ontoAgentServiceIRI).isA(Service).andHas(hasOperation, iri(operationIRI)));
+		modify.insert(iri(operationIRI).isA(Operation)
+				.andHas(hasInput, iri(mcInputIRI))
+				.andHas(hasOutput, iri(mcOutputIRI))
+				.andHas(hasHttpUrl, Rdf.literalOfType(ontoAgentOperationHttpUrl, XSD.ANYURI)));
+		modify.insert(iri(mcInputIRI).isA(MessageContent));
+		for (String input : inputTypes) {
+			String mpInputIRI = getNameSpace(ontoAgentServiceIRI) + "MessagePart_" + UUID.randomUUID().toString();
+			modify.insert(iri(mcInputIRI).has(hasMandatoryPart, iri(mpInputIRI)));
+			modify.insert(iri(mpInputIRI).isA(MessagePart).andHas(hasType, iri(input)));
+		}
+
+		modify.insert(iri(mcOutputIRI).isA(MessageContent));
+		for (String output : outputTypes) {
+			String mpOutput = getNameSpace(ontoAgentServiceIRI) + "MessagePart_" + UUID.randomUUID().toString();
+			modify.insert(iri(mcOutputIRI).has(hasMandatoryPart, iri(mpOutput)));
+			modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
+		}
+
+		// SPARQL update by insert-where clause to ensure one agent service don't get duplicated entries in KG
+		// NOTE this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
+		modify.where(GraphPatterns.filterNotExists(iri(ontoAgentServiceIRI).isA(Service)));
+
+		storeClient.executeUpdate(modify.prefix(prefixAgent).getQueryString());
 	}
 
 	/**
