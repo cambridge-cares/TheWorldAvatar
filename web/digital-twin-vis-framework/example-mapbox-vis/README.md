@@ -71,6 +71,36 @@ The default position of the map can be specified via the start field of the sett
 }
 ```
 
+#### Feature Filtering
+
+When using the Mapbox implementation, a rudimentary ability to filter/search for individual locations has been added. Accessed via the CTRL+F keyboard shortcut, this feature allows users to hide all locations that do not match some input search term. Properties from the geospatial data (i.e. not any dynamically loaded metadata) can be used as targets for the search; the example Mapbox visualisation contains an example of this (primarily focussed on the Cambridge Colleges data set).
+
+It is worth noting that, at the time of writing, the filter will apply to all locations across all layers currently available on the map. Additionally, any clustering of locations (normally enabled by configuring the source object within the data configuration file) will be temporarily disabled whilst the search controls are active; this is to avoid the situation in which matching locations are hidden because they were clustered (and clustered locations will almost always fail the filter match as they contain very little information on what individual features they contain).
+
+To enable this functionality within your visualisation, a special `search` node needs to be added to your `settings.json` file. This node should be a JSON array of objects, each object defining: `description`, the user facing name of the parameter that can be filtered on/searched for; `property`, the name of the actual property within the geospatial data; and `type`, which must be `string|number|boolean` and represents the type of property.
+
+An example snippet of the `settings.json` file defining search parameters is shown below.
+
+```json
+"search": [
+    {
+        "description": "Name",
+        "property": "name",
+        "type": "string"
+    },
+    {
+        "description": "Year Founded",
+        "property": "founded",
+        "type": "number"
+    },
+    {
+        "description": "Undergraduates Admitted?",
+        "property": "undergraduates",
+        "type": "boolean"
+    }  
+]
+```
+
 ## Sample Data
 
 A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
