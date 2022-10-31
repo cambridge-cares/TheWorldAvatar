@@ -80,7 +80,7 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      * @return query result as a ResultSet
      */
     public ResultSet executeQuerytoResultSet(String query) {
-        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+        try (Connection conn = getConnection(); 
             Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
             return stmt.executeQuery(query);
         } catch (SQLException e) {
@@ -96,7 +96,7 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query){
-        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+        try (Connection conn = getConnection();
             Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
                 java.sql.ResultSet rs = stmt.executeQuery(query);
                 return StoreClientHelper.convert(rs);
@@ -145,7 +145,7 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String update) {
-        try (Connection conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword); 
+        try (Connection conn = getConnection(); 
             Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY)) {
             return stmt.executeUpdate(update);
         } catch (SQLException e) {
