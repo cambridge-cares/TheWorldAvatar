@@ -29,8 +29,9 @@ OBE_FLAT = OBE + 'Flat'
 OBE_IS_IN = OBE + 'isIn'
 OBE_HAS_ADDRESS = OBE + 'hasAddress'
 OBE_HAS_POSTALCODE = OBE + 'hasPostalCode'
+OBE_HAS_UNIT_NAME = OBE + 'hasUnitName'
 OBE_POSTALCODE = OBE + 'PostalCode'
-OBE_HAS_PROPERTYNUMBER = OBE + 'hasPropertyNumber'
+OBE_IS_PRESUMED_MATCH_OF = OBE + 'isPresumedMatchOf'
 OBE_HAS_ADMIN_DISTRICT = OBE + 'hasAdministrativeDistrict'
 OBE_ADMIN_DISTRICT = OBE + 'AdministrativeDistrict'
 OBE_LOCATEDIN = OBE + 'locatedIn'
@@ -51,6 +52,11 @@ OBE_WINDOWS = OBE + 'Windows'
 OBE_FLOOR = OBE + 'Floor'
 OBE_HAS_LATEST_EPC = OBE + 'hasLatestEPC'
 OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
+OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
+# LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
+LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
+LRPPI_PRICE = LRPPI + 'pricePaid'
+LRPPI_DATE = LRPPI + 'transactionDate'
 
 ###--- IRIs for OntoBuiltEnv ABox ---###
 # http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl
@@ -151,6 +157,8 @@ GEO_ASWKT = GEO + 'asWKT'
 # ICONTACT ontology
 ICONTACT_ADDRESS = ICONTACT + 'Address'
 ICONTACT_HAS_STREET = ICONTACT + 'hasStreet'
+ICONTACT_HAS_STREET_NUMBER = ICONTACT + 'hasStreetNumber'
+ICONTACT_HAS_BUILDING = ICONTACT + 'hasBuilding'
 
 # Office for National Statistics (ONS)
 ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'

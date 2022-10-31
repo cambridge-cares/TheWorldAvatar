@@ -6,7 +6,7 @@ It is designed to interact with the stack spun up by the stack manager.
 
 <span style="color:red">Tests are currently still excluded.</span>
 <br/><br/>
-<span style="color:red">The current version of the agent (i.e. commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
+<span style="color:red">The current version of the agent (i.e. commit ef61ae035f7aeb36b692eddd45188ce7231528c1) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
 
 # 1. Setup
 
@@ -67,8 +67,8 @@ This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
-bash build_py4jps_resources.sh
+# Compiling latest py4jps Stack_Clients resources
+bash build_py4jps_resource.sh
 # Buildings the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
@@ -137,7 +137,7 @@ Agent start-up will automatically register a recurring task to assimilate latest
 
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5001/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to instantiate all postcodes in a given local authority:
 > `/api/epcagent/instantiate/postcodes`
@@ -229,7 +229,7 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [Container registry on Github]: ghcr.io
 [EPC APIs]: https://epc.opendatacommunities.org/docs/api
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[http://localhost:5000/]: http://localhost:5000/
+[http://localhost:5001/]: http://localhost:5001/
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
 [OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl

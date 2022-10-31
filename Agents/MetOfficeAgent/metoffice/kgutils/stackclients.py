@@ -32,9 +32,9 @@ class OntopClient:
         try:
             # Initialise OntopClient as RemoteStoreClient
             self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise OntopClient.")
-            raise StackException("Unable to initialise OntopClient.")
+            raise StackException("Unable to initialise OntopClient.") from ex
     
     def performQuery(self, query):
         """
@@ -44,9 +44,9 @@ class OntopClient:
         """
         try:
             response = self.ontop_client.execute(query)
-        except:
+        except Exception as ex:
             #logger.error("SPARQL query not successful")
-            raise StackException("SPARQL query not successful")
+            raise StackException("SPARQL query not successful.") from ex
         return json.loads(response)
 
     
@@ -65,9 +65,9 @@ class OntopClient:
             fp = f.toPath()
             # Update ONTOP mapping (requires JAVA path object)
             stackClientsView.OntopClient().updateOBDA(fp)
-        except:
+        except Exception as ex:
             #logger.error("Unable to update OBDA mapping.")
-            raise StackException("Unable to update OBDA mapping.")
+            raise StackException("Unable to update OBDA mapping.") from ex
 
 
 class PostGISClient:
@@ -81,9 +81,9 @@ class PostGISClient:
         try:
             # Retrieve JDBC connection properties
             self.conn_props = self.connection_properties()
-        except:
+        except Exception as ex:
             #logger.error("Unable to retrieve JDBC connection properties.")
-            raise StackException("Unable to retrieve JDBC connection properties.")
+            raise StackException("Unable to retrieve JDBC connection properties.") from ex
 
     
     def connection_properties(self):
@@ -120,7 +120,7 @@ class PostGISClient:
                         return False
         except Exception as ex:
             #logger.error(f'Unsuccessful JDBC interaction: {ex}')
-            raise StackException(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
     def check_point_feature_exists(self, lat, lon, feature_type, table=LAYERNAME):
@@ -143,7 +143,7 @@ class PostGISClient:
                     return res
         except Exception as ex:
             #logger.error(f'Unsuccessful JDBC interaction: {ex}')
-            raise StackException(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
 
     def get_feature_iris_in_circle(self, lat: float, lon: float, radius: float,
                                    table=LAYERNAME):
@@ -170,7 +170,7 @@ class PostGISClient:
                     return res
         except Exception as ex:
             #logger.error(f'Unsuccessful JDBC interaction: {ex}')
-            raise StackException(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
 class GdalClient:
@@ -184,9 +184,9 @@ class GdalClient:
         try:
             self.client = stackClientsView.GDALClient()
             self.orgoptions = stackClientsView.Ogr2OgrOptions()
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise GdalClient.")
-            raise StackException("Unable to initialise GdalClient.")
+            raise StackException("Unable to initialise GdalClient.") from ex
 
 
     def uploadGeoJSON(self, geojson_string, database=DATABASE, table=LAYERNAME):
@@ -208,9 +208,9 @@ class GeoserverClient:
         try:
             self.client = stackClientsView.GeoServerClient()
             self.vectorsettings = stackClientsView.GeoServerVectorSettings()
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise GeoServerClient.")
-            raise StackException("Unable to initialise GeoServerClient.")    
+            raise StackException("Unable to initialise GeoServerClient.") from ex   
 
 
     def create_workspace(self, workspace=GEOSERVER_WORKSPACE):
