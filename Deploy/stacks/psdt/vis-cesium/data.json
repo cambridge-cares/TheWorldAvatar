@@ -133,7 +133,8 @@
                     "id": "pumpingstations-vector-points-layer",
                     "name": "Pumpstationen (Symbole)",
                     "source": "pumpingstations-vector-points-source",
-                    "visibility": "visible"
+                    "order": 1001,
+                    "visibility": "none"
                 },
                 {
                     "id": "main-network-kml-layer",
