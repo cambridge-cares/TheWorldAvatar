@@ -446,7 +446,7 @@ public class DerivationClient {
 	/**
 	 * adds a timestamp to your input following the w3c standard for unix timestamp
 	 * https://www.w3.org/TR/owl-time/
-	 * <entity> <hasTime> <time>, <time> <numericPosition> current_timestamp
+	 * <entity> <hasTime> <time>, <time> <numericPosition> currentTimestamp
 	 *
 	 * @param entity
 	 */
@@ -474,19 +474,19 @@ public class DerivationClient {
 	public void updateTimestamps(List<String> entities) {
 		// if the given entity is part of a derivation, update the derivation instead
 		Map<String, String> entityDerivationMap = this.sparqlClient.getDerivationsOf(entities);
-		Map<String, Long> timestamp_map = new HashMap<>();
+		Map<String, Long> timestampMap = new HashMap<>();
 		long currentTime = Instant.now().getEpochSecond();
 		for (String entity : entities) {
 			if (entityDerivationMap.containsKey(entity)) {
 				// belongs to a derivation, update timestamp of derivation
-				timestamp_map.put(entityDerivationMap.get(entity), currentTime);
+				timestampMap.put(entityDerivationMap.get(entity), currentTime);
 			} else {
 				// assume this is a pure input, if this does not exist
 				// nothing should happen
-				timestamp_map.put(entity, currentTime);
+				timestampMap.put(entity, currentTime);
 			}
 		}
-		this.sparqlClient.updateTimestamps(timestamp_map);
+		this.sparqlClient.updateTimestamps(timestampMap);
 	}
 
 	public void updateTimestamp(String entity) {
@@ -645,13 +645,13 @@ public class DerivationClient {
 			}
 
 			// update timestamps in KG
-			Map<String, Long> derivationTime_map = new HashMap<>();
+			Map<String, Long> derivationTimeMap = new HashMap<>();
 			for (Derivation derivation : derivations) {
 				if (derivation.getUpdateStatus()) {
-					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
 				}
 			}
-			this.sparqlClient.updateTimestamps(derivationTime_map);
+			this.sparqlClient.updateTimestamps(derivationTimeMap);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -690,13 +690,13 @@ public class DerivationClient {
 			}
 
 			// update timestamps in kg
-			Map<String, Long> derivationTime_map = new HashMap<>();
+			Map<String, Long> derivationTimeMap = new HashMap<>();
 			for (Derivation derivation : derivations) {
 				if (derivation.getUpdateStatus()) {
-					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
 				}
 			}
-			this.sparqlClient.updateTimestamps(derivationTime_map);
+			this.sparqlClient.updateTimestamps(derivationTimeMap);
 
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
