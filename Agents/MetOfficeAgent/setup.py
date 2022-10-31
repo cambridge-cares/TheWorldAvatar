@@ -21,6 +21,13 @@ setup(
         'JayDeBeApi~=1.2',
         'py4jps>=1.0.26', 
         'requests~=2.27',
-        'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer',
-    ]
+        'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer'
+    ],
+    extras_require={
+        "dev": [
+            "pytest>=6.2.3",
+            "pytest-mock>=3.7.0",
+            "testcontainers>=3.4.2"
+        ]
+    }
 )
