@@ -241,16 +241,17 @@ class Manager {
      */
     public showFeature(feature, properties) {
         // Bug out if no properties at all
-        if((properties === null || properties === undefined) && feature.hasOwnProperty["properties"]) {
+        if((properties === null || properties === undefined) && feature["properties"] != null) {
             properties = feature["properties"];
-        } else if(properties == null) {
+        } else if(properties === null) {
             console.warn("Selected feature has no properties, cannot show any side panel content!");
+            return;
         }
 
         // Get the correct name for the feature
         let name = getName(properties);
         if(name == null) {
-            if(feature.hasOwnProperty("id")) {
+            if(feature.hasOwnProperty("id") && typeof feature["id"] !== "object") {
                 name = "Feature " + feature["id"];
             } else {
                 name = "Selected Feature";
@@ -487,26 +488,80 @@ class Manager {
      * @returns 
      */
     public static findStack(feature, properties) {
-        // @ts-ignore
-        if(feature instanceof Cesium.Cesium3DTileFeature) {
-            // Feature within 3D tileset
-            let tileset = feature.tileset;
+        switch(Manager.PROVIDER) {
+            case MapProvider.CESIUM: {
 
-        } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
-            // WMS feature on cesium
-            return null;
+                if(feature instanceof Cesium.Cesium3DTileFeature) {
+                    // Feature within 3D tileset
+                    let tileset = feature.tileset;
 
-        } else {
-            // Mapbox or WMS feature?
-            let layer = feature["layer"]["id"];
+                    if(tileset.hasOwnProperty("layerID")) {
+                        let layerID = tileset["layerID"];
 
-            if(layer !== null && layer !== undefined) {
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
 
-                for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
-                    let layers = value as string[];
-                    if(layers.includes(layer)) return stack;
+                } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+                    // WMS feature on cesium
+                    let layer = feature["imageryLayer"];
+                    let provider = layer["imageryProvider"];
+
+                    if(provider.hasOwnProperty("layerID")) {
+                        let layerID = provider["layerID"];
+
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
+
+                } else {
+                    let entity = feature["id"];
+
+                    if(entity !== null && entity !== undefined) {
+                        let collection = entity["entityCollection"];
+                        let owner = collection.owner;
+
+                        if(owner !== null && owner !== undefined && owner.hasOwnProperty("layerID")) {
+                            let layerID = owner["layerID"];
+
+                            for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                                let layers = value as string[];
+                                if(layers.includes(layerID)) {
+                                    return stack;
+                                } 
+                            }
+                        }
+                    }
                 }
             }
+            break;
+
+            case MapProvider.MAPBOX: {
+                // Mapbox
+                let layer = feature["layer"]["id"];
+
+                if(layer !== null && layer !== undefined) {
+                    for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                        let layers = value as string[];
+                        if(layers.includes(layer)) return stack;
+                    }
+                }
+            }
+            break;
         }
 
         return null;

@@ -30,10 +30,21 @@ abstract class SearchHandler {
         let finderContainer = document.getElementById("finderContainer");
         if(finderContainer === null || finderContainer === undefined) return;
 
+        let attrContainer = document.getElementById("attributionContainer");
+
         if(finderContainer.style.display === "table") {
-            finderContainer.style.display = "none";
+            // Re-enable attributions if content was set
+            if(attrContainer != null && Manager.SETTINGS.getSetting("attribution") != null) {
+                attrContainer.style.display = "block";
+            }
         } else {
             finderContainer.style.display = "table";
+
+            // Hide the attributions container
+            if(attrContainer != null) attrContainer.style.display = "none";
+
+            // Temporarily turn of location clustering
+            this.turnOffClustering();
         }
 
         let sidePanel = document.getElementById("sidePanel");
@@ -51,6 +62,8 @@ abstract class SearchHandler {
      * within the settings file) and adds them to the HTML document.
      */
     private generateControls() {
+        let self = this;
+
         let finderContainer = document.getElementById("finderContainer");
         if(finderContainer !== null) return;
 
@@ -69,7 +82,6 @@ abstract class SearchHandler {
         let propertyDrop = document.createElement("select");
         propertyDrop.id = "finderSelect";
         propertyDrop.classList.add("finderSelectClass");
-
         this.allSearchProperties.forEach(property => {
             let option = document.createElement("option");
             option.classList.add("finderSelectClass");
@@ -78,44 +90,25 @@ abstract class SearchHandler {
             propertyDrop.appendChild(option);
         });
 
-        // Add buttons
-        let helpContainer = document.createElement("div");
-        helpContainer.classList.add("tooltip");
-        helpContainer.classList.add("searchButton");
-        helpContainer.addEventListener("click", () => this.showHelp());
-        helpContainer.innerHTML = "<span class='tooltiptext lower'>Help</span>";
-        let helpButton = document.createElement("i");
-        helpButton.classList.add("fas");
-        helpButton.classList.add("fa-question");
-        helpButton.classList.add("fa-lg");
-        helpContainer.appendChild(helpButton);
-
-        let confirmContainer = document.createElement("div");
-        confirmContainer.classList.add("tooltip");
-        confirmContainer.classList.add("searchButton");
-        confirmContainer.innerHTML = "<span class='tooltiptext lower'>Run this search</span>";
-        confirmContainer.addEventListener("click", () => this.startSearch());
-        let confirmButton = document.createElement("i");
-        confirmButton.classList.add("fas");
-        confirmButton.classList.add("fa-search-location");
-        confirmButton.classList.add("fa-lg");
-        confirmContainer.appendChild(confirmButton);
-
-        let hideContainer = document.createElement("div");
-        hideContainer.classList.add("tooltip");
-        hideContainer.classList.add("searchButton");
-        hideContainer.innerHTML = "<span class='tooltiptext lower'>Hide search controls</span>";
-        hideContainer.addEventListener("click", () => this.toggle());
-        let hideButton = document.createElement("i");
-        hideButton.classList.add("far");
-        hideButton.classList.add("fa-minus-square");
-        hideButton.classList.add("fa-lg");
-        hideContainer.appendChild(hideButton);
-
         let cancelContainer = document.createElement("div");
         cancelContainer.classList.add("tooltip");
         cancelContainer.classList.add("searchButton");
-        cancelContainer.addEventListener("click", () => this.cancelSearch());
+        cancelContainer.addEventListener("click", () => {
+            this.cancelSearch()
+
+            // Hide the container
+            let finderContainer = document.getElementById("finderContainer");
+            finderContainer.style.display = "none";
+
+            // Re-enable attributions if content was set
+            let attrContainer = document.getElementById("attributionContainer");
+            if(attrContainer != null && Manager.SETTINGS.getSetting("attribution") != null) {
+                attrContainer.style.display = "block";
+            }
+
+            // Turn location clustering back on
+            this.turnOnClustering();
+        });
         cancelContainer.innerHTML = "<span class='tooltiptext lower'>Cancel search</span>";
         let cancelButton = document.createElement("i");
         cancelButton.classList.add("far");
@@ -124,28 +117,18 @@ abstract class SearchHandler {
         cancelContainer.appendChild(cancelButton);
 
         // Add selection logic
-        let self = this;
         propertyDrop.addEventListener("change", function() {
             self.changeProperty(propertyDrop.value);
+            self.startSearch();
         });
         
         // Append to document
         finderContainer.appendChild(propertyDrop);
         finderContainer.appendChild(cancelContainer);
-        finderContainer.appendChild(hideContainer);
-        finderContainer.appendChild(confirmContainer);
-        finderContainer.appendChild(helpContainer);
         document.body.appendChild(finderContainer);
 
         // Fire logic for property change
         propertyDrop.dispatchEvent(new Event('change'));
-    }
-
-    /**
-     * Show search help.
-     */
-    private showHelp() {
-
     }
 
     /**
@@ -155,6 +138,7 @@ abstract class SearchHandler {
      * @param value newly selected property value
      */
     private changeProperty(value: string) {
+        let self = this;
         let finderContainer = document.getElementById("finderContainer");
 
         // Cache the selected property
@@ -168,7 +152,9 @@ abstract class SearchHandler {
             rangeSelect = document.createElement("select");
             rangeSelect.id = "finderRangeSelect";
             rangeSelect.classList.add("finderSelectClass");
-           
+            rangeSelect.addEventListener("change", function() {
+                self.startSearch();
+            });
             finderContainer.appendChild(rangeSelect);
         }
 
@@ -193,6 +179,10 @@ abstract class SearchHandler {
                 searchField.type = "text";
                 searchField.value = "";
                 searchField.placeholder = "search term";
+
+                searchField.addEventListener('input', function() {
+                    self.startSearch();
+                });
             }
             break;
 
@@ -268,5 +258,15 @@ abstract class SearchHandler {
      * Cancel the current search.
      */
     public abstract cancelSearch();
+
+    /**
+     * Where applicable, disable any location clustering.
+     */
+    public abstract turnOffClustering();
+
+    /**
+     * Where applicable, re-enable any location clustering.
+     */
+    public abstract turnOnClustering();
 }
 

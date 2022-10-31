@@ -199,20 +199,26 @@ class PanelHandler {
         // Get required details
         let iri = properties["iri"];
         let stack = Manager.findStack(feature, properties);
+        console.log("Attempting to contact agent with stack at '" + stack + "'");
+        console.log("Will submit IRI for query '" + iri + "'");
 
         if(iri == null || stack == null) {
-            console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
+            console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
 
             // Render metadata tree
             this.prepareMetaContainers(true, false);
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            // @ts-ignore
-            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-            // @ts-ignore
-            JsonView.expandChildren(metaTree);
-            // @ts-ignore
-            JsonView.selectiveCollapse(metaTree);
+            if(Object.keys(properties).length > 0) {
+                // @ts-ignore
+                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+                // @ts-ignore
+                JsonView.expandChildren(metaTree);
+                // @ts-ignore
+                JsonView.selectiveCollapse(metaTree);
+            } else {
+                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+            }
             return;
         }
 

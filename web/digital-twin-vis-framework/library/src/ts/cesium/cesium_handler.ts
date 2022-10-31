@@ -160,9 +160,7 @@ class MapHandler_Cesium extends MapHandler {
                         properties[id] = contentMetadata.getProperty(id);
                     });
                 } else {
-                    feature.getPropertyIds().forEach(id => {
-                        properties[id] = feature.getProperty(id);
-                    });
+                    // No metadata refined, pass no properties
                 }
                 
                 self.manager.showFeature(feature, properties);
@@ -340,16 +338,11 @@ class MapHandler_Cesium extends MapHandler {
     private addKMLFile(source: Object, layer: DataLayer) {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
         sourceKML.then((result) => {
+            
             result["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
+            result["layerID"] = layer.id;
 
-            // TODO: Investigate if camera and canvas options are actually required here.
-            MapHandler.MAP.dataSources.add(
-                result,
-                {
-                    camera: MapHandler.MAP.camera,
-                    canvas: MapHandler.MAP.canvas
-                }
-            );
+            MapHandler.MAP.dataSources.add(result);
             console.info("Added KML source to map with layer ID: "+ layer.id);
     
             // Cache knowledge of this source, keyed by layer id
@@ -415,7 +408,7 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addTileset(source: Object,  layer: DataLayer) {
+    private addTileset(source: Object, layer: DataLayer) {
         // Check the position (if set)
         let position = source["position"];
         if(position !== null && position !== undefined) {
@@ -435,6 +428,7 @@ class MapHandler_Cesium extends MapHandler {
 
         // Add the tileset to the map
         let tileset = new Cesium.Cesium3DTileset(options);
+        tileset["layerID"] = layer.id;
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 
@@ -467,6 +461,7 @@ class MapHandler_Cesium extends MapHandler {
             },
             credit: layer.id,
         });
+        provider["layerID"] = layer.id;
 
         let layers = MapHandler.MAP.imageryLayers;
         layers.addImageryProvider(provider);

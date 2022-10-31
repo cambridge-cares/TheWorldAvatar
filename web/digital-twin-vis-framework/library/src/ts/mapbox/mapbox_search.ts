@@ -10,6 +10,62 @@ class SearchHandler_Mapbox extends SearchHandler {
     private previousFilters = {};
 
     /**
+     * Caches mapbox sources so that clustering can be renabled.
+     */
+    private cachedSources = {};
+
+
+    /**
+     * When applicable, turn off clustering for each source currently
+     * loaded within the map's style object.
+     */
+    public turnOffClustering() {
+        this.cachedSources = {};
+        const style = MapHandler.MAP.getStyle();
+        const sources = style.sources;
+
+        Object.entries(sources).forEach(([name, source]) => {
+            // Is this source clustered?
+            if(source.hasOwnProperty("cluster") && source["cluster"]) {
+                // Cache the source
+                this.cachedSources[name] = source;
+                
+                // Turn off clustering
+                source["cluster"] = false;
+            }
+        });
+    
+        // Re-apply the style to force update
+        MapHandler.MAP.setStyle(style);
+    }
+
+    /**
+     * Using cached knowledge of what sources were clustered,
+     * reset each back to their original setting.
+     */
+    public turnOnClustering() {
+        const style = MapHandler.MAP.getStyle();
+        const sources = style.sources;
+
+        Object.entries(sources).forEach(([name, source]) => {
+            // Is clustering defined but false?
+            if(source.hasOwnProperty("cluster") && source["cluster"] === false) {
+                // Was this source previously clustered?
+                if(this.cachedSources.hasOwnProperty(name)) {
+                    // Turn clustering back on
+                    source["cluster"] = true;
+                }
+            }
+        });
+        this.cachedSources = {};
+
+        // Re-apply the style to force update
+        MapHandler.MAP.setStyle(style);
+
+        console.log("CLUSETING BACK ON?");
+    }
+
+    /**
      * Execute the filter with the input search term.
      * 
      * @param searchTerm search term
@@ -42,6 +98,8 @@ class SearchHandler_Mapbox extends SearchHandler {
      * Clear the filter.
      */
     public cancelSearch() {
+        if(this.previousFilters == null) return;
+
         // Revert to previously cached filters
         Object.entries(this.previousFilters).forEach(([layerID, filter]) => {
             MapHandler.MAP.setFilter(layerID, filter);

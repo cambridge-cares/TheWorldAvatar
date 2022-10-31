@@ -90,11 +90,17 @@ function filterNulls(dictionary: Object) {
  * @returns name (or null) 
  */
 function getName(properties: Object): string {
+    if(properties === null || properties === undefined) return null;
+
     let fieldSettings = Manager.SETTINGS.getSetting("fields");
-    if(fieldSettings === null || fieldSettings === undefined) return properties["name"];
+    if(fieldSettings === null || fieldSettings === undefined) {
+        return properties["name"];
+    }
 
     let nameField = fieldSettings["name"];
-    if(nameField === null || nameField === undefined) return properties["name"];
+    if(nameField === null || nameField === undefined) {
+        return properties["name"];
+    }
     
     return properties[nameField];
 }
@@ -153,5 +159,20 @@ function showAttributions() {
                 title.innerHTML = "<span>Attributions</span><i class='fas fa-chevron-up'></i>";
             }
         });
+    }
+}
+
+/**
+ * Shows the relevant help page.
+ */
+function showHelpPage() {
+    switch(Manager.PROVIDER) {
+        case MapProvider.CESIUM:
+            // TODO
+        break;
+
+        case MapProvider.MAPBOX:
+            // TODO
+        break;
     }
 }

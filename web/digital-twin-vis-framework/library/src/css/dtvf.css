@@ -476,7 +476,6 @@ h6 {
 }
 #metaTreeContainer {
     height: 100%;
-    overflow-x: hidden;
     overflow-y: scroll;
 }
 #metaTimeContainer {
@@ -1140,7 +1139,7 @@ label[for="select-feature"] {
 #finderContainer {
     display: table;
     position: absolute;
-    bottom: 40;
+    bottom: 30;
     left: 20;
     height: 40px;
     width: calc(100% - 540px);
@@ -1169,6 +1168,10 @@ label[for="select-feature"] {
     width: 20%;
     margin-top: 5px;
 }
+.finderSelectClass option {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
 #finderRangeSelect {
     margin-left: 10px;
 }
@@ -1177,7 +1180,7 @@ label[for="select-feature"] {
     height: 30px;
     margin-top: 5px;
     margin-left: 10px;
-    width: 44%;
+    width: 54%;
     padding-left: 10px;
 }
 
@@ -1272,3 +1275,24 @@ label[for="select-feature"] {
     font-size: 10pt !important;
 }
 
+#helpContainer {
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tooltiptext.right {
+    position: absolute;
+    z-index: 1;
+    right: -75px;
+    width: 75px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.mapboxgl-ctrl-bottom-left {
+    top: 5px !important;
+    right: 5px !important;
+    left: revert;
+    bottom: revert;
+}
