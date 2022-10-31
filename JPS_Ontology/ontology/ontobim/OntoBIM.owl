@@ -81,8 +81,40 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement&apos;s exact direction to the local Z axis.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement or geometry&apos;s exact direction to the local Z axis.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBaseSurface -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBaseSurface">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the surface defining side for the half space.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBooleanOperator -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBooleanOperator">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult"/>
+        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcBooleanOperator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the operator type for boolean operations.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBounds -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasBounds">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Face"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the boundaries of a face.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -93,6 +125,16 @@
         <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links the Site to its world longitude or latitude. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasConnectedFaces -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasConnectedFaces">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ClosedShell"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Face"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the closed shell, comprising of a set of faces arcwise connected along common edges or vertices.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -150,6 +192,57 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExteriorBoundary -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExteriorBoundary">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FacetedBrep"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ClosedShell"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the exterior boundary of the solid through a shell. The shell normal shall point away from the interior of the solid.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionDirection -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionDirection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the direction of the extrusion of the surface.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionProfile -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the surface that is to be extruded, ie profile definition.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasFaceBoundary -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasFaceBoundary">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolyLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the polyloop acting as the boundary for the face.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasFirstOperand -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasFirstOperand">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the first operand/geometry of the boolean clipping operation. This is usually a swept area solid or another boolean clipping result.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
@@ -184,6 +277,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasNextVertex -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasNextVertex">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that linked the current vertex to the next vertex in a line.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasOrientation -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasOrientation">
@@ -208,6 +311,27 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPolygonalBoundary -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPolygonalBoundary">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the half space&apos;s 2D bounded curve, defined in the xy plane of the position coordinate system.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasProfileType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasProfileType">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:range rdf:resource="http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines that profile type of a profile definition of a surface.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity">
@@ -226,8 +350,11 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement&apos;s direction to the local X axis.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement or geometry direction to the local X axis.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -259,7 +386,12 @@
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefPoint -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the geometric position of a reference point.</rdfs:comment>
     </owl:ObjectProperty>
@@ -283,7 +415,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationItem">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the representation items that constitutes the 3D geometric model representation of an element.</rdfs:comment>
     </owl:ObjectProperty>
     
@@ -297,6 +429,17 @@
         <rdfs:range rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Site"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that reference the root of the project&apos;s spatial structure hierarchy to a zone of either site or building level.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSecondOperand -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSecondOperand">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the second operand/geometry of the boolean clipping operation. This is usually a half space solid.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -320,6 +463,17 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the source placement of an existing geometric representation for an element&apos;s model representaion. This relationship must be used alongside the &quot;hasTargetPlacement&quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasStartingVertex -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasStartingVertex">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates the starting vertex for a line.</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -515,6 +669,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasAgreementFlag -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasAgreementFlag">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A boolean property that determines the subset of a half space. When true, the subset is the one the normal points away from. Otherwise, the subset is the one the normal points into.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextIdentifier -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContextIdentifier">
@@ -575,6 +740,17 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the x,y, and z direction ratio for a Direction Vector as a double value. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionDepth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionDepth">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the distance that the solid is extruded.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -722,6 +898,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDimensionExtent -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDimensionExtent">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the X-extents for the rectangle profile.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDirectionRatio -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDirectionRatio">
@@ -742,6 +929,17 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Cartesian Point Y-coordinates as a double value.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasYDimensionExtent -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasYDimensionExtent">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the Y-extents for the rectangle profile.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -788,6 +986,17 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Boolean indicator that is true when the roof is suitable for installation of heat support, and is false, otherwise.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isLoopNonInversedOrientation -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isLoopNonInversedOrientation">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A boolean property that indicates whether the loop has the same sense when used to bound the face as when first defined. When false, the senses of all its component oriented edges are implicitly reversed when used in the face.</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -841,6 +1050,14 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA -->
+
+    <owl:Class rdf:about="http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 
@@ -904,6 +1121,15 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a solid that is created as a result of the Boolean difference between a solid (restricted to swept area solid) and a half space solid. The solid is the regularization of the set of all points which are in the first operand/geometry, but not in the second operand. More than one difference operation can be applied to achieve this solid. Its IFC equivalent is IfcBooleanClippingResult.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint">
@@ -924,6 +1150,15 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ClosedShell -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ClosedShell">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a shell of dimensionality 2, that typically serves as a bound for a region. It is usually represented by a collection of faces. Its IFC equivalent is IfcClosedShell.</rdfs:comment>
     </owl:Class>
     
 
@@ -957,6 +1192,24 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defined a solid by sweeping a bounded planar surface in a given direction. If the planar area has inner boundaries, i.e. holes defined, then those holes shall be swept into holes of the solid. Its IFC equivalent is IfcExtrudedAreaSolid</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Face -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Face">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a topological entity of dimensionality 2, that is represented by its bounding loops or face bounds. Its IFC equivalent is IfcFace.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a loop that is the outer boundary of a face. Only one should exist for any given face. Its IFC equivalent is IfcFaceOuterBound.</rdfs:comment>
     </owl:Class>
     
 
@@ -996,6 +1249,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representation of the element that describes the shape of each element, with additional meaning of having geometric position, orientation, or both.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext">
@@ -1020,6 +1281,15 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#HalfSpaceSolid -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#HalfSpaceSolid">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A solid that is defined by the half space, ie the regular subset of the domain which lies on one side of an unbounded surface. The surface side in the half space is determined by the surface normal and agreement flag. A valid half space solid must have the domain divided exactly into two subsets by the surface. Its IFC equivalent is IfcHalfSpaceSolid.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof">
@@ -1035,6 +1305,15 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CompoundPlaneAngle"/>
         <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Longitude"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The world longitude at reference point defined as integer values for degrees, minutes, seconds, and, optionally, microseconds with respect to the world geodetic system WGS84.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a vertex on a polyline that follows a sequence. Its geometric position is given by a cartesian point.</rdfs:comment>
     </owl:Class>
     
 
@@ -1064,10 +1343,45 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolyLoop -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolyLoop">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a polyline that is a closed loop. Its closest IFC equivalent is IfcPolyLoop.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PolygonalBoundedHalfSpace">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#HalfSpaceSolid"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a half space solid, in which the half space is bounded by a polygonal boundary. Its IFC equivalent is IfcPolygonalBoundedHalfSpace.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a bounded curve of n-1 linear segments, defined by a list of n Line Vertex. Its IFC equivalent is IfcPolyline.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines an abstract container class that establishes the context for information to be exchanged or shared, and reference the root of the Zone hierarchy. Its IFC equivalent is IfcProject.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the profile definition of the swept surface geometry or swept area solid as a rectangle. Its IFC equivalent is the IfcRectangleProfileDef class.</rdfs:comment>
     </owl:Class>
     
 
@@ -1101,6 +1415,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a complete representation of an element&apos;s nominal shape such that all points in the interior are connected. There are several different types of solid model representations. Its IFC equivalent is IfcSolidModel</rdfs:comment>
     </owl:Class>
     
@@ -1110,6 +1425,23 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair">
         <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines an unbounded surface with a constant normal (specified by a point and its normal direction vector). A surface can be envisioned as a set of connected points in 3-dimensional space which is always 2-dimensional locally, but need not be a manifold. Its IFC equivalent is IfcPlane.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TopologicalRepresentation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A representation of the element that describes how elements are bounded and connected in an abstract manner.</rdfs:comment>
     </owl:Class>
     
 
@@ -1187,6 +1519,14 @@
     <owl:Class rdf:about="https://saref.etsi.org/core/Sensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
         <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcBooleanOperator -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcBooleanOperator">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -1416,6 +1756,24 @@
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#HalfSpaceSolid"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Polyline"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SurfacePlane"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#BooleanClippingResult"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#HalfSpaceSolid"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#SolidModel"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor"/>
@@ -1423,6 +1781,15 @@
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ClosedShell"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Face"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
