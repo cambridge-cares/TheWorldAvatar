@@ -8,11 +8,12 @@
 # `agent.mockutils.env_configs_mock`. Since the import machinery already finds
 # the keys in the sys.modules dictionary, it will not begin looking for the old files.
 #
-#
+# -> Mock all modules, which depend on Stack deployment and/or run of Flask App startup
 # ----------------------------------------------------------------------------------
-from . import mockutils
-from .mockutils import env_configs_mock, stack_configs_mock
+
+from .mockutils import env_configs_mock, stack_configs_mock, initialise_kg_mock
 import sys
 
 sys.modules['agent.utils.env_configs'] = env_configs_mock
 sys.modules['agent.utils.stack_configs'] = stack_configs_mock
+sys.modules['agent.kgutils.initialise_kg'] = initialise_kg_mock

@@ -1,6 +1,6 @@
-DB_USER="postgres"
-DB_PASSWORD="postgres"
-DB_URL=""
-QUERY_ENDPOINT=""
-UPDATE_ENDPOINT=""
-ONTOP_URL=""
+DB_USER='postgres'
+DB_PASSWORD='postgres'
+DB_URL=''
+QUERY_ENDPOINT='http://localhost:50253/blazegraph/namespace/kb/sparql'
+UPDATE_ENDPOINT='http://localhost:50253/blazegraph/namespace/kb/sparql'
+ONTOP_URL=''

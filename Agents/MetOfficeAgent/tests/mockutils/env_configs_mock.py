@@ -1,6 +1,6 @@
-DATAPOINT_API_KEY="test_token"
-NAMESPACE="stations"
-DATABASE="metoffice"
-LAYERNAME="metoffice"
-GEOSERVER_WORKSPACE="metoffice"
-ONTOP_FILE="/app/resources/ontop.obda"
+DATAPOINT_API_KEY='test_token'
+NAMESPACE='stations'
+DATABASE='metoffice'
+LAYERNAME='metoffice'
+GEOSERVER_WORKSPACE='metoffice'
+ONTOP_FILE='/app/resources/ontop.obda'
