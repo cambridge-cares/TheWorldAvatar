@@ -3,31 +3,68 @@
 # Date: 04 Apr 2022                            #
 ################################################
 
-# This module provides helper functions for various tests
+# This module provides fixtures and helper functions for various tests
 
 # Avoid unnecessary logging information from py4j package
 import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-
 import os
 import json
+import time
 import requests
 from pathlib import Path
+import pytest
+from testcontainers.core.container import DockerContainer
 
+from agent.flaskapp import create_app
 from agent.kgutils.kgclient import KGClient
 from agent.utils.stack_configs import QUERY_ENDPOINT
 
 
+# ----------------------------------------------------------------------------------
+# Fixtures
+# ----------------------------------------------------------------------------------
+
+@pytest.fixture()
+def initialise_triple_store():
+    # Define temporary Docker container based on empty Blazegraph image from CMCL registry
+    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT')
+    blazegraph.with_exposed_ports(8080)    
+    # Clear logger at the end of the test
+    clear_loggers()    
+    yield blazegraph
+
+
+@pytest.fixture
+def create_testing_agent():
+    app = create_app({'TESTING': True})
+    with app.test_client() as client:
+        yield client
+
+
+# ----------------------------------------------------------------------------------
+# Helper functions
+# ----------------------------------------------------------------------------------
+
 def get_sparql_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
-    # endpoint acts as both Query and Update endpoint
+    # (endpoint acts as both Query and Update endpoint)
     endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
+               + docker_container.get_exposed_port(8080)
     # 'kb' is default namespace in Blazegraph
-    endpoint += '/blazegraph/namespace/test_kb/sparql'
-    # Clear logger at the end of the test
-    clear_loggers()
+    endpoint += '/blazegraph/namespace/kb/sparql'
+    
+    # Ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
+    service_available = False
+    while not service_available:
+        try:
+            response = requests.head(endpoint)
+            if response.status_code != requests.status_codes.codes.not_found:
+                service_available = True
+        except requests.exceptions.ConnectionError:
+            time.sleep(3)
+    
     return endpoint
 
 
@@ -51,8 +88,7 @@ def read_station_data():
     fp = os.path.join(Path(__file__).parent, "data", "station_data.json")
     with open(fp, 'r') as file:
         stations = json.load(file)
-    # Clear logger at the end of the test
-    clear_loggers()
+
     return stations
 
 
@@ -66,8 +102,7 @@ def read_readings_locations():
         with open(f, 'r') as file:
             readings = json.load(file)
             data.append(readings)
-    # Clear logger at the end of the test
-    clear_loggers()
+
     return data
 
 
@@ -92,8 +127,7 @@ def read_readings_timeseries():
         with open(f, 'r') as file:
             readings = json.load(file)
             data.append(readings)
-    # Clear logger at the end of the test
-    clear_loggers()
+
     return data
 
 

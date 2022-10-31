@@ -12,28 +12,12 @@ from testcontainers.core.container import DockerContainer
 from agent.dataretrieval.stations import *
 from agent.dataretrieval.readings import *
 from agent.errorhandling.exceptions import APIException
-from agent.utils.stack_configs import QUERY_ENDPOINT
-from agent.flaskapp import create_app
+
 from tests.conftest import *
 
 # Import modules under test from gasgridagent
 from agent.datainstantiation.stations import *
 from agent.datainstantiation.readings import *
-
-
-@pytest.fixture()
-def initialise_triple_store():
-    # Define temporary Docker container based on empty Blazegraph image from CMCL registry
-    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    blazegraph.with_exposed_ports(9999)
-    yield blazegraph
-
-
-@pytest.fixture
-def client():
-    app = create_app({'TESTING': True})
-    with app.test_client() as client:
-        yield client
 
 
 def test_instantiate_stations(initialise_triple_store, mocker):
@@ -54,9 +38,7 @@ def test_instantiate_stations(initialise_triple_store, mocker):
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-        # Retrieve SPARQL endpoint
+        # Retrieve SPARQL endpoint as soon as container is available
         endpoint = get_sparql_endpoint(container)
         create_blazegraph_namespace(endpoint)
 
@@ -116,9 +98,7 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-        # Retrieve SPARQL endpoint
+        # Retrieve SPARQL endpoint as soon as container is available
         endpoint = get_sparql_endpoint(container)
         create_blazegraph_namespace(endpoint)
 
