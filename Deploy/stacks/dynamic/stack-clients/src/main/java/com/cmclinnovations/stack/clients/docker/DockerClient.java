@@ -213,9 +213,16 @@ public class DockerClient extends BaseClient {
                 try (ExecStartResultCallback result = execStartCmd
                         .exec(new ExecStartResultCallback(outputStream, errorStream))) {
                     if (wait) {
-                        result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn("Docker exec command '{}' still running after the {} second execution timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     } else {
-                        result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS);
+                        if (!result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS)) {
+                            LOGGER.warn(
+                                    "Docker exec command '{}' still not started within the {} second initialisation timeout.",
+                                    cmd, evaluationTimeout);
+                        }
                     }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
@@ -229,10 +236,28 @@ public class DockerClient extends BaseClient {
     }
 
     public long getCommandErrorCode(String execId) {
+        Long exitCode = null;
         try (InspectExecCmd inspectExecCmd = internalClient.inspectExecCmd(execId)) {
-            InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
-            Long exitCode = inspectExecResponce.getExitCodeLong();
-            return (null != exitCode) ? exitCode : 1;
+
+            boolean isRunning = true;
+            while (isRunning) {
+                InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
+                isRunning = inspectExecResponce.isRunning();
+                if (isRunning) {
+                    Thread.sleep(500);
+                } else {
+                    exitCode = inspectExecResponce.getExitCodeLong();
+                }
+            }
+        } catch (InterruptedException ex) {
+            LOGGER.warn("Sleep method was interrupted whilst waiting for Docker inspect exec command.", ex);
+            Thread.currentThread().interrupt();
+        }
+        if (null == exitCode) {
+            throw new RuntimeException(
+                    "Docker exec command returned 'null' exit code even after it had finshed running.");
+        } else {
+            return exitCode;
         }
     }
 
@@ -327,6 +352,8 @@ public class DockerClient extends BaseClient {
         TarArchiveEntry entry = new TarArchiveEntry(filePath);
         entry.setSize(fileContent.length);
         entry.setMode(0755);
+        // Set the files' user and group to the default ones in that container
+        entry.setIds(1000, 1000);
         tar.putArchiveEntry(entry);
         tar.write(fileContent);
         tar.closeArchiveEntry();
@@ -432,20 +459,23 @@ public class DockerClient extends BaseClient {
         return new byte[0];
     }
 
-    public Optional<Container> getContainer(String containerName) {
+    public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            // Setting "showAll" to "true" ensures non-running containers are also returned
             return listContainersCmd.withNameFilter(List.of(containerName))
-                    .withShowAll(true).exec()
+                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .withShowAll(showAll).exec()
                     .stream().findAny();
         }
     }
 
+    public Optional<Container> getContainer(String containerName) {
+        // Setting "showAll" to "true" ensures non-running containers are also returned
+        return getContainer(containerName, true);
+    }
+
     public boolean isContainerUp(String containerName) {
-        try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            // Don't need to filter for "running" state as this is the default setting
-            return !listContainersCmd.withNameFilter(List.of(containerName)).exec().isEmpty();
-        }
+        // Setting "showAll" to "false" ensures only running containers are returned
+        return getContainer(containerName, false).isPresent();
     }
 
     public String getContainerId(String containerName) {

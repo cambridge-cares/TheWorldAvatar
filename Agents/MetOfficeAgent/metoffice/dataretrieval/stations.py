@@ -15,9 +15,10 @@ import pandas as pd
 
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.timeseries import TSClient
+from metoffice.kgutils.tsclient import TSClient
+from metoffice.kgutils.stackclients import OntopClient
 from metoffice.kgutils.querytemplates import *
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
 from metoffice.dataretrieval.readings import get_time_series_data
 from metoffice.utils.output_formatting import create_geojson_output, create_metadata_output
@@ -51,31 +52,31 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
         Returns dictionary with Met Office IDs as key and station IRI as value
 
         Arguments:
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km
     """
     
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geo:search.")
-        raise InvalidInput("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geospatial search.")
+        raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
             #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in WGS84 coordinates.")
+            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
-                               +"\"latitude#longitude\" in WGS84 coordinates.")
+                               +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
     # Construct KG client with correct query
     query_string = instantiated_metoffice_stations(circle_center=circle_center,
-                                          circle_radius=circle_radius)
+                                                   circle_radius=circle_radius)
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Extract results in required format
-    res = [(r['id'], r['station']) for r in results]
+    res = [(r['stationID'], r['station']) for r in results]
     res = dict(res)
     
     return res
@@ -91,33 +92,56 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
           'obs_station', 'fcs_station', 'dataIRI'])
 
         Arguments:
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km
     """
 
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geo:search.")
-        raise InvalidInput("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geospatial search.")
+        raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
             #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in WGS84 coordinates.")
+            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
-                               +"\"latitude#longitude\" in WGS84 coordinates.")
+                               +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
-    # Construct KG client with correct query
-    query_string = instantiated_metoffice_stations_with_details(circle_center=circle_center,
-                                                                circle_radius=circle_radius)
+    # Construct KG client, set query and execute
+    kg_query = instantiated_metoffice_stations_with_details(circle_center=circle_center,
+                                                            circle_radius=circle_radius)                                            
     kg_client = KGClient(query_endpoint, update_endpoint)
-    # Execute query
-    results = kg_client.performQuery(query=query_string)
-    # Parse results into DataFrame
+    results = kg_client.performQuery(query=kg_query)
+
+    # Extract all (unique) station IRIs (neglect potential Nones)
+    station_iris = list(set([r.get('station') for r in results]))
+    station_iris = [s for s in station_iris if s is not None]
+    
+    # OntopClient seems to have issues with large queries; hence query in batches
+    ontop_client = OntopClient()
+    n = 500     # batch size
+    latlon_all = {}
+    station_iris = [station_iris[i:i + n] for i in range(0, len(station_iris), n)]
+
+    for iris in station_iris:
+        # Set query and execute
+        ontop_query = geospatial_station_info(iris)        
+        res = ontop_client.performQuery(ontop_query)
+        # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
+        lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in res}
+        latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
+        # Append to overall dictionary
+        latlon_all.update(latlon)
+
+    # Parse results into DataFrame and map geospatial information to station IRIs
     df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
                                'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
+    df['latlon'] = df['station'].map(latlon_all)
+    # Drop stations without geo
+    df = df.dropna(subset=['latlon'])
     # Add station classification (one hot encoded)
     df['obs_station'] = df['dataIRI_obs'].isna().apply(lambda x: 0 if x else 1)
     df['fcs_station'] = df['dataIRI_fc'].isna().apply(lambda x: 0 if x else 1)
@@ -150,9 +174,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
                                 for which to retrieve data (all if None)
             split_obs_fcs - boolean flag whether to create joint output files for
                             observations and forecasts or 2 separate sets 
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km            
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km         
             tmin - oldest time step for which to retrieve data
             tmax - latest time step for which to retrieve data
             split_obs_fcs - boolean flag

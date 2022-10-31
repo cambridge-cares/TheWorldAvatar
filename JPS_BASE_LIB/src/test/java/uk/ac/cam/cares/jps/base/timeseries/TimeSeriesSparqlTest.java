@@ -38,8 +38,8 @@ public class TimeSeriesSparqlTest {
     private TimeSeriesSparql sparqlClient;
     
 	// Initialise correct namespaces to use for ontology and knowledge base
-	private final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
-	private final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
+	private final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
+	private final String ns_kb = "https://www.theworldavatar.com/kg/ontotimeseries/";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
     private final String tsIRI1 = "http://tsIRI1";
