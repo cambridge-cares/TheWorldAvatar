@@ -155,9 +155,6 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     available = retrieve_station_data_from_api(api_key)
     available_ids = [s['id'] for s in available]
 
-    # TODO: remove
-    available_ids = available_ids[10:20]
-
     # Get already instantiated stations
     instantiated_ids = get_all_metoffice_station_ids(query_endpoint=query_endpoint)
 
