@@ -30,7 +30,7 @@
 
   <!-- Metre Below Local Stage Ontology -->
 
-  <om:Unit rdf:about="http://theworldavatar.com/resource/ontouom/metreBDAT">
+  <om:Unit rdf:about="https://www.theworldavatar.com/kg/ontouom/metreBDAT">
     <rdfs:label xml:lang="en">metre BDAT</rdfs:label>
     <rdfs:comment xml:lang="en">Meters below local reference datum</rdfs:comment>
     <om:symbol>mBDAT </om:symbol>

@@ -26,29 +26,18 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Mass of Substance Concentration Upper Ontology -->
+  <!-- Amount Of Money Per Energy Upper Ontology -->
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
-    <rdfs:label xml:lang="en">Mass concentration is defined as the mass of a constituent divided by the volume of the mixture</rdfs:label>
-    <om:alternativeLabel xml:lang="en">mass concentration</om:alternativeLabel>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerEnergy">
+    <rdfs:label xml:lang="en">amount of money per energy</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Quantity"/>
-    <om:symbol>C</om:symbol> 
   </owl:Class>
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
-    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/microgramPerCubicMetre"/>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerEnergy">
+    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/euroPerMegawattHour"/>
   </owl:Class>
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="&om;hasDimension"/>
-        <owl:hasValue rdf:resource="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration-Dimension"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-  </owl:Class>
-
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerEnergy">
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasValue"/>
@@ -56,12 +45,12 @@
           <owl:Restriction>
             <owl:onProperty rdf:resource="&om;hasUnit"/>
             <owl:allValuesFrom>
-              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentrationUnit"/>
+              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerEnergyUnit"/>
             </owl:allValuesFrom>
-          </owl:Restriction>
+          </owl:Restriction>	
         </owl:allValuesFrom>
-      </owl:Restriction>
-    </rdfs:subClassOf>
+      </owl:Restriction>     
+    </rdfs:subClassOf>     
   </owl:Class>
 
 </rdf:RDF>

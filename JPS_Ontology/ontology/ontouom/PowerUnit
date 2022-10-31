@@ -26,30 +26,32 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Mass of Substance Concentration Unit Ontology -->
+  <!-- Power Upper Ontology -->
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentrationUnit">
-    <rdfs:label xml:lang="en">mass of substance concentration unit</rdfs:label>
+  <owl:Class rdf:about="&om;PowerUnit">
+    <rdfs:label xml:lang="en">power unit</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Unit"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
           <owl:Class>
             <owl:oneOf rdf:parseType="Collection">
-              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/microgramPerCubicMetre"/>
-              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/nanogramPerCubicMetre"/>
-              <om:UnitDivision rdf:about="&om;gramPerCubicmetre"/>
-              <om:UnitDivision rdf:about="&om;milligramPerCubicmetre"/>
-              <om:UnitDivision rdf:about="&om;gramPerCubicCentimetre"/>
-              <om:UnitDivision rdf:about="&om;microgramPerCubicCentimetre"/>
-              <om:UnitDivision rdf:about="&om;kilogramPerCubicmetre"/>
-              <om:UnitDivision rdf:about="&om;kilogramPerCubicDecimetre"/>
-              <om:UnitDivision rdf:about="&om;gramPerLitre"/>
+              <om:Unit rdf:about="&om;horsepower-Boiler"/>
+              <om:Unit rdf:about="&om;horsepower-British"/>
+              <om:Unit rdf:about="&om;horsepower-Electric"/>
+              <om:Unit rdf:about="&om;horsepower-Metric"/>
+              <om:Unit rdf:about="&om;horsepower-Water"/>
+              <om:Unit rdf:about="&om;kilocalorie-MeanPerDay"/>
+              <om:Unit rdf:about="&om;solarLuminosity"/>
+              <om:Unit rdf:about="&om;tonOfRefrigeration"/>
+              <om:Unit rdf:about="&om;watt"/>
+              <om:UnitDivision rdf:about="&om;joulePerSecond-Time"/>
+              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/kilowattHourPerYear">
+              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/gigawattHourPerYear">
+              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/megawattHourPerYear">
             </owl:oneOf>
           </owl:Class>
-          <owl:Class rdf:about="&om;PrefixedMolePerLitre"/>
-          <owl:Class rdf:about="&om;MolePerPrefixedLitre"/>
-          <owl:Class rdf:about="&om;PrefixedMolePerPrefixedLitre"/>
+          <owl:Class rdf:about="&om;PrefixedWatt"/>
         </owl:unionOf>
       </owl:Class>
     </owl:equivalentClass>

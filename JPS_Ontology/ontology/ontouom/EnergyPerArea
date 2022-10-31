@@ -26,18 +26,13 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Amount Of Money Per Area Upper Ontology -->
+  <!-- Energy Per Area Upper Ontology -->
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
-    <rdfs:label xml:lang="en">Specific amount of money per area, e.g. cost or value per sqm of land</rdfs:label>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerArea">
+    <rdfs:label xml:lang="en">energy per area</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Quantity"/>
-  </owl:Class>
-
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
-    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm"/>
-  </owl:Class>
-
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
+    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/wattHourPerSquareMetre"/>
+    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/kilowattHourPerSquareMetre"/>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasValue"/>
@@ -45,7 +40,7 @@
           <owl:Restriction>
             <owl:onProperty rdf:resource="&om;hasUnit"/>
             <owl:allValuesFrom>
-              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerAreaUnit"/>
+              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerAreaUnit"/>
             </owl:allValuesFrom>
           </owl:Restriction>	
         </owl:allValuesFrom>

@@ -5,8 +5,8 @@
   <!DOCTYPE rdf:RDF [
     <!ENTITY rdf     "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs    "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl     "http://www.w3.org/2002/07/owl#">
-    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#">
+    <!ENTITY owl     "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#"> 
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
@@ -21,22 +21,24 @@
     xmlns="&om;"
     xml:base="&om;"
   >
-
+  
   <owl:Ontology rdf:about="">
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Additional Flow Rate Units Ontology -->
+  <!-- Energy Per Area Upper Ontology -->
 
-  <!-- Litre Per Day Ontology -->
-
-  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/litrePerDay">
-    <rdfs:label xml:lang="en">litre per day</rdfs:label>
-    <om:symbol>l/d</om:symbol>
-    <om:alternativeSymbol>l d-1</om:alternativeSymbol>
-    <om:alternativeSymbol>l·d-1</om:alternativeSymbol>
-    <om:hasNumerator rdf:resource="&om;litre"/>
-    <om:hasDenominator rdf:resource="&om;day"/>
-  </om:UnitDivision>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/EnergyPerAreaUnit">
+    <rdfs:label xml:lang="en">energy per area unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&om;Unit"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/wattHourPerSquareMetre"/>
+          <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/kilowattHourPerSquareMetre"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class> 
 
 </rdf:RDF>
