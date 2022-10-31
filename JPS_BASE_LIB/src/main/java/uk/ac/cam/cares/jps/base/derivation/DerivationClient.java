@@ -398,6 +398,8 @@ public class DerivationClient {
 
 	/**
 	 * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+	 * It does registration via SPARQL update with sub query, which skips adding triples if the provided agent's
+	 * OntoAgent:Service IRI already exist in the triple store: ontoAgentServiceIRI rdf:type OntoAgent:Service.
 	 * @param ontoAgentServiceIRI
 	 * @param ontoAgentOperationHttpUrl
 	 * @param inputTypes
