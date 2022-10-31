@@ -331,16 +331,6 @@ def initialise_timestamps(derivation_client, derivation_inputs):
         derivation_client.updateTimestamp(input)
 
 
-def get_endpoint(docker_container):
-    # Retrieve SPARQL endpoint for temporary testcontainer
-    # endpoint acts as both Query and Update endpoint
-    endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
-    # 'kb' is default namespace in Blazegraph
-    endpoint += '/blazegraph/namespace/kb/sparql'
-    return endpoint
-
-
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():
     """Remove handlers from all loggers"""
