@@ -196,14 +196,14 @@ public class Derivation {
 		List<Entity> inputs = this.getInputs();
 
 		for (Entity input : inputs) {
-			long input_timestamp;
+			long inputTimestamp;
 			if (input.hasBelongsTo()) {
-				input_timestamp = input.getBelongsTo().getTimestamp();
+				inputTimestamp = input.getBelongsTo().getTimestamp();
 			} else {
-				input_timestamp = input.getTimestamp();
+				inputTimestamp = input.getTimestamp();
 			}
 
-			if (input_timestamp > this.timestamp) {
+			if (inputTimestamp > this.timestamp) {
 				outOfDate = true;
 				return outOfDate;
 			}
