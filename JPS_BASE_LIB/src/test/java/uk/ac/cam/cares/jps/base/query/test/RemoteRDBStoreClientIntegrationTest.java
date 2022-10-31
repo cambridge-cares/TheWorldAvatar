@@ -25,34 +25,6 @@ public class RemoteRDBStoreClientIntegrationTest {
     private static final String user = "postgres";
     private static final String password = "postgres";
 
-    /**
-     * Tests the getConnection method which returns the connection to the RDB when given a valid url
-     * and RDB credentials
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
-     * @throws SQLException
-     */
-    @Test
-    public void getConnectionTest() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-        Field statement = rdbStoreClient.getClass().getDeclaredField("stmt");
-        statement.setAccessible(true);
-        Statement stmt = (Statement) statement.get(rdbStoreClient);
-        assertNull(stmt);
-        Connection conn = rdbStoreClient.getConnection();
-        assertNotNull(conn);
-        assertFalse(conn.isClosed());
-        stmt = (Statement) statement.get(rdbStoreClient);
-        assertNotNull(stmt);
-        conn.close();
-        RemoteRDBStoreClient rdbStoreClient1 = new RemoteRDBStoreClient(null, null, null);
-        JPSRuntimeException e = assertThrows(JPSRuntimeException.class, () -> rdbStoreClient1.getConnection());
-        assertEquals(e.getMessage(), "The connection attempt failed");
-
-        RemoteRDBStoreClient rdbStoreClient2 = new RemoteRDBStoreClient("jdbc:postgresql://host.docker.internal:5432/timeseries", "postgres", "postgres");
-        e = assertThrows(JPSRuntimeException.class, () -> rdbStoreClient2.getConnection());
-        assertEquals(e.getMessage(), "The connection attempt failed");
-    }
 
 
 }
