@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 04 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 04 Apr 2022                            #
+################################################
 
 import pytest
 
@@ -16,7 +16,6 @@ def test_add_station_data():
             'dataSource': 'test_source',
             'label': 'test_label',
             'id': 'test_id',
-            'location': 'test_location',
             'elevation': 1.23,
 	}
     data3 = {'station_iri': 'test_iri',
@@ -30,7 +29,6 @@ def test_add_station_data():
             + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/dataSource> \"test_source\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
             + "<test_iri> <http://www.w3.org/2000/01/rdf-schema#label> \"test_label\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
             + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/hasIdentifier> \"test_id\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
-            + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/hasObservationLocation> \"test_location\"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon> . " \
             + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/hasObservationElevation> \"1.23\"^^<http://www.w3.org/2001/XMLSchema#float> . "
     result3 = "<test_iri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.theworldavatar.com/kg/ontoems/ReportingStation> . " \
             + "<test_iri> <https://www.theworldavatar.com/kg/ontoems/dataSource> \"test_source\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
