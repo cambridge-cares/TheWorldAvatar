@@ -1,11 +1,13 @@
 import logging
 import re
+import time
 
 from gensim import *
 import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 #from owlready2 import * #get_ontology, default_world
 import owlready2
+#TODO-AE 221031 remove spiral import for COLAB
 from spiral import ronin
 from tqdm import tqdm
 

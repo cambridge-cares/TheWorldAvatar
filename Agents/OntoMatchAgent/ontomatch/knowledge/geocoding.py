@@ -23,7 +23,7 @@ class Agent():
         logging.info('created index with %s keys', len(self.index))
         logging.info('initialized geocoding agent')
 
-    def query(self, location:str, zipcode:int) -> tuple[float, float]:
+    def query(self, location:str, zipcode:int) -> tuple:
 
         found_iri = None
 

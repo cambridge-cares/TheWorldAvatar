@@ -62,7 +62,7 @@ class Agent():
             logging.fatal(full_traceback)
             raise
 
-    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> tuple[str, str]:
+    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> tuple:
         logging.info('calling ontomatch.knowledge.enrichment.Agent, addr=%s, add_knowledge=%s, http=%s',
                 addr, add_knowledge, http)
         if http:
@@ -130,10 +130,10 @@ class Agent():
             raise Exception
 
 
-def start(config_dev=None):
+def start(config_dev=None, use_config_name_as_log_name=False):
 
     starttime = time.time()
-    params, config_file = ontomatch.utils.util.init(config_dev)
+    params, config_file = ontomatch.utils.util.init(config_dev, use_config_name_as_log_name)
     http = params['pre_processing'].get('http')
 
     if http:
@@ -156,8 +156,8 @@ def start(config_dev=None):
         config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(config_file, params_str, http=False)
         Agent().start(config_handle, http=False)
 
-    timenow = time.time()-starttime
-    logging.info('elapsed time in seconds=%s', timenow)
+    timediff = time.time()-starttime
+    logging.info('elapsed time in seconds=%s', timediff)
 
 if __name__ == '__main__':
-    start()
+    start(use_config_name_as_log_name=True)

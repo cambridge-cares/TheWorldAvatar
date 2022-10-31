@@ -15,7 +15,7 @@ class Agent():
         properties = ['rdfs:label', 'sdo:postalCode']
         self.index = create_index(addr, 'turtle', properties)
 
-    def search(self, string: str) -> list[str]:
+    def search(self, string: str) -> list:
         return self.index[str]
 
 
