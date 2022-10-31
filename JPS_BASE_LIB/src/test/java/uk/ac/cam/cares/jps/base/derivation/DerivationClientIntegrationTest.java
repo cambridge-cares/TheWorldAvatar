@@ -28,7 +28,6 @@ public class DerivationClientIntegrationTest {
     static final String derivationBaseUrl = "http://derivation/";
     static final Integer numberOfIRIs = 300;
     static List<String> agentIriList = new ArrayList<>();
-    static List<String> agentUrlList = new ArrayList<>();
     static List<Boolean> forUpdateFlagList = new ArrayList<>();
 
     // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
@@ -54,7 +53,6 @@ public class DerivationClientIntegrationTest {
         devClient = new DerivationClient(storeClient, derivationBaseUrl);
         for (int i = 0; i < numberOfIRIs; i++) {
             agentIriList.add(agentIRI);
-            agentUrlList.add(agentURL);
             forUpdateFlagList.add(true);
         }
     }
@@ -74,7 +72,7 @@ public class DerivationClientIntegrationTest {
         // create derivations markup in bulk
         List<List<String>> entitiesList = generateIRIs(numberOfIRIs);
         List<List<String>> inputsList = generateIRIs(numberOfIRIs);
-        List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIriList, agentUrlList, inputsList);
+        List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIriList, inputsList);
 
         // check that the triples were inserted
         // as the SPARQL update is done in one-go, checking the first derivation is sufficient
@@ -88,7 +86,7 @@ public class DerivationClientIntegrationTest {
         // create derivations markup in bulk
         List<List<String>> entitiesList = generateIRIs(numberOfIRIs);
         List<List<String>> inputsList = generateIRIs(numberOfIRIs);
-        List<String> derivations = devClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIriList, agentUrlList, inputsList);
+        List<String> derivations = devClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIriList, inputsList);
 
         // check that the triples were inserted
         // as the SPARQL update is done in one-go, checking the first derivation is sufficient
