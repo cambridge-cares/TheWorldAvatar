@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.jooq.tools.jdbc.MockConnection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -93,9 +94,13 @@ public class TimeSeriesClient<T> {
 		
 		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
 		String rdbURL;
-		try {
-			rdbURL = conn.getMetaData().getURL();		
-		} catch (Exception e) {
+		if (conn.getClass() != MockConnection.class) {
+			try {
+				rdbURL = conn.getMetaData().getURL();
+			} catch (SQLException e) {
+				throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
+			}
+		} else {
 			rdbURL = "";
 		}
 		
@@ -157,8 +162,13 @@ public class TimeSeriesClient<T> {
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-   		try {
-			String rdbURL = conn.getMetaData().getURL();
+		String rdbURL;
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
+		}
+		try {
    			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit);
 		}
 		catch (Exception eRdfCreate) {
@@ -305,11 +315,16 @@ public class TimeSeriesClient<T> {
 
 			// modification mainly to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway
 			String rdbUrl;
-			try {
-				rdbUrl = conn.getMetaData().getURL();
-			} catch (Exception e) {
-				rdbUrl = ""; // setting dummy url, is not used in practice anyway
+			if (conn.getClass() != MockConnection.class) {
+				try {
+					rdbUrl = conn.getMetaData().getURL();
+				} catch (SQLException e) {
+					throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
+				}
+			} else {
+				rdbUrl = "";
 			}
+			
 			try {
 				rdfClient.initTS(tsIRI, dataIRIs, rdbUrl, timeUnit);
 			} catch (Exception eRdfCreate) {
