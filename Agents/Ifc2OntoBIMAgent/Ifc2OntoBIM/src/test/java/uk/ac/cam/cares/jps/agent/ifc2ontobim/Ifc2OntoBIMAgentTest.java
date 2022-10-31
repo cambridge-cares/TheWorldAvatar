@@ -24,6 +24,7 @@ class Ifc2OntoBIMAgentTest {
     private static Path sampleTtl;
     private static Ifc2OntoBIMAgent agent;
     private static final String KEY_BASEURI = "uri";
+    private static final String KEY_ENDPOINT = "endpoint";
 
     @BeforeAll
     static void init() throws IOException {
@@ -91,6 +92,17 @@ class Ifc2OntoBIMAgentTest {
     }
 
     @Test
+    void testValidateInputForEndpoint() {
+        // Test both variations of accepted uris
+        JSONObject requestParams = new JSONObject();
+        String uri = "http://www.theworldavatar.com/";
+        String endpoint = "http://localhost:9999/blazegraph/namespace/test/sparql";
+        requestParams.put(KEY_BASEURI, uri);
+        requestParams.put(KEY_ENDPOINT, endpoint);
+        assertTrue(agent.validateInput(requestParams));
+    }
+
+    @Test
     void testValidateInputFail() {
         // Test if the string does not start with http://www. , it returns false
         JSONObject requestParams = new JSONObject();
@@ -102,6 +114,21 @@ class Ifc2OntoBIMAgentTest {
         requestParams = new JSONObject();
         uri = "https://www.theworldavatar.com/ifc";
         requestParams.put(KEY_BASEURI, uri);
+        assertFalse(agent.validateInput(requestParams));
+
+        // Test bad endpoint url
+        requestParams = new JSONObject();
+        uri = "default";
+        String endpoint = "localhost:9999";
+        requestParams.put(KEY_BASEURI, uri);
+        requestParams.put(KEY_ENDPOINT, endpoint);
+        assertFalse(agent.validateInput(requestParams));
+
+        // Test bad endpoint url
+        requestParams = new JSONObject();
+        endpoint = "http://localhost:9999/blazegraph/namespace/bah";
+        requestParams.put(KEY_BASEURI, uri);
+        requestParams.put(KEY_ENDPOINT, endpoint);
         assertFalse(agent.validateInput(requestParams));
     }
 
@@ -131,16 +158,17 @@ class Ifc2OntoBIMAgentTest {
     void testRunAgentNoTTLFile() {
         try (MockedConstruction<IfcOwlConverter> mockOwlConverter = Mockito.mockConstruction(IfcOwlConverter.class)) {
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                agent.runAgent(new String[]{});
+                JSONObject message = agent.runAgent(new String[]{});
                 // Verify method was called
                 Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles();
                 // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
                 assertThrows(IndexOutOfBoundsException.class, () -> mockBimConverter.constructed().get(0));
+                assertEquals("No TTL file detected! Please place at least 1 IFC file input.", message.getString("Result"));
             }
         }
     }
 
-    private  Set<String> genFileSet(){
+    private Set<String> genFileSet() {
         Set<String> ttlFileSet = new HashSet<>();
         ttlFileSet.add(sampleTtl.toString());
         return ttlFileSet;

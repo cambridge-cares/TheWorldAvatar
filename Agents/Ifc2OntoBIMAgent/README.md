@@ -1,6 +1,6 @@
 # Ifc2OntoBim Agent
 
-This agent converts IFC files into TTL files defined by the OntoBIM ontology.
+This agent converts IFC files into TTL files defined by the OntoBIM ontology, and may upload them to the specified endpoint.
 
 ## Instructions
 ### 1. Requirements
@@ -57,21 +57,37 @@ This sets the base URI for all instances. Examples of valid URIs include `http:/
 
 A default URI of `http://www.theworldavatar.com/ifc/resources_16UUID/` is also available. Please access this with a request of `"uri":"default"`.
 
+2. SPARQL Endpoint - Optional
+
+The TTL file generated will be uploaded to the namespace indicated in the endpoint (Please create this namespace). 
+Do note that the upload is ONLY APPLICABLE when there is ONLY ONE IFC input. 
+Multiple IFC inputs will NOT be uploaded automatically.   
+
+Valid format: `http://IPv4ADDRESS:PORTNO/blazegraph/namespace/NAMESPACE/sparql`.
+Example: `http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql`.
+
+If you do not want to upload the TTL file, do not send this parameter in the request.
+
 ##### 2.3.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/retrieve`. A sample request is as follows:
 ```
 POST http://localhost:3025/ifc2ontobim-agent/retrieve
 Content-Type: application/json
-{"uri":"http://www.theworldavatar.com/ifc/building/"}
+{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim-agent/retrieve 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
+// When endpoint is left out
 {"Result":["File.ttl has been successfully converted!","All ttl files have been generated in OntoBIM. Please check the directory."]}
+// Full results
+{"Result":["File.ttl has been successfully converted!","File.ttl has been uploaded to endpoint","All ttl files have been generated in OntoBIM. Please check the directory."]}
 ```
 
 #### 2.3 Post-Build
 The generated TTL files can be retrieved at the `<root>/data/` directory.
+
+If an endpoint has been provided and only ONE IFC input is provided, the triples would be uploaded to the endpoint as well.
