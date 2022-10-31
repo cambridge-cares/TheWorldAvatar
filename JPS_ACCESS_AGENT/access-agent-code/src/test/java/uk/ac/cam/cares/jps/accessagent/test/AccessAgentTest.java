@@ -30,11 +30,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
+import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
@@ -79,26 +81,71 @@ public class AccessAgentTest{
 		
 		JSONObject requestParams;
 		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.ACCESS_URL);
+		
 		//test http get
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performGet(requestParams);
 		
 		//test http put
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPut.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPut(requestParams);
 		
 		//test http post
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPost(requestParams);
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCache() {
+		
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
+		
+		JSONObject response;
+		response = agent.processRequestParameters(requestParams, request);
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCacheThrows() {
+	
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setMethod(HttpPost.METHOD_NAME);
+		request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
+		
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.processRequestParameters(requestParams, request);});
+	}
+	
+	@Test
+	public void testClearCache() {
+		AccessAgent agent = new AccessAgent();
+		JSONObject response = agent.clearCache();
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
 	}
 	
 	@Test
@@ -192,7 +239,7 @@ public class AccessAgentTest{
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		StoreClientInterface storeClient = new MockStoreClient(); 
+		TripleStoreClientInterface storeClient = new MockStoreClient();
 		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		JSONObject jo = new JSONObject();
@@ -245,7 +292,7 @@ public class AccessAgentTest{
 	public void testPostWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		StoreClientInterface storeClient = createStoreClient(filePath); 
+		TripleStoreClientInterface storeClient = createStoreClient(filePath);
 		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		String testUpdate = getUpdateRequest().toString();
@@ -296,7 +343,7 @@ public class AccessAgentTest{
 		
         Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performPost(jo);});								
 	}	
-	
+		
 	///////////////////////////////////////////////
 	
 	/**
@@ -312,7 +359,7 @@ public class AccessAgentTest{
 	 * Create test store client.
 	 * Could mock this instead.
 	 */
-	private StoreClientInterface createStoreClient(String file) {
+	private TripleStoreClientInterface createStoreClient(String file) {
 		MockStoreClient mockStoreClient = new MockStoreClient();
 		mockStoreClient.load(file);
 		return mockStoreClient;

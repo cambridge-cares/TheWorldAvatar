@@ -15,6 +15,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This utility compresses a list of files to standard ZIP format file. It is able to compress all sub files and sub
  * directories, recursively.
@@ -22,6 +25,11 @@ import java.util.zip.ZipOutputStream;
  * @author www.codejava.net
  */
 public final class ZipUtility {
+
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(ZipUtility.class);
 
 	/**
 	 * A constants for buffer size used to read/write data
@@ -125,16 +133,17 @@ public final class ZipUtility {
 				continue;
 			}
 			zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
-			BufferedInputStream bis = new BufferedInputStream(
-				new FileInputStream(file));
-			long bytesRead = 0;
-			byte[] bytesIn = new byte[BUFFER_SIZE];
-			int read = 0;
-			while ((read = bis.read(bytesIn)) != -1) {
-				zos.write(bytesIn, 0, read);
-				bytesRead += read;
-			}
-			zos.closeEntry();
+
+            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+                byte[] bytesIn = new byte[BUFFER_SIZE];
+                int read = 0;
+                while ((read = bis.read(bytesIn)) != -1) {
+                    zos.write(bytesIn, 0, read);
+                }
+                zos.closeEntry();
+            } catch(Exception exception) {
+                LOGGER.error("Exception when zipping directory: " + file, exception);
+            }
 		}
 	}
 
@@ -149,16 +158,17 @@ public final class ZipUtility {
 	private void zipFile(File file, ZipOutputStream zos)
 		throws FileNotFoundException, IOException {
 		zos.putNextEntry(new ZipEntry(file.getName()));
-		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(
-			file));
-		long bytesRead = 0;
-		byte[] bytesIn = new byte[BUFFER_SIZE];
-		int read = 0;
-		while ((read = bis.read(bytesIn)) != -1) {
-			zos.write(bytesIn, 0, read);
-			bytesRead += read;
-		}
-		zos.closeEntry();
+
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+            byte[] bytesIn = new byte[BUFFER_SIZE];
+            int read = 0;
+            while ((read = bis.read(bytesIn)) != -1) {
+                zos.write(bytesIn, 0, read);
+            }
+            zos.closeEntry();
+        } catch(Exception exception) {
+            LOGGER.error("Exception when zipping file: " + file, exception);
+        }
 	}
 
 }

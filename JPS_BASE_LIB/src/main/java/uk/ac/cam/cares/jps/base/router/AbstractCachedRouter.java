@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * This abstract class defines a cached router. The extending router class must 
@@ -12,7 +12,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * in its constructor and implement the 
  * {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#getStoreClient getStoreClient}
  * and {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#getFromStore getFromStore} 
- * methods to initialize the {@link  uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClient}
+ * methods to initialize the {@link  uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface StoreClient}
  * object and fetch data from the router triple store.
  * The {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#get get} method 
  * should be used to retrieve routing data e.g.
@@ -39,6 +39,22 @@ public abstract class AbstractCachedRouter<K, V> {
 	}
 
 	/**
+	 * Clear cache
+	 */
+	public void clearCache() {
+		LOGGER.info("Clearing cache!");
+		cache.clear();
+	}
+
+	/**
+	 * Check if cache is empty
+	 * @return
+	 */
+	public boolean isCacheEmpty() {
+		return cache.isEmpty();
+	}
+	
+	/**
 	 * Get value mapped to the specified key. If the key is not in the cache 
 	 * then get the value from the triple store and add it to the cache.
 	 * 
@@ -51,7 +67,7 @@ public abstract class AbstractCachedRouter<K, V> {
 		V value;
 		if(!cache.contains(key)) {
 			LOGGER.info("Key= "+key.toString()+" not in cache. Get from store.");
-			StoreClientInterface storeClient = getStoreClient();
+			TripleStoreClientInterface storeClient = getRouterStoreClient();
 			value = getFromStore(key, storeClient);
 			if(validate(value)) {
 				cache.put(key, value);
@@ -87,7 +103,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return storeClient
 	 */
-	abstract public StoreClientInterface getStoreClient();
+	abstract public TripleStoreClientInterface getRouterStoreClient();
 	
 	/**
 	 * Extending class to implement logic for getting value(s) from triple store
@@ -97,5 +113,5 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return value
 	 */
-	abstract public V getFromStore(K key, StoreClientInterface storeClient);	
+	abstract public V getFromStore(K key, TripleStoreClientInterface storeClient);
 }
