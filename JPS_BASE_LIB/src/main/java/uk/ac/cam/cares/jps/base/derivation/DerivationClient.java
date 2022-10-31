@@ -773,7 +773,7 @@ public class DerivationClient {
 	}
 
 	/**
-	 * drops absolutely everything
+	 * drops absolutely everything except for triples with OntoAgent
 	 */
 	public void dropAllDerivationsAndTimestamps() {
 		dropAllDerivations();
@@ -781,29 +781,12 @@ public class DerivationClient {
 	}
 
 	/**
-	 * drops absolutely everything except for triples with OntoAgent
-	 */
-	public void dropAllDerivationsAndTimestampsNotOntoAgent() {
-		dropAllDerivationsNotOntoAgent();
-		dropAllTimestamps();
-	}
-
-	/**
-	 * clears all derivations from the kg, only removes timestamps directly attached
-	 * to derivations, does not remove timestamps of pure inputs
-	 */
-	public void dropAllDerivations() {
-		this.sparqlClient.dropAllDerivations();
-		LOGGER.info("Dropped all derivations");
-	}
-
-	/**
 	 * clears all derivations from the kg, only removes timestamps directly attached
 	 * to derivations, does not remove timestamps of pure inputs, does not remove
 	 * triples that can be part of OntoAgent
 	 */
-	public void dropAllDerivationsNotOntoAgent() {
-		this.sparqlClient.dropAllDerivationsNotOntoAgent();
+	public void dropAllDerivations() {
+		this.sparqlClient.dropAllDerivations();
 		LOGGER.info("Dropped all derivations but not OntoAgent triples");
 	}
 
