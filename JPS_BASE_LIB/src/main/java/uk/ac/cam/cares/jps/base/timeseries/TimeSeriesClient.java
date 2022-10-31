@@ -13,7 +13,8 @@ import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  * This class represents the MAIN interface to interact with time series in The World Avatar
  * 
@@ -48,6 +49,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  */
 
 public class TimeSeriesClient<T> {
+	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesClient.class);
 	// Associated RDB and RDF/SPARQL clients
 	private TimeSeriesRDBClient<T> rdbClient;
 	private TimeSeriesSparql rdfClient;
@@ -98,7 +100,10 @@ public class TimeSeriesClient<T> {
 			try {
 				rdbURL = conn.getMetaData().getURL();
 			} catch (SQLException e) {
-				throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
+				// this ensures rdfClient.initTS has a valid string
+				LOGGER.warn(e.getMessage());
+				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
+				rdbURL = "";
 			}
 		} else {
 			rdbURL = "";
@@ -163,10 +168,17 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
 		String rdbURL;
-		try {
-			rdbURL = conn.getMetaData().getURL();
-		} catch (SQLException e) {
-			throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
+		if (conn.getClass() != MockConnection.class) {
+			try {
+				rdbURL = conn.getMetaData().getURL();
+			} catch (SQLException e) {
+				// this ensures rdfClient.bulkInitTS has a valid string
+				LOGGER.warn(e.getMessage());
+				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
+				rdbURL = "";
+			}
+		} else {
+			rdbURL = "";
 		}
 		try {
    			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit);
@@ -303,6 +315,21 @@ public class TimeSeriesClient<T> {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", eRdfDelete);
 		}
 
+		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
+		String rdbURL;
+		if (conn.getClass() != MockConnection.class) {
+			try {
+				rdbURL = conn.getMetaData().getURL();
+			} catch (SQLException e) {
+				// this ensures rdfClient.initTS has a valid string
+				LOGGER.warn(e.getMessage());
+				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
+				rdbURL = "";
+			}
+		} else {
+			rdbURL = "";
+		}
+
 		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
 		try {
 			// Retrieve example dataIRI needed to delete RDB related information
@@ -312,21 +339,8 @@ public class TimeSeriesClient<T> {
 			// try to revert previous knowledge base deletion
 			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
 			//		a different exception depending on what the problem was, and how it should be handled
-
-			// modification mainly to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway
-			String rdbUrl;
-			if (conn.getClass() != MockConnection.class) {
-				try {
-					rdbUrl = conn.getMetaData().getURL();
-				} catch (SQLException e) {
-					throw new JPSRuntimeException("Database access error while obtaining metadata from connection object", e);
-				}
-			} else {
-				rdbUrl = "";
-			}
-			
 			try {
-				rdfClient.initTS(tsIRI, dataIRIs, rdbUrl, timeUnit);
+				rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
 			} catch (Exception eRdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
 						" , as database related deletion failed but KG triples were deleted.", eRdfCreate);
