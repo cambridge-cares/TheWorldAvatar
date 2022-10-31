@@ -59,10 +59,9 @@ def test_get_time_series_data_exceptions(t1, t2, expectedMsg):
     assert expectedMsg in str(excinfo.value)
 
 
-@pytest.mark.skip(reason="Only works as integration test with (local) Blazegraph running \
-                          at endpoint specified in `stack_configs_mock.py` file \
-                          Namespace needs to be empty or not created yet")
-def test_get_all_metoffice_stations(mocker):
+@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in `stack_configs_mock.py` file.\
+                          Default settings in `stack_configs_mock.py` match provided `docker-compose.test.yml`")
+def test_get_all_metoffice_stations(clear_triple_store, mocker):
 
     # Read test station data
     station_data = read_station_data()
@@ -79,7 +78,7 @@ def test_get_all_metoffice_stations(mocker):
     # Mock call to uuid function
     mocker.patch('uuid.uuid4', side_effect=[str(1), str(2), str(3)])
 
-    # Retrieve SPARQL endpoint from `stack_configs_mock.py` file and create namespace
+    # Retrieve SPARQL endpoint from `stack_configs_mock.py` file and create namespace (if not exists)
     endpoint = QUERY_ENDPOINT
     create_blazegraph_namespace(endpoint)
 

@@ -1,5 +1,5 @@
 DATAPOINT_API_KEY='test_token'
-NAMESPACE='stations'
+NAMESPACE='kb'
 DATABASE='metoffice'
 LAYERNAME='metoffice'
 GEOSERVER_WORKSPACE='metoffice'

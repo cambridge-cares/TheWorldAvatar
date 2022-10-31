@@ -237,10 +237,9 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         assert triples == 12
 
 
-@pytest.mark.skip(reason="Only works as integration test with (local) Blazegraph running \
-                          at endpoint specified in `stack_configs_mock.py` file \
-                          Namespace needs to be empty or not created yet")
-def test_instantiate_all_stations_webapp(create_testing_agent, mocker):
+@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in `stack_configs_mock.py` file.\
+                          Default settings in `stack_configs_mock.py` match provided `docker-compose.test.yml`")
+def test_instantiate_all_stations_webapp(clear_triple_store, create_testing_agent, mocker):
     # Integration test for expected behavior of instantiation of all stations via Flask App 
 
     # Mock Stack client initialisations

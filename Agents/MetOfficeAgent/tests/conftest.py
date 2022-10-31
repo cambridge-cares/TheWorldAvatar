@@ -19,7 +19,7 @@ from testcontainers.core.container import DockerContainer
 
 from agent.flaskapp import create_app
 from agent.kgutils.kgclient import KGClient
-from agent.utils.stack_configs import QUERY_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
 # ----------------------------------------------------------------------------------
@@ -36,11 +36,22 @@ def initialise_triple_store():
     yield blazegraph
 
 
-@pytest.fixture
+@pytest.fixture()
 def create_testing_agent():
     app = create_app({'TESTING': True})
     with app.test_client() as client:
         yield client
+
+
+@pytest.fixture()
+def clear_triple_store():
+    # Delete all triples from triple store (to ensure that tests are independent)
+    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    query_string = \
+        """
+        DELETE WHERE {?s ?p ?o}
+        """
+    kg_client.performUpdate(query_string)
 
 
 # ----------------------------------------------------------------------------------
