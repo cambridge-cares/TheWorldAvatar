@@ -24,7 +24,7 @@ RUN mvn clean package
 FROM tomcat:9.0.68-jre11-temurin as agent
 
 # Copies all files in config directory to destination
-COPY --from=builder /root/Ifc2OntoBIM/output/ifc2ontobim##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/Ifc2OntoBIM/output/ifc2ontobim-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Download dependency
 ADD https://github.com/pipauwel/IFCtoRDF/releases/download/IFCtoRDF-0.4/IFCtoRDF-0.4-shaded.jar .

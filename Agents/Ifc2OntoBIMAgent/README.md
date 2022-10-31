@@ -1,4 +1,4 @@
-# Ifc2OntoBim
+# Ifc2OntoBim Agent
 
 This agent converts IFC files into TTL files defined by the OntoBIM ontology.
 
@@ -65,14 +65,13 @@ Content-Type: application/json
 {"uri":"http://www.theworldavatar.com/ifc/building/"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim/retrieve 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim-agent/retrieve 
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 {"Result":["File.ttl has been successfully converted!","All ttl files have been generated in OntoBIM. Please check the directory."]}
 ```
-
 
 #### 2.3 Post-Build
 The generated TTL files can be retrieved at the `<root>/data/` directory.
