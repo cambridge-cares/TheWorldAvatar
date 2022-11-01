@@ -57,6 +57,7 @@ public class DerivedQuantitySparqlTest {
 	private MockDevStoreClient mockClient;
 	private DerivationSparql devClient;
 	private final String derivationInstanceBaseURL = "http://derivationsparql/test/";
+	private String p_time = "http://www.w3.org/2006/time#";
 	private String entity1 = "http://entity1";
 	private String entity2 = "http://entity2";
 	private String entity3 = "http://entity3";
@@ -299,19 +300,6 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testHasBelongsTo() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// empty kg
-		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", String.class);
-		hasBelongsTo.setAccessible(true);
-		Assert.assertFalse((boolean) hasBelongsTo.invoke(devClient, entity1));
-
-		// derived quantity created
-		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) hasBelongsTo.invoke(devClient, entity1));
-	}
-
-	@Test
 	public void testMarkAsRequested() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
@@ -326,13 +314,15 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testMarkAsRequestedIfOutdated() {
+	public void testMarkAsRequestedIfOutdated() throws InterruptedException {
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		// add timestamp to inputs and derivations
-		devClient.addTimeInstance(inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
 		devClient.addTimeInstance(derivation);
+		// here we also need to updateTimeStamp to make derivation up-to-date
+		// as the timestamp of inputs is added as current timestamp
+		devClient.updateTimeStamp(derivation);
 
-		// case 1: as all timestamp will be 0, the derivation should be deemed as
+		// case 1: as all timestamp will be current timestamp, the derivation should be deemed as
 		// up-to-date, thus nothing should happen if execute
 		devClient.markAsRequestedIfOutdated(derivation);
 		OntModel testKG = mockClient.getKnowledgeBase();
@@ -340,7 +330,8 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
 
 		// case 2: if now we make the derivation to be outdated, then the status should
-		// be mark as requested
+		// be mark as requested, here we sleep for 1 sec to be sure
+		TimeUnit.SECONDS.sleep(1);
 		for (String input : inputs) {
 			devClient.updateTimeStamp(input);
 		}
@@ -801,12 +792,7 @@ public class DerivedQuantitySparqlTest {
 		newTriples2.add(Rdf.iri("http://c/new2").isA(Rdf.iri("http://c/rdftype")));
 		String derivation = devClient.createDerivation(oldInstances, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
-
-		// add timestamp to all inputs with current timestamp
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp for all inputs should already be added automatically when createDerivation
 
 		// test if derivation was created correctly
 		// agent
@@ -893,6 +879,18 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testCreateDerivationIRI() {
+		String derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATION);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATION + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONWITHTIMESERIES + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONASYN);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONASYN + "_"));
+	}
+
+	@Test
 	public void testWriteSyncDerivationNewInfo() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 
@@ -912,18 +910,19 @@ public class DerivedQuantitySparqlTest {
 		newTriples.add(Rdf.iri(c).has(Rdf.iri(c_p), Rdf.iri(c_v)));
 
 		// create a new derivation IRI
-		String derivation = devClient.createDerivationIRI();
+		String derivationType = DerivationSparql.ONTODERIVATION_DERIVATION;
+		String derivation = devClient.createDerivationIRI(derivationType);
 
 		// timestamp
 		long retrievedInputsAt = Instant.now().getEpochSecond();
 
 		devClient.writeSyncDerivationNewInfo(newTriples, entities, derivedAgentIRI, inputs, derivation,
-				DerivationSparql.ONTODERIVATION_DERIVATION, retrievedInputsAt);
+				derivationType, retrievedInputsAt);
 
 		// test if derivation was created correctly
 		// derivation
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation), RDF.type,
-				ResourceFactory.createResource(DerivationSparql.ONTODERIVATION_DERIVATION)));
+				ResourceFactory.createResource(derivationType)));
 		// agent
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
@@ -952,6 +951,26 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testAllowedAsDerivationOutputs() {
+		// case 1: entities allowed to be added as outputs
+		// the function should execute fine
+		devClient.allowedAsDerivationOutputs(entities);
+
+		// case 2: entity already belongsTo other derivations
+		// mark derivation now, then the function should throw error
+		devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(entities));
+		Assert.assertTrue(e.getMessage().contains("already part of another derivation"));
+
+		// case 3: entity already has timestamp, is pure input
+		// should throw error
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+		Assert.assertTrue(e.getMessage().contains("have time instances"));
+	}
+
+	@Test
 	public void testBulkCreateDerivations() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
@@ -959,6 +978,12 @@ public class DerivedQuantitySparqlTest {
 
 		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "Derivation");
 
+		// add timestamp to all pure inputs first
+		devClient.addTimeInstance(inputsList.stream().flatMap(List::stream).collect(Collectors.toList()));
+		// then create derivation, as all pure inputs already have timestamp in KG
+		// the sub query that retrieves the pure inputs whose timestamp is missing will return empty results
+		// but due to the optional clause, the insert clause should still be able to proceed to mark up derivation
+		// thus if the below tests passes, the optional clause is tested automatically
 		List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
 				inputsList);
 		for (int i = 0; i < derivations.size(); i++) {
@@ -978,8 +1003,89 @@ public class DerivedQuantitySparqlTest {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
 						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
 						ResourceFactory.createResource(input)));
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(input),
+						ResourceFactory.createProperty(p_time + "hasTime")));
 			}
 		}
+
+		// an instance cannot be part of two derivations
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList));
+		Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+		for (String d : derivations) {
+			Assert.assertTrue(e.getMessage().contains(d));
+		}
+		for (String en : entitiesList.stream().flatMap(List::stream).collect(Collectors.toList())) {
+			Assert.assertTrue(e.getMessage().contains(en));
+		}
+
+		// an instance cannot be marked belongsTo more than one derivation
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(entities3, entities3),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(inputs1, inputs3)
+				));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
+	}
+
+	@Test
+	public void testBulkCreateDerivationsExceptions() {
+		// some errors for potential circular dependency will be detected at creation
+		// NOTE however that there will be situations that the creation is okay in DerivationSparql
+		// but circular dependency still exist, these can be detected by DerivationClient::validateDerivations
+		// this is the reason that derivations are always validated behind-the-secenes when creating derivation in bulk by developer
+		// check out DerivedQuantityClientTest::testValidateDerived and
+		// DerivedQuantityClientTest::testBulkCreateDerivationsDetectCircularDependency
+
+		// inputs cancelled out
+		// e1 --> d1 --> i1. i1 --> d2 --> e1.
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(input1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1. i1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1, i2. i1, i2 --> e1.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1, input2)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1, input2), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// same IRI exist in both inputs and outputs
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI),
+						Arrays.asList(derivedAgentURL),
+						Arrays.asList(Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Intersection between inputs and outputs for the same derivation markup"));
+
+		// entity will be belongsTo more than one derivation
+		// e2 --> e1. e1 --> i1. e1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
 	}
 
 	@Test
@@ -2442,11 +2548,7 @@ public class DerivedQuantitySparqlTest {
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN),
 				Arrays.asList(false, false, false, false, true, false));
-		// add timestamp to pure inputs with current timestamp
-		for (String input : inputs0) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp should already be added to all pure inputs with current timestamp in bulkCreateMixedDerivations
 		// add timestamp to all derivation with 0 timestamp, also mark them as Requested
 		// --> this is the same as the status of derivations after call
 		// unifiedUpdateDerivations

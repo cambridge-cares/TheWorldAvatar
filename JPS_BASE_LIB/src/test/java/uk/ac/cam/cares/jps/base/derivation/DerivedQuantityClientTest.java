@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +20,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -569,6 +572,14 @@ public class DerivedQuantityClientTest {
 
 	@Test
 	public void testAddTimeInstance() {
+		// both addTimeInstance(String) and addTimeInstance(List<String>) are tested here
+		// we test four aspect of the method:
+		// (1) do nothing if timestamp exist for instance already
+		// (2) do nothing if the instance is derived data
+		// (3) add time instance only if the instance is NOT derived data and do NOT have timestamp already
+		// (4) only one timestamp added to the duplicated instances in the input argument
+
+		// first test the case where the timestamp is not in the triple store and we add it
 		String namespace = "http://www.w3.org/2006/time#";
 		devClient.addTimeInstance(input1);
 		OntModel testKG = mockClient.getKnowledgeBase();
@@ -581,24 +592,158 @@ public class DerivedQuantityClientTest {
 		RDFNode timestamp = testKG.getIndividual(timeposition.toString())
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
 		Assert.assertTrue(timestamp.isLiteral());
+
+		// create a derivation instance to make derived data exist in the triple store
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, Arrays.asList(input1));
+		// the output entity1 should NOT have timestamp
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
+				ResourceFactory.createProperty(namespace + "hasTime")));
+		// if add time instance to entity1 explicitly, still nothing should happen
+		devClient.addTimeInstance(entity1);
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
+				ResourceFactory.createProperty(namespace + "hasTime")));
+
+		// then try to add timestamp to a list of entities, including the first one and the derived data
+		// check that nothing happens to the instance if its timestamp already exists
+		// also nothing happens to the derived data
+		// the other instances should have their timestamp added
+		devClient.addTimeInstance(Arrays.asList(input1, input2, entity1));
+		// check that the timestamp of the first instance is not changed
+		JSONArray resultsForInput1 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			input1, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForInput1.length());
+		Assert.assertEquals(timeInstance.toString(), resultsForInput1.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition.toString(), resultsForInput1.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp.asLiteral().getLong(), resultsForInput1.getJSONObject(0).getLong("timestamp"));
+		// check that the timestamp of the second instance is added
+		RDFNode timeInstance2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance2.isResource());
+		RDFNode timeposition2 = testKG.getIndividual(timeInstance2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition2.isResource());
+		RDFNode timestamp2 = testKG.getIndividual(timeposition2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp2.isLiteral());
+		JSONArray resultsForInput2 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			input2, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForInput2.length());
+		Assert.assertEquals(timeInstance2.toString(), resultsForInput2.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition2.toString(), resultsForInput2.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp2.asLiteral().getLong(), resultsForInput2.getJSONObject(0).getLong("timestamp"));
+		// check that the derived data doesn't have time instance
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
+				ResourceFactory.createProperty(namespace + "hasTime")));
+
+		// only one timestamp is added to the duplicated instance in input arguments
+		devClient.addTimeInstance(Arrays.asList(entity3, entity3, entity3));
+		// check that only one instance of timestamp is added to entity3
+		RDFNode timeInstance3 = testKG.getIndividual(entity3)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance3.isResource());
+		RDFNode timeposition3 = testKG.getIndividual(timeInstance3.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition3.isResource());
+		RDFNode timestamp3 = testKG.getIndividual(timeposition3.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp3.isLiteral());
+		JSONArray resultsForEntity3 = mockClient.executeQuery(String.format(
+			"SELECT * WHERE { <%s> <%s> ?timeInstance. ?timeInstance <%s> ?timePosition. ?timePosition <%s> ?timestamp. }",
+			entity3, namespace + "hasTime", namespace + "inTimePosition", namespace + "numericPosition"));
+		Assert.assertEquals(1, resultsForEntity3.length());
+		Assert.assertEquals(timeInstance3.toString(), resultsForEntity3.getJSONObject(0).get("timeInstance"));
+		Assert.assertEquals(timeposition3.toString(), resultsForEntity3.getJSONObject(0).get("timePosition"));
+		Assert.assertEquals(timestamp3.asLiteral().getLong(), resultsForEntity3.getJSONObject(0).getLong("timestamp"));
 	}
 
 	@Test
-	public void testUpdateTimestamps() {
+	public void testAddTimeInstanceCurrentTimestamp() {
+		long currentTs = Instant.now().getEpochSecond();
 		String namespace = "http://www.w3.org/2006/time#";
-		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI,
-				derivedAgentURL, inputs);
+		// first add time instance to input1 with 0 as default
+		devClient.addTimeInstance(input1);
+		// then add timestamp to both input1 and input2
+		// nothing should happen to input1, but input2 will be added current timestamp
+		devClient.addTimeInstanceCurrentTimestamp(Arrays.asList(input1, input2));
 		OntModel testKG = mockClient.getKnowledgeBase();
-		long oldtime = testKG.getIndividual(devInstance)
+
+		// check timestamp for input1, should be 0
+		RDFNode timeInstance = testKG.getIndividual(input1)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance.isResource());
+		RDFNode timeposition = testKG.getIndividual(timeInstance.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition.isResource());
+		RDFNode timestamp = testKG.getIndividual(timeposition.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp.isLiteral());
+		Assert.assertEquals(0, timestamp.asLiteral().getLong());
+
+		// check timestamp for input2, should no less than currentTs
+		RDFNode timeInstance2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getObject();
+		Assert.assertTrue(timeInstance2.isResource());
+		RDFNode timeposition2 = testKG.getIndividual(timeInstance2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getObject();
+		Assert.assertTrue(timeposition2.isResource());
+		RDFNode timestamp2 = testKG.getIndividual(timeposition2.toString())
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getObject();
+		Assert.assertTrue(timestamp2.isLiteral());
+		Assert.assertTrue(timestamp2.asLiteral().getLong() >= currentTs);
+	}
+
+	@Test
+	public void testUpdateTimestamps() throws InterruptedException {
+		String namespace = "http://www.w3.org/2006/time#";
+		// create derivation, the timestamp of the pure inputs will be added automatically
+		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI,
+				derivedAgentURL, Arrays.asList(input1, input2));
+		OntModel testKG = mockClient.getKnowledgeBase();
+		long oldtimeDevInstance = testKG.getIndividual(devInstance)
 				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
-		devClient.updateTimestamps(Arrays.asList(entity1));
-		long newtime = testKG.getIndividual(devInstance)
+		long oldtimeInput1 = testKG.getIndividual(input1)
 				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
-		Assert.assertTrue(newtime > oldtime);
+		long oldtimeInput2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+
+		// sleep for one sec, so that ensure the new timestamp to be added by the updateTimestamps is greater
+		TimeUnit.SECONDS.sleep(1);
+
+		// update the timestamp, this tests five folds of the function:
+		// 1. update the timestamp of the derivation instance given the IRI of the output - newtime > oldtime for devInstance
+		devClient.updateTimestamps(Arrays.asList(devInstance, entity1, entity2, derivedAgentIRI, input1, input2));
+		long newtimeDevInstance = testKG.getIndividual(devInstance)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeDevInstance > oldtimeDevInstance);
+		// 2. no timestamp is added to the output instance
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(entity1),
+				ResourceFactory.createProperty(namespace + "hasTime")));
+		// 3. update the timestamp of the pure input given its IRI - newtime > oldtime for both inputs
+		long newtimeInput1 = testKG.getIndividual(input1)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeInput1 > oldtimeInput1);
+		long newtimeInput2 = testKG.getIndividual(input2)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertTrue(newtimeInput2 > oldtimeInput2);
+		// 4. do nothing for the non-exist IRI - entity2 is not in the triple store
+		Assert.assertNull(testKG.getIndividual(entity2));
+		// 5. do nothing for the IRI that doesn't have a timestamp accociated with it - no timestamp instances exist for derivedAgentIRI
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivedAgentIRI),
+				ResourceFactory.createProperty(namespace + "hasTime")));
 	}
 
 	@Test
@@ -607,28 +752,46 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
 
-		// 1. inputs do not have timestamps yet
+		// 1. if any pure inputs don't have timestamp - in theory this should not be possible, unless someone deleted manually
 		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI,
 				derivedAgentURL, inputs);
 		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2,
 				derivedAgentURL2, Arrays.asList(entity1));
+		// the first check should pass as the timestamp for pure inputs are added automatically
+		Assert.assertTrue(devClient.validateDerivations());
+
+		// now delete timestamp of one pure input, and the derivations should not be valid anymore
+		mockClient.executeUpdate(String.format("delete where {<%s> <%s> ?time.}",
+				inputs.get(0), "http://www.w3.org/2006/time#hasTime"));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
-
-		// test should pass after added timestamp to pure inputs
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
-
-		Assert.assertTrue(devClient.validateDerivations());
 
 		devClient.dropAllDerivations();
 		devClient.dropAllTimestamps();
 
 		// 2. intentionally create a circular dependency
-		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
-		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
-		devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
+		// case i: e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at validate
+		List<String> derivations = devClient.sparqlClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1)),
+				Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+				Arrays.asList(derivedAgentURL, derivedAgentURL2),
+				Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1)));
+		devClient.addTimeInstance(derivations);
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("Circular dependency likely occurred"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// case ii: e2 --> e1. e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at validate
+		derivations = devClient.sparqlClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(entity1), Arrays.asList(entity2), Arrays.asList(input1)),
+				Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+				Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+				Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1), Arrays.asList(entity1)));
+		devClient.addTimeInstance(derivations);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 
@@ -636,10 +799,19 @@ public class DerivedQuantityClientTest {
 		devClient.dropAllTimestamps();
 
 		// 3. pure inputs part of a derivation
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
-		devClient.createDerivation(inputs, derivedAgentIRI, derivedAgentURL, inputs);
+		// with the latest design, this should not be possible (nothing happens when trying to add timestamp to derived data)
+		// but here we just create the situation manually
+		String namespace = "http://www.w3.org/2006/time#";
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
+		mockClient.executeUpdate(
+			String.format(
+				"insert data {" +
+					"<%s> <%s> <http://time_instant>." +
+					"<http://time_instant> a <%s>; <%s> <http://time_position>. " +
+					"<http://time_position> a <%s>; <%s> 123; <%s> <http://dbpedia.org/resource/Unix_time>.}",
+				entity1, namespace + "hasTime", namespace + "Instant", namespace + "inTimePosition",
+				namespace + "TimePosition", namespace + "numericPosition", namespace + "hasTRS")
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(
 				e.getMessage().contains("Entities belonging to a derivation should not have timestamps attached"));
@@ -682,13 +854,19 @@ public class DerivedQuantityClientTest {
 		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
 				inputsOfDownstreamDerivation);
 
-		// validation should fail as no timestamp were added for the pure inputs
+		// validation should pass as timestamp were automatically added for the pure inputs
+		Assert.assertTrue(devClient.validateDerivations());
+		// if now we manually remove the timestamp of one pure input, it should fail
 		// this is also to check the validateDerivations actually pulled derivaitons
 		// from KG and performed the checks (i.e. entered the recursive loop)
+		mockClient.executeUpdate("PREFIX time: <http://www.w3.org/2006/time#>" +
+			"DELETE WHERE { <" + inputs.get(0) + "> time:hasTime ?timeInstant . ?timeInstant a time:Instant ; time:inTimePosition ?timeUnix ." +
+				"?timeUnix a time:TimePosition ; time:numericPosition ?timestamp ; time:hasTRS <http://dbpedia.org/resource/Unix_time> . }"
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
-		// after added timestamps for pure inputs, validateDerivations should also work
+		// after added timestamps for pure inputs, validateDerivations should pass again
 		// for this type of derivation structure
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
@@ -720,13 +898,20 @@ public class DerivedQuantityClientTest {
 		// and third derivation given the two upstream derivation
 		String d3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI3, Arrays.asList(d1, d2));
 
-		// validation should fail as no timestamp were added for the pure inputs
+		// validation should pass as timestamp were automatically added for the pure inputs
+		Assert.assertTrue(devClient.validateDerivations());
+
+		// if now we manually remove the timestamp of one pure input, it should fail
 		// this is also to check the validateDerivations actually pulled derivaitons
 		// from KG and performed the checks (i.e. entered the recursive loop)
+		mockClient.executeUpdate("PREFIX time: <http://www.w3.org/2006/time#>" +
+			"DELETE WHERE { <" + inputs.get(0) + "> time:hasTime ?timeInstant . ?timeInstant a time:Instant ; time:inTimePosition ?timeUnix ." +
+				"?timeUnix a time:TimePosition ; time:numericPosition ?timestamp ; time:hasTRS <http://dbpedia.org/resource/Unix_time> . }"
+		);
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
-		// after added timestamps for pure inputs, validateDerivations should also work
+		// after added timestamps for pure inputs, validateDerivations should pass again
 		// for this type of derivation structure
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
@@ -738,14 +923,55 @@ public class DerivedQuantityClientTest {
 	}
 
 	@Test
+	public void testBulkCreateDerivationsDetectCircularDependency() {
+		// this test focuses on those situations where DerivationSparql::bulkCreateDerivations works fine
+		// but DerivationClient::bulkCreateDerivations should fail thanks to DerivationClient::validateDerivations
+		// this will happen if there's something potentiall create a circular dependencies in the list of derivation
+		// markup provided as arguments to the DerivationSparql::bulkCreateDerivations
+		// but won't be identified with the current design, a better design might be provided in the future to identify
+		// any circular dependency at creation, e.g. create a DAG in local memory for all the provided markup and validate
+
+		// initialise rdf:type of all instances, so that derivations can be cached
+		OntModel testKG = mockClient.getKnowledgeBase();
+		initRdfType(testKG);
+
+		// below test cases are same to [2. intentionally create a circular dependency]
+		// in DerivedQuantityClientTest::testValidateDerived
+		// case i: e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at DerivationClient::bulkCreateDerivations
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2),
+						Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Circular dependency likely occurred"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// case ii: e2 --> e1. e1 --> i1, i2. i1 --> e1.
+		// if we use the DerivationSparql::bulkCreateDerivations to bulk create
+		// it will be successful, but will fail at DerivationClient::bulkCreateDerivations
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(entity2), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(derivedAgentURL, derivedAgentURL2, derivedAgentURL3),
+						Arrays.asList(Arrays.asList(input1, input2), Arrays.asList(entity1), Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+	}
+
+	@Test
 	public void testDropDerivations() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 
 		// case 1: standard derivation
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
@@ -785,9 +1011,6 @@ public class DerivedQuantityClientTest {
 
 		// case 1: standard derivation
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-		}
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		devClient.dropAllDerivationsNotOntoAgent();
 		Assert.assertNull(testKG.getIndividual(derivation));
@@ -932,9 +1155,9 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
-			devClient.addTimeInstance(i);
+			// no need to addTimeInstance as time instances are automatically added when creating derivation markup
 			devClient.sparqlClient.updateTimeStamp(i);
-		}); // add time instance and update timestamp for pure inputs, otherwise
+		}); // update timestamp for pure inputs, otherwise
 			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
 			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
@@ -985,9 +1208,9 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
-			devClient.addTimeInstance(i);
+			// no need to addTimeInstance as time instances are automatically added when creating derivation markup
 			devClient.sparqlClient.updateTimeStamp(i);
-		}); // add time instance and update timestamp for pure inputs, otherwise
+		}); // update timestamp for pure inputs, otherwise
 			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
 			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
@@ -1041,9 +1264,9 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
-			devClient.addTimeInstance(i);
+			// no need to addTimeInstance as time instances are automatically added when creating derivation markup
 			devClient.sparqlClient.updateTimeStamp(i);
-		}); // add time instance and update timestamp for pure inputs, otherwise
+		}); // update timestamp for pure inputs, otherwise
 			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
 			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
@@ -1102,9 +1325,9 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
-			devClient.addTimeInstance(i);
+			// no need to addTimeInstance as time instances are automatically added when creating derivation markup
 			devClient.sparqlClient.updateTimeStamp(i);
-		}); // add time instance and update timestamp for pure inputs, otherwise
+		}); // update timestamp for pure inputs, otherwise
 			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
 			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
@@ -1179,9 +1402,9 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
-			devClient.addTimeInstance(i);
+			// no need to addTimeInstance as time instances are automatically added when creating derivation markup
 			devClient.sparqlClient.updateTimeStamp(i);
-		}); // add time instance and update timestamp for pure inputs, otherwise
+		}); // update timestamp for pure inputs, otherwise
 			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
 			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
