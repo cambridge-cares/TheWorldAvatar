@@ -409,7 +409,7 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 180, unit = TimeUnit.SECONDS)
-    @Order(9)
+    @Order(10)
     public void testErrorStatus() throws ServletException, InterruptedException {
         // first initialise exceptionThrowAgent
         exceptionThrowAgent.init();
