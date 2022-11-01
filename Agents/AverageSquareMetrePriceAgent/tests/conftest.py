@@ -274,18 +274,19 @@ def initialise_timeseries(kgclient, dataIRI, dates, values, rdb_url,
     # Create time series from test data                        
     ts = TSClient.create_timeseries(dates, [dataIRI], [values])
     
-    # Initialise time series in Blazegraph and PostgreSQL
-    ts_client.tsclient.initTimeSeries([dataIRI], [DATACLASS], TIME_FORMAT_SHORT,
-                                      ts_client.conn)
-    # Add test time series data
-    ts_client.tsclient.addTimeSeriesData(ts, ts_client.conn)
+    with ts_client.connect() as conn:
+        # Initialise time series in Blazegraph and PostgreSQL
+        ts_client.tsclient.initTimeSeries([dataIRI], [DATACLASS], TIME_FORMAT_SHORT, conn)
+        # Add test time series data
+        ts_client.tsclient.addTimeSeriesData(ts, conn)
 
 
 def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
     # Initialise time series client
     ts_client = TSClient(kg_client=kgclient, rdb_url=rdb_url, rdb_user=rdb_user, 
                          rdb_password=rdb_password)
-    ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
+    with ts_client.connect() as conn:
+        ts = ts_client.tsclient.getTimeSeries([dataIRI], conn)
     dates = ts.getTimes()
     # Unwrap Java time objects
     dates = [d.toString() for d in dates]

@@ -6,6 +6,8 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
+from contextlib import contextmanager
+
 import agentlogging
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
@@ -39,11 +41,10 @@ class TSClient:
 
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
-            self.conn = connection.getConnection()
+            self.conn = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
-            logger.error("Unable to initialise TS client RDB connection.")
-            raise TSException("Unable to initialise TS client RDB connection.") from ex
+            logger.error("Unable to initialise TS Remote Store client.")
+            raise TSException("Unable to initialise TS Remote Store client.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
@@ -51,6 +52,19 @@ class TSClient:
         except Exception as ex:
             logger.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
+
+
+    @contextmanager
+    def connect(self):
+        """
+        Create context manager for RDB connection using getConnection method of Java
+        TimeSeries client (i.e. to ensure connection is closed after use)
+        """
+        try:
+            conn = self.conn.getConnection()
+            yield conn
+        finally:
+            conn.close()
 
 
     @staticmethod

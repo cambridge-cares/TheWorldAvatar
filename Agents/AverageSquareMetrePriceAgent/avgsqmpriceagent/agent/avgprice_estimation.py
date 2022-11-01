@@ -169,7 +169,9 @@ class AvgSqmPriceAgent(DerivationAgent):
                 # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
                 # (https://landregistry.data.gov.uk/app/ukhpi/doc)
                 try:
-                    ts = ts_client.tsclient.getTimeSeries([ppi_iri], ts_client.conn)
+                    # Retrieve time series in try-with-resources block to ensure closure of RDB connection
+                    with ts_client.connect() as conn:
+                        ts = ts_client.tsclient.getTimeSeries([ppi_iri], conn)
                     dates = [d.toString() for d in ts.getTimes()]
                     values = [v for v in ts.getValues(ppi_iri)]
                 except Exception as ex:
