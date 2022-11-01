@@ -13,7 +13,9 @@ services:
       - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
       - AERMET_EXE=./root/aermod/aermet # need to match Dockerfile
       - AERMOD_EXE=./root/aermod/aermod # need to match Dockerfile
+      - WEATHER_AGENT=http://weatheragent:8080/WeatherAgent/UpdateStation
       - DATABASE=postgres
+      - SIMULATION_DIR=/root/aermod/simulations
     configs:
       - postgis
       - blazegraph
