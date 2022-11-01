@@ -2773,10 +2773,10 @@ public class DerivationSparql {
 							.executeUpdateByPost(sparqlUpdate)) {
 						if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
 							String html = EntityUtils.toString(httpResponse.getEntity());
-							Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+							Pattern pattern = Pattern.compile("mutationCount=([0-9]+)");
 							Matcher matcher = pattern.matcher(html);
 							if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-								// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+								// only return true if the agent is able to parse "mutationCount=([0-9]+)" and
 								// the parsed value is greater than 0
 								LOGGER.debug("SPARQL update (" + sparqlUpdate + ") executed with mutationCount="
 									+ matcher.group(1));

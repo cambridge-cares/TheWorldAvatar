@@ -94,7 +94,7 @@ public class RemoteStoreIntegrationTest {
 			Assert.assertNotNull(entity);
 			String html = EntityUtils.toString(entity);
 			System.out.println(html);
-			Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+			Pattern pattern = Pattern.compile("mutationCount=([0-9]+)");
 			Matcher matcher = pattern.matcher(html);
 			// matcher should find the value
 			Assert.assertTrue(matcher.find());

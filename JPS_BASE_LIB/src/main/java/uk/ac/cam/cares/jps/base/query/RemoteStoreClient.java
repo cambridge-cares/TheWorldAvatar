@@ -369,21 +369,17 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * Executes the update operation by HTTP POST and returns the HttpResponse
      * instance. This method was tested for blazegraph and rdf4j triple store. The
      * entity of response from blazegraph endpoint will be something look like:
+     * <p>
+     * {@code COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1}
+     * <p>
+     * So one can parse this string to determine the amount of triples got updated
+     * by regex matching "{@code mutationCount=([0-9]+)}".
      * 
-     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade; by SYSTAP</title
-     * ></head
-     * ><body<p>totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0, whereClause=0ms, deleteClause=0ms, insertClause=0ms</p
-     * ><hr><p>COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1</p
-     * ></html
-     * >
-     * 
-     * So one can parse this string to determine the amount of triples got updated by
-     * regex matching "mutationCount=(.*)</p".
-     * 
-     * However, the rdf4j endpoint will only return HTTP 204 No Content status - there
-     * is no way to know if the SPARQL update actually changed any triples.
+     * However, the rdf4j endpoint will only return HTTP 204 No Content status -
+     * there is no way to know if the SPARQL update actually changed any triples.
      * 
      * @param query
+     * 
      * @return
      */
     public CloseableHttpResponse executeUpdateByPost(String query) {
