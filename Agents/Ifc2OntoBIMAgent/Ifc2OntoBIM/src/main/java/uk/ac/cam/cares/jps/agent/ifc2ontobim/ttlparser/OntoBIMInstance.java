@@ -93,7 +93,7 @@ class OntoBIMInstance {
                 replacementName = "PolygonalBoundedHalfSpace";
                 break;
             case "IfcPlane":
-                replacementName = "Plane";
+                replacementName = "SurfacePlane";
                 break;
             case "IfcPolyline":
                 replacementName = "Polyline";

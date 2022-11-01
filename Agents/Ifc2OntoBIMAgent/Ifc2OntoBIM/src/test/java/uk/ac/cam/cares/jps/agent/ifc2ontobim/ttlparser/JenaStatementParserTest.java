@@ -70,7 +70,7 @@ class JenaStatementParserTest {
                 () -> assertTrue(result.contains("eg:LineVertex_3523 rdf:type eg:LineVertex")),
                 // Ensure List predicates are renamed
                 () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasNextVertex eg:LineVertex_5555")),
-                () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasLocalPosition eg:CartesianPoint_222"))
+                () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasRefPoint eg:CartesianPoint_222"))
         );
     }
 

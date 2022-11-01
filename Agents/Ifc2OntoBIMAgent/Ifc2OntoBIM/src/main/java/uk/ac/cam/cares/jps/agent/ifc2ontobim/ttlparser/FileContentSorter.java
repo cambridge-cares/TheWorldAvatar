@@ -70,7 +70,7 @@ class FileContentSorter {
         String subjectPrefix = StringUtils.getStringBeforeFirstCharacterOccurrence(line, ":");
         String subjectName = StringUtils.getStringAfterFirstCharacterOccurrence(line, ":");
         subjectName = StringUtils.getStringBeforeFirstCharacterOccurrence(subjectName, " ");
-        String object = StringUtils.getStringAfterLastCharacterOccurrence(line, " ");
+        String object = StringUtils.getStringAfterNCharacterOccurrence(line, " ",2);
         String objectName = StringUtils.getStringAfterFirstCharacterOccurrence(object, ":");
 
         // If neither the subject or object is found in the class mapping, return the line, and stop processing

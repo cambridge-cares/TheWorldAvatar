@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides query statements specific to the spatial zones such as Site, Building, Building Storey, and Spaces.
@@ -8,6 +9,18 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
  * @author qhouyee
  */
 public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate {
+    public static final String LAT_ANGLE_VAR = "?latcompoundangle";
+    public static final String LAT_DEGREE_VAR = "?latdegree";
+    public static final String LAT_MIN_VAR = "?latminute";
+    public static final String LAT_SEC_VAR = "?latsecond";
+    public static final String LAT_MILSEC_VAR = "?latmilsecond";
+    public static final String LONG_ANGLE_VAR = "?longcompoundangle";
+    public static final String LONG_DEGREE_VAR = "?longdegree";
+    public static final String LONG_MIN_VAR = "?longminute";
+    public static final String LONG_SEC_VAR = "?longsecond";
+    public static final String LONG_MILSEC_VAR = "?longmilsecond";
+
+
     /**
      * Create the SPARQL query syntax for Construct queries.
      *
@@ -53,19 +66,19 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
     private void addSpatialLocationQueryComponents(ConstructBuilder builder, String ifcClass) {
         switch (ifcClass) {
             case "ifc:IfcBuilding":
-                builder.addConstruct("?zone", "bot:hasBuilding", "?element");
+                builder.addConstruct(ZONE_VAR, "bot:hasBuilding", ELEMENT_VAR);
                 break;
             case "ifc:IfcBuildingStorey":
-                builder.addConstruct("?zone", "bot:hasStorey", "?element");
+                builder.addConstruct(ZONE_VAR, "bot:hasStorey", ELEMENT_VAR);
                 break;
             case "ifc:IfcSpace":
-                builder.addConstruct("?zone", "bot:hasSpace", "?element");
+                builder.addConstruct(ZONE_VAR, "bot:hasSpace", ELEMENT_VAR);
                 break;
         }
 
-        builder.addWhere("?relaggregates", "rdf:type", "ifc:IfcRelAggregates")
-                .addWhere("?relaggregates", "ifc:relatingObject_IfcRelDecomposes", "?zone")
-                .addWhere("?relaggregates", "ifc:relatedObjects_IfcRelDecomposes", "?element");
+        builder.addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
+                .addWhere(RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", ZONE_VAR)
+                .addWhere(RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", ELEMENT_VAR);
     }
 
     /**
@@ -74,8 +87,8 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addBuildingStoreyQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?element", "bim:hasRefElevation", "?refelevation");
-        builder.addWhere("?element", "ifc:elevation_IfcBuildingStorey/express:hasDouble", "?refelevation");
+        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", "?refelevation");
+        builder.addWhere(ELEMENT_VAR, "ifc:elevation_IfcBuildingStorey/express:hasDouble", "?refelevation");
     }
 
     /**
@@ -84,32 +97,32 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addReferenceSystemParamQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?element", "bim:hasRefElevation", "?elevation")
-                .addConstruct("?element", "bim:hasRefLatitude", "?latcompoundangle")
-                .addConstruct("?latcompoundangle", "rdf:type", "bim:Latitude")
-                .addConstruct("?latcompoundangle", "bim:hasDegree", "?latdegree")
-                .addConstruct("?latcompoundangle", "bim:hasMinute", "?latminute")
-                .addConstruct("?latcompoundangle", "bim:hasSecond", "?latsecond")
-                .addConstruct("?latcompoundangle", "bim:hasMillionthSecond", "?latmilsecond")
-                .addConstruct("?element", "bim:hasRefLongitude", "?longcompoundangle")
-                .addConstruct("?longcompoundangle", "rdf:type", "bim:Longitude")
-                .addConstruct("?longcompoundangle", "bim:hasDegree", "?longdegree")
-                .addConstruct("?longcompoundangle", "bim:hasMinute", "?longminute")
-                .addConstruct("?longcompoundangle", "bim:hasSecond", "?longsecond")
-                .addConstruct("?longcompoundangle", "bim:hasMillionthSecond", "?longmilsecond");
+        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", ELEVATION_VAR)
+                .addConstruct(ELEMENT_VAR, "bim:hasRefLatitude", LAT_ANGLE_VAR)
+                .addConstruct(LAT_ANGLE_VAR, QueryHandler.RDF_TYPE, "bim:Latitude")
+                .addConstruct(LAT_ANGLE_VAR, "bim:hasDegree", LAT_DEGREE_VAR)
+                .addConstruct(LAT_ANGLE_VAR, "bim:hasMinute", LAT_MIN_VAR)
+                .addConstruct(LAT_ANGLE_VAR, "bim:hasSecond", LAT_SEC_VAR)
+                .addConstruct(LAT_ANGLE_VAR, "bim:hasMillionthSecond", LAT_MILSEC_VAR)
+                .addConstruct(ELEMENT_VAR, "bim:hasRefLongitude", LONG_ANGLE_VAR)
+                .addConstruct(LONG_ANGLE_VAR, QueryHandler.RDF_TYPE, "bim:Longitude")
+                .addConstruct(LONG_ANGLE_VAR, "bim:hasDegree", LONG_DEGREE_VAR)
+                .addConstruct(LONG_ANGLE_VAR, "bim:hasMinute", LONG_MIN_VAR)
+                .addConstruct(LONG_ANGLE_VAR, "bim:hasSecond", LONG_SEC_VAR)
+                .addConstruct(LONG_ANGLE_VAR, "bim:hasMillionthSecond", LONG_MILSEC_VAR);
 
-        builder.addWhere("?element", "ifc:refLatitude_IfcSite", "?latcompoundangle")
-                .addWhere("?latcompoundangle", "rdf:type", "ifc:IfcCompoundPlaneAngleMeasure")
-                .addWhere("?latcompoundangle", "list:hasContents/express:hasInteger", "?latdegree")
-                .addWhere("?latcompoundangle", "list:hasNext/list:hasContents/express:hasInteger", "?latminute")
-                .addWhere("?latcompoundangle", "list:hasNext/list:hasNext/list:hasContents/express:hasInteger", "?latsecond")
-                .addOptional("?latcompoundangle", "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", "?latmilsecond")
-                .addWhere("?element", "ifc:refLongitude_IfcSite", "?longcompoundangle")
-                .addWhere("?longcompoundangle", "rdf:type", "ifc:IfcCompoundPlaneAngleMeasure")
-                .addWhere("?longcompoundangle", "list:hasContents/express:hasInteger", "?longdegree")
-                .addWhere("?longcompoundangle", "list:hasNext/list:hasContents/express:hasInteger", "?longminute")
-                .addWhere("?longcompoundangle", "list:hasNext/list:hasNext/list:hasContents/express:hasInteger", "?longsecond")
-                .addOptional("?longcompoundangle", "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", "?longmilsecond")
-                .addWhere("?element", "ifc:refElevation_IfcSite/express:hasDouble", "?elevation");
+        builder.addWhere(ELEMENT_VAR, "ifc:refLatitude_IfcSite", LAT_ANGLE_VAR)
+                .addWhere(LAT_ANGLE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCompoundPlaneAngleMeasure")
+                .addWhere(LAT_ANGLE_VAR, "list:hasContents/express:hasInteger", LAT_DEGREE_VAR)
+                .addWhere(LAT_ANGLE_VAR, "list:hasNext/list:hasContents/express:hasInteger", LAT_MIN_VAR)
+                .addWhere(LAT_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LAT_SEC_VAR)
+                .addOptional(LAT_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LAT_MILSEC_VAR)
+                .addWhere(ELEMENT_VAR, "ifc:refLongitude_IfcSite", LONG_ANGLE_VAR)
+                .addWhere(LONG_ANGLE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCompoundPlaneAngleMeasure")
+                .addWhere(LONG_ANGLE_VAR, "list:hasContents/express:hasInteger", LONG_DEGREE_VAR)
+                .addWhere(LONG_ANGLE_VAR, "list:hasNext/list:hasContents/express:hasInteger", LONG_MIN_VAR)
+                .addWhere(LONG_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LONG_SEC_VAR)
+                .addOptional(LONG_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LONG_MILSEC_VAR)
+                .addWhere(ELEMENT_VAR, "ifc:refElevation_IfcSite/express:hasDouble", ELEVATION_VAR);
     }
 }
