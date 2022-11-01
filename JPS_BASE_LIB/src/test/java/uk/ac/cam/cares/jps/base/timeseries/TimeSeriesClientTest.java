@@ -13,6 +13,7 @@ import org.mockito.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.mocks.PostgresMock;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
