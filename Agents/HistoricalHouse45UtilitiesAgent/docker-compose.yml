@@ -7,3 +7,5 @@ services:
     build: .
     ports:
       - "3050:8080"
+    volumes:
+      - ./data:/usr/local/tomcat/data
