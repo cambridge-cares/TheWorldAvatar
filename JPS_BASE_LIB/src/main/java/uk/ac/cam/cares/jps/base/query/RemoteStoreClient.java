@@ -341,18 +341,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
-        }
-        if (isConnectionUpdateUrlValid(connectionUrl)) {
-            try (Connection conn = DriverManager.getConnection(connectionUrl)) {
-                    return executeUpdate(query, conn);
-            } catch (SQLException e) {
-                throw new JPSRuntimeException(e.getMessage(), e);
-            }
-        } else {
-            throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is not valid.");
+        try (Connection conn = getConnection()) {
+            return executeUpdate(query, conn);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
 
@@ -470,18 +462,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        String connectionUrl = getConnectionUrl();
-        if (connectionUrl.isEmpty()) {
-            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
-        }
-        if (isConnectionQueryUrlValid(connectionUrl)) {
-            try (Connection conn = DriverManager.getConnection(connectionUrl)) {
-                return executeQuery(query, conn);
-            } catch (SQLException e) {
-                throw new JPSRuntimeException(e.getMessage(), e);
-            }
-        } else {
-            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+        try (Connection conn = getConnection()) {
+            return executeQuery(query, conn);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
 
@@ -590,6 +574,24 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
         }
         return sb.toString();
+    }
+
+    /**
+     * Establish connection to remote store
+     * @return connection object to the remote store
+     * @throws SQLException
+     */
+    public Connection getConnection() throws SQLException{
+        String connectionUrl = getConnectionUrl();
+        if (connectionUrl.isEmpty()) {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+        }
+        if (isConnectionQueryUrlValid(connectionUrl)) {
+            RemoteEndpointDriver.register();
+            return DriverManager.getConnection(connectionUrl);
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+        }
     }
 
     /**
