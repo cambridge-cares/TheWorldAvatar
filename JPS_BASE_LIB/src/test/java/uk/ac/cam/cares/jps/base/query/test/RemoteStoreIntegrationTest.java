@@ -10,8 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -88,18 +88,21 @@ public class RemoteStoreIntegrationTest {
 		String p = "<http://" + UUID.randomUUID().toString() + ">";
 		String o = "<http://" + UUID.randomUUID().toString() + ">";
 		String update = "insert data {" + s + " " + p + " " + o + "}";
-		HttpResponse response = storeClient.executeUpdateByPost(update);
-		HttpEntity entity = response.getEntity();
-		// the entity should not be null as we are querying blazegraph
-		Assert.assertNotNull(entity);
-		String html = EntityUtils.toString(entity);
-		System.out.println(html);
-		Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-		Matcher matcher = pattern.matcher(html);
-		// matcher should find the value
-		Assert.assertTrue(matcher.find());
-		// the value should be 1 as one triple was added to KG
-		Assert.assertEquals(1, Integer.parseInt(matcher.group(1)));
+		try (CloseableHttpResponse response = storeClient.executeUpdateByPost(update)) {
+			HttpEntity entity = response.getEntity();
+			// the entity should not be null as we are querying blazegraph
+			Assert.assertNotNull(entity);
+			String html = EntityUtils.toString(entity);
+			System.out.println(html);
+			Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+			Matcher matcher = pattern.matcher(html);
+			// matcher should find the value
+			Assert.assertTrue(matcher.find());
+			// the value should be 1 as one triple was added to KG
+			Assert.assertEquals(1, Integer.parseInt(matcher.group(1)));
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	@Test

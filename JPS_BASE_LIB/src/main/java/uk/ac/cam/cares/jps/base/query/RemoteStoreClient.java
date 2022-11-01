@@ -18,7 +18,6 @@ import java.util.Objects;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -395,7 +394,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param query
      * @return
      */
-    public HttpResponse executeUpdateByPost(String query) {
+    public CloseableHttpResponse executeUpdateByPost(String query) {
         HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
 
         // below lines follow the uploadFile(File file, String extension) method
@@ -411,8 +410,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         LOGGER.info("Executing SPARQL update to " + this.updateEndpoint + ". SPARQL update string: " + query);
         // then send the post request
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            // here we return HttpResponse instead of CloseableHttpResponse to avoid ConnectionClosedException when reading the returned response
-            HttpResponse response = httpClient.execute(postRequest);
+            // the returned CloseableHttpResponse should be handled with try-with-resources
+            CloseableHttpResponse response = httpClient.execute(postRequest);
             if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
                 throw new JPSRuntimeException(
                         "SPARQL update execution by HTTP POST failed. Response status code ="
