@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -15,9 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -178,8 +174,6 @@ public class DerivationClient {
 	 * @param inputsIRI
 	 * @param derivationType
 	 * @return
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, List<String> inputsIRI, String derivationType) {
 		// retrieve agentURL for HTTP request
@@ -196,8 +190,6 @@ public class DerivationClient {
 	 * @param inputsIRI
 	 * @param derivationType
 	 * @return
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
 			String derivationType) {
@@ -232,47 +224,43 @@ public class DerivationClient {
 		// execute HTTP request to create new information
 		LOGGER.debug("Creating <" + derivationIRI + "> using agent at <" + agentURL
 				+ "> with http request " + requestParams);
-		HttpResponse httpResponse;
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET + requestParams.toString();
-		HttpGet httpGet;
-		String response;
-		try {
-			httpGet = new HttpGet(
-				agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
 					+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
-			httpResponse = httpClient.execute(httpGet);
-			if (httpResponse.getStatusLine().getStatusCode() != 200) {
-				String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
-						+ originalRequest;
-				String body = EntityUtils.toString(httpResponse.getEntity());
-				LOGGER.error(msg);
-				throw new JPSRuntimeException(msg + " Error body: " + body);
+			try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
+				if (httpResponse.getStatusLine().getStatusCode() != 200) {
+					String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
+							+ originalRequest;
+					String body = EntityUtils.toString(httpResponse.getEntity());
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg + " Error body: " + body);
+				}
+
+				String response = EntityUtils.toString(httpResponse.getEntity());
+				LOGGER.debug("Obtained http response from agent: " + response);
+				// process the agentResponse to add the created outputs to createdDerivation
+				JSONObject agentResponse = new JSONObject(response);
+				Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
+				while (keys.hasNext()) {
+					String iri = keys.next();
+					Entity ne = new Entity(iri);
+					ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
+					createdDerivation.addEntity(ne);
+				}
+
+				LOGGER.info("Instantiated derivation <" + createdDerivation.getIri() + "> with derivation type <"
+						+ createdDerivation.getRdfType() + ">");
+				LOGGER.debug("<" + createdDerivation.getEntitiesIri() + "> belongsTo <" + createdDerivation.getIri() + ">");
+				LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedFrom <" + inputsIRI + ">");
+				LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedUsing <" + agentIRI + ">");
+				return createdDerivation;
 			}
-			response = EntityUtils.toString(httpResponse.getEntity());
-			LOGGER.debug("Obtained http response from agent: " + response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to update derivation <" + derivationIRI + "> with original request: " + originalRequest, e);
 			throw new JPSRuntimeException("Failed to update derivation <" + derivationIRI + "> with original request: "
 				+ originalRequest, e);
 		}
-
-		// process the agentResponse to add the created outputs to createdDerivation
-		JSONObject agentResponse = new JSONObject(response);
-		Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
-		while (keys.hasNext()) {
-			String iri = keys.next();
-			Entity ne = new Entity(iri);
-			ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
-			createdDerivation.addEntity(ne);
-		}
-
-		LOGGER.info("Instantiated derivation <" + createdDerivation.getIri() + "> with derivation type <"
-				+ createdDerivation.getRdfType() + ">");
-		LOGGER.debug("<" + createdDerivation.getEntitiesIri() + "> belongsTo <" + createdDerivation.getIri() + ">");
-		LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedFrom <" + inputsIRI + ">");
-		LOGGER.debug("<" + createdDerivation.getIri() + "> isDerivedUsing <" + agentIRI + ">");
-		return createdDerivation;
 	}
 
 	/**
@@ -1203,11 +1191,8 @@ public class DerivationClient {
 	 * 
 	 * @param derivation
 	 * @param graph
-	 * @throws IOException
-	 * @throws ClientProtocolException
 	 */
-	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph)
-			throws ClientProtocolException, IOException {
+	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
 		// inputs that are part of another derivation (for recursive call)
 		// don't need direct inputs here
 		List<Derivation> upstreamDerivations = derivation.getInputsWithBelongsTo();
@@ -1269,95 +1254,99 @@ public class DerivationClient {
 				// uk.ac.cam.cares.jps.base.discovery.AgentCaller.executeGetWithURLAndJSON(AgentCaller.java:178)
 				// at
 				// uk.ac.cam.cares.jps.base.derivation.DerivationClient.updatePureSyncDerivation(DerivationClient.java:1010)
-				HttpResponse httpResponse;
-				CloseableHttpClient httpClient = HttpClients.createDefault();
 				String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-						+ requestParams.toString();
-				HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
+							+ requestParams.toString();
+				try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+					HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+							+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
+					try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
+						if (httpResponse.getStatusLine().getStatusCode() != 200) {
+							String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
+									+ originalRequest;
+							String body = EntityUtils.toString(httpResponse.getEntity());
+							LOGGER.error(msg);
+							throw new JPSRuntimeException(msg + " Error body: " + body);
+						}
+						String response = EntityUtils.toString(httpResponse.getEntity());
+						LOGGER.debug("Obtained http response from agent: " + response);
 
-				httpResponse = httpClient.execute(httpGet);
-				if (httpResponse.getStatusLine().getStatusCode() != 200) {
-					String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
-							+ originalRequest;
-					String body = EntityUtils.toString(httpResponse.getEntity());
-					LOGGER.error(msg);
-					throw new JPSRuntimeException(msg + " Error body: " + body);
-				}
-				String response = EntityUtils.toString(httpResponse.getEntity());
-				LOGGER.debug("Obtained http response from agent: " + response);
+						// NOTE difference 3 - as the update on knowledge graph will be done by the
+						// DerivationAgent for normal Derivation, here we only need to update the cached
+						// value for normal Derivation, whereas for DerivationWithTimeSeries, we need to
+						// update the timestamp and status (if presented)
+						JSONObject agentResponse = new JSONObject(response);
+						// NOTE difference 4 - the timestamp is read from the agent response and used
+						// for updating the cached derivations
+						derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
 
-				// NOTE difference 3 - as the update on knowledge graph will be done by the
-				// DerivationAgent for normal Derivation, here we only need to update the cached
-				// value for normal Derivation, whereas for DerivationWithTimeSeries, we need to
-				// update the timestamp and status (if presented)
-				JSONObject agentResponse = new JSONObject(response);
-				// NOTE difference 4 - the timestamp is read from the agent response and used
-				// for updating the cached derivations
-				derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
+						// if it is a derived quantity with time series, there will be no changes to the
+						// instances, only timestamp will be updated
+						if (!derivation.isDerivationWithTimeSeries()) {
 
-				// if it is a derived quantity with time series, there will be no changes to the
-				// instances, only timestamp will be updated
-				if (!derivation.isDerivationWithTimeSeries()) {
+							// entities that are input to another derivation
+							List<Entity> inputToAnotherDerivation = derivation.getEntities()
+									.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
-					// entities that are input to another derivation
-					List<Entity> inputToAnotherDerivation = derivation.getEntities()
-							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
-
-					// NOTE difference 5 - here we create lists to be used when reconnecting
-					// inputs and updating cached data, as now the new entiteis are returned as part
-					// of HTTP response, we can create list of Entities directly
-					// TODO we may consider return the entities if we decided to provide the
-					// TODO function accessInformation
-					List<Entity> newEntities = new ArrayList<>();
-					Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
-					while (keys.hasNext()) {
-						String iri = keys.next();
-						Entity ne = new Entity(iri);
-						ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
-						newEntities.add(ne);
-					}
-
-					if (inputToAnotherDerivation.size() > 0) {
-						LOGGER.debug(
-								"This derivation contains at least one entity which is an input to another derivation");
-						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-
-						// UPDATE CACHED DATA
-						// here we do the mapping in memory first to get the mapping between downstream
-						// derivations and new instances to be connected - we need to make sure that the
-						// new instances remains linked to the appropriate downstream derivations
-
-						for (Entity oldInput : inputToAnotherDerivation) {
-							// find within new Entities with the same rdf:type
-							List<Entity> matchingEntity = newEntities.stream()
-									.filter(e -> e.getRdfType().equals(oldInput.getRdfType()))
-									.collect(Collectors.toList());
-
-							if (matchingEntity.size() != 1) {
-								String errmsg = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set";
-								LOGGER.error(errmsg);
-								LOGGER.error("Number of matching entities = " + matchingEntity.size());
-								throw new JPSRuntimeException(errmsg);
+							// NOTE difference 5 - here we create lists to be used when reconnecting
+							// inputs and updating cached data, as now the new entiteis are returned as part
+							// of HTTP response, we can create list of Entities directly
+							// TODO we may consider return the entities if we decided to provide the
+							// TODO function accessInformation
+							List<Entity> newEntities = new ArrayList<>();
+							Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
+							while (keys.hasNext()) {
+								String iri = keys.next();
+								Entity ne = new Entity(iri);
+								ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
+								newEntities.add(ne);
 							}
 
-							// update cached data
-							oldInput.getInputOf().forEach(d -> {
-								Derivation derivationToReconnect = d;
-								derivationToReconnect.addInput(matchingEntity.get(0));
-								derivationToReconnect.removeInput(oldInput);
-							});
+							if (inputToAnotherDerivation.size() > 0) {
+								LOGGER.debug(
+										"This derivation contains at least one entity which is an input to another derivation");
+								LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
+
+								// UPDATE CACHED DATA
+								// here we do the mapping in memory first to get the mapping between downstream
+								// derivations and new instances to be connected - we need to make sure that the
+								// new instances remains linked to the appropriate downstream derivations
+
+								for (Entity oldInput : inputToAnotherDerivation) {
+									// find within new Entities with the same rdf:type
+									List<Entity> matchingEntity = newEntities.stream()
+											.filter(e -> e.getRdfType().equals(oldInput.getRdfType()))
+											.collect(Collectors.toList());
+
+									if (matchingEntity.size() != 1) {
+										String errmsg = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set";
+										LOGGER.error(errmsg);
+										LOGGER.error("Number of matching entities = " + matchingEntity.size());
+										throw new JPSRuntimeException(errmsg);
+									}
+
+									// update cached data
+									oldInput.getInputOf().forEach(d -> {
+										Derivation derivationToReconnect = d;
+										derivationToReconnect.addInput(matchingEntity.get(0));
+										derivationToReconnect.removeInput(oldInput);
+									});
+								}
+							}
+							// also update cached data if newEntities were generated
+							if (!newEntities.isEmpty()) {
+								derivation.replaceEntities(newEntities);
+							}
+						} else {
+							// NOTE difference 7 - update timestamp after the update of every
+							// DerivationWithTimeSeries, so here we update timestamp, delete status (for
+							// sync in mixed type DAGs) in one-go
+							this.sparqlClient.updateTimestampDeleteStatus(derivation.getIri(), derivation.getTimestamp());
 						}
 					}
-					// also update cached data if newEntities were generated
-					if (!newEntities.isEmpty()) {
-						derivation.replaceEntities(newEntities);
-					}
-				} else {
-					// NOTE difference 7 - update timestamp after the update of every
-					// DerivationWithTimeSeries, so here we update timestamp, delete status (for
-					// sync in mixed type DAGs) in one-go
-					this.sparqlClient.updateTimestampDeleteStatus(derivation.getIri(), derivation.getTimestamp());
+				} catch (Exception e) {
+					LOGGER.error("Failed to update derivation <" + derivation.getIri() + "> with original request: " + originalRequest, e);
+					throw new JPSRuntimeException("Failed to update derivation <" + derivation.getIri() + "> with original request: "
+						+ originalRequest, e);
 				}
 			}
 		}
