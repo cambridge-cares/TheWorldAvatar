@@ -28,7 +28,6 @@ COPY ./config/. /root/
 
 # Set the required environment variables
 ENV TIMESERIES_CLIENTPROPERTIES="/root/client.properties"
-ENV EXCELPROPERTIES="/root/excel.properties"
 
 COPY --from=builder /root/HistoricalHouse45UtilitiesAgent/output/historical-house45-utilities-agent##1.0.0.war $CATALINA_HOME/webapps/
 

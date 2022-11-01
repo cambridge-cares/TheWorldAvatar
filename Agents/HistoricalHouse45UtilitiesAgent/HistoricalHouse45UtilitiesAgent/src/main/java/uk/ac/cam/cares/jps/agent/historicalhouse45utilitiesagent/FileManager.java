@@ -17,6 +17,7 @@ import java.util.stream.Stream;
  */
 class FileManager {
     private static final String DATA_DIR = System.getProperty("user.dir") + "/data/";
+    protected static final String PROPERTIES = DATA_DIR + "excel.properties";
 
     /**
      * An overloaded method that provides a default Excel workbook path.

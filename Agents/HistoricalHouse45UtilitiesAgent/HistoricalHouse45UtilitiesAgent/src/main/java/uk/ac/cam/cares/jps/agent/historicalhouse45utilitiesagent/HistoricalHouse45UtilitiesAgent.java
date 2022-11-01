@@ -71,7 +71,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
             LOGGER.info("Passing request to Historical House45 Utilities Agent..");
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-            String excelProperties = System.getenv(requestParams.getString(KEY_EXCELPROPERTIES));
+            String excelProperties = FileManager.PROPERTIES;
             String excelFile;
             try {
                 excelFile = FileManager.retrieveExcelPath();
@@ -92,20 +92,13 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         boolean validate;
         String clientProperties;
-        String excelProperties;
         if (requestParams.isEmpty()) {
             validate = false;
         } else {
             validate = requestParams.has(KEY_CLIENTPROPERTIES);
             if (validate) {
-                validate = requestParams.has(KEY_EXCELPROPERTIES);
-            }
-            if (validate) {
                 clientProperties = (requestParams.getString(KEY_CLIENTPROPERTIES));
-                excelProperties = (requestParams.getString(KEY_EXCELPROPERTIES));
                 if (System.getenv(clientProperties) == null) {
-                    validate = false;
-                } else if (System.getenv(excelProperties) == null) {
                     validate = false;
                 }
             }
