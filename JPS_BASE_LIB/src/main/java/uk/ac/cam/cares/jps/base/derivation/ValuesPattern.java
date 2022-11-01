@@ -23,7 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Jiaru Bai
  * @author Kok Foong Lee
  */
-class ValuesPattern implements GraphPattern {
+public class ValuesPattern implements GraphPattern {
 	public static final String ILLEGAL_INIT_ARG_ERROR_MSG = "Illegal init argument: Each value pair MUST contain all variables, received: ";
 	public static final String ILLEGAL_VALUEPAIR_ERROR_MSG = "Illegal value pair to add: The added value pair MUST contain the same number of values as existing value pairs, existing: ";
 
