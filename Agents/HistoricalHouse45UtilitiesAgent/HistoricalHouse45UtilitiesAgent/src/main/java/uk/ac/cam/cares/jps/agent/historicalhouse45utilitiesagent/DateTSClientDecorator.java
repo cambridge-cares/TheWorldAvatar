@@ -12,7 +12,12 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DateTSClientDecorator {
+/**
+ * A decorator for the Time Series client in the JPS base library, that provides functionality specific to this agent.
+ *
+ * @author qhouyee
+ */
+class DateTSClientDecorator {
 
     /**
      * Logger for reporting info/errors.
@@ -26,19 +31,21 @@ public class DateTSClientDecorator {
     /**
      * Standard constructor
      */
-    public DateTSClientDecorator(String dateKey) {
-        this.dateKey = dateKey;
+    protected DateTSClientDecorator(String dateKey) {
+        DateTSClientDecorator.dateKey = dateKey;
     }
-    public DateTSClientDecorator(String dateKey, int[] dateArrays) {
-        this.dateKey = dateKey;
-        this.dateArrays=dateArrays;
+
+    protected DateTSClientDecorator(String dateKey, int[] dateArrays) {
+        DateTSClientDecorator.dateKey = dateKey;
+        DateTSClientDecorator.dateArrays = dateArrays;
     }
+
     /**
      * Setter for the time series client.
      *
      * @param tsClient The time series client to use.
      */
-    public void setTsClient(TimeSeriesClient<LocalDate> tsClient) {
+    protected void setTsClient(TimeSeriesClient<LocalDate> tsClient) {
         this.tsClient = tsClient;
     }
 
@@ -48,7 +55,7 @@ public class DateTSClientDecorator {
      * @param excelReadings Excel readings parsed from the Excel Workbook
      * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
      */
-    public void initializeTimeSeriesIfNotExist(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
+    protected void initializeTimeSeriesIfNotExist(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
         List<String> excelHeaders = new ArrayList<>(iriMappings.keySet());
         List<String> iris = new ArrayList<>(iriMappings.values());
         // If IRIs do not have a time series linked, initialize the corresponding time series
@@ -95,7 +102,7 @@ public class DateTSClientDecorator {
      * @param excelReadings Excel readings parsed from the Excel Workbook
      * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
      */
-    public void updateData(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
+    protected void updateData(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
         TimeSeries<LocalDate> timeSeries;
         timeSeries = convertReadingsToTimeSeries(excelReadings, iriMappings);
 
@@ -116,13 +123,13 @@ public class DateTSClientDecorator {
         List<String> iris = new ArrayList<>(iriMappings.values());
         List<LocalDate> dateItems = new ArrayList<>();
 
-        if (this.dateArrays == null) {
-            List<LocalDateTime> dateValues = (List<LocalDateTime>) readings.get(this.dateKey);
+        if (dateArrays == null) {
+            List<LocalDateTime> dateValues = (List<LocalDateTime>) readings.get(dateKey);
             for (LocalDateTime dates : dateValues) {
                 dateItems.add(dates.toLocalDate());
             }
         } else {
-            dateItems = (List<LocalDate>) readings.get(this.dateKey);
+            dateItems = (List<LocalDate>) readings.get(dateKey);
         }
 
         List<List<?>> dataValues = new ArrayList<>();

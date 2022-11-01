@@ -12,9 +12,12 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-public class TSPropertiesHandler {
-
+/**
+ * Handles the properties file for the time series client.
+ *
+ * @author qhouyee
+ */
+class TSPropertiesHandler {
     // Logger for reporting info/errors.
     private static final Logger LOGGER = LogManager.getLogger(HistoricalHouse45UtilitiesAgent.class);
     private String propertiesFile; // file path to properties file
@@ -27,7 +30,7 @@ public class TSPropertiesHandler {
      *
      * @param readings A Hashmap containing the readings.
      */
-    public TSPropertiesHandler(Map<String, List<?>> readings, String dateKey) throws IOException {
+    protected TSPropertiesHandler(Map<String, List<?>> readings, String dateKey) throws IOException {
         if (!readings.isEmpty()) {
             this.readingsKey = new ArrayList<>(readings.keySet());
             // Remove the date or time data as it is not required to be pass in time series
@@ -46,7 +49,7 @@ public class TSPropertiesHandler {
      * @param propertiesFile The properties file path.
      * @return the iriMappings as a Hashmap in the format {dataIRI: excelHeader}
      */
-    public Map<String, String> generateIRIMappings(String propertiesFile) throws IOException {
+    protected Map<String, String> generateIRIMappings(String propertiesFile) throws IOException {
         this.propertiesFile = propertiesFile;
         Properties prop = new Properties();
 

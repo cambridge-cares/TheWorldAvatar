@@ -8,14 +8,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-
+/**
+ * This class acts as an agent that receives POST requests, and coordinate with the other classes
+ * to instantiate the timeseries data from Excel into a SPARQL endpoint and RDB.
+ *
+ * @author qhouyee
+ */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     /**
@@ -45,10 +45,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String DATA_UPDATE_ERROR_MSG = "Could not update time series!";
 
-
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
-    public static final String KEY_EXCELPROPERTIES = "excelProperties";
-
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility"; // The prefix to use for generating IRI
     public static final int rowStart = 3;

@@ -15,7 +15,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 
-public class ExcelParser {
+/**
+ * Parses the readings from the Excel workbook into a Java collection that can be read by the time series client.
+ *
+ * @author qhouyee
+ */
+class ExcelParser {
     // Logger for reporting info/errors.
     private static final Logger LOGGER = LogManager.getLogger(HistoricalHouse45UtilitiesAgent.class);
     // Error messages
@@ -25,7 +30,7 @@ public class ExcelParser {
     private int sheetIndex = 0;
     private Sheet dataSheet;
     private int[] parserDateArray;
-    private String dateKey;
+    private final String dateKey;
     private Map<String, List<?>> excelValues;
 
 
@@ -34,14 +39,14 @@ public class ExcelParser {
      *
      * @param excel_filepath Specifies the file path to the Excel workbook.
      */
-    public ExcelParser(String excel_filepath, String dateKey) throws FileNotFoundException {
+    protected ExcelParser(String excel_filepath, String dateKey) throws FileNotFoundException {
         File file = new File(excel_filepath);
         if (!file.exists()) {
             LOGGER.fatal(FILE_NOT_FOUND_MSG);
             throw new FileNotFoundException(FILE_NOT_FOUND_MSG + excel_filepath);
         }
         this.EXCEL_FILE_PATH = excel_filepath;
-        this.dateKey=dateKey;
+        this.dateKey = dateKey;
     }
 
     /**
@@ -51,14 +56,14 @@ public class ExcelParser {
      * @param excel_filepath Specifies the file path to the Excel workbook.
      * @param sheetIndex     Specifies the sheet index to read in the Excel file.
      */
-    public ExcelParser(String excel_filepath, String dateKey, int sheetIndex) throws IOException {
+    protected ExcelParser(String excel_filepath, String dateKey, int sheetIndex) throws IOException {
         File file = new File(excel_filepath);
         if (!file.exists()) {
             LOGGER.fatal(FILE_NOT_FOUND_MSG);
             throw new FileNotFoundException(FILE_NOT_FOUND_MSG);
         }
         this.EXCEL_FILE_PATH = excel_filepath;
-        this.dateKey=dateKey;
+        this.dateKey = dateKey;
         if (sheetIndex < 0) {
             throw new IOException("Sheet Index is invalid, please input a integer starting from 0");
         }
@@ -72,7 +77,7 @@ public class ExcelParser {
      * @param rowStart Starting row number that contains values, not headings. Start from index 0
      * @return Excel values as a HashMap containing {dataIRI prefix: List of readings} key value pairs
      */
-    public Map<String, List<?>> parseToHashMap(int rowStart) {
+    protected Map<String, List<?>> parseToHashMap(int rowStart) {
         try {
             return retrieveExcelValues(rowStart);
         } catch (Exception e) {
@@ -89,7 +94,7 @@ public class ExcelParser {
      * @param dateArray An array of size 3, containing the column index of day, month, and year data
      * @return Excel values as a HashMap containing {dataIRI prefix: List of readings} key value pairs
      */
-    public Map<String, List<?>> parseToHashMap(int rowStart, int[] dateArray) {
+    protected Map<String, List<?>> parseToHashMap(int rowStart, int[] dateArray) {
         try {
             setParserDateArray(dateArray);
             return retrieveExcelValues(rowStart);
@@ -184,6 +189,7 @@ public class ExcelParser {
         }
         return columnHeaders;
     }
+
     /**
      * Retrieves the cell value as a formatted String for data IRI.
      *
@@ -196,11 +202,11 @@ public class ExcelParser {
         // Remove leading and trailing spaces before converting the string to an array
         char[] phraseChars = phrase.trim().toCharArray();
         // Capitalise the first character of the string and after a white space
-        for (int i = 0; i < phraseChars.length-1; i++) {
-            if(i == 0 ) {
+        for (int i = 0; i < phraseChars.length - 1; i++) {
+            if (i == 0) {
                 phraseChars[i] = Character.toUpperCase(phraseChars[i]);
-            } else if(phraseChars[i] == ' ') {
-                phraseChars[i+1] = Character.toUpperCase(phraseChars[i+1]);
+            } else if (phraseChars[i] == ' ') {
+                phraseChars[i + 1] = Character.toUpperCase(phraseChars[i + 1]);
             }
         }
         // Remove white spaces
@@ -285,7 +291,10 @@ public class ExcelParser {
     /**
      * Get the field DateArray in this class
      */
-    public int[] getParserDateArray() {return this.parserDateArray;}
+    public int[] getParserDateArray() {
+        return this.parserDateArray;
+    }
+
     /**
      * Sets the field DateArray in this class
      *
