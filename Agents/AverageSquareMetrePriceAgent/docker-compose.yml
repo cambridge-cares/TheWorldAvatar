@@ -8,6 +8,8 @@ services:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
+      # Specify Blazegraph namespace
+      - NAMESPACE=buildings
       #--- Agent parameters ---#
       # Minimum number of sales transactions required to assess average price
       - THRESHOLD=5

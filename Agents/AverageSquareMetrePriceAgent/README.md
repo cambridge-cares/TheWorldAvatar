@@ -22,6 +22,7 @@ THRESHOLD                     # Minimum number of sales transactions required to
 # Stack & Stack Clients configuration
 STACK_NAME                    # Name of stack to which agent shall be deployed
 DATABASE                      # PostGIS/PostgreSQL database name (default: `postgres`)
+NAMESPACE                     # Blazegraph namespace (within Stack) to observe
 # Derivation Agent configuration
 ONTOAGENT_SERVICE_IRI         # IRI of OntoAgent service
 ONTOAGENT_OPERATION_HTTP_URL  # Port needs to match port specified in `docker-compose.yml`
@@ -208,7 +209,7 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
 4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers (Please note, that respective containers need to be down at the beginning of the tests):
     ```bash
     # Add -s flag to see live logs
-    pytest -s --docker-compose=./docker-compose.test.yml
+    pytest -s --docker-compose=./docker-compose-test.yml
    ```
 
 

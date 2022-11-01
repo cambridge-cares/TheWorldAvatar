@@ -7,7 +7,7 @@
 # (e.g. for the Time Series Client) from Stack clients
 
 import agentlogging
-from avgsqmpriceagent.utils.env_configs import DATABASE, THRESHOLD
+from avgsqmpriceagent.utils.env_configs import DATABASE, NAMESPACE, THRESHOLD
 from avgsqmpriceagent.kg_operations.javagateway import stackClientsGw
 
 
@@ -46,10 +46,8 @@ def retrieve_settings():
     DB_USER = pg_conf.getUsername()
     DB_PASSWORD = pg_conf.getPassword()
 
-    # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
-    # for Blazegraph)
-    #TODO: ensure alignment with EPC data endpoint
-    QUERY_ENDPOINT = bg_conf.getUrl("buildings")
+    # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent for Blazegraph)
+    QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
 
