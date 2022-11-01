@@ -349,6 +349,85 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testMarkAsError() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+
+		// get an exception by checking if the inputs are allowed to be outputs for other derivations
+		JPSRuntimeException exc = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+
+		String excComment = devClient.markAsError(derivation, exc);
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation));
+
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				 .asLiteral().getString();
+		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
+
+		Assert.assertTrue(errMsg.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(errMsg.contains(st.toString()));
+		}
+	}
+
+	@Test
+	public void testGetDerivationsInErrorStatus() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		String derivation2 = devClient.createDerivation(entities2, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		devClient.addTimeInstance(derivation2);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+		devClient.markAsRequestedIfOutdated(derivation2);
+
+		// get an exception by checking if the inputs are allowed to be outputs for other derivations
+		JPSRuntimeException exc = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+
+		String excComment = devClient.markAsError(derivation, exc);
+		String excComment2 = devClient.markAsError(derivation2, exc);
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation));
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation2));
+
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				.asLiteral().getString();
+		String statusIRI2 = testKG.getProperty(ResourceFactory.createResource(derivation2),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg2 = testKG.getProperty(ResourceFactory.createResource(statusIRI2),
+				ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				.asLiteral().getString();
+		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
+		Assert.assertEquals(excComment2, errMsg2.replace("\n", "\\n"));
+		Map<String, String> derivationErrMsgMap = devClient.getDerivationsInErrorStatus(derivedAgentIRI);
+		Assert.assertEquals(2, derivationErrMsgMap.size());
+		Assert.assertEquals(errMsg, derivationErrMsgMap.get(derivation));
+		Assert.assertEquals(errMsg2, derivationErrMsgMap.get(derivation2));
+
+		Assert.assertTrue(errMsg.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(errMsg.contains(st.toString()));
+		}
+		Assert.assertTrue(errMsg2.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(errMsg2.contains(st.toString()));
+		}
+	}
+
+	@Test
 	public void testMarkAsRequestedIfOutdated() throws InterruptedException {
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		// add timestamp to derivations, the timestamp of inputs is automatically added

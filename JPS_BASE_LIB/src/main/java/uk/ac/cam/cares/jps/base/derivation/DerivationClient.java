@@ -775,6 +775,30 @@ public class DerivationClient {
 	}
 
 	/**
+	 * This method marks the status of the derivation as "Error" and writes
+	 * the exception stack trace to triple store. It should be called if the
+	 * agent ran into exception during handling the derivation.
+	 *
+	 * @param derivationIRI
+	 * @param exc
+	 * @return
+	 */
+	public String markAsError(String derivationIRI, Exception exc) {
+		return this.sparqlClient.markAsError(derivationIRI, exc);
+	}
+
+	/**
+	 * This method retrieves a mapped list of derivations that <isDerivedUsing> a
+	 * given <agentIRI> and their error message is they are in Error status.
+	 *
+	 * @param agentIRI
+	 * @return
+	 */
+	public Map<String, String> getDerivationsInErrorStatus(String agentIRI) {
+		return this.sparqlClient.getDerivationsInErrorStatus(agentIRI);
+	}
+
+	/**
 	 * drops absolutely everything except for triples with OntoAgent
 	 */
 	public void dropAllDerivationsAndTimestamps() {
