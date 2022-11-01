@@ -43,12 +43,11 @@ STACK_CONFIG_FILE = os.path.join(THIS_DIR, 'mockutils/stack_configs_mock.py')
 
 # Agent configuration .env file
 AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
-# NOTE As the agent is designed to be deployed to the stack, the triple store URLs provided
-# in the agent_test.env file are just placeholders to be overwritten by a `stack_configs.py`
-# mock. However, some entry is required in the .env file to avoid Exceptions from the 
-# AgentConfig class (the same applies to other keywords left blank)
+# NOTE As the agent is designed to be deployed to the stack, the triple store URLs provided in the `agent_test.env` 
+# file are just placeholders to be overwritten by the `stack_configs.py` mock. However, some entry is required in 
+# the .env file to avoid Exceptions from the AgentConfig class (the same applies to other keywords left blank)
 #
-# To ensure proper mocking of the stack_configs.py module, please provide the 
+# To ensure proper mocking of the `stack_configs.py` module, please provide the 
 # DATABASE, DB_USER, DB_PASSWORD environment variables in the respective files:
 #   tests\mockutils\env_configs_mock.py
 #   tests\mockutils\stack_configs_mock.py
@@ -179,15 +178,6 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
         DERIVATION_INSTANCE_BASE_URL
     )
 
-    # Overwrite default placeholder values for endpoints in mocked stack_configs.py
-    with open(STACK_CONFIG_FILE, 'r') as f:
-        conf = f.read()
-    conf = re.sub("DB_URL=.*\n",f"DB_URL=\'{rdb_url}\'\n", conf)
-    conf = re.sub("QUERY_ENDPOINT=.*\n",f"QUERY_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
-    conf = re.sub("UPDATE_ENDPOINT=.*\n",f"UPDATE_ENDPOINT=\'{sparql_endpoint}\'\n", conf)
-    with open(STACK_CONFIG_FILE, 'w') as f:
-        f.write(conf)
-
     yield sparql_client, derivation_client, rdb_url
 
     # Clear logger at the end of the test
@@ -228,6 +218,10 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
+
 
 def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples

@@ -1,2 +1,3 @@
 DATABASE='postgres'
+NAMESPACE='kb'
 THRESHOLD=3

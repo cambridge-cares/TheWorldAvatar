@@ -67,4 +67,27 @@ COPY ./avgsqmpriceagent ./avgsqmpriceagent
 
 # Set the entrypoint
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()"]
+
+
+#------------------------------------------------------
+# Testing image reusing the base
+#------------------------------------------------------
+FROM base as test
+# Install additional dependencies
+RUN pip install gunicorn
+
+# Copy required source code (as code is not attached as volume)
+WORKDIR /app
+COPY ./avgsqmpriceagent ./avgsqmpriceagent
+
+# Overwrite/Mock all stack interactions with pre-defined settings from testing stack
+COPY ./tests/mockutils/env_configs_mock.py ./avgsqmpriceagent/utils/env_configs.py
+COPY ./tests/mockutils/stack_configs_mock.py ./avgsqmpriceagent/utils/stack_configs.py
+# Adjust relative import statement
+RUN sed -i "s|env_configs_mock|env_configs |g" ./avgsqmpriceagent/utils/stack_configs.py
+
+# Set the entrypoint
+# --preload flag is added to provide more information in the container to help with debugging
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload"]
+
 #==================================================================================================

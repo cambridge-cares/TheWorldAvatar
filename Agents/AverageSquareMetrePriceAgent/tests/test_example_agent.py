@@ -2,7 +2,6 @@ from pathlib import Path
 from rdflib import Graph
 from rdflib import RDF
 import pytest
-from unittest.mock import patch
 import time
 
 import avgsqmpriceagent.datamodel as dm
@@ -11,7 +10,8 @@ from . import conftest as cf
 
 
 def test_example_triples():
-    """This test checks that the example triples are correct in syntax.
+    """
+    This test checks that the example triples are correct in syntax.
 
     Raises:
         e: If the example triples are not valid RDF.
@@ -26,8 +26,9 @@ def test_example_triples():
 
 
 def test_example_data_instantiation(initialise_clients):
-    """This test checks that all example data gets correctly instantiated,
-       including associated time series data in PostgreSQL.
+    """
+        This test checks that all example data gets correctly instantiated,
+        including associated time series data in PostgreSQL.
     """
     # Get SPARQL client from fixture
     sparql_client, _, rdb_url = initialise_clients
@@ -70,17 +71,23 @@ def test_example_data_instantiation(initialise_clients):
 
 
 @pytest.mark.parametrize(
-    "derivation_input_set, expected_postcode, expected_avg",
+    "derivation_input_set, expected_postcode, expected_avg, local_agent_test",
     [
-        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1),
-        (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2), 
+        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, True),  
+        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, False),  # deployed docker agent test
+        (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, False),  
     ],
 )
 def test_monitor_derivations(
     initialise_clients, create_example_agent, derivation_input_set, expected_postcode, 
-    expected_avg, mocker
-    
+    expected_avg, local_agent_test, mocker    
 ):
+    """
+        Test if derivation agent performs derivation update as expected, the `local_agent_test` 
+        parameter controls if the agent performing the update is instantiating in memory (for quick
+        debugging) or deployed in docker container (to mimic the production environment)
+    """
     # -------------------------------------------------------------------------
     # Mock call to ONS API and simply return all transaction records as alias
     # for transaction records from nearby postcodes
@@ -112,11 +119,11 @@ def test_monitor_derivations(
     # -> Here we always set `register_agent=True` to guarantee that Blazegraph will be ready when
     # the agent is initialised. In a real deployment, the agent MUST be registered in the KG when 
     # spinning up the agent container, i.e. REGISTER_AGENT=true in env file
-    agent = create_example_agent(register_agent=True, random_agent_iri=False)
+    agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
 
-
-    # Start the scheduler to monitor derivations (as this is a local agent test)
-    agent._start_monitoring_derivations()
+    # Start the scheduler to monitor derivations if it's local agent test
+    if local_agent_test:
+        agent._start_monitoring_derivations()
 
     # Assert that there's currently no instances has rdf:type of the output signature in the KG
     assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OBE_AVERAGE_SM_PRICE)
@@ -160,5 +167,6 @@ def test_monitor_derivations(
 
     print("All check passed.")
 
-    # Shutdown the scheduler to clean up
-    agent.scheduler.shutdown()
+    # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
+    if local_agent_test:
+        agent.scheduler.shutdown()
