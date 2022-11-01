@@ -65,7 +65,11 @@ class AvgSqmPriceAgent(DerivationAgent):
             postcode_iri {str}, ppi_iri {str}, tx_records {list}
         """
 
-        #TODO: Potentially add derivationIRI to logger and exception message
+        # TODO: Potentially add derivationIRI to logger and exception message
+        # With pyderivationagent 1.2.2, this is not easily possible, as derivationIRI is hidden
+        # to `process_request_parameters`. Potentially to be revisited if method gets changed to
+        # `process_request_parameters(self, derivation_iri, derivation_inputs, derivation_outputs)`
+        # in a next version of pyderivationagent
 
         # Check whether postcode is available
         if inputs.get(OBE_POSTALCODE):
