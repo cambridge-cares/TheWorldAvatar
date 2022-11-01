@@ -76,15 +76,15 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 		checkIfDerivationClientInitialised();
 		JSONObject res = new JSONObject();
 		if (validateInput(requestParams)) {
-			// serialises DerivationInputs objects from JSONObject
-			DerivationInputs inputs = new DerivationInputs(
-				requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
-			LOGGER.info("Received derivation request parameters: " + requestParams);
-
 			// retrieve necessary information
 			String derivationIRI = requestParams.getString(DerivationClient.DERIVATION_KEY);
 			String derivationType = requestParams.getString(DerivationClient.DERIVATION_TYPE_KEY);
 			Boolean syncNewInfoFlag = requestParams.getBoolean(DerivationClient.SYNC_NEW_INFO_FLAG);
+
+			// serialises DerivationInputs objects from JSONObject
+			DerivationInputs inputs = new DerivationInputs(
+				requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY), derivationIRI);
+			LOGGER.info("Received derivation request parameters: " + requestParams);
 
 			// initialise DerivationOutputs, also set up information
 			DerivationOutputs outputs = new DerivationOutputs();
@@ -97,7 +97,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			}
 
 			// apply agent logic to convert inputs to outputs
-			processRequestParameters(derivationIRI, inputs, outputs);
+			processRequestParameters(inputs, outputs);
 
 			// return response if this sync derivation is generated for new info
 			if (syncNewInfoFlag) {
@@ -158,7 +158,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	}
 
 	@Override
-	public void processRequestParameters(String derivationIRI, DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		// TODO developer needs to overwrite this function
 	}
 
@@ -275,10 +275,10 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 									LOGGER.info("Asynchronous derivation <" + derivation + "> is now in progress.");
 									// serialise JSONObject retrieved from KG to instance of DerivationInputs
 									DerivationInputs derivationInputs = new DerivationInputs(
-											agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
+											agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY), derivation);
 									DerivationOutputs derivationOutputs = new DerivationOutputs();
 									// perform the conversion from DerivationInputs to DerivationOutputs
-									processRequestParameters(derivation, derivationInputs, derivationOutputs);
+									processRequestParameters(derivationInputs, derivationOutputs);
 									// deserialise the derivationOutputs to a list of String of new derived IRI
 									List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
 									List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();

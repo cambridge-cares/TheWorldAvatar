@@ -18,12 +18,11 @@ public interface DerivationAgentInterface {
 	/**
 	 * Shall implement logic transforming derivationInputs to derivationOutputs.
 	 * 
-	 * @param derivationIRI
 	 * @param derivationInputs
 	 * @param derivationOutputs
 	 * @return
 	 */
-	void processRequestParameters(String derivationIRI, DerivationInputs derivationInputs, DerivationOutputs derivationOutputs);
+	void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs);
 
 	/**
 	 * Shall implement input validation logic.
