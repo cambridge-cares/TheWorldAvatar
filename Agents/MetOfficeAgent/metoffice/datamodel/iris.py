@@ -13,7 +13,7 @@ WEATHER = 'https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOnt
 SIO = 'http://semanticscience.org/resource/'
 # CoMo / CARES ontologies
 EMS = 'https://www.theworldavatar.com/kg/ontoems/'
-TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
+TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontoems/'
 

@@ -94,34 +94,19 @@ public class DerivationClient {
 		this.sparqlClient = new DerivationSparql(kbClient, derivationInstanceBaseURL);
 	}
 
-	/**
-	 * This creates a new derived instance and adds the following statements
-	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>,
-	 * <agentIRI> <hasHttpUrl> <agentURL>, <derived> <isDerivedFrom> <inputsIRI>
-	 * Use this for instances that get replaced by agents
-	 * 
-	 * @param derivedQuantityIRI
-	 * @param inputsIRI
-	 * @param agentIRI
-	 */
-	public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-		String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, agentURL, inputsIRI);
-		this.sparqlClient.addTimeInstance(createdDerivation);
-		LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
-		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
-		return createdDerivation;
-	}
-
 	public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
-		List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
-				inputsList);
+			List<List<String>> inputsList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, inputsList);
 		LOGGER.info("Instantiated derivations " + derivations);
 
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
+
+		// validate derivations
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (!derivations.isEmpty()) {
+			validateDerivations();
+		}
 
 		return derivations;
 	}
@@ -154,29 +139,32 @@ public class DerivationClient {
 	 * 
 	 * @param entity
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputsIRI
 	 */
-	public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL,
-			List<String> inputsIRI) {
-		String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, agentURL,
-				inputsIRI);
+	public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, List<String> inputsIRI) {
+		String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, inputsIRI);
 		this.sparqlClient.addTimeInstance(createdDerivation);
 		LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
 		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
 		return createdDerivation;
 	}
 
 	public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+			List<List<String>> inputsList) {
 		List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList,
-				agentURLList, inputsList);
+				inputsList);
 		LOGGER.info("Instantiated derivations with time series " + derivations);
 
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
+
+		// validate derivations
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (!derivations.isEmpty()) {
+			validateDerivations();
+		}
 
 		return derivations;
 	}
@@ -214,8 +202,12 @@ public class DerivationClient {
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
 			String derivationType) {
 		// create a unique IRI for this new derived quantity
-		String derivationIRI = this.sparqlClient.createDerivationIRI();
+		String derivationIRI = this.sparqlClient.createDerivationIRI(derivationType);
 		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
+
+		// add time instance to inputs in case any of them is pure inputs but haven't got timestamp attached
+		// nothing happens if the inputs are derived data, or there're already timestamps attached
+		this.sparqlClient.addTimeInstanceCurrentTimestamp(inputsIRI);
 
 		// add mapped inputs to createdDerivation
 		JSONObject mappedInputs = this.sparqlClient.mapInstancesToAgentInputs(inputsIRI, agentIRI);
@@ -373,6 +365,12 @@ public class DerivationClient {
 			}
 		}
 
+		// validate derivations
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (!derivations.isEmpty()) {
+			validateDerivations();
+		}
+
 		return derivations;
 	}
 
@@ -389,7 +387,26 @@ public class DerivationClient {
 		// add timestamp to each derivation
 		this.sparqlClient.addTimeInstance(derivations);
 
+		// validate derivations
+		// this is to prevent the potential circular dependencies in the markup added but not detected at creation
+		if (!derivations.isEmpty()) {
+			validateDerivations();
+		}
+
 		return derivations;
+	}
+
+	/**
+	 * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+	 * It does registration via SPARQL update with sub query, which skips adding triples if the provided agent's
+	 * OntoAgent:Service IRI already exist in the triple store: ontoAgentServiceIRI rdf:type OntoAgent:Service.
+	 * @param ontoAgentServiceIRI
+	 * @param ontoAgentOperationHttpUrl
+	 * @param inputTypes
+	 * @param outputTypes
+	 */
+	public void createOntoAgentInstance(String ontoAgentServiceIRI, String ontoAgentOperationHttpUrl, List<String> inputTypes, List<String> outputTypes) {
+		this.sparqlClient.createOntoAgentInstance(ontoAgentServiceIRI, ontoAgentOperationHttpUrl, inputTypes, outputTypes);
 	}
 
 	/**
@@ -400,8 +417,9 @@ public class DerivationClient {
 	 * @param entity
 	 */
 	public void addTimeInstance(String entity) {
-		this.sparqlClient.addTimeInstance(entity);
-		LOGGER.info("Added timestamp to <" + entity + ">");
+		// calls the method that adds timestamp in bulk
+		addTimeInstance(Arrays.asList(entity));
+		LOGGER.info("Added timestamp to <" + entity + "> if it doesn't have a timestamp already");
 	}
 
 	/**
@@ -411,7 +429,29 @@ public class DerivationClient {
 	 */
 	public void addTimeInstance(List<String> entities) {
 		this.sparqlClient.addTimeInstance(entities);
-		LOGGER.info("Added timestamps to <" + entities + ">");
+		LOGGER.info("Added timestamps to <" + entities + "> if they don't have a timestamp already");
+	}
+
+	/**
+	 * adds a timestamp to your input following the w3c standard for unix timestamp
+	 * https://www.w3.org/TR/owl-time/
+	 * <entity> <hasTime> <time>, <time> <numericPosition> currentTimestamp
+	 *
+	 * @param entity
+	 */
+	public void addTimeInstanceCurrentTimestamp(String entity) {
+		addTimeInstanceCurrentTimestamp(Arrays.asList(entity));
+		LOGGER.info("Added time instances with current timestamps to <" + entity + "> if it doesn't have a timestamp already");
+	}
+
+	/**
+	 * same method as above but in bulk
+	 *
+	 * @param entities
+	 */
+	public void addTimeInstanceCurrentTimestamp(List<String> entities) {
+		this.sparqlClient.addTimeInstanceCurrentTimestamp(entities);
+		LOGGER.info("Added time instances with current timestamps to <" + entities + "> if they don't have a timestamp already");
 	}
 
 	/**
@@ -423,19 +463,19 @@ public class DerivationClient {
 	public void updateTimestamps(List<String> entities) {
 		// if the given entity is part of a derivation, update the derivation instead
 		Map<String, String> entityDerivationMap = this.sparqlClient.getDerivationsOf(entities);
-		Map<String, Long> timestamp_map = new HashMap<>();
+		Map<String, Long> timestampMap = new HashMap<>();
 		long currentTime = Instant.now().getEpochSecond();
 		for (String entity : entities) {
 			if (entityDerivationMap.containsKey(entity)) {
 				// belongs to a derivation, update timestamp of derivation
-				timestamp_map.put(entityDerivationMap.get(entity), currentTime);
+				timestampMap.put(entityDerivationMap.get(entity), currentTime);
 			} else {
 				// assume this is a pure input, if this does not exist
 				// nothing should happen
-				timestamp_map.put(entity, currentTime);
+				timestampMap.put(entity, currentTime);
 			}
 		}
-		this.sparqlClient.updateTimestamps(timestamp_map);
+		this.sparqlClient.updateTimestamps(timestampMap);
 	}
 
 	public void updateTimestamp(String entity) {
@@ -594,13 +634,13 @@ public class DerivationClient {
 			}
 
 			// update timestamps in KG
-			Map<String, Long> derivationTime_map = new HashMap<>();
+			Map<String, Long> derivationTimeMap = new HashMap<>();
 			for (Derivation derivation : derivations) {
 				if (derivation.getUpdateStatus()) {
-					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
 				}
 			}
-			this.sparqlClient.updateTimestamps(derivationTime_map);
+			this.sparqlClient.updateTimestamps(derivationTimeMap);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -639,13 +679,13 @@ public class DerivationClient {
 			}
 
 			// update timestamps in kg
-			Map<String, Long> derivationTime_map = new HashMap<>();
+			Map<String, Long> derivationTimeMap = new HashMap<>();
 			for (Derivation derivation : derivations) {
 				if (derivation.getUpdateStatus()) {
-					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
 				}
 			}
-			this.sparqlClient.updateTimestamps(derivationTime_map);
+			this.sparqlClient.updateTimestamps(derivationTimeMap);
 
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
@@ -687,6 +727,16 @@ public class DerivationClient {
 			}
 		}
 
+		// if there are derivations exist in the triple store, but no topNodes identified
+		// then it will be considered as circular dependency
+		// e.g. no topNodes will be identified for below situation
+		// e1 <belongsTo> d1. d1 <isDerivedFrom> i1.
+		// i1 <belongsTo> d2. d2 <isDerivedFrom> e1.
+		if (!derivations.isEmpty() && topNodes.isEmpty()) {
+			throw new JPSRuntimeException(
+				"Derivations exist in triple store but no top nodes identified. Circular dependency likely occurred.");
+		}
+
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 		try {
@@ -725,7 +775,7 @@ public class DerivationClient {
 	}
 
 	/**
-	 * drops absolutely everything
+	 * drops absolutely everything except for triples with OntoAgent
 	 */
 	public void dropAllDerivationsAndTimestamps() {
 		dropAllDerivations();
@@ -733,29 +783,12 @@ public class DerivationClient {
 	}
 
 	/**
-	 * drops absolutely everything except for triples with OntoAgent
-	 */
-	public void dropAllDerivationsAndTimestampsNotOntoAgent() {
-		dropAllDerivationsNotOntoAgent();
-		dropAllTimestamps();
-	}
-
-	/**
-	 * clears all derivations from the kg, only removes timestamps directly attached
-	 * to derivations, does not remove timestamps of pure inputs
-	 */
-	public void dropAllDerivations() {
-		this.sparqlClient.dropAllDerivations();
-		LOGGER.info("Dropped all derivations");
-	}
-
-	/**
 	 * clears all derivations from the kg, only removes timestamps directly attached
 	 * to derivations, does not remove timestamps of pure inputs, does not remove
 	 * triples that can be part of OntoAgent
 	 */
-	public void dropAllDerivationsNotOntoAgent() {
-		this.sparqlClient.dropAllDerivationsNotOntoAgent();
+	public void dropAllDerivations() {
+		this.sparqlClient.dropAllDerivations();
 		LOGGER.info("Dropped all derivations but not OntoAgent triples");
 	}
 
