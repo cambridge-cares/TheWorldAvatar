@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
+import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -19,9 +20,11 @@ import java.util.Set;
  */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class Ifc2OntoBIMAgent extends JPSAgent {
+    private static String endpoint;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String IFCOWL_CONVERSION_ERROR_MSG = "Failed to convert to IfcOwl schema. Read error for more information: ";
     private static final String KEY_BASEURI = "uri";
+    private static final String KEY_ENDPOINT = "endpoint";
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -34,7 +37,8 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         if (validateInput(requestParams)) {
             LOGGER.info("Passing request to Ifc2OntoBIM Agent..");
             String baseURI = requestParams.getString(KEY_BASEURI);
-            String[] args = (!baseURI.equals("default")) ? new String[]{"--baseURI", baseURI} : new String []{};
+            endpoint = requestParams.has(KEY_ENDPOINT) ? requestParams.getString(KEY_ENDPOINT) : "";
+            String[] args = (!baseURI.equals("default")) ? new String[]{"--baseURI", baseURI} : new String[]{};
             jsonMessage = this.runAgent(args);
             LOGGER.info("All ttl files have been generated in OntoBIM. Please check the directory for the files at :");
             jsonMessage.accumulate("Result", "All ttl files have been generated in OntoBIM. Please check the directory.");
@@ -57,6 +61,11 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                 // Base URI passed must either be default or a valid URL (starts with http/https and ends with / or #)
                 validate = baseURI.equals("default") ||
                         (baseURI.startsWith("http://www.") || baseURI.startsWith("https://www.")) && (baseURI.endsWith("/") || baseURI.endsWith("#"));
+                // When there is an optional endpoint specified, verify it is correct
+                if (requestParams.has(KEY_ENDPOINT)) {
+                    String endpoint = requestParams.getString(KEY_ENDPOINT);
+                    validate = endpoint.startsWith("http") && endpoint.contains("/blazegraph/namespace") && endpoint.endsWith("/sparql");
+                }
             }
         }
         return validate;
@@ -66,7 +75,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
     public JSONObject runAgent(String[] args) {
         JSONObject jsonMessage = new JSONObject();
         // Convert the IFC files in the target directory to TTL using IfcOwl Schema
-        IfcOwlConverter ifcConverter= new IfcOwlConverter(args);
+        IfcOwlConverter ifcConverter = new IfcOwlConverter(args);
         LOGGER.info("IfcOwl converter object have been initialised");
         try {
             ifcConverter.parse2TTL();
@@ -80,13 +89,35 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         Set<String> ttlFileList = ifcConverter.listTTLFiles();
 
         OntoBimConverter bimConverter;
-        // Convert each TTL file with IFCOwl instances to ontoBIM instances
-        for (String ttlFile: ttlFileList){
-            LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
-            bimConverter = new OntoBimConverter();
-            bimConverter.convertOntoBIM(ttlFile);
-            LOGGER.info(ttlFile + " has been successfully converted!");
-            jsonMessage.accumulate("Result", ttlFile + " has been successfully converted!");
+
+        if (ttlFileList.size()==0){
+            LOGGER.info("No TTL file detected! Please place at least 1 IFC file input.");
+            jsonMessage.put("Result", "No TTL file detected! Please place at least 1 IFC file input.");
+        } else if (ttlFileList.size()>1 && !endpoint.isEmpty()){
+            LOGGER.info("More than one TTL file detected! Files will not be uploaded to " + endpoint);
+            jsonMessage.put("Result", "More than one TTL file detected! Files will not be uploaded to " + endpoint);
+        }
+
+        if (ttlFileList.size()!=0) {
+            // Convert each TTL file with IFCOwl instances to ontoBIM instances
+            for (String ttlFile : ttlFileList) {
+                LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
+                bimConverter = new OntoBimConverter();
+                bimConverter.convertOntoBIM(ttlFile);
+                LOGGER.info(ttlFile + " has been successfully converted!");
+                jsonMessage.accumulate("Result", ttlFile + " has been successfully converted!");
+
+                // Load to an endpoint if specified
+                if (!endpoint.isEmpty()) {
+                    if (ttlFileList.size() == 1) {
+                        try (RDFConnection conn = RDFConnection.connect(endpoint)) {
+                            conn.load(ttlFile);
+                        }
+                        LOGGER.info(ttlFile + " has been uploaded to " + endpoint);
+                        jsonMessage.accumulate("Result", ttlFile + " has been uploaded to " + endpoint);
+                    }
+                }
+            }
         }
         return jsonMessage;
     }

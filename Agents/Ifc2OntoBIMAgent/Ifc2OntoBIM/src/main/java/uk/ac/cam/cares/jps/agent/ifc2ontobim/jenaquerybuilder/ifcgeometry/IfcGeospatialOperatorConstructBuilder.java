@@ -2,6 +2,9 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.rdf.model.RDFNode;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +16,23 @@ import java.util.Map;
  * @author qhouyee
  */
 class IfcGeospatialOperatorConstructBuilder {
+    protected static final String DIRECTION_VAR = "?direction";
+    protected static final String DIRECTION_AXIS_VAR = "?axisdirection";
+    protected static final String DIRECTION_REF_VAR = "?refdirection";
+    protected static final String CARTPOINT_VAR = "?cartesianpoint";
+    private static final String PARENT_PLACEMENT_VAR = "?parentplacement";
+    private static final String COORDS_VAR = "?coordinates";
+    private static final String AXISPLACEMENT_VAR = "?axisplacement";
+    private static final String CART_TRANSFORMER_OPERATOR_VAR = "?operator";
+    private static final String SCALE_FACTOR_VAR = "?scalefactor";
+    private static final String XDIRECTION_VAR = "?xdirection";
+    private static final String YDIRECTION_VAR = "?ydirection";
+    private static final String XVALUE_VAR = "?xvalue";
+    private static final String XLIST_VAR = "?xlist";
+    private static final String YVALUE_VAR = "?yvalue";
+    private static final String YLIST_VAR = "?ylist";
+    private static final String ZVALUE_VAR = "?zvalue";
+
     /**
      * Add the query statements for all geometric representation sub-context and their properties.
      *
@@ -20,21 +40,21 @@ class IfcGeospatialOperatorConstructBuilder {
      * @param builder A Construct Builder object to hold the statements.
      */
     protected static void constructGeometricRepresentationSubContextTriples(List<RDFNode> iriList, ConstructBuilder builder) {
-        builder.addConstruct("?subcontext", "rdf:type", "bim:GeometricRepresentationSubContext")
-                .addConstruct("?subcontext", "bim:hasParentContext", "?subContextParent")
-                .addConstruct("?subcontext", "bim:hasContextIdentifier", "?subContextIdentifier")
-                .addConstruct("?subcontext", "bim:hasContextType", "?subContextViewType")
-                .addConstruct("?subcontext", "bim:hasTargetView", "?subContextTargetView");
+        builder.addConstruct(IfcElementConstructBuilder.SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, "bim:GeometricRepresentationSubContext")
+                .addConstruct(IfcElementConstructBuilder.SUBCONTEXT_VAR, "bim:hasParentContext", "?subContextParent")
+                .addConstruct(IfcElementConstructBuilder.SUBCONTEXT_VAR, "bim:hasContextIdentifier", "?subContextIdentifier")
+                .addConstruct(IfcElementConstructBuilder.SUBCONTEXT_VAR, "bim:hasContextType", "?subContextViewType")
+                .addConstruct(IfcElementConstructBuilder.SUBCONTEXT_VAR, "bim:hasTargetView", "?subContextTargetView");
 
         //IFC query structure
-        builder.addWhere("?subcontext", "rdf:type", "ifc:IfcGeometricRepresentationSubContext")
-                .addWhere("?subcontext", "ifc:parentContext_IfcGeometricRepresentationSubContext", "?subContextParent")
-                .addWhere("?subcontext", "ifc:contextIdentifier_IfcRepresentationContext/express:hasString", "?subContextIdentifier")
-                .addWhere("?subcontext", "ifc:contextType_IfcRepresentationContext/express:hasString", "?subContextViewType")
-                .addWhere("?subcontext", "ifc:targetView_IfcGeometricRepresentationSubContext", "?subContextTargetView");
+        builder.addWhere(IfcElementConstructBuilder.SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcGeometricRepresentationSubContext")
+                .addWhere(IfcElementConstructBuilder.SUBCONTEXT_VAR, "ifc:parentContext_IfcGeometricRepresentationSubContext", "?subContextParent")
+                .addWhere(IfcElementConstructBuilder.SUBCONTEXT_VAR, "ifc:contextIdentifier_IfcRepresentationContext/express:hasString", "?subContextIdentifier")
+                .addWhere(IfcElementConstructBuilder.SUBCONTEXT_VAR, "ifc:contextType_IfcRepresentationContext/express:hasString", "?subContextViewType")
+                .addWhere(IfcElementConstructBuilder.SUBCONTEXT_VAR, "ifc:targetView_IfcGeometricRepresentationSubContext", "?subContextTargetView");
         // Add VALUES statement for all IRIs
         Map<String, List<RDFNode>> varMap = new HashMap<>();
-        varMap.put("?subcontext", iriList);
+        varMap.put(IfcElementConstructBuilder.SUBCONTEXT_VAR, iriList);
         builder.addWhereValueVars(varMap);
     }
 
@@ -47,36 +67,36 @@ class IfcGeospatialOperatorConstructBuilder {
     protected static void constructLocalPlacementTriples(List<RDFNode> iriList, ConstructBuilder builder) {
         ConstructBuilder subgroupBuilder = builder.clone();
         ConstructBuilder unionBuilder = builder.clone();
-        builder.addConstruct("?localplacement", "rdf:type", "bim:LocalPlacement")
-                .addConstruct("?localplacement", "bim:hasRelativePosition", "?parentplacement")
-                .addConstruct("?localplacement", "bim:hasPosition", "?coordinates")
-                .addConstruct("?coordinates", "rdf:type", "bim:CartesianPoint")
-                .addConstruct("?localplacement", "bim:hasRefDirection", "?refdirection")
-                .addConstruct("?refdirection", "rdf:type", "bim:DirectionVector")
-                .addConstruct("?localplacement", "bim:hasAxisDirection", "?axisdirection")
-                .addConstruct("?axisdirection", "rdf:type", "bim:DirectionVector");
+        builder.addConstruct(IfcConstructBuilderTemplate.PLACEMENT_VAR, QueryHandler.RDF_TYPE, "bim:LocalPlacement")
+                .addConstruct(IfcConstructBuilderTemplate.PLACEMENT_VAR, "bim:hasRelativePosition", PARENT_PLACEMENT_VAR)
+                .addConstruct(IfcConstructBuilderTemplate.PLACEMENT_VAR, "bim:hasPosition", COORDS_VAR)
+                .addConstruct(COORDS_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint")
+                .addConstruct(IfcConstructBuilderTemplate.PLACEMENT_VAR, "bim:hasRefDirection", DIRECTION_REF_VAR)
+                .addConstruct(DIRECTION_REF_VAR, QueryHandler.RDF_TYPE, "bim:DirectionVector")
+                .addConstruct(IfcConstructBuilderTemplate.PLACEMENT_VAR, "bim:hasAxisDirection", DIRECTION_AXIS_VAR)
+                .addConstruct(DIRECTION_AXIS_VAR, QueryHandler.RDF_TYPE, "bim:DirectionVector");
 
         //IFC query structure
-        builder.addWhere("?localplacement", "rdf:type", "ifc:IfcLocalPlacement")
-                .addWhere("?localplacement", "ifc:relativePlacement_IfcLocalPlacement", "?axisplacement")
-                .addWhere("?axisplacement", "ifc:location_IfcPlacement", "?coordinates")
-                .addWhere("?coordinates", "rdf:type", "ifc:IfcCartesianPoint")
+        builder.addWhere(IfcConstructBuilderTemplate.PLACEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcLocalPlacement")
+                .addWhere(IfcConstructBuilderTemplate.PLACEMENT_VAR, "ifc:relativePlacement_IfcLocalPlacement", AXISPLACEMENT_VAR)
+                .addWhere(AXISPLACEMENT_VAR, "ifc:location_IfcPlacement", COORDS_VAR)
+                .addWhere(COORDS_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCartesianPoint")
                 // All Ifc elements have a relative position to a parent element's placement except for IfcSite
-                .addOptional("?localplacement", "ifc:placementRelTo_IfcLocalPlacement", "?parentplacement");
+                .addOptional(IfcConstructBuilderTemplate.PLACEMENT_VAR, "ifc:placementRelTo_IfcLocalPlacement", PARENT_PLACEMENT_VAR);
 
         // Adds a subgroup with Union pattern as the placement transformer may be either 2D or 3D with different properties
-        unionBuilder.addWhere("?axisplacement", "ifc:refDirection_IfcAxis2Placement2D", "?refdirection")
-                .addWhere("?refdirection", "rdf:type", "ifc:IfcDirection");
-        subgroupBuilder.addWhere("?axisplacement", "ifc:axis_IfcAxis2Placement3D", "?axisdirection")
-                .addWhere("?axisdirection", "rdf:type", "ifc:IfcDirection")
-                .addWhere("?axisplacement", "ifc:refDirection_IfcAxis2Placement3D", "?refdirection")
-                .addWhere("?refdirection", "rdf:type", "ifc:IfcDirection");
+        unionBuilder.addWhere(AXISPLACEMENT_VAR, "ifc:refDirection_IfcAxis2Placement2D", DIRECTION_REF_VAR)
+                .addWhere(DIRECTION_REF_VAR, QueryHandler.RDF_TYPE, "ifc:IfcDirection");
+        subgroupBuilder.addWhere(AXISPLACEMENT_VAR, "ifc:axis_IfcAxis2Placement3D", DIRECTION_AXIS_VAR)
+                .addWhere(DIRECTION_AXIS_VAR, QueryHandler.RDF_TYPE, "ifc:IfcDirection")
+                .addWhere(AXISPLACEMENT_VAR, "ifc:refDirection_IfcAxis2Placement3D", DIRECTION_REF_VAR)
+                .addWhere(DIRECTION_REF_VAR, QueryHandler.RDF_TYPE, "ifc:IfcDirection");
         subgroupBuilder.addUnion(unionBuilder);
         builder.addWhere(subgroupBuilder);
 
         // Add VALUES statement for all IRIs
         Map<String, List<RDFNode>> varMap = new HashMap<>();
-        varMap.put("?localplacement", iriList);
+        varMap.put(IfcConstructBuilderTemplate.PLACEMENT_VAR, iriList);
         builder.addWhereValueVars(varMap);
     }
 
@@ -87,24 +107,24 @@ class IfcGeospatialOperatorConstructBuilder {
      * @param builder A Construct Builder object to hold the statements.
      */
     protected static void constructCartesianTransformationOperatorTriples(List<RDFNode> iriList, ConstructBuilder builder) {
-        builder.addConstruct("?operator", "rdf:type", "bim:CartesianTransformationOperator")
-                .addConstruct("?operator", "bim:hasLocalOrigin", "?cartesianpoint")
-                .addConstruct("?cartesianpoint", "rdf:type", "bim:CartesianPoint")
-                .addConstruct("?operator", "bim:hasScale", "?scalefactor")
-                .addConstruct("?operator", "bim:hasDerivedXAxis", "?xdirection")
-                .addConstruct("?operator", "bim:hasDerivedYAxis", "?ydirection");
+        builder.addConstruct(CART_TRANSFORMER_OPERATOR_VAR, QueryHandler.RDF_TYPE, "bim:CartesianTransformationOperator")
+                .addConstruct(CART_TRANSFORMER_OPERATOR_VAR, "bim:hasLocalOrigin", CARTPOINT_VAR)
+                .addConstruct(CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint")
+                .addConstruct(CART_TRANSFORMER_OPERATOR_VAR, "bim:hasScale", SCALE_FACTOR_VAR)
+                .addConstruct(CART_TRANSFORMER_OPERATOR_VAR, "bim:hasDerivedXAxis", XDIRECTION_VAR)
+                .addConstruct(CART_TRANSFORMER_OPERATOR_VAR, "bim:hasDerivedYAxis", YDIRECTION_VAR);
 
         // IFC query structure
-        builder.addWhere("?operator", "rdf:type", "ifc:IfcCartesianTransformationOperator3D")
-                .addWhere("?operator", "ifc:localOrigin_IfcCartesianTransformationOperator", "?cartesianpoint")
-                .addWhere("?cartesianpoint", "rdf:type", "ifc:IfcCartesianPoint");
+        builder.addWhere(CART_TRANSFORMER_OPERATOR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCartesianTransformationOperator3D")
+                .addWhere(CART_TRANSFORMER_OPERATOR_VAR, "ifc:localOrigin_IfcCartesianTransformationOperator", CARTPOINT_VAR)
+                .addWhere(CARTPOINT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCartesianPoint");
         // Optional statements for optional IFC properties
-        builder.addOptional("?operator", "ifc:scale_IfcCartesianTransformationOperator/express:hasDouble", "?scalefactor")
-                .addOptional("?operator", "ifc:axis1_IfcCartesianTransformationOperator", "?xdirection")
-                .addOptional("?operator", "ifc:axis2_IfcCartesianTransformationOperator", "?ydirection");
+        builder.addOptional(CART_TRANSFORMER_OPERATOR_VAR, "ifc:scale_IfcCartesianTransformationOperator/express:hasDouble", SCALE_FACTOR_VAR)
+                .addOptional(CART_TRANSFORMER_OPERATOR_VAR, "ifc:axis1_IfcCartesianTransformationOperator", XDIRECTION_VAR)
+                .addOptional(CART_TRANSFORMER_OPERATOR_VAR, "ifc:axis2_IfcCartesianTransformationOperator", YDIRECTION_VAR);
         // Add VALUES statement for all IRIs
         Map<String, List<RDFNode>> varMap = new HashMap<>();
-        varMap.put("?operator", iriList);
+        varMap.put(CART_TRANSFORMER_OPERATOR_VAR, iriList);
         builder.addWhereValueVars(varMap);
     }
 
@@ -115,21 +135,21 @@ class IfcGeospatialOperatorConstructBuilder {
      * @param builder A Construct Builder object to hold the statements.
      */
     protected static void constructDirectionVectorTriples(List<RDFNode> iriList, ConstructBuilder builder) {
-        builder.addConstruct("?direction", "rdf:type", "bim:DirectionVector")
-                .addConstruct("?direction", "bim:hasXDirectionRatio", "?xvalue")
-                .addConstruct("?direction", "bim:hasYDirectionRatio", "?yvalue")
-                .addConstruct("?direction", "bim:hasZDirectionRatio", "?zvalue");
+        builder.addConstruct(DIRECTION_VAR, QueryHandler.RDF_TYPE, "bim:DirectionVector")
+                .addConstruct(DIRECTION_VAR, "bim:hasXDirectionRatio", XVALUE_VAR)
+                .addConstruct(DIRECTION_VAR, "bim:hasYDirectionRatio", YVALUE_VAR)
+                .addConstruct(DIRECTION_VAR, "bim:hasZDirectionRatio", ZVALUE_VAR);
 
         // IFC query structure
-        builder.addWhere("?direction", "rdf:type", "ifc:IfcDirection")
-                .addWhere("?direction", "ifc:directionRatios_IfcDirection", "?xlist")
-                .addWhere("?xlist", "list:hasContents/express:hasDouble", "?xvalue")
-                .addWhere("?xlist", "list:hasNext", "?ylist")
-                .addWhere("?ylist", "list:hasContents/express:hasDouble", "?yvalue")
-                .addOptional("?ylist", "list:hasNext/list:hasContents/express:hasDouble", "?zvalue"); // Z-coordinates are optional in Ifc
+        builder.addWhere(DIRECTION_VAR, QueryHandler.RDF_TYPE, "ifc:IfcDirection")
+                .addWhere(DIRECTION_VAR, "ifc:directionRatios_IfcDirection", XLIST_VAR)
+                .addWhere(XLIST_VAR, "list:hasContents/express:hasDouble", XVALUE_VAR)
+                .addWhere(XLIST_VAR, "list:hasNext", YLIST_VAR)
+                .addWhere(YLIST_VAR, "list:hasContents/express:hasDouble", YVALUE_VAR)
+                .addOptional(YLIST_VAR, "list:hasNext/list:hasContents/express:hasDouble", ZVALUE_VAR); // Z-coordinates are optional in Ifc
         // Add VALUES statement for all IRIs
         Map<String, List<RDFNode>> varMap = new HashMap<>();
-        varMap.put("?direction", iriList);
+        varMap.put(DIRECTION_VAR, iriList);
         builder.addWhereValueVars(varMap);
     }
 
@@ -140,21 +160,21 @@ class IfcGeospatialOperatorConstructBuilder {
      * @param builder A Construct Builder object to hold the statements.
      */
     protected static void constructCartesianPointTriples(List<RDFNode> iriList, ConstructBuilder builder) {
-        builder.addConstruct("?point", "rdf:type", "bim:CartesianPoint")
-                .addConstruct("?point", "bim:hasXCoordinate", "?xvalue")
-                .addConstruct("?point", "bim:hasYCoordinate", "?yvalue")
-                .addConstruct("?point", "bim:hasZCoordinate", "?zvalue");
+        builder.addConstruct(CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint")
+                .addConstruct(CARTPOINT_VAR, "bim:hasXCoordinate", XVALUE_VAR)
+                .addConstruct(CARTPOINT_VAR, "bim:hasYCoordinate", YVALUE_VAR)
+                .addConstruct(CARTPOINT_VAR, "bim:hasZCoordinate", ZVALUE_VAR);
 
         // IFC query structure
-        builder.addWhere("?point", "rdf:type", "ifc:IfcCartesianPoint")
-                .addWhere("?point", "ifc:coordinates_IfcCartesianPoint", "?xlist")
-                .addWhere("?xlist", "list:hasContents/express:hasDouble", "?xvalue")
-                .addWhere("?xlist", "list:hasNext", "?ylist")
-                .addWhere("?ylist", "list:hasContents/express:hasDouble", "?yvalue")
-                .addOptional("?ylist", "list:hasNext/list:hasContents/express:hasDouble", "?zvalue"); // Z-coordinates are optional in Ifc
+        builder.addWhere(CARTPOINT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCartesianPoint")
+                .addWhere(CARTPOINT_VAR, "ifc:coordinates_IfcCartesianPoint", XLIST_VAR)
+                .addWhere(XLIST_VAR, "list:hasContents/express:hasDouble", XVALUE_VAR)
+                .addWhere(XLIST_VAR, "list:hasNext", YLIST_VAR)
+                .addWhere(YLIST_VAR, "list:hasContents/express:hasDouble", YVALUE_VAR)
+                .addOptional(YLIST_VAR, "list:hasNext/list:hasContents/express:hasDouble", ZVALUE_VAR); // Z-coordinates are optional in Ifc
         // Add VALUES statement for all IRIs
         Map<String, List<RDFNode>> varMap = new HashMap<>();
-        varMap.put("?point", iriList);
+        varMap.put(CARTPOINT_VAR, iriList);
         builder.addWhereValueVars(varMap);
     }
 }

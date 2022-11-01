@@ -19,19 +19,10 @@ public class RemoteRDBStoreClientTest {
     private String password = "postgres";
 
     /**
-     * Tests the number of fields in RemoteRDBStoreClient class
-     */
-    @Test
-    public void testNewRemoteRDBStoreClientFields(){
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, user, password);
-        assertEquals(7, rdbStoreClient.getClass().getDeclaredFields().length);
-    }
-
-    /**
      * Tests the number of methods in RemoteRDBStoreClient class
      */
     @Test
-    public void testNewRemoteRDBStoreClientMethods(){
+    public void testNewRemoteRDBStoreClientMethods() {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, user, password);
         assertEquals(17, rdbStoreClient.getClass().getDeclaredMethods().length);
     }

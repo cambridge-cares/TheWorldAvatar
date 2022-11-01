@@ -10,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GeomConstructBuilderMediatorTest {
@@ -282,14 +281,14 @@ class GeomConstructBuilderMediatorTest {
                 .append("  { \n")
                 .append("    ?polyspace rdf:type bim:PolygonalBoundedHalfSpace .\n")
                 .append("    ?polyspace bim:hasAgreementFlag ?boolean .\n")
-                .append("    ?polyspace bim:hasPosition ?spacecartesianpoint .\n")
-                .append("    ?polyspace bim:hasPositionAxis ?axisdirection .\n")
-                .append("    ?polyspace bim:hasRefDirectionForPosition ?refdirection .\n")
+                .append("    ?polyspace bim:hasRefPoint ?spacecartesianpoint .\n")
+                .append("    ?polyspace bim:hasAxisDirection ?axisdirection .\n")
+                .append("    ?polyspace bim:hasRefDirection ?refdirection .\n")
                 .append("    ?polyspace bim:hasBaseSurface ?plane .\n")
                 .append("    ?plane rdf:type bim:SurfacePlane .\n")
-                .append("    ?plane bim:hasPosition ?cartesianpointplane .\n")
-                .append("    ?plane bim:hasPositionAxis ?axisdirectionplane .\n")
-                .append("    ?plane bim:hasRefDirectionForPosition ?refdirectionplane .\n")
+                .append("    ?plane bim:hasRefPoint ?cartesianpointplane .\n")
+                .append("    ?plane bim:hasAxisDirection ?axisdirectionplane .\n")
+                .append("    ?plane bim:hasRefDirection ?refdirectionplane .\n")
                 .append("    ?polyspace bim:hasPolygonalBoundary ?polyline .\n")
                 .append("    ?polyline rdf:type ifc:IfcPolyline .\n")
                 .append("  }\n")
@@ -362,14 +361,14 @@ class GeomConstructBuilderMediatorTest {
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
                 .append("    ?extrudedareasolid rdf:type bim:ExtrudedAreaSolid .\n")
-                .append("    ?extrudedareasolid bim:hasPosition ?cartesianpoint .\n")
-                .append("    ?extrudedareasolid bim:hasExtrusionDirection ?directionvector .\n")
+                .append("    ?extrudedareasolid bim:hasRefPoint ?cartesianpoint .\n")
+                .append("    ?extrudedareasolid bim:hasExtrusionDirection ?direction .\n")
                 .append("    ?extrudedareasolid bim:hasExtrusionDepth ?depthvalue .\n")
-                .append("    ?extrudedareasolid bim:hasSweptArea ?rectangleprofile .\n")
+                .append("    ?extrudedareasolid bim:hasExtrusionProfile ?rectangleprofile .\n")
                 .append("    ?rectangleprofile rdf:type bim:RectangleProfileDefinition .\n")
                 .append("    ?rectangleprofile bim:hasProfileType ?profiletype .\n")
-                .append("    ?rectangleprofile bim:hasPosition ?profilecartesianpoint .\n")
-                .append("    ?rectangleprofile bim:hasRefDirectionForPosition ?profiledirectionvector .\n")
+                .append("    ?rectangleprofile bim:hasRefPoint ?profilecartesianpoint .\n")
+                .append("    ?rectangleprofile bim:hasRefDirection ?profiledirectionvector .\n")
                 .append("    ?rectangleprofile bim:hasXDimensionExtent ?xdimvalue .\n")
                 .append("    ?rectangleprofile bim:hasYDimensionExtent ?ydimvalue .\n")
                 .append("  }\n")
@@ -378,7 +377,7 @@ class GeomConstructBuilderMediatorTest {
                 .append("              rdf:type  ifc:IfcExtrudedAreaSolid .\n")
                 .append("    ?extrudedareasolid ifc:position_IfcSweptAreaSolid/ifc:location_IfcPlacement ?cartesianpoint .\n")
                 .append("    ?extrudedareasolid\n")
-                .append("              ifc:extrudedDirection_IfcExtrudedAreaSolid  ?directionvector .\n")
+                .append("              ifc:extrudedDirection_IfcExtrudedAreaSolid  ?direction .\n")
                 .append("    ?extrudedareasolid ifc:depth_IfcExtrudedAreaSolid/express:hasDouble ?depthvalue .\n")
                 .append("    ?extrudedareasolid\n")
                 .append("              ifc:sweptArea_IfcSweptAreaSolid  ?rectangleprofile .\n")
@@ -531,21 +530,21 @@ class GeomConstructBuilderMediatorTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?point rdf:type bim:CartesianPoint .\n")
-                .append("    ?point bim:hasXCoordinate ?xvalue .\n")
-                .append("    ?point bim:hasYCoordinate ?yvalue .\n")
-                .append("    ?point bim:hasZCoordinate ?zvalue .\n")
+                .append("    ?cartesianpoint rdf:type bim:CartesianPoint .\n")
+                .append("    ?cartesianpoint bim:hasXCoordinate ?xvalue .\n")
+                .append("    ?cartesianpoint bim:hasYCoordinate ?yvalue .\n")
+                .append("    ?cartesianpoint bim:hasZCoordinate ?zvalue .\n")
                 .append("  }\n")
                 .append("WHERE\n")
-                .append("  { ?point  rdf:type              ifc:IfcCartesianPoint ;\n")
-                .append("            ifc:coordinates_IfcCartesianPoint  ?xlist .\n")
+                .append("  { ?cartesianpoint\n")
+                .append("              rdf:type              ifc:IfcCartesianPoint ;\n")
+                .append("              ifc:coordinates_IfcCartesianPoint  ?xlist .\n")
                 .append("    ?xlist list:hasContents/express:hasDouble ?xvalue .\n")
                 .append("    ?xlist  list:hasNext  ?ylist .\n")
                 .append("    ?ylist list:hasContents/express:hasDouble ?yvalue\n")
                 .append("    OPTIONAL\n")
                 .append("      { ?ylist (list:hasNext/list:hasContents)/express:hasDouble ?zvalue}\n")
-                .append("    VALUES ?point { bim:" + cartPointInst + " }\n")
-                .append("  }");
+                .append("    VALUES ?cartesianpoint { bim:" + cartPointInst + " }\n");
         return expected.toString();
     }
 }

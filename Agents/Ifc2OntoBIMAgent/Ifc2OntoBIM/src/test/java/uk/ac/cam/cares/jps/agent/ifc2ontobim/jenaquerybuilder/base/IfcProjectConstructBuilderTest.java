@@ -45,7 +45,7 @@ class IfcProjectConstructBuilderTest {
                 .append("    ?project ifc:longName_IfcProject/express:hasString ?name .\n")
                 .append("    ?project ifc:phase_IfcProject/express:hasString ?phase .\n")
                 .append("    ?project  ifc:representationContexts_IfcProject  ?repcontext .\n")
-                .append("    ?relaggregate\n")
+                .append("    ?relaggregates\n")
                 .append("              rdf:type              ifc:IfcRelAggregates ;\n")
                 .append("              ifc:relatingObject_IfcRelDecomposes  ?project ;\n")
                 .append("              ifc:relatedObjects_IfcRelDecomposes  ?root .\n")

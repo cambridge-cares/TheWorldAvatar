@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.timeseries;
+package uk.ac.cam.cares.jps.base.timeseries.mocks;
 
 import java.sql.SQLException;
 

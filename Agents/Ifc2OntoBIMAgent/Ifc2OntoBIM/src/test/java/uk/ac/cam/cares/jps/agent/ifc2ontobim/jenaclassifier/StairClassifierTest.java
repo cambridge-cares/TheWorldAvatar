@@ -16,11 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class StairClassifierTest {
     private static LinkedHashSet<Statement> testSet;
     private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
-    private static final String botUri = "https://w3id.org/bot#";
     private static final String inst = "IfcStair_1634";
     private static final String landingInst = "IfcSlab_2256";
     private static final String structComponentInst = "IfcMember_546";
-    private static final String predicate = "hasSubElement";
+    private static final String predicate = "hasStairSubElement";
     private static final String stairClass = "Stair";
     private static final String landingClass = "Landing";
     private static final String structComponentClass = "StructuralComponent";
@@ -50,13 +49,13 @@ class StairClassifierTest {
                 .addProperty(RDF.type,
                         sampleModel.createResource(bimUri + stairClass));
         sampleModel.createResource(bimUri + inst)
-                .addProperty(sampleModel.createProperty(botUri + predicate),
+                .addProperty(sampleModel.createProperty(bimUri + predicate),
                         sampleModel.createResource(bimUri + landingInst));
         sampleModel.createResource(bimUri + landingInst)
                 .addProperty(RDF.type,
                         sampleModel.createResource(bimUri + landingClass));
         sampleModel.createResource(bimUri + inst)
-                .addProperty(sampleModel.createProperty(botUri + predicate),
+                .addProperty(sampleModel.createProperty(bimUri + predicate),
                         sampleModel.createResource(bimUri + structComponentInst));
         sampleModel.createResource(bimUri + structComponentInst)
                 .addProperty(RDF.type,

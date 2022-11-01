@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides supplementary query statements relevant to stairs.
@@ -10,35 +11,44 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
  * @author qhouyee
  */
 class IfcStairQuery {
+    private static final String STAIRFLIGHT_VAR = "?stairflight";
+    private static final String LANDING_VAR = "?landing";
+    private static final String RAILING_VAR = "?railing";
+    private static final String STRUCTURAL_COMPONENT_VAR = "?structurecomponent";
+    private static final String RISER_NUM_VAR = "?riserno";
+    private static final String RISER_HEIGHT_VAR = "?riserheight";
+    private static final String TREAD_NUM_VAR = "?treadno";
+    private static final String TREAD_LENGTH_VAR = "?treadlength";
+
     /**
      * Add the statements for querying the physical sub-elements that constitutes the abstract parent Stair container.
      *
      * @param builder Construct Builder object to add Construct query statements.
      */
     protected static void addSubElementsQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?element","bot:hasSubElement","?stairflight")
-                .addConstruct("?stairflight","rdf:type", "bim:StairFlight")
-                .addConstruct("?element","bot:hasSubElement","?landing")
-                .addConstruct("?landing","rdf:type", "bim:Landing")
-                .addConstruct("?element","bot:hasSubElement","?railing")
-                .addConstruct("?railing","rdf:type", "bim:Railing")
-                .addConstruct("?element","bot:hasSubElement","?structurecomponent")
-                .addConstruct("?structurecomponent","rdf:type", "bim:StructuralComponent");
-        builder.addWhere("?relagg", "rdf:type", "ifc:IfcRelAggregates")
-                .addWhere("?relagg", "ifc:relatingObject_IfcRelDecomposes", "?element")
-                .addWhere("?relagg", "ifc:relatedObjects_IfcRelDecomposes", "?stairflight")
-                .addWhere("?stairflight", "rdf:type", "ifc:IfcStairFlight")
-                .addWhere("?relagg", "ifc:relatedObjects_IfcRelDecomposes", "?landing")
-                .addWhere("?landing", "rdf:type", "ifc:IfcSlab")
-                .addWhere("?relagg", "ifc:relatedObjects_IfcRelDecomposes", "?railing")
-                .addWhere("?railing", "rdf:type", "ifc:IfcRailing")
-                .addWhere("?relagg", "ifc:relatedObjects_IfcRelDecomposes", "?structurecomponent")
-                .addWhere("?structurecomponent", "rdf:type", "ifc:IfcMember");
+        builder.addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", STAIRFLIGHT_VAR)
+                .addConstruct(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, "bim:StairFlight")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", LANDING_VAR)
+                .addConstruct(LANDING_VAR, QueryHandler.RDF_TYPE, "bim:Landing")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", RAILING_VAR)
+                .addConstruct(RAILING_VAR, QueryHandler.RDF_TYPE, "bim:Railing")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", STRUCTURAL_COMPONENT_VAR)
+                .addConstruct(STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, "bim:StructuralComponent");
+        builder.addWhere(IfcElementConstructBuilder.RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
+                .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", STAIRFLIGHT_VAR)
+                .addWhere(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcStairFlight")
+                .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", LANDING_VAR)
+                .addWhere(LANDING_VAR, QueryHandler.RDF_TYPE, "ifc:IfcSlab")
+                .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", RAILING_VAR)
+                .addWhere(RAILING_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRailing")
+                .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", STRUCTURAL_COMPONENT_VAR)
+                .addWhere(STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcMember");
         addStairFlightQueryComponents(builder);
-        addSubElementModelRepresentationQueryComponents(builder,"stairflight");
-        addSubElementModelRepresentationQueryComponents(builder,"landing");
-        addSubElementModelRepresentationQueryComponents(builder,"railing");
-        addSubElementModelRepresentationQueryComponents(builder,"structurecomponent");
+        addSubElementModelRepresentationQueryComponents(builder, "stairflight");
+        addSubElementModelRepresentationQueryComponents(builder, "landing");
+        addSubElementModelRepresentationQueryComponents(builder, "railing");
+        addSubElementModelRepresentationQueryComponents(builder, "structurecomponent");
     }
 
     /**
@@ -47,14 +57,14 @@ class IfcStairQuery {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private static void addStairFlightQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?stairflight", "bim:hasNumOfRiser", "?riserno")
-                .addConstruct("?stairflight", "bim:hasNumOfTread", "?treadno")
-                .addConstruct("?stairflight", "bim:hasRiserHeight", "?riserheight")
-                .addConstruct("?stairflight", "bim:hasTreadLength", "?treadlength");
-        builder.addWhere("?stairflight", "ifc:numberOfRiser_IfcStairFlight/express:hasInteger", "?riserno")
-                .addWhere("?stairflight", "ifc:numberOfTreads_IfcStairFlight/express:hasInteger", "?treadno")
-                .addWhere("?stairflight", "ifc:riserHeight_IfcStairFlight/express:hasDouble", "?riserheight")
-                .addWhere("?stairflight", "ifc:treadLength_IfcStairFlight/express:hasDouble", "?treadlength");
+        builder.addConstruct(STAIRFLIGHT_VAR, "bim:hasNumOfRiser", RISER_NUM_VAR)
+                .addConstruct(STAIRFLIGHT_VAR, "bim:hasNumOfTread", TREAD_NUM_VAR)
+                .addConstruct(STAIRFLIGHT_VAR, "bim:hasRiserHeight", RISER_HEIGHT_VAR)
+                .addConstruct(STAIRFLIGHT_VAR, "bim:hasTreadLength", TREAD_LENGTH_VAR);
+        builder.addWhere(STAIRFLIGHT_VAR, "ifc:numberOfRiser_IfcStairFlight/express:hasInteger", RISER_NUM_VAR)
+                .addWhere(STAIRFLIGHT_VAR, "ifc:numberOfTreads_IfcStairFlight/express:hasInteger", TREAD_NUM_VAR)
+                .addWhere(STAIRFLIGHT_VAR, "ifc:riserHeight_IfcStairFlight/express:hasDouble", RISER_HEIGHT_VAR)
+                .addWhere(STAIRFLIGHT_VAR, "ifc:treadLength_IfcStairFlight/express:hasDouble", TREAD_LENGTH_VAR);
     }
 
     /**
@@ -63,32 +73,32 @@ class IfcStairQuery {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private static void addSubElementModelRepresentationQueryComponents(ConstructBuilder builder, String subStairComponent) {
-        String base =  "?" + subStairComponent;
-        String placement = base +"placement";
-        String productShapeDefinition = base +"definition";
-        String shapeRep = base +"shaperep";
-        String shapeRepType = base +"shapereptype";
-        String subContext = base +"context";
-        String geom = base +"geom";
-        String geomType = base +"geomtype";
+        String base = "?" + subStairComponent;
+        String placement = base + "placement";
+        String productShapeDefinition = base + "definition";
+        String shapeRep = base + "shaperep";
+        String shapeRepType = base + "shapereptype";
+        String subContext = base + "context";
+        String geom = base + "geom";
+        String geomType = base + "geomtype";
 
         builder.addConstruct(base, "bim:hasLocalPosition", placement)
-                .addConstruct(placement, "rdf:type", "bim:LocalPlacement")
+                .addConstruct(placement, QueryHandler.RDF_TYPE, "bim:LocalPlacement")
                 .addConstruct(base, "bim:hasGeometricRepresentation", shapeRep)
-                .addConstruct(shapeRep, "rdf:type", "bim:ModelRepresentation3D")
+                .addConstruct(shapeRep, QueryHandler.RDF_TYPE, "bim:ModelRepresentation3D")
                 .addConstruct(shapeRep, "bim:hasRepresentationType", shapeRepType)
                 .addConstruct(shapeRep, "bim:hasSubContext", subContext)
-                .addConstruct(subContext, "rdf:type", "bim:GeometricRepresentationSubContext")
+                .addConstruct(subContext, QueryHandler.RDF_TYPE, "bim:GeometricRepresentationSubContext")
                 .addConstruct(shapeRep, "bim:hasRepresentationItem", geom)
-                .addConstruct(geom, "rdf:type", geomType);
+                .addConstruct(geom, QueryHandler.RDF_TYPE, geomType);
         builder.addWhere(base, "ifc:objectPlacement_IfcProduct", placement)
                 .addWhere(base, "ifc:representation_IfcProduct", productShapeDefinition)
                 .addWhere(productShapeDefinition, "ifc:representations_IfcProductRepresentation/list:hasContents", shapeRep)
-                .addWhere(shapeRep, "rdf:type", "ifc:IfcShapeRepresentation")
+                .addWhere(shapeRep, QueryHandler.RDF_TYPE, "ifc:IfcShapeRepresentation")
                 .addWhere(shapeRep, "ifc:representationType_IfcRepresentation/express:hasString", shapeRepType)
                 .addWhere(shapeRep, "ifc:contextOfItems_IfcRepresentation", subContext)
-                .addWhere(subContext, "rdf:type", "ifc:IfcGeometricRepresentationSubContext")
+                .addWhere(subContext, QueryHandler.RDF_TYPE, "ifc:IfcGeometricRepresentationSubContext")
                 .addWhere(shapeRep, "ifc:items_IfcRepresentation", geom)
-                .addWhere(geom, "rdf:type", geomType);
+                .addWhere(geom, QueryHandler.RDF_TYPE, geomType);
     }
 }
