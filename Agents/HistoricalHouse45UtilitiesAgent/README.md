@@ -13,9 +13,7 @@ At present, this agent can only work with Dates. If time information is required
 ### 1. Requirements
 #### 1.1 Excel pre-processing
 This agent is designed to work with any Excel version in .xls or .xlsx format. An Excel workbook must be placed in the
- `config/` directory, and must be renamed to `data.xlsx` by default (Other names are acceptable but require updates
- in the Dockerfile at the `EXCELFILEPATH` field). Some pre-processing might be required in order to ensure that the 
- Excel content are compatible with the agent.
+ `data/` directory. Some pre-processing might be required in order to ensure that the Excel content are compatible with the agent.
 
 The following shows the content of a compatible Excel file with multi-column Date data:
 ![Shows the content of a compatible Excel file.](docs/img/sample_excel1.PNG "Sample Excel file")
@@ -26,7 +24,8 @@ Notes:
   - For the 1 column, any Excel Date format is valid, but it must be in Excel Date format.
   - If 3 columns are required, please set the column indices in the `dateArrays` field of the `HistoricalHouse45UtilitiesAgent` class.
 - Contents do not need to start at the first sheet or second row. This can be set in the `HistoricalHouse45UtilitiesAgent` class.
-- All numeric data are return as `Double.class` or `Date.class` in Java at the moment. 
+- All numeric data are return as `Double.class` or `Date.class` in Java at the moment.
+- The agent can only process one workbook at a time. Please do not put more than one workbook for processing.
 
 #### 1.2 KG and RDB Endpoint access file
 Access to a KG SPARQL database and RDB (PostgreSQL) endpoint from the host machine is required. 
@@ -98,38 +97,40 @@ You'll need to provide  your credentials in a single-word text files located lik
 repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-In the `config folder`, place the Excel workbook (`data.xlsx`) and modify the `client.properties` to specify the KG and RDB endpoints accordingly.
-There is no requirement to include a [mapping file](#13-mapping-file) unless there is a preceding file, which can be [retrieved](#131-retrieval-of-mapping-file-in-docker).
-
-Please disable the `DateTSClientDecoratorIntegrationTest` when building the agent in Docker. The test containers are 
-unable to access the local Docker daemon from within the container. The test runs when building locally in Maven. 
-
 This agent is designed for easy modifications and generalization. All modifiable inputs are available in the `HistoricalHouse45UtilitiesAgent` class:
 - `rowStart` field
 - `dateKey`field at `processRequestParameters` method
 - `dateArrays`field at `processRequestParameters` method 
 - `iriPrefix`field
 
-#### 2.2 Building through Docker
+#### 2.2 Docker Deployment
 Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
 ```
 docker-compose up -d
 ```
 
+Please disable the `DateTSClientDecoratorIntegrationTest` when building the agent in Docker. The test containers are
+unable to access the local Docker daemon from within the container. The test runs when building locally in Maven.
+
+#### 2.3 Running the Agent
+##### 2.3.1 Precursor
+Place the Excel workbook at the `root/data` directory. In the `config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly.
+There is no requirement to include a [mapping file](#13-mapping-file) unless there is a preceding file, which can be [retrieved](#131-retrieval-of-mapping-file-in-docker).
+
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3050/historical-house45-utilities-agent/retrieve`.
-Three parameters are required. A sample request is as follows:
+Two parameters are required. A sample request is as follows:
 ```
 POST http://localhost:3050/historical-house45-utilities-agent/retrieve
 Content-Type: application/json
-{"clientProperties":"TIMESERIES_CLIENTPROPERTIES", "excelProperties":"EXCELPROPERTIES", "excelFile":"EXCELFILEPATH"}
+{"clientProperties":"TIMESERIES_CLIENTPROPERTIES", "excelProperties":"EXCELPROPERTIES"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"TIMESERIES_CLIENTPROPERTIES\", \"excelProperties\":\"EXCELPROPERTIES\", \"excelFile\":\"EXCELFILEPATH\"}" localhost:3050/historical-house45-utilities-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{'clientProperties':'TIMESERIES_CLIENTPROPERTIES', 'excelProperties':'EXCELPROPERTIES'}" localhost:3050/historical-house45-utilities-agent/retrieve
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 {"Result":["Data updated with new readings from Excel Workbook.","Timeseries Data has been updated."]}
 ```
-#### 2.3 Post-Build
+#### 2.4 Post-Build
 Please access the Blazegraph and transfer all the triples into the TTL file (The IRI to edit are appended with replaceIRIHere).
 Please [retrieve](#131-retrieval-of-mapping-file-in-docker). the `excel.properties` containing IRI mappings and place it in the `config` directory for future reuse.
