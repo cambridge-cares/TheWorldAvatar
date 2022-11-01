@@ -21,7 +21,13 @@ The time-series client property file is required and it needs to contain all cre
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 
-More information can be found in the example property file `client.properties` in the `config` folder.
+More information can be found in the example property file `client.properties` in the `config` folder. Please take note the namespace set in the db.url has to be the same as the one set in the PostgreSQL Databases. 
+
+#### Routing setup for local Blazegraph
+The query endpoint and update endpoint for routing information has to be set as  
+```
+http://blazegraph-access-agent:8080/blazegraph/namespace/ontoheatnet/sparql
+```
 
 #### Mapping files
 The mapping files define how the heating network data is connected
@@ -66,5 +72,5 @@ curl -X POST --header "Content-Type: application/json" -d "{
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
-{"Result":["Timeseries static data has been updated.","Timeseries client initialized.","Timeseries Data has been updated."]}
+{"Result":["Static data has been updated.","Timeseries client initialized.","Timeseries Data has been updated."]}
 ```
