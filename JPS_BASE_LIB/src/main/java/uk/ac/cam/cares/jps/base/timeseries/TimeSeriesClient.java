@@ -94,18 +94,14 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
 		
-		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
+		// Obtain RDB URL from connection object, exception thrown when connection is down
 		String rdbURL;
-		if (conn.getClass() != MockConnection.class) {
-			try {
-				rdbURL = conn.getMetaData().getURL();
-			} catch (SQLException e) {
-				// this ensures rdfClient.initTS has a valid string
-				LOGGER.warn(e.getMessage());
-				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
-				rdbURL = "";
-			}
-		} else {
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			// this ensures rdfClient.initTS always has a valid string
+			LOGGER.warn(e.getMessage());
+			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
 		
@@ -167,17 +163,15 @@ public class TimeSeriesClient<T> {
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+
+		// Obtain RDB URL from connection object, exception thrown when connection is down 
 		String rdbURL;
-		if (conn.getClass() != MockConnection.class) {
-			try {
-				rdbURL = conn.getMetaData().getURL();
-			} catch (SQLException e) {
-				// this ensures rdfClient.bulkInitTS has a valid string
-				LOGGER.warn(e.getMessage());
-				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
-				rdbURL = "";
-			}
-		} else {
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			// this ensures rdfClient.bulkInitTS always has a valid string
+			LOGGER.warn(e.getMessage());
+			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
 		try {
@@ -315,18 +309,14 @@ public class TimeSeriesClient<T> {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", eRdfDelete);
 		}
 
-		// modification to make tests work when the Connection is a MockConnection object, rdbUrl is not used anyway 
+		// Obtain RDB URL from connection object, exception thrown when connection is down 
 		String rdbURL;
-		if (conn.getClass() != MockConnection.class) {
-			try {
-				rdbURL = conn.getMetaData().getURL();
-			} catch (SQLException e) {
-				// this ensures rdfClient.initTS has a valid string
-				LOGGER.warn(e.getMessage());
-				LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
-				rdbURL = "";
-			}
-		} else {
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			// this ensures rdfClient.initTS has a valid string
+			LOGGER.warn(e.getMessage());
+			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
 
