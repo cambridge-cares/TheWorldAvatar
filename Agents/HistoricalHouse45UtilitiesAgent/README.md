@@ -51,7 +51,7 @@ properties file, containing one line per column and linked to an IRI. **The mapp
 be linked to multiple columns or vice versa.
 
 The agent will automatically generate this file from the Excel if it is missing on the first build process. If there is 
-a preceding  properties file with established dataIRI, please place the `excel.properties` file in the `config` 
+a preceding  properties file with established dataIRI, please place the `excel.properties` file in the `data` 
 directory to retain the relations. When the IRI is left empty, the agent will generate one and save the changes to file.
 
 ```
@@ -69,16 +69,7 @@ oilconsumption=
 *If any mappings are modified from preceding builds, any data inputs are perceived as a *"new"* time series. This can result 
 in inconsistencies in both KG and RDB. In such circumstances, please reset the namespaces and database to  a clean slate.
 
-##### 1.3.1 Retrieval of Mapping file in Docker
-These mapping files can be retrieved from a running docker container through the following command line code:
-
-```
-// Anonymized template
-docker cp <Docker container ID>://root/<name>.properties <destination filepath>
-
-// Sample code
-docker cp 7956ce42351d://root/excel.properties C:/Users/USER01/Desktop/excel.properties
-```
+*The mapping file can be retrieved from the `data` directory.
 
 ### 2. Building the Agent
 This agent is designed to be an executable war and deployed as a web servlet on Tomcat. Then, a POST request would
@@ -114,18 +105,20 @@ unable to access the local Docker daemon from within the container. The test run
 
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor
-Place the Excel workbook at the `root/data` directory. In the `config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly.
-There is no requirement to include a [mapping file](#13-mapping-file) unless there is a preceding file, which can be [retrieved](#131-retrieval-of-mapping-file-in-docker).
+In the `root/config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly.
+
+In the `root/data` directory, please place the Excel workbook, and if there is a preceding file, the [mapping file](#13-mapping-file),
+which must be named as `excel.properties`. Note that the mapping file will be automatically generated otherwise.
 
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3050/historical-house45-utilities-agent/retrieve`.
 Two parameters are required. A sample request is as follows:
 ```
 POST http://localhost:3050/historical-house45-utilities-agent/retrieve
 Content-Type: application/json
-{"clientProperties":"TIMESERIES_CLIENTPROPERTIES", "excelProperties":"EXCELPROPERTIES"}
+{"clientProperties":"TIMESERIES_CLIENTPROPERTIES"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'clientProperties':'TIMESERIES_CLIENTPROPERTIES', 'excelProperties':'EXCELPROPERTIES'}" localhost:3050/historical-house45-utilities-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{'clientProperties':'TIMESERIES_CLIENTPROPERTIES'}" localhost:3050/historical-house45-utilities-agent/retrieve
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
@@ -133,4 +126,3 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 #### 2.4 Post-Build
 Please access the Blazegraph and transfer all the triples into the TTL file (The IRI to edit are appended with replaceIRIHere).
-Please [retrieve](#131-retrieval-of-mapping-file-in-docker). the `excel.properties` containing IRI mappings and place it in the `config` directory for future reuse.
