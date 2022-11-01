@@ -97,7 +97,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			}
 
 			// apply agent logic to convert inputs to outputs
-			processRequestParameters(inputs, outputs);
+			processRequestParameters(derivationIRI, inputs, outputs);
 
 			// return response if this sync derivation is generated for new info
 			if (syncNewInfoFlag) {
@@ -158,7 +158,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	}
 
 	@Override
-	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+	public void processRequestParameters(String derivationIRI, DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		// TODO developer needs to overwrite this function
 	}
 
@@ -278,7 +278,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 											agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
 									DerivationOutputs derivationOutputs = new DerivationOutputs();
 									// perform the conversion from DerivationInputs to DerivationOutputs
-									processRequestParameters(derivationInputs, derivationOutputs);
+									processRequestParameters(derivation, derivationInputs, derivationOutputs);
 									// deserialise the derivationOutputs to a list of String of new derived IRI
 									List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
 									List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();
