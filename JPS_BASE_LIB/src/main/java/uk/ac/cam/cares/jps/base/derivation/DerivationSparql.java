@@ -746,6 +746,7 @@ public class DerivationSparql {
 
 		// add stack trace to triple store
 		StringBuilder bld = new StringBuilder();
+		bld.append(exc.getClass().toString() + ": \n");
 		bld.append(exc.getMessage() + "\n");
 		for (StackTraceElement ste : exc.getStackTrace()) {
 			bld.append(ste.toString() + "\n");

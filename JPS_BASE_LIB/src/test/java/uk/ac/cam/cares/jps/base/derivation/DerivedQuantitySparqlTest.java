@@ -372,6 +372,7 @@ public class DerivedQuantitySparqlTest {
 				 .asLiteral().getString();
 		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
 
+		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
 		for (StackTraceElement st : exc.getStackTrace()) {
 			Assert.assertTrue(errMsg.contains(st.toString()));
@@ -417,10 +418,12 @@ public class DerivedQuantitySparqlTest {
 		Assert.assertEquals(errMsg, derivationErrMsgMap.get(derivation));
 		Assert.assertEquals(errMsg2, derivationErrMsgMap.get(derivation2));
 
+		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
 		for (StackTraceElement st : exc.getStackTrace()) {
 			Assert.assertTrue(errMsg.contains(st.toString()));
 		}
+		Assert.assertTrue(errMsg2.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg2.contains(exc.getMessage()));
 		for (StackTraceElement st : exc.getStackTrace()) {
 			Assert.assertTrue(errMsg2.contains(st.toString()));
