@@ -8,9 +8,14 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +48,6 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
     public static final String KEY_EXCELPROPERTIES = "excelProperties";
-    private static final String EXCEL_FILE_PATH = "excelFile";
 
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility"; // The prefix to use for generating IRI
@@ -63,13 +67,18 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         JSONObject jsonMessage = new JSONObject();
         if (validateInput(requestParams)) {
             this.setDateKey("reading_datestamp");
-            this.setDateArray(new int[] {0, 1, 2});
+            this.setDateArray(new int[]{0, 1, 2});
 
             LOGGER.info("Passing request to Historical House45 Utilities Agent..");
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String excelProperties = System.getenv(requestParams.getString(KEY_EXCELPROPERTIES));
-            String excelFile = System.getenv(requestParams.getString(EXCEL_FILE_PATH));
-            String[] parameters = new String[]{clientProperties, excelProperties,excelFile};
+            String excelFile;
+            try {
+                excelFile = FileManager.retrieveExcelPath();
+            } catch (IOException e) {
+                throw new JPSRuntimeException(e);
+            }
+            String[] parameters = new String[]{clientProperties, excelProperties, excelFile};
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -103,12 +112,15 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         }
         return validate;
     }
-    public void setDateKey(String dateText){
+
+    public void setDateKey(String dateText) {
         dateKey = dateText;
     }
-    public void setDateArray(int[] dateArray){
+
+    public void setDateArray(int[] dateArray) {
         dateArrays = dateArray; // Date array must contain column indices for day, month, year
     }
+
     public JSONObject initializeAgent(String[] args) {
         JSONObject jsonMessage = new JSONObject();
         // Ensure that there are two properties files and one Excel file
@@ -117,6 +129,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
         LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
+
 
         // Create an Excel parser object to retrieve Excel content
         ExcelParser parser;
@@ -142,7 +155,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         // Initialize a Properties handler to handle properties file management
         TSPropertiesHandler handler;
         try {
-            handler = new TSPropertiesHandler(excelReadings,dateKey);
+            handler = new TSPropertiesHandler(excelReadings, dateKey);
         } catch (IOException | IllegalArgumentException e) {
             LOGGER.error(HANDLER_ERROR_MSG, e);
             throw new JPSRuntimeException(HANDLER_ERROR_MSG, e);

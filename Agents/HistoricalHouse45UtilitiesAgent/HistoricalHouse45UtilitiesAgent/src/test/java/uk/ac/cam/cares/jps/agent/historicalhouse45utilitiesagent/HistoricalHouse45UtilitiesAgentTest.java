@@ -29,14 +29,14 @@ public class HistoricalHouse45UtilitiesAgentTest {
         Path clientProp = tempDir.resolve("client.properties");
         Path excelProp = tempDir.resolve("excel.properties");
         excelData = tempDir.resolve("data.xlsx");
-        args = new String[]{String.valueOf(clientProp), String.valueOf(excelProp), String.valueOf(excelData)};
+        args = new String[]{String.valueOf(clientProp), String.valueOf(excelProp),String.valueOf(excelData)};
         HistoricalHouse45UtilitiesAgent agent = new HistoricalHouse45UtilitiesAgent();
         agent.setDateKey("dates");
         agent.setDateArray(null);
     }
 
     @Test
-    void testMainNoArgs() {
+    void testInitializeAgentNoArgs() {
         String[] args = {};
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () ->
                 new HistoricalHouse45UtilitiesAgent().initializeAgent(args), "JPSRuntimeException was expected");
@@ -45,7 +45,8 @@ public class HistoricalHouse45UtilitiesAgentTest {
     }
 
     @Test
-    void testMainMissingExcelFile() {
+    void testInitializeAgentMissingExcelFile() {
+        args[2] = "data.xlsx";
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () ->
                 new HistoricalHouse45UtilitiesAgent().initializeAgent(args), "JPSRuntimeException was expected");
         assertEquals("Could not construct the Excel parser needed to interact with the Excel Workbook!"
@@ -53,7 +54,7 @@ public class HistoricalHouse45UtilitiesAgentTest {
     }
 
     @Test
-    void testMainParsingExcelError() {
+    void testInitializeAgentParsingExcelError() {
         ExcelParserTest.createTestExcelFile(excelData);
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () ->
                 new HistoricalHouse45UtilitiesAgent().initializeAgent(args), "JPSRuntimeException was expected");
@@ -61,7 +62,7 @@ public class HistoricalHouse45UtilitiesAgentTest {
     }
 
     @Test
-    void testMainEmptyReadings() throws Exception {
+    void testInitializeAgentEmptyReadings(){
         // Stub the method to return empty readings, this will throw an exception when creating the handler
         Map<String, List<?>> emptyMap = new HashMap<>();
         try (MockedConstruction<ExcelParser> mockParser = Mockito.mockConstruction(ExcelParser.class,
@@ -77,7 +78,7 @@ public class HistoricalHouse45UtilitiesAgentTest {
     }
 
     @Test
-    void testMainGenIRIMapError() throws Exception {
+    void testInitializeAgentGenIRIMapError() {
         // Mock the ExcelParser constructor and methods performed
         try (MockedConstruction<ExcelParser> mockParser = Mockito.mockConstruction(ExcelParser.class)) {
             try (MockedConstruction<TSPropertiesHandler> mockHandler = Mockito.mockConstruction(TSPropertiesHandler.class,
@@ -95,7 +96,7 @@ public class HistoricalHouse45UtilitiesAgentTest {
     }
 
     @Test
-    void testMainConstructTsClientError() throws Exception {
+    void testInitializeAgentConstructTsClientError() throws Exception {
         try (MockedConstruction<ExcelParser> mockParser = Mockito.mockConstruction(ExcelParser.class)) {
             try (MockedConstruction<TSPropertiesHandler> mockHandler = Mockito.mockConstruction(TSPropertiesHandler.class)) {
                 try {
