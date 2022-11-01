@@ -65,9 +65,9 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # Create MetOffice client to retrieve readings via API
     try:
         metclient = metoffer.MetOffer(api_key)
-    except:
+    except Exception as ex:
         #logger.error("MetOffer client could not be created to retrieve station readings.")
-        raise APIException("MetOffer client could not be created to retrieve station readings.")        
+        raise APIException("MetOffer client could not be created to retrieve station readings.") from ex
     
     # Load available observations and forecasts from API
     print('Retrieving time series data from API ...')
@@ -204,7 +204,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
         metclient = metoffer.MetOffer(api_key)
     except Exception as ex:
         #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
-        raise APIException("MetOffer client could not be created to retrieve station readings.")
+        raise APIException("MetOffer client could not be created to retrieve station readings.") from ex
     
     # Initialise update query
     triples = f""
@@ -481,9 +481,9 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
         # Load OBSERVATIONS data
         try:
             obs = metclient.loc_observations(station_id)
-        except:
+        except Exception as ex:
             #logger.error('Error while retrieving observation data from DataPoint API')
-            raise APIException('Error while retrieving observation data from DataPoint API')
+            raise APIException('Error while retrieving observation data from DataPoint API.') from ex
         observations = readings_dict_gen(obs)
         # Skip entries with potentially missing data
         observations = {k: v for k, v in observations.items() if v}
@@ -498,9 +498,9 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
         try:
             fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
             creation_time = fc['SiteRep']['DV']['dataDate']
-        except:
+        except Exception as ex:
             #logger.error('Error while retrieving observation data from DataPoint API')
-            raise APIException('Error while retrieving observation data from DataPoint API')
+            raise APIException('Error while retrieving observation data from DataPoint API.') from ex
         forecasts = readings_dict_gen(fc)
         # Skip entries with potentially missing data
         forecasts = {k: v for k, v in forecasts.items() if v}

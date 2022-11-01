@@ -50,7 +50,7 @@ public class MaxValueAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String listOfRandomPoints_iri = derivationInputs

@@ -83,3 +83,12 @@ CRSs = {'EPSG:27700': 'urn:ogc:def:crs:EPSG::27700',
         'EPSG:4326': 'urn:ogc:def:crs:EPSG::4326',
         'crs_84': 'urn:ogc:def:crs:OGC::CRS84'
         }
+
+# Define typical unit, property and street names (required for address extraction from EPC data)
+NAMES_UNITS = ['flat', 'apartment']
+NAMES_BLDGS = ['house', 'bungalow', 'farm', 'lodge', 'cottage', 'villa', 
+                'chalet', 'barn', 'cabin', 'hall', 'court', 'hotel', 'grange',
+                'annex']
+NAMES_STREET = ['road', 'street', 'avenue', 'lane', 'close', 'way', 'court',
+                'drive', 'drove', 'walk', 'square', 'place', 'lane', 'bank',
+                'highway']

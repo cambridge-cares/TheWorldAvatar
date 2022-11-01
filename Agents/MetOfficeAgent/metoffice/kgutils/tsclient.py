@@ -38,9 +38,9 @@ class TSClient:
         try:
             ts_client = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, instant_class, 
                                                         DB_URL, DB_USER, DB_PASSWORD)
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise TS client")
-            raise TSException("Unable to initialise TS client")
+            raise TSException("Unable to initialise TS client.") from ex
         
         return ts_client
 
@@ -56,8 +56,8 @@ class TSClient:
 
         try:
             timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
-        except:
+        except Exception as ex:
             #logger.error("Unable to create timeseries")
-            raise TSException("Unable to create timeseries")
+            raise TSException("Unable to create timeseries.") from ex
         
         return timeseries
