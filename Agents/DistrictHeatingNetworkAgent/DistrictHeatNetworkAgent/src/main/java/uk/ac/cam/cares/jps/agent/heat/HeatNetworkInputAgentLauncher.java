@@ -42,8 +42,8 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
     private static final String UPDATETSDATA = "Could not update time series data";
 
     // Data format string pattern for converting the time format for TS client
-    private static final SimpleDateFormat inSDF = new SimpleDateFormat("dd/mm/yyyyhh:ss");
-    private static final SimpleDateFormat outSDF = new SimpleDateFormat("yyyy-mm-dd hh:ss:00");
+    private static final SimpleDateFormat inSDF = new SimpleDateFormat("dd/MM/yyyyhh:mm:ss a");
+    private static final SimpleDateFormat outSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
     @Override
@@ -77,7 +77,7 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
 
         try {
             agent.dataInstantiation();
-            jsonMessage.accumulate("Result", "Timeseries static data has been updated.");
+            jsonMessage.accumulate("Result", "Static data has been updated.");
         } catch (JPSRuntimeException e) {
             LOGGER.error(DATAINSTANTIATION, e);
             throw new JPSRuntimeException(DATAINSTANTIATION, e);
