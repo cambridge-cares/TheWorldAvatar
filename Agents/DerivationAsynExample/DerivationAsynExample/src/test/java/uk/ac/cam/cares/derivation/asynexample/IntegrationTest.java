@@ -65,6 +65,7 @@ public class IntegrationTest extends TestCase {
     static MinValueAgent minValueAgent;
     static DifferenceAgent differenceAgent;
     static DiffReverseAgent diffReverseAgent;
+    static ExceptionThrowAgent exceptionThrowAgent;
 
     // timestamps
     static long currentTimestamp_rng_derivation;
@@ -137,6 +138,7 @@ public class IntegrationTest extends TestCase {
         minValueAgent = new MinValueAgent(storeClient, Config.derivationInstanceBaseURL);
         differenceAgent = new DifferenceAgent(storeClient, Config.derivationInstanceBaseURL);
         diffReverseAgent = new DiffReverseAgent(storeClient, Config.derivationInstanceBaseURL);
+        exceptionThrowAgent = new ExceptionThrowAgent(storeClient, Config.derivationInstanceBaseURL);
     }
 
     @AfterAll
@@ -147,6 +149,7 @@ public class IntegrationTest extends TestCase {
         minValueAgent.destroy();
         differenceAgent.destroy();
         diffReverseAgent.destroy();
+        exceptionThrowAgent.destroy();
 
         // close containers after all tests
         if (blazegraph.isRunning()) {
@@ -402,6 +405,35 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(5, diffReverseValues.size());
         int difference = sparqlClient.getValue(sparqlClient.getDifferenceIRI());
         diffReverseValues.values().stream().forEach(val -> Assert.assertEquals(0, val + difference));
+    }
+
+    @Test
+    @Timeout(value = 180, unit = TimeUnit.SECONDS)
+    @Order(9)
+    public void testErrorStatus() throws ServletException, InterruptedException {
+        // first initialise exceptionThrowAgent
+        exceptionThrowAgent.init();
+        // initialise all triples for exception throw test
+        InitialiseInstances initialiseExceptionThrow = new InitialiseInstances();
+        JSONObject exceptionThrowResponse = initialiseExceptionThrow.initialiseExceptionThrow(sparqlClient, devClient);
+        String inputPlaceholderExceptionThrowIri = exceptionThrowResponse.getString(InitialiseInstances.input_placeholder_exc_throw_key);
+        // create three derivations and wait for the status to be changed to Error
+        String exceptionThrowDerivation1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+        String exceptionThrowDerivation2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+        String exceptionThrowDerivation3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+        // wait for init delay and five periods, which should be sufficient for agent to iterate through all derivations
+        TimeUnit.SECONDS.sleep(Config.initDelayAgentExceptionThrow + 5 * Config.periodAgentExceptionThrow);
+        // if the amount of derivations in Error status matches the amount of total derivations got marked up
+        // then it implies the agent was able to catch the exception and proceed to next derivation without getting stuck
+        Map<String, StatusType> excThrowDerivations = devClient.getDerivationsAndStatusType(Config.agentIriExceptionThrow);
+        Assert.assertEquals(3, excThrowDerivations.size());
+        Assert.assertEquals(3, countNumberOfDerivationsGivenStatusType(excThrowDerivations, StatusType.ERROR));
+        // also all of the error message recorded in rdfs:comment should have the error message defined in the ExceptionThrowAgent
+        Map<String, String> errMsgs = devClient.getDerivationsInErrorStatus(Config.agentIriExceptionThrow);
+        Assert.assertEquals(3, errMsgs.size());
+        errMsgs.forEach((d, msg) -> {
+            Assert.assertTrue(msg.contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
+        });
     }
 
     public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {
