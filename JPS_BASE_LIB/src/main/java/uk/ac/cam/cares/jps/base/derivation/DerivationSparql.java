@@ -35,6 +35,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,6 +91,8 @@ public class DerivationSparql {
 	// classes
 	private static Iri Service = prefixAgent.iri("Service");
 	private static Iri Operation = prefixAgent.iri("Operation");
+	private static Iri MessageContent = prefixAgent.iri("MessageContent");
+	private static Iri MessagePart = prefixAgent.iri("MessagePart");
 	private static Iri TimePosition = prefixTime.iri("TimePosition");
 	private static Iri Derivation = prefixDerived.iri(DERIVATION);
 	private static Iri DerivationWithTimeSeries = prefixDerived.iri(DERIVATIONWITHTIMESERIES);
@@ -105,6 +108,7 @@ public class DerivationSparql {
 	private static Iri hasHttpUrl = prefixAgent.iri("hasHttpUrl");
 	private static Iri hasOperation = prefixAgent.iri("hasOperation");
 	private static Iri hasInput = prefixAgent.iri("hasInput");
+	private static Iri hasOutput = prefixAgent.iri("hasOutput");
 	private static Iri hasMandatoryPart = prefixAgent.iri("hasMandatoryPart");
 	private static Iri hasType = prefixAgent.iri("hasType");
 	private static Iri hasName = prefixAgent.iri("hasName");
@@ -192,28 +196,77 @@ public class DerivationSparql {
 	}
 
 	/**
+	 * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+	 * @param ontoAgentServiceIRI
+	 * @param ontoAgentOperationHttpUrl
+	 * @param inputTypes
+	 * @param outputTypes
+	 */
+	public void createOntoAgentInstance(String ontoAgentServiceIRI, String ontoAgentOperationHttpUrl, List<String> inputTypes, List<String> outputTypes) {
+		String operationIRI = getNameSpace(ontoAgentServiceIRI) + "Operation_" + UUID.randomUUID().toString();
+		String mcInputIRI = getNameSpace(ontoAgentServiceIRI) + "MessageContent_" + UUID.randomUUID().toString();
+		String mcOutputIRI = getNameSpace(ontoAgentServiceIRI) + "MessageContent_" + UUID.randomUUID().toString();
+
+		ModifyQuery modify = Queries.MODIFY();
+
+		modify.insert(iri(ontoAgentServiceIRI).isA(Service).andHas(hasOperation, iri(operationIRI)));
+		modify.insert(iri(operationIRI).isA(Operation)
+				.andHas(hasInput, iri(mcInputIRI))
+				.andHas(hasOutput, iri(mcOutputIRI))
+				.andHas(hasHttpUrl, Rdf.literalOfType(ontoAgentOperationHttpUrl, XSD.ANYURI)));
+		modify.insert(iri(mcInputIRI).isA(MessageContent));
+		for (String input : inputTypes) {
+			String mpInputIRI = getNameSpace(ontoAgentServiceIRI) + "MessagePart_" + UUID.randomUUID().toString();
+			modify.insert(iri(mcInputIRI).has(hasMandatoryPart, iri(mpInputIRI)));
+			modify.insert(iri(mpInputIRI).isA(MessagePart).andHas(hasType, iri(input)));
+		}
+
+		modify.insert(iri(mcOutputIRI).isA(MessageContent));
+		for (String output : outputTypes) {
+			String mpOutput = getNameSpace(ontoAgentServiceIRI) + "MessagePart_" + UUID.randomUUID().toString();
+			modify.insert(iri(mcOutputIRI).has(hasMandatoryPart, iri(mpOutput)));
+			modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
+		}
+
+		// SPARQL update by insert-where clause to ensure one agent service don't get duplicated entries in KG
+		// NOTE this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
+		// NOTE that below we are using a work-around to achieve the where clause
+		// in practice, "WHERE { FILTER NOT EXISTS { <http://agent> a ontoagent:Service } }" should be sufficient
+		// however, if the where clause is constructed using below line of code
+		// modify.where(GraphPatterns.filterNotExists(iri(ontoAgentServiceIRI).isA(Service)));
+		// one can only get "WHERE { <http://agent> a ontoagent:Service }" due to the implementation of SparqlBuilder
+		// therefore, here we make it SPARQL update with sub query to determine if the agent service IRI already exist
+		// the complete where clause looks like:
+		// WHERE { { SELECT *
+		// WHERE {  VALUES ( ?x0 )   { (<http://b6b6f047-8ee5-4ee8-8d6a-dd2c23a8c944>) }
+		// FILTER NOT EXISTS { ?x0 a agent:Service . } }
+		// } }
+		SubSelect sub = GraphPatterns.select();
+		Variable servicePlaceholder = sub.var();
+		ValuesPattern serviceVP = new ValuesPattern(servicePlaceholder);
+		serviceVP.addValuePairForMultipleVariables(iri(ontoAgentServiceIRI));
+		sub.where(serviceVP, GraphPatterns.filterNotExists(servicePlaceholder.isA(Service)));
+		modify.where(sub);
+
+		storeClient.executeUpdate(modify.prefix(prefixAgent).getQueryString());
+	}
+
+	/**
 	 * This method unifies all methods that create multiple derivations in one go.
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
-	 * @param agentURLList
 	 * @param inputsList
 	 * @param derivationTypeList
 	 * @param forAsyncUpdateFlagList
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
+			List<List<String>> inputsList, List<String> derivationTypeList, List<Boolean> forAsyncUpdateFlagList) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		if (entitiesList.size() != agentIRIList.size()) {
 			String errmsg = "Size of entities list is different from agent IRI list";
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		if (entitiesList.size() != agentURLList.size()) {
-			String errmsg = "Size of entities list is different from agent URL list";
 			LOGGER.fatal(errmsg);
 			throw new JPSRuntimeException(errmsg);
 		}
@@ -261,7 +314,6 @@ public class DerivationSparql {
 				}
 			});
 			String agentIRI = agentIRIList.get(i);
-			String agentURL = agentURLList.get(i);
 			Boolean forUpdateFlag = forAsyncUpdateFlagList.get(i);
 			String derivationType = derivationTypeList.get(i);
 			// create a unique IRI for this new derived quantity
@@ -291,14 +343,6 @@ public class DerivationSparql {
 			// link to agent
 			// here it is assumed that an agent only has one operation
 			modify.insert(derivedIri.has(isDerivedUsing, iri(agentIRI)));
-			// only add information about ontoagent:Operation to knowledge graph if the
-			// agent url is provided and is NOT PLACEHOLDER string
-			if (!agentURL.contentEquals(PLACEHOLDER)) {
-				String operationIri = derivationInstanceBaseURL + UUID.randomUUID().toString();
-				// add agent url
-				modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operationIri)));
-				modify.insert(iri(operationIri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-			}
 		}
 
 		// put sub query to retrieve the pure inputs whose timestamp is missing and add timestamp in insert clause
@@ -349,34 +393,12 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * creates a new instance of derived quantity, grouping the given entities under
-	 * this instance
-	 * whenever this derived quantity gets updated, the provided entities will get
-	 * deleted by the client
-	 * 
-	 * @param kbClient
-	 * @param entities
-	 * @param agentIRI
-	 * @param agentURL
-	 * @param inputs
-	 */
-	String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
-		List<String> derivations = bulkCreateDerivations(
-				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
-		return derivations.get(0);
-	}
-
-	/**
 	 * This method creates a new instance of derived quantity, grouping the given
 	 * entities under this instance,
 	 * whenever this derived quantity gets updated, the provided entities will get
 	 * deleted by the client.
-	 * This method primarily follows createDerivation(StoreClientInterface kbClient,
-	 * List<String> entities,
-	 * String agentIRI, String agentURL, List<String> inputs), except that this
-	 * method does NOT create statements
-	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method
-	 * assumes the triples
+	 * This method does NOT create statements about the OntoAgent:Operation and
+	 * OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
 	 * <URL>}
 	 * already exist in respective OntoAgent instances.
@@ -389,7 +411,7 @@ public class DerivationSparql {
 	 */
 	String createDerivation(List<String> entities, String agentIRI, List<String> inputs) {
 		List<String> derivations = bulkCreateDerivations(
-			Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(PLACEHOLDER), Arrays.asList(inputs));
+			Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(inputs));
 		return derivations.get(0);
 	}
 
@@ -500,16 +522,14 @@ public class DerivationSparql {
 	 * 
 	 * @param entities
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputs
 	 */
-	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<List<String>> inputsList) {
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATION)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
 	}
 
@@ -521,13 +541,11 @@ public class DerivationSparql {
 	 * @param kbClient
 	 * @param entities
 	 * @param agentIRI
-	 * @param agentURL
 	 * @param inputs
 	 */
-	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL,
-			List<String> inputs) {
+	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, List<String> inputs) {
 		List<String> derivations = bulkCreateDerivationsWithTimeSeries(
-				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(agentURL), Arrays.asList(inputs));
+				Arrays.asList(entities), Arrays.asList(agentIRI), Arrays.asList(inputs));
 		return derivations.get(0);
 	}
 
@@ -536,16 +554,14 @@ public class DerivationSparql {
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
-	 * @param agentURLList
 	 * @param inputsList
 	 */
-	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList) {
+	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<List<String>> inputsList) {
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONWITHTIMESERIES)
 				.collect(Collectors.toList());
 		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
 	}
 
@@ -554,12 +570,8 @@ public class DerivationSparql {
 	 * the given entities under this instance,
 	 * whenever this derived quantity gets updated, the provided entities will get
 	 * deleted by the client.
-	 * This method primarily follows createDerivation(StoreClientInterface kbClient,
-	 * List<String> entities,
-	 * String agentIRI, String agentURL, List<String> inputs), except that this
-	 * method does NOT create statements
-	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method
-	 * assumes the triples
+	 * This method does NOT create statements about the OntoAgent:Operation and
+	 * OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
 	 * <URL>}
 	 * already exist in respective OntoAgent instances.
@@ -578,28 +590,6 @@ public class DerivationSparql {
 
 	/**
 	 * This method enables creating multiple asynchronous derivations in one go.
-	 * Note that this method DOES create statements about OntoAgent:Operation
-	 * and OntoAgent:hasHttpUrl, i.e. below triples
-	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
-	 * <URL>}
-	 * 
-	 * @param entitiesList
-	 * @param agentIRIList
-	 * @param agentURLList
-	 * @param inputsList
-	 * @param forAsyncUpdateFlagList
-	 * @return
-	 */
-	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
-				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationTypeList, forAsyncUpdateFlagList);
-	}
-
-	/**
-	 * This method enables creating multiple asynchronous derivations in one go.
 	 * Note that this method does NOT create statements about OntoAgent:Operation
 	 * and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
 	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
@@ -614,32 +604,10 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<List<String>> inputsList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
-				.collect(Collectors.toList());
 		List<String> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> ONTODERIVATION_DERIVATIONASYN)
 				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationTypeList, forAsyncUpdateFlagList);
-	}
-
-	/**
-	 * This method enables creating multiple derivations with potentially mixed
-	 * derivation type in one go.
-	 * Note that this method DOES create statements about OntoAgent:Operation
-	 * and OntoAgent:hasHttpUrl, i.e. below triples
-	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
-	 * <URL>}
-	 * 
-	 * @param entitiesList
-	 * @param agentIRIList
-	 * @param agentURLList
-	 * @param inputsList
-	 */
-	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationRdfTypeList,
-			List<Boolean> forAsyncUpdateFlagList) {
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
 	/**
@@ -657,9 +625,7 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<List<String>> inputsList, List<String> derivationRdfTypeList, List<Boolean> forAsyncUpdateFlagList) {
-		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
-				.collect(Collectors.toList());
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, inputsList,
 				derivationRdfTypeList, forAsyncUpdateFlagList);
 	}
 
@@ -2855,87 +2821,11 @@ public class DerivationSparql {
 	 * works with the Derivation, DerivationWithTimeSeries, and DerivationAsyn
 	 * does not remove timestamps of inputs (technically outside derivation)
 	 * 
+	 * NOTE: this method does NOT remove triples about OntoAgent instances as
+	 * they might be needed outside of the derivation framework
+	 * 
 	 */
 	void dropAllDerivations() {
-		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries, DerivationAsyn);
-		ModifyQuery modify = Queries.MODIFY();
-
-		SubSelect query = GraphPatterns.select();
-		Variable inputs = query.var();
-		Variable entities = query.var();
-		Variable derivation = query.var();
-		Variable time = query.var();
-		Variable timeUnixIri = query.var();
-		Variable timestamp = query.var();
-		Variable trs = query.var();
-		Variable agent = query.var();
-		Variable operation = query.var();
-		Variable url = query.var();
-		Variable derivationType = query.var();
-
-		TriplePattern belongsToTp = entities.has(belongsTo, derivation);
-		TriplePattern isDerivedFromTp = derivation.has(isDerivedFrom, inputs);
-		TriplePattern derivationTypeTp = derivation.isA(derivationType);
-
-		// timestamp
-		TriplePattern timestampTp1 = derivation.has(hasTime, time);
-
-		TriplePattern timeTpAll1 = time.isA(InstantClass).andHas(inTimePosition, timeUnixIri);
-		TriplePattern timeTpAll2 = timeUnixIri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
-				trs);
-
-		// agent
-		TriplePattern agentTp1 = derivation.has(isDerivedUsing, agent);
-		// TODO we need to decide whether to delete these triples
-		// TODO this is also relevant if we should write these triples using derivation
-		// framework in the first place
-		TriplePattern agentTp2 = agent.isA(Service).andHas(hasOperation, operation);
-		TriplePattern agentTp3 = operation.isA(Operation).andHas(hasHttpUrl, url);
-
-		// DerivationAsyn Status related variables and triples
-		Variable status = query.var();
-		Variable statusType = query.var();
-		Variable newDerivedIRI = query.var();
-		TriplePattern tp1 = derivation.has(hasStatus, status);
-		TriplePattern tp2 = status.isA(statusType);
-		TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
-		GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
-		GraphPattern asyncStatusGP = GraphPatterns.and(tp1, tp2, gp).optional();
-
-		// NOTE: belongsToTp is made optional to accommodate the situation where async
-		// derivations are created for new info, so no outputs are generated yet at the
-		// point we would like to drop all derivations
-		// NOTE: agentTp2 and agentTp3 were made optional to relax the query and update
-		// - this applies when async derivation were generated when no instances about
-		// OntoAgent were written to the KG
-		GraphPattern queryPattern = GraphPatterns.and(
-				new ValuesPattern(derivationType,
-						// somehow we need to stream and collect derivationTypes
-						// otherwise reporting constructor not found error for ValuesPattern
-						derivationTypes.stream().map(i -> i).collect(Collectors.toList())),
-				isDerivedFromTp, timestampTp1, timeTpAll1, timeTpAll2,
-				agentTp1, derivationTypeTp, agentTp2.optional(), agentTp3.optional(),
-				belongsToTp.optional(), asyncStatusGP);
-
-		modify.delete(belongsToTp, isDerivedFromTp,
-				timestampTp1, timeTpAll1, timeTpAll2,
-				agentTp1, agentTp2, agentTp3, derivationTypeTp, tp1, tp2, tp3).where(queryPattern)
-				.prefix(prefixTime, prefixDerived, prefixAgent);
-
-		storeClient.executeUpdate(modify.getQueryString());
-	}
-
-	/**
-	 * works with the Derivation, DerivationWithTimeSeries, and DerivationAsyn
-	 * does not remove timestamps of inputs (technically outside derivation)
-	 * 
-	 * NOTE: compared to method dropAllDerivations(), this method does NOT remove
-	 * triples agent.isA(Service).andHas(hasOperation, operation) and
-	 * operation.isA(Operation).andHas(hasHttpUrl, url) - these triples are part of
-	 * OntoAgent instances that might be needed outside of derivation framework
-	 * 
-	 */
-	void dropAllDerivationsNotOntoAgent() {
 		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries, DerivationAsyn);
 		ModifyQuery modify = Queries.MODIFY();
 
