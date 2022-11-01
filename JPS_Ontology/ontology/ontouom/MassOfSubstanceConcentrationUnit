@@ -28,7 +28,7 @@
 
   <!-- Mass of Substance Concentration Unit Ontology -->
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentrationUnit">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentrationUnit">
     <rdfs:label xml:lang="en">mass of substance concentration unit</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Unit"/>
     <owl:equivalentClass>
@@ -36,8 +36,8 @@
         <owl:unionOf rdf:parseType="Collection">
           <owl:Class>
             <owl:oneOf rdf:parseType="Collection">
-              <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/microgramPerCubicMetre"/>
-              <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/nanogramPerCubicMetre"/>
+              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/microgramPerCubicMetre"/>
+              <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/nanogramPerCubicMetre"/>
               <om:UnitDivision rdf:about="&om;gramPerCubicmetre"/>
               <om:UnitDivision rdf:about="&om;milligramPerCubicmetre"/>
               <om:UnitDivision rdf:about="&om;gramPerCubicCentimetre"/>
