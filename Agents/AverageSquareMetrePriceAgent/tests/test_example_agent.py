@@ -30,7 +30,7 @@ def test_example_data_instantiation(initialise_clients):
        including associated time series data in PostgreSQL.
     """
     # Get SPARQL client from fixture
-    sparql_client, _, rdb_conn, rdb_url = initialise_clients
+    sparql_client, _, rdb_url = initialise_clients
 
     ### TRIPPLE STORE ###
     # Verify that KG is empty
@@ -44,7 +44,7 @@ def test_example_data_instantiation(initialise_clients):
 
     ### POSTGRESQL ###
     # Verify that Postgres database is empty
-    assert cf.get_number_of_rdb_tables(rdb_conn) == 0
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
     # Initialise and Upload time series
     cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
@@ -53,7 +53,7 @@ def test_example_data_instantiation(initialise_clients):
                              dates=cf.DATES, values=cf.VALUES)
 
     # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
-    assert cf.get_number_of_rdb_tables(rdb_conn) == 2
+    assert cf.get_number_of_rdb_tables(rdb_url) == 2
     assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
 
     # Verify correct retrieval of time series data
@@ -65,8 +65,8 @@ def test_example_data_instantiation(initialise_clients):
     assert pytest.approx(values, rel=1e-5) == cf.VALUES
 
     # Verify that dropping all tables works as expected
-    cf.initialise_database(rdb_conn)
-    assert cf.get_number_of_rdb_tables(rdb_conn) == 0
+    cf.initialise_database(rdb_url)
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
 @pytest.mark.parametrize(
@@ -89,14 +89,14 @@ def test_monitor_derivations(
     # -------------------------------------------------------------------------
 
     # Get required clients from fixtures
-    sparql_client, derivation_client, rdb_conn, rdb_url = initialise_clients
+    sparql_client, derivation_client, rdb_url = initialise_clients
 
     # Initialise all triples in test_triples + initialise time series in RDB
     # It first DELETES ALL DATA in the specified SPARQL/RDB endpoint
     # It then SPARQL updates all triples stated in test_triples folder to SPARQL endpoint +
     # Initialises PropertyPriceIndex time series and uploads test data to RDB
     cf.initialise_triples(sparql_client)
-    cf.initialise_database(rdb_conn)
+    cf.initialise_database(rdb_url)
     cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
                              rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
                              dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,

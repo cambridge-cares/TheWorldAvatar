@@ -158,7 +158,7 @@ def get_postgres_service_url(session_scoped_container_getter):
             except Exception:
                 time.sleep(3)
 
-        return conn, service_url
+        return service_url
     return _get_service_url
 
 
@@ -168,7 +168,7 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     sparql_endpoint = get_blazegraph_service_url(KG_SERVICE, url_route=KG_ROUTE)
 
     # Retrieve endpoint for postgres
-    rdb_conn, rdb_url = get_postgres_service_url(RDB_SERVICE, url_route=RDB_ROUTE)
+    rdb_url = get_postgres_service_url(RDB_SERVICE, url_route=RDB_ROUTE)
 
     # Create SparqlClient for testing
     sparql_client = KGClient(sparql_endpoint, sparql_endpoint)
@@ -188,7 +188,7 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     with open(STACK_CONFIG_FILE, 'w') as f:
         f.write(conf)
 
-    yield sparql_client, derivation_client, rdb_conn, rdb_url
+    yield sparql_client, derivation_client, rdb_url
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -241,10 +241,10 @@ def initialise_triples(sparql_client):
         sparql_client.uploadGraph(g)
 
 
-def initialise_database(rdb_conn):
+def initialise_database(rdb_url):
     # Deletes all tables in the database (before initialising prepared tables)
-    with rdb_conn:
-        cur=rdb_conn.cursor()
+    with connect_to_rdb(rdb_url) as conn:
+        cur=conn.cursor()
         sql_query = """
             DROP SCHEMA public CASCADE;
             CREATE SCHEMA public;
@@ -252,10 +252,10 @@ def initialise_database(rdb_conn):
         cur.execute(sql_query)
 
 
-def get_number_of_rdb_tables(rdb_conn):
+def get_number_of_rdb_tables(rdb_url):
     # Returns total number of tables in given database
-    with rdb_conn:
-        cur=rdb_conn.cursor()
+    with connect_to_rdb(rdb_url) as conn:
+        cur=conn.cursor()
         sql_query = """
             SELECT table_name FROM information_schema.tables
             WHERE table_schema = 'public'
@@ -263,6 +263,15 @@ def get_number_of_rdb_tables(rdb_conn):
         cur.execute(sql_query)
         rows = cur.fetchall()
         return len(rows)
+
+
+def connect_to_rdb(rdb_url):
+        # Retrieve host and port from RDB URL assuming default format like
+        # jdbc:postgresql://localhost:5432/<url_route>
+        host = rdb_url.split(':')[2].replace('//', '')
+        port = rdb_url.split(':')[3].split('/')[0]
+        return pg.connect(host=host, port=port, database=DATABASE,
+                          user=DB_USER, password=DB_PASSWORD)
 
 
 def initialise_timeseries(kgclient, dataIRI, dates, values, rdb_url, 
