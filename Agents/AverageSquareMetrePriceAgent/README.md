@@ -196,6 +196,8 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     # Install agentlogging (separate installation required, as not possible to include in setup.py)
     python -m pip install -r requirements.txt
     ```
+    Please note: If developing/testing in WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package.
+
 3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Runtime Environment version >=11]):
     ```bash
     # Build latest Stack_Clients resource for py4jps
