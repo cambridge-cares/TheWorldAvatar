@@ -438,7 +438,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit)
-                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI("OM_Has_NUMERICAL_VALUE"), NumericalValue);
+                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
         UpdateRequest omHasValueNonTS_ur = omHasValueNonTS_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", omHasValueNonTS_ur.toString());
     }
