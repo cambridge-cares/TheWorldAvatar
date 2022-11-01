@@ -1,4 +1,27 @@
 /**
+ * 
+ * @returns 
+ */
+function openHelpURL() {
+    let scriptURL = null;
+
+    var scripts = document.getElementsByTagName('script');
+    for(let i = 0; i < scripts.length; i++) {
+        if(scripts[i].src.endsWith("dtvf.min.js")) scriptURL = scripts[i].src;
+    };
+
+    if(scriptURL !== null)  {
+        // Split the URL by slash
+        let parts = scriptURL.toString().split("/");
+        parts[parts.length - 1] = "help";
+        
+        // Open in a new tab
+        let finalURL = parts.join("/") + "/";
+        window.open(finalURL, "_blank");
+    }
+}
+
+/**
  * Get the geographical center of the input feature.
  * 
  * @param feature

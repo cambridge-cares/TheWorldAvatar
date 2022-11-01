@@ -112,7 +112,7 @@ class Manager {
                     }
                 }
 
-                if(self.searchHandler !== null) self.searchHandler.toggle();
+                if(self.searchHandler != null) self.searchHandler.toggle();
                 e.preventDefault();
             }
         });

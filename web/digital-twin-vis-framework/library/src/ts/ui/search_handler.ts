@@ -179,7 +179,7 @@ abstract class SearchHandler {
                 searchField.type = "text";
                 searchField.value = "";
                 searchField.placeholder = "search term";
-
+                
                 searchField.addEventListener('input', function() {
                     self.startSearch();
                 });
@@ -216,6 +216,11 @@ abstract class SearchHandler {
                 }
             }
             break;
+        }
+
+        // Focus on the search field
+        if(searchField !== null && searchField !== undefined) {
+            searchField.focus();
         }
     }
 

@@ -60,7 +60,7 @@
                 <!-- Terrain controls -->
                 <div id="terrainContainer" class="controlBlock">
                     <div id="controlTitle" class="controlTitle">
-                        <p>Terrain</p>
+                        <p>Imagery</p>
                         <div class="tooltip">
                             <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
                             <span class="tooltiptext">Toggle 3D terrain</span>
@@ -83,6 +83,14 @@
                         <div id="layerTreeContainer">
                             <div class="hummingbird-treeview-converter"></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
                     </div>
                 </div>
 
@@ -137,8 +145,8 @@
 
             // ===== CUSTOMISABLE =====
             // Enter Mapbox account name and API key here!
-			MapHandler.MAP_USER = "cmclinnovations";
-            MapHandler.MAP_API = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
+			MapHandler.MAP_USER = "";
+            MapHandler.MAP_API = "";
             // ===== CUSTOMISABLE =====
 
             // Create a new manager instance
@@ -180,7 +188,6 @@
 
                 // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
-
                     // Load registered images and linked files
                     manager.loadImagesAndLinks().then(() => {
 

@@ -61,8 +61,6 @@ class SearchHandler_Mapbox extends SearchHandler {
 
         // Re-apply the style to force update
         MapHandler.MAP.setStyle(style);
-
-        console.log("CLUSETING BACK ON?");
     }
 
     /**

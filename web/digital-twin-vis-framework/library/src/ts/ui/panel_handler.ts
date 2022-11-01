@@ -111,6 +111,7 @@ class PanelHandler {
 		var sidePanel = document.getElementById("sidePanel");
 		var leftButton = document.getElementById("slideButton");
 		var rightButton = document.getElementById("expandButton");
+        var attributions = document.getElementById("attributionContainer");
 
 		if(sidePanel.classList.contains("small")) {
 			// Make large
@@ -119,12 +120,9 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "100%";
 			document.getElementById("controlsContainer").style.visibility = "hidden";
-
 			leftButton.style.visibility = "hidden";
-
-			// Stop keyboard events
-			// MapHandler.MAP["keyboard"].disable();
-			// MapHandler.MAP.resize();
+            
+            if(attributions != null) attributions.style.display = "none";
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -133,13 +131,14 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "calc(100% - 500px)";
 			document.getElementById("controlsContainer").style.visibility = "visible";
-
 			leftButton.style.visibility = "visible";
 
-			// Allow keyboard events
-			// MapHandler.MAP["keyboard"].enable();
-			// MapHandler.MAP.resize();
+            if(Manager.SETTINGS.getSetting("attribution") != null && attributions != null) {
+                attributions.style.display = "block";
+            }
 		}
+
+        MapHandler.MAP.resize();
 	}
 
     /**
