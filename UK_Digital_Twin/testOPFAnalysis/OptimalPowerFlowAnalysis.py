@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 17 Oct 2022          #
+# Last Update Date: 31 Oct 2022          #
 ##########################################
 
 """
@@ -79,6 +79,9 @@ from pymoo.visualization.scatter import Scatter
 from sklearn.cluster import DBSCAN
 from pyscipopt import Model
 from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
+import matplotlib.pyplot as plt
+from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
+import pandas as pd
 
 ## create configuration objects
 SLASH = '/'
@@ -101,7 +104,7 @@ class OptimalPowerFlowAnalysis:
         startTime_of_EnergyConsumption:str,
         slackBusNodeIRI:str, loadAllocatorName:str, EBusModelVariableInitialisationMethodName:str,
         ELineInitialisationMethodName:str, 
-        CarbonTaxForSMRSiteSelection:float, piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
+        piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
         withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, newGeneratorType:str,
         discountRate:float,
         bankRate:float, 
@@ -113,33 +116,25 @@ class OptimalPowerFlowAnalysis:
         SMRCapability:float,
         maxmumSMRUnitAtOneSite: int,
         SMRIntergratedDiscount:float, 
-        backUpCapacityRatio:float,
-        windOutputRatio:float, 
-        solarOutputRatio:float,
         DiscommissioningCostEstimatedLevel:int,
-        pureBackUpAllGenerator:bool,
-        replaceRenewableGenerator:bool,
-        clusterFlag:bool,
         pop_size:int,
         n_offsprings:int,
         numberOfGAGenerations:int,
         OWLUpdateEndPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
-       
+        ## -- Local objectives container --##
+        self.ObjectSet = locals()     
         ##--1. specify the query/update endpoint information--##
         self.queryUKDigitalTwinEndpointLabel = endpointList.ukdigitaltwin['label'] ## ukdigitaltwin
         self.queryUKDigitalTwinEndpointIRI = endpointList.ukdigitaltwin['endpoint_iri']
         self.geospatialQueryEndpointLabel = endpointList.ukdigitaltwin_pd['label'] ## population: ukdigitaltwin_pd
         self.geospatialQueryEndpointIRI = endpointList.ukdigitaltwin_pd['endpoint_iri']
-
         self.OWLUpdateEndPointURL = OWLUpdateEndPointURL ## derivation
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord
-
         self.ons_endpointIRI = endpointList.ONS['endpoint_iri']
         self.ons_endpointLabel = endpointList.ONS['label']
-
         ## create the power system model node IRI
         self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
@@ -147,8 +142,11 @@ class OptimalPowerFlowAnalysis:
         ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
         self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
-        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10: samllerLAcode   
-        
+        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant 11: samllerLAcode   
+        if withRetrofit is True:
+            for egen in self.generatorNodeList:
+                egen.append("Extant")
+        self.capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
         ##--2. passing arguments--##
         ## specify the topology node
         self.topologyNodeIRI = topologyNodeIRI
@@ -163,14 +161,11 @@ class OptimalPowerFlowAnalysis:
         ## specify the EBusModel, ELine and EGen Variable Initialisation Method Name
         self.EBbusInitialisationMethodName = str(EBusModelVariableInitialisationMethodName)
         self.ELineInitialisationMethodName = str(ELineInitialisationMethodName)
-
         self.OrderedBusNodeIRIList = []
         ##--3. specify the OPF model factors--##
         ## specify the baseMVA and OPFOrPF 
         self.baseMVA = float(baseMVA)
         self.OPFOrPF:bool = True ## true for OPF simulation 
-        ## specify the CarbonTax
-        self.CarbonTaxForSMRSiteSelection = float(CarbonTaxForSMRSiteSelection)
         ## specify the OPF objective function type, 1 for piecewise, 2 for polynomial
         if int(piecewiseOrPolynomial) not in [1, 2]:
             raiseExceptions("piecewiseOrPolynomial has to be 1 or 2")
@@ -180,8 +175,7 @@ class OptimalPowerFlowAnalysis:
         if int(pointsOfPiecewiseOrcostFuncOrder) < 0:
             raiseExceptions("pointsOfPiecewiseOrcostFuncOrder has to be a positive number")
         else:
-            self.pointsOfPiecewiseOrcostFuncOrder = int(pointsOfPiecewiseOrcostFuncOrder)
-        
+            self.pointsOfPiecewiseOrcostFuncOrder = int(pointsOfPiecewiseOrcostFuncOrder)     
         ## specify the local storage path (to be deleted)
         self.OWLFileStoragePath = OWLFileStoragePath
         self.updateLocalPowerPlantOWLFileFlag = updateLocalPowerPlantOWLFileFlag       
@@ -201,24 +195,6 @@ class OptimalPowerFlowAnalysis:
             raiseExceptions("withRetrofit has to be a bool number")
         else:
             self.withRetrofit = withRetrofit 
-        if type(pureBackUpAllGenerator) is not bool:
-            raiseExceptions("pureBackUpAllGenerator has to be a bool number")
-        else:
-            self.pureBackUpAllGenerator = pureBackUpAllGenerator
-        if type(replaceRenewableGenerator) is not bool:
-            raiseExceptions("replaceRenewableGenerator has to be a bool number")
-        else:
-            self.replaceRenewableGenerator = replaceRenewableGenerator
-
-        if self.pureBackUpAllGenerator is True:
-            self.replaceRenewableGenerator = False
-            print("!!!WARNING: As pureBackUpAllGenerator has been set to be True, the replaceRenewableGenerator flag is forced to alter to False!!!")
-
-        if type(clusterFlag) is not bool:
-            raiseExceptions("clusterFlag has to be a bool number")
-        else:
-            self.clusterFlag = clusterFlag
-
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
         self.retrofitGenerationFuelOrGenType = retrofitGenerationTechTypeOrGenerationTechnology    
         ##--6. Identify the generators type used to replace the exisiting generators--##
@@ -239,9 +215,6 @@ class OptimalPowerFlowAnalysis:
         self.NeighbourhoodRadiusForSMRUnitOf1MW = NeighbourhoodRadiusForSMRUnitOf1MW
         self.ProbabilityOfReactorFailure = ProbabilityOfReactorFailure
         self.SMRCapability = float(SMRCapability)
-        self.backUpCapacityRatio = backUpCapacityRatio
-        self.windOutputRatio = windOutputRatio
-        self.solarOutputRatio = solarOutputRatio
         self.DiscommissioningCostEstimatedLevel = DiscommissioningCostEstimatedLevel
         self.pop_size = pop_size
         self.n_offsprings = n_offsprings
@@ -249,7 +222,7 @@ class OptimalPowerFlowAnalysis:
         self.retrofittingCost = 0
         ##--9. Demanding area query --##
         self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
-        ## TODO: demanding should be queried
+        ##FIXME: demanding should be queried
         # self.demandingAreaList = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
         # # find the centroid of the polygon, the value of the 
         # for ec in self.demandingAreaList:
@@ -260,11 +233,12 @@ class OptimalPowerFlowAnalysis:
         #         lat = ec['Geo_InfoList'].centroid.y
         #         ec['Geo_InfoList'] = [lat, lon]
 
+        self.CarbonTaxForOPF = -1 ## the initial carbon tax not for OPF calculation
+        self.weatherConditionName = None
 
     """Find the power plants located in each demanding areas"""
+    ##FIXME: this method is for the pre-opf method
     def powerPlantAndDemandingAreasMapper(self):
-        # self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
-        # i = 0
         for demanding in self.demandingAreaList:
             Area_LACode = str(demanding['Area_LACode'])
             boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
@@ -286,66 +260,6 @@ class OptimalPowerFlowAnalysis:
                     if interiorFlag == True:
                         gen.append(Area_LACode)
         return 
-
-    """The generator cluster function: cluster the generator who gets too close to each other (the safty distance is 30 km)"""
-    def siteCluster(self):
-        location = []
-        ## Form the loaction point list for clustering
-        for gen in self.retrofitListBeforeSelection:
-            if "#" in gen["LatLon"]:
-                gen['LatLon'] = [float(gen['LatLon'].split('#')[0]), float(gen['LatLon'].split('#')[1])]    
-                location.append(gen['LatLon'])  
-            else:
-                location.append(gen['LatLon'])
-        print('The number of the point to be clustered is:', len(location))
-        
-        ## perform the clustering algorithm: Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
-        clustering = DBSCAN(eps = 0.27, min_samples = 2).fit(location)
-        label = clustering.labels_
-        print('The number of clusters is:',  max(label) + 1)
-        print('The number of outliers is:', numpy.count_nonzero(label==-1))
-        print('The number of points (sites) after the clustering is:', max(label) + 1 + numpy.count_nonzero(label==-1))
-
-        outliers = []
-        beClastered = [ [] for i in range(max(label) + 1) ]
-        beClasteredGenerator = [ [] for i in range(max(label) + 1) ]
-        ##  capacityForEachCluster = [ 0 for i in range(max(label) + 1) ]
-        centriodList = []
-
-        ## classify the outliers and the clustered 
-        for l in location:
-            i = location.index(l)
-            clusteringlabel = label[i]
-            if clusteringlabel == -1:
-                outliers.append(self.retrofitListBeforeSelection[i])
-            else: 
-                beClastered[int(clusteringlabel)].append((l[1], l[0])) ## append the lat lon list
-                originalGenerator = self.retrofitListBeforeSelection[i]
-                beClasteredGenerator[int(clusteringlabel)].append(originalGenerator)
-
-        ## Find the centroid of each cluster
-        for mp in beClastered:
-            centriod = MultiPoint(mp).centroid
-            centriodList.append([round(float(centriod.y), 5), round(float(centriod.x), 5)]) 
-        
-        ## initialize the new sites with the location of the centroids
-        clusteredSite = []
-        for centroid in centriodList:
-            n = centriodList.index(centroid)
-            beclusteredgens = beClasteredGenerator[n]
-            gen = {'PowerGenerator': None, 
-                    'Bus': None, 
-                    'Capacity': 0, 
-                    'LatLon': centroid, 
-                    'fuelOrGenType': 'SMR', 
-                    'annualOperatingHours': 0, 
-                    'CO2EmissionFactor': 0.0, 
-                    'place': None,
-                    'beClusteredGenerators': beclusteredgens}
-            clusteredSite.append(gen)
-
-        self.generatorToBeReplacedList = outliers + clusteredSite
-        return
         
     """This method is called to select the site to be replaced by SMR"""
     def retrofitGeneratorInstanceFinder(self):
@@ -364,14 +278,43 @@ class OptimalPowerFlowAnalysis:
                 for iri in self.retrofitGenerationFuelOrGenType:
                     parse(iri, rule='IRI')
                 self.retrofitListBeforeSelection, self.genTypeSummary = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
-
-            print("===The number of the generator that goes to the site selection method is (before cluster):===", len(self.retrofitListBeforeSelection))
-            
-            ## cluster the close generators
+            print("===The number of the generator that goes to the site selection method is (before cluster):===", len(self.retrofitListBeforeSelection))           
+            ## cluster the close generators, self.retrofitListBeforeSelection will be changed
             self.siteCluster()
-
             print("===The number of the generator that goes to the site selection method is (after cluster):===", len(self.retrofitListBeforeSelection))
-            
+            print("The total number of generator is", len(self.generatorNodeList))
+
+            ## Pre-calculate the the population and the weightedDemandingDistance
+            rs_List = []
+            for n in range(self.maxmumSMRUnitAtOneSite):
+                rs =  (self.NeighbourhoodRadiusForSMRUnitOf1MW/1000) * ((n + 1) * (self.SMRCapability**(0.5)))
+                rs_List.append(rs)
+            self.population_list = []
+            self.weightedDemandingDistance_list = []
+            for s in range(len(self.retrofitListBeforeSelection)):
+                latlon = self.retrofitListBeforeSelection[s]["LatLon"]
+                populationListForOneSite = []
+                sumUpOfWeightedDemanding = 0
+                for rs in rs_List:
+                    population = populationDensityCalculator(latlon, rs, self.geospatialQueryEndpointLabel)
+                    populationListForOneSite.append(population)
+                self.population_list.append(populationListForOneSite)
+
+                ## pre-calculation of demanding distance
+                for demand in self.demandingAreaList:
+                    LA_code  = demand["Area_LACode"]
+                    ## Avoid 
+                    if LA_code in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", 
+                                    "E12000003", "E12000004", "E12000005", "E12000006", "E12000007", "E12000008", 
+                                    "E12000009", "E13000001", "E13000002"]:
+                        print(LA_code)
+                        print(self.demandingAreaList.index(demand))
+                        print("This LA code should not be taked into the considerations.")
+                        continue
+                    distance = DistanceBasedOnGPSLocation(latlon + demand['Geo_InfoList'])
+                    weightedDemanding = distance * float(demand['v_TotalELecConsumption'])  
+                    sumUpOfWeightedDemanding += weightedDemanding
+                self.weightedDemandingDistance_list.append(sumUpOfWeightedDemanding)   
             return
 
     """The generator cluster function: cluster the generator who gets too close to each other (the safty distance is 30 km)"""
@@ -387,7 +330,7 @@ class OptimalPowerFlowAnalysis:
         print('The number of the point to be clustered is:', len(location))
         
         ## perform the clustering algorithm: Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
-        clustering = DBSCAN(eps = 0.16, min_samples = 2).fit(location)
+        clustering = DBSCAN(eps = 0.27, min_samples = 2).fit(location)
         label = clustering.labels_
         print('The number of clusters is:',  max(label) + 1)
         print('The number of outliers is:', numpy.count_nonzero(label==-1))
@@ -462,7 +405,7 @@ class OptimalPowerFlowAnalysis:
             #         raiseExceptions('The powerPlantAndDemandingAreasMapper should be ran before this function being called.')
             #     for potentialSiteGen in self.retrofitListBeforeSelection:
             #         if gen[0] == potentialSiteGen['PowerGenerator']:
-            #             potentialSiteGen['LACode_SmallerArea'] = gen[10]
+            #             potentialSiteGen['LACode_SmallerArea'] = gen[11]
             
             # netDemandingIndicator_busArea = []
             # for gen in self.retrofitListBeforeSelection:
@@ -487,43 +430,12 @@ class OptimalPowerFlowAnalysis:
     """The SMR site selection algorithm"""   
     def siteSelector(self, numberOfSMRToBeIntroduced):
         if self.withRetrofit is True: 
-            ## pre-calculation of each site surrounding population density
-            rs_List = []
-            for n in range(self.maxmumSMRUnitAtOneSite):
-                rs =  (self.NeighbourhoodRadiusForSMRUnitOf1MW/1000) * ((n + 1) * (self.SMRCapability**(0.5)))
-                rs_List.append(rs)
-            self.population_list = []
-            self.weightedDemandingDistance_list = []
-            for s in range(len(self.retrofitListBeforeSelection)):
-                latlon = self.retrofitListBeforeSelection[s]["LatLon"]
-                populationListForOneSite = []
-                sumUpOfWeightedDemanding = 0
-                for rs in rs_List:
-                    population = populationDensityCalculator(latlon, rs, self.geospatialQueryEndpointLabel)
-                    populationListForOneSite.append(population)
-                self.population_list.append(populationListForOneSite)
-
-                ## pre-calculation of demanding distance
-                for demand in self.demandingAreaList:
-                    LA_code  = demand["Area_LACode"]
-                    ## Avoid 
-                    if LA_code in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", 
-                                    "E12000003", "E12000004", "E12000005", "E12000006", "E12000007", "E12000008", 
-                                    "E12000009", "E13000001", "E13000002"]:
-                        print(LA_code)
-                        print(self.demandingAreaList.index(demand))
-                        print("This LA code should not be taked into the considerations.")
-                        continue
-                    distance = DistanceBasedOnGPSLocation(latlon + demand['Geo_InfoList'])
-                    weightedDemanding = distance * float(demand['v_TotalELecConsumption'])  
-                    sumUpOfWeightedDemanding += weightedDemanding
-                self.weightedDemandingDistance_list.append(sumUpOfWeightedDemanding)   
-
+            self.numberOfSMRToBeIntroduced = numberOfSMRToBeIntroduced
             ## Initialise the selector
             siteSelector = sp_pymoo.siteSelector(numberOfSMRToBeIntroduced, self.geospatialQueryEndpointLabel, self.retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost,
-            self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.bankRate, self.CarbonTaxForSMRSiteSelection,
+            self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.bankRate,
             self.maxmumSMRUnitAtOneSite, self.SMRIntergratedDiscount, self.startTime_of_EnergyConsumption, self.population_list, self.weightedDemandingDistance_list)
-
+            ## Selecte the Genetic Algorithm NSGA2
             algorithm = NSGA2(
                 pop_size = self.pop_size,## the initial population size 
                 n_offsprings = self.n_offsprings, ## the number of the offspring of each generation 
@@ -549,87 +461,102 @@ class OptimalPowerFlowAnalysis:
             return
 
     """This method is used to pick up the optima from the pareto front according to the given weighter"""
-    def optimaPicker(self, weighter):
-            self.weighter = weighter
-            if self.withRetrofit is True: 
-                ## Find the Optima
-                weightedObjectiveValue = []
-                for f in self.F:
-                    wv = weighter * float(f[0]) + float(f[1])
-                    weightedObjectiveValue.append(wv)
-                optimaIndex = weightedObjectiveValue.index(min(weightedObjectiveValue))
-                indexListOfResults = numpy.where(self.X[optimaIndex] == 1)[0]
-                self.retrofittingCost = float(self.F[optimaIndex, 0])
+    def optimaPicker(self, weighterList):
+        self.indexListOfSiteSelectionResults = []
+        self.retrofittingCostList = []
+        self.weighterList = weighterList
 
-                # self.retrofittingCost = float(min(res.F[:,0]))
-                # indexOfMinimumObjective1 = int(numpy.where((res.F[:,0]) == min(res.F[:,0]))[0][0]) ## perfer the first objective
-                # indexListOfResults = numpy.where(res.X[indexOfMinimumObjective1] == 1)[0]
+        ## Form the weight list
+        weightNumpyMatrix = numpy.zeros((len(weighterList),2))
+        for i in range(len(weighterList)):
+            if float(weighterList[i]) > 1 or float(weighterList[i]) < 0:
+                raise ValueError("Invalid weight: %s" % weighterList[i])
+            if float(weighterList[i]) < 0.000001:
+                weighterList[i] = float(weighterList[i]) + 0.000001
+            elif float(weighterList[i]) > 9.999999 or abs(float(weighterList[i]) -1) < 0.000001:
+                weighterList[i] = float(weighterList[i]) - 0.000001
 
-                self.SMRList =[]
-                for index in indexListOfResults:
-                    s = index // self.maxmumSMRUnitAtOneSite
-                    numOfSMRUnit = (index % self.maxmumSMRUnitAtOneSite) + 1
-                    ## vibrate the site location from the original site a bit
-                    lalon = [float(self.retrofitListBeforeSelection[s]["LatLon"][0]) + 0.004, float(self.retrofitListBeforeSelection[s]["LatLon"][1]) + 0.004]
-                    ## initialise the SMR generator with the atttributes
-                    SMRSite = {'PowerGenerator': None, 
-                    'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
-                    'Capacity': numOfSMRUnit * self.SMRCapability, 
-                    'LatLon': lalon,
-                    'fuelOrGenType': 'SMR', 
-                    'annualOperatingHours': 0, 
-                    'CO2EmissionFactor': 0.0, 
-                    'place': None,
-                    'NumberOfSMRUnits': numOfSMRUnit}
-                    self.SMRList.append(SMRSite)
-                
-                ## Results diagram: Pareto Front
-                _X = numpy.row_stack([a.pop.get("X") for a in self.res.history])
-                _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
-                feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
-                feasibleSolustions_F = _F[feasible]
-                a = self.F[optimaIndex]
+            weightNumpyMatrix[i, 0] = weighterList[i]
+            weightNumpyMatrix[i, 1] = float(1 - weighterList[i])
 
-                optima = numpy.zeros((1,2))
-                optima[0,0] = self.F[optimaIndex, 0]
-                optima[0,1] = self.F[optimaIndex, 1]
-                print(optima)
+        ## Normalisation the objective space: apply the ideal and nadir point method 
+        self.approx_ideal = self.F.min(axis = 0)
+        self.approx_nadir = self.F.max(axis = 0)
+        self.nF = (self.F - self.approx_ideal) / (self.approx_nadir - self.approx_ideal)
+        ## Decomposition method called Augmented Scalarization Function (ASF),
+        decomp = ASF()
+        indexOfOptima = []
+        for weights in weightNumpyMatrix:
+            print(weights)
+            i = decomp.do(self.nF, 1/weights).argmin()
+            indexOfOptima.append(i)
+            self.indexListOfSiteSelectionResults.append(numpy.where(self.X[i] == 1)[0])
+            self.retrofittingCostList.append(round(float(self.F[i, 0]), 2))
 
-                plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+        ## Results diagram: Pareto Front, feasible points and optima 
+        #_X = numpy.row_stack([a.pop.get("X") for a in self.res.history])
+        _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
+        feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
+        ## Real feasible points
+        feasibleSolustions_F = _F[feasible]
+        ## Normalised feasible points
+        self.approx_ideal_feasibleNormalised = feasibleSolustions_F.min(axis = 0)
+        self.approx_nadir_feasibleNormalised = feasibleSolustions_F.max(axis = 0)
+        self.nF_feasibleNormalised = (self.F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
+        feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
 
-                self.capacityReplacedGeneratorList = []
-                ## create an instance of class generatorCluster
-                if self.clusterFlag: 
-                    gc = genCluster.generatorCluster()
-                
-                    ## pass the arrguments to the cluster method closestBus
-                    self.clusteredSiteSelected = gc.closestBus(self.busNodeList, self.clusteredSiteSelected, [], "BusLatLon", "BusNodeIRI", "LatLon")
-
-                    for gen in self.clusteredSiteSelected:
-                        gen['Bus'] = gen['BusNodeIRI']
-                        del gen['BusNodeIRI']
-                        del gen['BusLatLon']
-                
-                else:
-                    self.solarAndWindSiteSelected = []
-                    self.clusteredSiteSelected = []
-                    self.otherSiteSelected = []
-                    self.allSelectedSite = []
-                    self.retrofitListBeforeSelection = []
-                    ##self.siteNotSelected = []
-
-                print("The carbon tax is £/tCO2", self.CarbonTaxForSMRSiteSelection)
-                print("The total number of generator is", len(self.generatorNodeList))
-                print("The total number of protential sites is", len(self.retrofitListBeforeSelection))
-                print("The total number of generator whose capacity to be replaced by SMR is", len(self.capacityReplacedGeneratorList))
-                print("The total number of SMR sites is", len(self.SMRList))
-                return 
+        plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.6, s=20, facecolors='#728FCE', edgecolors='none')
+        plt.scatter(self.nF_feasibleNormalised[:, 0], self.nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
+        for i in indexOfOptima:
+            i_ = indexOfOptima.index(i)
+            plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
+            weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+            plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data') #, arrowprops=dict(arrowstyle='->'))     
+        plt.title("Normalised Objective Space")
+        plt.xlabel("Normalised SMR Investment and Risk Cost (-)")
+        plt.ylabel("Normalised Load-Demand Distance (-)") 
+        plt.legend()
+        plt.savefig('SMR_%s.png' % str(self.numberOfSMRToBeIntroduced), dpi = 1200)
+        plt.savefig('SMR_%s.svg' % str(self.numberOfSMRToBeIntroduced))
+        ##plt.show()
+        ##plt.close()
+        plt.cla()
+        ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+            
+        ##-- Create the SMR instances according to the site selection and the optima pick processing --##
+        ## self.SMRList is a list of lists containing the SMR instances that are selected from different weighters
+        self.SMRList =[] ## the length of the list of the self.SMRList should equal to the number of the weighters at the same weather condition and same carbon tax
+        for indexListOfResults_EachWeight in self.indexListOfSiteSelectionResults: 
+            SMRArrangement = []
+            for index in indexListOfResults_EachWeight:
+                s = index // self.maxmumSMRUnitAtOneSite
+                numOfSMRUnit = (index % self.maxmumSMRUnitAtOneSite) + 1
+                ## vibrate the site location from the original site a bit
+                lalon = [float(self.retrofitListBeforeSelection[s]["LatLon"][0]) + 0.004, float(self.retrofitListBeforeSelection[s]["LatLon"][1]) + 0.004]
+                ## initialise the SMR generator with the atttributes
+                SMRSite = {'PowerGenerator': None, 
+                'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
+                'Capacity': numOfSMRUnit * self.SMRCapability, 
+                'LatLon': lalon,
+                'fuelOrGenType': 'SMR', 
+                'annualOperatingHours': 0, 
+                'CO2EmissionFactor': 0.0, 
+                'place': None,
+                'NumberOfSMRUnits': numOfSMRUnit}
+                SMRArrangement.append(SMRSite)
+            self.SMRList.append(SMRArrangement)
+            ## i_ = self.indexListOfSiteSelectionResults.index(indexListOfResults_EachWeight)
+            ## weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+            ## print("At %s" % weightLabel)
+            ## print("The total number of SMR sites is", len(indexListOfResults_EachWeight))
+        return 
         
-    """This method is called to initialize the model entities objects: bus and branch"""
+    """This method is called to initialize the model entities objects: bus and branch (this initialisation will not be affected by SMR introduction or Carbon tax change"""
     def ModelPythonObjectInputInitialiser_BusAndBranch(self): 
-        ##-- create model bus, branch and generator objects dynamically --##
-        self.ObjectSet = locals()  
-
+        ## TODO: initialise the branch and bus for each run
+        self.BusObjectList = []
+        self.BranchObjectList = []
+        self.OrderedBusNodeIRIList = []
         ###=== Initialisation of the Bus Model Entities ===###
         ## create an instance of class demandLoadAllocator
         dla = DLA.demandLoadAllocator()
@@ -673,70 +600,89 @@ class OptimalPowerFlowAnalysis:
             ###2. execute the initialiser with the branch model instance as the function argument 
             self.ObjectSet[objectName] = initialiser(eline['ELineNode'], uk_eline_model, eline, self.branchVoltageLevel, self.OrderedBusNodeIRIList, self.queryUKDigitalTwinEndpointLabel) 
             self.BranchObjectList.append(objectName)
+
+        print("*****This are EBus results*****")
+        for attr in self.ObjectSet.get('EBus-7').__dir__():
+            print(attr, getattr(self.ObjectSet.get('EBus-7'), attr))
+        for attr in self.ObjectSet.get('EBus-8').__dir__():
+            print(attr, getattr(self.ObjectSet.get('EBus-8'), attr))
+
+        print("*****This are ELine results*****")
+        for attr in self.ObjectSet.get('ELine-0').__dir__():
+            print(attr, getattr(self.ObjectSet.get('ELine-0'), attr)) 
+            
         return
 
     """This method is called to initialize the model entities objects: Generator"""
     def ModelPythonObjectInputInitialiser_Generator(self, CarbonTaxForOPF, ifWithSMR, windOutputRatio, solarOutputRatio, weatherConditionName, decommissionFlag):  
-        if not decommissionFlag:
-            self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10: samllerLAcode   
-        
-        ###=== Initialisation of the Generator Model Entities ===###
-        capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, self.startTime_of_EnergyConsumption)
-        ## remove the shut down generator from the generatorNodeList
-        print('The total number of existing generators:', len(self.generatorNodeList))
-
-        if self.withRetrofit is True:
-            for egen in self.generatorNodeList:
-                if egen[0] in [gen["PowerGenerator"] for gen in self.capacityReplacedGeneratorList]:
-                    egen.append("CapacityReplaced")
-                else:
-                    egen.append("Extant")
-
-        print("The number of the existing power plant is", len(self.generatorNodeList))
-
+        ## FIXME: think over the way of introducing the decommission post-process
+        # if not decommissionFlag:
+        #     self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10: samllerLAcode   
+    
+    ## if self.CarbonTaxForOPF != CarbonTaxForOPF or self.weatherConditionName != weatherConditionName: ## The carbon tax changed or the weather condition changed, the generator should be reinitialised
         ## for each OPF with different carbon tax, clean up the list 
+
+        print("*****This are EBus results*****")
+        for attr in self.ObjectSet.get('EBus-7').__dir__():
+            print(attr, getattr(self.ObjectSet.get('EBus-7'), attr))
+        for attr in self.ObjectSet.get('EBus-8').__dir__():
+            print(attr, getattr(self.ObjectSet.get('EBus-8'), attr))
+
+        print("*****This are ELine results*****")
+        for attr in self.ObjectSet.get('ELine-0').__dir__():
+            print(attr, getattr(self.ObjectSet.get('ELine-0'), attr)) 
+            
+        self.CarbonTaxForOPF = CarbonTaxForOPF
+        self.weatherConditionName = weatherConditionName
         self.GeneratorObjectList = []
         self.SMRSiteObjectList = []
-        if decommissionFlag:
-            self.carbonTaxTag = "weighter" + str(self.weighter) + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-afterDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
-        else:
-            self.carbonTaxTag = "weighter" + str(self.weighter) + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-beforeDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
-        
-        for egen in self.generatorNodeList:
-            objectName = UK_PG.UKEGenModel.EGenKey + self.carbonTaxTag + str(self.generatorNodeList.index(egen)) ## egen model python object name
-            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), egen[8], float(egen[6]), None, str(egen[9]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
-            uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
-            ###add EGen model parametor###
-            self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio, windOutputRatio, solarOutputRatio)
-            self.GeneratorObjectList.append(objectName)
-            # self.CarbonTaxForOPF = CarbonTaxForOPF
-     
-        ### Initialisation of the SMR Generator Model Entities ###
-        if self.withRetrofit is True and ifWithSMR is True:
-            ## extract the emssion factor
-            for i in range(len(modelFactorArrays)):
-                if str(self.newGeneratorType) in modelFactorArrays[i]:
-                    factorArray = modelFactorArrays[i]
-                    break
-            if not 'factorArray' in locals():
-                raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
 
-            for egen_re in self.SMRList:
-                objectName = UK_PG.UKEGenModel.EGenRetrofitKey + self.carbonTaxTag + str(self.SMRList.index(egen_re)) 
-                newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
-                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
-                egen_re = [newGeneratorNodeIRI, float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], egen_re["Capacity"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
-                uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
+        for SMRList_EachWeight in self.SMRList:
+            GeneratorObjectList_EachWeight = []
+            SMRSiteObjectList_EachWeight = []
+            i = self.SMRList.index(SMRList_EachWeight)
+            weighter = str(self.weighterList[i])
+            if decommissionFlag:
+                self.genTag = "SMRDesign" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-afterDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
+            else:
+                self.genTag = "SMRDesign" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-beforeDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
+            
+            for egen in self.generatorNodeList:
+                objectName = UK_PG.UKEGenModel.EGenKey + self.genTag + str(self.generatorNodeList.index(egen)) ## egen model python object name
+                uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), egen[8], float(egen[6]), None, str(egen[9]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
                 ###add EGen model parametor###
-                self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio, self.windOutputRatio, self.solarOutputRatio)
-                self.SMRSiteObjectList.append(objectName)
-        return     
-    
+                self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
+                GeneratorObjectList_EachWeight.append(objectName)
+            self.GeneratorObjectList.append(GeneratorObjectList_EachWeight)
         
+            ### Initialisation of the SMR Generator Model Entities ###
+            if self.withRetrofit is True and ifWithSMR is True:
+                ## extract the emssion factor
+                for i in range(len(modelFactorArrays)):
+                    if str(self.newGeneratorType) in modelFactorArrays[i]:
+                        factorArray = modelFactorArrays[i]
+                        break
+                if not 'factorArray' in locals():
+                    raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
+
+                for egen_re in SMRList_EachWeight:
+                    objectName = UK_PG.UKEGenModel.EGenRetrofitKey + self.genTag + str(SMRList_EachWeight.index(egen_re)) 
+                    newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
+                    uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                    egen_re = [newGeneratorNodeIRI, float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], egen_re["Capacity"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
+                    uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
+                    ###add EGen model parametor###
+                    self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
+                    SMRSiteObjectList_EachWeight.append(objectName)
+                self.SMRSiteObjectList.append(SMRSiteObjectList_EachWeight)
+        return    
+
+    ## generate a list of the ppc at different weighters and the same weather condition and same carbon tax   
     def OPFModelInputFormatter(self):
         """
         The OPFModelInputFormatter is used to created the pypower OPF model input from the model objects which are created from the F{ModelObjectInputInitialiser}.
-        This function will be called abfer F{ModelObjectInputInitialiser}.
+        This function will be called after F{ModelObjectInputInitialiser}.
         
         Raises
         ------
@@ -751,7 +697,7 @@ class OptimalPowerFlowAnalysis:
 
         if not hasattr(self, 'ObjectSet'):  
             raise Exception("The model object has not been properly created, please run the function ModelObjectInputInitialiser at first.")
-        
+
         ##-- Format the PF analysis input, ppc --##
         ppc: dict = {"version": '2'}
         
@@ -763,9 +709,10 @@ class OptimalPowerFlowAnalysis:
         ppc["bus"] = numpy.zeros((self.numOfBus, len(UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS)), dtype = float)
         index_bus  = 0
         while index_bus < self.numOfBus:
+            objectiveName = self.BusObjectList[index_bus]
             for key in UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS:
                 index = int(UK_PG.UKEbusModel.INPUT_VARIABLE[key])
-                ppc["bus"][index_bus][index] = getattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus)), key)
+                ppc["bus"][index_bus][index] = getattr(self.ObjectSet.get(objectiveName), key)
             index_bus += 1
             
         ## branch data
@@ -773,66 +720,81 @@ class OptimalPowerFlowAnalysis:
         ppc["branch"] = numpy.zeros((len(self.BranchObjectList), len(UK_PG.UKElineModel.INPUT_VARIABLE_KEYS)), dtype = float)
         index_br  = 0
         while index_br < len(self.BranchObjectList):
+            objectiveName = self.BranchObjectList[index_br]
             for key in UK_PG.UKElineModel.INPUT_VARIABLE_KEYS:
                 index = int(UK_PG.UKElineModel.INPUT_VARIABLE[key])
-                ppc["branch"][index_br][index] = getattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key)
+                ppc["branch"][index_br][index] = getattr(self.ObjectSet.get(objectiveName), key)
             index_br += 1
-        
-        ## generator data
-        # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
-        # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
 
-        self.numOfExistAndRetrofittedGenerators = len(self.GeneratorObjectList) + len(self.SMRSiteObjectList) # len(self.GeneratorToBeRetrofittedObjectList) + len(self.GeneratorToBeBackUpObjectList) + len(self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList)
-        ppc["gen"] = numpy.zeros((self.numOfExistAndRetrofittedGenerators, len(UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS)), dtype = float)
-        index_gen  = 0 
-        while index_gen < len(self.GeneratorObjectList):
-            for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
-                index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])
-                ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.carbonTaxTag + str(index_gen)), key)
-            index_gen += 1
+        self.ppc_List = []
 
-        if self.withRetrofit is True: 
-            index_regen = 0
-            while index_gen < self.numOfExistAndRetrofittedGenerators:
+        for SMRSiteObjectList_EachWeight in self.SMRSiteObjectList:
+            i_ = self.SMRSiteObjectList.index(SMRSiteObjectList_EachWeight)
+            GeneratorObjectList_EachWeight = self.GeneratorObjectList[i_]
+            ## generator data
+            # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
+            # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
+            numOfExistAndRetrofittedGenerators = len(GeneratorObjectList_EachWeight) + len(SMRSiteObjectList_EachWeight) # len(self.GeneratorToBeRetrofittedObjectList) + len(self.GeneratorToBeBackUpObjectList) + len(self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList)
+            
+            ppc["gen"] = numpy.zeros((numOfExistAndRetrofittedGenerators, len(UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS)), dtype = float)
+            index_gen  = 0 
+            while index_gen < len(GeneratorObjectList_EachWeight):
+                genObjectiveName = GeneratorObjectList_EachWeight[index_gen]
                 for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
-                    index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])                 
-                    ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + self.carbonTaxTag + str(index_regen)), key)
+                    index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])
+                    ## ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.extantGenTag + str(index_gen)), key)
+                    ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(genObjectiveName), key)
                 index_gen += 1
-                index_regen += 1
 
-        ## generator COST data
-        # MODEL, STARTUP, SHUTDOWN, NCOST, COST[a, b]
-        columnNum = len(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS) + self.pointsOfPiecewiseOrcostFuncOrder -1
-        ppc["gencost"] = numpy.zeros((self.numOfExistAndRetrofittedGenerators, columnNum), dtype = float)
-        index_gen  = 0
-        while index_gen < len(self.GeneratorObjectList):
-            for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
-                index = int(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE[key])
-                if key == "COST":
-                    for para in getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.carbonTaxTag + str(index_gen)), key):
-                        ppc["gencost"][index_gen][index] = para
-                        index += 1
-                else:
-                    ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.carbonTaxTag + str(index_gen)), key)
-            index_gen += 1
+            if self.withRetrofit is True: 
+                index_regen = 0
+                while index_gen < numOfExistAndRetrofittedGenerators:
+                    SMRObjectiveName = SMRSiteObjectList_EachWeight[index_regen]
+                    for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
+                        index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])                 
+                        ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(SMRObjectiveName), key)
+                    index_gen += 1
+                    index_regen += 1
 
-        if self.withRetrofit is True: 
-            index_regen = 0
-            while index_gen < self.numOfExistAndRetrofittedGenerators:
+            ## generator COST data
+            # MODEL, STARTUP, SHUTDOWN, NCOST, COST[a, b]
+            columnNum = len(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS) + self.pointsOfPiecewiseOrcostFuncOrder -1
+            ppc["gencost"] = numpy.zeros((numOfExistAndRetrofittedGenerators, columnNum), dtype = float)
+            index_gen  = 0
+            while index_gen < len(GeneratorObjectList_EachWeight):
+                genObjectiveName = GeneratorObjectList_EachWeight[index_gen]
                 for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
                     index = int(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE[key])
                     if key == "COST":
-                        for para in getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + self.carbonTaxTag + str(index_regen)), key):
+                        ## for para in getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.extantGenTag + str(index_gen)), key):
+                        for para in getattr(self.ObjectSet.get(genObjectiveName), key):
                             ppc["gencost"][index_gen][index] = para
                             index += 1
                     else:
-                        ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + self.carbonTaxTag + str(index_regen)), key)
+                        ## ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.SMRTag + str(index_gen)), key)
+                        ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(genObjectiveName), key)
                 index_gen += 1
-                index_regen += 1
 
-        self.ppc = ppc
+            if self.withRetrofit is True: 
+                index_regen = 0
+                while index_gen < numOfExistAndRetrofittedGenerators:
+                    SMRObjectiveName = SMRSiteObjectList_EachWeight[index_regen]
+                    for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
+                        index = int(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE[key])
+                        if key == "COST":
+                            for para in getattr(self.ObjectSet.get(SMRObjectiveName), key):
+                                ppc["gencost"][index_gen][index] = para
+                                index += 1
+                        else:
+                            ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(SMRObjectiveName), key)
+                    index_gen += 1
+                    index_regen += 1
+            ppc_copy = ppc.copy()
+            self.ppc_List.append(ppc_copy)
         return 
-            
+
+    
+    ## Generate the list of the results, total cost and OPEX for each weighter at the same weather and same carbon tax
     def OptimalPowerFlowAnalysisSimulation(self, ppc: list = None):
         """
         Perform the optimal power flow analysis.
@@ -848,45 +810,54 @@ class OptimalPowerFlowAnalysis:
 
         """
          
-        if not hasattr(self, 'ppc'): 
+        if not hasattr(self, 'ppc') and not hasattr(self, 'ppc_List'): 
             if ppc is None or not isinstance(ppc, list):
                 raise Exception("The model input has not been reformatted, please run the function ModelInputFormatter at first.")
             else:
-                self.ppc = ppc
-    
-        ##-- starts opf analysis --## 
-        # set up numerical method: Newton's Method
-        self.ppopt = ppoption(OUT_ALL = 0, VERBOSE = 2) 
-        self.results = runopf(self.ppc, self.ppopt)
+                self.ppc_List = ppc
 
-        ## there are several different ways to do OPF analysis
-        ## self.results = runuopf(self.ppc, self.ppopt)
-
-        annualOperationCost_OPF = round(self.results["f"], 2) * 8760
-        totalOperationCost_OPF = 0
-        for l in range(self.projectLifeSpan):
-            ## l starts frm 0, therefore it is no need to use -(l-1) bus just use -l
-            totalOperationCost_OPF += annualOperationCost_OPF * (1 + float(self.bankRate)) **(-l)
+        ## Clean the list of the results for each carbontax-weather condition 
+        self.annualisedOPEXList = []
+        self.totalCostList = []
+        self.resultsList = []
         
-        self.annualisedOPEX = round((totalOperationCost_OPF * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))), 2)
+        # set up numerical method: Newton's Method
+        ppopt = ppoption(OUT_ALL = 0, VERBOSE = 2) 
+        
+        for ppc in self.ppc_List:
+            i = self.ppc_List.index(ppc)
+            ##-- starts opf analysis --##
+            results = runopf(ppc, ppopt)
+            self.resultsList.append(results)
 
-        self.totalCost = round((self.annualisedOPEX + self.retrofittingCost), 2)
-        percentageOfOPEX = round(self.annualisedOPEX/self.totalCost, 2)
-        percentageOfCAPEX = round((1- percentageOfOPEX),2)
+            ## there are several different ways to do OPF analysis
+            # results = runuopf(ppc, ppopt)
 
-        print("***Total cost (£): ", self.totalCost)
-        print("***AnnualisedOPEX cost (£): ", self.annualisedOPEX) ## calculated from OPF, OPEX 
-        print("***RetrofittingCost cost (£): ", self.retrofittingCost) ## calculated from site selection, CAPEX
-        print("***Percentage of OPEX: ", percentageOfOPEX, "and the percentage of CAPEX is: ", percentageOfCAPEX)
+            annualOperationCost_OPF = round(results["f"], 2) * 8760
+            totalOperationCost_OPF = 0
+            for l in range(self.projectLifeSpan):
+                ## l starts frm 0, therefore it is no need to use -(l-1) bus just use -l
+                totalOperationCost_OPF += annualOperationCost_OPF * (1 + float(self.bankRate)) **(-l)
+            
+            annualisedOPEX = round((totalOperationCost_OPF * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))), 2)
+            self.annualisedOPEXList.append(annualisedOPEX)
+            self.totalCostList.append(round((annualisedOPEX + self.retrofittingCostList[i]), 2))
+            # percentageOfOPEX = round(self.annualisedOPEX/self.totalCost, 2)
+            # percentageOfCAPEX = round((1- percentageOfOPEX),2)
 
-        self.ConvergeFlag = self.results["success"]
-        if self.ConvergeFlag:
-            print('-----The OPF model is converged.-----')
-        else:
-            print('!!!!!!The OPF model is diverged.!!!!!')
+            print("***Total cost (£): ", round((annualisedOPEX + self.retrofittingCostList[i]), 2))
+            print("***Annualised OPEX cost (£): ", annualisedOPEX) ## calculated from OPF, OPEX 
+            print("***RetrofittingCost (CAPEX) cost (£): ", self.retrofittingCostList[i]) ## calculated from site selection, CAPEX
+            ## print("***Percentage of OPEX: ", percentageOfOPEX, "and the percentage of CAPEX is: ", percentageOfCAPEX)
+
+            ConvergeFlag = results["success"]
+            if ConvergeFlag is True:
+                print('-----The OPF model is converged.-----')
+            else:
+                print('!!!!!!The OPF model is diverged.!!!!!')
         return
 
-    def ModelOutputFormatter(self):
+    def ModelOutputFormatter(self, generateVisualisationJSON:bool):
         """
         Reformat the result and add attributes into the objects.
 
@@ -895,101 +866,129 @@ class OptimalPowerFlowAnalysis:
         None.
 
         """
-        if not self.ConvergeFlag:  
-            raise Exception("!!!!!!The OPF has not converged.!!!!!!")
         
-        ## the bus, gen, branch and loss result
-        bus = self.results["bus"]
-        branch = self.results["branch"]
-        gen = self.results["gen"]
-        
-        ##--Bus--##  
-        ##  VM_OUTPUT, VM_OUTPUT, P_GEN, G_GEN, PD_OUTPUT, GD_OUTPUT        
-        ## post processsing of the bus results   
-        busPostResult = numpy.zeros((self.numOfBus, len(UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-        
-        for i in range(self.numOfBus):
-            busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VM_OUTPUT"]] = bus[i][VM]
-            busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VA_OUTPUT"]] = bus[i][VA]
-            
-            g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & ~isload(gen))
-            ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & isload(gen))
-            
-            if any(g + 1):
-                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["P_GEN"]] = sum(gen[g, PG])
-                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["G_GEN"]] = sum(gen[g, QG])
-                    
-            if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
-                if any(ld + 1):
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i, PD] - sum(gen[ld, PG])
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i, QD] - sum(gen[ld, QG])    
-                else:
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i][PD]
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i][QD]
-            
-        ## update the object attributes with the model results
-        index_bus  = 0
-        while index_bus < self.numOfBus:
-            for key in UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS:
-                index = int(UK_PG.UKEbusModel.OUTPUT_VARIABLE[key])
-                setattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus)), key, busPostResult[index_bus][index])        
-            index_bus += 1   
-        
-        ##--Branch--##    
-        ## FROMBUSINJECTION_P, FROMBUSINJECTION_Q, TOBUSINJECTION_P, TOBUSINJECTION_Q, LOSS_P, LOSS_Q
-        ## post processsing of the branch results   
-        branchPostResult = numpy.zeros((len(self.BranchObjectList), len(UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-        
-        for i in range(len(self.BranchObjectList)):
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_P"]] = branch[i][PF]
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_Q"]] = branch[i][QF]
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_P"]] = branch[i][PT]
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_Q"]] = branch[i][QT]
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_P"]] = abs(abs(branch[i][PF]) - abs(branch[i][PT]))  
-            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_Q"]] = abs(abs(branch[i][QF]) - abs(branch[i][QT]))  
-            
-        ## update the object attributes with the model results
-        index_br  = 0
-        while index_br < len(self.BranchObjectList):
-            for key in UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS:
-                index = int(UK_PG.UKElineModel.OUTPUT_VARIABLE[key])
-                setattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key, branchPostResult[index_br][index])        
-            index_br += 1   
-        
-        ##--Generator--##    
-        ## PG_OUTPUT, QG_OUTPUT
-        ## post processsing of the generator results   
-        generatorPostResult = numpy.zeros((self.numOfExistAndRetrofittedGenerators, len(UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-        for i in range(self.numOfExistAndRetrofittedGenerators):
-            if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
-                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["PG_OUTPUT"]] = gen[i][PG]
-                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["QG_OUTPUT"]] = gen[i][QG]
-        ## update the object attributes with the model results
-        index_gen  = 0
-        while index_gen < len(self.GeneratorObjectList):
-            for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
-                index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
-                setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + self.carbonTaxTag + str(index_gen)), key, generatorPostResult[index_gen][index])        
-            index_gen += 1
+        for index_ in range(len(self.resultsList)): ## the length of the results
+            results = self.resultsList[index_]
+            GeneratorObjectList_EachWeight = self.GeneratorObjectList[index_]
+            SMRSiteObjectList_EachWeight = self.SMRSiteObjectList[index_]
+            weightForObjective1 = round(self.weighterList[index_], 2)
 
-        if self.withRetrofit is True:
-            index_regen = 0
-            while index_gen < self.numOfExistAndRetrofittedGenerators:
+            ## the bus, gen, branch and loss result
+            bus = results["bus"]
+            branch = results["branch"]
+            gen = results["gen"]
+            
+            ##--Bus--##  
+            ##  VM_OUTPUT, VM_OUTPUT, P_GEN, G_GEN, PD_OUTPUT, GD_OUTPUT        
+            ## post processsing of the bus results   
+            busPostResult = numpy.zeros((self.numOfBus, len(UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+            
+            for i in range(self.numOfBus):
+                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VM_OUTPUT"]] = bus[i][VM]
+                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VA_OUTPUT"]] = bus[i][VA]
+                
+                g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & ~isload(gen))
+                ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & isload(gen))
+                
+                if any(g + 1):
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["P_GEN"]] = sum(gen[g, PG])
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["G_GEN"]] = sum(gen[g, QG])
+                        
+                if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
+                    if any(ld + 1):
+                        busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i, PD] - sum(gen[ld, PG])
+                        busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i, QD] - sum(gen[ld, QG])    
+                    else:
+                        busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i][PD]
+                        busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i][QD]
+                
+            ## update the object attributes with the model results
+            index_bus  = 0
+            while index_bus < self.numOfBus:
+                objectiveName = self.BusObjectList[index_bus]
+                for key in UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS:
+                    index = int(UK_PG.UKEbusModel.OUTPUT_VARIABLE[key])
+                    setattr(self.ObjectSet.get(objectiveName), key, busPostResult[index_bus][index])        
+                index_bus += 1   
+            
+            ##--Branch--##    
+            ## FROMBUSINJECTION_P, FROMBUSINJECTION_Q, TOBUSINJECTION_P, TOBUSINJECTION_Q, LOSS_P, LOSS_Q
+            ## post processsing of the branch results   
+            branchPostResult = numpy.zeros((len(self.BranchObjectList), len(UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+            
+            for i in range(len(self.BranchObjectList)):
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_P"]] = branch[i][PF]
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_Q"]] = branch[i][QF]
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_P"]] = branch[i][PT]
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_Q"]] = branch[i][QT]
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_P"]] = abs(abs(branch[i][PF]) - abs(branch[i][PT]))  
+                branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_Q"]] = abs(abs(branch[i][QF]) - abs(branch[i][QT]))  
+                
+            ## update the object attributes with the model results
+            index_br  = 0
+            while index_br < len(self.BranchObjectList):
+                objectiveName = self.BranchObjectList[index_br]
+                for key in UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS:
+                    index = int(UK_PG.UKElineModel.OUTPUT_VARIABLE[key])
+                    setattr(self.ObjectSet.get(objectiveName), key, branchPostResult[index_br][index])        
+                index_br += 1   
+            
+            ##--Generator--##    
+            ## PG_OUTPUT, QG_OUTPUT
+            ## post processsing of the generator results 
+            numOfExistAndRetrofittedGenerators = len(GeneratorObjectList_EachWeight) + len(SMRSiteObjectList_EachWeight)  
+            generatorPostResult = numpy.zeros((numOfExistAndRetrofittedGenerators, len(UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+            for i in range(numOfExistAndRetrofittedGenerators):
+                if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
+                    generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["PG_OUTPUT"]] = gen[i][PG]
+                    generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["QG_OUTPUT"]] = gen[i][QG]
+            ## update the object attributes with the model results
+            index_gen  = 0
+            while index_gen < len(GeneratorObjectList_EachWeight):
+                objectiveName = GeneratorObjectList_EachWeight[index_gen]
                 for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
-                    index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])                  
-                    setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + self.carbonTaxTag + str(index_regen)), key, generatorPostResult[index_gen][index])        
-                index_regen += 1
-                index_gen += 1 
+                    index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
+                    setattr(self.ObjectSet.get(objectiveName), key, generatorPostResult[index_gen][index])        
+                index_gen += 1
+
+            if self.withRetrofit is True:
+                index_regen = 0
+                while index_gen < numOfExistAndRetrofittedGenerators:
+                    objectiveName = SMRSiteObjectList_EachWeight[index_regen]
+                    for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
+                        index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])                  
+                        setattr(self.ObjectSet.get(objectiveName), key, generatorPostResult[index_gen][index])        
+                    index_regen += 1
+                    index_gen += 1
+
+            #FIXME: modify the ModelPythonObjectOntologiser method 
+            ## self.ModelPythonObjectOntologiser() 
+            
+            if generateVisualisationJSON:
+                ExtantGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ExtantGenerator'
+                SMRIntroducedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_SMR'
+                ClosedGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ClosedGenerator'
+                DecommissionLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
+
+                self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
+                self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
+                self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, ClosedGeneratorLabel)
+                ## FIXME: add the decommssion visualisationFileCreator
+                ## self.visualisationFileCreator_decommissionedGenerator(DecommissionLabel)
+                
         return 
 
+
+#FIXME: still need to check why there is no generator not been used for each weather condition
     def decommissionPowerPlantDecider(self, numberOfSMRToBeIntroduced, slackFactor:float, generatorNameList:list):
         index_NonOutputList = []    
         apperanceTime_NonOutputList = []
         alwaysNonOutputList = []
         alwaysNonOutputIndexList = []
         ## Find the shut down power plant in each weather condition scenario and count the number of times
-        if type(generatorNameList[0]) == list: 
-            raiseExceptions("The generator name list should be a 2D list.")
+        
+        # if type(generatorNameList[0]) is list: 
+        #     raiseExceptions("The generator name list should be a 2D list.")
         for genListOfEachWeatherCondition in generatorNameList:
             for genName in genListOfEachWeatherCondition: ## has the same order with the generatorNodeList
                 i = genListOfEachWeatherCondition.index(genName)
@@ -1023,6 +1022,7 @@ class OptimalPowerFlowAnalysis:
         dcKeys = DCost.keys()
         for bv in binaryVarNameList:
             i = binaryVarNameList.index(bv)
+            print(self.ObjectSet[bv])
             sumOfDecommissionCapacity += self.ObjectSet[bv] * float(alwaysNonOutputList[i][6])
             fuelType = alwaysNonOutputList[i][7]
             for key in dcKeys:
@@ -1034,21 +1034,20 @@ class OptimalPowerFlowAnalysis:
         model.addCons(sumOfDecommissionCapacity <= numberOfSMRToBeIntroduced * self.SMRCapability * float(slackFactor)) ## slack factor is 1.1
 
         ##-- Set up the objective function --##
-        self.model.setObjective(totalDecommissioningCost, "minimize")
+        model.setObjective(totalDecommissioningCost, "minimize")
 
         ##-- Set up optimisation method --##
-        self.model.optimize()
+        model.optimize()
 
         ##-- Results post processing --##
-        print("The decommission cost is:", self.model.getObjVal())
+        print("The decommission cost is:", model.getObjVal())
 
         decommissionedPowerPlant_Index = []
         self.decommissionedPowerPlant_generator = []
         for bvname in binaryVarNameList:
-            print( bvname, " = ", (self.model.getVal(self.ObjectSet[bvname])))
-            if int(self.model.getVal(self.ObjectSet[bvname])) > 0:
+            print( bvname, " = ", (model.getVal(self.ObjectSet[bvname])))
+            if int(model.getVal(self.ObjectSet[bvname])) > 0:
                 decommissionedPowerPlant_Index.append(binaryVarNameList.index(bvname))
-                
         
         TotalDecommissionedCapacity = 0
         for i in decommissionedPowerPlant_Index: 
@@ -1058,28 +1057,10 @@ class OptimalPowerFlowAnalysis:
         
         capacityDifference = numberOfSMRToBeIntroduced * self.SMRCapability - TotalDecommissionedCapacity
         
-        print()
-        return
-
-
-
-
-
-## TODO: from decommission cost, decommissioned generator and total decommission capacity and its different values with the SMR total capacity
-
-        
-        
-            
-
-
-
-                    
-
-
-
+        print("capacityDifference is:", capacityDifference)
         return 
 
-##TODO: check the LA code of the demanding
+#FIXME: This function is used in the pre-opf method, check the LA code of the demanding, also fix the problem
     def netDemandingCalculator(self):
         ## net demanding of each demanding area
         self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
@@ -1100,7 +1081,7 @@ class OptimalPowerFlowAnalysis:
                 if len(gen) < 10:
                     raiseExceptions("The generator has not be attached with a smaller area LA code, please run powerPlantAndDemandingAreasMapper at first or check if", 
                     gen[0], " has not find the smaller area LA code.")
-                if str(gen[10]) == Area_LACode:
+                if str(gen[11]) == Area_LACode:
                     output = float(self.ObjectSet[self.GeneratorObjectList[i]].PG_OUTPUT)
                     netDemandingOfThisArea -= output
             self.netDemandingList_smallArea.append([Area_LACode, netDemandingOfThisArea])
@@ -1123,7 +1104,8 @@ class OptimalPowerFlowAnalysis:
         for i in range(len(busNodeList)):
             self.netDemandingList_busRadiatingArea.append(busNodeList[i], netDemanding_busArea[i], LACodeList_busArea[i])
         return 
-    
+
+##FIXME: this function should be updated according to the updated version of the code   
     def ModelPythonObjectOntologiser(self):
         """
         create KG representation for all model objects
@@ -1145,12 +1127,16 @@ class OptimalPowerFlowAnalysis:
         return 
     
     def CarbonEmissionCalculator(self):
-        self.totalCO2Emission = 0
-        for gen in self.GeneratorObjectList:
-            self.totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)       
-        print("Total CO2 Emission is:", self.totalCO2Emission, "t/hr")
+        self.totalCO2EmissionList = []
+        for GeneratorObjectList_EachWeight in self.GeneratorObjectList:
+            totalCO2Emission = 0
+            for gen in GeneratorObjectList_EachWeight:
+                totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)       
+            print("Total CO2 Emission is:", totalCO2Emission, "t/hr")
+            self.totalCO2EmissionList.append(totalCO2Emission)
         return 
-    
+
+## FIXME: the code should be updated according to the changed code
     def EnergySupplyBreakDownPieChartCreator(self):
         genTypeLabel = []
         outPutData = []
@@ -1207,13 +1193,12 @@ class OptimalPowerFlowAnalysis:
         plt.show()     
         return 
 
-
-    def visualisationFileCreator_ExtantGenerator(self, file_label):
+    def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
             "features": ["""
-        for extant_gen in self.GeneratorObjectList:
+        for extant_gen in GeneratorObjectList:
             if round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2) < 0.01:
                 continue
             else: 
@@ -1254,15 +1239,16 @@ class OptimalPowerFlowAnalysis:
         geojson_written = open(file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
-        print('---GeoJSON written successfully---', file_label)
+        print('---GeoJSON written successfully: visualisationFileCreator_ExtantGenerator---', file_label)
         return
 
-    def visualisationFileCreator_ClosedGenerator(self, file_label):
+##FIXME: if add the decommission method, it might be a concreate list of the closed generators, for now it will used the same list of the GeneratorObjectList
+    def visualisationFileCreator_ClosedGenerator(self, GeneratorObjectList, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
             "features": ["""
-        for extant_gen in self.GeneratorObjectList:
+        for extant_gen in GeneratorObjectList:
             if round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2) < 0.01:
                 feature = """{
                     "type": "Feature",
@@ -1303,18 +1289,18 @@ class OptimalPowerFlowAnalysis:
         geojson_written = open(file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
-        print('---GeoJSON written successfully---', file_label)
+        print('---GeoJSON written successfully: visualisationFileCreator_ClosedGenerator---', file_label)
         return
 
-    def visualisationFileCreator_AddedGenerator(self, file_label):
-        if len(self.SMRSiteObjectList) == 0:
+    def visualisationFileCreator_AddedSMRGenerator(self, SMRSiteObjectList, file_label):
+        if len(SMRSiteObjectList) == 0:
             print("***There is no SMR to be retrofitted.***")
             return
         geojson_file = """
         {
             "type": "FeatureCollection",
             "features": ["""
-        for smr in self.SMRSiteObjectList:
+        for smr in SMRSiteObjectList:
             feature = """{
                 "type": "Feature",
                 "properties": {
@@ -1350,21 +1336,21 @@ class OptimalPowerFlowAnalysis:
         geojson_written = open(file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
-        print('---GeoJSON written successfully---', file_label)
+        print('---GeoJSON written successfully: visualisationFileCreator_AddedSMRGenerator---', file_label)
         return
 
-    def visualisationFileCreator_deCommissionedGenerator(self, file_label):
+## FIXME: modify this function according to the new decommission method 
+    def visualisationFileCreator_decommissionedGenerator(self, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
             "features": ["""
-        for extant_gen in self.GeneratorObjectList:
+        for dcgen in self.decommissionedPowerPlant_generator:
             feature = """{
                 "type": "Feature",
                 "properties": {
                 "Fuel Type": "%s",
                 "Capacity": "%s",
-                "Carbon tax rate": "%s",
                 "Status": "Decommissioned",
                 "marker-color": "#000000",
                 "marker-size": "medium",
@@ -1377,8 +1363,7 @@ class OptimalPowerFlowAnalysis:
                     %s
                 ]
                 }
-                },"""%(self.ObjectSet[extant_gen].fueltype, self.ObjectSet[extant_gen].capacity, self.ObjectSet[extant_gen].CarbonTax, 
-                self.ObjectSet[extant_gen].latlon[1], self.ObjectSet[extant_gen].latlon[0])
+                },"""%(dcgen[7], dcgen[6], dcgen[8][1], dcgen[8][0])
             # adding new line 
             geojson_file += '\n'+feature
             
@@ -1394,8 +1379,101 @@ class OptimalPowerFlowAnalysis:
         geojson_written = open(file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
-        print('---GeoJSON written successfully---', file_label)
+        print('---GeoJSON written successfully: visualisationFileCreator_decommissionedGenerator---', file_label)
         return  
+
+    def resultsSheetCreator(self, weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, dataMatrix, fileName:str = None):
+        rowNum = len(NumberOfSMRUnitList) * len(weighterList) + 3 
+        colNum = 2 * len(weatherConditionList) * len(CarbonTaxForOPFList) + 2
+        resultSheet = numpy.zeros((rowNum, colNum), dtype = object)
+
+        ## Header line row[0]
+        resultSheet[0,0] = 'Design'
+        resultSheet[0,1] = 'Weight'
+
+        i = 0
+        l = 2 * len(weatherConditionList) * len(CarbonTaxForOPFList)
+        while i < l:
+            carbonTax_i = i // (2 * len(weatherConditionList))
+            carbonTax = str(CarbonTaxForOPFList[carbonTax_i])
+            resultSheet[0, i + 2] = carbonTax
+            i += 1
+
+        ## Second line row[1]
+        resultSheet[1,0] = '----'
+        resultSheet[1,1] = '----'
+
+        i = 0
+        while i < l:
+            weather_i = (i % (2 * len(weatherConditionList))) // 2
+            weather = str(weatherConditionList[weather_i][2])
+            resultSheet[1, i + 2] = weather
+            i += 1
+
+        ## Third line row[2]
+        resultSheet[2,0] = '----'
+        resultSheet[2,1] = '----'
+
+        i = 0
+        while i < l:
+            costName_i = i % 2 
+            if costName_i == 0:
+                costName = 'Total_Cost'
+            else:
+                costName = 'CO2_Emission'
+            resultSheet[2, i + 2] = costName
+            i += 1
+
+        ## Fill the first two rows
+        row_i = 3 ## the data row starts from row 3
+        while row_i < rowNum:
+            smr_i = (row_i - 3) // len(weighterList)
+            smrNum = str(NumberOfSMRUnitList[smr_i]) + '_SMR'
+            resultSheet[row_i, 0] = smrNum
+
+            weight_i = (row_i - 3) % len(weighterList)
+            weight = str(weighterList[weight_i])
+            resultSheet[row_i, 1] = weight
+            row_i += 1
+
+        ## Data sheet starts form row 3 and col 2
+        row_i = 3 ## the data row starts from row 3
+        col_i = 2
+        for i in range(len(NumberOfSMRUnitList)): 
+            SMRdesign = dataMatrix[i]
+            for j in range(len(CarbonTaxForOPFList)):
+                results_sameCarbonTax = SMRdesign[j]
+                for k in range(len(weatherConditionList)):
+                    results_sameWeather = results_sameCarbonTax[k]
+                    totalCost = results_sameWeather[0]
+                    CO2Emission = results_sameWeather[1]
+                    for m in range(len(weighterList)):
+                        resultSheet[row_i, col_i] = totalCost[m]
+                        resultSheet[row_i, col_i + 1] = CO2Emission[m]
+                        row_i += 1
+                    row_i -= len(weighterList)
+                    col_i += 2
+            row_i += len(weighterList)
+            col_i = 2
+        
+        ## File name 
+        if fileName is None:
+            fileName = 'SMR_Design_'
+            for smr in NumberOfSMRUnitList:
+                fileName += str(smr) + '_'
+            fileName = fileName[:-1]   
+            fileName += '.xlsx'
+
+        # with open(fileName, 'w') as f:
+        #     write = csv.writer(f)
+        #     write.writerow(resultSheet)
+
+        resultSheet = pd.DataFrame(resultSheet)
+        writer = pd.ExcelWriter(fileName)
+        resultSheet.to_excel(writer, sheet_name='Results', float_format = '%.5f', index=False)
+        writer.close()
+        print("============The Results Sheet is created====================")
+        return
 
 if __name__ == '__main__':        
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
@@ -1416,9 +1494,7 @@ if __name__ == '__main__':
 
     ELineInitialisationMethodName = "defaultBranchInitialiser"
     ELineInitialisationMethodName_29Bus = "preSpecifiedBranchInitialiser"
-
-    CarbonTaxForSMRSiteSelection = 10
-    CarbonTaxForOPFList = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 165, 180, 250] 
+    
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 150
@@ -1429,10 +1505,6 @@ if __name__ == '__main__':
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SourGas"]
-  
-    pureBackUpAllGenerator = False
-    replaceRenewableGenerator = False
-    clusterFlag = False
 
     discountRate = 0.02
     bankRate = 0.0125
@@ -1444,33 +1516,45 @@ if __name__ == '__main__':
     SMRCapability = 470
     maxmumSMRUnitAtOneSite = 4
     SMRIntergratedDiscount = 0.9
-    backUpCapacityRatio = 0.7
     windOutputRatio = 0.47
     solarOutputRatio = 0.44
     DecommissioningCostEstimatedLevel = 1
     slackFactor = 1.1
-
-    numberOfSMRToBeIntroduced = 54
-    # pop_size = 400
-    # n_offsprings = 500 
-    # numberOfGenerations = 150
+    generateVisualisationJSON = True
 
     pop_size = 800
     n_offsprings = 1000
     numberOfGenerations = 350
 
-    CarbonTaxForOPF = 50
-    NumberOfSMRUnitList = [1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10]
+    ## For Test
+    # pop_size = 200
+    # n_offsprings = 100
+    # numberOfGenerations = 150
 
-    weighterList = [1] #[0.001, 0.01, 1, 5, 10, 20, 50, 80, 100, 10E10]
+    ##For test
+    # NumberOfSMRUnitList = [5, 6]
+    # weighterList = [0.25, 0.5]
+    # CarbonTaxForOPFList = [0, 10]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.033, "WLSL"]]
+    
+    # ## For real run 
+    # NumberOfSMRUnitList = [1, 5, 10, 20, 30, 40, 50, 54, 60]
+    # weighterList = [0, 0.25, 0.5, 0.75, 1] 
+    # CarbonTaxForOPFList = [0, 20, 40, 60, 80, 100, 150, 200, 250] 
+    # # [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 165, 180, 250]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]] ## [wind, solar]
 
-    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]] ## [wind, solar]
-
+    ## For error shooting
+    NumberOfSMRUnitList = [10, 15, 50, 54, 60]
+    weighterList = [0, 0.25, 0.5, 0.75, 1] 
+    CarbonTaxForOPFList = [20] 
+    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    
 #############10 BUS Model#################################################################################################################################################################
     # testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
-    #     CarbonTaxForSMRSiteSelection, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
-    #     projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, SMRIntergratedDiscount, backUpCapacityRatio, windOutputRatio, solarOutputRatio,
-    #     DecommissioningCostEstimatedLevel, pureBackUpAllGenerator, replaceRenewableGenerator, clusterFlag,queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
+    #     piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
+    #     projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, SMRIntergratedDiscount,
+    #     DecommissioningCostEstimatedLevel, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
     
     # testOPF1.retrofitGeneratorInstanceFinder()
     # testOPF1.ModelPythonObjectInputInitialiser(CarbonTaxForOPF)
@@ -1520,13 +1604,12 @@ if __name__ == '__main__':
         print('---GeoJSON written successfully---', file_label)
         return
 ############29 Bus model##################################################################################################################################################################
-    testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, EBusModelVariableInitialisationMethodName_29Bus,
-        ELineInitialisationMethodName_29Bus, CarbonTaxForSMRSiteSelection, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
-        projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, SMRIntergratedDiscount, backUpCapacityRatio, windOutputRatio, solarOutputRatio,
-        DecommissioningCostEstimatedLevel, pureBackUpAllGenerator, replaceRenewableGenerator, clusterFlag, pop_size, n_offsprings, numberOfGenerations, updateEndPointURL)  
-    summary_beforedecommission = [['Weighter', 'CarbonTaxForOPF', 'WeatherCondition', 'total OPF', 'annualisedOPEX', 'retrofittingCost', 'totalCO2Emission\\n']]
-    summary_afterdecommission = [['Weighter', 'CarbonTaxForOPF', 'WeatherCondition', 'total OPF', 'annualisedOPEX', 'retrofittingCost', 'totalCO2Emission\\n']]
-
+    testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
+        EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
+        baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, projectLifeSpan, 
+        SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
+        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, pop_size, n_offsprings, numberOfGenerations, updateEndPointURL)  
+        
 ####================NEW demanding assessment method Pre-OPF method================####
     # ## Pre-OPF to determing the demanding indicator of each area without retrofitting
     # testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
@@ -1559,59 +1642,57 @@ if __name__ == '__main__':
     # print(summary)
 
 ####================ OLD demanding assessment method: without pre-OPF ================####
-    testOPF_29BusModel.retrofitGeneratorInstanceFinder()
+    testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
     ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
-    testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
-    testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
-    for weighter in weighterList:
-        testOPF_29BusModel.optimaPicker(weighter)
+    testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch() ## TODO: initialise the bus and branch for each run
+    summary_eachSMRDesign = []
+    for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
+        print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
+        testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
+        testOPF_29BusModel.optimaPicker(weighterList)
+        ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
+        summary_eachCarbonTax = []
         for CarbonTaxForOPF in CarbonTaxForOPFList:
-            generatorNameList = []
+            ## generatorNameList = []
             ## before decommssion: find the potential decommssion power plant 
+            summary_eachWeather = []
             for weatherCondition in weatherConditionList:
                 testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
                 testOPF_29BusModel.OPFModelInputFormatter()
                 testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-                testOPF_29BusModel.ModelOutputFormatter()
+                testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON)
                 testOPF_29BusModel.CarbonEmissionCalculator()
-                generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
+                ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
+                re = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
+                summary_eachWeather.append(re)
+            summary_eachCarbonTax.append(summary_eachWeather)
+        summary_eachSMRDesign.append(summary_eachCarbonTax)
+    testOPF_29BusModel.resultsSheetCreator(weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
+        
+            # ## find the decommssioned power plant
+            # testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
+
+            # ## after decommssion
+            # for weatherCondition in weatherConditionList:
+            #     testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], True)
+            #     testOPF_29BusModel.OPFModelInputFormatter()
+            #     testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
+            #     testOPF_29BusModel.ModelOutputFormatter()
+            #     testOPF_29BusModel.CarbonEmissionCalculator()
+            #     generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
                 
-                re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\\n"]
-                summary_beforedecommission.append(re)
-            
-            ## find the decommssioned power plant
-            testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
+            #     re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\\n"]
+            #     summary_afterdecommission.append(re)
 
-            ## after decommssion
-            for weatherCondition in weatherConditionList:
-                testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], True)
-                testOPF_29BusModel.OPFModelInputFormatter()
-                testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-                testOPF_29BusModel.ModelOutputFormatter()
-                testOPF_29BusModel.CarbonEmissionCalculator()
-                generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
-                
-                re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\\n"]
-                summary_afterdecommission.append(re)
-
-                ## testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()
-                testOPF_29BusModel.visualisationFileCreator_ExtantGenerator('NewSelector_29BusModel_' + str(numberOfSMRToBeIntroduced) + '_SMRs_retrofitted_ExtantGenerator_CarbonTax' + str(CarbonTaxForOPF) + "_WeatherCondition_" + str(weatherCondition[2]) + "_weighter_" + str(weighter))
-                testOPF_29BusModel.visualisationFileCreator_AddedGenerator('NewSelector_29BusModel_' + str(numberOfSMRToBeIntroduced) + '_SMRs_retrofitted_SMR_CarbonTax' + str(CarbonTaxForOPF) + "_WeatherCondition_" + str(weatherCondition[2]) + "_weighter_" + str(weighter))   
-                testOPF_29BusModel.visualisationFileCreator_ClosedGenerator('NewSelector_29BusModel_' + str(numberOfSMRToBeIntroduced) + '_SMRs_retrofitted_ClosedPlants_CarbonTax' + str(CarbonTaxForOPF) + "_WeatherCondition_" + str(weatherCondition[2]) + "_weighter_" + str(weighter))
-                testOPF_29BusModel.visualisationFileCreator_ClosedGenerator('NewSelector_29BusModel_' + str(numberOfSMRToBeIntroduced) + '_SMRs_retrofitted_DecommissionPlants_CarbonTax' + str(CarbonTaxForOPF) + "_WeatherCondition_" + str(weatherCondition[2]) + "_weighter_" + str(weighter)) 
-
-    print(summary_beforedecommission, summary_afterdecommission)
-    fileName_beforeDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + 'weight_' + str(weighterList[0]) + '_beforeDecommission.csv'
-    fileName_afterDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + 'weight_' + str(weighterList[0]) + '_afterDecommission.csv'
-    with open(fileName_beforeDecommission, 'w') as f:
-                write = csv.writer(f)
-                write.writerow(summary_beforedecommission)
-    with open(fileName_afterDecommission, 'w') as f:
-                write = csv.writer(f)
-                write.writerow(summary_afterdecommission)
+        # fileName_beforeDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + '_beforeDecommission.csv'
+        # fileName_afterDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + 'weight_' + str(weighterList[0]) + '_afterDecommission.csv'
+        # with open(fileName_beforeDecommission, 'w') as f:
+        #             write = csv.writer(f)
+        #             write.writerow(summary_beforedecommission)
+        # with open(fileName_afterDecommission, 'w') as f:
+        #             write = csv.writer(f)
+        #             write.writerow(summary_afterdecommission)
     print('Terminal')
-
-
 
 #     # print("*****This are EBus results*****")
 #     # for attr in testOPF1.ObjectSet.get('EBus-7').__dir__():
