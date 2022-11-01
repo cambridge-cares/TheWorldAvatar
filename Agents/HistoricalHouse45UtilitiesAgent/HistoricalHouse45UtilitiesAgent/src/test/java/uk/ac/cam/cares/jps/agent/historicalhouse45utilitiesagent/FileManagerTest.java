@@ -7,16 +7,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileManagerTest {
     @TempDir
     private static Path tempDir;
+    @TempDir
+    private static Path emptyTempDir;
     @TempDir
     private static Path multiFileTempDir;
 
@@ -39,17 +43,36 @@ class FileManagerTest {
     }
 
     @Test
+    void testRetrieveExcelPathFailNoWorkbook() {
+        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () -> FileManager.retrieveExcelPath(emptyTempDir.toString()), "JPSRuntimeException was expected");
+        assertTrue(thrown.getMessage().contains("No Excel workbook detected! Please place your file in the directory:"));
+    }
+
+    @Test
     void testRetrieveExcelPathFailWithTwoFiles() {
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () -> FileManager.retrieveExcelPath(multiFileTempDir.toString()), "JPSRuntimeException was expected");
-        assertTrue(thrown.getMessage().contains("Multiple Excel workbooks detected! This agent can only process one workbook at a time."));
+        assertEquals("Multiple Excel workbooks detected! This agent can only process one workbook at a time.",thrown.getMessage());
     }
 
     @Test
     void testOverloadRetrieveExcelPath() {
-        // Test that the default directory for the overloaded method ends with the /data/
-        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, FileManager::retrieveExcelPath, "JPSRuntimeException was expected");
-        assertTrue(thrown.getMessage().contains("No Excel workbook detected! Please place your file in the directory:"));
-        assertTrue(thrown.getMessage().endsWith("/data/"));
+        // Note that the current working directory follows the pom.xml location
+        // For testing, we will create a new temp data directory to ensure the method is running properly
+        String workingDir = System.getProperty("user.dir") + "/data/";
+        try {
+            // Create an empty directory for the default directory
+            Files.createDirectories(Paths.get(workingDir));
+            // Test that the default directory for the overloaded method ends with the /data/
+            JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, FileManager::retrieveExcelPath, "JPSRuntimeException was expected");
+            assertTrue(thrown.getMessage().contains("No Excel workbook detected! Please place your file in the directory:"));
+            assertTrue(thrown.getMessage().endsWith("/data/"));
+        } catch (IOException e) {
+            throw new JPSRuntimeException(e);
+        } finally {
+            // Delete this temp directory regardless of result
+            File dataDir = new File(workingDir);
+            dataDir.delete();
+        }
     }
 
     public static void createTestExcel(Path excel) {
