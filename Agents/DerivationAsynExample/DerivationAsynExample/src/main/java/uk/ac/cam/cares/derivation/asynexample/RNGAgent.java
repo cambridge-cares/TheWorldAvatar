@@ -52,8 +52,8 @@ public class RNGAgent extends DerivationAgent {
 	}
 	
 	@Override
-	public void processRequestParameters(String derivationIRI, DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString());
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String upperLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.UpperLimit)).get(0);

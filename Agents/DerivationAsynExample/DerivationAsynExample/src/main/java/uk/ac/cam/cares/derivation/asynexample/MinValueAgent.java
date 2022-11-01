@@ -49,8 +49,8 @@ public class MinValueAgent extends DerivationAgent {
 	}
 	
 	@Override
-	public void processRequestParameters(String derivationIRI, DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("MinValueAgent received derivationInputs: " + derivationInputs.toString());
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
+		LOGGER.debug("MinValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String listOfRandomPoints_iri = derivationInputs
