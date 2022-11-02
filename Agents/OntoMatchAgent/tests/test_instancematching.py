@@ -9,19 +9,18 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
     def get_params_model_specific(self):
         return {
-            'symmetric': True,
-            'delta': 0.05
+            'delta': 0.025
         }
 
     def test_auto_calibration_without_geo_coordinates(self):
 
         params_model_specific = self.get_params_model_specific()
 
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO)
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_CSV)
         params_blocking = params['blocking']
         params_mapping = params['mapping']
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
@@ -30,64 +29,24 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
 
-        index_set_matches = self.read_kwl_gppd_DEU_matching_file()
+        index_set_matches = self.read_klw_gppd_DEU_matches()
         logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
-        self.assertEqual(len(df_total_best_scores), 1412)
+        self.assertEqual(len(df_total_best_scores), 1228)
 
-        # evaluation result - maximum: t=0.3, f1=0.87076, p=0.93235, r=0.81681
-        expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.9, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.8, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.7, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.6, 0.99603, 0.27047, 251, 1, 677, 0.42542], 
-            [0.5, 0.99752, 0.43427, 403, 1, 525, 0.60511], 
-            [0.4, 0.98696, 0.57112, 530, 7, 398, 0.72355], 
-            [0.3, 0.93235, 0.81681, 758, 55, 170, 0.87076], 
-            [0.2, 0.80309, 0.89655, 832, 204, 96, 0.84725], 
-            [0.1, 0.68124, 0.92349, 857, 401, 71, 0.78408], 
-            [0.0, 0.62535, 0.95151, 883, 529, 45, 0.7547]]
-
-        for i, expected in enumerate(expected_result):
-            actual = result[i]
-            self.assertAlmostEqual(actual[1], expected[1], places=2)
-            self.assertAlmostEqual(actual[2], expected[2], places=2)
-
-    def test_auto_calibration_with_geo_coordinates(self):
-
-        params_model_specific = self.get_params_model_specific()
-
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_GEO)
-        params_blocking = params['blocking']
-        params_mapping = params['mapping']
-
-        src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
-
-        matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
-        _, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, params_mapping=params_mapping)
-
-        logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
-        logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
-
-        index_set_matches = self.read_kwl_gppd_DEU_matching_file()
-        logging.info('length of total best scores=%s', len(df_total_best_scores))
-        result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
-
-        self.assertEqual(len(df_total_best_scores), 1359)
-
-        # evaluation result - maximum: t=0.2, f1=0.85862, p=0.82376, r=0.89655
-        expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.9, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.8, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.7, 1.0, 0.0, 0, 0, 928, 0.0], 
-            [0.6, 1.0, 0.00216, 2, 0, 926, 0.0043], 
-            [0.5, 0.996, 0.26832, 249, 1, 679, 0.42275], 
-            [0.4, 0.9938, 0.51832, 481, 3, 447, 0.6813], 
-            [0.3, 0.95716, 0.77047, 715, 32, 213, 0.85373], 
-            [0.2, 0.82376, 0.89655, 832, 178, 96, 0.85862], 
-            [0.1, 0.67699, 0.94181, 874, 417, 54, 0.78774], 
-            [0.0, 0.65195, 0.95474, 886, 473, 42, 0.77481]]
+        # evaluation result - maximum: t=0.3, f1=0.87836, p=0.93292, r=0.82983
+        expected_result = [[1.0, 1.0, 0.0, 0, 0, 905, 0.0], 
+            [0.9, 1.0, 0.0, 0, 0, 905, 0.0], 
+            [0.8, 1.0, 0.0, 0, 0, 905, 0.0], 
+            [0.7, 1.0, 0.00552, 5, 0, 900, 0.01099], 
+            [0.6, 0.99645, 0.3105, 281, 1, 624, 0.47346], 
+            [0.5, 0.99775, 0.49061, 444, 1, 461, 0.65778], 
+            [0.4, 0.98311, 0.57901, 524, 9, 381, 0.72879], 
+            [0.3, 0.93292, 0.82983, 751, 54, 154, 0.87836], 
+            [0.2, 0.81791, 0.90829, 822, 183, 83, 0.86073], 
+            [0.1, 0.71688, 0.91492, 828, 327, 77, 0.80388], 
+            [0.0, 0.67915, 0.92155, 834, 394, 71, 0.782]]
 
         for i, expected in enumerate(expected_result):
             actual = result[i]
@@ -116,8 +75,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_matching_with_scoring_weights_without_geo_coordinates(self):
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT_CSV)
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_post_processing = params['post_processing']
@@ -134,22 +93,21 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         ontomatch.instancematching.add_total_scores(scores, props=[0, 1, 2, 3, 4], scoring_weights=scoring_weights)
 
-        matches = self.read_kwl_gppd_DEU_matching_file()
+        matches = self.read_klw_gppd_DEU_matches()
         result = ontomatch.evaluate.evaluate(scores, matches, number_of_thresholds=11)
 
-        # evaluation result - maximum: t=0.8, f1=0.80754, p=0.85905, r=0.76185
-        # area under curve=0.8316915503444298
-        expected_result = [[1.0, 0.99688, 0.34483, 320, 1, 608, 0.51241], 
-            [0.9, 0.95188, 0.68211, 633, 32, 295, 0.79473], 
-            [0.8, 0.85905, 0.76185, 707, 116, 221, 0.80754], 
-            [0.7, 0.80498, 0.80065, 743, 180, 185, 0.80281], 
-            [0.6, 0.74656, 0.81897, 760, 258, 168, 0.78109], 
-            [0.5, 0.67483, 0.8319, 772, 372, 156, 0.74517], 
-            [0.4, 0.6, 0.83405, 774, 516, 154, 0.69793], 
-            [0.3, 0.50751, 0.83728, 777, 754, 151, 0.63196], 
-            [0.2, 0.40553, 0.86961, 807, 1183, 121, 0.55312], 
-            [0.1, 0.25388, 0.96983, 900, 2645, 28, 0.40241], 
-            [0.0, 0.16828, 0.97198, 902, 4458, 26, 0.2869]]
+        #evaluation result - maximum: t=0.8, f1=0.82093, p=0.86626, r=0.78011
+        expected_result = [[1.0, 0.99688, 0.35359, 320, 1, 585, 0.52202], 
+            [0.9, 0.95173, 0.69724, 631, 32, 274, 0.80485], 
+            [0.8, 0.86626, 0.78011, 706, 109, 199, 0.82093], 
+            [0.7, 0.81421, 0.8232, 745, 170, 160, 0.81868], 
+            [0.6, 0.7552, 0.84199, 762, 247, 143, 0.79624], 
+            [0.5, 0.68402, 0.85635, 775, 358, 130, 0.76055], 
+            [0.4, 0.61037, 0.85856, 777, 496, 128, 0.7135], 
+            [0.3, 0.5196, 0.86409, 782, 723, 123, 0.64896], 
+            [0.2, 0.41517, 0.89503, 810, 1141, 95, 0.56723], 
+            [0.1, 0.24934, 0.94144, 852, 2565, 53, 0.39426], 
+            [0.0, 0.18097, 0.94365, 854, 3865, 51, 0.3037]]
 
         for i, expected in enumerate(expected_result):
             actual = result[i]
@@ -161,7 +119,6 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         params = self.read_params(tests.utils_for_testing.PATH_CONF_REST_AUTO_CSV)
         params_blocking = params['blocking']
         params_mapping = params['mapping']
-        #params_model_specific = self.get_params_model_specific()
         params_model_specific = params['matching']['model_specific']
 
         src_onto, tgt_onto = self.read_restaurant_tables()
@@ -173,11 +130,9 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
 
-        index_set_matches = self.read_restaurant_matching_file()
+        index_set_matches = self.read_restaurant_matches()
         logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
-
-        print('RESULT', result)
 
         self.assertEqual(len(df_total_best_scores), 659)
 
