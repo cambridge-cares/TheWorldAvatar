@@ -39,8 +39,8 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -2532,14 +2532,7 @@ public class DerivationSparql {
 	 * 
 	 * This method returns a boolean value to indicate if it is certain that the
 	 * triples in the update endpoint are changed by the SPARQL update operation.
-	 * This is currently implemented as checking the "mutationCount" in the response
-	 * message of the HTTP POST for SPARQL update to blazegraph-backended endpoint,
-	 * a true boolean will be returned IF AND ONLY IF the mutationCount is greater
-	 * than 0 meaning the triples are changed.
-	 * 
-	 * For non-blazegraph-backended endpoint, the SPARQL update will be executed in
-	 * the normal way and it is not clear enough to determine whether triples are
-	 * changed. In this situation, a false boolean will be returned.
+	 * For more details, see DerivationSparql::updateDerivationIfHttpPostAvailable.
 	 * 
 	 * @param outputTriples
 	 * @param newIriDownstreamDerivationMap
@@ -2626,35 +2619,7 @@ public class DerivationSparql {
 				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, deleteOldTimestamp)
 				.insert(insertNewTimestamp).where(sub);
 
-		try {
-			if (storeClient.getClass() == RemoteStoreClient.class) {
-				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-							.executeUpdateByPost(modify.getQueryString());
-					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-						String html = EntityUtils.toString(httpResponse.getEntity());
-						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-						Matcher matcher = pattern.matcher(html);
-						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-							// the parsed value is greater than 0
-							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-									+ matcher.group(1));
-							return true;
-						}
-						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-								+ matcher.group(1));
-					}
-				} else {
-					storeClient.executeUpdate(modify.getQueryString());
-				}
-			} else {
-				storeClient.executeUpdate(modify.getQueryString());
-			}
-		} catch (ParseException | IOException exception) {
-			throw new JPSRuntimeException(exception);
-		}
-		return false;
+		return updateDerivationIfHttpPostAvailable(modify.getQueryString());
 	}
 
 	/**
@@ -2679,14 +2644,7 @@ public class DerivationSparql {
 	 * 
 	 * This method returns a boolean value to indicate if it is certain that the
 	 * triples in the update endpoint are changed by the SPARQL update operation.
-	 * This is currently implemented as checking the "mutationCount" in the response
-	 * message of the HTTP POST for SPARQL update to blazegraph-backended endpoint,
-	 * a true boolean will be returned IF AND ONLY IF the mutationCount is greater
-	 * than 0 meaning the triples are changed.
-	 * 
-	 * For non-blazegraph-backended endpoint, the SPARQL update will be executed in
-	 * the normal way and it is not clear enough to determine whether triples are
-	 * changed. In this situation, a false boolean will be returned.
+	 * For more details, see DerivationSparql::updateDerivationIfHttpPostAvailable.
 	 * 
 	 * @param derivation
 	 * @param newIriDownstreamDerivationMap
@@ -2786,30 +2744,53 @@ public class DerivationSparql {
 						deleteOldTimestamp, deleteRetrievedInputsAt)
 				.insert(insertNewTimestamp).where(sub);
 
+		return updateDerivationIfHttpPostAvailable(modify.getQueryString());
+	}
+
+	/**
+	 * This method performs the SPARQL update when reconnecting derivation outputs
+	 * via HTTP POST if blazegraph backended.
+	 *
+	 * This method returns a boolean value to indicate if it is certain that the
+	 * triples in the update endpoint are changed by the SPARQL update operation.
+	 * This is currently implemented as checking the "mutationCount" in the response
+	 * message of the HTTP POST for SPARQL update to blazegraph-backended endpoint,
+	 * a true boolean will be returned IF AND ONLY IF the mutationCount is greater
+	 * than 0 meaning the triples are changed.
+	 *
+	 * For non-blazegraph-backended endpoint, the SPARQL update will be executed in
+	 * the normal way and it is not clear enough to determine whether triples are
+	 * changed. In this situation, a false boolean will be returned.
+	 *
+	 * @param sparqlUpdate
+	 * @return
+	 */
+	boolean updateDerivationIfHttpPostAvailable(String sparqlUpdate) {
 		try {
 			if (storeClient.getClass() == RemoteStoreClient.class) {
 				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-							.executeUpdateByPost(modify.getQueryString());
-					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-						String html = EntityUtils.toString(httpResponse.getEntity());
-						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-						Matcher matcher = pattern.matcher(html);
-						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-							// the parsed value is greater than 0
-							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
+					try (CloseableHttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+							.executeUpdateByPost(sparqlUpdate)) {
+						if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+							String html = EntityUtils.toString(httpResponse.getEntity());
+							Pattern pattern = Pattern.compile("mutationCount=([0-9]+)");
+							Matcher matcher = pattern.matcher(html);
+							if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+								// only return true if the agent is able to parse "mutationCount=([0-9]+)" and
+								// the parsed value is greater than 0
+								LOGGER.debug("SPARQL update (" + sparqlUpdate + ") executed with mutationCount="
+									+ matcher.group(1));
+								return true;
+							}
+							LOGGER.debug("SPARQL update (" + sparqlUpdate + ") executed with mutationCount="
 								+ matcher.group(1));
-							return true;
 						}
-						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
-							+ matcher.group(1));
 					}
 				} else {
-					storeClient.executeUpdate(modify.getQueryString());
+					storeClient.executeUpdate(sparqlUpdate);
 				}
 			} else {
-				storeClient.executeUpdate(modify.getQueryString());
+				storeClient.executeUpdate(sparqlUpdate);
 			}
 		} catch (ParseException | IOException exception) {
 			throw new JPSRuntimeException(exception);
