@@ -1,10 +1,9 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 12 Oct 2022                            #
+# Authors: Magnus Mueller (mm2692@cam.ac.uk) #    
+# Date: 31 Oct 2022                            #
 ################################################
 
-# The purpose of this module is to instantiate/update data retrieved from
-# the HM Land Registry Open Data SPARQL endpoint according to OntoBuiltEnv
+# The purpose of this module is to forecast a time series using a trained model or Prophet
 
 import re
 import json
@@ -55,7 +54,7 @@ def forecast(dataIRI, horizon = 24 *7, forecast_start_date = None, model_path_ck
 
     # use mapping function to get the correct dataIRI timeseries and its covariates
     logger.info('Retrieving instantiated timeseries for dataIRI ...')
-    df, cov_iris, covariates = mapping_type_data_function[predecessor_type](dataIRI)
+    df, cov_iris, covariates = mapping_type_data_function[predecessor_type](dataIRI, kgClient, tsClient)
 
     # remove timezone
     df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)

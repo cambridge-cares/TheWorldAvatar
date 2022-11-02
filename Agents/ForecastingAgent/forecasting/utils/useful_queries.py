@@ -76,7 +76,7 @@ def get_ts_value_iri(dataIRI, kgClient):
     ts_value_iri = kgClient.performQuery(query)[0]["tsValueIRI"]
     return ts_value_iri
 
-def get_df_for_heat_supply(dataIRI, kgClient):
+def get_df_for_heat_supply(dataIRI, kgClient, tsClient):
     cov_iris = []
     heat_supply_ts_iri = get_ts_value_iri(dataIRI)
     heat_supply_dates, heat_supply_ts = get_ts_data( heat_supply_ts_iri, tsClient)
