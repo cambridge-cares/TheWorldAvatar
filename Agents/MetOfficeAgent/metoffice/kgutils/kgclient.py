@@ -1,5 +1,10 @@
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 08 Apr 2022                            #
+################################################
+
 # The purpose of this module is to provide functionality to execute
-# KG queries and updates using the StoreRouter from the JPB_BASE_LIB
+# KG queries and updates using the StoreRouter from the JPS_BASE_LIB
 
 import json
 
@@ -20,8 +25,7 @@ class KGClient:
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its
-        # tested and
+        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
         # # Get StoreClientInterface Java object to sparqlEndPoint with
         # # query operations enabled (True) and update operations disabled (False)
@@ -32,9 +36,9 @@ class KGClient:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
             else:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
-        except:
+        except Exception as ex:
             #logger.error("Unable to initialise KG client")
-            raise KGException("Unable to initialise KG client")
+            raise KGException("Unable to initialise KG client.") from ex
 
     
     def performQuery(self, query):
@@ -45,9 +49,9 @@ class KGClient:
         """
         try:
             response = self.kg_client.execute(query)
-        except:
+        except Exception as ex:
             #logger.error("SPARQL query not successful")
-            raise KGException("SPARQL query not successful")
+            raise KGException("SPARQL query not successful.") from ex
         return json.loads(response)
 
 
@@ -59,6 +63,6 @@ class KGClient:
         """
         try:
             self.kg_client.executeUpdate(update)
-        except:
+        except Exception as ex:
             #logger.error("SPARQL update not successful")
-            raise KGException("SPARQL update not successful")
+            raise KGException("SPARQL update not successful.") from ex

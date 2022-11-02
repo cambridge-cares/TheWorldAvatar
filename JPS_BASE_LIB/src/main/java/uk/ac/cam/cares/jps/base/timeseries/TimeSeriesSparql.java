@@ -42,7 +42,7 @@ public class TimeSeriesSparql {
 
 	// Namespaces for ontology and knowledge base
 	public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
-	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
+	public static final String ns_kb = "https://www.theworldavatar.com/kg/ontotimeseries/";
 	public static final String ns_time = "http://www.w3.org/2006/time#";
 
 	// Prefixes

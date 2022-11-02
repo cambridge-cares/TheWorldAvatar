@@ -19,7 +19,6 @@ PREFIXES = {
     'rdfs': RDFS,
     'xsd':  XSD,
     'geo':  GEO,
-    'geolit': GEOLIT,
     'om' :  OM,
     'owl':  OWL,
     'm3l':  M3L,

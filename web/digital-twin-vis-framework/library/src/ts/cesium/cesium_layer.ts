@@ -4,7 +4,7 @@
 class CesiumLayer extends DataLayer {
 
     /**
-     * Initialise a new MapBoxLayer instance.
+     * Initialise a new MapboxLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
        super(id, name, source);
