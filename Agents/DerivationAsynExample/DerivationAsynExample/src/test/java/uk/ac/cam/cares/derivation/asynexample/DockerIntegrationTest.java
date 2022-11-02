@@ -3,6 +3,7 @@ package uk.ac.cam.cares.derivation.asynexample;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.derivation.StatusType;
@@ -266,11 +268,11 @@ public class DockerIntegrationTest extends TestCase {
 		Assert.assertEquals(3, excThrowDerivations.size());
 		Assert.assertEquals(3, countNumberOfDerivationsGivenStatusType(excThrowDerivations, StatusType.ERROR));
 		// also all of the error message recorded in rdfs:comment should have the error message defined in the ExceptionThrowAgent
-		Map<String, String> errMsgs = devClient.getDerivationsInErrorStatus(Config.agentIriExceptionThrow);
-		Assert.assertEquals(3, errMsgs.size());
-		errMsgs.forEach((d, msg) -> {
-			Assert.assertTrue(msg.contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
-		});
+		List<Derivation> errDerivations = devClient.getDerivationsInErrorStatus(Config.agentIriExceptionThrow);
+        Assert.assertEquals(3, errDerivations.size());
+        errDerivations.stream().forEach(d -> {
+            Assert.assertTrue(d.getErrMsg().contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
+        });
 	}
 
 	////////////////////////////////////////////////////////////
