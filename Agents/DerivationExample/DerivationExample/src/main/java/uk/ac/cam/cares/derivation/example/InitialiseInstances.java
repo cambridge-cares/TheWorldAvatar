@@ -77,7 +77,23 @@ public class InitialiseInstances extends JPSAgent{
     	createInputTimeSeries(input, tsClient);
     	LOGGER.info("Created input <" + input + ">");
     	InstancesDatabase.Input = input;
-    	
+
+		// register ontoagent instances in triple store
+		String inputDataRdfType = SparqlClient.getRdfTypeString(SparqlClient.InputData);
+		String minValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
+		String maxValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
+		String avgRdfType = SparqlClient.getRdfTypeString(SparqlClient.Average);
+		String differenceRdfType = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String scalarValueRdfType = SparqlClient.getRdfTypeString(SparqlClient.ScalarValue);
+		devClient.createOntoAgentInstance(minvalue_agent_iri, minvalue_agent_url,
+			Arrays.asList(inputDataRdfType), Arrays.asList(minValueRdfType, scalarValueRdfType));
+		devClient.createOntoAgentInstance(maxvalue_agent_iri, maxvalue_agent_url,
+			Arrays.asList(inputDataRdfType), Arrays.asList(maxValueRdfType, scalarValueRdfType));
+		devClient.createOntoAgentInstance(difference_agent_iri, difference_agent_url,
+			Arrays.asList(minValueRdfType, maxValueRdfType), Arrays.asList(differenceRdfType, scalarValueRdfType));
+		devClient.createOntoAgentInstance(average_agent_iri, average_agent_url,
+			Arrays.asList(inputDataRdfType), Arrays.asList(avgRdfType));
+
     	String min_property = sparqlClient.createMinValue();
     	String min_value = sparqlClient.addValueInstance(min_property, 0);
     	LOGGER.info("Created min value <" + min_property + ">");
@@ -97,17 +113,17 @@ public class InitialiseInstances extends JPSAgent{
     	InstancesDatabase.Average = average;
     	
     	// create 3 standard derived quantities
-    	String derived_minvalue = devClient.createDerivation(Arrays.asList(min_property,min_value), minvalue_agent_iri, minvalue_agent_url, Arrays.asList(input));
+		String derived_minvalue = devClient.createDerivation(Arrays.asList(min_property,min_value), minvalue_agent_iri, Arrays.asList(input));
     	LOGGER.info("Created derived quantity for min value <" + derived_minvalue + ">");
     	
-    	String derived_maxvalue = devClient.createDerivation(Arrays.asList(max_property,max_value), maxvalue_agent_iri, maxvalue_agent_url, Arrays.asList(input));
+		String derived_maxvalue = devClient.createDerivation(Arrays.asList(max_property,max_value), maxvalue_agent_iri, Arrays.asList(input));
     	LOGGER.info("Created derived quantity for max value <" + derived_maxvalue + ">");
     	
-    	String derived_difference = devClient.createDerivation(Arrays.asList(diff_property,diff_value), difference_agent_iri, difference_agent_url, Arrays.asList(min_property,max_property));
+		String derived_difference = devClient.createDerivation(Arrays.asList(diff_property,diff_value), difference_agent_iri, Arrays.asList(min_property,max_property));
     	LOGGER.info("Created derived quantity for calculated difference <" + derived_difference + ">");
     	
     	// average is a derivation with a time series
-    	String derived_average = devClient.createDerivationWithTimeSeries(Arrays.asList(average), average_agent_iri, average_agent_url, Arrays.asList(input));
+		String derived_average = devClient.createDerivationWithTimeSeries(Arrays.asList(average), average_agent_iri, Arrays.asList(input));
     	LOGGER.info("Created derivation for average <" + derived_average + ">");
     	
     	// check all connections between the derived quantities

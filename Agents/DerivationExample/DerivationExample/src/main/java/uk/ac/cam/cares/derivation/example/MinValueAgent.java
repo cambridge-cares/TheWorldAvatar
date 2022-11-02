@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -40,7 +40,7 @@ public class MinValueAgent extends DerivationAgent {
 	public static final String URL_MINVALUE = "/MinValueAgent";
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);
 	
-	StoreClientInterface storeClient;
+	TripleStoreClientInterface storeClient;
 	SparqlClient sparqlClient;
 
 	public MinValueAgent() {
