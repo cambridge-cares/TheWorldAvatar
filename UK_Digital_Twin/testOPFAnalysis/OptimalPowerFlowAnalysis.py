@@ -82,6 +82,7 @@ from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
 import matplotlib.pyplot as plt
 from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
 import pandas as pd
+import seaborn
 
 ## create configuration objects
 SLASH = '/'
@@ -518,7 +519,7 @@ class OptimalPowerFlowAnalysis:
         plt.legend()
         plt.savefig('SMR_%s.png' % str(self.numberOfSMRToBeIntroduced), dpi = 1200)
         plt.savefig('SMR_%s.svg' % str(self.numberOfSMRToBeIntroduced))
-        ##plt.show()
+        ##plt.show() ## show must come after the savefig
         ##plt.close()
         plt.cla()
         ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
@@ -553,7 +554,6 @@ class OptimalPowerFlowAnalysis:
         
     """This method is called to initialize the model entities objects: bus and branch (this initialisation will not be affected by SMR introduction or Carbon tax change"""
     def ModelPythonObjectInputInitialiser_BusAndBranch(self): 
-        ## TODO: initialise the branch and bus for each run
         self.BusObjectList = []
         self.BranchObjectList = []
         self.OrderedBusNodeIRIList = []
@@ -600,17 +600,6 @@ class OptimalPowerFlowAnalysis:
             ###2. execute the initialiser with the branch model instance as the function argument 
             self.ObjectSet[objectName] = initialiser(eline['ELineNode'], uk_eline_model, eline, self.branchVoltageLevel, self.OrderedBusNodeIRIList, self.queryUKDigitalTwinEndpointLabel) 
             self.BranchObjectList.append(objectName)
-
-        print("*****This are EBus results*****")
-        for attr in self.ObjectSet.get('EBus-7').__dir__():
-            print(attr, getattr(self.ObjectSet.get('EBus-7'), attr))
-        for attr in self.ObjectSet.get('EBus-8').__dir__():
-            print(attr, getattr(self.ObjectSet.get('EBus-8'), attr))
-
-        print("*****This are ELine results*****")
-        for attr in self.ObjectSet.get('ELine-0').__dir__():
-            print(attr, getattr(self.ObjectSet.get('ELine-0'), attr)) 
-            
         return
 
     """This method is called to initialize the model entities objects: Generator"""
@@ -621,16 +610,6 @@ class OptimalPowerFlowAnalysis:
     
     ## if self.CarbonTaxForOPF != CarbonTaxForOPF or self.weatherConditionName != weatherConditionName: ## The carbon tax changed or the weather condition changed, the generator should be reinitialised
         ## for each OPF with different carbon tax, clean up the list 
-
-        print("*****This are EBus results*****")
-        for attr in self.ObjectSet.get('EBus-7').__dir__():
-            print(attr, getattr(self.ObjectSet.get('EBus-7'), attr))
-        for attr in self.ObjectSet.get('EBus-8').__dir__():
-            print(attr, getattr(self.ObjectSet.get('EBus-8'), attr))
-
-        print("*****This are ELine results*****")
-        for attr in self.ObjectSet.get('ELine-0').__dir__():
-            print(attr, getattr(self.ObjectSet.get('ELine-0'), attr)) 
             
         self.CarbonTaxForOPF = CarbonTaxForOPF
         self.weatherConditionName = weatherConditionName
@@ -643,9 +622,9 @@ class OptimalPowerFlowAnalysis:
             i = self.SMRList.index(SMRList_EachWeight)
             weighter = str(self.weighterList[i])
             if decommissionFlag:
-                self.genTag = "SMRDesign" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-afterDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
+                self.genTag = "SMRDesign-" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-afterDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
             else:
-                self.genTag = "SMRDesign" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-beforeDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
+                self.genTag = "SMRDesign-" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-beforeDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
             
             for egen in self.generatorNodeList:
                 objectName = UK_PG.UKEGenModel.EGenKey + self.genTag + str(self.generatorNodeList.index(egen)) ## egen model python object name
@@ -968,16 +947,16 @@ class OptimalPowerFlowAnalysis:
                 ExtantGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ExtantGenerator'
                 SMRIntroducedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_SMR'
                 ClosedGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ClosedGenerator'
-                DecommissionLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
+                DecommissionedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
 
-                self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
-                self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
-                self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, ClosedGeneratorLabel)
-                ## FIXME: add the decommssion visualisationFileCreator
-                ## self.visualisationFileCreator_decommissionedGenerator(DecommissionLabel)
+                filePath =  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
                 
+                self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, filePath, ExtantGeneratorLabel) 
+                self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, filePath, SMRIntroducedLabel)
+                self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, filePath, ClosedGeneratorLabel)
+                ## FIXME: add the decommssion visualisationFileCreator
+                ## self.visualisationFileCreator_decommissionedGenerator(DecommissionLabel)          
         return 
-
 
 #FIXME: still need to check why there is no generator not been used for each weather condition
     def decommissionPowerPlantDecider(self, numberOfSMRToBeIntroduced, slackFactor:float, generatorNameList:list):
@@ -1193,7 +1172,7 @@ class OptimalPowerFlowAnalysis:
         plt.show()     
         return 
 
-    def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, file_label):
+    def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, filePath, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
@@ -1236,14 +1215,14 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        geojson_written = open(file_label +'.geojson','w')
+        geojson_written = open('.\\JSONFiles\\' + filePath + '\\'+ file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ExtantGenerator---', file_label)
         return
 
 ##FIXME: if add the decommission method, it might be a concreate list of the closed generators, for now it will used the same list of the GeneratorObjectList
-    def visualisationFileCreator_ClosedGenerator(self, GeneratorObjectList, file_label):
+    def visualisationFileCreator_ClosedGenerator(self, GeneratorObjectList, filePath, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
@@ -1286,13 +1265,13 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        geojson_written = open(file_label +'.geojson','w')
+        geojson_written = open('.\\JSONFiles\\' + filePath + '\\'+ file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ClosedGenerator---', file_label)
         return
 
-    def visualisationFileCreator_AddedSMRGenerator(self, SMRSiteObjectList, file_label):
+    def visualisationFileCreator_AddedSMRGenerator(self, SMRSiteObjectList, filePath, file_label):
         if len(SMRSiteObjectList) == 0:
             print("***There is no SMR to be retrofitted.***")
             return
@@ -1307,6 +1286,7 @@ class OptimalPowerFlowAnalysis:
                 "Fuel Type": "%s",
                 "Capacity": "%s",
                 "Output": "%s",
+                "Operation ratio": "%s",
                 "Number of SMR units": "%s",
                 "Carbon tax rate": "%s",
                 "Status": "%s",
@@ -1319,7 +1299,7 @@ class OptimalPowerFlowAnalysis:
                     %s
                 ]
                 }
-            },"""%(self.ObjectSet[smr].fueltype, self.ObjectSet[smr].capacity, round(float(self.ObjectSet[smr].PG_OUTPUT),2), int(float(self.ObjectSet[smr].capacity)/self.SMRCapability), 
+            },"""%(self.ObjectSet[smr].fueltype, self.ObjectSet[smr].capacity, round(float(self.ObjectSet[smr].PG_OUTPUT),2), round(float(self.ObjectSet[smr].PG_OUTPUT)/float(self.ObjectSet[smr].capacity), 2), int(float(self.ObjectSet[smr].capacity)/self.SMRCapability), 
             self.ObjectSet[smr].CarbonTax, self.ObjectSet[smr].status, self.ObjectSet[smr].generatorNodeIRI,  self.ObjectSet[smr].latlon[1], self.ObjectSet[smr].latlon[0])
             # adding new line 
             geojson_file += '\n'+feature
@@ -1333,14 +1313,14 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        geojson_written = open(file_label +'.geojson','w')
+        geojson_written = open('.\\JSONFiles\\' + filePath + '\\'+ file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_AddedSMRGenerator---', file_label)
         return
 
 ## FIXME: modify this function according to the new decommission method 
-    def visualisationFileCreator_decommissionedGenerator(self, file_label):
+    def visualisationFileCreator_decommissionedGenerator(self, filePath, file_label):
         geojson_file = """
         {
             "type": "FeatureCollection",
@@ -1376,12 +1356,78 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        geojson_written = open(file_label +'.geojson','w')
+        geojson_written = open('.\\JSONFiles\\' + filePath + '\\'+ file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_decommissionedGenerator---', file_label)
-        return  
+        return 
+    
+    """Create the heatmap for total cost and CO2 emission"""
+    def dataHeatmapCreator(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+        rowNum = len(NumberOfSMRUnitList)
+        colNum = len(CarbonTaxForOPFList)
+        self.weightRecorder = []
+        
+        for k in range(len(weatherConditionList)):
+            matrix_minTotalCost = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_minCO2Emission = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_weight = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_minTotalCostForAnnotation = numpy.zeros((rowNum, colNum), dtype = float)
+            row = 0
+            for i in range(rowNum): ## SMR design index
+                SMRdesign = dataMatrix[i]
+                col = 0
+                for j in range(colNum): ## carbon tax index
+                    results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
+                    totalCost = results_sameCarbonTaxAndSameWeather[0]
+                    minTotalCost = min(totalCost[0])
+                    CO2EmissionOftheMinimumCost = results_sameCarbonTaxAndSameWeather[1][totalCost.index(minTotalCost)]
+                    matrix_minTotalCost[i, j] = minTotalCost
+                    matrix_minTotalCostForAnnotation[i, j] = float(minTotalCost)/1E10
+                    matrix_minCO2Emission[i, j] = CO2EmissionOftheMinimumCost
+                    matrix_weight[i, j] = weighterList[totalCost[0].index(minTotalCost)]
+                    col += 1
+                row += 1
+            self.weightRecorder.append(matrix_weight)
 
+
+
+            ## Draw the heatmap of total cost
+            seaborn.heatmap(matrix_minTotalCost, linewidth=0.002, cmap="crest", annot=matrix_minTotalCostForAnnotation, fmt=".3f", square = True, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5})
+            plt.title("Total cost at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.savefig('TotalCost_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            plt.savefig('TotalCost_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of carbon emission
+            seaborn.heatmap(matrix_minCO2Emission, linewidth=0.002, cmap="crest", annot=True, fmt=".1f", square = True, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':5})
+            plt.title("Carbon emission at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.savefig('CarbonEmission_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of carbon emission
+            seaborn.heatmap(matrix_weight, linewidth=0.002, cmap="crest", annot=True, fmt=".2f", square = True, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.5, annot_kws={'size':7.5})
+            plt.title("Picked weight at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.savefig('weight_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.close()
+            plt.cla()
+        return
+
+
+    """Develope the data matrix"""
     def resultsSheetCreator(self, weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, dataMatrix, fileName:str = None):
         rowNum = len(NumberOfSMRUnitList) * len(weighterList) + 3 
         colNum = 2 * len(weatherConditionList) * len(CarbonTaxForOPFList) + 2
@@ -1516,11 +1562,10 @@ if __name__ == '__main__':
     SMRCapability = 470
     maxmumSMRUnitAtOneSite = 4
     SMRIntergratedDiscount = 0.9
-    windOutputRatio = 0.47
-    solarOutputRatio = 0.44
     DecommissioningCostEstimatedLevel = 1
     slackFactor = 1.1
-    generateVisualisationJSON = True
+    ## TODO: stop generating the JSON files
+    generateVisualisationJSON = False
 
     pop_size = 800
     n_offsprings = 1000
@@ -1545,9 +1590,9 @@ if __name__ == '__main__':
     # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]] ## [wind, solar]
 
     ## For error shooting
-    NumberOfSMRUnitList = [10, 15, 50, 54, 60]
+    NumberOfSMRUnitList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60]
     weighterList = [0, 0.25, 0.5, 0.75, 1] 
-    CarbonTaxForOPFList = [20] 
+    CarbonTaxForOPFList = [0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
     weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
     
 #############10 BUS Model#################################################################################################################################################################
@@ -1644,7 +1689,7 @@ if __name__ == '__main__':
 ####================ OLD demanding assessment method: without pre-OPF ================####
     testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
     ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
-    testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch() ## TODO: initialise the bus and branch for each run
+    testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
     summary_eachSMRDesign = []
     for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
         print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
@@ -1668,7 +1713,8 @@ if __name__ == '__main__':
             summary_eachCarbonTax.append(summary_eachWeather)
         summary_eachSMRDesign.append(summary_eachCarbonTax)
     testOPF_29BusModel.resultsSheetCreator(weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-        
+    testOPF_29BusModel.dataHeatmapCreator(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
+    print(testOPF_29BusModel.weightRecorder)        
             # ## find the decommssioned power plant
             # testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
 
