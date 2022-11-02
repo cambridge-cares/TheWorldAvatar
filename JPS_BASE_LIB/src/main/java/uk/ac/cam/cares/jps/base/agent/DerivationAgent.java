@@ -237,87 +237,98 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			// NOTE a for loop is used here instead of Stream.forEach as we need to break out the iteration
 			for (String derivation : derivationsAndStatusType.keySet()) {
 				StatusType statusType = derivationsAndStatusType.get(derivation);
-				switch (statusType) {
-					case REQUESTED:
-						Map<String, List<String>> immediateUpstreamDerivationToUpdate = devClient
-								.checkImmediateUpstreamDerivation(derivation);
-						if (immediateUpstreamDerivationToUpdate
-								.containsKey(DerivationSparql.ONTODERIVATION_DERIVATIONASYN)) {
-							// if any of upstream async derivations are still outdated, skip
-							LOGGER.info("Asynchronous derivation <" + derivation
-									+ "> has a list of immediate upstream asynchronous derivations to be updated: "
-									+ immediateUpstreamDerivationToUpdate.toString());
-							// set flag to false to skips this "Requested" derivation until next time
-							// this is to avoid the agent flooding the KG with queries of the status over a short period of time
-							queryAgain = false;
-						} else {
-							// here implies all the immediate upstream async derivations are up-to-date
-							// request update if any of upstream sync derivations are outdated
-							List<String> syncDerivationsToUpdate = devClient
-									.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate);
-							if (!syncDerivationsToUpdate.isEmpty()) {
-								devClient.updatePureSyncDerivations(syncDerivationsToUpdate);
-							}
-							// check again to make sure that NO upstream async derivations need update
-							// this is needed when updating all upstream sync derivation takes long time
-							if (devClient.checkImmediateUpstreamDerivation(derivation).isEmpty()) {
-								// assume the checking is really fast so all sync ones are up-to-date
-								// retrieve the agent inputs that mapped to their rdf:type
-								JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
-								// if another agent thread is updating the same derivation concurrently
-								// and successed before this thread, then this method will return false
-								boolean progressToJob = devClient.updateStatusBeforeSetupJob(derivation);
-								// only progress to job if the status is updated successfully
-								// otherwise, the other thread will handle the job
-								if (progressToJob) {
-									LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of asynchronous derivation <"
-											+ derivation + ">: " + agentInputs.toString() + ".");
-									LOGGER.info("Asynchronous derivation <" + derivation + "> is now in progress.");
-									// serialise JSONObject retrieved from KG to instance of DerivationInputs
-									DerivationInputs derivationInputs = new DerivationInputs(
-											agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY), derivation);
-									DerivationOutputs derivationOutputs = new DerivationOutputs();
-									// perform the conversion from DerivationInputs to DerivationOutputs
-									processRequestParameters(derivationInputs, derivationOutputs);
-									// deserialise the derivationOutputs to a list of String of new derived IRI
-									List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
-									List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();
-									// update the status records in KG when the job is completed, also writes all
-									// new triples to KG
-									devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
-									LOGGER.info("Asynchronous derivation <" + derivation + "> has new generated derived IRI: "
-											+ newDerivedIRI.toString() + ".");
-									LOGGER.info("Asynchronous derivation <" + derivation + "> has all new generated triples: "
-											+ newTriples.stream().map(t -> t.getQueryString()).collect(Collectors.toList()));
-									LOGGER.info(
-											"Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.");
-								} else {
-									LOGGER.info("Asynchronous derivation <" + derivation
-											+ "> is already in progress by another agent thread.");
+				try {
+					switch (statusType) {
+						case REQUESTED:
+							Map<String, List<String>> immediateUpstreamDerivationToUpdate = devClient
+									.checkImmediateUpstreamDerivation(derivation);
+							if (immediateUpstreamDerivationToUpdate
+									.containsKey(DerivationSparql.ONTODERIVATION_DERIVATIONASYN)) {
+								// if any of upstream async derivations are still outdated, skip
+								LOGGER.info("Asynchronous derivation <" + derivation
+										+ "> has a list of immediate upstream asynchronous derivations to be updated: "
+										+ immediateUpstreamDerivationToUpdate.toString());
+								// set flag to false to skips this "Requested" derivation until next time
+								// this is to avoid the agent flooding the KG with queries of the status over a short period of time
+								queryAgain = false;
+							} else {
+								// here implies all the immediate upstream async derivations are up-to-date
+								// request update if any of upstream sync derivations are outdated
+								List<String> syncDerivationsToUpdate = devClient
+										.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate);
+								if (!syncDerivationsToUpdate.isEmpty()) {
+									devClient.updatePureSyncDerivations(syncDerivationsToUpdate);
 								}
+								// check again to make sure that NO upstream async derivations need update
+								// this is needed when updating all upstream sync derivation takes long time
+								if (devClient.checkImmediateUpstreamDerivation(derivation).isEmpty()) {
+									// assume the checking is really fast so all sync ones are up-to-date
+									// retrieve the agent inputs that mapped to their rdf:type
+									JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
+									// if another agent thread is updating the same derivation concurrently
+									// and successed before this thread, then this method will return false
+									boolean progressToJob = devClient.updateStatusBeforeSetupJob(derivation);
+									// only progress to job if the status is updated successfully
+									// otherwise, the other thread will handle the job
+									if (progressToJob) {
+										LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of asynchronous derivation <"
+												+ derivation + ">: " + agentInputs.toString() + ".");
+										LOGGER.info("Asynchronous derivation <" + derivation + "> is now in progress.");
+										// serialise JSONObject retrieved from KG to instance of DerivationInputs
+										DerivationInputs derivationInputs = new DerivationInputs(
+												agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY), derivation);
+										DerivationOutputs derivationOutputs = new DerivationOutputs();
+										// perform the conversion from DerivationInputs to DerivationOutputs
+										processRequestParameters(derivationInputs, derivationOutputs);
+										// deserialise the derivationOutputs to a list of String of new derived IRI
+										List<String> newDerivedIRI = derivationOutputs.getNewDerivedIRI();
+										List<TriplePattern> newTriples = derivationOutputs.getOutputTriples();
+										// update the status records in KG when the job is completed, also writes all
+										// new triples to KG
+										devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
+										LOGGER.info("Asynchronous derivation <" + derivation + "> has new generated derived IRI: "
+												+ newDerivedIRI.toString() + ".");
+										LOGGER.info("Asynchronous derivation <" + derivation + "> has all new generated triples: "
+												+ newTriples.stream().map(t -> t.getQueryString()).collect(Collectors.toList()));
+										LOGGER.info(
+												"Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.");
+									} else {
+										LOGGER.info("Asynchronous derivation <" + derivation
+												+ "> is already in progress by another agent thread.");
+									}
+								}
+								// set flag to true as either (1) the agent has been process this derivation for some time
+								// and status of other derivations in KG might have changed by other processes during this time
+								// or (2) the derivation is processed by another agent therefore needs a record update
+								queryAgain = true;
 							}
-							// set flag to true as either (1) the agent has been process this derivation for some time
-							// and status of other derivations in KG might have changed by other processes during this time
-							// or (2) the derivation is processed by another agent therefore needs a record update
-							queryAgain = true;
-						}
-						break;
-					case INPROGRESS:
-						// the current design just passes when the derivation is "InProgress"
-						// the queryAgain flag is set as false to let agent carry on to next derivation in the list
-						queryAgain = false;
-						break;
-					case FINISHED:
-						// clean up the derivation at "Finished" status
-						devClient.cleanUpFinishedDerivationUpdate(derivation);
-						LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleand up.");
-						// set flag to false as this cleaning up process is fast and no need to query again
-						queryAgain = false;
-						break;
-					case NOSTATUS:
-						// no need to queryAgain as the derivation is considered as up-to-date
-						queryAgain = false;
-						break;
+							break;
+						case INPROGRESS:
+							// the current design just passes when the derivation is "InProgress"
+							// the queryAgain flag is set as false to let agent carry on to next derivation in the list
+							queryAgain = false;
+							break;
+						case FINISHED:
+							// clean up the derivation at "Finished" status
+							devClient.cleanUpFinishedDerivationUpdate(derivation);
+							LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleand up.");
+							// set flag to false as this cleaning up process is fast and no need to query again
+							queryAgain = false;
+							break;
+						case ERROR:
+							// currently just pass
+							LOGGER.info("Asynchronous derivation <" + derivation + "> is in Error state.");
+							queryAgain = false;
+							break;
+						case NOSTATUS:
+							// no need to queryAgain as the derivation is considered as up-to-date
+							queryAgain = false;
+							break;
+					}
+				} catch (Exception exc) {
+					devClient.markAsError(derivation, exc);
+					queryAgain = true;
+					LOGGER.error("Error when handling derivation <" + derivation + ">", exc);
 				}
 				// break out the for loop and query again the list of derivations and their status
 				if (queryAgain) {

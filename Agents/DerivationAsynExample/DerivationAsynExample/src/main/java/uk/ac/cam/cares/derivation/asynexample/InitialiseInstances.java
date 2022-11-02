@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @WebServlet(urlPatterns = { InitialiseInstances.API_PATTERN_1, InitialiseInstances.API_PATTERN_2,
 		InitialiseInstances.API_PATTERN_3, InitialiseInstances.API_PATTERN_4, InitialiseInstances.API_PATTERN_5,
-		InitialiseInstances.API_PATTERN_6 })
+		InitialiseInstances.API_PATTERN_6, InitialiseInstances.API_PATTERN_EXC_THROW })
 public class InitialiseInstances extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
@@ -38,6 +38,7 @@ public class InitialiseInstances extends JPSAgent {
 	static final String API_PATTERN_4 = "/InitialiseInstances_4";
 	static final String API_PATTERN_5 = "/InitialiseInstances_5";
 	static final String API_PATTERN_6 = "/InitialiseInstances_6";
+	static final String API_PATTERN_EXC_THROW = "/InitialiseInstances_ExceptionThrow";
 
 	public static final int upper_limit_value = 20;
 	public static final int lower_limit_value = 3;
@@ -54,6 +55,8 @@ public class InitialiseInstances extends JPSAgent {
 	public static final String max_dev_key = "MaxValue Derivation";
 	public static final String min_dev_key = "MinValue Derivation";
 	public static final String diff_dev_key = "Difference Derivation";
+	public static final String input_placeholder_exc_throw_key = "InputPlaceholderExceptionThrow instance";
+	public static final String output_placeholder_exc_throw_key = "OutputPlaceholderExceptionThrow instance";
 
 	private static final String PATTERN_NOT_SUPPORTED_KEY = "Pattern not supported";
 
@@ -85,15 +88,21 @@ public class InitialiseInstances extends JPSAgent {
 			case API_PATTERN_6:
 				response = initialise6(sparqlClient, devClient);
 				break;
+			case API_PATTERN_EXC_THROW:
+				response = initialiseExceptionThrow(sparqlClient, devClient);
+				break;
 			default:
 				response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
 		}
 
 		// check all connections between all derivations
 		// the method validateDerivations() validates all derivations in the KG
-		LOGGER.info(
-				"Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
-						+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		if (!path.contentEquals(API_PATTERN_EXC_THROW)) {
+			// only log if it's not API_PATTERN_EXC_THROW
+			LOGGER.info("Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
+					+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		}
+
 		try {
 			devClient.validateDerivations();
 			LOGGER.info("Validated chain of derivations successfully");
@@ -128,6 +137,29 @@ public class InitialiseInstances extends JPSAgent {
 
 	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, false, false, false, false);
+	}
+
+	JSONObject initialiseExceptionThrow(SparqlClient sparqlClient, DerivationClient devClient) {
+		JSONObject response = new JSONObject();
+
+		// clear KG when initialising
+		LOGGER.info("Initialising new instances, all existing instances will get deleted");
+		sparqlClient.clearKG();
+
+		// get the IRIs
+		String inputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.InputPlaceholderExceptionThrow);
+		String outputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.OutputPlaceholderExceptionThrow);
+
+		// create ontoagent instances
+		devClient.createOntoAgentInstance(Config.agentIriExceptionThrow, Config.agentHttpUrlExceptionThrow,
+				Arrays.asList(inputPlaceholderRdfType), Arrays.asList(outputPlaceholderRdfType));
+
+		// create upperlimit, lowerlimit, numberofpoints
+		String inputPlaceholder = sparqlClient.createInputPlaceholderExceptionThrow();
+		LOGGER.info("Created InputPlaceholderExceptionThrow instance <" + inputPlaceholder + ">");
+		response.put(input_placeholder_exc_throw_key, inputPlaceholder);
+
+		return response;
 	}
 
 	JSONObject basicInitialisation(SparqlClient sparqlClient, DerivationClient devClient, boolean listPt, boolean max,
