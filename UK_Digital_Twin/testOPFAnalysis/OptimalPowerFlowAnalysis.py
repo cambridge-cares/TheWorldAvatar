@@ -1385,7 +1385,7 @@ class OptimalPowerFlowAnalysis:
                     matrix_minTotalCost[i, j] = minTotalCost
                     matrix_minTotalCostForAnnotation[i, j] = float(minTotalCost)/1E10
                     matrix_minCO2Emission[i, j] = CO2EmissionOftheMinimumCost
-                    matrix_weight[i, j] = weighterList[totalCost[0].index(minTotalCost)]
+                    matrix_weight[i, j] = weighterList[totalCost.index(minTotalCost)]
                     col += 1
                 row += 1
             self.weightRecorder.append(matrix_weight)
@@ -1590,9 +1590,9 @@ if __name__ == '__main__':
     # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]] ## [wind, solar]
 
     ## For error shooting
-    NumberOfSMRUnitList = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60]
+    NumberOfSMRUnitList = [54]#[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60]
     weighterList = [0, 0.25, 0.5, 0.75, 1] 
-    CarbonTaxForOPFList = [0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
+    CarbonTaxForOPFList = [20]# [0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
     weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
     
 #############10 BUS Model#################################################################################################################################################################
