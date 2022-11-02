@@ -66,6 +66,11 @@ Here, *kg* in the config file name ``conf_kg_auto_50.json`` stands for the domai
 
 
 
+# Preparing the Unit Tests
+
+1. Download [data.zip](https://doi.org/10.17863/CAM.82548) from the University of Cambridge data repository
+2. Extract *data.zip* 
+3. Copy the subdirectory ``KWL-GPPDdeu`` to ``$OntoMatchAgent/tests/data``
 
 
 

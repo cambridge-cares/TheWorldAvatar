@@ -9,7 +9,7 @@ import ontomatch.evaluate
 import ontomatch.utils.util
 
 PATH_MATCHES_PP_DEU = './tests/data/matches_power_plant_DEU.csv'
-PATH_TEST_PP_DEU = './tests/data/power_plant_DEU/test.csv'
+PATH_TEST_PP_DEU = './tests/data/KWL-GPPDdeu/test.csv'
 #PATH_MATCHES_REST = './tests/data/restaurant/all.csv'
 PATH_TEST_REST = './tests/data/restaurant/test.csv'
 PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
@@ -36,8 +36,8 @@ class TestCaseOntoMatch(unittest.TestCase):
     #    return src_onto, tgt_onto
     
     def read_kwl_gppd_tables(self):
-        src_df = ontomatch.utils.util.read_csv_table_ditto_format('./tests/data/power_plant_DEU/tableA.csv')
-        tgt_df = ontomatch.utils.util.read_csv_table_ditto_format('./tests/data/power_plant_DEU/tableB.csv')
+        src_df = ontomatch.utils.util.read_csv_table_ditto_format('./tests/data/KWL-GPPDdeu/tableA.csv')
+        tgt_df = ontomatch.utils.util.read_csv_table_ditto_format('./tests/data/KWL-GPPDdeu/tableB.csv')
         return src_df, tgt_df
 
     #def load_kwl_with_geo_coordinates_gppd_ontologies(self):

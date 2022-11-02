@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./tests/data/power_plant_DEU/tableA.csv",
-	"tgt": "./tests/data/power_plant_DEU/tableB.csv"
+	"src": "./tests/data/KWL-GPPDdeu/tableA.csv",
+	"tgt": "./tests/data/KWL-GPPDdeu/tableB.csv"
 },
 "pre_processing":{
 	"add_knowledge": null
@@ -45,6 +45,6 @@
 },
 "post_processing":{
 	"dump": null,
-	"evaluation_file": "./tests/data/power_plant_DEU/test.csv"
+	"evaluation_file": "./tests/data/KWL-GPPDdeu/test.csv"
 }
 }
