@@ -203,8 +203,6 @@ class PanelHandler {
 
         if(iri == null || stack == null) {
             console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
-
-            // Render metadata tree
             this.prepareMetaContainers(true, false);
             document.getElementById("metaTreeContainer").innerHTML = "";
 
@@ -258,6 +256,23 @@ class PanelHandler {
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
             }
+        })
+        .fail(function() {
+            console.warn("Could not contact the intended agent, will show any in-model content instead...");
+            self.prepareMetaContainers(true, false);
+            document.getElementById("metaTreeContainer").innerHTML = "";
+
+            if(Object.keys(properties).length > 0) {
+                // @ts-ignore
+                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+                // @ts-ignore
+                JsonView.expandChildren(metaTree);
+                // @ts-ignore
+                JsonView.selectiveCollapse(metaTree);
+            } else {
+                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+            }
+            return;
         });
         return promise;
     }
