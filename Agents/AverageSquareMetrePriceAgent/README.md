@@ -208,9 +208,10 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     ```
 4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers (Please note, that respective containers need to be down at the beginning of the tests):
     ```bash
-    # Add -s flag to see live logs
+    # Add `-s` flag to see live logs
     pytest -s --docker-compose=./docker-compose-test.yml
    ```
+   Running the tests likely creates a few left over Docker volumes. They might need to be removed manually thereafter.
 
 
 &nbsp;
