@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -150,36 +149,30 @@ public class InitialiseInstances extends JPSAgent {
 		String diff_reverse_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
 
 		// create ontoagent instances
-		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
+		devClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
 				Arrays.asList(ul_rdf_type, ll_rdf_type, np_rdf_type), Arrays.asList(lp_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
+		devClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
 				Arrays.asList(lp_rdf_type), Arrays.asList(maxv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
+		devClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
 				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
+		devClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
 				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
+		devClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
 				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_reverse_rdf_type));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
 		String ul_value = sparqlClient.addValueInstance(upperLimit, upper_limit_value);
-		devClient.addTimeInstance(upperLimit);
-		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
 		response.put(upper_limit_instance_key, upperLimit);
 
 		String lowerLimit = sparqlClient.createLowerLimit();
 		String ll_value = sparqlClient.addValueInstance(lowerLimit, lower_limit_value);
-		devClient.addTimeInstance(lowerLimit);
-		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
 		response.put(lower_limit_instance_key, lowerLimit);
 
 		String numOfPoints = sparqlClient.createNumberOfPoints();
 		String np_value = sparqlClient.addValueInstance(numOfPoints, number_of_points);
-		devClient.addTimeInstance(numOfPoints);
-		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		response.put(num_of_pts_instance_key, numOfPoints);
 

@@ -1,10 +1,10 @@
 /**
  * Represents a single visual layer of data.
  */
-class MapBoxLayer extends DataLayer {
+class MapboxLayer extends DataLayer {
 
     /**
-     * Initialise a new MapBoxLayer instance.
+     * Initialise a new MapboxLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
        super(id, name, source);
