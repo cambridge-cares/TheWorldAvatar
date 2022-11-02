@@ -39,7 +39,7 @@ public class MaxValueAgent extends DerivationAgent {
 	private static final long serialVersionUID = 1L;
 	public static final String URL_MAXVALUE = "/MaxValueAgent";
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);
-	
+
 	TripleStoreClientInterface storeClient;
 	SparqlClient sparqlClient;
 
@@ -50,14 +50,14 @@ public class MaxValueAgent extends DerivationAgent {
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		LOGGER.info("Received request: " + derivationInputs.toString());
-    	
-    	if (validateInput(derivationInputs, sparqlClient)) {
-    		String inputdata_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData)).get(0);
-    		
-    		// query from RDB using TimeSeries Client
-    		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-    		Integer maxvalue = (int) tsClient.getMaxValue(inputdata_iri);
-			
+
+		if (validateInput(derivationInputs, sparqlClient)) {
+			String inputdata_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData)).get(0);
+
+			// query from RDB using TimeSeries Client
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			Integer maxvalue = (int) tsClient.getMaxValue(inputdata_iri);
+
 			// write the output triples to derivationOutputs
 			String max_iri = SparqlClient.namespace + UUID.randomUUID().toString();
 			derivationOutputs.createNewEntity(max_iri, SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
@@ -67,15 +67,15 @@ public class MaxValueAgent extends DerivationAgent {
 			derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
 			LOGGER.info(
 					"Created a new max value instance <" + max_iri + ">, and its value instance <" + value_iri + ">");
-    	} else {
+		} else {
 			throw new BadRequestException("Input validation failed.");
 		}
 	}
-	
+
 	private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) {
 		boolean valid = false;
-        LOGGER.debug("Checking input for MaxValue agent");
-		
+		LOGGER.debug("Checking input for MaxValue agent");
+
 		List<String> inputData = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData));
 		if (inputData.size() == 1) {
 			String inputDataIri = inputData.get(0);
@@ -87,7 +87,7 @@ public class MaxValueAgent extends DerivationAgent {
 		} else {
 			throw new BadRequestException("Incorrect number of inputs");
 		}
-		
+
 		return valid;
 	}
 
