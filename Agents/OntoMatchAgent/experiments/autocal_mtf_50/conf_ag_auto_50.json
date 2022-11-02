@@ -1,0 +1,50 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/Structured/Amazon-Google/tableA.csv",
+	"tgt": "./data/Structured/Amazon-Google/tableB.csv"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 50,
+		"max_token_occurrences_tgt": 50,
+		"blocking_properties": ["title", "manufacturer"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "price", "prop2": "price", "sim": 1, "pos": 0},
+		{"prop1": "title", "prop2": "title", "sim": 3, "pos": 1},
+		{"prop1": "title", "prop2": "title", "sim": 4, "pos": 2},
+		{"prop1": "manufacturer", "prop2": "manufacturer", "sim": 3, "pos": 3},
+		{"prop1": "manufacturer", "prop2": "manufacturer", "sim": 4, "pos": 4}
+	],
+	"similarity_file": null
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"delta": 0.025
+	}
+},
+"post_processing":{
+	"test_file": "./data/Structured/Amazon-Google/test.csv",
+	"evaluation_file": null
+}
+}
