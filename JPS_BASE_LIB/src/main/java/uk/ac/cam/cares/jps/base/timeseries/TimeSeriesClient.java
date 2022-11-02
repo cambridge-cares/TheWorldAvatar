@@ -143,7 +143,6 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRIs
 	 * @param dataClass
 	 * @param timeUnit
-	 * @param srid
 	 * @param conn
      */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
@@ -240,7 +239,7 @@ public class TimeSeriesClient<T> {
 	/**
      * Append time series data to an already instantiated time series 
 	 * (i.e. add data for several time series in a single RDB connection)
-	 * @param ts_list List of TimeSeries objects to add
+	 * @param tsList List of TimeSeries objects to add
 	 * @param conn connection to the RDB
      */
     public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
@@ -571,10 +570,10 @@ public class TimeSeriesClient<T> {
 	/**
 	 * converts list of time series into required format for visualisation
 	 * please do not modify without consulting the visualisation team at CMCL
-	 * @param ts_list
+	 * @param tsList
 	 * @param id
-	 * @param units_map
-	 * @param table_header_map
+	 * @param unitsMap
+	 * @param tableHeaderMap
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> tsList, List<Integer> id,
@@ -734,9 +733,9 @@ public class TimeSeriesClient<T> {
      * @param dataClass list of data classes for each dataIRI
      * @param timeUnit time unit as (full) IRI
      */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, String type, String temporalUnit, Double numericDuration) {
 		try (Connection conn = rdbClient.getConnection()) {
-			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn, type, temporalUnit, numericDuration);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -748,9 +747,9 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, temporalUnit, numericDuration);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -764,9 +763,9 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 * @param srid
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, temporalUnit, numericDuration);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -787,8 +786,7 @@ public class TimeSeriesClient<T> {
 	/**
      * Append time series data to an already instantiated time series
 	 * (i.e. add data for several time series in a single RDB connection)
-	 * @param ts_list List of TimeSeries objects to add
-	 * @param conn connection to the RDB
+	 * @param tsList List of TimeSeries objects to add
      */
 	public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList) {
 		// Add time series data to respective database tables
@@ -831,7 +829,6 @@ public class TimeSeriesClient<T> {
 	/**
      * Delete time series and all associated dataIRI connections from triple store and relational database
      * @param tsIRI time series IRI as String
-	 * @param conn connection to the RDB
      */
 	public void deleteTimeSeries(String tsIRI) {
 		try (Connection conn = rdbClient.getConnection()) {
@@ -981,6 +978,168 @@ public class TimeSeriesClient<T> {
 	public boolean checkDataHasTimeSeries(String dataIRI) {
 		try (Connection conn = rdbClient.getConnection()) {
 			return rdbClient.checkDataHasTimeSeries(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
+	 */
+	@Deprecated
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
+		try (Connection conn = rdbClient.getConnection()) {
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
+	 * @param conn connection to the RDB
+	 */
+	@Deprecated
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn) {
+
+		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
+		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+
+		// Step1: Initialise time series in knowledge base
+		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
+		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+
+		// Obtain RDB URL from connection object, exception thrown when connection is down
+		String rdbURL;
+		try {
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			// this ensures rdfClient.initTS always has a valid string
+			LOGGER.warn(e.getMessage());
+			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
+			rdbURL = "";
+		}
+
+		try {
+			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
+		}
+		catch (Exception eRdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
+		}
+
+		// Step2: Try to initialise time series in relational database
+		try {
+			rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI, conn);
+		} catch (JPSRuntimeException eRdbCreate) {
+			// For exceptions thrown when initialising RDB elements in relational database,
+			// try to revert previous knowledge base instantiation
+			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+			//		a different exception depending on what the problem was, and how it should be handled
+			try {
+				rdfClient.removeTimeSeries(tsIRI);
+			} catch (Exception eRdfDelete) {
+				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRI +
+						" , as database related instantiation failed but KG triples were created.", eRdfDelete);
+			}
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdbCreate);
+		}
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param conn
+	 */
+	@Deprecated
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * srid is used if the time series values contain geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 * @param conn
+	 */
+	@Deprecated
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		// create random time series IRI
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+
+		// Step1: Initialise time series in knowledge base
+		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
+		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		try {
+			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+		}
+		catch (Exception e_RdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		}
+
+		// Step2: Try to initialise time series in relational database
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			try {
+				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
+			} catch (JPSRuntimeException e_RdbCreate) {
+				// For exceptions thrown when initialising RDB elements in relational database,
+				// try to revert previous knowledge base instantiation
+				// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+				//		a different exception depending on what the problem was, and how it should be handled
+				try {
+					rdfClient.removeTimeSeries(tsIRIs.get(i));
+				} catch (Exception e_RdfDelete) {
+					throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
+							" , as database related instantiation failed but KG triples were created.");
+				}
+				throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+			}
+		}
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 */
+	@Deprecated
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection#
+	 * Provide SRID if time series data contains geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 */
+	@Deprecated
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
