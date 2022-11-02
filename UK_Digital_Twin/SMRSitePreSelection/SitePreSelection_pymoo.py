@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 31 Oct 2022          #
+# Last Update Date: 02 Nov 2022          #
 ##########################################
 
 """
@@ -34,7 +34,8 @@ class siteSelector(Problem):
             SMRIntergratedDiscount:float, 
             startTime_of_EnergyConsumption:str,
             population_list:list,
-            weightedDemandingDistance_list:list
+            weightedDemandingDistance_list:list,
+            safeDistance:float
         ):
         ##-- Model Parameters --##  
         self.numberOfSMRToBeIntroduced = int(numberOfSMRToBeIntroduced)
@@ -55,11 +56,12 @@ class siteSelector(Problem):
         self.varSets = locals()  
         self.startTime_of_EnergyConsumption = str(startTime_of_EnergyConsumption)
         siteSelectionBinaryVariableNumber = len(self.generatorToBeReplacedList) * self.N
+        self.safeDistance = float(safeDistance)
 
         super().__init__(
         n_var = siteSelectionBinaryVariableNumber, 
         n_obj = 2,  ## 'F'
-        n_ieq_constr = len(self.generatorToBeReplacedList), ## 'G'
+        n_ieq_constr = len(self.generatorToBeReplacedList) * len(self.generatorToBeReplacedList), ## 'G' (n: for binary variables constraints; n *(n -1): for safty distance between two SMR sites)
         n_eq_constr = 1, ## 'H'
         xl=0.0,
         xu=1.0, 
@@ -69,15 +71,33 @@ class siteSelector(Problem):
         ##-- 1. Define the iequality constraints --##
         ## This constraint limits that for each site there is only one status (either hosting 0 or 1 or 2  or 3 or 4 SMR units) ##
         g_list = []
+        g_j_list = []
         for i in range(len(self.generatorToBeReplacedList)):
-            g = 0 ## this is the initialisation of the constaint function for each site 
+            ## 1. -- Sum up binary constaint function for each site: x1 + x2 + x3 + x4 <= 1 --##    
+            g = 0 
             g_Name = 'g_' + str(i) ## defining the name of the constraint function, the number of the ieq constraints is the number of the sites  
             for n in range(self.N):
                 numOfBV = int(i * self.N + n) ## the index of the binary variable x 
                 g += x[:, numOfBV]
             self.varSets[g_Name] = g - 1 ## the constaint looks like: x1 + x2 + x3 + x4 <= 1, while the sum up equal to 0, it means that there is no SMR being placed
             g_list.append(self.varSets[g_Name])
-        out["G"] = np.column_stack(g_list)  ## iequality constraints 
+            
+            ## 2. -- Safty distance constrain: distance_i,j >= safeDistance--## 
+            LatLon_i = self.generatorToBeReplacedList[i]['LatLon']
+            if "#" in LatLon:
+                LatLon = [float(LatLon.split('#')[0]), float(LatLon.split('#')[1])]
+            for j in range(len(self.generatorToBeReplacedList)):
+                if i != j:
+                    g_j = 0
+                    g_j_name = 'g_j_' + str(i) + '_' + str(j) 
+                    for n_j in range(self.N):
+                        numOfBV_j = int(j * self.N + n_j) ## the index of the binary variable x 
+                        g_j += x[:, numOfBV_j]
+                    LatLon_j = self.generatorToBeReplacedList[j]['LatLon']
+                    distanceBetweenij = DistanceBasedOnGPSLocation(LatLon_i + LatLon_j)
+                    self.varSets[g_j_name] = ((g + g_j) // 2) * (self.safeDistance - distanceBetweenij)
+                    g_j_list.append(self.varSets[g_j_name])
+        out["G"] = np.column_stack(g_list + g_j_list)  ## iequality constraints 
 
 
         ##--2. Define equality constraint --##
