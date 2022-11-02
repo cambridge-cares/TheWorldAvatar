@@ -4,17 +4,17 @@ import java.util.List;
 
 public class SensitivityResult {
     private final String name;
-    private final List<SensitivityLables> lables;
+    private final List<SensitivityLabels> labels;
     private final List<SensitivityValues> values;
 
-    public SensitivityResult(String name, List<SensitivityLables> lables, List<SensitivityValues> values) {
-        this.lables = lables;
+    public SensitivityResult(String name, List<SensitivityLabels> labels, List<SensitivityValues> values) {
+        this.labels = labels;
         this.values = values;
         this.name = name;
     }
 
-    public List<SensitivityLables> getLables() {
-        return lables;
+    public List<SensitivityLabels> getLabels() {
+        return labels;
     }
 
     public List<SensitivityValues> getValues() {

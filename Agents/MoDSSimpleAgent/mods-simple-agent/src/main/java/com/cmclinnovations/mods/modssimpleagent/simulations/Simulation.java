@@ -26,7 +26,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
-import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLables;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -462,14 +462,14 @@ public class Simulation {
         List<SensitivityResult> sensitivities = new ArrayList<>(nY);
 
         for (int iy = 0; iy < nY; iy++) {
-            List<SensitivityLables> sensitivityLablesList = new ArrayList<>(nOrdersToShow);
+            List<SensitivityLabels> sensitivityLabelsList = new ArrayList<>(nOrdersToShow);
             List<SensitivityValues> sensitivityValuesList = new ArrayList<>(nOrdersToShow);
             for (int iOrder = 0; iOrder < nOrdersToShow; iOrder++) {
                 // iOrder + 1 so ordering starts at 1 instead of 0
-                sensitivityLablesList.add(new SensitivityLables(iOrder + 1, termLabels.get(iOrder)));
+                sensitivityLabelsList.add(new SensitivityLabels(iOrder + 1, termLabels.get(iOrder)));
                 sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
             }
-            sensitivities.add(new SensitivityResult(yVarNames.get(iy), sensitivityLablesList, sensitivityValuesList));
+            sensitivities.add(new SensitivityResult(yVarNames.get(iy), sensitivityLabelsList, sensitivityValuesList));
         }
 
         return sensitivities;
