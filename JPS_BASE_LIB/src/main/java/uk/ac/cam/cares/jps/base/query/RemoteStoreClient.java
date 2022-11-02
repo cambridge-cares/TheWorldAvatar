@@ -18,7 +18,6 @@ import java.util.Objects;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -52,7 +51,6 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -61,25 +59,20 @@ import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
 
 /**
  * This class allows to establish connection with remote knowledge
- * repositories<p>
- * to perform SPARQL query and update operations. It supports many triple
- * stores<p>
- * such as Blazegraph and RDF4J. It requires to set the end point URL for the<p>
- * intended type of operation. See some example end point URLS:
- * <p>
+ * repositories to perform SPARQL query and update operations. It supports many
+ * triple stores such as Blazegraph and RDF4J. It requires to set the end point
+ * URL for the intended type of operation. See some example end point URLS:
  * <p>
  * Blazegraph query end point URL:
  * http://localhost:8080/blazegraph/namespace/kb/sparql
  * <p>
  * Note that this is for the namespace called "kb". If you have a different
- * namespace,
- * <p>
- * e.g, "ontokin", replace "kb" with "ontokin" in the above URL<p>
+ * namespace, e.g, "ontokin", replace "kb" with "ontokin" in the above URL
  * <p>
  * RDF4J query end point URL:
  * http://localhost:8080/rdf4j-server/repositories/ontospecies
  * <p>
- * Note that this is for the repository called ontospecies.<p>
+ * Note that this is for the repository called ontospecies.
  * <p>
  * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
  *
@@ -91,10 +84,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
-
-    //Connection and Statement objects
-    Connection conn;
-    Statement stmt;
 
     private String queryEndpoint;
     private String updateEndpoint;
@@ -123,9 +112,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
-     * EndPoint URL and a set of graphs to send a data retrieval or update<p>
-     * query.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL and a set of graphs to send a data retrieval or update query.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -150,8 +138,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
-     * EndPoint URL, user name and password.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL, user name and password.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -166,9 +154,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * A constructor defined to initialise the query EndPoint URL, update<p>
-     * EndPoint URL, user name and password and a data retrieval or update<p>
-     * query.
+     * A constructor defined to initialise the query EndPoint URL, update EndPoint
+     * URL, user name and password and a data retrieval or update query.
      *
      * @param queryEndpoint
      * @param updateEndpoint
@@ -190,7 +177,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String getQuery() {
+    public String getQuery() {
         return query;
     }
 
@@ -201,7 +188,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String setQuery(String query) {
+    public String setQuery(String query) {
         this.query = query;
         return this.query;
     }
@@ -212,7 +199,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String getQueryEndpoint() {
+    public String getQueryEndpoint() {
         return queryEndpoint;
     }
 
@@ -223,7 +210,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String setQueryEndpoint(String queryEndpoint) {
+    public String setQueryEndpoint(String queryEndpoint) {
         this.queryEndpoint = queryEndpoint;
         return this.queryEndpoint;
     }
@@ -234,7 +221,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String getUpdateEndpoint() {
+    public String getUpdateEndpoint() {
         return updateEndpoint;
     }
 
@@ -245,7 +232,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String setUpdateEndpoint(String updateEndpoint) {
+    public String setUpdateEndpoint(String updateEndpoint) {
         this.updateEndpoint = updateEndpoint;
         return this.updateEndpoint;
     }
@@ -256,7 +243,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String getUser() {
+    public String getUser() {
         return userName;
     }
 
@@ -266,7 +253,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param userName
      */
     @Override
-	public void setUser(String userName) {
+    public void setUser(String userName) {
         this.userName = userName;
     }
 
@@ -276,7 +263,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     @Override
-	public String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -286,7 +273,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param password
      */
     @Override
-	public void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -315,15 +302,14 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     // Sparql query and update
     ///////////////////////////
     /**
-     * Executes the update operation that is provided through the constructors
-     * or setter<p>
-     * method.
+     * Executes the update operation that is provided through the constructors or
+     * setter method.
      *
      * @return
      */
     @Override
     public int executeUpdate() {
-            return executeUpdate(this.query);
+        return executeUpdate(this.query);
     }
 
     /**
@@ -347,19 +333,28 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
-            }
-            if (isConnectionUpdateUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                return stmt.executeUpdate(query);
-            } else {
-                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is not valid.");
-            }
+        try (Connection conn = getConnection()) {
+            return executeUpdate(query, conn);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Executes the update operation supplied by the calling method and returns
+     * results.
+     *
+     * @param query
+     * @param conn  connection to the remote store
+     * @return
+     */
+    public int executeUpdate(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            return stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: error when executing SPARQL update:\n" + query, e);
         }
     }
 
@@ -367,49 +362,46 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * Executes the update operation by HTTP POST and returns the HttpResponse
      * instance. This method was tested for blazegraph and rdf4j triple store. The
      * entity of response from blazegraph endpoint will be something look like:
+     * <p>
+     * {@code COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1}
+     * <p>
+     * So one can parse this string to determine the amount of triples got updated
+     * by regex matching "{@code mutationCount=([0-9]+)}".
      * 
-     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade; by SYSTAP</title
-     * ></head
-     * ><body<p>totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0, whereClause=0ms, deleteClause=0ms, insertClause=0ms</p
-     * ><hr><p>COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1</p
-     * ></html
-     * >
-     * 
-     * So one can parse this string to determine the amount of triples got updated by
-     * regex matching "mutationCount=(.*)</p".
-     * 
-     * However, the rdf4j endpoint will only return HTTP 204 No Content status - there
-     * is no way to know if the SPARQL update actually changed any triples.
+     * However, the rdf4j endpoint will only return HTTP 204 No Content status -
+     * there is no way to know if the SPARQL update actually changed any triples.
      * 
      * @param query
+     * 
      * @return
      */
-    public HttpResponse executeUpdateByPost(String query) {
+    public CloseableHttpResponse executeUpdateByPost(String query) {
         HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
 
         // below lines follow the uploadFile(File file, String extension) method
         HttpPost postRequest = new HttpPost(this.updateEndpoint);
         if ((this.userName != null) && (this.password != null)) {
             String auth = this.userName + ":" + this.password;
-            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Executing SPARQL update to " + this.updateEndpoint + ". SPARQL update string: " + query);
+        LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", this.updateEndpoint, query);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            // the returned CloseableHttpResponse should be handled with try-with-resources
+            CloseableHttpResponse response = httpClient.execute(postRequest);
             if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
                 throw new JPSRuntimeException(
                         "SPARQL update execution by HTTP POST failed. Response status code ="
                                 + response.getStatusLine().getStatusCode());
             }
             return response;
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("SPARQL update execution by HTTP POST failed.", ex);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: SPARQL update execution by HTTP POST failed: " + query, e);
         }
     }
 
@@ -419,18 +411,18 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return JSONArray as String
      */
     @Override
-	public String execute() {
+    public String execute() {
         return execute(this.query);
     }
 
     /**
-     * Excute sparql query
+     * Execute sparql query
      *
      * @param query
      * @return JSONArray as String
      */
     @Override
-	public String execute(String query) {
+    public String execute(String query) {
         JSONArray result = executeQuery(query);
         if (result == null) {
             throw new JPSRuntimeException("RemoteStoreClient: sparql query result is null.");
@@ -440,7 +432,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Executes the query that is provided through the constructors or setter<p>
+     * Executes the query that is provided through the constructors or setter
      * method.
      *
      * @return
@@ -451,7 +443,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Executes the query supplied by the calling method and returns results<p>
+     * Executes the query supplied by the calling method and returns results
      * as a JSONArray.
      *
      * @param query
@@ -459,30 +451,31 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results;
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
-            }
-            if (isConnectionQueryUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                java.sql.ResultSet rs = stmt.executeQuery(query);
-                results = StoreClientHelper.convert(rs);
-            } else {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
-            }
+        try (Connection conn = getConnection()) {
+            return executeQuery(query, conn);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
-        finally {
-        	try {
-				conn.close();
-			} catch (SQLException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
+    }
+
+    /**
+     * Executes the query supplied by the calling method and returns results
+     * as a JSONArray.
+     *
+     * @param query
+     * @param conn  connection to the remote store
+     * @return
+     */
+    public JSONArray executeQuery(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            java.sql.ResultSet rs = stmt.executeQuery(query);
+            JSONArray results = StoreClientHelper.convert(rs);
+            return results;
+        } catch (Exception e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: error when executing SPARQL query:\n" + query, e);
         }
-        return results;
     }
 
     /**
@@ -535,23 +528,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Establishes connection to triple store and sets the Statement Object
-     */
-    protected void connect(String connectionUrl){
-        try {
-            if (this.conn == null || this.conn.isClosed()) {
-                RemoteEndpointDriver.register();
-                conn = DriverManager.getConnection(connectionUrl);
-                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            }
-        } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-    }
-    /**
-     * Generates the URL of the remote data repository's EndPoint, which<br>
-     * might require authentication either to perform a data retrieval or<br>
-     * an update query.
+     * Generates the URL of the remote data repository's EndPoint, which might
+     * require authentication either to perform a data retrieval or an update query.
      *
      * @return
      */
@@ -588,8 +566,27 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Puts the type of an endpoint (e.g. query and update), equal to symbol<p>
-     * and end point URL in a string and returns the string.
+     * Establish connection to remote store
+     * 
+     * @return connection object to the remote store
+     * @throws SQLException
+     */
+    public Connection getConnection() throws SQLException {
+        String connectionUrl = getConnectionUrl();
+        if (connectionUrl.isEmpty()) {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+        }
+        if (isConnectionQueryUrlValid(connectionUrl)) {
+            RemoteEndpointDriver.register();
+            return DriverManager.getConnection(connectionUrl);
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+        }
+    }
+
+    /**
+     * Puts the type of an endpoint (e.g. query and update), equal to symbol and end
+     * point URL in a string and returns the string.
      *
      * @param endpointType
      * @param endpointURL
@@ -603,33 +600,33 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return sb.toString();
     }
 
-
     /**
-     * Checks the validity of the URL generated for connecting to a remote<p>
-     * repository based on user provided inputs via one of the parameterised<p>
+     * Checks the validity of the URL generated for connecting to a remote
+     * repository based on user provided inputs via one of the parameterised
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing<p>
-     * a connection with the remote repository to perform a query operation<p>
-     * @return
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      a connection with the remote repository to perform a
+     *                      query operation
      */
     public boolean isConnectionQueryUrlValid(String connectionUrl) {
-        if (connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
-                .concat(HTTP_PROTOCOL))
-                || connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
-                        .concat(HTTPS_PROTOCOL))) {
+        if (connectionUrl.startsWith(getQueryEndpointConnectionPrefixes()
+                + HTTP_PROTOCOL)
+                || connectionUrl.startsWith(getQueryEndpointConnectionPrefixes()
+                        + HTTPS_PROTOCOL)) {
             return isConnectionUrlValid(connectionUrl);
         }
         return false;
     }
 
     /**
-     * Checks the validity of the URL generated for connecting to a remote<p>
-     * repository based on user provided inputs via one of the parameterised<p>
+     * Checks the validity of the URL generated for connecting to a remote
+     * repository based on user provided inputs via one of the parametrised
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing<p>
-     * a connection with the remote repository to perform an update operation<p>
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      a connection with the remote repository to perform an
+     *                      update operation
      * @return
      */
     public boolean isConnectionUpdateUrlValid(String connectionUrl) {
@@ -637,15 +634,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         // the executeUpdate() method. This is why it is crucial to check
         // if the provided update URL is correctly encoded.
         if (isConnectionQueryUrlValid(connectionUrl)) {
-            if (connectionUrl.contains(getUpdateEndpointConnectionParameter().concat(HTTP_PROTOCOL))
-                    || connectionUrl.contains(
-                            getUpdateEndpointConnectionParameter().concat(HTTPS_PROTOCOL))) {
+            if (connectionUrl.contains(getUpdateEndpointConnectionParameter() + HTTP_PROTOCOL)
+                    || connectionUrl.contains(getUpdateEndpointConnectionParameter() + HTTPS_PROTOCOL)) {
                 return true;
             }
         }
-        if (connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTP_PROTOCOL))
-                || connectionUrl
-                        .startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTPS_PROTOCOL))) {
+        if (connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes() + HTTP_PROTOCOL)
+                || connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes() + HTTPS_PROTOCOL)) {
             return isConnectionUrlValid(connectionUrl);
         }
         return false;
@@ -658,7 +653,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     private boolean isConnectionUrlValid(String connectionUrl) {
-        String[] tokens = new String[]{""};
+        String[] tokens = new String[] { "" };
         if (connectionUrl.contains(HTTP_PROTOCOL)) {
             tokens = connectionUrl.split(HTTP_PROTOCOL);
         } else if (connectionUrl.contains(HTTPS_PROTOCOL)) {
@@ -681,11 +676,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      *
      * @return
      */
-    private String getQueryEndpointConnectionPrfixes() {
+    private String getQueryEndpointConnectionPrefixes() {
         return JenaDriver.DRIVER_PREFIX
-                .concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-                .concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
-                .concat("=");
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_QUERY_ENDPOINT
+                + "=";
     }
 
     /**
@@ -696,9 +691,9 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     private String getUpdateEndpointConnectionPrefixes() {
         return JenaDriver.DRIVER_PREFIX
-                .concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-                .concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
-                .concat("=");
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+                + "=";
     }
 
     /**
@@ -708,28 +703,30 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     private String getUpdateEndpointConnectionParameter() {
         return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
-                .concat("=");
+                + "=";
     }
 
     /**
      * If a list of SPARQL endpoints and a query are passed to this method, it
-     * evaluates<br>
-     * the query against all the endpoints and returns the result in JSON
-     * format.<br>
+     * evaluates the query against all the endpoints and returns the result in JSON
+     * format.
      * <br>
-     * Endpoints should be provided as shown in the following two examples:<br>
+     * Endpoints should be provided as shown in the following two examples:
+     * <br>
      * 1. OntoSpecies KB endpoint:
-     * http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql 2.
-     * OntoCompChem KB endpoint:
+     * http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql
+     * </br>
+     * 2. OntoCompChem KB endpoint:
      * http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql
      *
      * @param endpoints a list of endpoints.
-     * @param query a SPARQL query.
+     * @param query     a SPARQL query.
      * @return
      * @throws Exception
      */
     public JSONArray executeFederatedQuery(List<String> endpoints, String query) throws Exception {
-        // Declares a JSONArray and JSONObject to produce the query output in JSON format. 
+        // Declares a JSONArray and JSONObject to produce the query output in JSON
+        // format.
         JSONArray json = new JSONArray();
         JSONObject obj;
         BindingSet bSet;
@@ -743,7 +740,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             try {
                 // Evaluates the query against all the endpoints.
                 TupleQueryResult tqRes = tq.evaluate();
-                // Processes the result 
+                // Processes the result
                 while (tqRes.hasNext()) {
                     obj = new JSONObject();
                     bSet = tqRes.next();
@@ -756,7 +753,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                             obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
                                     bSet.getValue(bindingName).toString().length() - 1));
                         } // A value found without double quotes is codified as a JSON Object
-                        // without modification.
+                          // without modification.
                         else {
                             obj.put(bindingName, bSet.getValue(bindingName).toString());
 
@@ -794,10 +791,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                 .addConstruct(varS, varP, varO);
 
         if (resourceUrl == null) {
-            //Default graph
+            // Default graph
             builder.addWhere(varS, varP, varO);
         } else {
-            //Named graph
+            // Named graph
             String graphURI = "<" + resourceUrl + ">";
             builder.addGraph(graphURI, varS, varP, varO);
         }
@@ -808,7 +805,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         if (accept != null) {
             syntax = RDFLanguages.contentTypeToLang(accept);
         } else {
-            //default to application/rdf+xml
+            // default to application/rdf+xml
             syntax = Lang.RDFXML;
         }
 
@@ -820,7 +817,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     /**
      * Insert rdf content into store.
      *
-     * @param graphName (if any)
+     * @param graphName   (if any)
      * @param content
      * @param contentType
      */
@@ -831,8 +828,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
         InputStream in = new ByteArrayInputStream(content.getBytes());
         if (contentType == null) {
-            //RDF/XML default
-            //base=null, assume all uri are absolute
+            // RDF/XML default
+            // base=null, assume all uri are absolute
             model.read(in, null);
         } else {
             Lang syntax = RDFLanguages.contentTypeToLang(contentType);
@@ -852,105 +849,110 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * upload a file to the endpoint using its REST API
-     * only tested the xml format with Blazegraph and RDF4j, this may vary between stores
-     * the update endpoint for rdf4j is <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
-     * The query and update endpoints for Blazegraph are the same
-     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig, nq, rsj, json
+     * Upload a file to the endpoint using its REST API.
+     * Only tested the xml format with Blazegraph and RDF4j, this may vary between
+     * stores. The update endpoint for rdf4j is
+     * <p>
+     * {@code <BASE_HTTP_URL\>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements}.
+     * <p>
+     * The query and update endpoints for Blazegraph are the same.
+     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig,
+     * nq, rsj, json
      *
      * @param file
      */
     public void uploadFile(File file) {
-    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
-    	uploadFile(file, extension);
+        String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+        uploadFile(file, extension);
     }
-    
+
     /**
-     * same method as above but receives extension as a separate argument
+     * Same method as above but receives extension as a separate argument
+     * 
      * @param file
      * @param extension
      */
     public void uploadFile(File file, String extension) {
-    	if (!file.exists()) {
-    		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
-    	}
-    	
-    	HttpEntity entity;
-    	switch (extension) {
-    		case "rdf":
-    		case "rdfs":
-    		case "owl":
-    		case "xml":
-    			entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
-    			break;
-    		
-    		case "nt":
-    			entity = new FileEntity(file, ContentType.TEXT_PLAIN);
-    			break;
-    			
-    		case "ntx":
-    			entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
-    			break;
+        if (!file.exists()) {
+            throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
+        }
 
-    		case "ttl":
-    			entity = new FileEntity(file, ContentType.create("application/x-turtle"));
-    			break;
-    			
-    		case "ttlx":
-    			entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
-    			break;
-    			
-    		case "n3":
-    			entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
-    			break;
-    			
-    		case "trix":
-    			entity = new FileEntity(file, ContentType.create("application/trix"));
-    			break;
-    			
-    		case "trig":
-    			entity = new FileEntity(file, ContentType.create("application/x-trig"));
-    			break;
-    			
-    		case "nq":
-    			entity = new FileEntity(file, ContentType.create("text/x-nquads"));
-    			break;
-    			
-    		case "srj":
-    			entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
-    			break;
-    			
-    		case "json":
-    			entity = new FileEntity(file, ContentType.APPLICATION_JSON);
-    			break;
-    		
-    		default:
-    			throw new JPSRuntimeException("Unsupported file extension: " + extension);
-    	}
+        HttpEntity entity;
+        switch (extension) {
+            case "rdf":
+            case "rdfs":
+            case "owl":
+            case "xml":
+                entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
+                break;
 
-        // tried a few methods to add credentials, this seems to be the only way that works
+            case "nt":
+                entity = new FileEntity(file, ContentType.TEXT_PLAIN);
+                break;
+
+            case "ntx":
+                entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
+                break;
+
+            case "ttl":
+                entity = new FileEntity(file, ContentType.create("application/x-turtle"));
+                break;
+
+            case "ttlx":
+                entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
+                break;
+
+            case "n3":
+                entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
+                break;
+
+            case "trix":
+                entity = new FileEntity(file, ContentType.create("application/trix"));
+                break;
+
+            case "trig":
+                entity = new FileEntity(file, ContentType.create("application/x-trig"));
+                break;
+
+            case "nq":
+                entity = new FileEntity(file, ContentType.create("text/x-nquads"));
+                break;
+
+            case "srj":
+                entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
+                break;
+
+            case "json":
+                entity = new FileEntity(file, ContentType.APPLICATION_JSON);
+                break;
+
+            default:
+                throw new JPSRuntimeException("Unsupported file extension: " + extension);
+        }
+
+        // tried a few methods to add credentials, this seems to be the only way that
+        // works
         // i.e. setting it manually in the header
         HttpPost postRequest = new HttpPost(this.updateEndpoint);
         if ((this.userName != null) && (this.password != null)) {
             String auth = this.userName + ":" + this.password;
-            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
 
-        // add contents to the post request 
+        // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
+        LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
         // then send the post request
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
-
-            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpClient.execute(postRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 300) {
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + statusCode);
             }
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("Upload RDF file failed.", ex);
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Failed to upload file " + file + " to " + this.updateEndpoint, e);
         }
     }
 }

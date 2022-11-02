@@ -15,11 +15,13 @@ def create_app(test_config=None):
         # Import parts of application
         import metoffice.flaskapp.home.routes as home
         import metoffice.flaskapp.inputtasks.routes as inputtasks
+        #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
         import metoffice.flaskapp.outputtasks.routes as outputtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
+        #TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
         app.register_blueprint(outputtasks.outputtasks_bp)
 
     return app

@@ -6,11 +6,15 @@ This directory houses the Typescript, CSS, and HTML files that make up the frame
 
 For more details on the framework, see the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page on the GitHub wiki. For an example implementation of the framework, see the [example-visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-visualisation) directory of the repository.
 
+### How to use the framework
+
+This README has been put together for developers wishing to understand the technial workings of the DTVF. For details on how to import, configure, and use the framework, please read the documentation starting on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page.
+
 ## Requirements
 
 To function correctly, whichever visualisation implementation is using this framework also needs to include the following JS libraries. For more details, see the provided [example-visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-visualisation).
 
-- [MapBox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/)
+- [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/)
 - [JQuery & JQuery UI](https://jquery.com/)
 - [ChartJS](https://www.chartjs.org/)
 - [Moment & ChartJS Moment Adapter](https://momentjs.com/)
