@@ -90,6 +90,9 @@ class Manager {
 
         this.panelHandler.toggleMode();
 
+        // Show attributions if present
+        showAttributions();
+        
         // Override CTRL+F shortcut for feature searching (BETA)
         // let searchBox = document.getElementById("finderContainer");
         // if(searchBox !== null) {
@@ -189,6 +192,13 @@ class Manager {
             console.warn("Loading icons and/or links has failed, these will be skipped."); 
         });
         return promise;
+    }
+    
+    /**
+     * Get the map handler instance.
+     */
+     public getMapHandler() {
+        return this.mapHandler;
     }
 
     /**

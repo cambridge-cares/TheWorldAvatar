@@ -5,8 +5,7 @@ from metoffice.datamodel.observation_types import *
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
-GEO = 'http://www.bigdata.com/rdf/geospatial#'
-GEOLIT = 'http://www.bigdata.com/rdf/geospatial/literals/v1#'
+GEO = 'http://www.opengis.net/ont/geosparql#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
 M3L = 'http://purl.org/iot/vocab/m3-lite#'
@@ -14,7 +13,7 @@ WEATHER = 'https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOnt
 SIO = 'http://semanticscience.org/resource/'
 # CoMo / CARES ontologies
 EMS = 'https://www.theworldavatar.com/kg/ontoems/'
-TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
+TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontoems/'
 
@@ -73,4 +72,7 @@ RDFS_LABEL = RDFS + 'label'
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
 XSD_DATETIME = XSD + 'dateTime'
-GEOLIT_LAT_LON = GEOLIT + 'lat-lon'
+# GeoSPARQL
+GEO_FEATURE = GEO + 'Feature'
+GEO_HAS_GEOMETRY = GEO + 'hasGeometry'
+GEO_ASWKT = GEO + 'asWKT'

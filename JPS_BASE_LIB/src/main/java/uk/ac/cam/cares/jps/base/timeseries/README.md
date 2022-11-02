@@ -24,7 +24,7 @@ The namespaces used in this document:
 ```
 ts  : https://www.theworldavatar.com/kg/ontotimeseries/
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
-kb  : http://www.theworldavatar.com/kb/ontotimeseries/
+kb  : https://www.theworldavatar.com/kg/ontotimeseries/
 ```
 
 ### Instantiation in KG ###
@@ -82,9 +82,9 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
    * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
 
 ### Updated Design ##
-The Agent examples above utilize the older version of `TimeSeriesClient` which has been deprecated but can still be used.<br> 
+The Agent examples above utilize the older version of `TimeSeriesClient`.<br> 
 The updated design to use the `TimeSeriesClient`: <br>
-- An instance of the `TimeSeriesClient` can only be created with a pre-defined kbClient and the class type for the time values. 
+- An instance of the `TimeSeriesClient` can be created with a pre-defined kbClient and the class type for the time values. 
 - The methods in `TimeSeriesClient` used to interact with the database require a **java.sql.Connection** object containing the connection to the database to be passed as an argument. 
 - To create the connection object: 
   - Create an instance of `RemoteRDBStoreClient` and use `RemoteRDBStoreClient.getConnection()` method to obtain the connection object.
