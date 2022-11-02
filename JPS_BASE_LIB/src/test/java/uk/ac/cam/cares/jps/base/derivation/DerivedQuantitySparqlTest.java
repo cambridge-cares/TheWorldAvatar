@@ -411,22 +411,18 @@ public class DerivedQuantitySparqlTest {
 		String errMsg2 = testKG.getProperty(ResourceFactory.createResource(statusIRI2),
 				ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				.asLiteral().getString();
+		Assert.assertEquals(errMsg, errMsg2);
 		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
-		Assert.assertEquals(excComment2, errMsg2.replace("\n", "\\n"));
-		Map<String, String> derivationErrMsgMap = devClient.getDerivationsInErrorStatus(derivedAgentIRI);
-		Assert.assertEquals(2, derivationErrMsgMap.size());
-		Assert.assertEquals(errMsg, derivationErrMsgMap.get(derivation));
-		Assert.assertEquals(errMsg2, derivationErrMsgMap.get(derivation2));
+		Assert.assertEquals(excComment2, errMsg.replace("\n", "\\n"));
+		List<Derivation> derivations = devClient.getDerivationsInErrorStatus(derivedAgentIRI);
+		Assert.assertEquals(2, derivations.size());
+		Assert.assertEquals(errMsg, derivations.get(0).getErrMsg());
+		Assert.assertEquals(errMsg, derivations.get(1).getErrMsg());
 
 		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
 		for (StackTraceElement st : exc.getStackTrace()) {
 			Assert.assertTrue(errMsg.contains(st.toString()));
-		}
-		Assert.assertTrue(errMsg2.contains(exc.getClass().toString()));
-		Assert.assertTrue(errMsg2.contains(exc.getMessage()));
-		for (StackTraceElement st : exc.getStackTrace()) {
-			Assert.assertTrue(errMsg2.contains(st.toString()));
 		}
 	}
 

@@ -766,23 +766,29 @@ public class DerivationSparql {
 	 * @param agentIRI
 	 * @return
 	 */
-	Map<String, String> getDerivationsInErrorStatus(String agentIRI) {
+	List<Derivation> getDerivationsInErrorStatus(String agentIRI) {
 		SelectQuery query = Queries.SELECT();
 		Variable derivation = query.var();
+		Variable derivationType = query.var();
 		Variable errMsg = query.var();
 
-		query.prefix(prefixDerived).select(derivation, errMsg)
-			.where(derivation.has(isDerivedUsing, iri(agentIRI)),
+		ValuesPattern derivationTypeVP = new ValuesPattern(derivationType,
+				derivationTypes.stream().map(i -> derivationToIri.get(i)).collect(Collectors.toList()));
+		query.prefix(prefixDerived).select(derivation, derivationType, errMsg)
+			.where(derivationTypeVP, derivation.has(isDerivedUsing, iri(agentIRI)).andIsA(derivationType),
 				derivation.has(PropertyPaths.path(hasStatus, iri(RDFS.COMMENT.toString())), errMsg));
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-		Map<String, String> derivationsAndErrMsg = new HashMap<>();
+		List<Derivation> derivations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			derivationsAndErrMsg.put(queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)),
-					queryResult.getJSONObject(i).getString(errMsg.getQueryString().substring(1)));
+			Derivation d = new Derivation(
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1)));
+			d.setErrMsg(queryResult.getJSONObject(i).getString(errMsg.getQueryString().substring(1)));
+			derivations.add(d);
 		}
 
-		return derivationsAndErrMsg;
+		return derivations;
 	}
 
 	/**

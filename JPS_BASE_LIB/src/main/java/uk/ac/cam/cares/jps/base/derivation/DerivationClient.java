@@ -782,7 +782,7 @@ public class DerivationClient {
 	 * @param agentIRI
 	 * @return
 	 */
-	public Map<String, String> getDerivationsInErrorStatus(String agentIRI) {
+	public List<Derivation> getDerivationsInErrorStatus(String agentIRI) {
 		return this.sparqlClient.getDerivationsInErrorStatus(agentIRI);
 	}
 
