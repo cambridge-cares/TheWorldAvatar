@@ -9,6 +9,9 @@ class DerivationInputs():
     def __init__(self, derivationInputs) -> None:
         self.derivation_inputs = derivationInputs
 
+    def getDerivationIRI(self):
+        return self.derivation_inputs.getDerivationIRI()
+
     def getInputs(self):
         return ast.literal_eval(str(self.derivation_inputs.getInputs()))
 
