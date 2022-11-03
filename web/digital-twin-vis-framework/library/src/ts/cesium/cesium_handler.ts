@@ -144,6 +144,7 @@ class MapHandler_Cesium extends MapHandler {
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
             window.currentFeature = feature;
+            console.log(feature);
 
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
@@ -159,8 +160,27 @@ class MapHandler_Cesium extends MapHandler {
                     contentMetadata.getPropertyIds().forEach(id => {
                         properties[id] = contentMetadata.getProperty(id);
                     });
+                } else if(typeof feature.getPropertyIds === "function") {
+                    console.log("A");
+
+                    // No metadata refined, try to get properties via id
+                    let ids = feature.getPropertyIds();
+                    if(ids != null) {
+                        ids.forEach(id => {
+                            properties[id] = feature.getProperty(id);
+                        });
+                    }
                 } else {
-                    // No metadata refined, pass no properties
+                    // Show the node name, not sure what else we can get here.
+                    let detail = feature["detail"];
+                    if(detail != null) {
+                        let node = detail["node"];
+                        if(node != null && node.hasOwnProperty("name")) {
+                            properties["Node name"] = node["name"];
+                        } else if(node != null && node.hasOwnProperty("_name")) {
+                            properties["Node name"] = node["_name"];
+                        }
+                    }
                 }
                 
                 self.manager.showFeature(feature, properties);
