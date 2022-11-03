@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
  * 2. Update the ACCESS_AGENT_VERSION variable to the new version number
  * 3. Run the integration tests.
  *
- * @author csl37
+ * @author Mehal Agarwal (ma988@cam.ac.uk)
  *
  */
 @Disabled("Requires Testcontainers and Docker to run. The AccessAgent Docker image must be built.")

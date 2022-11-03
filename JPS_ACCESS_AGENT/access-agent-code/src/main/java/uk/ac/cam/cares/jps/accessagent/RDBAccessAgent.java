@@ -16,9 +16,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-@WebServlet(urlPatterns = {RDBAccessAgent.ACCESS_RDB_URL})
+@WebServlet(urlPatterns = {RDBAccessAgent.ACCESS_RDB_URL, RDBAccessAgent.CLEAR_CACHE_URL})
 public class RDBAccessAgent extends JPSAgent {
     public static final String ACCESS_RDB_URL = "/rdbaccess";
+    public static final String CLEAR_CACHE_URL = "/rdbclearcache";
 
     /**
      * Logger for error output.
@@ -34,22 +35,42 @@ public class RDBAccessAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
-        if (!validateInput(requestParams)) {
-            throw new JSONException("RDBAccessAgent: Input parameters not valid.\n");
-        }
-
         String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 
-        JSONObject JSONResult = new JSONObject();
-
-        LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
-
-        switch (method) {
-            case HttpGet.METHOD_NAME:
-                JSONResult = new JSONObject().put("result", performGet(requestParams));
-                break;
+        // Clear cache
+        if(request.getServletPath().equals(CLEAR_CACHE_URL)) {
+            if (method.equals(HttpGet.METHOD_NAME)) {
+                return clearCache();
+            } else {
+                throw new JPSRuntimeException("RDBAccessAgent: Input parameters not valid.\n");
+            }
         }
-        return JSONResult;
+        else {
+            if (!validateInput(requestParams)) {
+                throw new JSONException("RDBAccessAgent: Input parameters not valid.\n");
+            }
+
+            JSONObject JSONResult = new JSONObject();
+
+            LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
+
+            switch (method) {
+                case HttpGet.METHOD_NAME:
+                    JSONResult = new JSONObject().put("result", performGet(requestParams));
+                    break;
+            }
+            return JSONResult;
+        }
+    }
+
+    /**
+     * Clear RDBStoreRouter cache
+     * @return
+     */
+    public JSONObject clearCache() {
+        RDBStoreRouter.getInstance().clearCache();
+        JSONObject JSONresult = new JSONObject().put(JPSConstants.RESULT_KEY, "Cache cleared.");
+        return JSONresult;
     }
 
     @Override
