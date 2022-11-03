@@ -115,6 +115,7 @@ public class EmissionsAgent extends DerivationAgent {
 
         derivationOutputs.addTriple(particleDensity, hasValue, particleDensityMeasure);
         derivationOutputs.addLiteral(particleDensityMeasure, hasNumericalValue, chimney.getParticleDensity());
+        derivationOutputs.addLiteral(particleDensityMeasure, hasUnit, kgm3);
 
         // mixture density, and temperature shared by all gas phase
         String density = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX, QueryClient.DENSITY);
