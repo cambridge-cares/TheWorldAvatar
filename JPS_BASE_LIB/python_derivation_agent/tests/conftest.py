@@ -23,6 +23,8 @@ from pyderivationagent.conf import Config
 
 from pyderivationagent.data_model import iris
 
+from pyderivationagent.kg_operations import PyDerivationClient
+
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
 from tests.agents.agents_for_test import MaxValueAgent
@@ -208,9 +210,10 @@ def initialise_clients_and_agents(get_service_url, get_service_auth):
     )
 
     # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd,
     )
 
     # Delete all triples before anything
@@ -272,9 +275,9 @@ def initialise_agent(initialise_triple_store):
         sparql_client = PySparqlClientForTest(endpoint, endpoint)
 
         # Create DerivationClient for creating derivation instances
-        derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-            sparql_client.kg_client,
-            DERIVATION_INSTANCE_BASE_URL
+        derivation_client = PyDerivationClient(
+            DERIVATION_INSTANCE_BASE_URL,
+            endpoint, endpoint,
         )
 
         # Delete all triples before registering agents

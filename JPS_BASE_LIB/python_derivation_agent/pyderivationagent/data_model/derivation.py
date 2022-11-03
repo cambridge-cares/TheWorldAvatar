@@ -1,5 +1,21 @@
 import ast
+from typing import List
 from rdflib import Graph, RDF, Literal
+
+
+class Derivation():
+    def __init__(
+        self,
+        derivation_java
+    ):
+        self.derivation = derivation_java
+
+    def getIri(self) -> str:
+        return self.derivation.getIri()
+
+    def getBelongsToIris(self, outputRdfType: str) -> List[str]:
+        return self.derivation.getBelongsToIris(outputRdfType)
+
 
 class DerivationInputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationInputs.java.
@@ -17,6 +33,7 @@ class DerivationInputs():
 
     def getIris(self, rdfType):
         return list(self.derivation_inputs.getIris(rdfType))
+
 
 class DerivationOutputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationOutputs.java.

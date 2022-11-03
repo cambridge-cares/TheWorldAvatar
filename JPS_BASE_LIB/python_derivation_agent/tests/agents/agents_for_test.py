@@ -48,10 +48,10 @@ class UpdateEndpoint(DerivationAgent):
             diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
             self.logger.info("Difference IRI: %s", diff_iri)
             self.logger.info("Difference Reverse IRI List: %s", diff_reverse_iri_list)
-            derivations = list(self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
+            derivations = list(self.derivation_client.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
             self.logger.info("Derivations: %s", derivations)
             for derivation in derivations:
-                self.derivationClient.unifiedUpdateDerivation(derivation)
+                self.derivation_client.unifiedUpdateDerivation(derivation)
             return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
         except Exception as e:
             raise f"Difference IRI: {diff_iri}; DifferenceReverse IRI list: {diff_reverse_iri_list}; Requested Derivations: {derivations}; Error in update_derivations: {str(e)}"
@@ -67,6 +67,8 @@ class DifferenceAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing Difference Derivation: {derivation_inputs.getDerivationIRI()}")
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get min and max value
@@ -96,6 +98,8 @@ class DiffReverseAgent(DerivationAgent):
         # DiffReverseAgent will sleep for a few seconds before it runs
         # This is to simulate an agent running long jobs
         time.sleep(self.time_interval)
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing DiffReverse Derivation: {derivation_inputs.getDerivationIRI()}")
 
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
@@ -123,6 +127,9 @@ class MaxValueAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing MaxValue Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
@@ -147,6 +154,9 @@ class MinValueAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing MinValue Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
@@ -171,6 +181,9 @@ class RNGAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing RNG Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the number of points to be generated
