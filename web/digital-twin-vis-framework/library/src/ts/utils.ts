@@ -81,10 +81,17 @@ function updateURL(originalURL: string): string {
     originalURL = originalURL.replace("localhost", "");
     originalURL = originalURL.replace("127.0.0.1", "");
 
-    if(originalURL.startsWith("/")) {
-        return baseURL + originalURL;
+    if(originalURL.startsWith(":")) {
+        if(baseURL.endsWith("/")) {
+            return baseURL.substring(0, baseURL.length - 1) + originalURL;
+        }
+        return originalURL + baseURL;
     } else {
-        return baseURL + "/" + originalURL;
+        if(originalURL.startsWith("/") || baseURL.endsWith("/")) {
+            return baseURL + originalURL;
+        } else {
+            return baseURL + "/" + originalURL;
+        }
     }
 }
 

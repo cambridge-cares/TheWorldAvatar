@@ -303,6 +303,7 @@ class PanelHandler {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTreeContainer' class='tabcontent'></div>"
             }
         }
+        document.getElementById("treeButton").style.display = (addMeta) ? "block" : "none"; 
 
         if(addTime) {
             if(document.getElementById("timeButton") === null) {
@@ -314,6 +315,7 @@ class PanelHandler {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
         }
+        document.getElementById("timeButton").style.display = (addTime) ? "block" : "none"; 
 
         if(addMeta && !addTime) {
             document.getElementById("treeButton").style.width = "100%";
