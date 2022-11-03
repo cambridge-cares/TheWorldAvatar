@@ -1,17 +1,22 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.sparql.expr.Expr;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.router.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-public class RDBStoreRouter {
+public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
 
     private static Logger LOGGER = LogManager.getLogger(RDBStoreRouter.class);
     public static final String RDFS_PREFIX = "rdfs";
@@ -44,21 +49,42 @@ public class RDBStoreRouter {
         LOGGER.info("RDB STOREROUTER_ENDPOINT set to "+RDBStoreRouterEndpoint);
     }
 
+    /*
+     * LRU Cache configuration:
+     * key=label, value=rdbUrl
+     */
+    private static final int CACHE_SIZE = Integer.parseInt(KeyValueMap.getInstance().get(IKeys.RDB_STOREROUTER_CACHE_SIZE));
+
     static RDBStoreRouter rdbStoreRouter = null;
+
+    /**
+     * RDBStoreRouter singleton
+     */
+    private RDBStoreRouter() {
+        super(new LRUCache<String, String>(CACHE_SIZE));
+    }
+
+    public static synchronized RDBStoreRouter getInstance() {
+        if (rdbStoreRouter == null) {
+            rdbStoreRouter = new RDBStoreRouter();
+        }
+        return rdbStoreRouter;
+    }
+
 
     public static String getRDBUrl(String targetRDBResourceID){
 
         String rdbUrl = null;
         if (targetRDBResourceID != null && !targetRDBResourceID.isEmpty()) {
-            if (rdbStoreRouter == null) {
-                rdbStoreRouter = new RDBStoreRouter();
-            }
+            //instantiate singleton if not already done so
+            getInstance();
+
            if(isRemoteTargetResourceID(targetRDBResourceID)){
 
                 String targetResourceLabel = getLabelFromTargetResourceID(targetRDBResourceID);
                 LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 
-                rdbUrl = queryRDBUrl(targetResourceLabel);
+                rdbUrl = rdbStoreRouter.get(targetResourceLabel);
 
                 if(rdbUrl==null){
                     LOGGER.error("Url could not be retrieved for the following resource IRI:"+targetRDBResourceID+", label:"+targetResourceLabel);
@@ -73,36 +99,33 @@ public class RDBStoreRouter {
         return rdbUrl;
     }
 
-    public static String queryRDBUrl(String targetResourceName){
+    @Override
+    public String getFromStore(String targetResourceLabel, TripleStoreClientInterface storeClient){
+
+        ExprFactory exprFactory = new ExprFactory();
+        Expr exprRegex = exprFactory.regex(exprFactory.str( QUESTION_MARK.concat(LABEL)), targetResourceLabel, "");
+
         SelectBuilder builder = new SelectBuilder()
                 .addPrefix( RDFS_PREFIX,  RDFS )
                 .addPrefix( RDF_PREFIX,  RDF )
                 .addPrefix( ONTORDBROUTER_PREFIX,  ONTORDBROUTER )
-                .addVar( QUESTION_MARK.concat(RESOURCE))
-                .addVar( QUESTION_MARK.concat(LABEL) )
                 .addVar( QUESTION_MARK.concat(URL) )
-                .addWhere(getRDBRouterWhereBuilder())
-                .addWhere( QUESTION_MARK.concat(RESOURCE), ONTORDBROUTER_PREFIX.concat(COLON).concat(HAS_URL), QUESTION_MARK.concat(URL) );
-        RemoteStoreClient rKBClient = new RemoteStoreClient(RDBStoreRouterEndpoint);
-        System.out.println(builder.toString());
-        String json = rKBClient.execute(builder.toString());
-        JSONArray jsonArray = new JSONArray(json);
-        for (int i = 0; i<jsonArray.length(); i++){
-            JSONObject obj = jsonArray.getJSONObject(i);
-            if(obj.getString(LABEL).equals(targetResourceName)){
-                System.out.println(obj.get(URL));
-                return obj.getString(URL);
-            }
-        }
-        return null;
-    }
-    private static WhereBuilder getRDBRouterWhereBuilder(){
-        return new WhereBuilder()
-                .addPrefix( RDFS_PREFIX,  RDFS )
-                .addPrefix( RDF_PREFIX,  RDF )
-                .addPrefix( ONTORDBROUTER_PREFIX,  ONTORDBROUTER )
                 .addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTORDBROUTER_PREFIX.concat(COLON).concat(TARGET_RDB_RESOURCE) )
-                .addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL) );
+                .addOptional( QUESTION_MARK.concat(RESOURCE), ONTORDBROUTER_PREFIX.concat(COLON).concat(HAS_URL), QUESTION_MARK.concat(URL) )
+                .addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL))
+                .addFilter(exprRegex);
+        JSONArray results = storeClient.executeQuery(builder.toString());
+
+        if(!results.isEmpty()) {
+            JSONObject obj = results.getJSONObject(0);
+            String url = MiscUtil.optNullKey(obj, URL);
+            return url;
+
+        }else {
+            LOGGER.error("URL not found for resource="+targetResourceLabel);
+            return null;
+        }
+
     }
 
     public static String getLabelFromTargetResourceID(String targetResourceID) {
@@ -120,6 +143,14 @@ public class RDBStoreRouter {
                 return false;
             }
         }
+    }
+
+    /**
+     * Get store client for ontordbrouter
+     */
+    @Override
+    public TripleStoreClientInterface getRouterStoreClient() {
+        return new RemoteStoreClient(RDBStoreRouterEndpoint);
     }
 
 }
