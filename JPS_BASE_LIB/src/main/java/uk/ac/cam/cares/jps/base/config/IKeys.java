@@ -29,6 +29,7 @@ public interface IKeys {
 	String LONG_NUCLEAR_GAMS="apply.longtime.nuclear.gams";
 	
 	String STOREROUTER_CACHE_SIZE = "storerouter.cache.size";
+	String RDB_STOREROUTER_CACHE_SIZE = "rdb.storerouter.cache.size";
 	String URL_STOREROUTER_ENDPOINT = "url.storerouter.endpoint";
 	String URL_RDB_STOREROUTER_ENDPOINT = "url.rdbstorerouter.endpoint";
 	String URL_ACCESSAGENT_HOST = "url.accessagent.host";
