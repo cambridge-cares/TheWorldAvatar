@@ -20,7 +20,7 @@ LowerCalorificValue,Class,CalorificValue,IS-A,,,,Absolute quantity of heat relea
 CoGenRevenueInTimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,IS-A,,,,Includes all revenue associated with co-generation of electricity in gas turbine in a particular time period,https://www.theworldavatar.com/kg/ontoheatnetwork/,Co-gen revenue in time interval
 TieredUnitPrice,Class,,,,,,Unit price of heat based on the quantity purchased,https://www.theworldavatar.com/kg/ontoheatnetwork/,Tiered unit price
 Tier,Class,,,,,,"Individual tier within the tiered unit price, i.e., unitprice for particular purchase window",https://www.theworldavatar.com/kg/ontoheatnetwork/,Tier
-HeatUnitPrice,Class,UnitRate,IS-A,,,,Unit price for purchasing heat energy,https://www.theworldavatar.com/kg/ontoheatnetwork/,Heat unit price
+UnitPrice,Class,UnitRate,IS-A,,,,Unit price for purchase,https://www.theworldavatar.com/kg/ontoheatnetwork/,Unit price
 IncinerationPlant,Class,HeatProvider,IS-A,,,,Also known as energy-from-waste (EfW) plant,https://www.theworldavatar.com/kg/ontoheatnetwork/,Incineration plant
 UnitRate,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Hypernym of unit cost and unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,Unit rate
 GridCharges,Class,UnitRate,IS-A,,,,Saved grid charges for each “avoided” MWh electricity sourced from the grid,https://www.theworldavatar.com/kg/ontoheatnetwork/,Grid charges
@@ -124,9 +124,9 @@ hasObservableProperty,Object Property,,,GridConnection,http://www.theworldavatar
 operates,Object Property,,,MunicipalUtility,HeatingNetwork,,A relationship between municipal utility and heating network that it operates,https://www.theworldavatar.com/kg/ontoheatnetwork/,operates
 hasPurchaseAgreement,Object Property,,,MunicipalUtility,https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract,,A relationship between municipal utility and the purchase agreement signed in a contract with another heat provider,https://www.theworldavatar.com/kg/ontoheatnetwork/,has purchase agreement
 hasTieredUnitPrice,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract,TieredUnitPrice,,A relationship between contract and tiered unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,has tiered unit price
-hasCurrentUnitPrice,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract,HeatUnitPrice,,A relationship between contract and current heat unit price based on relative purchases according to tiers,https://www.theworldavatar.com/kg/ontoheatnetwork/,has current unit price
+hasCurrentUnitPrice,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract,UnitPrice,,A relationship between contract and current unit price based on relative purchases according to tiers,https://www.theworldavatar.com/kg/ontoheatnetwork/,has current unit price
 hasCumulativeEnergyCap,Object Property,,,Tier,http://www.ontology-of-units-of-measure.org/resource/om-2/Energy,,A relationship between a tier and its cumulative energy cap,https://www.theworldavatar.com/kg/ontoheatnetwork/,has cumulative energy cap
-hasUnitPrice,Object Property,,,Tier,HeatUnitPrice,,A relationship between a tier and the associated heat unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,has unit price
+hasUnitPrice,Object Property,,,Tier,UnitPrice,,A relationship between a tier and the associated unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,has unit price
 hasTier,Object Property,,,TieredUnitPrice,Tier,,A relationship between tiered unit price and tier,https://www.theworldavatar.com/kg/ontoheatnetwork/,has tier
 isPublicHoliday,Class,CalendarEffect,IS-A,,,,A particular date is public holiday,https://www.theworldavatar.com/kg/ontoheatnetwork/,is public holiday
 isSchoolVacation,Class,CalendarEffect,IS-A,,,,A particular date is school vacation,https://www.theworldavatar.com/kg/ontoheatnetwork/,is school vacation

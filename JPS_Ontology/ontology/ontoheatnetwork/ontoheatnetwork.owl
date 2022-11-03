@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 October 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 November 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology defined for representing the district heating network </rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -125,8 +125,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/hasCurrentUnitPrice">
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between contract and current heat unit price based on relative purchases according to tiers</rdfs:comment>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitPrice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between contract and current unit price based on relative purchases according to tiers</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has current unit price</rdfs:label>
     </owl:ObjectProperty>
@@ -418,8 +418,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/hasUnitPrice">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/Tier"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a tier and the associated heat unit price</rdfs:comment>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitPrice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a tier and the associated unit price</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit price</rdfs:label>
     </owl:ObjectProperty>
@@ -1135,18 +1135,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatUnitPrice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price for purchasing heat energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat unit price</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork -->
 
 
@@ -1315,6 +1303,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price of heat based on the quantity purchased</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tiered unit price</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoheatnetwork/UnitPrice -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitPrice">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price for purchase</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit price</rdfs:label>
     </owl:Class>
     
 
