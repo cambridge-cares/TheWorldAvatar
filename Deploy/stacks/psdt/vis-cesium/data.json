@@ -1,6 +1,6 @@
 {
     "name": "Pirmasens",
-    "stack": "http://localhost",
+    "stack": "http://localhost:3838",
     "groups": [
         {
             "name": "Gebäude",
