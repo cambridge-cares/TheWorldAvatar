@@ -1395,16 +1395,19 @@ class OptimalPowerFlowAnalysis:
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
         self.weightRecorder = []
+
+        ## colour pattern, "crest" was used at the first time
+        cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
         
         for k in range(len(weatherConditionList)):
             matrix_minTotalCost = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_minCO2Emission = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_weight = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_minTotalCostForAnnotation = numpy.zeros((rowNum, colNum), dtype = float)
-            row = 0
+            #row = 0
             for i in range(rowNum): ## SMR design index
                 SMRdesign = dataMatrix[i]
-                col = 0
+                #col = 0
                 for j in range(colNum): ## carbon tax index
                     results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
                     totalCost = results_sameCarbonTaxAndSameWeather[0]
@@ -1414,42 +1417,96 @@ class OptimalPowerFlowAnalysis:
                     matrix_minTotalCostForAnnotation[i, j] = float(minTotalCost)/1E10
                     matrix_minCO2Emission[i, j] = CO2EmissionOftheMinimumCost
                     matrix_weight[i, j] = round(weighterList[totalCost.index(minTotalCost)], 2)                    
-                    col += 1
-                row += 1
+                    #col += 1
+                #row += 1
             self.weightRecorder.append(matrix_weight)
-
+            
             ## Draw the heatmap of total cost
-            seaborn.heatmap(matrix_minTotalCost, linewidth=0.002, cmap="crest", annot=matrix_minTotalCostForAnnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
+            seaborn.heatmap(matrix_minTotalCost, linewidth=0.002, cmap=cmap, annot=matrix_minTotalCostForAnnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
             plt.title("Total cost at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
+            plt.tight_layout()
             plt.savefig('TotalCost_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
             plt.savefig('TotalCost_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
+            plt.clf()
             plt.close()
             plt.cla()
 
             ## Draw the heatmap of carbon emission
-            seaborn.heatmap(matrix_minCO2Emission, linewidth=0.002, cmap="crest", annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':5}, vmin=0, vmax=6000)
+            seaborn.heatmap(matrix_minCO2Emission, linewidth=0.002, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':6.5}, vmin=0, vmax=6000)
             plt.title("Carbon emission at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
+            plt.tight_layout()
             plt.savefig('CarbonEmission_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
             plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
+            plt.clf()
             plt.close()
             plt.cla()
 
             ## Draw the heatmap of carbon emission
-            seaborn.heatmap(matrix_weight, linewidth=0.002, cmap="crest", annot=True, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.5, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            seaborn.heatmap(matrix_weight, linewidth=0.002, cmap=cmap, annot=True, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.5, annot_kws={'size':7.5}, vmin=0, vmax=1)
             plt.title("Picked weight at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
+            plt.tight_layout()
             plt.savefig('weight_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
             plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
+            plt.clf()
             plt.close()
             plt.cla()
+
+        ## Draw the heatmap at each weight
+        for k in range(len(weatherConditionList)):
+            for m in range(len(weighterList)):
+                matrix_totalCostAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_CO2EmissionAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_totalCostAtEachWeightForAnotation = numpy.zeros((rowNum, colNum), dtype = float)
+                for i in range(rowNum): ## SMR design index
+                    SMRdesign = dataMatrix[i]
+                    for j in range(colNum): ## carbon tax index
+                        results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
+                        totalCost = results_sameCarbonTaxAndSameWeather[0]
+                        co2Emission = results_sameCarbonTaxAndSameWeather[1]
+                        matrix_totalCostAtEachWeight[i,j] = totalCost[m]
+                        matrix_totalCostAtEachWeightForAnotation [i,j] = totalCost[m]/1E10
+                        matrix_CO2EmissionAtEachWeight[i,j] = co2Emission[m]
+ 
+                ## Draw the heatmap of total cost
+                seaborn.heatmap(matrix_totalCostAtEachWeight, linewidth=0.002, cmap=cmap, annot=matrix_totalCostAtEachWeightForAnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
+                title = "Total cost at weather condition" + weatherConditionList[k][2] + " (weight = " + str(weighterList[m]) + ")"
+                plt.title(title)
+                plt.xlabel("Carbon tax (£)")
+                plt.ylabel("SMR Number") 
+                plt.tight_layout()
+                label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.png'
+                label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.svg'
+                plt.savefig(label_png, dpi = 1200)
+                plt.savefig(label_svg)
+                plt.show()
+                plt.clf()
+                plt.close()
+                plt.cla()
+
+                ## Draw the heatmap of carbon emission
+                seaborn.heatmap(matrix_CO2EmissionAtEachWeight, linewidth=0.002, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':6.5}, vmin=0, vmax=6000)
+                title = "Carbon emission at weather condition " + weatherConditionList[k][2] + " (weight = " + str(weighterList[m]) + ")"
+                plt.title(title)
+                plt.xlabel("Carbon tax (£)")
+                plt.ylabel("SMR Number") 
+                plt.tight_layout()
+                label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.png'
+                label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.svg'
+                plt.savefig(label_png, dpi = 1200)
+                plt.savefig(label_svg)
+                plt.show()
+                plt.clf()
+                plt.close()
+                plt.cla()        
         return
 
     """Develope the data matrix"""
@@ -1598,9 +1655,9 @@ if __name__ == '__main__':
     numberOfGenerations = 350
 
     ## For error shooting
-    NumberOfSMRUnitList = [20] #[0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60, 65]
-    weighterList = [0, 0.25, 0.5, 0.75, 1] 
-    CarbonTaxForOPFList = [20]# [0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
+    NumberOfSMRUnitList = [10]#[0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60, 65]
+    weighterList = [0] #, 0.25, 0.5, 0.75, 1] 
+    CarbonTaxForOPFList = [10] #[0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
     weatherConditionList = [[0.67, 0.74, "WHSH"]]#, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
     
 #############10 BUS Model#################################################################################################################################################################
