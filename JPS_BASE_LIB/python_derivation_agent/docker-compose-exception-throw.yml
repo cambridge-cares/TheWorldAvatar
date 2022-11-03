@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+
+  # Agents
+  exception_throw_agent:
+    image: exception_throw_agent:1.0.0
+    container_name: exception_throw_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7070:5000
+    extra_hosts: # added host.gateway so that the exception_throw_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.exception.throw.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_exception_throw_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_exception_throw"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt

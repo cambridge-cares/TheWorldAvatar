@@ -49,3 +49,11 @@ def create_update_endpoint():
     )
 
     return update_agent.app
+
+
+def create_exception_throw_app():
+    exception_throw_agent = cft.create_exception_throw_agent()
+
+    exception_throw_agent.start_all_periodical_job()
+
+    return exception_throw_agent.app

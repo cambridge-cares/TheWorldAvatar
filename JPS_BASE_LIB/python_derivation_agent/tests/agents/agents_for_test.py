@@ -22,6 +22,9 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 from .sparql_client_for_test import RANDOM_STRING_WITH_SPACES
 from .sparql_client_for_test import RANDOM_EXAMPLE_SPECIALVALUE
+from .sparql_client_for_test import RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW
+from .sparql_client_for_test import RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW
+from .sparql_client_for_test import RANDOM_EXAMPLE_EXCEPTION_THROW_MSG
 
 class UpdateEndpoint(DerivationAgent):
     # NOTE Placeholder to enable instantiating UpdateEndpoint instance
@@ -55,6 +58,21 @@ class UpdateEndpoint(DerivationAgent):
             return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
         except Exception as e:
             raise f"Difference IRI: {diff_iri}; DifferenceReverse IRI list: {diff_reverse_iri_list}; Requested Derivations: {derivations}; Error in update_derivations: {str(e)}"
+
+class ExceptionThrowAgent(DerivationAgent):
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW]
+
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing ExceptionThrow Derivation: {derivation_inputs.getDerivationIRI()}")
+        raise Exception(RANDOM_EXAMPLE_EXCEPTION_THROW_MSG)
 
 class DifferenceAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:

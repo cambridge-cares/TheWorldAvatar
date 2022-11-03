@@ -8,7 +8,6 @@ from rdflib import Literal
 from rdflib import URIRef
 from rdflib import Graph
 from rdflib import XSD
-import logging
 import pytest
 import random
 import uuid
@@ -32,8 +31,7 @@ from tests.agents.agents_for_test import MinValueAgent
 from tests.agents.agents_for_test import DifferenceAgent
 from tests.agents.agents_for_test import DiffReverseAgent
 from tests.agents.agents_for_test import UpdateEndpoint
-
-logging.getLogger("py4j").setLevel(logging.INFO)
+from tests.agents.agents_for_test import ExceptionThrowAgent
 
 
 # ----------------------------------------------------------------------------------
@@ -64,6 +62,7 @@ MINAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.min.env.test')
 DIFFAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.env.test')
 DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
+EXCEPTIONTHROW_ENV = os.path.join(ENV_FILES_DIR,'agent.exception.throw.env.test')
 
 
 # ----------------------------------------------------------------------------------
@@ -303,6 +302,33 @@ def initialise_agent(initialise_triple_store):
         clear_loggers()
 
 
+@pytest.fixture(scope="module")
+def initialise_clients_and_agents_for_exception_throw(get_service_url, get_service_auth):
+    # Retrieve endpoint and auth for triple store
+    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+
+    # Create SparqlClient for testing
+    sparql_client = PySparqlClientForTest(
+        sparql_endpoint, sparql_endpoint,
+        kg_user=sparql_user, kg_password=sparql_pwd
+    )
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd,
+    )
+
+    # Delete all triples before anything
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+    yield sparql_client, derivation_client
+
+    # Clear logger at the end of the test
+    clear_loggers()
+
 # ----------------------------------------------------------------------------------
 # Function-scoped test fixtures
 # ----------------------------------------------------------------------------------
@@ -477,6 +503,29 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
 
+
+def create_exception_throw_agent(
+    env_file: str = None,
+    sparql_endpoint: str = None,
+    register_agent: bool = None,
+    in_docker: bool = True,
+    random_agent_iri: bool = False,
+):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
+    return ExceptionThrowAgent(
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else "http://"+str(uuid.uuid4()),
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
+        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
+        app=Flask(__name__)
+    )
 
 # ----------------------------------------------------------------------------------
 # Helper functions

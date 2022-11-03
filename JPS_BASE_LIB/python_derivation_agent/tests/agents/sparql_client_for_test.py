@@ -4,20 +4,24 @@ import uuid
 import math
 
 # Random number generation TBox
-RANDOM_EXAMPLE_NUMOFPOINTS = 'http://www.example.com/ontology/random.owl#NumOfPoints'
-RANDOM_EXAMPLE_UPPERLIMIT = 'http://www.example.com/ontology/random.owl#UpperLimit'
-RANDOM_EXAMPLE_LOWERLIMIT = 'http://www.example.com/ontology/random.owl#LowerLimit'
-RANDOM_EXAMPLE_POINT = 'http://www.example.com/ontology/random.owl#Point'
-RANDOM_EXAMPLE_LISTOFPOINTS = 'http://www.example.com/ontology/random.owl#ListOfPoints'
-RANDOM_EXAMPLE_MINVALUE = 'http://www.example.com/ontology/random.owl#MinValue'
-RANDOM_EXAMPLE_MAXVALUE = 'http://www.example.com/ontology/random.owl#MaxValue'
-RANDOM_EXAMPLE_DIFFERENCE = 'http://www.example.com/ontology/random.owl#Difference'
-RANDOM_EXAMPLE_DIFFERENCEREVERSE = 'http://www.example.com/ontology/random.owl#DifferenceReverse'
-RANDOM_EXAMPLE_HASVALUE = 'http://www.example.com/ontology/random.owl#hasValue'
-RANDOM_EXAMPLE_HASPOINT = 'http://www.example.com/ontology/random.owl#hasPoint'
+RANDOM_EXAMPLE_TBOX = 'http://www.example.com/ontology/random.owl#'
+RANDOM_EXAMPLE_NUMOFPOINTS = RANDOM_EXAMPLE_TBOX + 'NumOfPoints'
+RANDOM_EXAMPLE_UPPERLIMIT = RANDOM_EXAMPLE_TBOX + 'UpperLimit'
+RANDOM_EXAMPLE_LOWERLIMIT = RANDOM_EXAMPLE_TBOX + 'LowerLimit'
+RANDOM_EXAMPLE_POINT = RANDOM_EXAMPLE_TBOX + 'Point'
+RANDOM_EXAMPLE_LISTOFPOINTS = RANDOM_EXAMPLE_TBOX + 'ListOfPoints'
+RANDOM_EXAMPLE_MINVALUE = RANDOM_EXAMPLE_TBOX + 'MinValue'
+RANDOM_EXAMPLE_MAXVALUE = RANDOM_EXAMPLE_TBOX + 'MaxValue'
+RANDOM_EXAMPLE_DIFFERENCE = RANDOM_EXAMPLE_TBOX + 'Difference'
+RANDOM_EXAMPLE_DIFFERENCEREVERSE = RANDOM_EXAMPLE_TBOX + 'DifferenceReverse'
+RANDOM_EXAMPLE_HASVALUE = RANDOM_EXAMPLE_TBOX + 'hasValue'
+RANDOM_EXAMPLE_HASPOINT = RANDOM_EXAMPLE_TBOX + 'hasPoint'
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
 RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
-RANDOM_EXAMPLE_SPECIALVALUE = 'http://www.example.com/ontology/random.owl#specialValue'
+RANDOM_EXAMPLE_SPECIALVALUE = RANDOM_EXAMPLE_TBOX + 'specialValue'
+RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW = RANDOM_EXAMPLE_TBOX + 'InputPlaceholderExceptionThrow'
+RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW = RANDOM_EXAMPLE_TBOX + 'OutputPlaceholderExceptionThrow'
+RANDOM_EXAMPLE_EXCEPTION_THROW_MSG = 'Throw an exception for ExceptionThrowAgent test.'
 
 class PySparqlClientForTest(PySparqlClient):
     def getListOfPoints(self):

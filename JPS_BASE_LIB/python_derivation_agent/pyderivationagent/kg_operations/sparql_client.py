@@ -25,6 +25,10 @@ class PySparqlClient:
         else:
             self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
 
+        # Expose query and update endpoint
+        self.query_endpoint = query_endpoint
+        self.update_endpoint = update_endpoint
+
         # Also initialise the fileserver URL and auth info
         # TODO in the future development, make use of pyuploader
         self.fs_url = fs_url

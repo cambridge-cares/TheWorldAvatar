@@ -1,9 +1,14 @@
 from pathlib import Path
 from rdflib import Graph
+from rdflib import URIRef
+from rdflib import RDF
+import uuid
 
 import pyderivationagent.data_model as dm
 from tests.conftest import RESOURCE_DIR
 from tests.conftest import AllInstances
+
+from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW
 
 # ----------------------------------------------------------------------------------
 # Utility functions
@@ -39,6 +44,14 @@ def initialise_triples_assert_pure_inputs(sparql_client, delete_all_triples=True
     assert not sparql_client.getDifferenceIRI()
 
     return all_instances
+
+
+def initialise_triples_for_exception_throw_test(sparql_client) -> str:
+    input_placeholder_exception_throw_iri = "http://" + str(uuid.uuid4())
+    g = Graph()
+    g.add((URIRef(input_placeholder_exception_throw_iri), RDF.type, URIRef(RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW)))
+    sparql_client.uploadGraph(g)
+    return input_placeholder_exception_throw_iri
 
 
 def get_timestamp(derivation_iri: str, sparql_client):
