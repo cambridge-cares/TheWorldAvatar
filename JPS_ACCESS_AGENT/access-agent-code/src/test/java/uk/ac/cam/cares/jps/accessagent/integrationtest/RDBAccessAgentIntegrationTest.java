@@ -11,6 +11,20 @@ import uk.ac.cam.cares.jps.base.query.*;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Integration tests for the RDB Access Agent.
+ * This uses the RDBAccessAgentCaller methods in JPS_BASE_LIB
+ * to call the RDBAccessAgent inside a Docker container.
+ *
+ * To test a new version of the RDBAccessAgent:
+ * 1. Build the new AccessAgent Docker image
+ * 	  if it doesn't already exist in the registry (see README)
+ * 2. Update the ACCESS_AGENT_VERSION variable to the new version number
+ * 3. Run the integration tests.
+ *
+ * @author csl37
+ *
+ */
 @Disabled("Requires Testcontainers and Docker to run. The AccessAgent Docker image must be built.")
 @Testcontainers
 public class RDBAccessAgentIntegrationTest {
