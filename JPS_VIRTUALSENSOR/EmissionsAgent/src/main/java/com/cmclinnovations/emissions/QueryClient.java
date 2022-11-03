@@ -4,21 +4,16 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.derivation.Derivation;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
-import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
-import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,9 +50,13 @@ public class QueryClient {
     static final String TEMPERATURE = OM_STRING + "Temperature";
     static final String MEASURE_STRING = OM_STRING + "Measure";
 
+    private static final String SPEED_STRING = PREFIX + "Speed";
+    private static final Iri SPEED = iri(SPEED_STRING);
+    private static final String SHIP_TYPE_STRING = PREFIX + "ShipType";
+    private static final Iri SHIP_TYPE = iri(SHIP_TYPE_STRING);
+
     // properties
-    private static final Iri HAS_SPEED = P_DISP.iri("hasSpeed");
-    private static final Iri HAS_SHIPTYPE = P_DISP.iri("hasShipType");
+    private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
@@ -73,24 +72,41 @@ public class QueryClient {
      * @return
      */
     Ship getShip(String shipIri) {
-        // step 1: query measure IRIs for each ship and group them
+        // step 1: query ship type
         SelectQuery query = Queries.SELECT();
 
-        Variable speed = query.var();
         Variable shipType = query.var();
+        Variable property = query.var();
 
-        GraphPattern gp = iri(shipIri).has(PropertyPaths.path(HAS_SPEED,HAS_VALUE),speed)
-        .andHas(PropertyPaths.path(HAS_SHIPTYPE,HAS_VALUE,HAS_NUMERICALVALUE), shipType);
+        GraphPattern gp = GraphPatterns.and(iri(shipIri).has(HAS_PROPERTY,property), 
+        property.isA(SHIP_TYPE).andHas(PropertyPaths.path(HAS_VALUE,HAS_NUMERICALVALUE), shipType));
 
         query.prefix(P_DISP,P_OM).where(gp);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        String speedMeasure;
         int shipTypeInt;
         if (queryResult.length() == 1) {
-            speedMeasure = queryResult.getJSONObject(0).getString(speed.getQueryString().substring(1));
             shipTypeInt = queryResult.getJSONObject(0).getInt(shipType.getQueryString().substring(1));
+        } else {
+            throw new RuntimeException("Incorrect number of ships queried");
+        }
+        
+        // step2: query ship speed measure iri
+        SelectQuery query2 = Queries.SELECT();
+
+        Variable speed = query2.var();
+
+        GraphPattern gp2 = GraphPatterns.and(iri(shipIri).has(HAS_PROPERTY, property),
+        property.isA(SPEED).andHas(HAS_VALUE, speed));
+
+        query2.prefix(P_OM, P_DISP).where(gp2);
+
+        JSONArray queryResult2 = storeClient.executeQuery(query2.getQueryString());
+
+        String speedMeasure;
+        if (queryResult.length() == 1) {
+            speedMeasure = queryResult2.getJSONObject(0).getString(speed.getQueryString().substring(1));
         } else {
             throw new RuntimeException("Incorrect number of ships queried");
         }
