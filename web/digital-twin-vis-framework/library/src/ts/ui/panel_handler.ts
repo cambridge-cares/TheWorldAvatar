@@ -221,7 +221,8 @@ class PanelHandler {
 
         // Proceed to contact agent for metadata and timeseries
         this.prepareMetaContainers(true, true);
-
+        document.getElementById("metaTreeContainer").innerHTML = "<i>Retrieving data...</i>";
+        
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
         let params = { "iri": iri };
@@ -293,36 +294,41 @@ class PanelHandler {
             this.appendContent("<div id='metaContainer'></div>");
         }
 
+        let treeButton = document.getElementById("treeButton");
+        let timeButton = document.getElementById("timeButton");
+
         if(addMeta) {
-            if(document.getElementById("treeButton") === null) {
+            if(treeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>
                 `;
+                treeButton = document.getElementById("treeButton");
             }
             if(document.getElementById("metaTreeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTreeContainer' class='tabcontent'></div>"
             }
         }
-        document.getElementById("treeButton").style.display = (addMeta) ? "block" : "none"; 
-
         if(addTime) {
-            if(document.getElementById("timeButton") === null) {
+            if(timeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>
                 `;
+                timeButton = document.getElementById("timeButton");
             }
             if(document.getElementById("metaTimeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
         }
-        document.getElementById("timeButton").style.display = (addTime) ? "block" : "none"; 
 
-        if(addMeta && !addTime) {
-            document.getElementById("treeButton").style.width = "100%";
-            document.getElementById("treeButton").style.borderRadius = "10px";
-        } else if(addMeta && addTime) {
-            document.getElementById("treeButton").style.width = "50%";
-            document.getElementById("treeButton").style.borderRadius = "10px 0 0 10px";
+        if(treeButton != null) treeButton.style.display = (addMeta) ? "block" : "none"; 
+        if(timeButton != null) timeButton.style.display = (addTime) ? "block" : "none"; 
+
+        if(addMeta && !addTime && treeButton != null) {
+            treeButton.style.width = "100%";
+            treeButton.style.borderRadius = "10px";
+        } else if(addMeta && addTime && treeButton != null) {
+            treeButton.style.width = "50%";
+            treeButton.style.borderRadius = "10px 0 0 10px";
         }
 
         let footerContent = document.getElementById("footerContainer");
