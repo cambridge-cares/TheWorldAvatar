@@ -8,6 +8,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
@@ -55,19 +56,19 @@ public class QueryClient {
     // classes
     // as Iri classes for sparql updates sent directly from here
     private static final Iri SHIP = P_DISP.iri("Ship");
-    private static final Iri SPEED = P_DISP.iri("Speed");
-    private static final Iri COURSE_OVER_GROUND = P_DISP.iri("CourseOverGround");
-    private static final Iri MMSI = P_DISP.iri("MMSI");
-    private static final Iri LOCATION = P_DISP.iri("Location");
+    private static final String SPEED_STRING = PREFIX + "Speed";
+    private static final Iri SPEED = iri(SPEED_STRING);
+    private static final String COURSE_STRING = PREFIX + "CourseOverGround";
+    private static final Iri COURSE_OVER_GROUND = iri(COURSE_STRING);
+    private static final String MMSI_STRING = PREFIX + "MMSI";
+    private static final Iri MMSI = iri(MMSI_STRING);
+    private static final String LOCATION_STRING = PREFIX + "Location";
+    private static final Iri LOCATION = iri(LOCATION_STRING);
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
     private static final Iri MEASURE = P_DISP.iri("Measure");
 
     // properties
-    private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
-    private static final Iri HAS_SPEED = P_DISP.iri("hasSpeed");
-    private static final Iri HAS_COURSE = P_DISP.iri("hasCourse");
-    private static final Iri HAS_SHIPTYPE = P_DISP.iri("hasShipType");
-    private static final Iri HAS_LOCATION = P_DISP.iri("hasLocation");
+    private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
@@ -155,7 +156,7 @@ public class QueryClient {
                 Iri mmsiProperty = P_DISP.iri(shipName +  "MMSI");
                 Iri mmsiMeasure = P_DISP.iri(shipName + "MMSIMeasure");
                 
-                modify.insert(shipIri.has(HAS_MMSI,mmsiProperty));
+                modify.insert(shipIri.has(HAS_PROPERTY,mmsiProperty));
                 modify.insert(mmsiProperty.isA(MMSI).andHas(HAS_VALUE, mmsiMeasure));
                 modify.insert(mmsiMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getMmsi()));
 
@@ -163,14 +164,14 @@ public class QueryClient {
                 Iri shipTypeProperty = P_DISP.iri(shipName +  "ShipType");
                 Iri shipTypeMeasure = P_DISP.iri(shipName +  "ShipTypeMeasure");
 
-                modify.insert(shipIri.has(HAS_SHIPTYPE, shipTypeProperty));
+                modify.insert(shipIri.has(HAS_PROPERTY, shipTypeProperty));
                 modify.insert(shipTypeProperty.isA(SHIP_TYPE).andHas(HAS_VALUE, shipTypeMeasure));
                 modify.insert(shipTypeMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getShipType()));
 
                 // Location time series
                 Iri locationProperty = P_DISP.iri(shipName + "Location");
                 String locationMeasure = PREFIX + shipName + "LocationMeasure";
-                modify.insert(shipIri.has(HAS_LOCATION, locationProperty));
+                modify.insert(shipIri.has(HAS_PROPERTY, locationProperty));
                 modify.insert(locationProperty.isA(LOCATION).andHas(HAS_VALUE, iri(locationMeasure)));
                 modify.insert(iri(locationMeasure).isA(MEASURE));
 
@@ -180,7 +181,7 @@ public class QueryClient {
                 // speed time series
                 Iri speedProperty = P_DISP.iri(shipName + "Speed");
                 String speedMeasure = PREFIX + shipName + "SpeedMeasure";
-                modify.insert(shipIri.has(HAS_SPEED, speedProperty));
+                modify.insert(shipIri.has(HAS_PROPERTY, speedProperty));
                 modify.insert(speedProperty.isA(SPEED).andHas(HAS_VALUE, iri(speedMeasure)));
                 modify.insert(iri(speedMeasure).isA(MEASURE));
 
@@ -190,7 +191,7 @@ public class QueryClient {
                 // course time series
                 Iri courseProperty = P_DISP.iri(shipName + "Course");
                 String courseMeasure = PREFIX + shipName + "CourseMeasure";
-                modify.insert(shipIri.has(HAS_COURSE, courseProperty));
+                modify.insert(shipIri.has(HAS_PROPERTY, courseProperty));
                 modify.insert(courseProperty.isA(COURSE_OVER_GROUND).andHas(HAS_VALUE, iri(courseMeasure)));
                 modify.insert(iri(courseMeasure).isA(MEASURE));
 
@@ -216,18 +217,24 @@ public class QueryClient {
         }
     }
 
-    void setIRIs(List<Ship> ships) {
+    /**
+     * get ship IRI from kg based on MMSI
+     * @param ships
+     */
+    void setShipIRIs(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 
         Variable ship = query.var();
         Variable mmsiValue = query.var();
-        Variable locationMeasure = query.var();
+        Variable property = query.var();
+        Variable measure = query.var();
 
-        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
-        GraphPattern gp = ship.has(PropertyPaths.path(HAS_MMSI,HAS_VALUE,HAS_NUMERICALVALUE), mmsiValue).
-        andHas(PropertyPaths.path(HAS_LOCATION, HAS_VALUE), locationMeasure);
+        ValuesPattern<Integer> vpMmsi = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
+        
+        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property), 
+        property.isA(MMSI).andHas(HAS_VALUE, measure), measure.has(HAS_NUMERICALVALUE, mmsiValue));
 
-        query.prefix(P_OM,P_DISP).where(gp,vp);
+        query.prefix(P_OM,P_DISP).where(gp, vpMmsi).select(ship, mmsiValue).distinct();
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -236,56 +243,60 @@ public class QueryClient {
         ships.stream().forEach(s -> mmsiToShipMap.put(s.getMmsi(),s));
 
         for (int i = 0; i < queryResult.length(); i++) {
-            int mmsi = queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1));
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
-            String locationMeasureIri = queryResult.getJSONObject(i).getString(locationMeasure.getQueryString().substring(1));
 
+            int mmsi = queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1));
             // obtain ship object from map and set IRI
             mmsiToShipMap.get(mmsi).setIri(shipIri);
-            mmsiToShipMap.get(mmsi).setLocationMeasureIri(locationMeasureIri);
+        }
+    }
+
+    void setMeasureIri(List<Ship> ships) {
+        SelectQuery query = Queries.SELECT();
+
+        Variable ship = query.var();
+        Variable property = query.var();
+        Variable propertyType = query.var();
+        Variable measure = query.var();
+
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+
+        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property), property.isA(propertyType).andHas(HAS_VALUE, measure));
+
+        query.prefix(P_OM, P_DISP).where(gp, shipValues).select(ship, property, propertyType, measure).distinct();
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // look up map to obtain ship object
+        Map<String, Ship> shipIriToShipMap = new HashMap<>();
+        ships.stream().forEach(s -> shipIriToShipMap.put(s.getIri(),s));
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
+            String propertyTypeIri = queryResult.getJSONObject(i).getString(propertyType.getQueryString().substring(1));
+
+            Ship shipObject = shipIriToShipMap.get(shipIri);
+
+            switch (propertyTypeIri) {
+                case LOCATION_STRING:
+                    shipObject.setLocationMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    break;
+                case SPEED_STRING:
+                    shipObject.setSpeedMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    break;
+                case COURSE_STRING:
+                    shipObject.setCourseMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
     void updateTimeSeriesData(List<Ship> ships) {
-        // step 1: query measure IRIs for each ship and group them
-        // each list of measureIRI belongs to the same time series table
-        Map<Ship, List<String>> shipToMeasureIRIMap = new HashMap<>();
-
-        Map<String, Ship> iriToShipMap = new HashMap<>();
-        ships.stream().forEach(s -> iriToShipMap.put(s.getIri(),s));
-
-        SelectQuery query = Queries.SELECT();
-
-        Variable shipVar = query.var();
-        Variable course = query.var();
-        Variable speed = query.var();
-        Variable location = query.var();
-
-        GraphPattern gp = shipVar.has(PropertyPaths.path(HAS_COURSE,HAS_VALUE), course)
-            .andHas(PropertyPaths.path(HAS_SPEED,HAS_VALUE),speed)
-            .andHas(PropertyPaths.path(HAS_LOCATION,HAS_VALUE),location);
-        ValuesPattern<Iri> vp = new ValuesPattern<>(shipVar, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
-
-        query.prefix(P_DISP,P_OM).where(gp,vp);
-
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-        for (int i = 0; i < queryResult.length(); i++) {
-            String shipIri = queryResult.getJSONObject(i).getString(shipVar.getQueryString().substring(1));
-            String courseMeasure = queryResult.getJSONObject(i).getString(course.getQueryString().substring(1));
-            String speedMeasure = queryResult.getJSONObject(i).getString(speed.getQueryString().substring(1));
-            String locationMeasure = queryResult.getJSONObject(i).getString(location.getQueryString().substring(1));
-
-            shipToMeasureIRIMap.put(iriToShipMap.get(shipIri), Arrays.asList(courseMeasure,speedMeasure,locationMeasure));
-        }
-
-        // generate 1 time series object for each ship and upload to rdb
-        Iterator<Ship> shipIterator = shipToMeasureIRIMap.keySet().iterator();
-
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            while(shipIterator.hasNext()) {
-                Ship ship = shipIterator.next();
-                List<String> dataIRIs = shipToMeasureIRIMap.get(ship);
+            ships.stream().forEach(ship -> {
+                List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(), ship.getLocationMeasureIri());
     
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
@@ -297,7 +308,7 @@ public class QueryClient {
     
                 TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
                 tsClient.addTimeSeriesData(ts, conn);
-            }
+            });
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
@@ -336,23 +347,34 @@ public class QueryClient {
      * @param ships
      */
     void createNewDerivations(List<Ship> ships) {
-        CompletableFuture<Derivation> getAsync = null;
+        if (Boolean.parseBoolean(EnvConfig.PARALLELISE_CALCULATIONS)) {
+            CompletableFuture<Derivation> getAsync = null;
 
-        for (Ship ship : ships) {
-            getAsync = CompletableFuture.supplyAsync(() -> {
-                Derivation derivation = null;
+            for (Ship ship : ships) {
+                getAsync = CompletableFuture.supplyAsync(() -> {
+                    Derivation derivation = null;
+                    try {
+                        derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage());
+                        LOGGER.error("Failed to create new derivation for {}", ship.getIri());
+                    }
+                    return derivation;
+                });
+            }
+
+            if (getAsync != null) {
+                getAsync.join();
+            }
+        } else {
+            for (Ship ship : ships) {
                 try {
-                    derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                    derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create new derivation for {}", ship.getIri());
                 }
-                return derivation;
-            });
-        }
-
-        if (getAsync != null) {
-            getAsync.join();
+            }
         }
     }
 }

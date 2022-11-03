@@ -11,6 +11,8 @@ import org.postgis.Point;
 public class Ship {
     private String iri;
     private String locationMeasureIri;
+    private String courseMeasureIri;
+    private String speedMeasureIri;
     private int mmsi;
     private int speed;
     private int course;
@@ -98,8 +100,21 @@ public class Ship {
     public void setLocationMeasureIri(String locationMeasureIri) {
         this.locationMeasureIri = locationMeasureIri;
     }
-
     public String getLocationMeasureIri() {
         return this.locationMeasureIri;
+    }
+
+    public void setCourseMeasureIri(String courseMeasureIri) {
+        this.courseMeasureIri = courseMeasureIri;
+    }
+    public String getCourseMeasureIri() {
+        return this.courseMeasureIri;
+    }
+
+    public void setSpeedMeasureIri(String speedMeasureIri) {
+        this.speedMeasureIri = speedMeasureIri;
+    }
+    public String getSpeedMeasureIri() {
+        return this.speedMeasureIri;
     }
 }
