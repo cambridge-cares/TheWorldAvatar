@@ -121,40 +121,6 @@ class PySparqlClient:
             raise Exception("ERROR: File <%s> download failed with code %d and response body: %s" % (
                 remote_file_path, response.status_code, str(response.content)))
 
-    def generate_ontoagent_instance(self, service_iri:str, http_url:str, input_types:List[str], output_types:List[str]):
-        operation_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_OPERATION)
-        msg_input_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
-        msg_output_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
-
-        g = Graph()
-        g.add((URIRef(service_iri), RDF.type, URIRef(ONTOAGENT_SERVICE)))
-        g.add((URIRef(service_iri), URIRef(ONTOAGENT_HASOPERATION), URIRef(operation_iri)))
-        g.add((URIRef(operation_iri), RDF.type, URIRef(ONTOAGENT_OPERATION)))
-        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASINPUT), URIRef(msg_input_iri)))
-        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASOUTPUT), URIRef(msg_output_iri)))
-        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASHTTPURL), Literal(http_url, datatype=XSD.anyURI)))
-
-        g.add((URIRef(msg_input_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
-        for each_input in input_types:
-            msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
-            g.add((URIRef(msg_input_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
-            g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
-            g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_input)))
-
-        g.add((URIRef(msg_output_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
-        for each_output in output_types:
-            msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
-            g.add((URIRef(msg_output_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
-            g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
-            g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_output)))
-
-        # NOTE SPARQL update with sub-query to ensure one agent service don't get duplicated entries in KG
-        # NOTE TODO this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
-        update = PREFIX_RDF + """INSERT { %s } WHERE { FILTER NOT EXISTS {<%s> rdf:type <%s>.} }""" % (
-            g.serialize(format='nt'), service_iri, ONTOAGENT_SERVICE
-        )
-        self.performUpdate(update)
-
     def uploadGraph(self, g: Graph):
         update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
         self.performUpdate(update)

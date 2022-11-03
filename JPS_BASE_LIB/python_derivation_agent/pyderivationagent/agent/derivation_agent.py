@@ -225,15 +225,14 @@ class DerivationAgent(ABC):
     def register_agent_in_kg(self):
         """This method registers the agent to the knowledge graph by uploading its OntoAgent triples generated on-the-fly."""
         if self.register_agent:
-            sparql_client = self.get_sparql_client(PySparqlClient)
             input_concepts = self.agent_input_concepts()
             output_concepts = self.agent_output_concepts()
             if not isinstance(input_concepts, list) or not isinstance(output_concepts, list):
-                raise Exception("Failed to register the agent <{}> to the KG <{}>. Error: Input and output concepts must be lists. Received: {} (type: {}) and {} (type: {})".format(
+                raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: Input and output concepts must be lists. Received: {} (type: {}) and {} (type: {})".format(
                     self.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
             if len(input_concepts) == 0 or len(output_concepts) == 0:
-                raise Exception("Failed to register the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
-            sparql_client.generate_ontoagent_instance(self.agentIRI, self.agentEndpoint, input_concepts, output_concepts)
+                raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
+            self.derivation_client.createOntoAgentInstance(self.agentIRI, self.agentEndpoint, input_concepts, output_concepts)
             self.logger.info("Agent <%s> is registered to the KG <%s> with input signature %s and output signature %s." % (
                 self.agentIRI, self.kgUrl, input_concepts, output_concepts))
         else:
