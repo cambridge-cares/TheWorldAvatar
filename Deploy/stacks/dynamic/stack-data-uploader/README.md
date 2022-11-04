@@ -367,11 +367,45 @@ This way you can look at look at the user interfaces of the various services (se
 
 ### Quick Fixes
 
+#### General
 - For certain vector geometries (e.g. `MULTILINESTRING` and `LINESTRING`) it is necessary to use [`-nlt`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt) to specify the geometry in the following way.
     ```json
     "ogr2ogrOptions": {
-                    "otherOptions": {
-                        "-nlt": ["<GEOMETRY TYPE>"]
-                    }
-                }
+        "otherOptions": {
+            "-nlt": ["<GEOMETRY TYPE>"]
+        }
+    }
+    ```
+
+- To upload only specific properties/fields from a source dataset their names can be specified as comma-separated values for the [`"-select"`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-select) option under [`"otherOption"`](#otheroptions).
+    In the example below only the fields with the names `field1`, `field3`, `field4` and `field8` would be uploaded with other fields, for example `field2` and `field5`, being ignored.
+    ```json
+    "ogr2ogrOptions": {
+        "otherOptions": {
+            "-select": [
+                "field1,field3,field4,field8"
+            ]
+        }
+    }
+    ```
+    The [cropmap](../example_datasets/inputs/config/cropmap.json) example shows this being used to remove some fields (containing calculated areas and perimeters) that were not constantly named across all of the [crop-map-of-england-crome-2020](https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020) Shapefiles.
+
+
+#### [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html)
+
+- As described in the GDAL documentation [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html) datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
+    For improved efficiency this folder can be added to a zip file with the `.gdb.zip` extension. For example:
+    ``` sh
+    inputs/
+      data/
+        dataset1/
+        datasubset1/
+            layer.gdb.zip           # Compressed zip file
+            layer.gdb/            # Special .gdb folder containing ESRI File Geodatabase files
+                a0000000a.gdbtablx
+                a0000000a.gdbtable
+                a0000000a.gdbindexes
+                a0000000a.freelist
+                a0000000a.spx
+                ...
     ```
