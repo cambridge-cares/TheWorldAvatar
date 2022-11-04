@@ -62,6 +62,30 @@ public class PostGISClient extends ContainerClient {
         }
     }
 
+    public void createSchema(String database, String schemaName) {
+        try (Connection conn = getConnection(database);
+                Statement stmt = conn.createStatement()) {
+            String sql = "CREATE SCHEMA IF NOT EXISTS " + schemaName;
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to create schema '" + schemaName
+                    + "' in database with JDBC URL '"
+                    + postgreSQLEndpoint.getJdbcURL(database) + "'.", ex);
+        }
+    }
+
+    public void removeSchema(String database, String schemaName) {
+        try (Connection conn = getConnection(database);
+                Statement stmt = conn.createStatement()) {
+            String sql = "DROP SCHEMA IF EXISTS " + schemaName;
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to drop schema '" + schemaName
+                    + "' from database with JDBC URL '"
+                    + postgreSQLEndpoint.getJdbcURL(database) + "'.", ex);
+        }
+    }
+
     public void executeUpdate(String databaseName, String sql) {
         try (Connection conn = getConnection(databaseName);
                 Statement stmt = conn.createStatement()) {
