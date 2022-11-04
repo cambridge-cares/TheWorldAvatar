@@ -102,7 +102,10 @@ public class TimeSeriesClient<T> {
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, Duration duration, ChronoUnit unit) {
 		String tsIRI;
 		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
-		if(type.equals(TimeSeriesSparql.StepwiseCumulative)){
+		if (type.equals(null)){
+			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+		}
+		else if(type.equals(TimeSeriesSparql.StepwiseCumulative)){
 			tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
 		}
 		else if(type.equals(TimeSeriesSparql.CumulativeTotal)){
@@ -115,7 +118,7 @@ public class TimeSeriesClient<T> {
 			tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
 		}
 		else {
-			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type + " is invalid");
 		}
 
 		// Step1: Initialise time series in knowledge base
@@ -177,20 +180,23 @@ public class TimeSeriesClient<T> {
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
 		String tsIRI;
     	for (int i = 0; i < dataIRIs.size(); i++) {
-			if(type.get(i)=="StepwiseCumulative"){
-				tsIRI = TimeSeriesSparql.ns_kb + "StepwiseCumulativeTimeseries_" + UUID.randomUUID();
+			if (type.get(i).equals(null)){
+				tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
 			}
-			else if(type.get(i)=="CumulativeTotal"){
-				tsIRI = TimeSeriesSparql.ns_kb + "CumulativeTotalTimeseries_" + UUID.randomUUID();
+			else if(type.get(i).equals(TimeSeriesSparql.StepwiseCumulative)){
+				tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
 			}
-			else if(type.get(i) == "Instantaneous"){
-				tsIRI = TimeSeriesSparql.ns_kb + "InstantaneousTimeseries_" + UUID.randomUUID();
+			else if(type.get(i).equals(TimeSeriesSparql.CumulativeTotal)){
+				tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
 			}
-			else if(type.get(i)=="Average"){
-				tsIRI = TimeSeriesSparql.ns_kb + "AverageTimeseries_" + UUID.randomUUID();
+			else if(type.get(i).equals(TimeSeriesSparql.Instantaneous)){
+				tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			}
+			else if(type.get(i).equals(TimeSeriesSparql.Average)){
+				tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
 			}
 			else {
-				tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+				throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type.get(i) + " is invalid");
 			}
     		tsIRIs.add(i, tsIRI);
     	}
