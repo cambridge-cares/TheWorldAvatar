@@ -48,4 +48,10 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
 
         return allArgs.toArray(args);
     }
+
+    public void setSchema(String schema) {
+        if (null != schema) {
+            layerCreationOptions.put("SCHEMA", schema);
+        }
+    }
 }

@@ -19,13 +19,15 @@ public class Vector extends DataSubset {
     @Override
     public void loadData(GDALClient gdalClient, String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
+        ogr2ogrOptions.setSchema(getSchema());
         gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
     public void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
             String database) {
-        geoServerClient.createPostGISLayer(dataSubsetDir, workspaceName, database, getName(), geoServerSettings);
+        geoServerClient.createPostGISLayer(dataSubsetDir, workspaceName, database, getSchema(), getName(),
+                geoServerSettings);
     }
 
 }

@@ -12,13 +12,10 @@ public class Tabular extends DataSubset {
     @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
-    public Ogr2OgrOptions getOptions() {
-        return ogr2ogrOptions;
-    }
-
     @Override
     public void loadData(GDALClient gdalClient, String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
+        ogr2ogrOptions.setSchema(getSchema());
         gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 

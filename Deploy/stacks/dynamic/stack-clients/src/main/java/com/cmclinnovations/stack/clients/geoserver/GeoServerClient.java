@@ -110,14 +110,14 @@ public class GeoServerClient extends ContainerClient {
     }
 
     public void createPostGISLayer(String dataSubsetDir, String workspaceName,
-            String database, String layerName, GeoServerVectorSettings geoServerSettings) {
+            String database, String schema, String layerName, GeoServerVectorSettings geoServerSettings) {
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, "public");
+            createPostGISDataStore(workspaceName, layerName, database, schema);
 
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
@@ -132,8 +132,7 @@ public class GeoServerClient extends ContainerClient {
             }
 
             if (manager.getPublisher().publishDBLayer(workspaceName,
-                    layerName,
-                    fte, geoServerSettings)) {
+                    layerName, fte, geoServerSettings)) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {
                 throw new RuntimeException(
