@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import org.jooq.tools.jdbc.MockConnection;
@@ -84,27 +86,33 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass list of data classes for each dataIRI
 	 * @param timeUnit time unit as (full) IRI
 	 * @param conn connection to the RDB
-	 * @param type type of TimeSeries data to be instantiated. Allowed values: StepwiseCumulative, CumulativeTotal, Instantaneous, Average.(optional)
+	 * @param type type of TimeSeries data to be instantiated. (optional)
+	 *             Allowed values:
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
 	 *             If not specified, default value: TimeSeries
-	 * @param temporalUnit Required for Average Time Series. Unit type of the averaging period for Average TimeSeries. (optional)
-	 *                     Allowed values of type <http://www.w3.org/2006/time#TemporalUnit/>: unitSecond, unitMinute, unitHour, unitDay, unitWeek, unitMonth, unitYear
-	 * @param numericDuration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Double. (optional)
-	 *                        Only positive values are allowed.
+	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
+	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
+	 *             Allowed values of type ChronoUnit:
+	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+	 *
 	 */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, String temporalUnit, Double numericDuration) {
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, Duration duration, ChronoUnit unit) {
 		String tsIRI;
 		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
-		if(type=="StepwiseCumulative"){
-			tsIRI = TimeSeriesSparql.ns_kb + "StepwiseCumulativeTimeseries_" + UUID.randomUUID();
+		if(type.equals(TimeSeriesSparql.StepwiseCumulative)){
+			tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
 		}
-		else if(type=="CumulativeTotal"){
-			tsIRI = TimeSeriesSparql.ns_kb + "CumulativeTotalTimeseries_" + UUID.randomUUID();
+		else if(type.equals(TimeSeriesSparql.CumulativeTotal)){
+			tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
 		}
-		else if(type == "Instantaneous"){
-			tsIRI = TimeSeriesSparql.ns_kb + "InstantaneousTimeseries_" + UUID.randomUUID();
+		else if(type.equals(TimeSeriesSparql.Instantaneous)){
+			tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
 		}
-		else if(type=="Average"){
-			tsIRI = TimeSeriesSparql.ns_kb + "AverageTimeseries_" + UUID.randomUUID();
+		else if(type.equals(TimeSeriesSparql.Average)){
+			tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
 		}
 		else {
 			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
@@ -114,7 +122,7 @@ public class TimeSeriesClient<T> {
 		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
 		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
 		try {
-			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericDuration);
+			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, duration, unit);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
@@ -144,9 +152,12 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 * @param conn
+	 * @param type
+	 * @param durations
+	 * @param units
      */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, temporalUnit, numericDuration);
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, durations, units);
 	} 
 
 	/**
@@ -157,8 +168,11 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 * @param srid
 	 * @param conn
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
 		String tsIRI;
@@ -197,7 +211,7 @@ public class TimeSeriesClient<T> {
 			rdbURL = "";
 		}
 		try {
-			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, temporalUnit, numericDuration);
+			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, durations, units);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
@@ -732,10 +746,22 @@ public class TimeSeriesClient<T> {
      * @param dataIRIs list of dataIRIs as Strings
      * @param dataClass list of data classes for each dataIRI
      * @param timeUnit time unit as (full) IRI
+	 * @param type type of TimeSeries data to be instantiated. (optional)
+	 *             Allowed values:
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
+	 *             If not specified, default value: TimeSeries
+	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
+	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
+	 *             Allowed values of type ChronoUnit:
+	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+	 *
      */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, String type, String temporalUnit, Double numericDuration) {
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, String type, Duration duration, ChronoUnit unit) {
 		try (Connection conn = rdbClient.getConnection()) {
-			initTimeSeries(dataIRIs, dataClass, timeUnit, conn, type, temporalUnit, numericDuration);
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn, type, duration, unit);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -746,10 +772,13 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRIs
 	 * @param dataClass
 	 * @param timeUnit
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, temporalUnit, numericDuration);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -762,10 +791,13 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 * @param srid
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<String> type, List<String> temporalUnit, List<Double> numericDuration) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, temporalUnit, numericDuration);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
