@@ -414,7 +414,15 @@ public class TimeSeriesSparql {
 				throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
 			}
 
-			if(type.get(i).equals(StepwiseCumulative)){
+			if(type.get(i).equals(null)){
+				// Check that the time series IRI is not yet in the Knowledge Graph
+				if (checkTimeSeriesExists(tsIRIs.get(i))) {
+					throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
+				}
+				// define type
+				modify.insert(tsIRI.isA(TimeSeries));
+			}
+			else if(type.get(i).equals(StepwiseCumulative)){
 				if (checkStepwiseCumulativeTimeSeriesExists(tsIRIs.get(i))) {
 					throw new JPSRuntimeException(exceptionPrefix + "Stepwise Cumulative Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
 				}
@@ -478,12 +486,7 @@ public class TimeSeriesSparql {
 				}
 			}
 			else {
-				// Check that the time series IRI is not yet in the Knowledge Graph
-				if (checkTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
-				// define type
-				modify.insert(tsIRI.isA(TimeSeries));
+				throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type.get(i) + " is invalid");
 			}
 
 			// Check that the data IRIs are not attached to a different time series IRI already
