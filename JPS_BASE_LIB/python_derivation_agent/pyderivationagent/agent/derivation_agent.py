@@ -5,6 +5,7 @@ from flask import Flask
 from flask import request
 from urllib.parse import unquote
 from urllib.parse import urlparse
+from multiprocessing import Process
 import traceback
 import yagmail
 import json
@@ -168,51 +169,46 @@ class DerivationAgent(ABC):
                         return func(self, *args, **kwargs)
                 except Exception as e:
                     if self.yag is not None:
-                        try:
-                            self.yag.send(
-                                self.email_recipient,
-                                f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
-                                [
-                                    format_current_time(),
-                                    # the "<" and ">" may exist in exception message if any IRI is presented, e.g. <http://iri>
-                                    # here we replace them to HTML entities, so that the IRIs can be displayed correctly
-                                    # for more information about HTML entities, visit https://www.w3schools.com/html/html_entities.asp
-                                    str(e).replace("<", "&lt;").replace(">", "&gt;"),
-                                    traceback.format_exc()
-                                ]
-                            )
-                        except Exception as yag_e:
-                            # if failed to send email, log the error and continue
-                            self.logger.error(f"Failed to send email. Error: {yag_e}",
-                                stack_info=True, exc_info=True)
+                        self.send_email(
+                            f"[{self.email_subject_prefix}] exception: {str(func.__name__)}",
+                            [
+                                format_current_time(),
+                                # the "<" and ">" may exist in exception message if any IRI is presented, e.g. <http://iri>
+                                # here we replace them to HTML entities, so that the IRIs can be displayed correctly
+                                # for more information about HTML entities, visit https://www.w3schools.com/html/html_entities.asp
+                                str(e).replace("<", "&lt;").replace(">", "&gt;"),
+                                traceback.format_exc()
+                            ]
+                        )
                     # Log error regardless
                     self.logger.exception(e)
             return inner
         return decorator
 
+    def send_email(self, subject, contents):
+        timeout = 2
+        process_email = Process(target=self.yag.send, args=(self.email_recipient, subject, contents))
+        process_email.start()
+        process_email.join(timeout=timeout)
+        if process_email.is_alive():
+            process_email.kill()
+            process_email.join()
+        if process_email.exitcode != 0:
+            self.logger.error(f"Timed out sending email notification after {timeout} seconds.\n Recipient: {self.email_recipient}\n Subject: {subject}\n Contents: {contents}")
+
     def send_email_when_async_derivation_up_to_date(self, derivation_iri):
         if self.yag is not None and self.email_start_end_async_derivations:
-            try:
-                self.yag.send(
-                    self.email_recipient,
-                    f"[{self.email_subject_prefix}] async derivation up-to-date",
-                    [format_current_time(), f"{derivation_iri}"]
-                )
-            except Exception as e:
-                # if failed to send email, log the error and continue
-                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
+            self.send_email(
+                f"[{self.email_subject_prefix}] async derivation up-to-date",
+                [format_current_time(), f"{derivation_iri}"]
+            )
 
     def send_email_when_async_derivation_started(self, derivation_iri):
         if self.yag is not None and self.email_start_end_async_derivations:
-            try:
-                self.yag.send(
-                    self.email_recipient,
-                    f"[{self.email_subject_prefix}] async derivation now-in-progress",
-                    [format_current_time(), f"{derivation_iri}"]
-                )
-            except Exception as e:
-                # if failed to send email, log the error and continue
-                self.logger.error(f"Failed to send email. Error: {e}", stack_info=True, exc_info=True)
+            self.send_email(
+                f"[{self.email_subject_prefix}] async derivation now-in-progress",
+                [format_current_time(), f"{derivation_iri}"]
+            )
 
     def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
         """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
