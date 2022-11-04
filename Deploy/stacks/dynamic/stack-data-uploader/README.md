@@ -202,14 +202,14 @@ Within that the following nodes can be added.
   - `"escapeSql"` is Boolean `true` or `false`.
     This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
   - `"geometry"` specifies the geometry with the following `key:value` pairs.
-  	- `"name"` name of column with the geometry.
-  	- `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
-  	- `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
-  	  Note that this is different from the GDAL Options.
+    - `"name"` name of column with the geometry.
+    - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
+    - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
+      Note that this is different from the GDAL Options.
   - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
-	  - `"name"` parameter name.
-	  - `"defaultValue"` default value of parameter.
-	  - `"regexpValidator"` validation regular expression.
+  - `"name"` parameter name.
+  - `"defaultValue"` default value of parameter.
+  - `"regexpValidator"` validation regular expression.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
@@ -238,7 +238,7 @@ Drivers:
 For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
 Within that the following nodes can be added.
 - `"layerSettings"`
-	- `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
+  - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 ## Prerequisites
 
@@ -302,13 +302,13 @@ Once again you can look at the examples in the [`example_datasets`](../example_d
     # can comment like this
 
     [MappingDeclaration] @collection [[
-    mappingId	<name of first mapping> 
-    target		<Turtle query to specify triples using columns from SQL in {}> 
-    source      <SQL query to make table of data to be mapped>
+    mappingId <name of first mapping> 
+    target    <Turtle query to specify triples using columns from SQL in {}> 
+    source    <SQL query to make table of data to be mapped>
 
-    mappingId	<name of second mapping> 
-    target		<Turtle query> # can also comment like this
-    source      <SQL query>
+    mappingId <name of second mapping> 
+    target    <Turtle query> # can also comment like this
+    source    <SQL query>
     ]]
     ```
     Add the following as a top level node in the config file.
@@ -329,12 +329,12 @@ If you don't want the use every config file you can either use `"skip"=true` or 
 If you want to use a few config files you can create one master config file named `<STACK NAME>.json` with the following.
     ```json
     {
-    		"name": "<STACK NAME>",
-    		"externalDatasets": [
-    				"name of one config file (no .json)",
-    				"name of another config file",
-    				<...>
-    		]
+        "name": "<STACK NAME>",
+        "externalDatasets": [
+            "name of one config file (no .json)",
+            "name of another config file",
+            <...>
+        ]
     }
     ```
 
