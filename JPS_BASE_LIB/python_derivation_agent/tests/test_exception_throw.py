@@ -9,7 +9,7 @@ from .agents.sparql_client_for_test import RANDOM_EXAMPLE_EXCEPTION_THROW_MSG
 @pytest.mark.parametrize(
     "local_test",
     [ # True - derivation created for local agent instance; False - derivation created for agent in docker
-        # (True),
+        (True),
         (False),
     ],
 )

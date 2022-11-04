@@ -524,7 +524,12 @@ def create_exception_throw_agent(
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__)
+        app=Flask(__name__),
+        email_recipient=agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=agent_config.EMAIL_USERNAME,
+        email_auth_json_path=agent_config.EMAIL_AUTH_JSON_PATH if in_docker else None, # this makes sure email is only sent in dockerised test
+        email_start_end_async_derivations=agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
 # ----------------------------------------------------------------------------------

@@ -185,7 +185,8 @@ class DerivationAgent(ABC):
                             # if failed to send email, log the error and continue
                             self.logger.error(f"Failed to send email. Error: {yag_e}",
                                 stack_info=True, exc_info=True)
-                    raise e
+                    # Log error regardless
+                    self.logger.exception(e)
             return inner
         return decorator
 
@@ -403,12 +404,14 @@ class DerivationAgent(ABC):
                                 derivation, statusType))
                             query_again = False
 
-                    except Exception:
-                        err_msg = traceback.format_exc()
-                        jps_exc = PythonException(err_msg)
+                    except Exception as exc:
+                        trace_back = traceback.format_exc()
+                        jps_exc = PythonException(trace_back)
                         self.derivation_client.derivation_client.markAsError(derivation, jps_exc.exception)
                         query_again = True
                         self.logger.error(f"Error when handling derivation <{derivation}>", stack_info=True, exc_info=True)
+                        # Raise exception so that this will be sent via email notification
+                        raise exc
 
                     # Break out the for loop and query again the list of derivations and their status
                     if query_again:

@@ -13,8 +13,13 @@ services:
      - 7070:5000
     extra_hosts: # added host.gateway so that the exception_throw_agent can access other agents
       - "host.docker.internal:host-gateway"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     env_file:
       - ./tests/env_files/agent.exception.throw.env.test
+    secrets:
+      - email_auth
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_exception_throw_app()", "--preload"]
 
   # Blazegraph
@@ -33,3 +38,5 @@ services:
 secrets:
   blazegraph_password:
     file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json
