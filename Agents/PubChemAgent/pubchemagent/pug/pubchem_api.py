@@ -1,6 +1,7 @@
 import requests
 from typing import Optional, Tuple
 import json
+from xml.etree import ElementTree as ET
 
 
 class pug_api():
@@ -19,26 +20,103 @@ class pug_api():
 
         #*************PUG API Definitions****************#
 
-        # https://pubchem.ncbi.nlm.nih.gov/rest/pug/<input specification>/<operation specification>/[<output specification>][?<operation_options>]
         pubchem_domain = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/'
-        # <input specification>:
-        input_domain = 'compound/' # <domain> = substance | compound | assay | gene | protein | pathway | taxonomy | cell | <other inputs>
-        input_namespace = self.input_namespace_dict.get(key) # compound domain <namespace> = cid | name | smiles | inchi | sdf | inchikey | formula | <structure search> | <xref> | listkey | <fast search>
-        input_identifier=  value # 'c1ccccc1CCC(O)C' is picked as a default InChI  
-        # /<operation specification>
-        operation_property = 'property/' # compound domain <operation specification> = record | <compound property> | synonyms | sids | cids | aids | assaysummary | classification | <xrefs> | description | conformers
-        operation_property = ''
-        property_tag = 'MolecularFormula,InChIKey,InChI,CanonicalSmiles,ExactMass,MolecularWeight,IsotopeAtomCount,IupacName,CovalentUnitCount,Tpsa/' # <compound property> = property / [comma-separated list of property tags]
-        property_tag = ''
-        # /<output specification>
-        output= 'JSON/' # <output specification> = XML | ASNT | ASNB | JSON | JSONP [ ?callback=<callback name> ] | SDF | CSV | PNG | TXT
+        input_domain = 'compound/' 
+        input_namespace = self.input_namespace_dict.get(key)
+        input_identifier=  value  
+        output= 'JSON/' 
         suffix = self.output_suffix_dict.get(key)
-        link = pubchem_domain+input_domain+input_namespace+operation_property+property_tag+output+suffix+input_identifier
+        link = pubchem_domain+input_domain+input_namespace+output+suffix+input_identifier
 
         data = requests.get(link)
         file = json.loads(data.text)
 
         return file
+    
+    def pug_request_exp_prop(self, cid: dict) -> dict:
+        
+        pubchem_domain_full = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/'
+        input_domain = 'compound/'
+        input_identifier = str(cid.get('cid')) + '/'
+      
+        # request experimental properties
+        exp_prop = {}
+        output= 'JSON?heading=Experimental+Properties'
+        link = pubchem_domain_full+input_domain+input_identifier+output
+        data={}
+        data = requests.get(link)
+        data = json.loads(data.text)
+        if 'Record' in data:
+                Reference=data.get('Record').get('Reference')
+                if 'Section' in data.get('Record').get('Section')[0].get('Section')[0]:
+                    data = data.get('Record').get('Section')[0].get('Section')[0].get('Section')
+                    for prop in data:
+                        i=1
+                        prop_list = prop.get('Information')
+                        key = prop.get('TOCHeading')
+                        exp_prop[key]={}
+                        for item in prop_list:
+                            if 'StringWithMarkup' in item.get('Value'):
+                                value = item.get('Value').get('StringWithMarkup')
+                                for i_value in value:
+                                    exp_prop[key][i]={}
+                                    ep_string = i_value.get('String')
+                            else:
+                                value = item.get('Value')
+                                exp_prop[key][i]={}
+                                ep_string = value.get('Number')
+                            reference_num = item.get('ReferenceNumber')
+                            for r in Reference:
+                                if r.get('ReferenceNumber') == reference_num:
+                                    reference=r.get('URL')                                      
+                            exp_prop[key][i]['value'] = ep_string
+                            exp_prop[key][i]['reference'] = reference
+                            i=i+1
+        else:
+            print("\'Experimental Properties\' do not exist in record")
+
+        return exp_prop
+
+    def pug_request_uses(self, cid: dict) -> dict:
+        
+        pubchem_domain_full = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/'
+        input_domain = 'compound/'
+        input_identifier = str(cid.get('cid')) + '/'
+        
+        list=['Industry+Uses','Consumer+Uses','Household+Products']
+        
+        # request uses
+        uses = {}
+        for i_key in list:
+            output= 'JSON?heading=' + i_key
+            link = pubchem_domain_full+input_domain+input_identifier+output
+            data={}
+            data = requests.get(link)
+            data = json.loads(data.text)
+            if 'Record' in data:
+                Reference=data.get('Record').get('Reference')
+                if 'Section' in data.get('Record').get('Section')[0].get('Section')[0]:
+                    data = data.get('Record').get('Section')[0].get('Section')[0].get('Section')[0].get('Information')[0]
+                    value = data.get('Value').get('StringWithMarkup')
+                    reference_num = data.get('ReferenceNumber')
+                    for r in Reference:
+                        if r.get('ReferenceNumber') == reference_num:
+                            reference=r.get('URL')
+                    key = i_key.replace('+',' ')
+                    uses[key]={}
+                    i=1
+                    for i_value in value:
+                        uses[key][i]={}
+                        use_string = i_value.get('String')
+                        uses[key][i]['value'] = use_string
+                        uses[key][i]['reference'] = reference
+                        i=i+1
+                else:
+                    print('\'' + i_key.replace('+',' ') + '\'' + " does not exist in record")    
+            else:
+                print('\'' + i_key.replace('+',' ') + '\'' + " does not exist in record")
+
+        return uses
 
     # Method for retrieving PubChem properties
     def get_props(self, data : dict) -> dict:
@@ -85,12 +163,16 @@ class pug_api():
 if __name__ == "__main__":
     pug_access = pug_api()
 
-    for inchi in ['InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H', 
+    for inchi in ['InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',
+        "InChI=1S/C23H34BrN3O3/c1-22(2,27-21(29)13-24)16-7-10-23(3,11-8-16)26-14-17(28)15-30-20-6-4-5-19-18(20)9-12-25-19/h4-6,9,12,16-17,25-26,28H,7-8,10-11,13-15H2,1-3H3,(H,27,29)",
+ 
                   'InChI=1/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3', 
                   'InChI=1/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
         data = pug_access.pug_request('InChI', inchi)
-        cid = pug_access.get_cid(data)
         props = pug_access.get_props(data)
+        cid = pug_access.get_cid(data)
+        exp_prop = pug_access.pug_request_exp_prop(cid)
+        uses = pug_access.pug_request_uses(cid)
         atom_id = pug_access.get_atoms(data)
 
         print(cid['cid'], props['Preferred IUPAC Name'], '\n', atom_id)
