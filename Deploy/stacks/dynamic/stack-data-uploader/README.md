@@ -17,7 +17,7 @@ By default all dataset configuration files in the [`inputs/configs/`](./inputs/c
 When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
 
 Below is an example where there are two datasets.
-One of which (*dataset1*) contains one data subset and another (*dataset1*) that contains two data subsets, each with their own subdirectory.
+One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory.
 ```sh
 inputs/
   config/               # Directory in which the dataset configuration files should be stored
