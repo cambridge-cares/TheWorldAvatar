@@ -15,16 +15,17 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.geom.Polygon;
 import org.postgis.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
+import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
-import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -91,15 +92,17 @@ public class QueryClient {
     private static final Iri UNIT_DEGREE = P_OM.iri("degree");
     private static final Iri UNIT_CELCIUS = P_OM.iri("degreeCelsius");
     private static final Iri UNIT_MS = P_OM.iri("metrePerSecond-Time");
-    private static final Iri UNIT_FRACTION = P_OM.iri("RatioUnit"); 
     private static final Iri UNIT_PERCENTAGE = P_OM.iri("PercentageUnit");
 
+    // Location type
+    private static final Iri LOCATION = P_DISP.iri("Location");
+
     // properties
+    private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
     private static final Iri HAS_QUANTITY = P_OM.iri("hasQuantity");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
-    private static final Iri HAS_LOCATION = P_DISP.iri("hasLocation");
     private static final Iri HAS_GEOMETRY = P_GEO.iri("hasGeometry");
     private static final Iri AS_WKT = P_GEO.iri("asWKT");
     private static final Iri IS_DERIVED_FROM = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
@@ -160,18 +163,22 @@ public class QueryClient {
                 }
 
                 try {
+                    // this is to convert from org.postgis.Point to the Geometry class
                     Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
                     String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
                     Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
                     
-                    if (scope.contains(point)) {
+                    if (scope.covers(point)) {
                         // measureToShipMap.get(measure) gives the iri
-                        ships.add(new Ship(measureToShipMap.get(measure)));
+                        Ship ship = new Ship(measureToShipMap.get(measure));
+                        ship.setLocation(postgisPoint);
+                        ships.add(ship);
                     }
                 } catch (ParseException e) {
                     LOGGER.error("Failed to parse WKT literal of point");
                     LOGGER.error(e.getMessage());
+                    return;
                 }
                 
             });
@@ -188,7 +195,7 @@ public class QueryClient {
      * @param scopeIri
      * @return
      */
-    Geometry getScopeFromOntop(String scopeIri) {
+    Polygon getScopeFromOntop(String scopeIri) {
         SelectQuery query = Queries.SELECT();
         Variable scope = query.var();
         
@@ -196,7 +203,7 @@ public class QueryClient {
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
         String wktLiteral = queryResult.getJSONObject(0).getString(scope.getQueryString().substring(1));
-        return WKTReader.extract(wktLiteral).getGeometry();
+        return (Polygon) WKTReader.extract(wktLiteral).getGeometry();
     }
 
     Map<String,String> getMeasureToShipMap() {
@@ -204,7 +211,10 @@ public class QueryClient {
 
         Variable ship = query.var();
         Variable locationMeasure = query.var();
-        GraphPattern gp = ship.isA(SHIP).andHas(PropertyPaths.path(HAS_LOCATION,HAS_VALUE), locationMeasure);
+        Variable property = query.var();
+
+        GraphPattern gp = GraphPatterns.and(ship.isA(SHIP).andHas(HAS_PROPERTY, property),
+        property.isA(LOCATION).andHas(HAS_VALUE, locationMeasure));
 
         query.where(gp).prefix(P_OM,P_DISP);
 
@@ -231,14 +241,12 @@ public class QueryClient {
         Variable quantityType = query.var();
         Variable numericalValue = query.var();
 
-        ValuesPattern shipValues = new ValuesPattern(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()));
-
-        ValuesPattern entityTypeValues = new ValuesPattern(entityType, List.of(iri(NO_X), iri(UHC), iri(CO), iri(SO2), iri(PM10), iri(PM25)));
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
         
         GraphPattern gp = GraphPatterns.and(derivation.has(IS_DERIVED_FROM, ship), entity.has(BELONGS_TO, derivation).andIsA(entityType)
         .andHas(HAS_QUANTITY, quantity), quantity.isA(quantityType).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE),numericalValue));
 
-        query.where(gp,shipValues,entityTypeValues).prefix(P_OM);
+        query.where(gp,shipValues).prefix(P_OM);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -246,7 +254,7 @@ public class QueryClient {
         Map<String, Ship> iriToShipMap = new HashMap<>();
         ships.stream().forEach(s -> iriToShipMap.put(s.getIri(), s));
 
-        for (int i = 1; i < queryResult.length(); i++) {
+        for (int i = 0; i < queryResult.length(); i++) {
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
             double literalValue = queryResult.getJSONObject(i).getDouble(numericalValue.getQueryString().substring(1));
             Ship shipObject = iriToShipMap.get(shipIri);
@@ -263,6 +271,14 @@ public class QueryClient {
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(DENSITY)) {
                 // particle density
                 shipObject.getChimney().setParticleDensity(literalValue);
+            } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(TEMPERATURE)) {
+                // all gas mixtures share the same temperature
+                shipObject.getChimney().setMixtureTemperatureInKelvin(literalValue);
+            } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(DENSITY)) {
+                // all gas mixtures share the same density
+                shipObject.getChimney().setMixtureDensityInKgm3(literalValue);
+            } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(MASS_FLOW)) {
+                shipObject.getChimney().setFlowrateSO2(literalValue);
             }
         }
     }
@@ -279,7 +295,7 @@ public class QueryClient {
         Variable derivation = query.var();
         Variable ship = query.var();
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
-        ValuesPattern vp = new ValuesPattern(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
         GraphPattern gp = derivation.has(isDerivedFrom, ship);
 
         query.where(gp,vp);
@@ -305,8 +321,10 @@ public class QueryClient {
         // RDF types for weather data
         List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED, WIND_DIRECTION);
 
-        ValuesPattern vp = new ValuesPattern(weatherType, weatherUnit);
-        weatherTypeList.stream().forEach(type -> vp.addValuePairForMultipleVariables(iri(type), UNIT_MAP.get(type)));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType, weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+
+        // ValuesPattern vp = new ValuesPattern(weatherType, weatherUnit);
+        // weatherTypeList.stream().forEach(type -> vp.addValuePairForMultipleVariables(iri(type), UNIT_MAP.get(type)));
 
         GraphPattern gp = GraphPatterns.and(iri(station).has(REPORTS, quantity),
         quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
@@ -404,7 +422,7 @@ public class QueryClient {
         Variable locationMeasure = query.var();
         Variable geometry = query.var();
 
-        ValuesPattern vp = new ValuesPattern(locationMeasure, locationMeasures.stream().map(Rdf::iri).collect(Collectors.toList()));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(locationMeasure, locationMeasures.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
         GraphPattern gp = locationMeasure.has(HAS_GEOMETRY,geometry);
 
         query.prefix(P_GEO).where(vp,gp);
@@ -434,7 +452,7 @@ public class QueryClient {
         Variable shipTime = query.var();
         Variable geometry = query.var();
 
-        ValuesPattern vp = new ValuesPattern(geometry, geometryIris.stream().map(Rdf::iri).collect(Collectors.toList()));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(geometry, geometryIris.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
         GraphPattern gp = GraphPatterns.and(vp,geometry.has(P_DISP.iri("hasTime"), shipTime));
 
         query.prefix(P_GEO,P_GEOF,P_OM,P_DISP).
@@ -458,7 +476,7 @@ public class QueryClient {
         Variable scopeWkt = query.var();
         Variable shipWkt = query.var();
 
-        ValuesPattern vp = new ValuesPattern(shipGeometry, shipGeometriesWithinTimeBounds.stream().map(Rdf::iri).collect(Collectors.toList()));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(shipGeometry, shipGeometriesWithinTimeBounds.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
 
         GraphPattern gp = GraphPatterns.and(vp, shipGeometry.has(AS_WKT, shipWkt), iri(scopeGeometry).has(AS_WKT, scopeWkt));
 

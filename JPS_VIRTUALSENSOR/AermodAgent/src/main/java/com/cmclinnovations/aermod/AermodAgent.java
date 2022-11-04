@@ -8,12 +8,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,6 +26,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
@@ -38,6 +38,7 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 @WebServlet(urlPatterns = {"/"})
 public class AermodAgent extends DerivationAgent {
@@ -63,7 +64,7 @@ public class AermodAgent extends DerivationAgent {
         int ny = queryClient.getMeasureValueAsInt(nyIri);
 
         // get ships within a scope and time
-        Geometry scope = queryClient.getScopeFromOntop(scopeIri);
+        Polygon scope = queryClient.getScopeFromOntop(scopeIri);
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
         // update derivation of ships (on demand)
@@ -71,6 +72,7 @@ public class AermodAgent extends DerivationAgent {
         updateDerivations(derivationsToUpdate);
 
         // get emissions and set the values in the ships
+        LOGGER.info("Querying emission values");
         queryClient.setEmissions(ships);
 
         // update weather station with simulation time
@@ -82,12 +84,34 @@ public class AermodAgent extends DerivationAgent {
         // making directory for simulation
         LOGGER.info("Creating directory for simulation files");
         Path simulationDirectory = Paths.get(EnvConfig.SIMULATION_DIR, UUID.randomUUID().toString());
-        simulationDirectory.toFile().mkdirs();
 
         // create input files
-        create144File(weatherData, simulationDirectory);
+        Aermod aermod = new Aermod(simulationDirectory);
+
+        aermod.create144File(weatherData);
+
+        // run aermet (weather preprocessor)
+        if (aermod.runAermet() != 0) {
+            LOGGER.error("Stopping agent execution");
+            return;
+        }
+
+        //compute srid
+        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
+        String srid;
+        if (scope.getCentroid().getCoordinate().getY() < 0) {
+        	srid = "EPSG:327" + centreZoneNumber;
+        } else {
+        	srid = "EPSG:326" + centreZoneNumber;
+        }
 
         // create emissions input
+        if (aermod.createPointsFile(ships, srid) != 0) {
+            LOGGER.error("Failed to create points emissions file, terminating");
+            return;
+        }
+
+        aermod.createAermodInputFile(scope);
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {
@@ -106,70 +130,6 @@ public class AermodAgent extends DerivationAgent {
         }
         if (getAsync != null) {
             getAsync.join();
-        }
-    }
-
-    void create144File(WeatherData weatherData, Path simulationDirectory) {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("weather_template.144");
-
-        String templateContent;
-        try {
-            templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            return;
-        }
-
-        String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
-        if (windSpeed.length() != 2) {
-            LOGGER.error("Invalid wind speed value {}", windSpeed);
-            return;
-        }
-
-        String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
-        if (windDirection.length() != 2) {
-            LOGGER.error("Invalid wind direction value {}", windDirection);
-            return;
-        }
-
-        // unsure how strict the format is, just follow blindly at the moment
-        String temperature = String.valueOf(weatherData.getTemperatureInFahrenheit());
-        if (temperature.length() < 3) {
-            temperature = "0" + temperature;
-        }
-        if (temperature.length() != 3) {
-            LOGGER.error("Invalid temperature value {}", temperature);
-            return;
-        }
-
-        String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
-        if (humidity.length() == 1) {
-            humidity = "00" + humidity;
-        } else if (humidity.length() == 2) {
-            humidity = "0" + humidity;
-        } 
-        if (humidity.length() != 3) {
-            throw new RuntimeException("Invalid humidity value " + humidity);
-        }
-
-        String cloudCover = String.valueOf(weatherData.getCloudCoverAsInteger());
-        if (cloudCover.length() != 1) {
-            throw new RuntimeException("Invalid cloud cover value " + cloudCover);
-        }
-        templateContent = templateContent.replace("WS", windSpeed).replace("WD", windDirection).replace("TEM", temperature)
-        .replace("HUM", humidity).replace("C", cloudCover);
-
-        writeToFile(simulationDirectory.resolve("weather.144"), templateContent);
-    }
-
-    void writeToFile(Path path, String content) {
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            writer.write(content);
-        } catch (IOException e) {
-            String errmsg = "Failed to write " + path.getFileName();
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 

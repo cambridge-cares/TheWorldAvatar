@@ -11,10 +11,10 @@ public class Chimney {
 	private double mixtureMassFlux = 0.0192143028723584; // kg/s, constant in python script anyway, probably violates mass balance
 	private double mixtureDensity; // kg/m3
 	private double particleDensity; // kg/m3
-	private double flowrateNOx;
-	private double flowrateSO2;
-	private double flowrateHC;
-	private double flowrateCO;
+	private double flowrateNOx; // kg/s
+	private double flowrateSO2; //kg/s
+	private double flowrateHC; //kg/s
+	private double flowrateCO; //kg/s
 	private double pm25; // pm 2.5
 	private double pm10; // pm 10
     
@@ -35,23 +35,30 @@ public class Chimney {
 	public void setFlowrateCO(double flowrateCO) {
 		this.flowrateCO = flowrateCO;
 	}
+	public void setMixtureTemperatureInKelvin(double mixtureTemperature) {
+		this.mixtureTemperature = mixtureTemperature;
+	}
 
-    public double getMixtureTemperature() {
+    public double getMixtureTemperatureInKelvin() {
     	return this.mixtureTemperature;
     }
     public double getMixtureMassFlux() {
     	return this.mixtureMassFlux;
     }
-    public double getMixtureDensity() {
+
+	public void setMixtureDensityInKgm3(double mixtureDensity) {
+		this.mixtureDensity = mixtureDensity;
+	}
+    public double getMixtureDensityInKgm3() {
     	return this.mixtureDensity;
     }
-    public double getFlowrateNOx() {
+    public double getFlowrateNOxInKgs() {
     	return this.flowrateNOx;
     }
-    public double getFlowrateCO() {
+    public double getFlowrateCOInKgs() {
     	return this.flowrateCO;
     }
-    public double getFlowrateSO2() {
+    public double getFlowrateSO2InKgs() {
     	return this.flowrateSO2;
     }
     public double getFlowrateHC() {
