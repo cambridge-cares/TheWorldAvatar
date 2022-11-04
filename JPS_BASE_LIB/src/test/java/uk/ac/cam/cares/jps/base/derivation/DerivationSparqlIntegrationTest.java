@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.junit.Assert;
@@ -58,6 +59,36 @@ public class DerivationSparqlIntegrationTest {
 		// close containers after all tests
 		if (blazegraph.isRunning()) {
 			blazegraph.stop();
+		}
+	}
+
+	@Test
+	public void testMarkAsError() {
+		// this tests writing exception to triple store
+		List<String> outputs = new ArrayList<>(Arrays.asList("http://" + UUID.randomUUID().toString()));
+		List<String> inputs = new ArrayList<>(Arrays.asList("http://" + UUID.randomUUID().toString()));
+		String derivation = devSparql.createDerivation(outputs, agentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devSparql.addTimeInstance(derivation);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devSparql.markAsRequestedIfOutdated(derivation);
+
+		// get an exception by checking if the inputs are allowed to be outputs for other derivations
+		JPSRuntimeException exc = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devSparql.allowedAsDerivationOutputs(inputs));
+
+		String excComment = devSparql.markAsError(derivation, exc);
+		System.out.println(excComment);
+		Assert.assertEquals(StatusType.ERROR, devSparql.getStatusType(derivation));
+		String askQuery = String.format(
+				 "ASK { <%s> <%s>/<%s> \"%s\" }", derivation, DerivationSparql.derivednamespace + "hasStatus",
+						 RDFS.COMMENT.toString(), excComment);
+		Assert.assertTrue(storeClient.executeQuery(askQuery).getJSONObject(0).getBoolean("ASK"));
+
+		Assert.assertTrue(excComment.contains(exc.getClass().toString()));
+		Assert.assertTrue(excComment.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(excComment.contains(st.toString()));
 		}
 	}
 
