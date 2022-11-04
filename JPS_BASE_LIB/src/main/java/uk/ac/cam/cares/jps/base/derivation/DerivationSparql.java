@@ -73,6 +73,7 @@ public class DerivationSparql {
 	private static String REQUESTED = "Requested";
 	private static String INPROGRESS = "InProgress";
 	private static String FINISHED = "Finished";
+	private static String ERROR = "Error";
 
 	// derivation types
 	public static final String DERIVATION = "Derivation";
@@ -101,6 +102,7 @@ public class DerivationSparql {
 	private static Iri Requested = prefixDerived.iri(REQUESTED);
 	private static Iri InProgress = prefixDerived.iri(INPROGRESS);
 	private static Iri Finished = prefixDerived.iri(FINISHED);
+	private static Iri Error = prefixDerived.iri(ERROR);
 	private static Iri InstantClass = prefixTime.iri("Instant");
 	private static Iri UnixTime = iri("http://dbpedia.org/resource/Unix_time");
 
@@ -139,6 +141,7 @@ public class DerivationSparql {
 		statusMap.put(derivednamespace.concat(REQUESTED), StatusType.REQUESTED);
 		statusMap.put(derivednamespace.concat(INPROGRESS), StatusType.INPROGRESS);
 		statusMap.put(derivednamespace.concat(FINISHED), StatusType.FINISHED);
+		statusMap.put(derivednamespace.concat(ERROR), StatusType.ERROR);
 		statusToType = statusMap;
 	}
 
@@ -713,6 +716,79 @@ public class DerivationSparql {
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * This method marks the status of the derivation as "Error" and writes
+	 * the exception stack trace to triple store. It should be called if the
+	 * agent ran into exception during handling the derivation.
+	 *
+	 * @param derivationIRI
+	 * @param exc
+	 * @return
+	 */
+	String markAsError(String derivationIRI, Exception exc) {
+		SelectQuery query = Queries.SELECT();
+		ModifyQuery modify = Queries.MODIFY();
+		Variable status = query.var();
+		Variable statusType = query.var();
+		Variable uuid = query.var();
+
+		GraphPattern queryGp = GraphPatterns.and(
+			iri(derivationIRI).has(hasStatus, status), status.isA(statusType),
+			iri(derivationIRI).has(uuidLock, uuid).optional());
+		TriplePattern deleteTp = status.isA(statusType);
+		TriplePattern deleteUuidLock = iri(derivationIRI).has(uuidLock, uuid);
+		TriplePattern insertTpTdfType = status.isA(Error);
+
+		modify.delete(deleteTp, deleteUuidLock).where(queryGp).prefix(prefixDerived);
+		modify.insert(insertTpTdfType);
+
+		// add stack trace to triple store
+		StringBuilder bld = new StringBuilder();
+		bld.append(exc.getClass().toString() + ": \n");
+		bld.append(exc.getMessage() + "\n");
+		for (StackTraceElement ste : exc.getStackTrace()) {
+			bld.append(ste.toString() + "\n");
+		}
+
+		String excComment = bld.toString().replace("\n", "\\n");
+		modify.insert(status.has(iri(RDFS.COMMENT.toString()), excComment));
+
+		storeClient.executeUpdate(modify.getQueryString());
+		return excComment;
+	}
+
+	/**
+	 * This method retrieves a mapped list of derivations that <isDerivedUsing> a
+	 * given <agentIRI> and their error message is they are in Error status.
+	 *
+	 * @param agentIRI
+	 * @return
+	 */
+	List<Derivation> getDerivationsInErrorStatus(String agentIRI) {
+		SelectQuery query = Queries.SELECT();
+		Variable derivation = query.var();
+		Variable derivationType = query.var();
+		Variable errMsg = query.var();
+
+		ValuesPattern derivationTypeVP = new ValuesPattern(derivationType,
+				derivationTypes.stream().map(i -> derivationToIri.get(i)).collect(Collectors.toList()));
+		query.prefix(prefixDerived).select(derivation, derivationType, errMsg)
+			.where(derivationTypeVP, derivation.has(isDerivedUsing, iri(agentIRI)).andIsA(derivationType),
+				derivation.has(PropertyPaths.path(hasStatus, iri(RDFS.COMMENT.toString())), errMsg));
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		List<Derivation> derivations = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			Derivation d = new Derivation(
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1)));
+			d.setErrMsg(queryResult.getJSONObject(i).getString(errMsg.getQueryString().substring(1)));
+			derivations.add(d);
+		}
+
+		return derivations;
 	}
 
 	/**
