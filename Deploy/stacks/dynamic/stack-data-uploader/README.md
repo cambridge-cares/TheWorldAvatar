@@ -199,11 +199,13 @@ Within that the following nodes can be added.
   - `"name"` a name is required.
   - `"sql"` an SQL query that defines the virtual table is required.
   - `"keyColumn"` specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) key.
-  - `"escapeSql"` is Boolean `true` or `false`. This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
+  - `"escapeSql"` is Boolean `true` or `false`.
+    This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
   - `"geometry"` specifies the geometry with the following `key:value` pairs.
   	- `"name"` name of column with the geometry.
   	- `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
-  	- `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`. Note that this is different from the GDAL Options.
+  	- `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
+  	  Note that this is different from the GDAL Options.
   - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
 	  - `"name"` parameter name.
 	  - `"defaultValue"` default value of parameter.
@@ -218,9 +220,10 @@ These are the most commonly used options, for more see the examples [here](https
 
 An `"options"` node within the relevant data subset in the configuration json can be added.
 Within that the following nodes can be added.
-- `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo). These open options are driver specific and details on them can be found in the driver pages below.
+- `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo).
+  These open options are driver specific and details on them can be found in the driver pages below.
 - `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co).
-These creation options are driver specific and details on them can be found in the driver pages below.
+  These creation options are driver specific and details on them can be found in the driver pages below.
 -  `"envVars"` allows you to set environment variables.
 - `"otherOptions"` allows you to add any other flag you wish to explicitly.
         
@@ -282,12 +285,12 @@ It is necessary that you replace any placeholders, `<...>`, with values appropri
 In GeoServer the style will be named `the_world_avatar:<style name>` as it is created within the `the_world_avatar` workspace.
 The following node can be added to the top level of the config file.
     ```json
-        "styles": [
-            {
-                "name": "<style name>",
-                "file": "<style file>.sld"
-            }
-        ]
+    "styles": [
+        {
+            "name": "<style name>",
+            "file": "<style file>.sld"
+        }
+    ]
     ```
 
 5. Create a `.obda` file in the `datasetDirectory` to specify the mapping.
@@ -310,9 +313,9 @@ Once again you can look at the examples in the [`example_datasets`](../example_d
     ```
     Add the following as a top level node in the config file.
     ```json
-        "mappings": [
-            "<name of mapping file>.obda"
-        ]
+    "mappings": [
+        "<name of mapping file>.obda"
+    ]
     ```
 
 6. From a terminal in the [`stack-data-uploader`](.) directory, start the `stack-data-uploader` container by running the following:
@@ -394,18 +397,19 @@ This way you can look at look at the user interfaces of the various services (se
 #### [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html)
 
 - As described in the GDAL documentation [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html) datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
-    For improved efficiency this folder can be added to a zip file with the `.gdb.zip` extension. For example:
+    For improved efficiency this folder can be added to a zip file with the `.gdb.zip` extension.
+    For example:
     ``` sh
     inputs/
       data/
         dataset1/
         datasubset1/
-            layer.gdb.zip           # Compressed zip file
-            layer.gdb/            # Special .gdb folder containing ESRI File Geodatabase files
-                a0000000a.gdbtablx
-                a0000000a.gdbtable
-                a0000000a.gdbindexes
-                a0000000a.freelist
-                a0000000a.spx
-                ...
+          layer.gdb.zip           # Compressed zip file
+          layer.gdb/              # Special .gdb folder containing ESRI File Geodatabase files
+            a0000000a.gdbtablx
+            a0000000a.gdbtable
+            a0000000a.gdbindexes
+            a0000000a.freelist
+            a0000000a.spx
+            ...
     ```
