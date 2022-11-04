@@ -46,8 +46,8 @@ The following table shows the top level nodes allowed in a configuration file.
 | [`"name"`](#name)                         | No                                                               | The filename without the .json extension | The name of the dataset                                                                                    |
 | [`"datasetDirectory"`](#datasetDirectory) | No                                                               | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset              |
 | [`"skip"`](#skip)                         | No                                                               | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                         |
-| [`"database"`](#database)                 | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres that appropriate data will be uploaded to                         |
-| [`"workspace"`](#workspace)               | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to      |
+| [`"database"`](#database)                 | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                        |
+| [`"workspace"`](#workspace)               | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added         |
 | [`"externalDatasets"`](#externaldatasets) | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name |
 | [`"dataSubsets"`](#dataSubsets)           | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                            |
 | [`"styles"`](#styles)                     | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                          |
@@ -68,13 +68,13 @@ The directory within `inputs/data/` that contains the data files associated with
 Setting the `"skip"` value of a dataset to `true` will cause the data uploader to not load any of the data or files listed in that dataset.
 
 #### `"database"`
-The name of the database within Postgres that appropriate data will be uploaded to.
+The name of the database within Postgres to which appropriate data will be uploaded.
 >The database will be created if it doesn't already exist.
 
 >**Ontop can only access the default 'postgres' database so it is usually best not to change this value**.
 
 #### `"workspace"`
-The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added to.
+The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added.
 >The workspace will be created if it doesn't already exist.
 
 #### `"externalDatasets"`
@@ -88,12 +88,12 @@ Each data subset should then have its own subdirectory.
 These specify how to load the data from a particular set of files.
 Each data subset must have the following values specified:
 
-| Key                           | Description                                                                              |
-| ----------------------------- | ---------------------------------------------------------------------------------------- |
-| name                          | The name of the data subset                                                              |
-| [type](#type)                 | The type of the data                                                                     |
-| [subdirectory](#subdirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
-| skip                          | If set to `true` this data subset will be ignored by the data uploader                   |
+| Key                               | Description                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| `"name"`                          | The name of the data subset                                                              |
+| [`"type"`](#type)                 | The type of the data                                                                     |
+| [`"subdirectory"`](#subdirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
+| `"skip"`                          | If set to `true` this data subset will be ignored by the data uploader                   |
 
 ##### `"type"`
 This controls which functions are used to load the data.
@@ -101,17 +101,17 @@ More information about the different data types can be found [here](#data-types)
 
 ##### `"subdirectory"`
 If there are multiple data subsets then each one must have a separate subdirectory set.
-If there is only one data subset then this maybe left unset and the files placed directly in the dataset directory.
+If there is only one data subset then this may be left unset and the files placed directly in the dataset directory.
 
 #### `"styles"`
 A list of GeoServer style file definition objects.
 The styles defined here wll be loaded into the GeoServer workspace associated with the dataset.
 Each entry requires the following values to be specified:
 
-| Key  | Description                                           |
-| ---- | ----------------------------------------------------- |
-| name | The name of the style as it will be used in GeoServer |
-| file | The name of the file containing the style definition  |
+| Key      | Description                                           |
+| -------- | ----------------------------------------------------- |
+| `"name"` | The name of the style as it will be used in GeoServer |
+| `"file"` | The name of the file containing the style definition  |
 
 Currently only `.sld` style files are supported.
 If required in the future support for other style formats might be add as GeoServer does support several other formats natively and a few more if the required plugins are loaded.
@@ -120,9 +120,9 @@ If required in the future support for other style formats might be add as GeoSer
 A list of Ontop mapping file definition objects.
 Each entry requires the following values to be specified:
 
-| Key  | Description                                       |
-| ---- | ------------------------------------------------- |
-| file | The name of the file containing the OBDA mappings |
+| Key      | Description                                       |
+| -------- | ------------------------------------------------- |
+| `"file"` | The name of the file containing the OBDA mappings |
 
 Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
 Ontop also supports the R2RML (.ttl) OBDA file standard but the data uploader would need changes to include matching support.
@@ -148,12 +148,12 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-The SRS needs to include the authority as well as the ID, for example `EPSG:4296` rather than just `4296`.
+The SRS needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs) argument passed to `ogr2ogr`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-The SRS needs to include the authority as well as the ID, for example `EPSG:4296` rather than just `4296`.
+The SRS needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) argument passed to `ogr2ogr`.
 It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs) argument, rather than `-a_srs`.
 
@@ -193,23 +193,21 @@ These can be set as key-value pairs within an `"envVars"` object.
 - [PostGIS](https://gdal.org/drivers/vector/pg.html) (mainly as the output)
 
 #### GeoServer Options
-
 For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
 Within that the following nodes can be added.
 - `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows.
-    - `"name"` a name is required.
-    - `"sql"` an SQL query that defines the virtual table is required.
-    - `"keyColumn"` specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) key.
-    - `"escapeSql"` is Boolean `true` or `false`.
-    This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
-    - `"geometry"` specifies the geometry with the following `key:value` pairs.
-        - `"name"` name of column with the geometry.
-        - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
-        - `"srid"` EPSG code as an integer.
-    - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
-        - `"name"` parameter name.
-        - `"defaultValue"` default value of parameter.
-        - `"regexpValidator"` validation regular expression.
+  - `"name"` a name is required.
+  - `"sql"` an SQL query that defines the virtual table is required.
+  - `"keyColumn"` specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) key.
+  - `"escapeSql"` is Boolean `true` or `false`. This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
+  - `"geometry"` specifies the geometry with the following `key:value` pairs.
+  	- `"name"` name of column with the geometry.
+  	- `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
+  	- `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`. Note that this is different from the GDAL Options.
+  - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
+	  - `"name"` parameter name.
+	  - `"defaultValue"` default value of parameter.
+	  - `"regexpValidator"` validation regular expression.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
@@ -220,25 +218,24 @@ These are the most commonly used options, for more see the examples [here](https
 
 An `"options"` node within the relevant data subset in the configuration json can be added.
 Within that the following nodes can be added.
-        - `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo).
-        These open options are driver specific and details on them can be found in the driver pages below.
-        - `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co).
-        These creation options are driver specific and details on them can be found in the driver pages below.
-        -  `"envVars"` allows you to set environment variables.
-        - `"otherOptions"` allows you to add any other flag you wish to explicitly.
+- `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo). These open options are driver specific and details on them can be found in the driver pages below.
+- `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co).
+These creation options are driver specific and details on them can be found in the driver pages below.
+-  `"envVars"` allows you to set environment variables.
+- `"otherOptions"` allows you to add any other flag you wish to explicitly.
         
-        The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`.
-        These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
+The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`.
+These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
 
-        Drivers:
-        - [PostGIS](https://gdal.org/drivers/raster/postgisraster.html)
+Drivers:
+- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html)
 
 #### GeoServer Options
 
-        For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
-        Within that the following nodes can be added.
-        - `"layerSettings"`
-            - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
+For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
+Within that the following nodes can be added.
+- `"layerSettings"`
+	- `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 ## Prerequisites
 
@@ -327,16 +324,16 @@ Once again you can look at the examples in the [`example_datasets`](../example_d
 
 If you don't want the use every config file you can either use `"skip"=true` or name your stack so that the relevant config file is named `<STACK NAME>.json`.
 If you want to use a few config files you can create one master config file named `<STACK NAME>.json` with the following.
-```json
-{
-    "name": "<STACK NAME>",
-    "externalDatasets": [
-        "name of one config file (no .json)",
-        "name of another config file",
-        <...>
-    ]
-}
-```
+    ```json
+    {
+    		"name": "<STACK NAME>",
+    		"externalDatasets": [
+    				"name of one config file (no .json)",
+    				"name of another config file",
+    				<...>
+    		]
+    }
+    ```
 
 ## Debugging the Stack Data Uploader in VSCode
 
