@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim.OntoBimAdapter;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -49,6 +50,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility"; // The prefix to use for generating IRI
     public static final int rowStart = 3;
+    protected static String queryEndpoint;
+    protected static String updateEndpoint;
     private static String dateKey;
 
     // Optional arguments
@@ -76,6 +79,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
                 throw new JPSRuntimeException(e);
             }
             String[] parameters = new String[]{clientProperties, excelProperties, excelFile};
+            queryEndpoint = FileManager.retrieveEndpoint(clientProperties,"sparql.query.endpoint");
+            updateEndpoint = FileManager.retrieveEndpoint(clientProperties,"sparql.update.endpoint");
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -189,6 +194,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             LOGGER.error(DATA_UPDATE_ERROR_MSG, e);
             throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
         }
+
+        OntoBimAdapter.addSupplementaryTriples(queryEndpoint,updateEndpoint);
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");
 

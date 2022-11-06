@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +24,9 @@ class FileManagerTest {
     private static Path emptyTempDir;
     @TempDir
     private static Path multiFileTempDir;
+    private static final String endpointKey = "sparql.query.endpoint";
+    private static final String endpointValue = "http://www.test.org/test/";
+    private static final String clientProperties = "client.properties";
 
     @BeforeAll
     static void initTestExcelData() {
@@ -51,7 +55,7 @@ class FileManagerTest {
     @Test
     void testRetrieveExcelPathFailWithTwoFiles() {
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () -> FileManager.retrieveExcelPath(multiFileTempDir.toString()), "JPSRuntimeException was expected");
-        assertEquals("Multiple Excel workbooks detected! This agent can only process one workbook at a time.",thrown.getMessage());
+        assertEquals("Multiple Excel workbooks detected! This agent can only process one workbook at a time.", thrown.getMessage());
     }
 
     @Test
@@ -75,7 +79,45 @@ class FileManagerTest {
         }
     }
 
-    public static void createTestExcel(Path excel) {
+    @Test
+    void testRetrieveEndpoint() throws IOException {
+        Path propertiesPath = tempDir.resolve(clientProperties);
+        genSampleProperties(propertiesPath);
+        assertEquals(endpointValue, FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey));
+    }
+
+    @Test
+    void testRetrieveEndpointFailNoFile() {
+        Path propertiesPath = emptyTempDir.resolve(clientProperties);
+        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class,
+                () -> FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey), "JPSRuntimeException was expected");
+        assertEquals("No client.properties file detected! Please place the file in the config directory.", thrown.getMessage());
+    }
+
+    @Test
+    void testRetrieveEndpointFailNoKey() throws IOException {
+        Path propertiesPath = tempDir.resolve(clientProperties);
+        genPropertiesNoEndpoint(propertiesPath);
+        assertNull(FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey));
+    }
+
+    private static void genSampleProperties(Path propertiesPath) throws IOException {
+        Properties prop = new Properties();
+        prop.setProperty(endpointKey, endpointValue);
+        try (OutputStream output = Files.newOutputStream(propertiesPath)) {
+            prop.store(output, null);
+        }
+    }
+
+    private static void genPropertiesNoEndpoint(Path propertiesPath) throws IOException {
+        Properties prop = new Properties();
+        prop.setProperty("fail", endpointValue);
+        try (OutputStream output = Files.newOutputStream(propertiesPath)) {
+            prop.store(output, null);
+        }
+    }
+
+    private static void createTestExcel(Path excel) {
         // Set up
         Workbook wb = new HSSFWorkbook();
         CreationHelper createHelper = wb.getCreationHelper();

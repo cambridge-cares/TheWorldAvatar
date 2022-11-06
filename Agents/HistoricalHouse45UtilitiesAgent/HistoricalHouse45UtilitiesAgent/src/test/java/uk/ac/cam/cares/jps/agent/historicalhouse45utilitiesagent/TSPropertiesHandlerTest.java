@@ -36,7 +36,6 @@ public class TSPropertiesHandlerTest {
         testMap.put("headingtwo", sampleList);
     }
 
-
     @Test
     @Order(0)
     void testTSPropertiesHandlerConstructor() throws IOException {

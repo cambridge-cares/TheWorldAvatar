@@ -2,11 +2,15 @@ package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,5 +56,26 @@ class FileManager {
         } else {
             return result.get(0);
         }
+    }
+
+    /**
+     * Retrieves the endpoint url specified in client.properties.
+     *
+     * @param propertiesPath The file path to the .properties file.
+     * @param key            The key to retrieve the endpoint url stored as a value in the .properties.
+     * @return The endpoint's url as a string.
+     */
+    protected static String retrieveEndpoint(String propertiesPath, String key) {
+        String endpoint = "";
+        try (InputStream input = new FileInputStream(propertiesPath)) {
+            Properties prop = new Properties();
+            prop.load(input);
+            endpoint = prop.getProperty(key);
+        } catch (FileNotFoundException e) {
+            throw new JPSRuntimeException("No client.properties file detected! Please place the file in the config directory.");
+        } catch (IOException e) {
+            throw new JPSRuntimeException("File could not be accessed! See error message for more details: " + e);
+        }
+        return endpoint;
     }
 }
