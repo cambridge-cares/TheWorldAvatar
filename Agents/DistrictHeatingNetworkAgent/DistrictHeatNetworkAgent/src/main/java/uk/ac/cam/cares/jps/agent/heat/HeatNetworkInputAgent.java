@@ -316,12 +316,12 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "Tier_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "Tier"))
                         .addInsert(NodeFactory.createURI(KB + "TieredUnitPrice"), NodeFactory.createURI(OHN + "hasTier"), NodeFactory.createURI(KB + "Tier_2"))
                         .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "Tier"))
-                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "HeatUnitPrice_1"))
-                        .addInsert(NodeFactory.createURI(KB + "HeatUnitPrice_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatUnitPrice"))
-                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "HeatUnitPrice_2"))
-                        .addInsert(NodeFactory.createURI(KB + "HeatUnitPrice_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatUnitPrice"))
-                        .addInsert(NodeFactory.createURI(KB + "Tier_1"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "HeatUnitPrice_1"))
-                        .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "HeatUnitPrice_2"))
+                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_1"))
+                        .addInsert(NodeFactory.createURI(KB + "UnitPrice_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "UnitPrice"))
+                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_2"))
+                        .addInsert(NodeFactory.createURI(KB + "UnitPrice_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "UnitPrice"))
+                        .addInsert(NodeFactory.createURI(KB + "Tier_1"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_1"))
+                        .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_2"))
                         .addInsert(NodeFactory.createURI(KB + "Tier_1"), NodeFactory.createURI(OHN + "hasCumulativeEnergyCap"), NodeFactory.createURI(KB + "CumulativeEnergyCap_1"))
                         .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(OHN + "hasCumulativeEnergyCap"), NodeFactory.createURI(KB + "CumulativeEnergyCap_2"))
                         .addInsert(NodeFactory.createURI(KB + "CumulativeEnergyCap_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_Energy))
@@ -330,8 +330,8 @@ public class HeatNetworkInputAgent {
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", Contract_ur.toString());
         omHasValueNonTS("CumulativeEnergyCap_1", "GigaWattHourPerYear", Value_TierOneCap);
         omHasValueNonTS("CumulativeEnergyCap_2", "GigaWattHourPerYear", Value_TierTwoCap);
-        omHasValueNonTS("HeatUnitPrice_1", "EuroPerMegaWattHour", Value_TierOneUnitPrice);
-        omHasValueNonTS("HeatUnitPrice_2", "EuroPerMegaWattHour", Value_TierTwoUnitPrice);
+        omHasValueNonTS("UnitPrice_1", "EuroPerMegaWattHour", Value_TierOneUnitPrice);
+        omHasValueNonTS("UnitPrice_2", "EuroPerMegaWattHour", Value_TierTwoUnitPrice);
         omHasValueNonTS("MinPurchase" + "IncinerationPlant", "MegaWattHourPerYear", Value_MinPurchase);
         omHasValueNonTS("MaxPurchase" + "IncinerationPlant", "MegaWattHourPerYear", Value_MaxPurchase);
 
@@ -340,11 +340,12 @@ public class HeatNetworkInputAgent {
         UpdateBuilder CalendarEffect_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))
-                        .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI("http://nomisma.org/ontology#hasDate"), NodeFactory.createURI(XSD_DATE))
-                        .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(OHN + "isPublicHoliday"), NodeFactory.createURI(XSD_BOOLEAN))
-                        .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(OHN + "isVacation"), NodeFactory.createURI(XSD_BOOLEAN))
+                        .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
+                        .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))
+                        .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))
                         .addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(EMS + "AirTemperature"));
         UpdateRequest CalendarEffect_ur = CalendarEffect_ub.buildRequest();
+        omHasValueTS("AirTemperature", "DegreeCelsius");
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", CalendarEffect_ur.toString());
 
 
