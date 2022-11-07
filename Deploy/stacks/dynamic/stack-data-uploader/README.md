@@ -229,7 +229,8 @@ The data loader does three things when uploading raster data:
 
 #### GDAL Options
 
-An `"options"` node within the relevant data subset in the configuration json can be added.
+A `"gdalTranslateOptions"` node within the relevant data subset in the configuration json can be added.
+This node was previously just called `"options"`.
 Within that the following nodes can be added.
 - `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo).
   These open options are driver specific and details on them can be found in the driver pages below.
