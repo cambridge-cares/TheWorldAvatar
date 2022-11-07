@@ -88,6 +88,8 @@ You'll need to provide  your credentials in a single-word text files located lik
 repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
+In the `root/config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly. This must be done before creating the image.
+
 This agent is designed for easy modifications and generalization. All modifiable inputs are available in the `HistoricalHouse45UtilitiesAgent` class:
 - `rowStart` field
 - `dateKey`field at `processRequestParameters` method
@@ -100,16 +102,27 @@ Deploy the agent and its dependencies by running the following code in the comma
 docker-compose up -d
 ```
 
-Please disable the `DateTSClientDecoratorIntegrationTest` when building the agent in Docker. The test containers are
-unable to access the local Docker daemon from within the container. The test runs when building locally in Maven.
+Please disable the `DateTSClientDecoratorIntegrationTest` and `QueryHandlerTest` when building the agent in Docker. 
+The test containers are unable to access the host Docker daemon from within the container. The test runs when building locally in Maven.
 
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor
-In the `root/config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly.
-
 In the `root/data` directory, please place the Excel workbook, and if there is a preceding file, the [mapping file](#13-mapping-file),
 which must be named as `excel.properties`. Note that the mapping file will be automatically generated otherwise.
 
+##### 2.3.2 POST Request Parameters
+The agent currently accepts two parameters.
+
+1. Client.properties File Path - Mandatory
+This is the file path to retrieve the login credentials necessary to access the SPARQL and RDB endpoints. It can be invoked with the `clientProperties` key.
+
+2. OntoCityGML Building IRI - Optional
+This links the OntoBIM Building instance to the building instance in the OntoCityGML ontology via the `hasOntoCityGMLRepresentation` property. 
+It is not required to link the building instances if they do not exist.
+
+It can be invoked with the `cityGmlBuildingIri` key.
+
+##### 2.3.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3050/historical-house45-utilities-agent/retrieve`.
 Two parameters are required. A sample request is as follows:
 ```
@@ -125,4 +138,4 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["Data updated with new readings from Excel Workbook.","Timeseries Data has been updated."]}
 ```
 #### 2.4 Post-Build
-Please access the Blazegraph and transfer all the triples into the TTL file (The IRI to edit are appended with replaceIRIHere).
+All the data are available in both the KG and RDB. The mapping files can be retrieved from the `data` directory.
