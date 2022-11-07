@@ -144,7 +144,7 @@ public class ShipInputAgent extends HttpServlet {
                 }
             }
 
-            boolean initialiseObda = false;
+            // boolean initialiseObda = false;
             if (!queryClient.initialised()) {
                 PostGISClient postGISClient = new PostGISClient();
                 Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -156,7 +156,7 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error(e.getMessage());
                 }
                 postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
-                initialiseObda = true;
+                // initialiseObda = true;
 
                 // this adds the OntoAgent triples, only do this once
                 queryClient.initialiseAgent();
@@ -188,13 +188,13 @@ public class ShipInputAgent extends HttpServlet {
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().print(responseJson);
 
-            // first time adding ontop mapping
-            if (initialiseObda) {
-                LOGGER.info("Initialising ontop mapping file");
-                // add ontop mapping
-                Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-                new OntopClient().updateOBDA(obdaFile);
-            }
+            // // first time adding ontop mapping
+            // if (initialiseObda) {
+            //     LOGGER.info("Initialising ontop mapping file");
+            //     // add ontop mapping
+            //     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
+            //     new OntopClient().updateOBDA(obdaFile);
+            // }
         }
     }
 
