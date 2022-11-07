@@ -136,8 +136,8 @@ A description of how each is processed and a summary of the available configurat
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
 The data loader does two things when uploading vector data: 
-1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
-The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html#vector-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
 
 The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
@@ -162,7 +162,7 @@ It also means any value specified for `"sridIn"` is passed as the value of the [
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
 These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
-All of the vector drivers are listed [here](https://gdal.org/drivers/vector/index.html) with links to their documentation.
+All of the vector drivers are listed [here](https://gdal.org/drivers/vector/index.html#vector-drivers) with links to their documentation.
 The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [-oo](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo) option.
 
 ##### `"layerCreationOptions"`
@@ -182,7 +182,7 @@ The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of th
 Several non-driver specific options are also available.
 These can be set as key-array-valued pairs within an `"otherOptions"` object.
 This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
-A list of possible options can be found on the [vector common options](https://gdal.org/programs/vector_common_options.html) and [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html) pages.
+A list of possible options can be found on the [vector common options](https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs) and [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) pages.
 
 ##### `"envVars"`
 A few aspects of some of the drivers can also be set via environment variables.
@@ -220,9 +220,9 @@ These are the most commonly used options, for more see the examples [here](https
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
 The data loader does three things when uploading raster data: 
-1. It uses the GDAL [`gdal_translate`](https://gdal.org/programs/gdal_translate.html) tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF](https://gdal.org/drivers/raster/cog.html#raster-cog) files stored in the stack.
+1. It uses the GDAL [`gdal_translate`](https://gdal.org/programs/gdal_translate.html#gdal-translate) tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)](https://gdal.org/drivers/raster/cog.html#raster-cog) files stored in the stack.
   This is an extension of the GeoTIFF format and both are very efficient to read.
-  The full list of file formats that `gdal_translate` supports is given [here](https://gdal.org/drivers/raster/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+  The full list of file formats that `gdal_translate` supports is given [here](https://gdal.org/drivers/raster/index.html#raster-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
 2. It uses the PostGIS [`raster2pgsql`](https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader) tool to register the GeoTIFF files in the PostGIS database.
    The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
 3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
@@ -238,7 +238,7 @@ Within that the following nodes can be added.
   These creation options are driver specific and details on them can be found in the driver pages below.
 - `"envVars"` allows you to set environment variables.
 - `"otherOptions"` allows you to add any other flag you wish to explicitly.
-        
+
 The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`.
 These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
 
@@ -257,9 +257,9 @@ Within that the following nodes can be added.
 
 The `"tabular"` data type should be used to load non-geospatial data.
 The data loader just does one thing when uploading tabular data: 
-1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv), and Microsoft Excel's [XLS](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format) and [XLSX](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet) formatted files.
-The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html#vector-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
 
 #### GDAL Options
 
@@ -269,7 +269,7 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 - [Comma Separated Value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
 - [XLS - MS Excel format](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format)
 - [XLSX - MS Office Open XML spreadsheet](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet)
-- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html) (mainly as the output)
+- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html#postgisraster-postgis-raster-driver) (mainly as the output)
 ## Prerequisites
 
 These are the same as listed in [The Stack Manager](../stack-manager/README.md#prerequisites).
@@ -424,9 +424,9 @@ This way you can look at look at the user interfaces of the various services (se
     The [cropmap](../example_datasets/inputs/config/cropmap.json) example shows this being used to remove some fields (containing calculated areas and perimeters) that were not constantly named across all of the [crop-map-of-england-crome-2020](https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020) Shapefiles.
 
 
-#### [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html)
+#### [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb)
 
-- As described in the GDAL documentation [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html) datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
+- As described in the GDAL documentation [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb) datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
     For improved efficiency this folder can be added to a zip file with the `.gdb.zip` extension.
     For example:
     ``` sh
