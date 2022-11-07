@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.BuildingIRISingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InsertQueryBuilderTest {
     private static StringBuilder insertQueryBuilder;
+    private static BuildingIRISingleton singleton;
     private static final String electricityIri = "electricity_6161";
+    private static final String elecFirstFloorIri = "electricity_FirstFloor_912";
+    private static final String elecGroundFloorIri = "electricity_GroundFloor_315";
+    private static final String elecAtticIri = "electricity_Attic_581";
     private static final String waterIri = "water_321";
     private static final String oilIri = "oil_123";
+    private static final String citygml = "CityGML_Building_123";
+    private static final String building = "Building_5515";
+    private static final String firstFloor = "Storey_5781";
+    private static final String groundFloor = "Storey_162";
+    private static final String attic = "Storey_836";
     private static final String falseStatement = "ontoubemmp:consumesUtilities twa:";
+
+    @BeforeAll
+    static void setup() {
+        singleton = BuildingIRISingleton.getInstance();
+    }
 
     @BeforeEach
     void init() {
@@ -30,8 +46,24 @@ class InsertQueryBuilderTest {
     }
 
     @Test
+    void testAddOntoBuiltEnvInsertStatements() {
+        setSingletonValues();
+        InsertQueryBuilder.addOntoBuiltEnvInsertStatements(insertQueryBuilder, singleton);
+        assertEquals("<" + building + "> builtenv:hasOntoCityGMLRepresentation <" + citygml + ">.\n",
+                insertQueryBuilder.toString());
+    }
+
+    @Test
+    void testAddOntoBuiltEnvInsertStatementsEmptyStatements() {
+        resetSingleton();
+        InsertQueryBuilder.addOntoBuiltEnvInsertStatements(insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().isEmpty());
+    }
+
+    @Test
     void testAddElectricityInsertStatements() {
-        InsertQueryBuilder.addElectricityInsertStatements(electricityIri, insertQueryBuilder);
+        resetSingleton();
+        InsertQueryBuilder.addElectricityInsertStatements(electricityIri, insertQueryBuilder, singleton);
         List<String> expected = genExpectedElectricityList();
         expected.forEach(line -> assertAll(
                 () -> assertTrue(insertQueryBuilder.toString().contains(line)),
@@ -39,10 +71,21 @@ class InsertQueryBuilderTest {
         ));
     }
 
+    @Test
+    void testAddElectricityInsertStatementsWithStoreyIri() {
+        setSingletonValues();
+        InsertQueryBuilder.addElectricityInsertStatements(elecAtticIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(attic + "> ontoubemmp:consumesUtilities twa:MonthlyElectricityConsumption_Quantity_"));
+        InsertQueryBuilder.addElectricityInsertStatements(elecGroundFloorIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(groundFloor + "> ontoubemmp:consumesUtilities twa:MonthlyElectricityConsumption_Quantity_"));
+        InsertQueryBuilder.addElectricityInsertStatements(elecFirstFloorIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(firstFloor + "> ontoubemmp:consumesUtilities twa:MonthlyElectricityConsumption_Quantity_"));
+    }
 
     @Test
     void testAddWaterInsertStatements() {
-        InsertQueryBuilder.addWaterInsertStatements(waterIri, insertQueryBuilder);
+        resetSingleton();
+        InsertQueryBuilder.addWaterInsertStatements(waterIri, insertQueryBuilder, singleton);
         List<String> expected = genExpectedWaterList();
         expected.forEach(line -> assertAll(
                 () -> assertTrue(insertQueryBuilder.toString().contains(line)),
@@ -51,13 +94,44 @@ class InsertQueryBuilderTest {
     }
 
     @Test
+    void testAddWaterInsertStatementsWithStoreyIri() {
+        setSingletonValues();
+        InsertQueryBuilder.addWaterInsertStatements(waterIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(building + "> ontoubemmp:consumesUtilities twa:MonthlyWaterConsumption_Quantity_"));
+    }
+
+    @Test
     void testAddOilInsertStatements() {
-        InsertQueryBuilder.addOilInsertStatements(oilIri, insertQueryBuilder);
+        resetSingleton();
+        InsertQueryBuilder.addOilInsertStatements(oilIri, insertQueryBuilder, singleton);
         List<String> expected = genExpectedOilList();
         expected.forEach(line -> assertAll(
                 () -> assertTrue(insertQueryBuilder.toString().contains(line)),
                 () -> assertFalse(insertQueryBuilder.toString().contains(falseStatement)) // Ensure this statement is not added since condition is null
         ));
+    }
+
+    @Test
+    void testAddOilInsertStatementsWithStoreyIri() {
+        setSingletonValues();
+        InsertQueryBuilder.addOilInsertStatements(oilIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(building + "> ontoubemmp:consumesUtilities twa:MonthlyOilConsumption_Quantity_"));
+    }
+
+    private static void resetSingleton() {
+        singleton.setOntoCityGmlBuildingIri("");
+        singleton.setBuildingIri("");
+        singleton.setGroundFloorIri("");
+        singleton.setFirstFloorIri("");
+        singleton.setAtticIri("");
+    }
+
+    private static void setSingletonValues() {
+        singleton.setOntoCityGmlBuildingIri(citygml);
+        singleton.setBuildingIri(building);
+        singleton.setGroundFloorIri(groundFloor);
+        singleton.setFirstFloorIri(firstFloor);
+        singleton.setAtticIri(attic);
     }
 
     private static List<String> genExpectedElectricityList() {

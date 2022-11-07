@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
+import uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.BuildingIRISingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
  */
 public class OntoBimAdapter {
     protected static String BASE_URI;
+    private static BuildingIRISingleton singleton;
     private static final String ELECTRICITY_KEYWORD = "ElectricityConsumption";
     private static final String WATER_KEYWORD = "WaterConsumption";
     private static final String OIL_KEYWORD = "OilConsumption";
@@ -22,19 +24,16 @@ public class OntoBimAdapter {
     private static final String GROUNDFLOOR_KEYWORD = "Ground";
     private static final String FIRSTFLOOR_KEYWORD = "Level 1";
     private static final String ATTIC_KEYWORD = "Attic";
-    protected static String BUILDING_INST ="";
-    protected static String GROUND_FLOOR_INST ="";
-    protected static String FIRST_FLOOR_INST ="";
-    protected static String ATTIC_INST ="";
-
 
     /**
      * Adds the supplementary triples for the instantiated timeseries to link to the OntoBIM instances.
      *
      * @param queryEndpoint  The remote SPARQL query endpoint.
      * @param updateEndpoint The remote SPARQL update endpoint.
+     * @param singletonInst  A singleton instance containing the required building and storey instances.
      */
-    public static void addSupplementaryTriples(String queryEndpoint, String updateEndpoint) {
+    public static void addSupplementaryTriples(String queryEndpoint, String updateEndpoint, BuildingIRISingleton singletonInst) {
+        singleton = singletonInst;
         retrieveBaseUri(queryEndpoint);
         List<String> measureList = retrieveMeasureInstances(queryEndpoint);
         retrieveZoneInstances(queryEndpoint);
@@ -102,15 +101,15 @@ public class OntoBimAdapter {
             String zone = soln.get(SelectQueryBuilder.ZONE_VAR).toString();
             // When there is no name ie a null value, use of Optional class to parse the name
             Optional<RDFNode> nameContainer = Optional.ofNullable(soln.get(SelectQueryBuilder.NAME_VAR));
-            String name = nameContainer.isPresent() ? nameContainer.toString() :"";
+            String name = nameContainer.isPresent() ? nameContainer.toString() : "";
             if (zone.contains(BUILDING_KEYWORD)) {
-                BUILDING_INST = zone;
+                singleton.setBuildingIri(zone);
             } else if (name.contains(ATTIC_KEYWORD)) {
-                ATTIC_INST = zone;
+                singleton.setAtticIri(zone);
             } else if (name.contains(GROUNDFLOOR_KEYWORD)) {
-                GROUND_FLOOR_INST = zone;
+                singleton.setGroundFloorIri(zone);
             } else if (name.contains(FIRSTFLOOR_KEYWORD)) {
-                FIRST_FLOOR_INST = zone;
+                singleton.setFirstFloorIri(zone);
             }
         }
     }
@@ -126,7 +125,7 @@ public class OntoBimAdapter {
         QueryHandler.genPrefixMapping(builder);
         builder.append("INSERT DATA {");
         InsertQueryBuilder.addUnitsInsertStatements(builder);
-        InsertQueryBuilder.addOntoBuiltEnvInsertStatements(builder);
+        InsertQueryBuilder.addOntoBuiltEnvInsertStatements(builder, singleton);
         for (String measure : measureList) {
             addInsertStatements(measure, builder);
         }
@@ -145,11 +144,11 @@ public class OntoBimAdapter {
 
         } else {
             if (measureIRI.contains(ELECTRICITY_KEYWORD)) {
-                InsertQueryBuilder.addElectricityInsertStatements(measureIRI, insertQuery);
+                InsertQueryBuilder.addElectricityInsertStatements(measureIRI, insertQuery, singleton);
             } else if (measureIRI.contains(WATER_KEYWORD)) {
-                InsertQueryBuilder.addWaterInsertStatements(measureIRI, insertQuery);
+                InsertQueryBuilder.addWaterInsertStatements(measureIRI, insertQuery, singleton);
             } else if (measureIRI.contains(OIL_KEYWORD)) {
-                InsertQueryBuilder.addOilInsertStatements(measureIRI, insertQuery);
+                InsertQueryBuilder.addOilInsertStatements(measureIRI, insertQuery, singleton);
             }
         }
     }

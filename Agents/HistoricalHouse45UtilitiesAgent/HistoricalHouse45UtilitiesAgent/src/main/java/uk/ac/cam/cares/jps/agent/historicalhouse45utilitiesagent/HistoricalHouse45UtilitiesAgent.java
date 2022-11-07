@@ -58,8 +58,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
     // Optional arguments
     private static int[] dateArrays;
-    public static String ontoCityGMLBuildingIRI;
-
+    private static BuildingIRISingleton singleton;
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
@@ -71,9 +70,12 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         if (validateInput(requestParams)) {
             this.setDateKey("reading_datestamp");
             this.setDateArray(new int[]{0, 1, 2});
+            singleton = BuildingIRISingleton.getInstance(); // Create new singleton
             LOGGER.info("Passing request to Historical House45 Utilities Agent..");
             // Initialise required values
-            ontoCityGMLBuildingIRI =requestParams.has(KEY_CITYGML_BUILDING_INST) ? requestParams.getString(KEY_CITYGML_BUILDING_INST) : "";
+            if (requestParams.has(KEY_CITYGML_BUILDING_INST)) {
+                singleton.setOntoCityGmlBuildingIri(requestParams.getString(KEY_CITYGML_BUILDING_INST));
+            }
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String excelProperties = FileManager.PROPERTIES;
             String excelFile;
@@ -83,8 +85,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
                 throw new JPSRuntimeException(e);
             }
             String[] parameters = new String[]{clientProperties, excelProperties, excelFile};
-            queryEndpoint = FileManager.retrieveEndpoint(clientProperties,"sparql.query.endpoint");
-            updateEndpoint = FileManager.retrieveEndpoint(clientProperties,"sparql.update.endpoint");
+            queryEndpoint = FileManager.retrieveEndpoint(clientProperties, "sparql.query.endpoint");
+            updateEndpoint = FileManager.retrieveEndpoint(clientProperties, "sparql.update.endpoint");
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -199,7 +201,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
         }
 
-        OntoBimAdapter.addSupplementaryTriples(queryEndpoint,updateEndpoint);
+        OntoBimAdapter.addSupplementaryTriples(queryEndpoint, updateEndpoint, singleton);
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");
 
