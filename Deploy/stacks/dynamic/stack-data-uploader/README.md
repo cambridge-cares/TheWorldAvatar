@@ -117,15 +117,9 @@ Currently only `.sld` style files are supported.
 If required in the future support for other style formats might be add as GeoServer does support several other formats natively and a few more if the required plugins are loaded.
 
 #### `"mappings"`
-A list of Ontop mapping file definition objects.
-Each entry requires the following values to be specified:
-
-| Key      | Description                                       |
-| -------- | ------------------------------------------------- |
-| `"file"` | The name of the file containing the OBDA mappings |
-
+A list of Ontop mapping file definition objects provided as paths relative to the [`"datasetDirectory"`](#datasetDirectory).
 Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
-Ontop also supports the R2RML (.ttl) OBDA file standard but the data uploader would need changes to include matching support.
+Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader would need changes to include matching support.
 
 ## Data types
 
