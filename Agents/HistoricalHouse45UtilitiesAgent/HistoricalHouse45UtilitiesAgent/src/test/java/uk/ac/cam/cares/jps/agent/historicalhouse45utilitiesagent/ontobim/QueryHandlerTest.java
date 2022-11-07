@@ -82,6 +82,7 @@ class QueryHandlerTest {
         results.add("PREFIX skos:<http://www.w3.org/2004/02/skos/core#>");
         results.add("PREFIX qudt:<http://qudt.org/schema/qudt>");
         results.add("PREFIX ontoubemmp:<https://www.theworldavatar.com/kg/ontoubemmp/>");
+        results.add("PREFIX builtenv:<http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#>");
         return results;
     }
 }

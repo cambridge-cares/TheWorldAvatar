@@ -115,10 +115,10 @@ Two parameters are required. A sample request is as follows:
 ```
 POST http://localhost:3050/historical-house45-utilities-agent/retrieve
 Content-Type: application/json
-{"clientProperties":"TIMESERIES_CLIENTPROPERTIES"}
+{"clientProperties":"TIMESERIES_CLIENTPROPERTIES", "cityGmlBuildingIri": "http://IPADDRESS:PORTNUM/namespace/NAMESPACE/sparql/GRAPH/INST/}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'clientProperties':'TIMESERIES_CLIENTPROPERTIES'}" localhost:3050/historical-house45-utilities-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{'clientProperties':'TIMESERIES_CLIENTPROPERTIES', 'cityGmlBuildingIri': 'http://IPADDRESS:PORTNUM/namespace/NAMESPACE/sparql/GRAPH/INST/'}" localhost:3050/historical-house45-utilities-agent/retrieve
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```

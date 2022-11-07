@@ -10,6 +10,7 @@ class QueryBuilderNode {
     protected static final String QUDT_PREFIX = "qudt:";
     protected static final String BOT_PREFIX = "bot:";
     protected static final String UBEMMP_PREFIX = "ontoubemmp:";
+    protected static final String ONTOBUILTENV_PREFIX = "builtenv:";
     protected static final String TIMESERIES_PREFIX = "ontotimeseries:";
     // Instances
     protected static final String MONTHLY_ELECTRICITY_INST = "MonthlyElectricityConsumption_Quantity_";
@@ -31,6 +32,7 @@ class QueryBuilderNode {
     protected static final String OM_LITRE = OM_PREFIX + "litre";
     protected static final String SKOS_NOTATION = SKOS_PREFIX + "notation";
     protected static final String UBEMMP_CONSUMES_UTILITIES = UBEMMP_PREFIX + "consumesUtilities";
+    protected static final String ONTOBUILTENV_HAS_CITYGML_REP = ONTOBUILTENV_PREFIX + "hasOntoCityGMLRepresentation";
     // Literal
     protected static final String KWH_LITERAL = "'kW.h'^^" + QUDT_PREFIX + "UCUMcs";
     protected static final String CBM_LITERAL = "'m3'^^" + QUDT_PREFIX + "UCUMcs";

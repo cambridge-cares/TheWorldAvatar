@@ -45,8 +45,10 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String DATA_UPDATE_ERROR_MSG = "Could not update time series!";
+    // POST request keys
+    private static final String KEY_CLIENTPROPERTIES = "clientProperties";
+    private static final String KEY_CITYGML_BUILDING_INST = "cityGmlBuildingIri";
 
-    public static final String KEY_CLIENTPROPERTIES = "clientProperties";
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility"; // The prefix to use for generating IRI
     public static final int rowStart = 3;
@@ -56,6 +58,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
     // Optional arguments
     private static int[] dateArrays;
+    public static String ontoCityGMLBuildingIRI;
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -68,8 +71,9 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         if (validateInput(requestParams)) {
             this.setDateKey("reading_datestamp");
             this.setDateArray(new int[]{0, 1, 2});
-
             LOGGER.info("Passing request to Historical House45 Utilities Agent..");
+            // Initialise required values
+            ontoCityGMLBuildingIRI =requestParams.has(KEY_CITYGML_BUILDING_INST) ? requestParams.getString(KEY_CITYGML_BUILDING_INST) : "";
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String excelProperties = FileManager.PROPERTIES;
             String excelFile;

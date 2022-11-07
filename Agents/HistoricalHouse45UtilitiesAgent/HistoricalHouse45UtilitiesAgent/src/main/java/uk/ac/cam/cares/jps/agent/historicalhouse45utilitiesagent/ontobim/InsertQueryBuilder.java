@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim;
 
+import uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.HistoricalHouse45UtilitiesAgent;
+
 import java.util.UUID;
 
 /**
@@ -8,6 +10,19 @@ import java.util.UUID;
  * @author qhouyee
  */
 class InsertQueryBuilder extends QueryBuilderNode {
+    /**
+     * Add the statements to link the building instance to their CityGML IRI counterpart.
+     *
+     * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     */
+    protected static void addOntoBuiltEnvInsertStatements(StringBuilder insertQueryBuilder) {
+        if (!HistoricalHouse45UtilitiesAgent.ontoCityGMLBuildingIRI.isEmpty() && !OntoBimAdapter.BUILDING_INST.isEmpty()) {
+            insertQueryBuilder.append(OPEN_ANCHOR + OntoBimAdapter.BUILDING_INST + CLOSED_ANCHOR + WHITESPACE
+                    + ONTOBUILTENV_HAS_CITYGML_REP + WHITESPACE
+                    + OPEN_ANCHOR+ HistoricalHouse45UtilitiesAgent.ontoCityGMLBuildingIRI + CLOSED_ANCHOR + FULLSTOP);
+        }
+    }
+
     /**
      * Add the statements for all measurement units to be inserted into the SPARQL endpoint.
      *

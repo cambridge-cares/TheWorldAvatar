@@ -19,6 +19,7 @@ class QueryHandler {
     private static final String QUDT_URI = "http://qudt.org/schema/qudt";
     private static final String TIMESERIES_URI = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
     private static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
+    private static final String ONTOBUILTENV_URI = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#";
     private static final String BOT_URI = "https://w3id.org/bot#";
 
 
@@ -51,6 +52,7 @@ class QueryHandler {
         insertQuery.append(START_PREFIX + InsertQueryBuilder.SKOS_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + SKOS_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.QUDT_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + QUDT_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.UBEMMP_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + UBEMMP_URI + InsertQueryBuilder.CLOSED_ANCHOR);
+        insertQuery.append(START_PREFIX + InsertQueryBuilder.ONTOBUILTENV_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + ONTOBUILTENV_URI + InsertQueryBuilder.CLOSED_ANCHOR);
     }
 
     /**

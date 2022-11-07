@@ -126,6 +126,7 @@ public class OntoBimAdapter {
         QueryHandler.genPrefixMapping(builder);
         builder.append("INSERT DATA {");
         InsertQueryBuilder.addUnitsInsertStatements(builder);
+        InsertQueryBuilder.addOntoBuiltEnvInsertStatements(builder);
         for (String measure : measureList) {
             addInsertStatements(measure, builder);
         }
@@ -152,4 +153,18 @@ public class OntoBimAdapter {
             }
         }
     }
+    /*
+    // Missing sensor display too
+
+        INSTBUILDING IRI ontobuiltenv:hasOntoCityGMLRepresentation <>  ;
+    ontobuiltenv:hasPVsuitableRoofArea twahouse:RoofArea_48b4592f-6862-4b42-8fd2-4bd0e965e531.
+// MANUALY ADD
+            twahouse:RoofArea_48b4592f-6862-4b42-8fd2-4bd0e965e531
+    rdf:type	om:Area ;
+    om:hasUnit	om:squareMetre ;
+    om:hasNumericalValue "5555.55"^^xsd:double.
+// MANUALY ADD
+    om:squareMetre
+    skos:notation 	"m2"^^qudt:UCUMcs .
+     */
 }
