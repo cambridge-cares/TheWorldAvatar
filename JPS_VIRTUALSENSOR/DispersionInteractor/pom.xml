@@ -82,7 +82,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.15.0-dev-timeseries-ontop-SNAPSHOT</version>
+			<version>1.28.0</version>
 		</dependency>
 
 		<dependency>

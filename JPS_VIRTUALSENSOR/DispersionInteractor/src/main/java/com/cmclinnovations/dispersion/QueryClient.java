@@ -45,11 +45,6 @@ public class QueryClient {
     private static final Prefix P_OM = SparqlBuilder.prefix("om",iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
 
     // classes
-    private static final Iri SHIP = P_DISP.iri("Ship");
-    private static final Iri SPEED = P_DISP.iri("Speed");
-    private static final Iri COURSE_OVER_GROUND = P_DISP.iri("CourseOverGround");
-    private static final Iri MMSI = P_DISP.iri("MMSI");
-    private static final Iri LOCATION = P_DISP.iri("Location");
     private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri SCOPE = P_DISP.iri("Scope");
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
@@ -59,10 +54,6 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
 
     // properties
-    private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
-    private static final Iri HAS_SPEED = P_DISP.iri("hasSpeed");
-    private static final Iri HAS_COURSE = P_DISP.iri("hasCourse");
-    private static final Iri HAS_LOCATION = P_DISP.iri("hasLocation");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
