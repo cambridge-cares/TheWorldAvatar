@@ -88,12 +88,12 @@ Each data subset should then have its own subdirectory.
 These specify how to load the data from a particular set of files.
 Each data subset must have the following values specified:
 
-| Key                               | Description                                                                              |
-| --------------------------------- | ---------------------------------------------------------------------------------------- |
-| `"name"`                          | The name of the data subset                                                              |
-| [`"type"`](#type)                 | The type of the data                                                                     |
-| [`"subdirectory"`](#subdirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
-| `"skip"`                          | If set to `true` this data subset will be ignored by the data uploader                   |
+| Key                               | Required? | Default value                             | Description                                                                              |
+| --------------------------------- | --------- | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [`"name"`](#name)                 | No        | Name of layer in source                   | The name of the data subset                                                              |
+| [`"type"`](#type)                 | Yes       | N/A                                       | The type of the data                                                                     |
+| [`"subdirectory"`](#subdirectory) | No        | [`"datasetDirectory"`](#datasetDirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
+| `"skip"`                          | No        | `false`                                   | If set to `true` this data subset will be ignored by the data uploader                   |
 
 ##### `"type"`
 This controls which functions are used to load the data.
