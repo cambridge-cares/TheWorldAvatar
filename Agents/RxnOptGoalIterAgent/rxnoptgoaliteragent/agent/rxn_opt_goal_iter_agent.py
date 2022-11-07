@@ -62,8 +62,6 @@ class RxnOptGoalIterAgent(DerivationAgent):
         g = Graph()
         g = doe_instance.create_instance_for_kg(g)
         self.sparql_client.uploadGraph(g)
-        self.derivationClient.addTimeInstance(doe_instance.instance_iri)
-        self.derivationClient.updateTimestamp(doe_instance.instance_iri)
 
         # Get plan and steps
         # TODO: [next iteration] implement a more generic way of processing plan and step, here we took a shortcut that only works for all goals have the same plan and step
@@ -74,11 +72,11 @@ class RxnOptGoalIterAgent(DerivationAgent):
 
         # Create derivation instance for new information, the timestamp of this derivation is 0
         # TODO: [next iteration] implement a more generic way of deciding the agent to perform the derivation, here we took a shortcut to use the first agent (Step.canBePerformedBy[0])
-        doe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri])
+        doe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri])
         self.logger.info(f"Initialised successfully, created asynchronous doe derivation instance: {doe_derivation_iri}")
-        exe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri])
+        exe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri])
         self.logger.info(f"Initialised successfully, created asynchronous exe derivation instance: {exe_derivation_iri}")
-        postpro_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(postpro_step.canBePerformedBy[0], [exe_derivation_iri])
+        postpro_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(postpro_step.canBePerformedBy[0], [exe_derivation_iri])
         self.logger.info(f"Initialised successfully, created asynchronous postproc derivation instance: {postpro_derivation_iri}")
 
 

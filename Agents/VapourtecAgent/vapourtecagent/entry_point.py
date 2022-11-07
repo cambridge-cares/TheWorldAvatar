@@ -2,11 +2,6 @@ from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.agent import default
 from vapourtecagent.conf import config_vapourtec_agent
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 
 def create_app():
     vapourtec_agent_config = config_vapourtec_agent()

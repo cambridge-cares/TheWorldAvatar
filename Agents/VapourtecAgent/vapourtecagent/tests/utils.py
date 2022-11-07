@@ -2,9 +2,9 @@ from rdflib import Graph
 import pkgutil
 import os
 
-from pyderivationagent.kg_operations import TIME_HASTIME
-from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
-from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
+from pyderivationagent.data_model import TIME_HASTIME
+from pyderivationagent.data_model import TIME_INTIMEPOSITION
+from pyderivationagent.data_model import TIME_NUMERICPOSITION
 
 import vapourtecagent.tests.conftest as cf
 

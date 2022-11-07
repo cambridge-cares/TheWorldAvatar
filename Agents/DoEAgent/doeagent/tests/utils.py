@@ -2,9 +2,9 @@ from rdflib import Graph
 import pkgutil
 import os
 
-from pyderivationagent.kg_operations import TIME_HASTIME
-from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
-from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
+from pyderivationagent.data_model import TIME_HASTIME
+from pyderivationagent.data_model import TIME_INTIMEPOSITION
+from pyderivationagent.data_model import TIME_NUMERICPOSITION
 
 import doeagent.tests.conftest as cf
 
@@ -12,7 +12,7 @@ import doeagent.tests.conftest as cf
 # Utility functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples(sparql_client, derivation_client, derivation_inputs):
+def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -35,10 +35,7 @@ def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     g = Graph().parse(os.path.join(cf.TEST_TRIPLES_DIR, 'rxn_exp_6_inf_data.ttl'))
     sparql_client.uploadGraph(g)
 
-    # Add timestamp to pure inputs
-    for input in derivation_inputs:
-        derivation_client.addTimeInstance(input)
-        derivation_client.updateTimestamp(input)
+    # Timestamp of pure inputs are not added here as they will be added at creation of the derivation instance
 
 
 def get_timestamp(derivation_iri: str, sparql_client):

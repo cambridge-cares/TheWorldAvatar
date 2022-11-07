@@ -22,7 +22,7 @@ def test_example_doe(
     sparql_client, derivation_client = initialise_clients
 
     # Initialise all triples in the knowledge graph
-    utils.initialise_triples(sparql_client, derivation_client, derivation_inputs)
+    utils.initialise_triples(sparql_client)
 
     # Create agent instance, register agent in KG
     doe_agent = create_doe_agent(register_agent=True, random_agent_iri=local_agent_test)

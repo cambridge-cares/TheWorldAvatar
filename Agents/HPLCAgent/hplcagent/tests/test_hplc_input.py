@@ -4,7 +4,6 @@ import filecmp
 import time
 import os
 
-logging.getLogger("py4j").setLevel(logging.INFO)
 logger = logging.getLogger("test_hplc_input")
 
 import hplcagent.tests.utils as utils
@@ -100,13 +99,8 @@ def test_monitor_derivation(
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
     derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_inputs:
-        hplc_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        hplc_agent.derivationClient.updateTimestamp(input)
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = hplc_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Start monitor derivations
@@ -182,13 +176,8 @@ def test_dry_run(
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
     derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_inputs:
-        hplc_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        hplc_agent.derivationClient.updateTimestamp(input)
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = hplc_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     ## Check if the derivation is processed and generated the desired triples
@@ -224,13 +213,8 @@ def test_docker_integration(
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
     derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_inputs:
-        hplc_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        hplc_agent.derivationClient.updateTimestamp(input)
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = hplc_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Wait for some arbitrary time more then the derivation_periodic_timescale

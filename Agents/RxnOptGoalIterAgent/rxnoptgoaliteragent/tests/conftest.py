@@ -4,7 +4,7 @@ from pathlib import Path
 from rdflib import Graph
 from flask import Flask
 from enum import Enum
-import logging
+import requests
 import pkgutil
 import pytest
 import shutil
@@ -20,12 +20,11 @@ from rxnoptgoaliteragent.data_model import *
 
 from chemistry_and_robots.tests.conftest import TargetIRIs
 
-logging.getLogger("py4j").setLevel(logging.INFO)
+from pyderivationagent.data_model import TIME_HASTIME
+from pyderivationagent.data_model import TIME_INTIMEPOSITION
+from pyderivationagent.data_model import TIME_NUMERICPOSITION
 
-from pyderivationagent.kg_operations import TIME_HASTIME
-from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
-from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
-
+from pyderivationagent.kg_operations import PyDerivationClient
 
 # ----------------------------------------------------------------------------------
 # Constant and configuration
@@ -85,12 +84,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
 
 @pytest.fixture(scope="session")
@@ -140,9 +147,10 @@ def initialise_clients(get_service_url, get_service_auth):
     sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
     # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd,
     )
 
     yield sparql_client, derivation_client
@@ -214,9 +222,9 @@ def initialise_test_triples(initialise_triple_store):
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
         # Create DerivationClient for creating derivation instances
-        derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-            sparql_client.kg_client,
-            DERIVATION_INSTANCE_BASE_URL
+        derivation_client = PyDerivationClient(
+            DERIVATION_INSTANCE_BASE_URL,
+            endpoint, endpoint
         )
 
         initialise_triples(sparql_client, derivation_client, IRIs.DERIVATION_INPUTS.value)
@@ -331,11 +339,6 @@ def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl') # goal_iter.ttl and plan_step_agent.ttl
     for path in pathlist:
         sparql_client.uploadOntology(str(path))
-
-    # Add timestamp to pure inputs
-    for input in derivation_inputs:
-        derivation_client.addTimeInstance(input)
-        derivation_client.updateTimestamp(input)
 
 
 def get_timestamp(derivation_iri: str, sparql_client):

@@ -7,7 +7,6 @@ import time
 import os
 
 
-logging.getLogger("py4j").setLevel(logging.INFO)
 logger = logging.getLogger("test_hplc_postpro")
 
 pytest_plugins = ["docker_compose"]
@@ -89,14 +88,8 @@ def test_hplc_postpro_agent(
     # Construct derivation_inputs with the iri of HPLCReport
     derivation_inputs = [hplc_report_iri]
 
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_inputs:
-        hplc_postpro_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        hplc_postpro_agent.derivationClient.updateTimestamp(input)
-
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = hplc_postpro_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_postpro_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_postpro_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_postpro_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Query timestamp of the derivation for every 20 seconds until it's updated

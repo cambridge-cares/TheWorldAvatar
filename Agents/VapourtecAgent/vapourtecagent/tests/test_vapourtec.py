@@ -44,12 +44,8 @@ def test_monitor_derivation(
     )
     vapourtec_agent._start_monitoring_derivations()
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivation update is finished
     currentTimestamp_derivation = 0
@@ -133,12 +129,8 @@ def test_docker_integration(
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivation update is finished
     currentTimestamp_derivation = 0

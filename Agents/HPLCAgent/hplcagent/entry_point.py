@@ -2,10 +2,6 @@ from hplcagent.agent import HPLCAgent
 from hplcagent.agent import default
 from hplcagent.conf import config_hplc_agent
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     hplc_agent_config = config_hplc_agent()
