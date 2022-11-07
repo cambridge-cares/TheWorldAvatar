@@ -38,7 +38,7 @@ def test_monitor_derivations(
     # Initialise all triples in test_triples
     # It first DELETES ALL TRIPLES in the specified SPARQL endpoint
     # It then SPARQL update all triples stated in test_triples folder to the same endpoint 
-    cf.initialise_triples(sparql_client, derivation_client)
+    cf.initialise_triples(sparql_client)
 
     # Create agent instance, register agent in KG
     # NOTE Here we always set register_agent=True even for dockerised agent test

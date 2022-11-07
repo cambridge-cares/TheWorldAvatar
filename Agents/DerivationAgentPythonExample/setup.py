@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='derivationagentpythonexample',
@@ -11,8 +11,8 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAgentPythonExample",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.2.2', 'pydantic==1.9.0',
+    packages=find_namespace_packages(exclude=['tests','tests.*']),
+    install_requires=['pyderivationagent>=1.3.0', 'pydantic==1.9.0',
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     ],
     extras_require={

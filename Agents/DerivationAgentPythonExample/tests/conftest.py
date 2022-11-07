@@ -1,7 +1,3 @@
-# Avoid unnecessary logging information from py4j package
-import logging
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
@@ -16,6 +12,7 @@ from derivationagentpythonexample.conf import config_example_agent
 from derivationagentpythonexample.agent import ExampleAgent
 import derivationagentpythonexample.data_model as dm
 
+from pyderivationagent import PyDerivationClient
 
 # ----------------------------------------------------------------------------------
 # Constant and configuration
@@ -104,9 +101,10 @@ def initialise_clients(get_service_url, get_service_auth):
     )
 
     # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd
     )
 
     yield sparql_client, derivation_client
@@ -160,7 +158,7 @@ def create_example_agent():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples(sparql_client, derivation_client):
+def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -170,11 +168,6 @@ def initialise_triples(sparql_client, derivation_client):
         g = Graph()
         g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
-
-    # Add timestamp to pure inputs
-    for input in DERIVATION_INPUTS:
-        derivation_client.addTimeInstance(input)
-        derivation_client.updateTimestamp(input)
 
 
 def host_docker_internal_to_localhost(endpoint: str):

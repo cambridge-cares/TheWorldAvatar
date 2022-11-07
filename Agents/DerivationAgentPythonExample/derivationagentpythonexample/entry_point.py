@@ -1,7 +1,3 @@
-# Avoid unnecessary logging information from py4j package
-import logging
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 # Import agent, root web page, and configuration
 from derivationagentpythonexample.agent import ExampleAgent
 from derivationagentpythonexample.agent import default
