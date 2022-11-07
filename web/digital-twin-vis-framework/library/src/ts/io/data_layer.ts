@@ -24,6 +24,11 @@ abstract class DataLayer {
     public definition: Object;
 
     /**
+     * Zero-based display order.
+     */
+    public order: number = 0;
+
+    /**
      * Initialise a new DataLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {

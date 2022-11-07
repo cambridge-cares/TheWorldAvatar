@@ -14,6 +14,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
 from metoffice.datainstantiation.readings import update_all_stations
+#TODO: Remove deprecated data retrieval; now handled by FeatureInfoAgent
 from metoffice.dataretrieval.stations import create_json_output_files
 
 # Add recurring background tasks

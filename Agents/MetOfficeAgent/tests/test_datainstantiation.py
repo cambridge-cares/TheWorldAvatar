@@ -12,7 +12,7 @@ from testcontainers.core.container import DockerContainer
 from metoffice.dataretrieval.stations import *
 from metoffice.dataretrieval.readings import *
 from metoffice.errorhandling.exceptions import APIException
-from metoffice.utils.properties import QUERY_ENDPOINT
+from metoffice.utils.env_configs import QUERY_ENDPOINT
 from metoffice.flaskapp import create_app
 from tests.utils import *
 
