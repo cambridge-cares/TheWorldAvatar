@@ -149,12 +149,12 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-The SRS needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs) argument passed to `ogr2ogr`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-The SRS needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) argument passed to `ogr2ogr`.
 It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs) argument, rather than `-a_srs`.
 
@@ -229,18 +229,41 @@ The data loader does three things when uploading raster data:
 
 #### GDAL Options
 
-A `"gdalTranslateOptions"` node within the relevant data subset in the configuration json can be added.
-This node was previously just called `"options"`.
-Within that the following nodes can be added.
-- `"inputDatasetOpenOptions"` implements [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo).
-  These open options are driver specific and details on them can be found in the driver pages below.
-- `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co).
-  These creation options are driver specific and details on them can be found in the driver pages below.
-- `"envVars"` allows you to set environment variables.
-- `"otherOptions"` allows you to add any other flag you wish to explicitly.
+In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+These can be specified within an `"gdalTranslateOptions"` object (previously just called `"options"`) under the following keys:
 
-The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`.
-These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
+##### `"sridIn"`
+If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
+When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs).
+This sets the value of the [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) argument passed to `gdal_translate`.
+
+##### `"sridOut"`
+If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
+When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs).
+This sets the value of the [`-t_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs) argument passed to `gdal_translate`.
+It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs) argument, rather than `-a_srs`.
+
+##### `"inputDatasetOpenOptions"`
+Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
+These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
+These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
+All of the raster drivers are listed [here](https://gdal.org/drivers/raster/index.html#raster-drivers) with links to their documentation.
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [-oo](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo) option.
+
+##### `"creationOptions"`
+All raster datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
+In general these options should not need to be set explicitly as the `gdal_translate` tool can usually work them out from the source dataset, or use default values.
+However, setting one or more of them may be required to fix specific problems with the input dataset.
+The creation options provided by the COG driver are described [here](https://gdal.org/drivers/raster/cog.html#creation-options).
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [-co](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co) option.
+
+##### `"otherOptions"`
+Several non-driver specific options are also available.
+These can be set as key-array-valued pairs within an `"otherOptions"` object.
+This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
+A list of possible options can be found on the [raster common options](https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs) and [gdal_translate options](https://gdal.org/programs/gdal_translate.html#gdal-translate) pages.
 
 ##### Common drivers
 - [GeoTIFF](https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format)
@@ -248,7 +271,7 @@ These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmd
 
 #### GeoServer Options
 
-For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
+For raster data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
 Within that the following nodes can be added.
 - `"layerSettings"`
   - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
