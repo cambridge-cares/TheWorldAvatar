@@ -102,8 +102,8 @@ Deploy the agent and its dependencies by running the following code in the comma
 docker-compose up -d
 ```
 
-Please disable the `DateTSClientDecoratorIntegrationTest` and `QueryHandlerTest` when building the agent in Docker. 
-The test containers are unable to access the host Docker daemon from within the container. The test runs when building locally in Maven.
+*Integration tests (`DateTSClientDecoratorIntegrationT` and `QueryHandlerIntegrationT`) are ignored in the default Maven test settings and when building the agent in Docker. 
+They can be run in a CLI with `mvn integration-test`, and must not be included when creating the Docker image. The test containers are unable to access the host Docker daemon from within the container.
 
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor

@@ -20,12 +20,11 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * This integration test targets the DateTSClientWrapper class and its public methods that interact with an external Knowledge graph and Relational database
+ * This integration test targets the DateTSClientWrapper class and its public methods that interact with an external Knowledge graph and Relational database.
+ * Will not run when building a new Docker image, as it does not have access to the host Docker daemon.
  */
-
-@Disabled("Requires a running Docker engine to compose containers for a blazegraph and postgreSQL database. Disable this test if not available")
 @Testcontainers
-public class DateTSClientDecoratorIntegrationTest {
+public class DateTSClientDecoratorIntegrationT {
     @Container
     PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:13-alpine");
     @Container
