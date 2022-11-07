@@ -163,14 +163,14 @@ Some data source formats require additional options to be set for the geometries
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
 These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
 All of the vector drivers are listed [here](https://gdal.org/drivers/vector/index.html#vector-drivers) with links to their documentation.
-The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [-oo](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo) option.
+The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-oo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo) option.
 
 ##### `"layerCreationOptions"`
 All vector datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
 In general these options should not need to be set explicitly as the `ogr2ogr` tool can usually work them out from the source dataset, or use default values.
 However, setting one or more of them may be required to fix specific problems with the input dataset.
 The layer creation options provided by the PostGIS driver are described [here](https://gdal.org/drivers/vector/pg.html#layer-creation-options).
-The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [-lco](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco) option.
+The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-lco`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco) option.
 
 ##### `"outputDatasetOpenOptions"`
 The PostGIS driver has a few options to control how the `ogr2ogr` tool connects to the database.
@@ -209,9 +209,9 @@ Within that the following nodes can be added.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
   - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
-  - `"name"` parameter name.
-  - `"defaultValue"` default value of parameter.
-  - `"regexpValidator"` validation regular expression.
+    - `"name"` parameter name.
+    - `"defaultValue"` default value of parameter.
+    - `"regexpValidator"` validation regular expression.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
@@ -250,14 +250,14 @@ Some data source formats require additional options to be set for the geometries
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
 These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
 All of the raster drivers are listed [here](https://gdal.org/drivers/raster/index.html#raster-drivers) with links to their documentation.
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [-oo](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo) option.
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo) option.
 
 ##### `"creationOptions"`
 All raster datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
 In general these options should not need to be set explicitly as the `gdal_translate` tool can usually work them out from the source dataset, or use default values.
 However, setting one or more of them may be required to fix specific problems with the input dataset.
 The creation options provided by the COG driver are described [here](https://gdal.org/drivers/raster/cog.html#creation-options).
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [-co](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co) option.
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-co`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co) option.
 
 ##### `"otherOptions"`
 Several non-driver specific options are also available.
