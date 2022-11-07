@@ -203,7 +203,9 @@ public class QueryClient {
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
         String wktLiteral = queryResult.getJSONObject(0).getString(scope.getQueryString().substring(1));
-        return (Polygon) WKTReader.extract(wktLiteral).getGeometry();
+        Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
+        scopePolygon.setSRID(4326);
+        return (Polygon) scopePolygon;
     }
 
     Map<String,String> getMeasureToShipMap() {

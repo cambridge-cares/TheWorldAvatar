@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -118,8 +120,16 @@ public class Aermod {
         }
 
         try {
-            Runtime.getRuntime().exec(new String[]{EnvConfig.AERMET_EXE, AERMET_INPUT}, null, aermetDirectory.toFile());
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMET_EXE, AERMET_INPUT}, null, aermetDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
         } catch (IOException e) {
+            LOGGER.error("Error executing aermet");
+            LOGGER.error(e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             LOGGER.error("Error executing aermet");
             LOGGER.error(e.getMessage());
             return 1;
@@ -154,7 +164,7 @@ public class Aermod {
 
             double massFlowrateInGs = ship.getChimney().getFlowrateSO2InKgs() * 1000;
 
-            sb.append(String.format("SO LOCATION %s POINT %f %f",stkId, xyTransformed[0], xyTransformed[1]));
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f",stkId, xyTransformed[0], xyTransformed[1], ship.getChimney().getHeight()));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId, 
             massFlowrateInGs, ship.getChimney().getHeight(), ship.getChimney().getMixtureTemperatureInKelvin(), velocity, ship.getChimney().getDiameter()));
@@ -176,7 +186,53 @@ public class Aermod {
         }
     }
 
-    public void createAermodInputFile(Geometry scope) {
-        scope.getCoordinates();
+    public int createAermodInputFile(Geometry scope, int nx, int ny, String srid) {
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        String originalSRID = "EPSG:" + scope.getSRID();
+        
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+            double[] xyTransformed = CRSTransformer.transform(originalSRID, srid, scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
+        }
+
+        double xMax = Collections.max(xDoubles);
+        double xMin = Collections.min(xDoubles);
+        double yMax = Collections.max(yDoubles);
+        double yMin = Collections.min(yDoubles);
+
+        double dy = (yMax - yMin) / ny;
+        double dx = (xMax - xMin) / nx;
+        
+        String templateContent;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod_input.inp")) {
+            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            String simGrid = String.format("%f %d %f %f %d %f", xMin, nx, dx, yMin, ny, dy);
+            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read aermod_input.inp file");
+            return 1;
+        }
+
+        return writeToFile(aermodDirectory.resolve("aermod_input.inp"), templateContent);
+    }
+
+    int runAermod() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMOD_EXE, "aermod_input.inp"}, null, aermodDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+        } catch (IOException e) {
+            return 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
+        return 0;
     }
 }

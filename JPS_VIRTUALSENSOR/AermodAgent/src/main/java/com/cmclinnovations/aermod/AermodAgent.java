@@ -111,7 +111,8 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        aermod.createAermodInputFile(scope);
+        aermod.createAermodInputFile(scope, nx, ny, srid);
+        aermod.runAermod();
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {
