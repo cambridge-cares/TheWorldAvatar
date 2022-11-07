@@ -2,9 +2,11 @@ package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.RDFNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * An adaptor that supplements the instantiated time series triples with their relationships to instances of the OntoBIM ontology.
@@ -16,6 +18,15 @@ public class OntoBimAdapter {
     private static final String ELECTRICITY_KEYWORD = "ElectricityConsumption";
     private static final String WATER_KEYWORD = "WaterConsumption";
     private static final String OIL_KEYWORD = "OilConsumption";
+    private static final String BUILDING_KEYWORD = "/Building_";
+    private static final String GROUNDFLOOR_KEYWORD = "Ground";
+    private static final String FIRSTFLOOR_KEYWORD = "Level 1";
+    private static final String ATTIC_KEYWORD = "Attic";
+    protected static String BUILDING_INST ="";
+    protected static String GROUND_FLOOR_INST ="";
+    protected static String FIRST_FLOOR_INST ="";
+    protected static String ATTIC_INST ="";
+
 
     /**
      * Adds the supplementary triples for the instantiated timeseries to link to the OntoBIM instances.
@@ -26,6 +37,7 @@ public class OntoBimAdapter {
     public static void addSupplementaryTriples(String queryEndpoint, String updateEndpoint) {
         retrieveBaseUri(queryEndpoint);
         List<String> measureList = retrieveMeasureInstances(queryEndpoint);
+        retrieveZoneInstances(queryEndpoint);
         String insertQuery = createInsertQuery(measureList);
         QueryHandler.insertToEndpoint(insertQuery, updateEndpoint);
     }
@@ -47,7 +59,7 @@ public class OntoBimAdapter {
      * @return The query results stored as a List.
      */
     private static List<String> retrieveMeasureInstances(String endpoint) {
-        String query = SelectQueryBuilder.genSelectQuery();
+        String query = SelectQueryBuilder.genUtilityTSSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, endpoint);
         return storeResultsInList(results);
     }
@@ -66,6 +78,41 @@ public class OntoBimAdapter {
             queryResults.add(iri);
         }
         return queryResults;
+    }
+
+    /**
+     * Retrieves the building and storey instances that is linked to the utility measure in the remote endpoint.
+     *
+     * @param endpoint The remote SPARQL endpoint.
+     */
+    private static void retrieveZoneInstances(String endpoint) {
+        String query = SelectQueryBuilder.genZoneSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, endpoint);
+        storeResultsAsVar(results);
+    }
+
+    /**
+     * Store the query results into variables.
+     *
+     * @param results The SELECT query results.
+     */
+    private static void storeResultsAsVar(ResultSet results) {
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String zone = soln.get(SelectQueryBuilder.ZONE_VAR).toString();
+            // When there is no name ie a null value, use of Optional class to parse the name
+            Optional<RDFNode> nameContainer = Optional.ofNullable(soln.get(SelectQueryBuilder.NAME_VAR));
+            String name = nameContainer.isPresent() ? nameContainer.toString() :"";
+            if (zone.contains(BUILDING_KEYWORD)) {
+                BUILDING_INST = zone;
+            } else if (name.contains(ATTIC_KEYWORD)) {
+                ATTIC_INST = zone;
+            } else if (name.contains(GROUNDFLOOR_KEYWORD)) {
+                GROUND_FLOOR_INST = zone;
+            } else if (name.contains(FIRSTFLOOR_KEYWORD)) {
+                FIRST_FLOOR_INST = zone;
+            }
+        }
     }
 
     /**

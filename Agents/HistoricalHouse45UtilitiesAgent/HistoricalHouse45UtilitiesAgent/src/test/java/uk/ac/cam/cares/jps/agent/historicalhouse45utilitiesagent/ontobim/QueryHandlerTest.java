@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled("Requires a running Docker engine to compose containers for a blazegraph database. Disable this test if not available or dockerising")
 @Testcontainers
 class QueryHandlerTest {
     @Container
@@ -35,7 +36,8 @@ class QueryHandlerTest {
         SelectBuilder builder = new SelectBuilder();
         QueryHandler.genPrefixMapping(builder);
         String namespaces = builder.buildString();
-        assertTrue(namespaces.contains("ontotimeseries: <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#>"));
+        List<String> expected = genExpectedSelectBuilderPrefixList();
+        expected.forEach(line -> assertTrue(namespaces.contains(line)));
     }
 
     @Test
@@ -43,12 +45,11 @@ class QueryHandlerTest {
         StringBuilder builder = new StringBuilder();
         QueryHandler.genPrefixMapping(builder);
         String namespaces = builder.toString();
-        List<String> expected = genExpectedPrefixList();
+        List<String> expected = genExpectedInsertBuilderPrefixList();
         expected.forEach(line -> assertTrue(namespaces.contains(line)));
     }
 
     @Test
-    @Disabled("Requires a running Docker engine to compose containers for a blazegraph database. Disable this test if not available or dockerising")
     void testExecSelectQueryAndInsertToEndpoint() {
         String subjectIRI = "http://www.test.org.com/subject";
         String subjectVar = "subject";
@@ -65,7 +66,16 @@ class QueryHandlerTest {
         }
     }
 
-    private static List<String> genExpectedPrefixList() {
+    private static List<String> genExpectedSelectBuilderPrefixList() {
+        List<String> results = new ArrayList<>();
+        results.add("ontotimeseries: <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#>");
+        results.add("rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
+        results.add("rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
+        results.add("bot:  <https://w3id.org/bot#>");
+        return results;
+    }
+
+    private static List<String> genExpectedInsertBuilderPrefixList() {
         List<String> results = new ArrayList<>();
         results.add("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>");

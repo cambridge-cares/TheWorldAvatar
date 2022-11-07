@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InsertQueryBuilderTest {
     private static StringBuilder insertQueryBuilder;
-    private static final String electricityIri = "electricity_124";
+    private static final String electricityIri = "electricity_6161";
     private static final String waterIri = "water_321";
     private static final String oilIri = "oil_123";
-
+    private static final String falseStatement = "ontoubemmp:consumesUtilities twa:";
 
     @BeforeEach
     void init() {
@@ -33,21 +33,31 @@ class InsertQueryBuilderTest {
     void testAddElectricityInsertStatements() {
         InsertQueryBuilder.addElectricityInsertStatements(electricityIri, insertQueryBuilder);
         List<String> expected = genExpectedElectricityList();
-        expected.forEach(line -> assertTrue(insertQueryBuilder.toString().contains(line)));
+        expected.forEach(line -> assertAll(
+                () -> assertTrue(insertQueryBuilder.toString().contains(line)),
+                () -> assertFalse(insertQueryBuilder.toString().contains(falseStatement)) // Ensure this statement is not added since condition is null
+        ));
     }
+
 
     @Test
     void testAddWaterInsertStatements() {
         InsertQueryBuilder.addWaterInsertStatements(waterIri, insertQueryBuilder);
         List<String> expected = genExpectedWaterList();
-        expected.forEach(line -> assertTrue(insertQueryBuilder.toString().contains(line)));
+        expected.forEach(line -> assertAll(
+                () -> assertTrue(insertQueryBuilder.toString().contains(line)),
+                () -> assertFalse(insertQueryBuilder.toString().contains(falseStatement)) // Ensure this statement is not added since condition is null
+        ));
     }
 
     @Test
     void testAddOilInsertStatements() {
         InsertQueryBuilder.addOilInsertStatements(oilIri, insertQueryBuilder);
         List<String> expected = genExpectedOilList();
-        expected.forEach(line -> assertTrue(insertQueryBuilder.toString().contains(line)));
+        expected.forEach(line -> assertAll(
+                () -> assertTrue(insertQueryBuilder.toString().contains(line)),
+                () -> assertFalse(insertQueryBuilder.toString().contains(falseStatement)) // Ensure this statement is not added since condition is null
+        ));
     }
 
     private static List<String> genExpectedElectricityList() {

@@ -13,11 +13,13 @@ import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 class QueryHandler {
     private static final String START_PREFIX = "PREFIX ";
     private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String OM_URI = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final String SKOS_URI = "http://www.w3.org/2004/02/skos/core#";
     private static final String QUDT_URI = "http://qudt.org/schema/qudt";
     private static final String TIMESERIES_URI = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
     private static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
+    private static final String BOT_URI = "https://w3id.org/bot#";
 
 
     /**
@@ -26,7 +28,15 @@ class QueryHandler {
      * @param builder The SELECT builder for querying.
      */
     protected static void genPrefixMapping(SelectBuilder builder) {
-        builder.addPrefix(SelectQueryBuilder.TIMESERIES_PREFIX, TIMESERIES_URI);
+        // Exclude the semicolon : in the Prefixes
+        builder.addPrefix(SelectQueryBuilder.TIMESERIES_PREFIX
+                .substring(0, SelectQueryBuilder.TIMESERIES_PREFIX.length() - 1), TIMESERIES_URI);
+        builder.addPrefix(SelectQueryBuilder.RDF_PREFIX
+                .substring(0, SelectQueryBuilder.RDF_PREFIX.length() - 1), RDF_URI);
+        builder.addPrefix(SelectQueryBuilder.RDFS_PREFIX
+                .substring(0, SelectQueryBuilder.RDFS_PREFIX.length() - 1), RDFS_URI);
+        builder.addPrefix(SelectQueryBuilder.BOT_PREFIX
+                .substring(0, SelectQueryBuilder.BOT_PREFIX.length() - 1), BOT_URI);
     }
 
     /**
