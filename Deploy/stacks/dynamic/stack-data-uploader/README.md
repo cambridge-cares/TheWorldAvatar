@@ -129,14 +129,15 @@ Ontop also supports the R2RML (.ttl) OBDA file standard but the data uploader wo
 
 ## Data types
 
-The following data types are supported:
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data) and [`tabular`](#tabular-data).
+A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector data
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
 The data loader does two things when uploading vector data: 
-1. It uses the GDAL [ogr2ogr](https://gdal.org/programs/ogr2ogr.html) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
-The full list of file formats that ogr2ogr supports is given [here](https://gdal.org/drivers/vector/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
 
 The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
@@ -188,14 +189,15 @@ A few aspects of some of the drivers can also be set via environment variables.
 These can be set as key-value pairs within an `"envVars"` object.
 
 ##### Common drivers
-- [CSV](https://gdal.org/drivers/vector/csv.html)
-- [Shapefile](https://gdal.org/drivers/vector/shapefile.html)
-- [PostGIS](https://gdal.org/drivers/vector/pg.html) (mainly as the output)
+- [Comma Separated Value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
+- [ESRI Shapefile / DBF](https://gdal.org/drivers/vector/shapefile.html#esri-shapefile-dbf)
+- [PostgreSQL / PostGIS](https://gdal.org/drivers/vector/pg.html#postgresql-postgis) (mainly as the output)
 
 #### GeoServer Options
 For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
+These settings are generally only required to add dynamic (value-based) styling to the layers for visualisation.
 Within that the following nodes can be added.
-- `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows.
+- `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows:
   - `"name"` a name is required.
   - `"sql"` an SQL query that defines the virtual table is required.
   - `"keyColumn"` specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) key.
@@ -214,9 +216,18 @@ Within that the following nodes can be added.
 
 These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
       
-### Raster Options
+### Raster data
 
-#### GDal Options
+The `"raster"` data type should be used to load raster/coverage geospatial data.
+The data loader does three things when uploading raster data: 
+1. It uses the GDAL [`gdal_translate`](https://gdal.org/programs/gdal_translate.html) tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF](https://gdal.org/drivers/raster/cog.html#raster-cog) files stored in the stack.
+  This is an extension of the GeoTIFF format and both are very efficient to read.
+  The full list of file formats that `gdal_translate` supports is given [here](https://gdal.org/drivers/raster/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+2. It uses the PostGIS [`raster2pgsql`](https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader) tool to register the GeoTIFF files in the PostGIS database.
+   The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
+3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
+
+#### GDAL Options
 
 An `"options"` node within the relevant data subset in the configuration json can be added.
 Within that the following nodes can be added.
@@ -224,14 +235,15 @@ Within that the following nodes can be added.
   These open options are driver specific and details on them can be found in the driver pages below.
 - `"creationOptions"` implements [`-co`](https://gdal.org/programs/raster_common_options.html#cmdoption-co).
   These creation options are driver specific and details on them can be found in the driver pages below.
--  `"envVars"` allows you to set environment variables.
+- `"envVars"` allows you to set environment variables.
 - `"otherOptions"` allows you to add any other flag you wish to explicitly.
         
 The `key:value` pairs `"sridIn"` and `"sridOut"` can also be used inside `"options"`.
 These use a combination of [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs), [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs), and [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) to set the input and output SRS.
 
-Drivers:
-- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html)
+##### Common drivers
+- [GeoTIFF](https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format)
+- [COG – Cloud Optimized GeoTIFF](https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator) (mainly as the output)
 
 #### GeoServer Options
 
@@ -240,6 +252,23 @@ Within that the following nodes can be added.
 - `"layerSettings"`
   - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
+## Tabular data
+
+The `"tabular"` data type should be used to load non-geospatial data.
+The data loader just does one thing when uploading tabular data: 
+1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv), and Microsoft Excel's [XLS](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format) and [XLSX](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet) formatted files.
+The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+
+#### GDAL Options
+
+These are the same as listed in the vector [GDAL Options](#gdal-options) although obviously the options specific to geospatial data will not be relevant.
+
+##### Common drivers
+- [Comma Separated Value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
+- [XLS - MS Excel format](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format)
+- [XLSX - MS Office Open XML spreadsheet](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet)
+- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html) (mainly as the output)
 ## Prerequisites
 
 These are the same as listed in [The Stack Manager](../stack-manager/README.md#prerequisites).
