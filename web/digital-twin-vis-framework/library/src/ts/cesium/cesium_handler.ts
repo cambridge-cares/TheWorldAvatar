@@ -144,7 +144,6 @@ class MapHandler_Cesium extends MapHandler {
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
             window.currentFeature = feature;
-            console.log(feature);
 
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
@@ -157,12 +156,9 @@ class MapHandler_Cesium extends MapHandler {
     
                 // Transform properties for compatability with manager code
                 if (Cesium.defined(contentMetadata)) {
-                    contentMetadata.getPropertyIds().forEach(id => {
-                        properties[id] = contentMetadata.getProperty(id);
-                    });
-                } else if(typeof feature.getPropertyIds === "function") {
-                    console.log("A");
+                    properties = {...contentMetadata["_properties"]};
 
+                } else if(typeof feature.getPropertyIds === "function") {
                     // No metadata refined, try to get properties via id
                     let ids = feature.getPropertyIds();
                     if(ids != null) {
@@ -171,16 +167,12 @@ class MapHandler_Cesium extends MapHandler {
                         });
                     }
                 } else {
-                    // Show the node name, not sure what else we can get here.
-                    let detail = feature["detail"];
-                    if(detail != null) {
-                        let node = detail["node"];
-                        if(node != null && node.hasOwnProperty("name")) {
-                            properties["Node name"] = node["name"];
-                        } else if(node != null && node.hasOwnProperty("_name")) {
-                            properties["Node name"] = node["_name"];
-                        }
-                    }
+                    console.log("here");
+                    let content = feature["content"];
+                    let tile = content["tile"];
+
+                    console.log("TILE");
+                    console.log(tile);
                 }
                 
                 self.manager.showFeature(feature, properties);
@@ -221,9 +213,7 @@ class MapHandler_Cesium extends MapHandler {
     
                 // Transform properties for compatability with manager code
                 if (Cesium.defined(contentMetadata)) {
-                    contentMetadata.getPropertyIds().forEach(id => {
-                        properties[id] = contentMetadata.getProperty(id);
-                    });
+                    properties = {...contentMetadata["_properties"]};
                 } else {
                     // Do nothing, there's no data?
                 }
