@@ -16,4 +16,5 @@ tilesets for Cesium visualisations:
 - Copy the files  `main_network.kml` and `sub_network.kml` into `/gateway/static/ps/sewage/`.
 - Copy the main Pirmasens building tileset into `/gateway/static/ps/buildings/lod2/`.
 - Copy the Hugo Ball, Leibniz, measurement station, and house 45 tilesets into `/gateway/static/ps/buildings/lod3/`.
+
 Don't forget to redeploy the container after updating the static folder.
