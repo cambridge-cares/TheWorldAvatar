@@ -75,38 +75,30 @@ def get_ts_value_iri(dataIRI, kgClient):
     ts_value_iri = kgClient.performQuery(query)[0]["tsValueIRI"]
     return ts_value_iri
 
-def get_df_for_heat_supply(dataIRI, kgClient, tsClient):
+def get_df_for_heat_supply(data_type, kgClient, tsClient):
     cov_iris = []
-    heat_supply_ts_iri = get_ts_value_iri(dataIRI)
+    heat_supply_ts_iri = get_ts_value_iri(data_type, kgClient)
     heat_supply_dates, heat_supply_ts = get_ts_data( heat_supply_ts_iri, tsClient)
     df_heat_supply = pd.DataFrame(zip(heat_supply_ts, heat_supply_dates), columns=["ForecastColumn", "Date"])
 
     # find ts by specific data iri. This just works for the data iri that is used and unique.
     ts_by_type = kgClient.performQuery(get_ts_by_type())
     for row in ts_by_type:
-        dataIRI = row['type']
-        if dataIRI == ONTOEMS_AIRTEMPERATURE:
-            cov_iris.append(row['tsIRI'])
-            air_temp_dates, air_temp = get_ts_data(row['tsIRI'], tsClient)
-            print(f"found: air_temp")
+        if 'type' in row and row['type'] == ONTOEMS_AIRTEMPERATURE:
+            data_iri = row['tsIRI']
+            cov_iris.append(data_iri)
+            air_temp_dates, air_temp = get_ts_data(data_iri, tsClient)
             df_air_temp = pd.DataFrame(zip(air_temp, air_temp_dates), columns=["AirTemp", "Date"])
-            break
-        
-    # find ts by string in time series iri
-    all_ts = kgClient.performQuery(get_all_ts())
-
-    for row in all_ts:
-        ts_iri = row['hasTS']
-        if "Holiday" in ts_iri:
-            cov_iris.append(ts_iri)
-            public_holidays_dates, public_holidays = get_ts_data(ts_iri, tsClient)
-            print(f"found: public_holidays")
-            df_public_holidays = pd.DataFrame(zip(public_holidays, public_holidays_dates), columns=["isHoliday", "Date"])
+        elif 'type2' in row and  row['type2'] == OHN_ISPUBLICHOLIDAY:
+            data_iri = row['tsIRI']
+            cov_iris.append(data_iri)
+            public_holiday_dates, public_holiday = get_ts_data(data_iri, tsClient)
+            df_public_holiday = pd.DataFrame(zip(public_holiday, public_holiday_dates), columns=["isHoliday", "Date"])
             
 
     # merge vacation, public holidays air temp and heat supply
     #df = pd.merge(df_vacation, df_public_holidays, on="Date", how="outer")
-    df = pd.merge(df_public_holidays, df_air_temp, on="Date", how="outer")
+    df = pd.merge(df_public_holiday, df_air_temp, on="Date", how="outer")
     df = pd.merge(df, df_heat_supply, on="Date", how="outer")
     df = df.sort_values(by="Date")
     df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
@@ -277,15 +269,23 @@ def get_ts_by_type():
      """
      It returns a SPARQL query that will return all the dataIRIs and tsIRIs in the graph, along with the
      type of the dataIRI.
+     
+     It distinguishes between measures and non-measures. 
+     The type of Timeseries with measures is returned under the key 'type' and those without measures are returned under the key 'type2'.
      """
 
      return f"""
      prefix rdf: <{RDF}>
      prefix om: <{OM}>
 
-     SELECT  ?dataIRI ?tsIRI ?type
+     prefix ts: <{TS}>
+
+     SELECT  distinct ?dataIRI ?tsIRI ?type ?type2
      WHERE {{
-          ?dataIRI om:hasValue ?tsIRI .  
-          ?dataIRI rdf:type ?type . 
+      
+       ?tsIRI ts:hasTimeSeries ?ts . 
+       ?tsIRI rdf:type ?type2 .
+       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type }} . 
+       
      }}
      """
