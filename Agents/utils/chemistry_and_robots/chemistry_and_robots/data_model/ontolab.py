@@ -107,6 +107,9 @@ class LabEquipment(Saref_Device):
     # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
     isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
 
+    def consists_of_lab_equipment(self, lab_equipment_iris: List[str]) -> bool:
+        return bool([le for le in self.consistsOf if le.instance_iri in lab_equipment_iris])
+
 class PreparationMethod(BaseOntology):
     clz: str = ONTOLAB_PREPARATIONMETHOD
 

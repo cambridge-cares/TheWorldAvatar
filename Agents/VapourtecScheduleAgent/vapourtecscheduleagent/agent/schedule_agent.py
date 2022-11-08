@@ -42,6 +42,8 @@ class VapourtecScheduleAgent(DerivationAgent):
         self.logger.info(json.dumps(rxn_exp_instance.dict()))
 
         # Check until it's the turn for the given reaction experiment
+        # TODO the queue dict should contain the reactor that the previous experiment were assigned to
+        # TODO then this can be passed to the get_preferred_vapourtec_rs400 function to get the other reactors if available
         rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
         self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
         # TODO NOTE [next iteration] here the maximum concurrent experiment is configured to follow max_thread_monitor_async_derivations
@@ -50,15 +52,20 @@ class VapourtecScheduleAgent(DerivationAgent):
             time.sleep(60)
             rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
             self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
+        less_desired_reactors = [rxn_exp_queue[exp][ONTOREACTION_ISASSIGNEDTO] for exp in rxn_exp_queue if rxn_exp_queue[exp][ONTOREACTION_ISASSIGNEDTO] is not None]
 
         # Check until get the digital twin of the most suitable hardware
         # This function also locates the digital twin of HPLC connected to the vapourtec_rs400
         preferred_rs400, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
-            rxn_exp_instance)
+            rxn_exp_instance,
+            less_desired_reactors=less_desired_reactors
+        )
         while (preferred_rs400, associated_hplc) == (None, None):
             time.sleep(60)
             preferred_rs400, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
-                rxn_exp_instance)
+                rxn_exp_instance,
+                less_desired_reactors=less_desired_reactors
+            )
 
         # Once selected the suitable digital twin, assign experiment to the reactor
         preferred_r4_reactor = preferred_rs400.get_suitable_r4_reactor_for_reaction_experiment(rxn_exp_instance)
@@ -68,9 +75,9 @@ class VapourtecScheduleAgent(DerivationAgent):
         )
 
         # Now create vapourtec derivation and hplc derivation for the reaction experiment
-        vapourtec_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+        vapourtec_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(
             preferred_rs400.isManagedBy, [rxn_exp_instance.instance_iri])
-        hplc_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+        hplc_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(
             associated_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
 
         # Monitor the status of the hplc_derivation_iri, until it produced outputs

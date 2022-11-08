@@ -1,5 +1,5 @@
 from flask import Flask
-import logging
+import requests
 import pytest
 import shutil
 import time
@@ -13,7 +13,6 @@ from vapourtecscheduleagent.kg_operations import ChemistryAndRobotsSparqlClient
 from vapourtecscheduleagent.data_model import *
 from vapourtecscheduleagent.agent import VapourtecScheduleAgent
 
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 ## For three-agent integration test
 from vapourtecagent.agent import VapourtecAgent
@@ -94,12 +93,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
 
 @pytest.fixture(scope="session")

@@ -1,10 +1,6 @@
 from pyderivationagent.conf import config_derivation_agent
-from vapourtecscheduleagent.agent import *
-
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
+from vapourtecscheduleagent.agent import VapourtecScheduleAgent
+from vapourtecscheduleagent.agent import default
 
 
 def create_app():

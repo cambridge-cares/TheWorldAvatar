@@ -995,14 +995,19 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_preferred_vapourtec_rs400(
         self, rxnexp: ReactionExperiment,
-        list_of_labs: list=None
+        list_of_labs: list=None,
+        less_desired_reactors: list=None,
     ) -> Tuple[VapourtecRS400, HPLC]:
         """ This function queries the digital twin of the most suitable VapourtecRS400 for the given reaction experiment."""
         # query the digital twin to get the list of VapourtecRS400 modules (if within the given list of labs)
         list_vapourtec_rs400 = self.get_vapourtec_rs400(list_of_labs_as_constraint=list_of_labs)
 
         suitable_vapourtec_rs400 = [rs400 for rs400 in list_vapourtec_rs400 if rs400.is_suitable_for_reaction_experiment(rxnexp)]
-        for rs400 in suitable_vapourtec_rs400:
+        desirable_vapourtec_rs400 = [
+            rs400 for rs400 in suitable_vapourtec_rs400 if not rs400.consists_of_lab_equipment(less_desired_reactors)
+        ] if less_desired_reactors is not None else suitable_vapourtec_rs400
+        vapourtec_rs400_final_options = suitable_vapourtec_rs400 if len(desirable_vapourtec_rs400) == 0 else desirable_vapourtec_rs400
+        for rs400 in vapourtec_rs400_final_options:
             # for each suitable VapourtecRS400, query the KG to get the HPLC
             # TODO [futre work] add support for other analytical instruments
             associated_hplc = self.get_hplc_given_vapourtec_rs400(rs400.instance_iri)
@@ -1381,20 +1386,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         self.performUpdate(update)
         logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
 
-    def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str, vapourtec_execution_agent_iri: str) -> Dict[str, int]:
+    def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str, vapourtec_execution_agent_iri: str):
         """This method queries the instances of ReactionExperiment that are prior in the queue for execution.
         NOTE: It is assumed there is only ONE possible OntoAgent:Service of DoE Agent. This can be extended if deemed necessary in the future."""
         # TODO [future work] support query prior experiments in the situation of multiple DoE Agent available
         rxn_exp_iri = trimIRI(rxn_exp_iri)
         vapourtec_execution_agent_iri = trimIRI(vapourtec_execution_agent_iri)
         query = PREFIX_RDF + """
-                SELECT ?rxn ?timestamp
+                SELECT ?rxn ?timestamp ?reactor
                 WHERE {
                     <%s> <%s> ?dd. ?dd <%s> ?doe_agent; <%s>/<%s>/<%s> ?specific_timestamp.
                     VALUES ?type {<%s> <%s>}.
                     ?rxn rdf:type ?type; <%s> ?doe_derivation.
                     ?doe_derivation <%s> ?doe_agent; <%s>/<%s>/<%s> ?timestamp.
                     ?rxn ^<%s> ?exe_derivation.
+                    OPTIONAL {?rxn <%s> ?reactor.}
                     ?exe_derivation <%s> <%s>.
                     ?exe_derivation <%s>/rdf:type ?status_type.
                     filter(?timestamp < ?specific_timestamp)
@@ -1402,10 +1408,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 """ % (rxn_exp_iri, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
                 ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, ONTODERIVATION_BELONGSTO,
                 ONTODERIVATION_ISDERIVEDUSING, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
-                ONTODERIVATION_ISDERIVEDFROM, ONTODERIVATION_ISDERIVEDUSING, vapourtec_execution_agent_iri, ONTODERIVATION_HASSTATUS)
+                ONTODERIVATION_ISDERIVEDFROM, ONTOREACTION_ISASSIGNEDTO, ONTODERIVATION_ISDERIVEDUSING, vapourtec_execution_agent_iri, ONTODERIVATION_HASSTATUS)
         logger.debug(query)
         response = self.performQuery(query)
-        rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
+        rxn_exp_queue = {
+            res['rxn']:{
+                TIME_NUMERICPOSITION:res['timestamp'],
+                ONTOREACTION_ISASSIGNEDTO:res['reactor'] if 'reactor' in res else None
+            } for res in response
+        }
         return rxn_exp_queue
 
     def detect_new_hplc_report(self, hplc_digital_twin, start_timestamp, end_timestamp):

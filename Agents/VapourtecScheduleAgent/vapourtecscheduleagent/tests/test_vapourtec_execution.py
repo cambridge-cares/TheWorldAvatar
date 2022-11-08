@@ -46,12 +46,8 @@ def test_monitor_derivation(
         utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, utils.cf.ONTOVAPOURTEC_VAPOURTECRS400
     ))
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_schedule_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     hplc_derivation = None
@@ -124,12 +120,8 @@ def test_docker_integration(
         utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, utils.cf.ONTOVAPOURTEC_VAPOURTECRS400
     ))
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_schedule_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     hplc_derivation = None
@@ -217,12 +209,8 @@ def test_three_agents_docker_integration(
     old_autosampler = old_rs400.get_autosampler()
     old_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in old_autosampler.hasSite if site.holds.isFilledWith is not None]}
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_schedule_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_schedule_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    vtexe_derivation_iri = vapourtec_schedule_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
+    vtexe_derivation_iri = vapourtec_schedule_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_schedule_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivations for vapourtec and hplc are instantiated
     vapourtec_derivation = None
