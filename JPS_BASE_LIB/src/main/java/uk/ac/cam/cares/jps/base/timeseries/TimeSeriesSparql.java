@@ -55,11 +55,11 @@ public class TimeSeriesSparql {
 	private static final Prefix prefix_time = SparqlBuilder.prefix("time", iri(ns_time));
 
 	// RDF type
-	private static final Iri TimeSeries = prefix_ontology.iri("TimeSeries");
-	private static final Iri StepwiseCumulativeTimeSeries = prefix_ontology.iri("StepwiseCumulativeTimeSeries");
-	private static final Iri CumulativeTotalTimeSeries = prefix_ontology.iri("CumulativeTotalTimeSeries");
-	private static final Iri AverageTimeSeries = prefix_ontology.iri("AverageTimeSeries");
-	private static final Iri InstantaneousTimeSeries = prefix_ontology.iri("InstantaneousTimeSeries");
+	public static final Iri TimeSeries = prefix_ontology.iri("TimeSeries");
+	public static final Iri StepwiseCumulativeTimeSeries = prefix_ontology.iri("StepwiseCumulativeTimeSeries");
+	public static final Iri CumulativeTotalTimeSeries = prefix_ontology.iri("CumulativeTotalTimeSeries");
+	public static final Iri AverageTimeSeries = prefix_ontology.iri("AverageTimeSeries");
+	public static final Iri InstantaneousTimeSeries = prefix_ontology.iri("InstantaneousTimeSeries");
 	private static final Iri Duration = prefix_time.iri("Duration");
 
 	// Relationships
@@ -149,204 +149,6 @@ public class TimeSeriesSparql {
 	}
 
 	/**
-	 * Check whether a particular time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI timeseries IRI provided as string
-	 * @return True if a time series instance with the tsIRI exists, false otherwise
-	 */
-    public boolean checkTimeSeriesExists(String timeSeriesIRI) {
-    	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "TimeSeries"));
-    	kbClient.setQuery(query);
-    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    }
-
-	/**
-	 * Check whether given data IRI is attached to a time series
-	 * @param dataIRI data IRI provided as string
-	 * @return True if dataIRI exists and is attached to a time series, false otherwise
-	 */
-    public boolean checkDataHasTimeSeries(String dataIRI) {
-    	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
-    	kbClient.setQuery(query);
-    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    }
-
-	/**
-	 * Check whether time series IRI has time unit
-	 * @param tsIRI timeseries IRI provided as string
-	 * @return True if the timeseries instance exists and has a defined time unit, false otherwise
-	 */
-    public boolean checkTimeUnitExists(String tsIRI) {
-    	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
-    	kbClient.setQuery(query);
-    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    }
-
-	/**
-	 * Instantiate the time series instance in the knowledge base (time unit is optional)
-	 * @param timeSeriesIRI timeseries IRI provided as string
-	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
-	 * @param dbURL URL of the database where the timeseries data is stored provided as string
-	 * @param timeUnit the time unit of the time series (optional)
-	 * @param type type of TimeSeries data to be instantiated. (optional)
-	 *             Allowed values:
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
-	 *             If not specified, default value: TimeSeries
-	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
-	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
-	 *             Allowed values of type ChronoUnit:
-	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
-	 *
-	 */
-
-	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, String type, Duration duration, ChronoUnit unit) {
-		// Construct time series IRI
-		Iri tsIRI;
-		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
-		// If only local name is provided, iri() function would add filepath as default prefix
-		// Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
-		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
-			tsIRI = iri(timeSeriesIRI);
-		} else {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
-		}
-
-		ModifyQuery modify = Queries.MODIFY();
-		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
-
-		if (type.equals(null)){
-			// Check that the time series IRI is not yet in the Knowledge Graph
-			if (checkTimeSeriesExists(timeSeriesIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-			}
-			// define type
-			modify.insert(tsIRI.isA(TimeSeries));
-		}
-		else if(type.equals(StepwiseCumulative)){
-			if (checkStepwiseCumulativeTimeSeriesExists(timeSeriesIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Stepwise Cumulative Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-			}
-			// define type
-			modify.insert(tsIRI.isA(StepwiseCumulativeTimeSeries));
-		}
-		else if(type.equals(CumulativeTotal)){
-			if (checkCumulativeTotalTimeSeriesExists(timeSeriesIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Cumulative Total Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-			}
-			// define type
-			modify.insert(tsIRI.isA(CumulativeTotalTimeSeries));
-		}
-		else if(type.equals(Instantaneous)){
-			if (checkInstantaneousTimeSeriesExists(timeSeriesIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Instantaneous Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-			}
-			// define type
-			modify.insert(tsIRI.isA(InstantaneousTimeSeries));
-		}
-		else if(type.equals(Average)){
-			if (checkAverageTimeSeriesExists(timeSeriesIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Average Time series " + timeSeriesIRI + " already in the Knowledge Graph");
-			}
-
-			if(duration.getNano()!=0){
-				LOGGER.warn("Nano is ignored");
-			}
-
-			//numeric Duration
-			if(duration.getSeconds() <=0.0){
-				throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration must be a positive value");
-			}
-
-			//Check if the given temporal unit is one of the allowed values.
-			// Where, allowed values are of type ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
-			if(!temporalUnitMap.containsKey(unit)){
-				throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + unit.toString() + " of invalid type");
-			}
-
-			Double numericValue = Double.valueOf(duration.getSeconds()/ unit.getDuration().getSeconds());
-			String temporalUnit = temporalUnitMap.get(unit);
-
-			//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
-			//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
-			String durationIRI = getDurationIRI(temporalUnit, numericValue);
-
-			if(durationIRI!=null){
-				modify.insert(tsIRI.isA(AverageTimeSeries));
-				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
-			}
-			else {
-				//Duration IRI
-				durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
-				while (checkDurationHasAverageTimeSeries(durationIRI)){
-					durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
-				}
-				modify.insert(tsIRI.isA(AverageTimeSeries));
-				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
-				modify.insert(iri(durationIRI).isA(Duration));
-				modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
-				modify.insert(iri(durationIRI).has(numericDuration, numericValue));
-			}
-		}
-		else {
-			throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type + " is invalid");
-		}
-
-		// Check that the data IRIs are not attached to a different time series IRI already
-		for (String iri: dataIRI) {
-			String ts = getTimeSeries(iri);
-			if(!(ts == null)) {
-				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
-			}
-		}
-
-		// relational database URL
-		modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
-
-		// link each data to time series
-		for (String data : dataIRI) {
-			TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
-			modify.insert(ts_tp);
-		}
-
-		// optional: define time unit
-		if (timeUnit != null) {
-			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
-			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
-		}
-
-		kbClient.executeUpdate(modify.getQueryString());
-	}
-
-	/**
-	 * Check if an averaging period with given temporalUnit and numericDuration already exists in the knowledge graph.
-	 * @param temporalUnit unit type of the averaging period
-	 * @param numericValue numerical duration of the averaging period
-	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
-	 */
-	public String getDurationIRI(String temporalUnit, Double numericValue) {
-
-		String durationIRI = null;
-		String queryString = "periodIRI";
-
-		SelectQuery query = Queries.SELECT();
-		Variable periodIRI = SparqlBuilder.var(queryString);
-		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(temporalUnit));
-
-		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
-
-		JSONArray result = kbClient.executeQuery(query.getQueryString());
-		if(!result.isEmpty()){
-			durationIRI = result.getJSONObject(0).getString(queryString);
-		}
-
-		return durationIRI;
-
-	}
-
-	/**
 	 * Check whether given duration IRI is attached to an Average time series
 	 * @param durationIRI duration IRI provided as string
 	 * @return True if durationIRI exists and is attached to an Average time series, false otherwise
@@ -401,10 +203,198 @@ public class TimeSeriesSparql {
 		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 	}
 
-	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
+	/**
+	 * Check whether a particular time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI timeseries IRI provided as string
+	 * @return True if a time series instance with the tsIRI exists, false otherwise
+	 */
+    public boolean checkTimeSeriesExists(String timeSeriesIRI) {
+    	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "TimeSeries"));
+    	kbClient.setQuery(query);
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    }
+
+	/**
+	 * Check whether given data IRI is attached to a time series
+	 * @param dataIRI data IRI provided as string
+	 * @return True if dataIRI exists and is attached to a time series, false otherwise
+	 */
+    public boolean checkDataHasTimeSeries(String dataIRI) {
+    	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
+    	kbClient.setQuery(query);
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    }
+
+	/**
+	 * Check whether time series IRI has time unit
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return True if the timeseries instance exists and has a defined time unit, false otherwise
+	 */
+    public boolean checkTimeUnitExists(String tsIRI) {
+    	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
+    	kbClient.setQuery(query);
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    }
+
+	/**
+	 * Instantiate the time series instance in the knowledge base (time unit is optional)
+	 * @param timeSeriesIRI timeseries IRI provided as string
+	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
+	 * @param dbURL URL of the database where the timeseries data is stored provided as string
+	 * @param timeUnit the time unit of the time series (optional)
+	 * @param type type of TimeSeries data to be instantiated. (optional)
+	 *             Allowed values:
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
+	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
+	 *             If not specified, default value: TimeSeries
+	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
+	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
+	 *             Allowed values of type ChronoUnit:
+	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+	 *
+	 */
+
+	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, Iri type, Duration duration, ChronoUnit unit) {
+		// Construct time series IRI
+		Iri tsIRI;
+		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
+		// If only local name is provided, iri() function would add filepath as default prefix
+		// Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
+		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
+			tsIRI = iri(timeSeriesIRI);
+		} else {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
+		}
+
 		ModifyQuery modify = Queries.MODIFY();
 		// set prefix declarations
 		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+
+		// define type
+		modify.insert(tsIRI.isA(type));
+
+		if(type.equals(AverageTimeSeries)){
+
+			if(duration.getNano()!=0){
+				LOGGER.warn("Nano is ignored");
+			}
+
+			//numeric Duration
+			if(duration.getSeconds() <=0.0){
+				throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration must be a positive value");
+			}
+
+			//Check if the given temporal unit is one of the allowed values.
+			// Where, allowed values are of type ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+			if(!temporalUnitMap.containsKey(unit)){
+				throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + unit.toString() + " of invalid type");
+			}
+
+			Double numericValue = Double.valueOf(duration.getSeconds()/ unit.getDuration().getSeconds());
+			String temporalUnit = temporalUnitMap.get(unit);
+
+			//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
+			//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
+			String durationIRI = getDurationIRI(temporalUnit, numericValue);
+
+			if(durationIRI!=null){
+				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+			}
+			else {
+				//Duration IRI
+				durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
+				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+				modify.insert(iri(durationIRI).isA(Duration));
+				modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
+				modify.insert(iri(durationIRI).has(numericDuration, numericValue));
+			}
+		}
+
+		// Check that the data IRIs are not attached to a different time series IRI already
+		for (String iri: dataIRI) {
+			String ts = getTimeSeries(iri);
+			if(!(ts == null)) {
+				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
+			}
+		}
+
+		// relational database URL
+		modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
+
+		// link each data to time series
+		for (String data : dataIRI) {
+			TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
+			modify.insert(ts_tp);
+		}
+
+		// optional: define time unit
+		if (timeUnit != null) {
+			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
+			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
+		}
+
+		kbClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * Check if an averaging period with given temporalUnit and numericDuration already exists in the knowledge graph.
+	 * @param temporalUnit unit type of the averaging period
+	 * @param numericValue numerical duration of the averaging period
+	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
+	 */
+	public String getDurationIRI(String temporalUnit, Double numericValue) {
+
+		String durationIRI = null;
+		String queryString = "periodIRI";
+
+		SelectQuery query = Queries.SELECT();
+		Variable periodIRI = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(temporalUnit));
+
+		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
+
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+		if(!result.isEmpty()){
+			durationIRI = result.getJSONObject(0).getString(queryString);
+		}
+
+		return durationIRI;
+
+	}
+
+	// (numericDuration, temporalUnit) -> durationIRI
+	//each (numericDuration, temporalUnit) pair in kg is unique and associated to a unique Averaging Period
+	public HashMap createDurationIRIMapping(){
+
+		HashMap<List<Object>, String> durationMap = new HashMap<>();
+
+		List<Object> values;
+
+		SelectQuery query = Queries.SELECT();
+		Variable durIRI = SparqlBuilder.var("durIRI");
+		Variable value = SparqlBuilder.var("value");
+		Variable unit = SparqlBuilder.var("unit");
+
+		TriplePattern queryPattern = durIRI.has(numericDuration, value).andHas(unitType, unit);
+		query.select(durIRI, value, unit).where(queryPattern).prefix(prefix_time);
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+
+		for (int i=0; i < result.length(); i++){
+			values = Arrays.asList(Double.valueOf(result.getJSONObject(i).getString("value")), result.getJSONObject(i).getString("unit"));
+			durationMap.put(values, result.getJSONObject(i).getString("durIRI"));
+		}
+		return durationMap;
+
+	}
+
+	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, Iri type, List<Duration> durations, List<ChronoUnit> units) {
+		ModifyQuery modify = Queries.MODIFY();
+		// set prefix declarations
+		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+
+		HashMap<List<Object>, String> durationMap = createDurationIRIMapping();
 
 		for (int i = 0; i < tsIRIs.size(); i++) {
 			Iri tsIRI;
@@ -414,39 +404,10 @@ public class TimeSeriesSparql {
 				throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
 			}
 
-			if(type.get(i).equals(null)){
-				// Check that the time series IRI is not yet in the Knowledge Graph
-				if (checkTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
-				// define type
-				modify.insert(tsIRI.isA(TimeSeries));
-			}
-			else if(type.get(i).equals(StepwiseCumulative)){
-				if (checkStepwiseCumulativeTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Stepwise Cumulative Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
-				// define type
-				modify.insert(tsIRI.isA(StepwiseCumulativeTimeSeries));
-			}
-			else if(type.get(i).equals(CumulativeTotal)){
-				if (checkCumulativeTotalTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Cumulative Total Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
-				// define type
-				modify.insert(tsIRI.isA(CumulativeTotalTimeSeries));
-			}
-			else if(type.get(i).equals(Instantaneous)){
-				if (checkInstantaneousTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Instantaneous Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
-				// define type
-				modify.insert(tsIRI.isA(InstantaneousTimeSeries));
-			}
-			else if(type.get(i).equals(Average)){
-				if (checkAverageTimeSeriesExists(tsIRIs.get(i))) {
-					throw new JPSRuntimeException(exceptionPrefix + "Average Time series " + tsIRIs.get(i) + " already in the Knowledge Graph");
-				}
+			modify.insert(tsIRI.isA(type));
+
+			if(type.equals(AverageTimeSeries)){
+
 				if(durations.get(i).getNano()!=0){
 					LOGGER.warn("Nano is ignored");
 				}
@@ -463,30 +424,27 @@ public class TimeSeriesSparql {
 				Double numericValue = Double.valueOf(durations.get(i).getSeconds()/ units.get(i).getDuration().getSeconds());
 				String temporalUnit = temporalUnitMap.get(units.get(i));
 
-
+				List<Object> value = Arrays.asList(numericValue, temporalUnit);
 				//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
 				//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
-				String durationIRI = getDurationIRI(temporalUnit, numericValue);
+//				String durationIRI = getDurationIRI(temporalUnit, numericValue);
+				String durationIRI = null;
+
+				if (durationMap.containsKey(value)){
+					durationIRI = durationMap.get(value);
+				}
 
 				if(durationIRI!=null){
-					modify.insert(tsIRI.isA(AverageTimeSeries));
 					modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
 				}
 				else {
 					//Duration IRI
 					durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
-					while (checkDurationHasAverageTimeSeries(durationIRI)){
-						durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
-					}
-					modify.insert(tsIRI.isA(AverageTimeSeries));
 					modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
 					modify.insert(iri(durationIRI).isA(Duration));
 					modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
 					modify.insert(iri(durationIRI).has(numericDuration, numericValue));
 				}
-			}
-			else {
-				throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type.get(i) + " is invalid");
 			}
 
 			// Check that the data IRIs are not attached to a different time series IRI already
