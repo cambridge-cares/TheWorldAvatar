@@ -42,6 +42,12 @@
                     "position": [7.606446, 49.202321, 408.0]
                 },
                 {
+                    "id": "leibniz-solarpanel-lod3-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz_solarpanel.json",
+                    "position": [7.606446, 49.202321, 408.0]
+                },
+                {
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
@@ -101,6 +107,12 @@
                     "id": "leibniz-ceiling-lod3-tiles-layer",
                     "name": "Leibniz-Gymnasium, Dach (3D, LoD3)",
                     "source": "leibniz-ceiling-lod3-tiles-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "leibniz-solarpanel-lod3-tiles-layer",
+                    "name": "Leibniz-Gymnasium, Solar (3D, LoD3)",
+                    "source": "leibniz-solarpanel-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
