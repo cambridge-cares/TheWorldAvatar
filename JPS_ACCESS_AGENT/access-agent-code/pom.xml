@@ -89,7 +89,7 @@
   	<dependency>
     	<groupId>uk.ac.cam.cares.jps</groupId>
     	<artifactId>jps-base-lib</artifactId>
-    	<version>1.21.0</version>
+    	<version>1.28.0-RDBAccessAgent-snapshot-1</version>
     </dependency>
    
     <!-- Java servlet API -->
