@@ -132,7 +132,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                 added_obs += len(dataIRIs_list[i])
                 ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
                 ts_list.append(ts)
-    ts_client.tsclient.bulkaddTimeSeriesData(ts_list, ts_client.conn)
+    with ts_client.connect() as conn:
+        ts_client.tsclient.bulkaddTimeSeriesData(ts_list, conn)
     #print(f'Time series data for {added_obs} observations successfully added to KG.')
     logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
@@ -163,7 +164,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                 ts_list.append(ts)
                 for iri in dataIRIs_list[i]:
                     query_string += f"<{iri}> , "
-    ts_client.tsclient.bulkaddTimeSeriesData(ts_list, ts_client.conn)
+    with ts_client.connect() as conn:
+        ts_client.tsclient.bulkaddTimeSeriesData(ts_list, conn)
     #print(f'Time series data for {added_fcs} forecasts successfully added.')
     logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
 
@@ -328,8 +330,8 @@ def instantiate_station_readings(instantiated_sites_list: list,
         # Instantiate all time series triples
         ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
                              rdb_password=DB_PASSWORD)
-        ts_client.tsclient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, 
-                                              ts_client.conn)
+        with ts_client.connect() as conn:
+            ts_client.tsclient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, conn)
         #print('Time series triples successfully added.')
         logger.info('Time series triples successfully added.')
 

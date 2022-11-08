@@ -260,8 +260,8 @@ def get_time_series_data(station_iris: list = None,
 
         # Get time series within desired bounds
         try:
-            ts_data.append(ts_client.tsclient.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax, 
-                                                                        ts_client.conn))
+            with ts_client.connect() as conn:
+                ts_data.append(ts_client.tsclient.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax, conn))
         except Exception as ex:
             logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
             raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}') from ex
