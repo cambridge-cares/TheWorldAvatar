@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SelectQueryBuilderTest {
     @Test
-    void genUtilityTSSelectQuery() {
+    void testGenUtilityTSSelectQuery() {
         String query = SelectQueryBuilder.genUtilityTSSelectQuery();
         String expected = "SELECT  ?subject\n" +
                 "WHERE\n" +
@@ -15,7 +15,7 @@ class SelectQueryBuilderTest {
     }
 
     @Test
-    void genZoneSelectQuery() {
+    void testGenZoneSelectQuery() {
         String query = SelectQueryBuilder.genZoneSelectQuery();
         String expected = "SELECT  ?zone ?name\n" +
                 "WHERE\n" +
@@ -25,6 +25,17 @@ class SelectQueryBuilderTest {
                 "               rdfs:label  ?name\n" +
                 "        FILTER ( ?name IN (\"Attic\", \"Ground\", \"Level 1\") )\n" +
                 "      }}";
+        assertTrue(query.contains(expected));
+    }
+
+    @Test
+    void testGenMeterSelectQuery() {
+        String query = SelectQueryBuilder.genMeterSelectQuery();
+        String expected = "SELECT  ?elecmeter ?watermeter ?oilmeter\n" +
+                "WHERE\n" +
+                "  { ?elecmeter  rdf:type  bim:ElectricityMeter .\n" +
+                "    ?watermeter  rdf:type  bim:WaterMeter .\n" +
+                "    ?oilmeter  rdf:type  bim:OilMeter}";
         assertTrue(query.contains(expected));
     }
 }

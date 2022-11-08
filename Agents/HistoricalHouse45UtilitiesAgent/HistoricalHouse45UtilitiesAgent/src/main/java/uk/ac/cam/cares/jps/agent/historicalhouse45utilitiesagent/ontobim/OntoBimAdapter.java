@@ -37,6 +37,7 @@ public class OntoBimAdapter {
         retrieveBaseUri(queryEndpoint);
         List<String> measureList = retrieveMeasureInstances(queryEndpoint);
         retrieveZoneInstances(queryEndpoint);
+        retrieveMeterInstances(queryEndpoint);
         String insertQuery = createInsertQuery(measureList);
         QueryHandler.insertToEndpoint(insertQuery, updateEndpoint);
     }
@@ -91,6 +92,17 @@ public class OntoBimAdapter {
     }
 
     /**
+     * Retrieves the utility meters instances that is linked to the utility measure in the remote endpoint.
+     *
+     * @param endpoint The remote SPARQL endpoint.
+     */
+    private static void retrieveMeterInstances(String endpoint) {
+        String query = SelectQueryBuilder.genMeterSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, endpoint);
+        storeResultsAsVar(results);
+    }
+
+    /**
      * Store the query results into variables.
      *
      * @param results The SELECT query results.
@@ -98,10 +110,21 @@ public class OntoBimAdapter {
     private static void storeResultsAsVar(ResultSet results) {
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String zone = soln.get(SelectQueryBuilder.ZONE_VAR).toString();
             // When there is no name ie a null value, use of Optional class to parse the name
             Optional<RDFNode> nameContainer = Optional.ofNullable(soln.get(SelectQueryBuilder.NAME_VAR));
             String name = nameContainer.isPresent() ? nameContainer.toString() : "";
+
+            // Assign values to their reference only when there is a retrievable value
+            // Similar to the code above, except RDFNode cannot be an Optional class, and will lead to errors
+            String zone = Optional.ofNullable(soln.get(SelectQueryBuilder.ZONE_VAR)).isPresent()
+                    ? soln.get(SelectQueryBuilder.ZONE_VAR).toString() : "";
+            String elecMeter = Optional.ofNullable(soln.get(SelectQueryBuilder.ELECMETER_VAR)).isPresent()
+                    ? soln.get(SelectQueryBuilder.ELECMETER_VAR).toString() : "";
+            String waterMeter = Optional.ofNullable(soln.get(SelectQueryBuilder.WATERMETER_VAR)).isPresent()
+                    ? soln.get(SelectQueryBuilder.WATERMETER_VAR).toString() : "";
+            String oilMeter = Optional.ofNullable(soln.get(SelectQueryBuilder.OILMETER_VAR)).isPresent()
+                    ? soln.get(SelectQueryBuilder.OILMETER_VAR).toString() : "";
+
             if (zone.contains(BUILDING_KEYWORD)) {
                 singleton.setBuildingIri(zone);
             } else if (name.contains(ATTIC_KEYWORD)) {
@@ -110,6 +133,18 @@ public class OntoBimAdapter {
                 singleton.setGroundFloorIri(zone);
             } else if (name.contains(FIRSTFLOOR_KEYWORD)) {
                 singleton.setFirstFloorIri(zone);
+            }
+
+            // Set their IRIs in the singleton if it exists
+            // Keep the if statements as separate statements since they are found in one solution
+            if (!elecMeter.isEmpty()) {
+                singleton.setElecMeterIri(elecMeter);
+            }
+            if (!waterMeter.isEmpty()) {
+                singleton.setWaterMeterIri(waterMeter);
+            }
+            if (!oilMeter.isEmpty()) {
+                singleton.setOilMeterIri(oilMeter);
             }
         }
     }
@@ -140,8 +175,8 @@ public class OntoBimAdapter {
      * @param insertQuery INSERT DATA query generated using a String builder.
      */
     private static void addInsertStatements(String measureIRI, StringBuilder insertQuery) {
-        if (measureIRI.contains("Sensordisplay")) {
-
+        if (measureIRI.contains("SensorDisplay")) {
+            InsertQueryBuilder.addMeterInsertStatements(measureIRI, insertQuery, singleton);
         } else {
             if (measureIRI.contains(ELECTRICITY_KEYWORD)) {
                 InsertQueryBuilder.addElectricityInsertStatements(measureIRI, insertQuery, singleton);
@@ -152,18 +187,4 @@ public class OntoBimAdapter {
             }
         }
     }
-    /*
-    // Missing sensor display too
-
-        INSTBUILDING IRI ontobuiltenv:hasOntoCityGMLRepresentation <>  ;
-    ontobuiltenv:hasPVsuitableRoofArea twahouse:RoofArea_48b4592f-6862-4b42-8fd2-4bd0e965e531.
-// MANUALY ADD
-            twahouse:RoofArea_48b4592f-6862-4b42-8fd2-4bd0e965e531
-    rdf:type	om:Area ;
-    om:hasUnit	om:squareMetre ;
-    om:hasNumericalValue "5555.55"^^xsd:double.
-// MANUALY ADD
-    om:squareMetre
-    skos:notation 	"m2"^^qudt:UCUMcs .
-     */
 }

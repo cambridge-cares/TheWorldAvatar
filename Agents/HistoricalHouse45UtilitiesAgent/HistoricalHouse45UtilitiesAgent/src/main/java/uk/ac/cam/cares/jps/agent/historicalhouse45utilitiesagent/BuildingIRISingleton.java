@@ -12,6 +12,9 @@ public class BuildingIRISingleton {
     private String GROUND_FLOOR_IRI;
     private String FIRST_FLOOR_IRI;
     private String ATTIC_IRI;
+    private String ELEC_METER_IRI;
+    private String WATER_METER_IRI;
+    private String OIL_METER_IRI;
     // Static variable reference to ensure single instance of type BuildingIRISingleton
     private static BuildingIRISingleton single_instance = null;
 
@@ -22,6 +25,9 @@ public class BuildingIRISingleton {
         GROUND_FLOOR_IRI = "";
         FIRST_FLOOR_IRI = "";
         ATTIC_IRI = "";
+        ELEC_METER_IRI = "";
+        WATER_METER_IRI = "";
+        OIL_METER_IRI = "";
     }
 
     /**
@@ -73,5 +79,29 @@ public class BuildingIRISingleton {
 
     public void setAtticIri(String iri) {
         this.ATTIC_IRI = iri;
+    }
+
+    public String getElecMeterIri() {
+        return ELEC_METER_IRI;
+    }
+
+    public void setElecMeterIri(String iri) {
+        this.ELEC_METER_IRI = iri;
+    }
+
+    public String getWaterMeterIri() {
+        return WATER_METER_IRI;
+    }
+
+    public void setWaterMeterIri(String iri) {
+        this.WATER_METER_IRI = iri;
+    }
+
+    public String getOilMeterIri() {
+        return OIL_METER_IRI;
+    }
+
+    public void setOilMeterIri(String iri) {
+        this.OIL_METER_IRI = iri;
     }
 }

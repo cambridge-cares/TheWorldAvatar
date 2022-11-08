@@ -25,6 +25,7 @@ class InsertQueryBuilder extends QueryBuilderNode {
      * Add the statements to link the building instance to their CityGML IRI counterpart.
      *
      * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     * @param singleton          A singleton instance containing the required instances.
      */
     protected static void addOntoBuiltEnvInsertStatements(StringBuilder insertQueryBuilder, BuildingIRISingleton singleton) {
         if (!singleton.getOntoCityGmlBuildingIri().isEmpty() && !singleton.getBuildingIri().isEmpty()) {
@@ -39,6 +40,7 @@ class InsertQueryBuilder extends QueryBuilderNode {
      *
      * @param measureIRI         Electricity Consumption IRI generated that should be linked to OntoBIM instances.
      * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     * @param singleton          A singleton instance containing the required instances.
      */
     protected static void addElectricityInsertStatements(String measureIRI, StringBuilder insertQueryBuilder, BuildingIRISingleton singleton) {
         String elecQuantityIRI = BASE_PREFIX + MONTHLY_ELECTRICITY_INST + UUID.randomUUID();
@@ -62,6 +64,7 @@ class InsertQueryBuilder extends QueryBuilderNode {
      *
      * @param measureIRI         Water Consumption IRI generated that should be linked to OntoBIM instances.
      * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     * @param singleton          A singleton instance containing the required instances.
      */
     protected static void addWaterInsertStatements(String measureIRI, StringBuilder insertQueryBuilder, BuildingIRISingleton singleton) {
         String waterQuantityIRI = BASE_PREFIX + MONTHLY_WATER_INST + UUID.randomUUID();
@@ -79,6 +82,7 @@ class InsertQueryBuilder extends QueryBuilderNode {
      *
      * @param measureIRI         Oil Consumption IRI generated that should be linked to OntoBIM instances.
      * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     * @param singleton          A singleton instance containing the required instances.
      */
     protected static void addOilInsertStatements(String measureIRI, StringBuilder insertQueryBuilder, BuildingIRISingleton singleton) {
         String oilQuantityIRI = BASE_PREFIX + MONTHLY_OIL_INST + UUID.randomUUID();
@@ -88,6 +92,31 @@ class InsertQueryBuilder extends QueryBuilderNode {
         insertQueryBuilder.append(TAB + OM_HASUNIT + WHITESPACE + OM_LITRE + FULLSTOP);
         if (!singleton.getBuildingIri().isEmpty()) {
             insertQueryBuilder.append(OPEN_ANCHOR + singleton.getBuildingIri() + CLOSED_ANCHOR + WHITESPACE + UBEMMP_CONSUMES_UTILITIES + WHITESPACE + oilQuantityIRI + FULLSTOP);
+        }
+    }
+
+    /**
+     * Add the statements for different utility meters to be inserted into the SPARQL endpoint.
+     *
+     * @param measureIRI         Utility Consumption with Sensor Display IRI generated that should be linked to OntoBIM instances.
+     * @param insertQueryBuilder INSERT DATA query generated using a String builder.
+     * @param singleton          A singleton instance containing the required instances.
+     */
+    protected static void addMeterInsertStatements(String measureIRI, StringBuilder insertQueryBuilder, BuildingIRISingleton singleton) {
+        String meteringFunctionIri = SAREF_PREFIX + METERING_FUNCTION_INST + UUID.randomUUID();
+        String measurementIri = SAREF_PREFIX + MEASUREMENT_INST + UUID.randomUUID();
+        if (!singleton.getElecMeterIri().isEmpty() && measureIRI.contains("Electricity")) {
+            insertQueryBuilder.append(OPEN_ANCHOR + singleton.getElecMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+        } else if (!singleton.getWaterMeterIri().isEmpty() && measureIRI.contains("Water")) {
+            insertQueryBuilder.append(OPEN_ANCHOR + singleton.getWaterMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+        } else if (!singleton.getOilMeterIri().isEmpty() && measureIRI.contains("Oil")) {
+            insertQueryBuilder.append(OPEN_ANCHOR + singleton.getOilMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+        }
+        if (!singleton.getElecMeterIri().isEmpty() || !singleton.getWaterMeterIri().isEmpty() || !singleton.getOilMeterIri().isEmpty()) {
+            insertQueryBuilder.append(meteringFunctionIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_METERING_FUNCTION + SEMICOLON);
+            insertQueryBuilder.append(TAB + SAREF_HAS_METER_READING + WHITESPACE + measurementIri + FULLSTOP);
+            insertQueryBuilder.append(measurementIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_MEASUREMENT + SEMICOLON);
+            insertQueryBuilder.append(TAB + OM_HASVALUE + WHITESPACE + OPEN_ANCHOR + measureIRI + CLOSED_ANCHOR + FULLSTOP);
         }
     }
 }

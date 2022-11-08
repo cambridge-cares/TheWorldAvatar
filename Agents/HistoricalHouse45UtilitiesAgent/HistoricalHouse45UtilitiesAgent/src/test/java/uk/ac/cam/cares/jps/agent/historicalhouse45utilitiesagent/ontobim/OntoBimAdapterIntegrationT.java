@@ -2,7 +2,9 @@ package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.exec.UpdateExec;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,12 +29,14 @@ class OntoBimAdapterIntegrationT {
     private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String BOT_URI = "https://w3id.org/bot#";
+    private static final String SAREF_URI = "https://saref.etsi.org/core/";
     private static final String OM_URI = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final String SKOS_URI = "http://www.w3.org/2004/02/skos/core#";
     private static final String QUDT_URI = "http://qudt.org/schema/qudt/";
     private static final String TIMESERIES_URI = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
     private static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
     private static final String ONTOBUILTENV_URI = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#";
+    private static final String BIM_URI = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
     // Instances
     private static final String electricityConsumptionQuantityInst = "MonthlyElectricityConsumption_Quantity_";
     private static final String waterConsumptionQuantityInst = "MonthlyWaterConsumption_Quantity_";
@@ -43,16 +47,25 @@ class OntoBimAdapterIntegrationT {
     private static final String electricityAtticMeasureIRI = TEST_URI + "Attic_MonthlyElectricityConsumption_11132";
     private static final String waterMeasureIRI = TEST_URI + "MonthlyWaterConsumption_2151";
     private static final String oilMeasureIRI = TEST_URI + "MonthlyOilConsumption_2974";
+    private static final String electricitySensorDisplayMeasureIRI = TEST_URI + "MonthlyElectricityConsumption_SensorDisplay_771";
+    private static final String waterSensorDisplayMeasureIRI = TEST_URI + "MonthlyWaterConsumption_SensorDisplay_3810";
+    private static final String oilSensorDisplayMeasureIRI = TEST_URI + "MonthlyOilConsumption_SensorDisplay_5012";
     private static final String citygmlIRI = TEST_URI + "CityGML_Building_123";
     private static final String buildingIRI = TEST_URI + "Building_5515";
     private static final String firstFloorIRI = TEST_URI + "Storey_5781";
     private static final String groundFloorIRI = TEST_URI + "Storey_162";
     private static final String atticIRI = TEST_URI + "Storey_836";
+    private static final String elecMeterIRI = TEST_URI + "ElectricityMeter_44124";
+    private static final String waterMeterIRI = TEST_URI + "WaterMeter_9521";
+    private static final String oilMeterIRI = TEST_URI + "OilMeter_3175";
+    private static final String meteringFunctionInst = SAREF_URI + "MeteringFunction_";
     // Properties
     private static final String TIMESERIES_HASTS = TIMESERIES_URI + "hasTimeSeries";
     private static final String RDF_TYPE = RDF_URI + "type";
     private static final String RDFS_LABEL = RDFS_URI + "label";
+    private static final String SAREF_HAS_FUNCTION = SAREF_URI + "hasFunction";
     private static final String OM_HASUNIT = OM_URI + "hasUnit";
+    private static final String OM_HASVALUE = OM_URI + "hasValue";
     private static final String OM_ENERGY = OM_URI + "Energy";
     private static final String OM_KWH = OM_URI + "kilowattHour";
     private static final String OM_VOLUME = OM_URI + "Volume";
@@ -64,6 +77,9 @@ class OntoBimAdapterIntegrationT {
     // Classes
     private static final String BOT_BUILDING = BOT_URI + "Building";
     private static final String BOT_Storey = BOT_URI + "Storey";
+    private static final String BIM_ELEC_METER = BIM_URI + "ElectricityMeter";
+    private static final String BIM_WATER_METER = BIM_URI + "WaterMeter";
+    private static final String BIM_OIL_METER = BIM_URI + "OilMeter";
     // Literal
     private static final String cubicMetreLiteral = "m3^^" + QUDT_URI + "UCUMcs";
     private static final String kwhLiteral = "kW.h^^" + QUDT_URI + "UCUMcs";
@@ -78,6 +94,12 @@ class OntoBimAdapterIntegrationT {
         endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
         baseURI = endpoint + "/blazegraph/namespace/kb/"; // Default namespace is "kb"
         endpoint = baseURI + "sparql";
+    }
+
+    @BeforeEach
+    void resetKG() {
+        String deleteQuery = "DELETE WHERE {?s ?p ?o}";
+        UpdateExec.service(endpoint).update(deleteQuery).execute();
         createSampleData();
     }
 
@@ -114,6 +136,9 @@ class OntoBimAdapterIntegrationT {
         addInsertStatement(electricityAtticMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
         addInsertStatement(waterMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
         addInsertStatement(oilMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
+        addInsertStatement(electricitySensorDisplayMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
+        addInsertStatement(waterSensorDisplayMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
+        addInsertStatement(oilSensorDisplayMeasureIRI, TIMESERIES_HASTS, timeseriesIRI, insertQuery, false);
         addInsertStatement(buildingIRI, RDF_TYPE, BOT_BUILDING, insertQuery, false);
         addInsertStatement(groundFloorIRI, RDF_TYPE, BOT_Storey, insertQuery, false);
         addInsertStatement(groundFloorIRI, RDFS_LABEL, "Ground", insertQuery, true);
@@ -121,6 +146,9 @@ class OntoBimAdapterIntegrationT {
         addInsertStatement(firstFloorIRI, RDFS_LABEL, "Level 1", insertQuery, true);
         addInsertStatement(atticIRI, RDF_TYPE, BOT_Storey, insertQuery, false);
         addInsertStatement(atticIRI, RDFS_LABEL, "Attic", insertQuery, true);
+        addInsertStatement(elecMeterIRI, RDF_TYPE, BIM_ELEC_METER, insertQuery, false);
+        addInsertStatement(waterMeterIRI, RDF_TYPE, BIM_WATER_METER, insertQuery, false);
+        addInsertStatement(oilMeterIRI, RDF_TYPE, BIM_OIL_METER, insertQuery, false);
         insertQuery.append("}");
         QueryHandler.insertToEndpoint(insertQuery.toString(), endpoint);
     }
@@ -180,6 +208,13 @@ class OntoBimAdapterIntegrationT {
         expected.add(OM_CBM + WHITESPACE + SKOS_NOTATION + WHITESPACE + cubicMetreLiteral);
         expected.add(OM_KWH + WHITESPACE + SKOS_NOTATION + WHITESPACE + kwhLiteral);
         expected.add(OM_LITRE + WHITESPACE + SKOS_NOTATION + WHITESPACE + litreLiteral);
+
+        expected.add(elecMeterIRI + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionInst);
+        expected.add(WHITESPACE + OM_HASVALUE + WHITESPACE + electricitySensorDisplayMeasureIRI);
+        expected.add(waterMeterIRI + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionInst);
+        expected.add(WHITESPACE + OM_HASVALUE + WHITESPACE + waterSensorDisplayMeasureIRI);
+        expected.add(oilMeterIRI + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionInst);
+        expected.add(WHITESPACE + OM_HASVALUE + WHITESPACE + oilSensorDisplayMeasureIRI);
         return expected;
     }
 }

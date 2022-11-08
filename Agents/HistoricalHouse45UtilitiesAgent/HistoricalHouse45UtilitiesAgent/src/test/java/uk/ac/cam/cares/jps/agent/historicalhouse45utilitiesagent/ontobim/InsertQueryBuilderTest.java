@@ -19,11 +19,17 @@ class InsertQueryBuilderTest {
     private static final String elecAtticIri = "electricity_Attic_581";
     private static final String waterIri = "water_321";
     private static final String oilIri = "oil_123";
+    private static final String elecMeasureIri = "ElectricityConsumption_SensorDisplay_812";
+    private static final String waterMeasureIri = "WaterConsumption_SensorDisplay_617";
+    private static final String oilMeasureIri = "OilConsumption_SensorDisplay_4417";
     private static final String citygml = "CityGML_Building_123";
     private static final String building = "Building_5515";
     private static final String firstFloor = "Storey_5781";
     private static final String groundFloor = "Storey_162";
     private static final String attic = "Storey_836";
+    private static final String elecMeter = "ElectricityMeter_112";
+    private static final String waterMeter = "WaterMeter_113";
+    private static final String oilMeter = "OilMeter_114";
     private static final String falseStatement = "ontoubemmp:consumesUtilities twa:";
 
     @BeforeAll
@@ -118,12 +124,47 @@ class InsertQueryBuilderTest {
         assertTrue(insertQueryBuilder.toString().contains(building + "> ontoubemmp:consumesUtilities twa:MonthlyOilConsumption_Quantity_"));
     }
 
+    @Test
+    void testAddMeterInsertStatementsForElectricityMeter() {
+        setSingletonValues();
+        InsertQueryBuilder.addMeterInsertStatements(elecMeasureIri, insertQueryBuilder, singleton);
+        List<String> expected = genExpectedElectricityMeterList();
+        expected.forEach(line -> assertTrue(insertQueryBuilder.toString().contains(line)));
+    }
+
+    @Test
+    void testAddMeterInsertStatementsForWaterMeter() {
+        setSingletonValues();
+        InsertQueryBuilder.addMeterInsertStatements(waterMeasureIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(waterMeter+ "> saref:hasFunction saref:MeteringFunction_"));
+        assertTrue(insertQueryBuilder.toString().contains("om:hasValue <" + waterMeasureIri));
+
+    }
+
+    @Test
+    void testAddMeterInsertStatementsForOilMeter() {
+        setSingletonValues();
+        InsertQueryBuilder.addMeterInsertStatements(oilMeasureIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().contains(oilMeter+ "> saref:hasFunction saref:MeteringFunction_"));
+        assertTrue(insertQueryBuilder.toString().contains("om:hasValue <" + oilMeasureIri));
+    }
+
+    @Test
+    void testAddMeterInsertStatementsNoMeterInst() {
+        resetSingleton();
+        InsertQueryBuilder.addMeterInsertStatements(electricityIri, insertQueryBuilder, singleton);
+        assertTrue(insertQueryBuilder.toString().isEmpty());
+    }
+
     private static void resetSingleton() {
         singleton.setOntoCityGmlBuildingIri("");
         singleton.setBuildingIri("");
         singleton.setGroundFloorIri("");
         singleton.setFirstFloorIri("");
         singleton.setAtticIri("");
+        singleton.setElecMeterIri("");
+        singleton.setWaterMeterIri("");
+        singleton.setOilMeterIri("");
     }
 
     private static void setSingletonValues() {
@@ -132,6 +173,9 @@ class InsertQueryBuilderTest {
         singleton.setGroundFloorIri(groundFloor);
         singleton.setFirstFloorIri(firstFloor);
         singleton.setAtticIri(attic);
+        singleton.setElecMeterIri(elecMeter);
+        singleton.setWaterMeterIri(waterMeter);
+        singleton.setOilMeterIri(oilMeter);
     }
 
     private static List<String> genExpectedElectricityList() {
@@ -161,6 +205,16 @@ class InsertQueryBuilderTest {
                 "\tom:hasValue <" + oilIri + ">.\n" +
                 "<" + oilIri + "> rdf:type om:Volume;\n" +
                 "\tom:hasUnit om:litre.");
+        return results;
+    }
+
+    private static List<String> genExpectedElectricityMeterList() {
+        List<String> results = new ArrayList<>();
+        results.add(elecMeter + "> saref:hasFunction saref:MeteringFunction_");
+        results.add("rdf:type saref:MeteringFunction;\n" +
+                "\tsaref:hasMeterReading saref:Measurement_");
+        results.add("rdf:type saref:Measurement;\n" +
+                "\tom:hasValue <" + elecMeasureIri);
         return results;
     }
 }

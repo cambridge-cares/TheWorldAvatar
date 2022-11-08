@@ -15,12 +15,14 @@ class QueryHandler {
     private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String OM_URI = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    private static final String BOT_URI = "https://w3id.org/bot#";
+    private static final String SAREF_URI = "https://saref.etsi.org/core/";
     private static final String SKOS_URI = "http://www.w3.org/2004/02/skos/core#";
     private static final String QUDT_URI = "http://qudt.org/schema/qudt/";
     private static final String TIMESERIES_URI = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
     private static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
     private static final String ONTOBUILTENV_URI = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#";
-    private static final String BOT_URI = "https://w3id.org/bot#";
+    private static final String BIM_URI = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
 
 
     /**
@@ -38,6 +40,8 @@ class QueryHandler {
                 .substring(0, SelectQueryBuilder.RDFS_PREFIX.length() - 1), RDFS_URI);
         builder.addPrefix(SelectQueryBuilder.BOT_PREFIX
                 .substring(0, SelectQueryBuilder.BOT_PREFIX.length() - 1), BOT_URI);
+        builder.addPrefix(SelectQueryBuilder.ONTOBIM_PREFIX
+                .substring(0, SelectQueryBuilder.ONTOBIM_PREFIX.length() - 1), BIM_URI);
     }
 
     /**
@@ -49,6 +53,7 @@ class QueryHandler {
         insertQuery.append(START_PREFIX + InsertQueryBuilder.BASE_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + OntoBimAdapter.BASE_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.RDF_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + RDF_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.OM_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + OM_URI + InsertQueryBuilder.CLOSED_ANCHOR);
+        insertQuery.append(START_PREFIX + InsertQueryBuilder.SAREF_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + SAREF_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.SKOS_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + SKOS_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.QUDT_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + QUDT_URI + InsertQueryBuilder.CLOSED_ANCHOR);
         insertQuery.append(START_PREFIX + InsertQueryBuilder.UBEMMP_PREFIX + InsertQueryBuilder.OPEN_ANCHOR + UBEMMP_URI + InsertQueryBuilder.CLOSED_ANCHOR);

@@ -8,7 +8,9 @@ class SelectQueryBuilder extends QueryBuilderNode {
     protected static final String SUBJECT_VAR = "?subject";
     protected static final String ZONE_VAR = "?zone";
     protected static final String NAME_VAR = "?name";
-
+    protected static final String ELECMETER_VAR = "?elecmeter";
+    protected static final String WATERMETER_VAR = "?watermeter";
+    protected static final String OILMETER_VAR = "?oilmeter";
 
     /**
      * Generate the required SELECT query for retrieving the instances of utility consumption time series generated.
@@ -43,6 +45,23 @@ class SelectQueryBuilder extends QueryBuilderNode {
             throw new JPSRuntimeException("FILTER clause cannot be parsed properly! " + e);
         }
         builder.addUnion(subquery);
+        return builder.buildString();
+    }
+
+    /**
+     * Generate the required SELECT query for retrieving the utility meters instances.
+     *
+     * @return The query in String format.
+     */
+    protected static String genMeterSelectQuery() {
+        SelectBuilder builder = new SelectBuilder();
+        QueryHandler.genPrefixMapping(builder);
+        builder.addVar(ELECMETER_VAR)
+                .addWhere(ELECMETER_VAR, RDFTYPE, BIM_ELEC_METER);
+        builder.addVar(WATERMETER_VAR)
+                .addWhere(WATERMETER_VAR, RDFTYPE, BIM_WATER_METER);
+        builder.addVar(OILMETER_VAR)
+                .addWhere(OILMETER_VAR, RDFTYPE, BIM_OIL_METER);
         return builder.buildString();
     }
 }

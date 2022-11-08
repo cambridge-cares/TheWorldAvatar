@@ -10,6 +10,16 @@ class BuildingIRISingletonTest {
     private static final String firstFloor = "Storey_5781";
     private static final String groundFloor = "Storey_162";
     private static final String attic = "Storey_836";
+    private static final String elecMeter = "ElectricityMeter_245";
+    private static final String waterMeter = "WaterMeter_6572";
+    private static final String oilMeter = "OilMeter_3918";
+
+    @Test
+    void testSingleInstance() {
+        BuildingIRISingleton first = BuildingIRISingleton.getInstance();
+        BuildingIRISingleton second = BuildingIRISingleton.getInstance();
+        assertEquals(first, second);
+    }
 
     @Test
     void testGetInstance() {
@@ -26,28 +36,49 @@ class BuildingIRISingletonTest {
     @Test
     void testGetAndSetBuildingIri() {
         BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
-        singleton.setOntoCityGmlBuildingIri(building);
-        assertEquals(building, singleton.getOntoCityGmlBuildingIri());
+        singleton.setBuildingIri(building);
+        assertEquals(building, singleton.getBuildingIri());
     }
 
     @Test
     void testGetAndSetGroundFloorIri() {
         BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
-        singleton.setOntoCityGmlBuildingIri(groundFloor);
-        assertEquals(groundFloor, singleton.getOntoCityGmlBuildingIri());
+        singleton.setGroundFloorIri(groundFloor);
+        assertEquals(groundFloor, singleton.getGroundFloorIri());
     }
 
     @Test
     void testGetAndSetFirstFloorIri() {
         BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
-        singleton.setOntoCityGmlBuildingIri(firstFloor);
-        assertEquals(firstFloor, singleton.getOntoCityGmlBuildingIri());
+        singleton.setFirstFloorIri(firstFloor);
+        assertEquals(firstFloor, singleton.getFirstFloorIri());
     }
 
     @Test
     void testGetAndSetAtticIri() {
         BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
-        singleton.setOntoCityGmlBuildingIri(attic);
-        assertEquals(attic, singleton.getOntoCityGmlBuildingIri());
+        singleton.setAtticIri(attic);
+        assertEquals(attic, singleton.getAtticIri());
+    }
+
+    @Test
+    void testGetAndSetElecMeterIri() {
+        BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
+        singleton.setElecMeterIri(elecMeter);
+        assertEquals(elecMeter, singleton.getElecMeterIri());
+    }
+
+    @Test
+    void testGetAndSetWaterMeterIri() {
+        BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
+        singleton.setWaterMeterIri(waterMeter);
+        assertEquals(waterMeter, singleton.getWaterMeterIri());
+    }
+
+    @Test
+    void testGetAndSetOilMeterIri() {
+        BuildingIRISingleton singleton = BuildingIRISingleton.getInstance();
+        singleton.setOilMeterIri(oilMeter);
+        assertEquals(oilMeter, singleton.getOilMeterIri());
     }
 }

@@ -33,6 +33,7 @@ class QueryHandlerTest {
         results.add("rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
         results.add("bot:  <https://w3id.org/bot#>");
+        results.add("bim:  <http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>");
         return results;
     }
 
@@ -40,6 +41,7 @@ class QueryHandlerTest {
         List<String> results = new ArrayList<>();
         results.add("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>");
+        results.add("PREFIX saref:<https://saref.etsi.org/core/>");
         results.add("PREFIX skos:<http://www.w3.org/2004/02/skos/core#>");
         results.add("PREFIX qudt:<http://qudt.org/schema/qudt/>");
         results.add("PREFIX ontoubemmp:<https://www.theworldavatar.com/kg/ontoubemmp/>");
