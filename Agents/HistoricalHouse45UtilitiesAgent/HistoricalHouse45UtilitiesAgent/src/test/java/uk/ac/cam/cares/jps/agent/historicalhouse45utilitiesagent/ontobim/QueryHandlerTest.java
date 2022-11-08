@@ -41,7 +41,7 @@ class QueryHandlerTest {
         results.add("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>");
         results.add("PREFIX skos:<http://www.w3.org/2004/02/skos/core#>");
-        results.add("PREFIX qudt:<http://qudt.org/schema/qudt>");
+        results.add("PREFIX qudt:<http://qudt.org/schema/qudt/>");
         results.add("PREFIX ontoubemmp:<https://www.theworldavatar.com/kg/ontoubemmp/>");
         results.add("PREFIX builtenv:<http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#>");
         return results;
