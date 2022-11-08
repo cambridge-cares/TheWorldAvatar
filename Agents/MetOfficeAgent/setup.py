@@ -26,9 +26,9 @@ setup(
     ],
     extras_require={
         "dev": [
-            "pytest==6.2.3",
-            "pytest-mock==3.7.0",
-            "testcontainers==3.4.2",
+            "pytest==7.2.0",
+            "pytest-mock==3.10.0",
+            "testcontainers==3.7.0",
             "psycopg2==2.9.5"
         ]
     }
