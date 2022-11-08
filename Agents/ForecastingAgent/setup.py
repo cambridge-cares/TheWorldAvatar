@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='landregistry',
+    name='forecasting',
     version='0.0.1',
     author='Markus Hofmeister',
     license='MIT',

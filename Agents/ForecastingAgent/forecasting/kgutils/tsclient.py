@@ -6,16 +6,16 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-import agentlogging
-from landregistry.errorhandling.exceptions import TSException
-from landregistry.kgutils.javagateway import jpsBaseLibGW
-from landregistry.kgutils.kgclient import KGClient
-from landregistry.datamodel.data_mapping import TIMECLASS
-from landregistry.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                             DB_URL, DB_USER, DB_PASSWORD
+#import agentlogging
+from forecasting.errorhandling.exceptions import TSException
+from forecasting.kgutils.javagateway import jpsBaseLibGW
+from forecasting.kgutils.kgclient import KGClient
+from forecasting.datamodel.data_mapping import TIMECLASS
+from forecasting.utils.properties import *
+
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 class TSClient:
@@ -44,14 +44,14 @@ class TSClient:
             connection = jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
             self.conn = connection.getConnection()
         except Exception as ex:
-            logger.error("Unable to initialise TS client RDB connection.")
+            #logger.("Unable to initialise TS client RDB connection.")
             raise TSException("Unable to initialise TS client RDB connection.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
             self.tsclient = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
-            logger.error("Unable to initialise TS client.")
+            #logger.("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
 
 
@@ -66,7 +66,7 @@ class TSClient:
         try:
             timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:
-            logger.error("Unable to create timeseries.")
+            #logger.("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
         
         return timeseries

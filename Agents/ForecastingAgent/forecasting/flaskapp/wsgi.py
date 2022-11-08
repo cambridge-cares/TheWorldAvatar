@@ -10,15 +10,10 @@ from forecasting.flaskapp import create_app
 #from apscheduler.schedulers.background import BackgroundScheduler
 
 
-# Add recurring background task to assimilate latest HM Land Registry Price Paid Data
-# every 4 weeks ("HM Land Registry publish Price Paid Data for England and Wales on a monthly basis." 
-# (https://landregistry.data.gov.uk/app/root/doc/ppd)
-#sched = BackgroundScheduler(daemon=True)
-#sched.add_job(update_all_transaction_records, trigger='interval', weeks=4)
-#sched.start()
 
 app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(host='localhost:5000')
+    app.run(host='127.0.0.1', port="5000", debug=True)
+    print('done')

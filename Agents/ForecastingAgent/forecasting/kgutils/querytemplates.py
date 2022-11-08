@@ -8,12 +8,12 @@
 
 import uuid
 
-import agentlogging
+#import agentlogging
 
-from landregistry.datamodel.iris import *
+from forecasting.datamodel.iris import *
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 #

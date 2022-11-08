@@ -5,14 +5,14 @@
 
 from flask import Blueprint, request, jsonify
 
-import agentlogging
+#import agentlogging
 
 from forecasting.errorhandling.exceptions import InvalidInput
 from forecasting.forecasting_agent.create_forecast import forecast
 
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 inputtasks_bp = Blueprint(
@@ -28,7 +28,7 @@ def api_forecast():
     try:
         query = request.json['query']
     except Exception as ex:
-        logger.error('No JSON "query" object could be identified.')
+        #logger.('No JSON "query" object could be identified.')
         raise InvalidInput('No JSON "query" object could be identified.') from ex
     
     # Retrieve data IRI to be updated
@@ -36,31 +36,31 @@ def api_forecast():
         dataIRI = str(query['dataIRI'])
         
     except Exception as ex:
-        logger.error('Invalid "dataIRI" provided.')
+        #logger.('Invalid "dataIRI" provided.')
         raise InvalidInput('Invalid "dataIRI" provided.') from ex
     
     # Retrieve horizon 
     try:
         horizon = int(query['horizon'])
     except Exception as ex:
-        logger.info('No horizon, using default.')
+        #logger.info('No horizon, using default.')
         horizon = 7
     if horizon <= 0:
-        logger.error('Invalid "horizon" provided. Must be higher than 0.')
+        #logger.('Invalid "horizon" provided. Must be higher than 0.')
         raise InvalidInput('Invalid "horizon" provided. Must be higher than 0.')
     
     # Retrieve forecast_start_date 
     try:
         forecast_start_date = query['forecast_start_date']
     except Exception as ex:
-        logger.info('No forecast_start_date, using most recent date.')
+        #logger.info('No forecast_start_date, using most recent date.')
         forecast_start_date = None
     
     # Retrieve model_path_ckpt_link 
     try:
         model_path_ckpt_link = query['model_path_ckpt_link']
     except Exception as ex:
-        logger.info('No model_path_ckpt_link, using Prophet.')
+        #logger.info('No model_path_ckpt_link, using Prophet.')
         model_path_ckpt_link = ''
     
     
@@ -68,7 +68,7 @@ def api_forecast():
     try:
         model_path_pth_link = query['model_path_pth_link']
     except Exception as ex:
-        logger.info('No model_path_pth_link, using Prophet.')
+        #logger.info('No model_path_pth_link, using Prophet.')
         model_path_pth_link = ''
     
     
@@ -77,6 +77,6 @@ def api_forecast():
         forecast(dataIRI, horizon, forecast_start_date, model_path_ckpt_link, model_path_pth_link)
         return jsonify({'status': '200'})
     except Exception as ex:
-        logger.error("Unable to forecast.", ex)
+        #logger.("Unable to forecast.", ex)
         return jsonify({'status': '500', 'msg': 'Forecast failed.'})
 

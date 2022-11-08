@@ -9,8 +9,60 @@
 
 from forecasting.datamodel.iris import *
 from forecasting.utils.properties import *
+from darts import concatenate
+from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
+
+import numpy as np
+from darts import TimeSeries
+from darts.dataprocessing.transformers import Scaler
 
 
+def get_data_cov(df, col):
+    """
+    It takes a path to a csv file and a list of column names, and returns a TimeSeries object with the
+    data from those columns
+    
+    :param path: the path to the data
+    :param col_names: a list of the column names of the covariates you want to use
+    :return: A list of TimeSeries objects
+    """
+    # covs scaler
+    covs = None
+    print(col)
+    cov = TimeSeries.from_dataframe(df, time_col='Date', value_cols=col)
+    scaler_cov = Scaler()
+    cov_scaled = scaler_cov.fit_transform(cov)
+    covs = cov_scaled if covs is None else concatenate([covs, cov_scaled],
+                                                        axis="component",)
+    return covs
+def get_time_cov(df, cov:dict):
+    """
+    It takes a df and returns a covariate matrix with the following columns:
+    
+    - day of year (cyclic)
+    - day of week (cyclic)
+    - hour of day (cyclic)
+    
+    The `cyclic` keyword argument is used to indicate that the covariate is cyclic. This is important
+    for the model to learn the correct periodicity
+    
+    :param series: the time series to be modeled
+    :return: A covariate matrix with the following columns:
+        - day of year (cyclic)
+        - day of week (cyclic)
+        - hour of day (cyclic)
+    """
+
+    series = TimeSeries.from_dataframe(df, time_col = 'Date' ) #, fill_missing_dates =True
+
+    covs = concatenate(
+        [
+            dt_attr(series.time_index, k, dtype=np.float32, cyclic=v) for k,v in cov.items()
+
+        ],
+        axis="component",
+    )
+    return covs
 def add_insert_data(update):
     """
     It takes a string of SPARQL update statements and returns a string of SPARQL update statements that

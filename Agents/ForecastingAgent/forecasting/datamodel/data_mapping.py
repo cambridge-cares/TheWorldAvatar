@@ -11,7 +11,7 @@
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
 from forecasting.datamodel.iris import *
-from forecasting.utils.useful_queries import *
+from forecasting.utils.useful_queries import get_df_for_heat_supply
 
 from forecasting.kgutils.javagateway import jpsBaseLibGW
 
