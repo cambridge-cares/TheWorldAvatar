@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import org.jooq.tools.jdbc.MockConnection;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -86,46 +86,54 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass list of data classes for each dataIRI
 	 * @param timeUnit time unit as (full) IRI
 	 * @param conn connection to the RDB
-	 * @param type type of TimeSeries data to be instantiated. (optional)
-	 *             Allowed values:
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
-	 *             If not specified, default value: TimeSeries
 	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
 	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
 	 *             Allowed values of type ChronoUnit:
 	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
 	 *
 	 */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, String type, Duration duration, ChronoUnit unit) {
-		String tsIRI;
-		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
-		if (type.equals(null)){
-			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-		}
-		else if(type.equals(TimeSeriesSparql.StepwiseCumulative)){
-			tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
-		}
-		else if(type.equals(TimeSeriesSparql.CumulativeTotal)){
-			tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
-		}
-		else if(type.equals(TimeSeriesSparql.Instantaneous)){
-			tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
-		}
-		else if(type.equals(TimeSeriesSparql.Average)){
-			tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
-		}
-		else {
-			throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type + " is invalid");
-		}
+
+	public void initAverageTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, Duration duration, ChronoUnit unit){
+		String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, TimeSeriesSparql.AverageTimeSeries, duration, unit);
+	}
+
+	public void initInstantaneousTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn){
+		String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void initStepwiseCumulativeTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn){
+		String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void initCumulativeTotalTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn){
+		String tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void initGeneralTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn){
+		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, TimeSeriesSparql.TimeSeries, null, null);
+	}
+
+	private void initTimeSeries(String tsIRI, List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, Iri type, Duration duration, ChronoUnit unit) {
 
 		// Step1: Initialise time series in knowledge base
 		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
 		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		String rdbURL;
 		try {
-			rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, duration, unit);
+			rdbURL = conn.getMetaData().getURL();
+		} catch (SQLException e) {
+			// this ensures rdfClient.bulkInitTS always has a valid string
+			LOGGER.warn(e.getMessage());
+			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
+			rdbURL = "";
+		}
+		try {
+			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, type, duration, unit);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
@@ -155,13 +163,108 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 * @param conn
-	 * @param type
 	 * @param durations
 	 * @param units
      */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, durations, units);
-	} 
+//	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
+//		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, durations, units);
+//	}
+
+	///////////////////////
+	//WITH CONNECTION
+
+	//srid not given
+	public void bulkInitAverageTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<Duration> durations, List<ChronoUnit> units) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, null, conn, TimeSeriesSparql.AverageTimeSeries, durations, units);
+	}
+
+	public void bulkInitInstantaneousTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, null, conn, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void bulkInitStepwiseCumulativeTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, null, conn, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void bulkInitCumulativeTotalTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.CumulativeTotal + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, null, conn, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void bulkInitGeneralTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, null, conn, TimeSeriesSparql.TimeSeries, null, null);
+	}
+
+
+	//srid given
+	public void bulkInitAverageTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Duration> durations, List<ChronoUnit> units) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, TimeSeriesSparql.AverageTimeSeries, durations, units);
+	}
+
+	public void bulkInitInstantaneousTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void bulkInitStepwiseCumulativeTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void bulkInitCumulativeTotalTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.CumulativeTotal + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void bulkInitGeneralTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, TimeSeriesSparql.TimeSeries, null, null);
+	}
 
 	/**
 	 * similar to initTimeSeries, but uploads triples in one connection
@@ -175,36 +278,11 @@ public class TimeSeriesClient<T> {
 	 * @param durations
 	 * @param units
 	 */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
-        // create random time series IRI
-    	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
-		String tsIRI;
-    	for (int i = 0; i < dataIRIs.size(); i++) {
-			if (type.get(i).equals(null)){
-				tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-			}
-			else if(type.get(i).equals(TimeSeriesSparql.StepwiseCumulative)){
-				tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
-			}
-			else if(type.get(i).equals(TimeSeriesSparql.CumulativeTotal)){
-				tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
-			}
-			else if(type.get(i).equals(TimeSeriesSparql.Instantaneous)){
-				tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
-			}
-			else if(type.get(i).equals(TimeSeriesSparql.Average)){
-				tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
-			}
-			else {
-				throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type.get(i) + " is invalid");
-			}
-    		tsIRIs.add(i, tsIRI);
-    	}
+    private void bulkInitTimeSeries(List<String> tsIRIs, List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, Iri type, List<Duration> durations, List<ChronoUnit> units) {
     	
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-
 
 		// Obtain RDB URL from connection object, exception thrown when connection is down
 		String rdbURL;
@@ -217,7 +295,7 @@ public class TimeSeriesClient<T> {
 			rdbURL = "";
 		}
 		try {
-			rdfClient.bulkInitTS(tsIRIs, dataIRIs, conn.getMetaData().getURL(), timeUnit, type, durations, units);
+			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, type, durations, units);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
@@ -747,6 +825,31 @@ public class TimeSeriesClient<T> {
 		this.rdbClient.setRdbPassword(password);
 	}
 
+	public void initAverageTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Duration duration, ChronoUnit unit){
+		String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.AverageTimeSeries, duration, unit);
+	}
+
+	public void initInstantaneousTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit){
+		String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void initStepwiseCumulativeTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit){
+		String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void initCumulativeTotalTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit){
+		String tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void initGeneralTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit){
+		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+		initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.TimeSeries, null, null);
+	}
+
 	/**
      * Initialise time series in triple store and relational database
      * @param dataIRIs list of dataIRIs as Strings
@@ -765,12 +868,109 @@ public class TimeSeriesClient<T> {
 	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
 	 *
      */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, String type, Duration duration, ChronoUnit unit) {
+	private void initTimeSeries(String tsIRI, List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Iri type, Duration duration, ChronoUnit unit) {
 		try (Connection conn = rdbClient.getConnection()) {
-			initTimeSeries(dataIRIs, dataClass, timeUnit, conn, type, duration, unit);
+			initTimeSeries(tsIRI, dataIRIs, dataClass, timeUnit, conn, type, duration, unit);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
+	}
+
+
+	///////////////////////
+	//WITHOUT CONNECTION
+
+	//srid not given
+	public void bulkInitAverageTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<Duration> durations, List<ChronoUnit> units) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.AverageTimeSeries, durations, units);
+	}
+
+	public void bulkInitInstantaneousTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void bulkInitStepwiseCumulativeTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void bulkInitCumulativeTotalTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.CumulativeTotal + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void bulkInitGeneralTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, TimeSeriesSparql.TimeSeries, null, null);
+	}
+
+
+	//srid given
+	public void bulkInitAverageTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<Duration> durations, List<ChronoUnit> units) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, TimeSeriesSparql.AverageTimeSeries, durations, units);
+	}
+
+	public void bulkInitInstantaneousTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, TimeSeriesSparql.InstantaneousTimeSeries, null, null);
+	}
+
+	public void bulkInitStepwiseCumulativeTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, TimeSeriesSparql.StepwiseCumulativeTimeSeries, null, null);
+	}
+
+	public void bulkInitCumulativeTotalTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.CumulativeTotal + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, TimeSeriesSparql.CumulativeTotalTimeSeries, null, null);
+	}
+
+	public void bulkInitGeneralTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRIs.add(i, tsIRI);
+		}
+		bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, TimeSeriesSparql.TimeSeries, null, null);
 	}
 
 	/**
@@ -782,9 +982,9 @@ public class TimeSeriesClient<T> {
 	 * @param durations
 	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
+	private void bulkInitTimeSeries(List<String> tsIRIs, List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Iri type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, durations, units);
+			bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -801,9 +1001,9 @@ public class TimeSeriesClient<T> {
 	 * @param durations
 	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<String> type, List<Duration> durations, List<ChronoUnit> units) {
+	private void bulkInitTimeSeries(List<String> tsIRIs, List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Iri type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, durations, units);
+			bulkInitTimeSeries(tsIRIs, dataIRIs, dataClass, timeUnit, srid, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
