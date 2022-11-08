@@ -6,16 +6,14 @@
 //                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
 //                 (default: 90)
 
-POST http://165.232.172.16:5002/api/forecastingAgent/forecast
+POST http://127.0.0.1:5000/api/forecastingAgent/forecast
 Content-Type: application/json
 
 { "query": {
-      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_c7b3bb56-57c9-4d6f-ac03-473760fb3a5e",
+      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_1b6ad574-3b79-4e6f-9cc3-fa7db99596a8",
       "horizon": 168,
       "model_path_ckpt_link": "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1", 
       "model_path_pth_link": "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
-      "forecast_start_date": "2020-06-03 01:00:00",
-
-
+      "forecast_start_date": "2020-06-03 01:00:00"
     }
 }

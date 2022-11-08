@@ -42,7 +42,7 @@ def forecast(dataIRI, horizon = 24 *7, forecast_start_date = None, model_path_ck
     tsClient = TSClient(kg_client=kgClient)
     
     # identify the dataIRI
-    predecessor_type = get_predecessor_type_by_predicate(dataIRI, OHN_HASHEATDEMAND)
+    predecessor_type = get_predecessor_type_by_predicate(dataIRI, OHN_HASHEATDEMAND, kgClient)
     
 
     # use mapping function to get the correct dataIRI timeseries and its covariates

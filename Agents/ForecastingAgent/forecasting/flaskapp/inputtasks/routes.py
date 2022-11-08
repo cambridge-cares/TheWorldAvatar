@@ -22,11 +22,11 @@ inputtasks_bp = Blueprint(
 
 # Define route for API request to update transaction record for single property
 # or list of provided properties
-@inputtasks_bp.route('/api/forecastingAgent/forecast', methods=['POST'])
+@inputtasks_bp.route("/api/forecastingAgent/forecast", methods=["POST"])
 def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:
-        query = request.json['query']
+        query = request.json["query"]
     except Exception as ex:
         #logger.('No JSON "query" object could be identified.')
         raise InvalidInput('No JSON "query" object could be identified.') from ex
@@ -78,5 +78,5 @@ def api_forecast():
         return jsonify({'status': '200'})
     except Exception as ex:
         #logger.("Unable to forecast.", ex)
-        return jsonify({'status': '500', 'msg': 'Forecast failed.'})
+        return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)})
 
