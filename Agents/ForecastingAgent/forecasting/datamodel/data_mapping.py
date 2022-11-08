@@ -30,8 +30,8 @@ TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
 # Create data class for time entries (LocalDate)
 # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
-LocalDate = jpsBaseLibView.java.time.LocalDate
-TIMECLASS = LocalDate.now().getClass()
+Instant = jpsBaseLibView.java.time.Instant
+TIME_CLASS = Instant.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
