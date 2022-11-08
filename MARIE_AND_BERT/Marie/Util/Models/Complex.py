@@ -67,6 +67,7 @@ class Complex(nn.Module):
         return self.score(triple)
 
     def pointwise_bce(self, preds, target):
+        # split the
         loss = torch.nn.BCEWithLogitsLoss()(torch.clamp(preds, min=0.0, max=1.0),
                                             target)  # torch.clamp(target, min=0.0, max=1.0))
         return loss
@@ -97,8 +98,8 @@ if __name__ == '__main__':
     e2i_path = open(os.path.join(full_dir, f'entity2idx.pkl'), 'rb')
     rel_num = len(pickle.load(r2i_path).keys())
     ent_num = len(pickle.load(e2i_path).keys())
-    model = Complex(dim=40, rel_num=rel_num, ent_num=ent_num,
-                    dataset_dir=os.path.join(DATA_DIR, "ontocompchem_calculation"), resume_training=True)
-    trainer = Trainer(model=model, dataset_name='ontocompchem_calculation', epochs=5000, learning_rate=1e-10,
-                      pointwise=True, batch_size=32, save_model=True, complex=True, gamma=1)
+    model = Complex(dim=80, rel_num=rel_num, ent_num=ent_num,
+                    dataset_dir=os.path.join(DATA_DIR, "ontocompchem_calculation"), resume_training=False)
+    trainer = Trainer(model=model, dataset_name='ontocompchem_calculation', epochs=1000, learning_rate=1,
+                      pointwise=True, batch_size=32, save_model=False, complex=True, gamma=0.99)
     trainer.train()

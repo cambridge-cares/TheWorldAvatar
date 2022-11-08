@@ -5,6 +5,7 @@ sys.path.append("../..")
 import pandas as pd
 import pickle
 from Marie.Util.location import DATA_DIR
+from KGToolbox.NHopExtractor import HopExtractor
 
 # TODO: create question set, containing the question, the h and t
 
@@ -18,19 +19,20 @@ from Marie.Util.location import DATA_DIR
 # find unique relations
 # ==================================
 # 'hasGeometryType': 1, 'oc:hasFrequencies': 2, 'oc:hasRotationalConstants': 3, 'oc:hasRotationalSymmetryNumber'
+hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, "ontocompchem_calculation_latent"),
+                             dataset_name="ontocompchem_calculation")
 
-
-rel2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation/relation2idx.pkl"), 'rb')
+rel2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/relation2idx.pkl"), 'rb')
 relations = pickle.load(rel2idx_pkl)
-ent2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation/entity2idx.pkl"), 'rb')
+ent2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/entity2idx.pkl"), 'rb')
 entities_dict = pickle.load(ent2idx_pkl)
 
 property_labels = [["geometry type"],
                    ["vibration frequency"],
                    ["rotational constant"],
-                   ["rotational symmetry number"]]
+                   ["symmetry number"]]
 
-property_names = ["oc:hasGeometryType", "oc:hasFrequencies", "oc:hasRotationalConstants",
+property_names = ["hasGeometryType", "oc:hasFrequencies", "oc:hasRotationalConstants",
                   "oc:hasRotationalSymmetryNumber"]
 
 property_names_label_dict = {}
@@ -55,7 +57,15 @@ ontocompchem_triples = pd.read_csv(
 4. Create the question 
 """
 
-
+p_dict = {'oc:hasFrequencies1': 'latent_relation_2',
+          'oc:hasRotationalConstants1': 'latent_relation_3',
+          'oc:hasRotationalSymmetryNumber1': 'latent_relation_4',
+          'hasGeometryType1': 'latent_relation_5',
+          'oc:hasFrequencies2': 'latent_relation_6',
+          'oc:hasRotationalConstants2': 'latent_relation_7',
+          'oc:hasRotationalSymmetryNumber2': 'latent_relation_8',
+          'hasGeometryType2': 'latent_relation_9'
+          }
 def find_species_paris(df):
     """
     :param df: all the triples from ontocompchem
@@ -63,9 +73,15 @@ def find_species_paris(df):
     """
 
     result = []
+
+    derived_triples = []
+
     species_calculation_pairs = df.loc[df.iloc[:, 1] == "oc:hasUniqueSpecies"]  # calculation - cd:has - species
     # make a set of species
     species = species_calculation_pairs.iloc[:, 2].values.tolist()
+    repeated_species = [x for n, x in enumerate(species) if x in species[:n]]
+    print('repeated_species',repeated_species)
+
     calculations = species_calculation_pairs.iloc[:, 0].values.tolist()
     # species = list(set(species))
     calculations_node_pairs = df.loc[df.iloc[:, 1] == "gc:isCalculationOn"]  # calculation - isCalculatedOn - node
@@ -82,16 +98,38 @@ def find_species_paris(df):
                 value_nodes = df.loc[(df.iloc[:, 1] == p) & (df.iloc[:, 0] == n)].iloc[:,
                               2].values.tolist()  # with p, with n
                 if len(value_nodes) == 1:
-                    value_nodes_random_copy = value_nodes_random
-                    value_nodes_random_copy.remove(value_nodes[0])
-                    triple = (s, p, value_nodes[0], 1)
-                    result.append(triple)
+                    value_node = value_nodes[0]
+                    # value_node_idx = entities_dict[value_node]
+                    value_nodes_random_copy = hop_extractor.extract_neighbour_from_label(s)
+                    # print('tail:', value_node)
+                    if value_node in value_nodes_random_copy:
+                        value_nodes_random_copy.remove(value_node)
+                    # print('neighbours', value_nodes_random_copy)
 
-                    fake_tail_node = random.choice(value_nodes_random_copy)
-                    fake_triple = (s, p, fake_tail_node, 0)
-                    result.append(fake_triple)
+                    rel_label = p_dict[p + '1']
+                    rel_idx = relations[rel_label]
+                    # rel_idx = rel_label
+                    triple = (s, p, value_node, rel_idx)
+                    derived_triples.append((s, p + '1', value_node))
+                    # derived_triples.append((s, 'latent_relation_1', n))
+                    # derived_triples.append((c, p + '2', value_node))
+                    if s not in repeated_species:
+                        result.append(triple)
+                        try:
+                            for fake_tail_node in [random.choice(value_nodes_random_copy)]:
+                                # check whether the triple exist or not ...
+                                # s_idx = entities_dict[s]
 
+                                fake_triple = (s, p, fake_tail_node, 0)
+                                # result.append(fake_triple)
+                        except:
+                            # print(value_nodes_random)
+                            # print(value_nodes[0])
+                            pass
 
+    derived_triples = pd.DataFrame(list(set(derived_triples)))
+    derived_triples.to_csv(os.path.join(DATA_DIR, 'ontocompchem_calculation', 'derived_triples.tsv'), sep='\t',
+                           index=False, header=False)
 
     return result
     # node - property - value_node
@@ -111,6 +149,7 @@ s_p_vn_triples = find_species_paris(ontocompchem_triples)  # (species, property,
 
 
 def translate_to_idx(entity):
+    # return entity
     return entities_dict[entity]
 
 
@@ -118,13 +157,13 @@ def make_questions(triples):
     q_s_vn_triples = []
 
     for triple in triples:
-        (species, property_iri, value_node, score) = triple
+        (species, property_iri, value_node, rel_idx) = triple
         # make the questions using templates
         labels = property_names_label_dict[property_iri]
-        template = "what is the %s of"
+        template = "%s"
         for l in labels:
             question = template % l
-            triple = (question, translate_to_idx(species), translate_to_idx(value_node), score)
+            triple = (question, translate_to_idx(species), translate_to_idx(value_node), rel_idx)
             q_s_vn_triples.append(triple)
 
         # print(q_s_vn_triples)
@@ -133,5 +172,5 @@ def make_questions(triples):
 
 q_s_vn_triples = make_questions(s_p_vn_triples)
 # print(q_s_vn_triples)
-q_s_vn_triples.columns = ["question", "head", "tail", "score"]
-q_s_vn_triples.to_csv(os.path.join(DATA_DIR, "ontocompchem_calculation/score_model_training.tsv"), sep='\t')
+q_s_vn_triples.columns = ["question", "head", "tail", "rel"]
+q_s_vn_triples.to_csv(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/score_model_training.tsv"), sep='\t')

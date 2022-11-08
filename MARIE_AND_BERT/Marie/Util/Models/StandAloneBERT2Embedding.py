@@ -63,7 +63,6 @@ class StandAloneBERT(nn.Module):
 
     def load_model(self, model_name):
         print(" - Loading pretrained BERT Mapping model")
-
         self.load_state_dict(torch.load(os.path.join(self.model_dir, model_name), map_location=self.device))
 
     def distance(self, emb_1, emb_2):

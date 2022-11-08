@@ -74,6 +74,6 @@ def train_Complex(dataset_name):
 
 
 if __name__ == '__main__':
-    dataset_name = 'pubchem20000'
-    # create_indexing(dataset_name=dataset_name, data_dir='pubchem_50000')
-    train_TransE(dataset_name=dataset_name)
+    dataset_name = 'ontocompchem_calculation'
+    create_indexing(dataset_name=dataset_name, data_dir='ontocompchem_calculation_latent')
+    # rain_TransE(dataset_name=dataset_name)

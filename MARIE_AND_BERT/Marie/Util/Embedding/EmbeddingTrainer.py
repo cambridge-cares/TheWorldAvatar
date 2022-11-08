@@ -1,10 +1,13 @@
 import os
 import random
+
+import pandas as pd
 import torch
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
 from Marie.Util.Dataset.TransE_Dataset import Dataset
+from Marie.Util.Dataset.Complex_Dataset import ComplexDataset
 from Marie.Util.location import DATA_DIR
 from KGToolbox.NHopExtractor import HopExtractor
 
@@ -40,8 +43,17 @@ class Trainer:
                           open(os.path.join(DATA_DIR,
                                             f'{data_folder}/{self.dataset_name}-train.txt')).read().splitlines()]
         test_triplets = random.sample(train_triplets, round(len(train_triplets) * 0.2))
-        self.train_set = Dataset(train_triplets, data_folder=data_folder)
-        self.test_set = Dataset(test_triplets, data_folder=data_folder)
+
+        if self.pointwise:
+            df_train = pd.read_csv(os.path.join(DATA_DIR,
+                                            f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
+            df_test = pd.read_csv(os.path.join(DATA_DIR,
+                                            f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
+            self.train_set = ComplexDataset(df_train, data_folder=data_folder)
+            self.test_set = ComplexDataset(df_test, data_folder=data_folder)
+        else:
+            self.train_set = Dataset(train_triplets, data_folder=data_folder)
+            self.test_set = Dataset(test_triplets, data_folder=data_folder)
         self.train_dataloader = torch.utils.data.DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
         self.test_dataloader = torch.utils.data.DataLoader(self.test_set, batch_size=self.batch_size, shuffle=True)
         self.e_num = self.train_set.ent_num
@@ -61,17 +73,11 @@ class Trainer:
                 """For pointwise training """
                 self.optimizer.zero_grad()
                 if self.pointwise:
-                    # give 1 for pos_train, 0 for neg_train
-                    pos_labels = torch.LongTensor([1]).repeat(len(pos_train[0]))
-                    pos_train.append(pos_labels)
-                    neg_labels = torch.LongTensor([0]).repeat(len(neg_train[0]))
-                    neg_train.append(neg_labels)
-                    pos_train = torch.stack(pos_train)
-                    neg_train = torch.stack(neg_train)
-                    whole_train = torch.cat([pos_train, neg_train], dim=1)
-                    loss = self.model(whole_train)
+                    loss = self.model(pos_train)
                 else:
                     loss = self.model(pos_train, neg_train)
+
+
                 loss.mean().backward()
                 loss = loss.data.cuda()
                 self.optimizer.step()
@@ -91,7 +97,7 @@ class Trainer:
                 if self.save_model:
                     self.export_embeddings()
 
-    def k_hit_evaluation(self, largest=False, global_compare=False):
+    def k_hit_evaluation(self, largest=False, global_compare=True):
         total_counter = 0
         total_hit_1 = 0
         total_hit_5 = 0

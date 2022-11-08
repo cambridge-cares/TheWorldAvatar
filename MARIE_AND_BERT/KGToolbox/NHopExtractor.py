@@ -25,12 +25,32 @@ class HopExtractor:
         self.triples = pd.read_csv(self.triples_full_path, sep='\t', header=None)
         self.entity2idx_path = os.path.join(self.dataset_dir, f'entity2idx.pkl')
         self.entity2idx = pickle.load(open(self.entity2idx_path, "rb"))
+        self.relation2idx_path = os.path.join(self.dataset_dir, f'relation2idx.pkl')
+        self.relation2idx = pickle.load(open(self.relation2idx_path, "rb"))
         self.ent_labels = list(self.entity2idx.keys())
         self.three_hop_dict_label_path = os.path.join(self.dataset_dir, 'three_hop_dict_label')
         self.three_hop_dict_index_path = os.path.join(self.dataset_dir, 'three_hop_dict_index')
         self.three_hop_dict_label = {}
         self.three_hop_dict_index = {}
         self.parse_knowledge_graph()
+        self.idx_triples = self.make_idx_triples()
+        self.entity_labels = list(self.entity2idx.keys())
+        self.relation_labels = list(self.relation2idx.keys())
+
+    def make_idx_triples(self):
+        idx_triples = []
+        for idx, row in self.triples.iterrows():
+            s, p, o = row.values.tolist()
+            # translate label to idx
+            s = self.entity2idx[s]
+            p = self.relation2idx[p]
+            o = self.entity2idx[o]
+            idx_triples.append('_'.join([str(s), str(p), str(o)]))
+        return idx_triples
+
+    def check_triple_existence(self, triple_str):
+        return triple_str in self.idx_triples
+
 
     def parse_knowledge_graph(self):
         """
@@ -64,13 +84,14 @@ class HopExtractor:
                 entity_idx = self.entity2idx[entity]
                 first_neighbours = one_hop_dict[entity]
                 second_neighbours = []
-                third_neighbours = []
                 for first_neighbour in first_neighbours:
                     second_neighbours += one_hop_dict[first_neighbour]
+                    third_neighbours = []
                     for second_neighbour in second_neighbours:
                         third_neighbours += one_hop_dict[second_neighbour]
 
-                three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
+                # three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
+                three_hop_dict[entity] = list(set(first_neighbours + second_neighbours))
                 three_hop_dict[entity].remove(entity)
                 three_hop_idx_dict[entity_idx] = [self.entity2idx[e_idx] for e_idx in three_hop_dict[entity]]
 
@@ -88,14 +109,17 @@ class HopExtractor:
             print(f'Writing index dictionary to {self.three_hop_dict_index_path}')
 
     def extract_neighbour_from_idx(self, entity_idx):
-        return self.three_hop_dict_index[str(entity_idx)]
+        return list(set(self.three_hop_dict_index[str(entity_idx)]))
+
+    def extract_neighbour_from_label(self, entity_label):
+        return list(set(self.three_hop_dict_label[entity_label]))
 
 
 if __name__ == "__main__":
     START_TIME = time.time()
     from Marie.Util.location import DATA_DIR
-
-    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, 'ontocompchem_calculation'),
+    # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
+    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, 'ontocompchem_calculation_latent'),
                                 dataset_name='ontocompchem_calculation')
 
     print(time.time() - START_TIME)
