@@ -5,12 +5,22 @@ import "cesium/Widgets/widgets.css";
 import {addTileset, addModel, addKml, addWMSLayer, addWMTSLayer} from './functions/cesium_data_handler.js';
 import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
 
-// Your access token can be found at: https://cesium.com/ion/tokens.
-// This is the default access token
-Cesium.Ion.defaultAccessToken = 'your access token';
-
 // Create a new viewer object
-const viewer = new Cesium.Viewer("cesiumContainer");
+const viewer = new Cesium.Viewer("cesiumContainer",{
+  timeline: false,
+  animation: false,
+  imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+    url : 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+}),
+  baseLayerPicker: false, 
+  homeButton: false, 
+  infoBox: false, 
+  navigationHelpButton: false,
+  projectionPicker: false,
+  fullscreenButton: false,
+  geocoder: false,
+  selectionIndicator: false
+});
 
 // Add tilesets to the viewer
 const bimTileset = './data/tileset_bim.json';
