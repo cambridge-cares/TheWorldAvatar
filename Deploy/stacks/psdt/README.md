@@ -18,4 +18,4 @@ In order to deploy (on a Linux machine):
 
 5. Run `copy_icons_into_geoserver.sh` from within the `stack-inputs` folder.
 
-6. Spin up the visualisation by running the docker commands at the end of its readme file.
+6. Spin up the visualisation by following the instructions in its readme file.
