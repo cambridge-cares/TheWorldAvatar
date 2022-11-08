@@ -181,11 +181,11 @@ To run the tests, please follow those instructions:
 3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Runtime Environment version >=11]):
     ```bash
     # Build latest Stack_Clients resource for py4jps
-    bash ./build_py4jps_stackclients_resource.sh
+    bash ./build_py4jps_stackclient_resource.sh
     # Install Stack_Clients resource for py4jps
     jpsrm install StackClients <tmp_stack> --jar <stack-clients-....jar>
     ```
-4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers (Please note, that respective containers need to be down at the beginning of the tests):
+4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
     ```bash
     # Uncomment integration tests and start Docker services (if wanted)
     docker compose -f "tests\docker-compose.test.yml" up -d --build 
