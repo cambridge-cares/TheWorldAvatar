@@ -19,3 +19,7 @@ In order to deploy (on a Linux machine):
 5. Run `copy_icons_into_geoserver.sh` from within the `stack-inputs` folder.
 
 6. Spin up the visualisation by following the instructions in its readme file.
+
+7. Spin up an instance of the Feature Info Agent from within TWA git repository.
+
+8. Run the script to update the stack nginx configuration from the feature info agent files folder in order to make the agent reachable from the visualisation and prevent CORS errors.
