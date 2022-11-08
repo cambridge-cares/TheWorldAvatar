@@ -50,7 +50,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     private static final String KEY_CITYGML_BUILDING_INST = "cityGmlBuildingIri";
 
     // Edit these fields per your requirements
-    public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility"; // The prefix to use for generating IRI
+    public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility/"; // The prefix to use for generating IRI
     public static final int rowStart = 3;
     protected static String queryEndpoint;
     protected static String updateEndpoint;
