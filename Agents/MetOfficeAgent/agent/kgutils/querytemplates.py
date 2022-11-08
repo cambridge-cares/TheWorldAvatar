@@ -88,25 +88,47 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
     return query
 
 
-def geospatial_station_info(station_iris: list = None):
-    # Returns query to retrieve geospatial station information (via Ontop)
+def geospatial_station_info(station_iris: list = None,
+                            ontop_endpoint: str = None) -> str:
+    """
+    Returns query to retrieve geospatial station information (via Ontop)
+
+    Arguments:
+        station_iris: list of station IRIs for which to retrieve geospatial information
+                      (provide info for all stations if not provided)
+        federation_endpoint: Returns query as federated query (i.e. using SERVICE keyword)
+                             to query Ontop via Blazegraph if ontop_endpoint provided;
+                             otherwise returns query to be used with Ontop client directly
+                             --> Using SERVICE keyword seems to resolve several connection 
+                                 issues with using Ontop client directly
+    """
     if station_iris:
         # Use FILTER IN expression
-        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-        filter_expression = f'FILTER (?station IN ({iris}) ) '
+        #iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        #filter_expression = f'FILTER (?station IN ({iris}) ) '
         # Use VALUES expression
-        # iris = ' '.join(['<'+iri+'>' for iri in station_iris])
-        # filter_expression = f'VALUES ?station {{ {iris} }} '
+        iris = ' '.join(['<'+iri+'>' for iri in station_iris])
+        filter_expression = f'VALUES ?station {{ {iris} }} '
     else:
         filter_expression = ''
+
+    if ontop_endpoint:
+        service_expression = f'SERVICE <{ontop_endpoint}> {{ '
+    else:
+        service_expression = ''
+
     query = f"""
         SELECT ?station ?wkt
         WHERE {{
-           {filter_expression}
-           ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
-                    <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
+            {service_expression}
+            {filter_expression}
+            ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
+                     <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
         }}
     """
+    if ontop_endpoint:
+        query += f' }}'
+
     return query
 
 

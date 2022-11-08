@@ -23,7 +23,8 @@ from agent.kgutils.tsclient import TSClient
 from agent.utils.output_formatting import (create_geojson_output,
                                            create_metadata_output)
 from agent.utils.stack_configs import (DB_PASSWORD, DB_URL, DB_USER,
-                                       QUERY_ENDPOINT, UPDATE_ENDPOINT)
+                                       QUERY_ENDPOINT, UPDATE_ENDPOINT,
+                                       ONTOP_URL)
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -121,8 +122,9 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     station_iris = list(set([r.get('station') for r in results]))
     station_iris = [s for s in station_iris if s is not None]
     
-    # OntopClient seems to have issues with large queries; hence query in batches
-    ontop_client = OntopClient()
+    # NOTE: OntopClient seems to have issues with large queries; hence query in batches
+    # Furthermore, OntopClient has issues with frequent connections; hence query via Blazegraph (for now)
+    # ontop_client = OntopClient()
     n = 500     # batch size
     latlon_all = {}
     station_iris = [station_iris[i:i + n] for i in range(0, len(station_iris), n)]
@@ -130,9 +132,10 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     for iris in station_iris:
         # Set query and execute
         # NOTE This query tends to fail if 1) Ontop has been running for a while
-        #      and/or 2) recurring requests have been made to it
-        ontop_query = geospatial_station_info(iris)        
-        res = ontop_client.performQuery(ontop_query)
+        #      and/or 2) recurring requests have been made to it 
+        #      --> Query Ontop via Blazegraph (for now)
+        ontop_query = geospatial_station_info(iris, ONTOP_URL)
+        res = kg_client.performQuery(ontop_query)
         # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
         lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in res}
         latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
