@@ -32,13 +32,25 @@ class OntoChemistryEngine:
         self.max_length = 12
 
     def test(self):
-        candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(1)
-        question, head, tails = self.prepare_prediction_batch(question='what is the geometry of', head_entity=1,
+        head = self.entity2idx['1b206169-7539-3491-85ec-a40dfe351a2a']
+        candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
+        question, head, tails = self.prepare_prediction_batch(question='what is the geometry of', head_entity=head,
                                                               candidate_entities=candidate_entities)
         rst = self.score_model.predict(question=question, head=head, tail=tails)
         _, indices_top_k = torch.topk(rst, k=5, largest=True)
         labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
         print(labels_top_k)
+
+    def run(self, head_entity, question):
+        head = self.entity2idx[head_entity]
+        candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
+        question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
+                                                              candidate_entities=candidate_entities)
+        scores = self.score_model.predict(question=question, head=head, tail=tails)
+        _, indices_top_k = torch.topk(scores, k=5, largest=True)
+        labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
+        score_top_k = [scores[index].item() for index in indices_top_k]
+        return labels_top_k, score_top_k
 
     def tokenize_question(self, question, repeat_num):
         """

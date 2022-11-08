@@ -19,12 +19,12 @@ from KGToolbox.NHopExtractor import HopExtractor
 # find unique relations
 # ==================================
 # 'hasGeometryType': 1, 'oc:hasFrequencies': 2, 'oc:hasRotationalConstants': 3, 'oc:hasRotationalSymmetryNumber'
-hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, "ontocompchem_calculation_latent"),
+hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, "ontocompchem_latent_40"),
                              dataset_name="ontocompchem_calculation")
 
-rel2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/relation2idx.pkl"), 'rb')
+rel2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_latent_40/relation2idx.pkl"), 'rb')
 relations = pickle.load(rel2idx_pkl)
-ent2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/entity2idx.pkl"), 'rb')
+ent2idx_pkl = open(os.path.join(DATA_DIR, "ontocompchem_latent_40/entity2idx.pkl"), 'rb')
 entities_dict = pickle.load(ent2idx_pkl)
 
 property_labels = [["geometry type"],
@@ -47,7 +47,7 @@ oc:hasRotationalSymmetryNumber
 """
 # TODO: map h and t with question
 ontocompchem_triples = pd.read_csv(
-    os.path.join(DATA_DIR, "ontocompchem_calculation/ontocompchem_calculation-train.txt"),
+    os.path.join(DATA_DIR, "ontocompchem_latent_40/ontocompchem_calculation-train.txt"),
     sep='\t', header=None)
 
 """
@@ -128,7 +128,7 @@ def find_species_paris(df):
                             pass
 
     derived_triples = pd.DataFrame(list(set(derived_triples)))
-    derived_triples.to_csv(os.path.join(DATA_DIR, 'ontocompchem_calculation', 'derived_triples.tsv'), sep='\t',
+    derived_triples.to_csv(os.path.join(DATA_DIR, 'ontocompchem_latent_40', 'derived_triples.tsv'), sep='\t',
                            index=False, header=False)
 
     return result
@@ -155,6 +155,7 @@ def translate_to_idx(entity):
 
 def make_questions(triples):
     q_s_vn_triples = []
+    cross_graph = []
 
     for triple in triples:
         (species, property_iri, value_node, rel_idx) = triple
@@ -166,11 +167,18 @@ def make_questions(triples):
             triple = (question, translate_to_idx(species), translate_to_idx(value_node), rel_idx)
             q_s_vn_triples.append(triple)
 
+            cross_triple = (question, species, 1, value_node)
+            cross_graph.append(cross_triple)
+
         # print(q_s_vn_triples)
-    return pd.DataFrame(q_s_vn_triples)
+    return pd.DataFrame(q_s_vn_triples), pd.DataFrame(cross_graph)
 
 
-q_s_vn_triples = make_questions(s_p_vn_triples)
+q_s_vn_triples, cross_graph_triples = make_questions(s_p_vn_triples)
 # print(q_s_vn_triples)
 q_s_vn_triples.columns = ["question", "head", "tail", "rel"]
-q_s_vn_triples.to_csv(os.path.join(DATA_DIR, "ontocompchem_calculation_latent/score_model_training.tsv"), sep='\t')
+q_s_vn_triples.to_csv(os.path.join(DATA_DIR, "ontocompchem_latent_40/score_model_training.tsv"), sep='\t')
+
+
+cross_graph_triples.columns = ["question", "head", "domain", "answer"]
+cross_graph_triples.to_csv(os.path.join(DATA_DIR, "CrossGraph/ontochemistry_cross_score.tsv"), sep='\t')
