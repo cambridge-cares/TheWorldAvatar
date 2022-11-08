@@ -107,16 +107,28 @@ class InsertQueryBuilder extends QueryBuilderNode {
         String measurementIri = SAREF_PREFIX + MEASUREMENT_INST + UUID.randomUUID();
         if (!singleton.getElecMeterIri().isEmpty() && measureIRI.contains("Electricity")) {
             insertQueryBuilder.append(OPEN_ANCHOR + singleton.getElecMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+            addCommonMeterStatements(measureIRI, meteringFunctionIri, measurementIri, insertQueryBuilder);
         } else if (!singleton.getWaterMeterIri().isEmpty() && measureIRI.contains("Water")) {
             insertQueryBuilder.append(OPEN_ANCHOR + singleton.getWaterMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+            addCommonMeterStatements(measureIRI, meteringFunctionIri, measurementIri, insertQueryBuilder);
         } else if (!singleton.getOilMeterIri().isEmpty() && measureIRI.contains("Oil")) {
             insertQueryBuilder.append(OPEN_ANCHOR + singleton.getOilMeterIri() + CLOSED_ANCHOR + WHITESPACE + SAREF_HAS_FUNCTION + WHITESPACE + meteringFunctionIri + FULLSTOP);
+            addCommonMeterStatements(measureIRI, meteringFunctionIri, measurementIri, insertQueryBuilder);
         }
-        if (!singleton.getElecMeterIri().isEmpty() || !singleton.getWaterMeterIri().isEmpty() || !singleton.getOilMeterIri().isEmpty()) {
-            insertQueryBuilder.append(meteringFunctionIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_METERING_FUNCTION + SEMICOLON);
-            insertQueryBuilder.append(TAB + SAREF_HAS_METER_READING + WHITESPACE + measurementIri + FULLSTOP);
-            insertQueryBuilder.append(measurementIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_MEASUREMENT + SEMICOLON);
-            insertQueryBuilder.append(TAB + OM_HASVALUE + WHITESPACE + OPEN_ANCHOR + measureIRI + CLOSED_ANCHOR + FULLSTOP);
-        }
+    }
+
+    /**
+     * Add the common statements for different utility meters.
+     *
+     * @param measureIRI          Utility Consumption with Sensor Display IRI generated that should be linked to OntoBIM instances.
+     * @param insertQueryBuilder  INSERT DATA query generated using a String builder.
+     * @param meteringFunctionIri Metering function IRI generated.
+     * @param measurementIri      SAREF Measurement IRI generated.
+     */
+    private static void addCommonMeterStatements(String measureIRI, String meteringFunctionIri, String measurementIri, StringBuilder insertQueryBuilder) {
+        insertQueryBuilder.append(meteringFunctionIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_METERING_FUNCTION + SEMICOLON);
+        insertQueryBuilder.append(TAB + SAREF_HAS_METER_READING + WHITESPACE + measurementIri + FULLSTOP);
+        insertQueryBuilder.append(measurementIri + WHITESPACE + RDFTYPE + WHITESPACE + SAREF_MEASUREMENT + SEMICOLON);
+        insertQueryBuilder.append(TAB + OM_HASVALUE + WHITESPACE + OPEN_ANCHOR + measureIRI + CLOSED_ANCHOR + FULLSTOP);
     }
 }

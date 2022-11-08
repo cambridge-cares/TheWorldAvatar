@@ -33,9 +33,12 @@ class SelectQueryBuilderTest {
         String query = SelectQueryBuilder.genMeterSelectQuery();
         String expected = "SELECT  ?elecmeter ?watermeter ?oilmeter\n" +
                 "WHERE\n" +
-                "  { ?elecmeter  rdf:type  bim:ElectricityMeter .\n" +
-                "    ?watermeter  rdf:type  bim:WaterMeter .\n" +
-                "    ?oilmeter  rdf:type  bim:OilMeter}";
+                "  { OPTIONAL\n" +
+                "      { ?elecmeter  rdf:type  bim:ElectricityMeter}\n" +
+                "    OPTIONAL\n" +
+                "      { ?watermeter  rdf:type  bim:WaterMeter}\n" +
+                "    OPTIONAL\n" +
+                "      { ?oilmeter  rdf:type  bim:OilMeter}";
         assertTrue(query.contains(expected));
     }
 }

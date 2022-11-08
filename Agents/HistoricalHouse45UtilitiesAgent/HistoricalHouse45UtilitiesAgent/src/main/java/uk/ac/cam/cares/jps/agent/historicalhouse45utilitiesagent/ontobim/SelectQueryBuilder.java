@@ -57,11 +57,11 @@ class SelectQueryBuilder extends QueryBuilderNode {
         SelectBuilder builder = new SelectBuilder();
         QueryHandler.genPrefixMapping(builder);
         builder.addVar(ELECMETER_VAR)
-                .addWhere(ELECMETER_VAR, RDFTYPE, BIM_ELEC_METER);
+                .addOptional(ELECMETER_VAR, RDFTYPE, BIM_ELEC_METER);
         builder.addVar(WATERMETER_VAR)
-                .addWhere(WATERMETER_VAR, RDFTYPE, BIM_WATER_METER);
+                .addOptional(WATERMETER_VAR, RDFTYPE, BIM_WATER_METER);
         builder.addVar(OILMETER_VAR)
-                .addWhere(OILMETER_VAR, RDFTYPE, BIM_OIL_METER);
+                .addOptional(OILMETER_VAR, RDFTYPE, BIM_OIL_METER);
         return builder.buildString();
     }
 }

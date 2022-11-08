@@ -175,7 +175,7 @@ public class OntoBimAdapter {
      * @param insertQuery INSERT DATA query generated using a String builder.
      */
     private static void addInsertStatements(String measureIRI, StringBuilder insertQuery) {
-        if (measureIRI.contains("SensorDisplay")) {
+        if (measureIRI.contains("Sensordisplay")) {
             InsertQueryBuilder.addMeterInsertStatements(measureIRI, insertQuery, singleton);
         } else {
             if (measureIRI.contains(ELECTRICITY_KEYWORD)) {

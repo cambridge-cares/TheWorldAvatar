@@ -47,9 +47,9 @@ class OntoBimAdapterIntegrationT {
     private static final String electricityAtticMeasureIRI = TEST_URI + "Attic_MonthlyElectricityConsumption_11132";
     private static final String waterMeasureIRI = TEST_URI + "MonthlyWaterConsumption_2151";
     private static final String oilMeasureIRI = TEST_URI + "MonthlyOilConsumption_2974";
-    private static final String electricitySensorDisplayMeasureIRI = TEST_URI + "MonthlyElectricityConsumption_SensorDisplay_771";
-    private static final String waterSensorDisplayMeasureIRI = TEST_URI + "MonthlyWaterConsumption_SensorDisplay_3810";
-    private static final String oilSensorDisplayMeasureIRI = TEST_URI + "MonthlyOilConsumption_SensorDisplay_5012";
+    private static final String electricitySensorDisplayMeasureIRI = TEST_URI + "MonthlyElectricityConsumption_Sensordisplay_771";
+    private static final String waterSensorDisplayMeasureIRI = TEST_URI + "MonthlyWaterConsumption_Sensordisplay_3810";
+    private static final String oilSensorDisplayMeasureIRI = TEST_URI + "MonthlyOilConsumption_Sensordisplay_5012";
     private static final String citygmlIRI = TEST_URI + "CityGML_Building_123";
     private static final String buildingIRI = TEST_URI + "Building_5515";
     private static final String firstFloorIRI = TEST_URI + "Storey_5781";
