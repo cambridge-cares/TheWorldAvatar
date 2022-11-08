@@ -87,9 +87,6 @@ The `docker` folder contains the required files to build a Docker Image for the 
 - A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 
-Once the requirements have been addressed, the image can be built using the below methods. If changing the visualisation, you'll need to rebuild and rerun the Docker image after and adjustments, or setup a Docker bind mount so that local changes are reflected within the container.
+Once the requirements have been addressed, the image can be built using the below method. If changing the visualisation, you'll need to rebuild and rerun the Docker image after and adjustments, or setup a Docker bind mount so that local changes are reflected within the container.
 
-- To build the Image:
-  - `docker-compose -p psdt-vis-cesium -f ./docker/docker-compose.yml build --force-rm`
-- To generate a Container (i.e. run the Image):
-  - `docker-compose -p psdt-vis-cesium -f ./docker/docker-compose.yml up -d --force-recreate`
+- To rebuild the image and deploy the container, run `./redeploy.sh`.
