@@ -67,7 +67,6 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
     try:
         all_instances = utils.initialise_triples_assert_pure_inputs(
             sparql_client=sparql_client,
-            derivation_client=derivation_client,
             delete_all_triples=True
         )
     except Exception as e:
@@ -104,7 +103,7 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
 
     # Now generate a few difference reverse derivations
     diff_reverse_derivation_iri_lst = []
-    random_int = random.randint(1, 5)
+    random_int = random.randint(2, 4)
     for i in range(random_int):
         diff_reverse_derivation_iri_lst.append(
             derivation_client.createAsyncDerivationForNewInfo(
@@ -261,7 +260,7 @@ def initialise_derivations(
     diff_deriv_inputs = []
 
     if rng:
-        rng_derivation = derivation_client.createSyncDerivationForNewInfo(
+        rng_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
             rng_agent.agentIRI, host_docker_internal_to_localhost(rng_agent.agentEndpoint),
             pure_inputs, ONTODERIVATION_DERIVATION
         )
@@ -285,7 +284,7 @@ def initialise_derivations(
 
         # create maxvalue, minvalue via derivations
         if max:
-            max_derivation = derivation_client.createSyncDerivationForNewInfo(
+            max_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
                 max_agent.agentIRI, host_docker_internal_to_localhost(max_agent.agentEndpoint),
                 max_deriv_inputs, ONTODERIVATION_DERIVATION
             )
@@ -308,7 +307,7 @@ def initialise_derivations(
             diff_deriv_inputs.append(all_instances.DERIV_MAX)
 
         if min:
-            min_derivation = derivation_client.createSyncDerivationForNewInfo(
+            min_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
                 min_agent.agentIRI, host_docker_internal_to_localhost(min_agent.agentEndpoint),
                 min_deriv_inputs, ONTODERIVATION_DERIVATION
             )
@@ -332,7 +331,7 @@ def initialise_derivations(
 
         if diff:
             # create difference via difference derivation
-            diff_derivation = derivation_client.createSyncDerivationForNewInfo(
+            diff_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
                 diff_agent.agentIRI, host_docker_internal_to_localhost(diff_agent.agentEndpoint),
                 diff_deriv_inputs, ONTODERIVATION_DERIVATION
             )

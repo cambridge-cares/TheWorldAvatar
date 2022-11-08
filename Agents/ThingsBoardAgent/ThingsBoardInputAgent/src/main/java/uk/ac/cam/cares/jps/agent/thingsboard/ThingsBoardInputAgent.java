@@ -150,8 +150,6 @@ public class ThingsBoardInputAgent{
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
-            } finally {
-            	tsClient.disconnectRDB();
             }
                 }
         }
@@ -178,9 +176,7 @@ public class ThingsBoardInputAgent{
         		else {
         			throw e;
         		}        		
-        	} finally {
-        		tsClient.disconnectRDB();
-        	}
+        	} 
         }
         return true;
     }
@@ -214,8 +210,6 @@ public class ThingsBoardInputAgent{
                 	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not get max time!");
-                } finally {
-                	tsClient.disconnectRDB();
                 }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
@@ -232,8 +226,6 @@ public class ThingsBoardInputAgent{
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!");
-                } finally {
-                	tsClient.disconnectRDB();
                 }
                 }
                 

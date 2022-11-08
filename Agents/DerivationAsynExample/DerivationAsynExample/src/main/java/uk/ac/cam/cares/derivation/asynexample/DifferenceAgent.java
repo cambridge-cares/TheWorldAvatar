@@ -50,7 +50,7 @@ public class DifferenceAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("DifferenceAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("DifferenceAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String maxvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);
