@@ -24,6 +24,7 @@ COPY ./tmp_stack ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+COPY ./requirements.txt .
 COPY ./resources/ontop.obda ./resources/ontop.obda
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
@@ -31,7 +32,7 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+RUN pip install -r requirements.txt
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -60,8 +61,6 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 # Production image reusing the base
 #------------------------------------------------------
 FROM base as prod
-# Install additional dependencies
-RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
