@@ -32,8 +32,8 @@ log4j2.xml
 target/
 
 # Python:
-__pycache__/
-*.py[cod]
+**/__pycache__/
+**/*.py[cod]
 *$py.class
 *.pkl
 *.egg-info/
