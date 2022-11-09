@@ -52,6 +52,8 @@ public class QueryClient {
     private static final Iri NY = P_DISP.iri("ny");
     private static final Iri REPORTING_STATION = iri("https://www.theworldavatar.com/kg/ontoems/ReportingStation");
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
+    private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
+    private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
@@ -110,16 +112,22 @@ public class QueryClient {
         modify.insert(iri(nyIri).isA(NY).andHas(HAS_VALUE, iri(nyMeasureIri)));
         modify.insert(iri(nyMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, ny));
 
-        // dispersion matrix (output)
+        // outputs (DispersionMatrix, DispersionLayer, ShipsLayer) as time series
         String matrixIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(matrixIri).isA(DISPERSION_MATRIX));
+
+        String dispLayerIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(dispLayerIri).isA(DISPERSION_LAYER));
+
+        String shipsLayerIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
 
         modify.prefix(P_DISP,P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
         // initialise time series for dispersion matrix
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClient.initTimeSeries(List.of(matrixIri), List.of(String.class), null, conn);
+            tsClient.initTimeSeries(List.of(matrixIri,dispLayerIri,shipsLayerIri), List.of(String.class, String.class, String.class), null, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Closing connection failed when initialising time series for dispersion matrix");
