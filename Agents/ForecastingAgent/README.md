@@ -34,10 +34,11 @@ Install the `forecasting` project including all required packages listed in `set
 python -m pip install --upgrade pip  
 python -m pip install -e . 
 ```
+If you use later a model pretrained with 'darts', conflicts can occur while loading the model, if your version differs from the version with which the model was trained.
 
 ### **3) An instantiated knowledge graph with a time series**
 
-In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the time series instantiation was done with [the time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
+In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the one provided by [the time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
 
 ### **4) Endpoints**
 
@@ -54,11 +55,22 @@ Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.
 ## Send http requests
 [HTTPRequest_forecast](./resources/HTTPRequest_forecast.http) shows a sample request to forecast a dataIRI. 
 
+### Input parameters
+- **dataIRI** is the IRI of the existing TS, which should receive the hasForecastedValue instantiation.
+- **horizon** the time steps the agent predicts autorecursively into the future.
+- **model_path_ckpt_link** checkpoint file of the save darts model.
+- **model_path_pth_link** model.pth.tar file of model.
+- **forecast_start_date** the start day of the forecast, if not specified, simple the last value is taken as a starting point. If 'forecast_start_date' is set, the code can be much faster, because lower and upper bound are calculated and therefore the time series to retrieve is smaller.
+- **data_length** if `forecast_start_date` is specified, `data_length` determines the number of values loaded before this date. Then, this data is used directly as input to prophet or to scale the input for the pre-trained neural method case (the actual input is the last subset of this data with the size of the model's input)
+
+## Custom data loading functions
+If you use your own pretrained darts model which needs additional covariates, you can follow the example of the `get_df_for_heat_supply()` function. You need to map this function to for example an rdfs type in [mapping_type_data_function](./forecasting/datamodel/data_mapping.py), which you can then identify in [the agent](./forecasting/forecasting_agent/create_forecast.py). Be aware that the created covariates should be in the same order as during training.
+
 
 &nbsp;
 # Authors #
-Magnus Mueller (mm2692@cam.ac.uk), November 2023
-Markus Hofmeister (mh807@cam.ac.uk), October 2023
+Magnus Mueller (mm2692@cam.ac.uk), November 2022
+Markus Hofmeister (mh807@cam.ac.uk), October 2022
 
 
 <!-- Links -->
