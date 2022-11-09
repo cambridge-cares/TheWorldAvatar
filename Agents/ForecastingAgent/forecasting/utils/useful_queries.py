@@ -75,34 +75,33 @@ def get_ts_value_iri(dataIRI, kgClient):
     ts_value_iri = kgClient.performQuery(query)[0]["tsValueIRI"]
     return ts_value_iri
 
-def get_df_for_heat_supply(data_type, kgClient, tsClient):
+def get_df_for_heat_supply(ts_iri, kgClient, tsClient,  lowerbound= None, upperbound= None):
     cov_iris = []
-    heat_supply_ts_iri = get_ts_value_iri(data_type, kgClient)
-    heat_supply_dates, heat_supply_ts = get_ts_data( heat_supply_ts_iri, tsClient)
+    heat_supply_ts_iri = get_ts_value_iri(ts_iri, kgClient)
+    heat_supply_dates, heat_supply_ts = get_ts_data(heat_supply_ts_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
     df_heat_supply = pd.DataFrame(zip(heat_supply_ts, heat_supply_dates), columns=["ForecastColumn", "Date"])
 
+    # find covariates
     # find ts by specific data iri. This just works for the data iri that is used and unique.
     ts_by_type = kgClient.performQuery(get_ts_by_type())
     for row in ts_by_type:
         if 'type' in row and row['type'] == ONTOEMS_AIRTEMPERATURE:
             data_iri = row['tsIRI']
             cov_iris.append(data_iri)
-            air_temp_dates, air_temp = get_ts_data(data_iri, tsClient)
+            air_temp_dates, air_temp = get_ts_data(data_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
             df_air_temp = pd.DataFrame(zip(air_temp, air_temp_dates), columns=["AirTemp", "Date"])
         elif 'type2' in row and  row['type2'] == OHN_ISPUBLICHOLIDAY:
             data_iri = row['tsIRI']
             cov_iris.append(data_iri)
-            public_holiday_dates, public_holiday = get_ts_data(data_iri, tsClient)
+            public_holiday_dates, public_holiday = get_ts_data(data_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
             df_public_holiday = pd.DataFrame(zip(public_holiday, public_holiday_dates), columns=["isHoliday", "Date"])
             
 
-    # merge vacation, public holidays air temp and heat supply
-    #df = pd.merge(df_vacation, df_public_holidays, on="Date", how="outer")
+    # merge public holidays air temp and heat supply
     df = pd.merge(df_public_holiday, df_air_temp, on="Date", how="outer")
     df = pd.merge(df, df_heat_supply, on="Date", how="outer")
     df = df.sort_values(by="Date")
     df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
-    #df = df.set_index("Date")
     covariates = concatenate(
         [
             get_data_cov(df, "AirTemp"),
@@ -111,7 +110,23 @@ def get_df_for_heat_supply(data_type, kgClient, tsClient):
         ],
         axis="component",
     ) 
+    cov_iris += ['dayofyear', 'dayofweek', 'hour']
     return df, cov_iris, covariates
+
+def get_df_no_covariates(iri, kgClient, tsClient,  lowerbound= None, upperbound= None):
+    
+    try:
+        # try if ts hasValue where the actual ts is stored
+        ts_iri = get_ts_value_iri(iri, kgClient)
+    except:
+        ts_iri = iri
+        
+    dates, values = get_ts_data( ts_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
+    df = pd.DataFrame(zip(values, dates), columns=["ForecastColumn", "Date"])
+    df = df.sort_values(by="Date")
+    df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
+    
+    return df, None, None
 
 def get_unit(dataIRI, kgClient):
     # get unit of dataIRI
@@ -157,21 +172,25 @@ def get_ts_of_predicate_by_label(label, predicate):
      """
 
 
-def get_ts_data(dataIRI, ts_client):
-     """
-     It takes a data IRI and a client object, and returns the dates and values of the time series
+def get_ts_data(dataIRI, ts_client, lowerbound= None, upperbound= None):
+    """
+    It takes a data IRI and a client object, and returns the dates and values of the time series
 
-     :param dataIRI: The IRI of the data you want to get
-     :param ts_client: a TimeSeriesClient object
-     :return: A tuple of two lists. The first list is a list of dates, the second list is a list of
-     values.
-     """
-     ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
-     dates = ts.getTimes()
-     # Unwrap Java time objects
-     dates = [d.toString() for d in dates]
-     values = ts.getValues(dataIRI)
-     return dates, values
+    :param dataIRI: The IRI of the data you want to get
+    :param ts_client: a TimeSeriesClient object
+    :return: A tuple of two lists. The first list is a list of dates, the second list is a list of
+    values.
+    """
+    if lowerbound is not None and upperbound is not None:
+        ts = ts_client.tsclient.getTimeSeriesWithinBounds([dataIRI], lowerbound, upperbound, ts_client.conn)
+    else: 
+        ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
+        
+    dates = ts.getTimes()
+    # Unwrap Java time objects
+    dates = [d.toString() for d in dates]
+    values = ts.getValues(dataIRI)
+    return dates, values
 
 
 def num_instance(p=False, o=False, s=False):

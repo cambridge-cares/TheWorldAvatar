@@ -11,11 +11,12 @@
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
 from forecasting.datamodel.iris import *
-from forecasting.utils.useful_queries import get_df_for_heat_supply
+from forecasting.utils.useful_queries import get_df_for_heat_supply, get_df_no_covariates
 
 from forecasting.kgutils.javagateway import jpsBaseLibGW
 
 mapping_type_data_function = {
+    'Default': get_df_no_covariates,
     OHN_CONSUMER : get_df_for_heat_supply}
 
 
@@ -31,7 +32,7 @@ TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
 # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 Instant = jpsBaseLibView.java.time.Instant
-TIME_CLASS = Instant.now().getClass()
+TIMECLASS = Instant.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
