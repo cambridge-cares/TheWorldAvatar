@@ -83,12 +83,41 @@
             </plugin>
 
             <!-- Downloads and extracts ZIP archives from Maven repository -->
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <!-- Version, configuration, and executions should be pulled from the 
-                parent POM unless overridden here. -->
+            </plugin> -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <requireUpperBoundDeps />
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.slf4j</exclude>
+                                        <exclude>ch.qos.logback</exclude>
+                                        <exclude>log4j</exclude>
+                                    </excludes>
+                                    <includes>
+                                        <include>org.slf4j:slf4j-api</include>
+                                    </includes>
+                                </bannedDependencies>
+                                <banDuplicatePomDependencyVersions />
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
 		</plugins>
 	</build>
 
@@ -100,8 +129,20 @@
 			<version>${jps.base.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.slf4j</groupId>
-                    <artifactId>*</artifactId>
+                    <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
 		</dependency>
@@ -113,11 +154,9 @@
 		</dependency>
 
         <!-- RDF4J support -->
-        
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-model</artifactId>
-            
         </dependency>
 
         <!-- SSH Connectivity -->
@@ -137,16 +176,50 @@
         <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <version>2.19.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-web</artifactId>
-            <scope>runtime</scope>
+            <artifactId>log4j-api</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+            <version>2.19.0</version>
         </dependency>
 
         <!-- Testing -->
@@ -204,5 +277,441 @@
 		</dependency>
 
 	</dependencies>
+
+    <!-- Commonly used, third party libraries -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Java servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>4.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-web</artifactId>
+                <version>2.19.0</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.14.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>0.13.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-util</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-turtle</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-trig</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-rdfxml</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-ntriples</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-nquads</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-languages</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-jsonld</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-datatypes</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryparser-api</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryalgebra-model</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-query</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-api</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-model</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-repository-http</artifactId>
+                <version>3.7.7</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-repository-api</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryresultio-sparqlxml</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.8-1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>3.23.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.13.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.13.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.13.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-cache</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.geosolutions</groupId>
+                <artifactId>geoserver-manager</artifactId>
+                <version>1.7.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.odiszapc</groupId>
+                <artifactId>nginxparser</artifactId>
+                <version>0.9.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.15</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>3.0.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>3.2.13</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport</artifactId>
+                <version>3.2.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-httpclient5</artifactId>
+                <version>3.2.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.8.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.9.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-api</artifactId>
+                <version>5.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-apibinding</artifactId>
+                <version>5.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.owlapi</groupId>
+                <artifactId>owlapi-distribution</artifactId>
+                <version>5.1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>5.0.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>5.0.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-rdf-api</artifactId>
+                <version>0.5.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>2.1.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>1.5.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.unibz.inf.ontop</groupId>
+                <artifactId>ontop-system-sql-owlapi</artifactId>
+                <version>4.2.1</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jgrapht-core</artifactId>
+                        <groupId>org.javabits.jgrapht</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>4.13.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-arq</artifactId>
+                <version>4.6.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-shaded-guava</artifactId>
+                <version>4.6.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.blazegraph</groupId>
+                <artifactId>bigdata-core</artifactId>
+                <version>2.1.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.5.0</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/net.postgis/postgis-jdbc -->
+            <dependency>
+                <groupId>net.postgis</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 </project>
