@@ -60,11 +60,13 @@ class TSClient:
         Create context manager for RDB connection using getConnection method of Java
         TimeSeries client (i.e. to ensure connection is closed after use)
         """
+        conn = None
         try:
             conn = self.conn.getConnection()
             yield conn
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
 
     @staticmethod
