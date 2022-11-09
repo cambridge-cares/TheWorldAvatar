@@ -10,10 +10,8 @@ POST http://127.0.0.1:5000/api/forecastingAgent/forecast
 Content-Type: application/json
 
 { "query": {
-      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_1b6ad574-3b79-4e6f-9cc3-fa7db99596a8",
+      "dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
       "horizon": 168,
-      "model_path_ckpt_link": "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1", 
-      "model_path_pth_link": "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
-      "forecast_start_date": "2020-06-03 01:00:00"
+      "forecast_start_date": "2020-06-03T01:00:00Z"
     }
 }
