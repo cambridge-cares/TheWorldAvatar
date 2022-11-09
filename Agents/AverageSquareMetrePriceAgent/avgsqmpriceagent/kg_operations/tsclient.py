@@ -41,7 +41,7 @@ class TSClient:
 
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            self.conn = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
+            self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
             logger.error("Unable to initialise TS Remote Store client.")
             raise TSException("Unable to initialise TS Remote Store client.") from ex
@@ -62,7 +62,7 @@ class TSClient:
         """
         conn = None
         try:
-            conn = self.conn.getConnection()
+            conn = self.connection.getConnection()
             yield conn
         finally:
             if conn is not None:
