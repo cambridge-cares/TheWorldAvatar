@@ -23,7 +23,7 @@ bash ./redeploy.sh
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following descriptions refers to commit `b02bb38598d19d96eecbb3f42fa3c816b5b59674` of the `dev-feature-info-agent` branch
+> The following descriptions refers to commit `90cc2f056cf56479acd3ce3bc9b45c77304c4bc5` of the `dev-feature-info-agent` branch
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building.
 
@@ -47,7 +47,7 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 
 * **Allow CORS (i.e. Cross-Origin Resource Sharing)**: The FIA relies on CORS information to retrieve metadata from the stack after clicking on any displayed feature. A current work-around to enable this is installing a browser plug-in to blanket-allow CORS requests. However, one should be aware of the security implications of this!
 
-* **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack nginx configuration to make the FIA reachable from the visualisation and prevent CORS errors.
+* **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack nginx configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
 
     ```bash
     # Run helper script to add Feature Info Agent NGINX configuration
