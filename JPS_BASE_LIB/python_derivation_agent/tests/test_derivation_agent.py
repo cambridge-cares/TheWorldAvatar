@@ -10,31 +10,30 @@ def test_integration_test(initialise_agent):
 
     all_instances = utils.initialise_triples_assert_pure_inputs(
         sparql_client=sparql_client,
-        derivation_client=derivation_client,
         # Do NOT delete all triples, as we have just registered agent instances
         # Instead, the triples are deleted as part of initialise_agent fixture
         delete_all_triples=False
     )
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(
+    rng_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
         rng_agent.agentIRI,
         [all_instances.IRI_UPPER_LIMIT, all_instances.IRI_LOWER_LIMIT, all_instances.IRI_NUM_OF_PTS]
     )
-    max_derivation_iri = max_agent.derivationClient.createAsyncDerivationForNewInfo(
+    max_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
         max_agent.agentIRI, [rng_derivation_iri]
     )
-    min_derivation_iri = min_agent.derivationClient.createAsyncDerivationForNewInfo(
+    min_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
         min_agent.agentIRI, [rng_derivation_iri]
     )
-    diff_derivation_iri = diff_agent.derivationClient.createAsyncDerivationForNewInfo(
+    diff_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
         diff_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
     )
     diff_reverse_derivation_iri_lst = []
     random_int = random.randint(1, 5)
     for i in range(random_int):
         diff_reverse_derivation_iri_lst.append(
-            diff_agent.derivationClient.createAsyncDerivationForNewInfo(
+            derivation_client.createAsyncDerivationForNewInfo(
                 diff_reverse_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
             )
         )
@@ -187,7 +186,7 @@ def test_integration_test(initialise_agent):
     ## I. Modify num of points ##
     #############################
     sparql_client.increaseNumOfPointsByOne()
-    rng_agent.derivationClient.updateTimestamp(sparql_client.getNumOfPoints())
+    derivation_client.updateTimestamp(sparql_client.getNumOfPoints())
     assert sparql_client.getValue(
         sparql_client.getNumOfPoints()) == numofpoints + 1
 
@@ -202,9 +201,9 @@ def test_integration_test(initialise_agent):
     )
 
     # Request for an update
-    diff_agent.derivationClient.unifiedUpdateDerivation(diff_derivation_iri)
+    derivation_client.unifiedUpdateDerivation(diff_derivation_iri)
     for iri in diff_reverse_derivation_iri_lst:
-        diff_reverse_agent.derivationClient.unifiedUpdateDerivation(iri)
+        derivation_client.unifiedUpdateDerivation(iri)
 
     # Wait until the difference and all difference reverse derivation are updated
     # i.e. the timestamp of all these derivations are greater than the timestamp before the update
