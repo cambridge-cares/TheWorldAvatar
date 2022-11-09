@@ -34,7 +34,7 @@ COPY pom.xml ./
 COPY src ./src/
 COPY WEB-INF ./WEB-INF/
 
-RUN mvn package -DskipTests -U
+RUN mvn package -DskipTests -U -P prod-profile
 
 #==================================================================================================
 # Build aermod components
