@@ -1,33 +1,22 @@
 package uk.ac.cam.cares.jps.base.util.test;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.Before;
-
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.atMost;
-import org.mockito.runners.MockitoJUnitRunner;
-
-
-import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
-import java.util.ArrayList;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import java.sql.SQLException;
 
-import java.sql.Blob;
-import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Date;
 
-import java.util.Date ;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 /**
