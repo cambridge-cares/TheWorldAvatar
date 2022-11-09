@@ -1,57 +1,33 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
-import static org.junit.Assert.*;
-
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
-import org.junit.Before;
-import org.junit.After;
-
-
-import org.json.JSONObject;
-
-import org.junit.runner.RunWith;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import org.springframework.mock.web.MockHttpServletRequest ;
-import org.springframework.mock.web.MockHttpServletResponse ;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.* ;
-
-import java.lang.ClassNotFoundException;
-import java.lang.NoSuchMethodException;
-import java.lang.IllegalAccessException;
-import java.lang.InstantiationException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
-import org.apache.logging.log4j.Logger;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
 
 
 
@@ -67,17 +43,6 @@ public class JPSHttpServletTest {
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         System.setOut(new PrintStream(out));
-    }
-
-    @BeforeEach
-    public void setUp() {
-
-//        request.setServerName("www.example.com");
-//        request.setRequestURI("/foo");
-//        request.setQueryString("param1=value1");
-//        response = new MockHttpServletResponse();
-//        JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
-//        System.setOut(new PrintStream(out));
     }
 
     @AfterEach
@@ -208,29 +173,7 @@ public class JPSHttpServletTest {
 
 
     }
-
-    @Test
-    public void testDoPostJPSwithoutReqBody() throws ClassNotFoundException,NoSuchMethodException,
-            IllegalAccessException,InvocationTargetException,
-            InstantiationException,UnsupportedEncodingException {
-
-        Class<?> TargetClass = Class.forName("uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet");
-        Method method = TargetClass.getDeclaredMethod("doPostJPS",HttpServletRequest.class,HttpServletResponse.class) ;
-        JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
-        method.setAccessible(true);
-
-        request.setMethod(HttpPost.METHOD_NAME) ;
-        byte[] bytes = "body".getBytes(Charset.defaultCharset());
-        request.setContent(bytes);
-        request.addParameter("k1","v1");
-        method.invoke(jhs,request,response);
-        String pattern = "DO GET RESPONSE BODY: ";
-        assertTrue(out.toString().contains(pattern));
-        assertFalse(response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode());
-        assertFalse(response.getStatus() == Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
-        assertTrue(response.getStatus() >= 200 && response.getStatus() <= 299);
-
-    }
+    
 
     @Test
     public void testDoPostJPSwithReqBody() throws ClassNotFoundException,NoSuchMethodException,
@@ -318,16 +261,6 @@ public class JPSHttpServletTest {
         assertTrue(response.getStatus() >= 200 && response.getStatus() <= 299);
 
 
-    }
-    @Test
-    public void randomtest() throws UnsupportedEncodingException {
-
-        String pattern = "DO GET ";
-        assertFalse(out.toString().contains(pattern));
-        MockHttpServletResponse response2 = new MockHttpServletResponse();
-        System.setOut(System.out);
-        System.out.println(response2.getStatus());
-        assertTrue(response2.getStatus() >= 400 );
     }
 
     @Test
@@ -422,14 +355,13 @@ public class JPSHttpServletTest {
         JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
         method.setAccessible(true);
 
-        String path = "HelloServlet-0.0.1-SNAPSHOT/sayhello" ;
+        String path = "https://httpbin.org/anything" ;
         String jsonInput = "json" ;
 
         String res = (String) method.invoke(jhs,path,jsonInput,HttpGet.METHOD_NAME);
         assertNotNull(res);
         assertTrue(res.length() > 0);
 
-        path = "https://httpbin.org/anything" ;
         res = (String) method.invoke(jhs,path,jsonInput,HttpPost.METHOD_NAME);
         assertNotNull(res);
         assertTrue(res.length() > 0);
@@ -457,47 +389,6 @@ public class JPSHttpServletTest {
         assertTrue(json.length() > 0);
     }
 
-    @Test
-    public void testEnableScenariowithOneString() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
-
-        Class<?> TargetClass = Class.forName("uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet");
-        Method method = TargetClass.getDeclaredMethod("enableScenario", String.class) ;
-        JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
-        method.setAccessible(true);
-
-        String scenariourl = "http://localhost:8080" ;
-        assertNull(JPSContext.getJpsContext());
-        assertNull(JPSContext.get(JPSConstants.SCENARIO_URL)) ;
-        JSONObject json = (JSONObject) method.invoke(jhs,scenariourl);
-        assertNotNull(JPSContext.getJpsContext());
-        assertEquals(JPSContext.get(JPSConstants.SCENARIO_URL),scenariourl) ;
-
-    }
-
-    @Test
-    public void testEnableScenariowithTwoStrings() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
-
-        Class<?> TargetClass = Class.forName("uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet");
-        Method method = TargetClass.getDeclaredMethod("enableScenario", String.class,String.class) ;
-        JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
-        method.setAccessible(true);
-
-        String scenariourl = "http://localhost:8080" ;
-        String usecaseurl = "https://httpbin.org/anything" ;
-        assertNull(JPSContext.getJpsContext());
-        assertNull(JPSContext.get(JPSConstants.SCENARIO_URL)) ;
-        assertNull(JPSContext.get(JPSConstants.SCENARIO_USE_CASE_URL)) ;
-        JSONObject json = (JSONObject) method.invoke(jhs,scenariourl,usecaseurl);
-        assertNotNull(JPSContext.getJpsContext());
-        assertEquals(JPSContext.get(JPSConstants.SCENARIO_URL),scenariourl) ;
-        assertEquals(JPSContext.get(JPSConstants.SCENARIO_USE_CASE_URL),usecaseurl) ;
-
-
-    }
-
-
 
     @Test
     public void testdisableScenario() throws ClassNotFoundException, InvocationTargetException,
@@ -505,9 +396,11 @@ public class JPSHttpServletTest {
         assertNull(JPSContext.getJpsContext());
         assertNull(JPSContext.get(JPSConstants.SCENARIO_URL)) ;
         assertNull(JPSContext.get(JPSConstants.SCENARIO_USE_CASE_URL)) ;
-        testEnableScenariowithTwoStrings();
+
         String scenariourl = "http://localhost:8080" ;
         String usecaseurl = "https://httpbin.org/anything" ;
+        JPSContext.putScenarioUrl(scenariourl);
+        JPSContext.putUsecaseUrl(usecaseurl);
         assertNotNull(JPSContext.getJpsContext());
         assertEquals(JPSContext.get(JPSConstants.SCENARIO_URL),scenariourl) ;
         assertEquals(JPSContext.get(JPSConstants.SCENARIO_USE_CASE_URL),usecaseurl) ;
@@ -523,4 +416,6 @@ public class JPSHttpServletTest {
 
 
     }
+
+
 }
