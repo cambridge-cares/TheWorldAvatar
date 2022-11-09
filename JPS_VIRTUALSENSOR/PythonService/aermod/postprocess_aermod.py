@@ -4,11 +4,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+import geojsoncontour
+from io import StringIO
+from flask import Blueprint, request, jsonify
+import requests
+import agentlogging
+import json
+
+ROUTE = "/getAermodGeoJSON"
+
+get_aermod_geojson_bp = Blueprint('get_aermod_geojson_bp', __name__)
+logger = agentlogging.get_logger("dev")
+
+@get_aermod_geojson_bp.route(ROUTE, methods=['GET'])
+def api():
+    logger.info("Received request to process AERMOD dispersion matrix")
+    aermod_output_url = request.args["dispersionMatrix"]
+
+    dispersion_file = requests.get(aermod_output_url, auth=requests.auth.HTTPBasicAuth('fs_user','fs_pass'))
+
+    # download file from url
+    return get_aermod_geojson(dispersion_file.text)
 
 # This script is only valid for a 1 hour simulation because this file shows the maximum concentration at each receptor
-#
-def start():
-    data = pd.read_csv('SO2_1HR_FLAT_CONC.DAT', delim_whitespace=True, skiprows=range(0,8), header=None, names=['X','Y','AVERAGE CONC', 'ZELEV', 'ZHILL','ZFLAG','AVE','GRP','RANK','NET ID','DATE(CONC)'])
+def get_aermod_geojson(aermod_output):
+    aermod_output_buffer = StringIO(aermod_output)
+    data = pd.read_csv(aermod_output_buffer, delim_whitespace=True, skiprows=range(0,8), header=None, names=['X','Y','AVERAGE CONC', 'ZELEV', 'ZHILL','ZFLAG','AVE','GRP','RANK','NET ID','DATE(CONC)'])
     x_all = data['X']
     y_all = data['Y']
 
@@ -36,10 +57,6 @@ def start():
     contour_level = 30
     fig, ax = plt.subplots()
 
-    cs = ax.contourf(x_matrix, y_matrix, conc_matrix, levels=contour_level,cmap=plt.cm.jet)
-    fig.colorbar(cs,ax=ax)
-    plt.savefig('AERTEST.png', dpi=600)
-    plt.show()
-
-if __name__ == '__main__':
-    start()
+    contourf = ax.contourf(x_matrix, y_matrix, conc_matrix, levels=contour_level,cmap=plt.cm.jet)
+    geojsonstring = geojsoncontour.contourf_to_geojson(contourf = contourf, fill_opacity = 0.5)
+    return jsonify(json.loads(geojsonstring)), 200
