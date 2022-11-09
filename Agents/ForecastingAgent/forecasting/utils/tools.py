@@ -28,7 +28,7 @@ def get_data_cov(df, col):
     """
     # covs scaler
     covs = None
-    print(col)
+    #print(col)
     cov = TimeSeries.from_dataframe(df, time_col='Date', value_cols=col)
     scaler_cov = Scaler()
     cov_scaled = scaler_cov.fit_transform(cov)

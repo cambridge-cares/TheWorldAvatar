@@ -34,40 +34,46 @@ from forecasting.utils.properties import *
 #logger = agentlogging.get_logger("prod")
 
 
-def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_link=None, model_path_pth_link=None):
+def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_link=None, model_path_pth_link=None, data_length=None):
     # initialise the  client
     kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     tsClient = TSClient(kg_client=kgClient)
-    max_input_length = 365 * 24 * 2
+
     time_format = "%Y-%m-%dT%H:%M:%SZ"
     ts_freq = dt.timedelta(hours=1)
     cov_iris, covariates = None, None
     lowerbound, upperbound = None, None
-    
+    # data length is the length of the time series which is loaded as input to the model
+    # prophet will use all of it, but TFT will use it just to scale the data and then uses 'input_chunk_length' to predict
+    data_length = 365 * 24
+
     try:
         # load model
-        model = load_pretrained_model(model_path_ckpt_link, model_path_pth_link)
-        input_length = model.model_params['input_chunk_length']
+        model = load_pretrained_model(
+            model_path_ckpt_link, model_path_pth_link)
         use_pretrained_model = True
-        
+
     except Exception as e:
         # if pretrained model fails, use prophet
         use_pretrained_model = False
         #logger.info(f"Could not forecast with pretrained model. Prophet is used. \nError: {e}")
         model = Prophet()
         model.model_name = "Prophet"
-        # set max input length for prophet for time complexity reason
-        input_length = max_input_length
-        
+
     # calculate lower and upper bound for the input data for faster retrieval
     # if forecast_start_date is not given, load whole series
     if forecast_start_date is not None:
         if isinstance(forecast_start_date, str):
+            # upper bound is forecast_start_date + horizon
             upperbound = forecast_start_date
-            forecast_start_date = pd.Timestamp(dt.datetime.strptime(
-                forecast_start_date, time_format)) 
-            lowerbound = forecast_start_date - ts_freq * input_length
-            lowerbound = lowerbound.astype(str)
+            upperbound = pd.Timestamp(dt.datetime.strptime(
+                forecast_start_date, time_format)) + ts_freq * (horizon + 1)
+            upperbound = upperbound.strftime(time_format)
+
+            # lower bound is forecast_start_date - input_length
+            lowerbound = pd.Timestamp(dt.datetime.strptime(
+                forecast_start_date, time_format)) - ts_freq * (data_length + 1)
+            lowerbound = lowerbound.strftime(time_format)
     try:
         # identify the dataIRI for right mapping function
         predecessor_type = get_predecessor_type_by_predicate(
@@ -100,7 +106,7 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
     if forecast_start_date is not None:
         if isinstance(forecast_start_date, str):
             forecast_start_date = pd.Timestamp(dt.datetime.strptime(
-                forecast_start_date, time_format))  # .timestamp()
+                forecast_start_date, time_format))
         try:
             series, not_used_future_data = series.split_before(
                 forecast_start_date)  # reduce size
@@ -127,15 +133,24 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
                 f"given series is too short, must be at least input_length {input_length} long, Prophet is used instead")
 
         # make prediction
-        forecast = model.predict(
-            n=horizon, future_covariates=covariates, series=series_scaled)
+        try:
+            forecast = model.predict(
+                n=horizon, future_covariates=covariates, series=series_scaled)
+        except RuntimeError as e:
+            # prediction failed, because of wrong dtype
+            covariates = covariates.astype('float32')
+            series_scaled = series_scaled.astype('float32')
+            forecast = model.predict(
+                n=horizon, future_covariates=covariates, series=series_scaled)
         # scale back
-        forecast = scaler.inverse_transform(forecast) 
+        forecast = scaler.inverse_transform(forecast)
+        input_length = model.model_params['input_chunk_length']
     else:
         # make prediction with prophet
         model.fit(series)
         forecast = model.predict(n=horizon)
-        
+        input_length = len(series)
+
     # metadata
     # input series range
     #logger.info(f"Input data range: {series.start_time()} - {series.end_time()}")
@@ -151,7 +166,22 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
     res = instantiate_forecast(forecast=forecast, dataIRI=dataIRI, model_name=model.model_name, forecast_input_length=input_length,
                                covariates=covariates, tsClient=tsClient, data_type=data_type, cov_iris=cov_iris, kgClient=kgClient)
     #logger.info('Done with instantiating forecast')
+
+    # calculate error if future target is available
+    if len(not_used_future_data) >= horizon:
+        #logger.info(f'Calculate error')
+        from darts.metrics import mape, mase, smape, mse, rmse
+        target = not_used_future_data[:horizon]
+        error = {}
+        error['mape'] = mape(forecast, target)
+        error['mase'] = mase(forecast, target, series)
+        error['smape'] = smape(forecast, target)
+        error['mse'] = mse(forecast, target)
+        error['rmse'] = rmse(forecast, target)
+        res['error'] = error
+        print(error)
     return res
+
 
 def load_pretrained_model(model_path_ckpt_link, model_path_pth_link):
 
@@ -179,6 +209,8 @@ def load_pretrained_model(model_path_ckpt_link, model_path_pth_link):
         #logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
     # try to load model from downloaded checkpoint
+    # model = TFTModel.load(
+    #    path_pth.__str__())
     model = TFTModel.load_from_checkpoint(
         path_ckpt.parent.parent.__str__())
     model.model_name = model_path_ckpt_link.__str__()
@@ -189,9 +221,8 @@ def load_pretrained_model(model_path_ckpt_link, model_path_pth_link):
     model.model_params['pl_trainer_kwargs'] = pl_trainer_kwargs
     model.trainer_params = pl_trainer_kwargs
     #logger.info(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
-
-
     return model
+
 
 def instantiate_forecast(forecast, dataIRI, model_name, forecast_input_length, covariates, tsClient, data_type, cov_iris, kgClient):
     #  instantiate forecast in KG
@@ -231,4 +262,4 @@ def instantiate_forecast(forecast, dataIRI, model_name, forecast_input_length, c
         ONTOEMS_HASFORECASTEDVALUE: forecast_iri})
 
     kgClient.performUpdate(add_insert_data(update))
-    return {'forecast_iri': forecast_iri, 'model_name': model_name, 'v': forecast_input_length, 'covariates': cov_iris}
+    return {'forecast_iri': forecast_iri, 'model': model_name, 'forecast_input_length': forecast_input_length, 'covariates': cov_iris}
