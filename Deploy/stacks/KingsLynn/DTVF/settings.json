@@ -8,5 +8,6 @@
     "search": {
         "Name": "name",
         "ID": "id"
-    }
+    },
+    "attribution": "Attribution placeholder 1<br/>Attribution placeholder 1"
 }
