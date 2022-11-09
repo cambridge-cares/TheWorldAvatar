@@ -42,7 +42,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private GenericContainer<?> blazegraph = new GenericContainer<>(
+            DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
@@ -81,7 +82,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
             // Start postgreSQL container
             postgres.start();
         } catch (Exception e) {
-            throw new JPSRuntimeException("TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
+            throw new JPSRuntimeException(
+                    "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
         }
 
         // Set endpoint to the triple store. The host and port are read from the container
@@ -142,13 +144,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Interrupt triple store connection
         blazegraph.stop();
 
-        try {
-            // Initialise time series in knowledge base and database
-            tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-            Assert.fail();
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
-        }
+        // Initialise time series in knowledge base and database
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit));
+        Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
     }
 
     @Test
@@ -171,12 +170,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
         ts = tsClient.getTimeSeries(dataIRI_1);
         Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
-        try {
-            tsClient.deleteIndividualTimeSeries(dataIRI);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
-        }
+        String finalDataIRI = dataIRI;
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteIndividualTimeSeries(finalDataIRI));
+        Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
 
         // Delete 2nd data series - verify deletion and that other data series are still unaltered
         dataIRI = dataIRI_1.remove(0);
@@ -186,31 +183,24 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
         ts = tsClient.getTimeSeries(dataIRI_1);
         Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
-        try {
-            tsClient.deleteIndividualTimeSeries(dataIRI);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
-        }
+        String finalDataIRI1 = dataIRI;
+        e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteIndividualTimeSeries(finalDataIRI1));
+        Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
 
         // Delete 3rd data series - verify deletion
         dataIRI = dataIRI_1.remove(0);
         tsClient.deleteIndividualTimeSeries(dataIRI);
         Assert.assertEquals(0, tsClient.countTimeSeries());
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
-        try {
-            tsClient.getTimeSeries(dataIRI_1);
-            Assert.fail();
-        } catch (Exception e) {
-            // Exception from executing SQL command with empty dataIRI
-            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
-        }
-        try {
-            tsClient.deleteIndividualTimeSeries(dataIRI);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
-        }
+
+        // Exception from executing SQL command with empty dataIRI
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.getTimeSeries(dataIRI_1));
+        Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
+        String finalDataIRI2 = dataIRI;
+        e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteIndividualTimeSeries(finalDataIRI2));
+        Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
     }
 
     @Test
@@ -223,17 +213,15 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Interrupt triple store connection
         blazegraph.stop();
 
-        try {
-            // Delete time series in knowledge base and database
-            tsClient.deleteIndividualTimeSeries(dataIRI);
-            Assert.fail();
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
-        }
+        // Delete time series in knowledge base and database
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteIndividualTimeSeries(dataIRI));
+        Assert.assertTrue(e.getCause().getMessage().contains("Error occurred during SPARQL query evaluation"));
     }
 
     @Test
-    public void testDeleteIndividualTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    public void testDeleteIndividualTimeSeriesWithKGDeleteException()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
@@ -242,7 +230,7 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Retrieve the value of the private field 'rdfClient' of the time series client
         Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
         RDFClient.setAccessible(true);
-        TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
         // Create a spy object of the real rdfClient and substitute the initial rdfClient with it
         // Spy's behave exactly like normal instances, except for particularly stubbed methods
@@ -251,13 +239,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Throw error when removal of time series in KG is intended
         doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeriesAssociation(Mockito.anyString());
 
-        try {
-            // Delete time series in knowledge base and database
-            tsClient.deleteIndividualTimeSeries(dataIRI);
-            Assert.fail();
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
-        }
+        // Delete time series in knowledge base and database
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteIndividualTimeSeries(dataIRI));
+        Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
 
         // Check that knowledge base and database are still consistent
         TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
@@ -287,12 +272,11 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         tsClient.deleteTimeSeries(tsIRI);
         Assert.assertEquals(1, tsClient.countTimeSeries());
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
-        try {
-            tsClient.getTimeSeries(dataIRI_1);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("<" + dataIRI_1.get(0) + "> does not have an assigned time series instance"));
-        }
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.getTimeSeries(dataIRI_1));
+        Assert.assertTrue(e.getMessage()
+                .contains("<" + dataIRI_1.get(0) + "> does not have an assigned time series instance"));
+
         TimeSeries<Instant> ts3 = tsClient.getTimeSeries(dataIRI_2);
         Assert.assertEquals(ts2.getDataIRIs(), ts3.getDataIRIs());
 
@@ -301,12 +285,9 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         tsClient.deleteTimeSeries(tsIRI);
         Assert.assertEquals(0, tsClient.countTimeSeries());
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_2.get(0)));
-        try {
-            tsClient.getTimeSeries(dataIRI_2);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
-        }
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.getTimeSeries(dataIRI_2));
+        Assert.assertTrue(e.getMessage()
+                .contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
     }
 
     @Test
@@ -320,17 +301,15 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Interrupt triple store connection
         blazegraph.stop();
 
-        try {
-            // Delete time series in knowledge base and database
-            tsClient.deleteTimeSeries(tsIRI);
-            Assert.fail();
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
-        }
+        // Delete time series in knowledge base and database
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteTimeSeries(tsIRI));
+        Assert.assertTrue(e.getCause().getMessage().contains("Error occurred during SPARQL query evaluation"));
     }
 
     @Test
-    public void testDeleteTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    public void testDeleteTimeSeriesWithKGDeleteException()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
@@ -338,7 +317,7 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         // Retrieve the value of the private field 'rdfClient' of the time series client
         Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
         RDFClient.setAccessible(true);
-        TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
         // Create a spy object of the real rdfClient and substitute the initial rdfClient with it
         // Spy's behave exactly like normal instances, except for particularly stubbed methods
@@ -349,13 +328,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
 
         // Retrieve tsIRI to be deleted
         String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
-        try {
-            // Delete time series in knowledge base and database
-            tsClient.deleteTimeSeries(tsIRI);
-            Assert.fail();
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Timeseries " + tsIRI + " was not deleted!"));
-        }
+        // Delete time series in knowledge base and database
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.deleteTimeSeries(tsIRI));
+        Assert.assertTrue(e.getMessage().contains("Timeseries " + tsIRI + " was not deleted!"));
 
         // Check that knowledge base and database are still consistent
         TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
@@ -387,12 +363,9 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         Assert.assertEquals(0, tsClient.countTimeSeries());
         List<List<String>> series = Arrays.asList(dataIRI_1, dataIRI_2);
         for (List<String> s : series) {
-            try {
-                tsClient.getTimeSeries(s);
-                Assert.fail();
-            } catch (Exception e) {
-                Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
-            }
+            JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                    () -> tsClient.getTimeSeries(s));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
 }
