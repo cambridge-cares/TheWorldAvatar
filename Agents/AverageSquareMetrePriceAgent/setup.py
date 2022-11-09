@@ -14,21 +14,21 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'flask~=2.1',
-        'JayDeBeApi~=1.2',
-        'pandas~=1.3',
-        'py4jps>=1.0.26', 
-        'requests~=2.28',
-        'pyderivationagent>=1.2.2'
+        'flask==2.1.0',
+        'JayDeBeApi==1.2.3',
+        'pandas==1.5.1',
+        'py4jps==1.0.27', 
+        'requests==2.28.1',
+        'pyderivationagent==1.3.0'
     ],
     extras_require={
         "dev": [
-            "testcontainers>=3.4.2",
-            "pytest>=6.2.3",
-            "pytest-docker-compose>=3.2.1",
-            "pytest-rerunfailures>=10.2",
-            "pytest-mock>=3.7.0",
-            "psycopg2~=2.9.5"
+            "testcontainers==3.7.0",
+            "pytest==7.2.0",
+            "pytest-docker-compose==3.2.1",
+            "pytest-rerunfailures==10.2",
+            "pytest-mock==3.10.0",
+            "psycopg2==2.9.5"
         ],
     }
 )
