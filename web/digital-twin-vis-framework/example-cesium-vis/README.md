@@ -68,9 +68,12 @@ Each group can also (optionally) contain an `expanded` boolean field. If set to 
 
 Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|tiles`), and a `uri` field pointing towards the data file to be loaded. Some types of sources also require additional parameters:
 
-- For `gltf` sources, an additional `position` field is required (array of [lng, lat, height] values).
+- For `gltf` sources, an additional `position` field is required.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
 - For `wms` sources, additional `wmsLayer`, `transparency`, and `format` fields are required.
-- For `tiles` sources, an optional `position` field can also be set.
+- For `tiles` sources, optional `position` and `rotation` fields can also be set.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
+  - The `rotation` field requires the `position` field to be present, and is a three value array of the form `[roll, pitch, heading]`. Cesium defines Roll as the rotation about the positive X axis, Pitch as the rotation about the negative Y axis, and Heading as the rotation about the negative Z axis
 
 #### Layers
 

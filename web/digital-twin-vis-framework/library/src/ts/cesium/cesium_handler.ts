@@ -426,6 +426,19 @@ class MapHandler_Cesium extends MapHandler {
             position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
         }
 
+        // Check the rotation (if set)
+        let rotation = source["rotation"];
+        if(rotation != null && rotation !== undefined && position != null) {
+            // Create a heading-pitch-roll object
+            let hpr = new Cesium.HeadingPitchRoll(rotation[2], rotation[1], rotation[0]);
+
+            // Create a rotation matrix
+            let rotationMatrix = Cesium.Matrix3.fromHeadingPitchRoll(hpr, new Cesium.Matrix3());
+
+            // And multiply the model matrix (position) by this rotation matrix
+            Cesium.Matrix4.multiplyByMatrix3(position, rotationMatrix, position);
+        }
+
         // Define tileset options
         let options = {
             url: source["uri"],
