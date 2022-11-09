@@ -148,10 +148,13 @@ Once the Agent is deployed, it periodically (every week, defined by `DERIVATION_
 For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The following methods from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only):
 ```bash
 # Retrieve derivation client from derivation agent
-deriv_client = agent.derivationClient
+deriv_client = agent.derivation_client
 
-# Add and update time stamp to all pure input instances (i.e. inputIRIs)
-deriv_client.addTimeInstance(inputIRI)
+# Using pyderivationagent>=1.3.0, the timestamp for pure inputs will be added automatically when marking up the derivations
+# Hence, no need to add them separately (just for reference here)
+#deriv_client.addTimeInstance(inputIRI)
+
+# Update time stamp to all pure input instances (i.e. inputIRIs)
 deriv_client.updateTimestamp(inputIRI)
 
 # Create (flat!) list of all pure inputs (i.e. inputIRIs)
