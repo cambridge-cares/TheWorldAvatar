@@ -115,12 +115,22 @@
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
+                },
+                {
+                    "id": "ea-stations",  
+                    "type": "vector",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=river_stations:river_stations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
                 }
             ], 
             "layers": [
                 {
                     "id": "metoffice",
-                    "name": "MetOffice Weather Stations", 
+                    "name": "Weather Stations", 
                     "source": "metoffice",
                     "source-layer": "metoffice",
                     "type": "symbol",
@@ -145,7 +155,7 @@
                 },
                 {
                     "id": "metoffice_cluster",
-                    "name":  "MetOffice Weather Stations",
+                    "name":  "Weather Stations",
                     "source": "metoffice",
                     "source-layer": "metoffice",
                     "type": "symbol",
@@ -163,6 +173,23 @@
                         "text-anchor": "center",
                         "text-offset": [0, -0.15]
                     }
+                },
+                {
+                    "id": "ea-stations",
+                    "name": "Flood Monitoring Stations", 
+                    "source": "ea-stations",
+                    "source-layer": "river_stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 8,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": ["get", "type"],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
                 }
             ]
         },
