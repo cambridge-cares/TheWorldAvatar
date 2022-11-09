@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='forecasting',
     version='0.0.1',
-    author='Markus Hofmeister',
+    author='Magnus Mueller',
     license='MIT',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
@@ -12,14 +12,10 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'apscheduler~=3.9',
-        'docopt~=0.6',
-        'flask~=2.2',
-        'JayDeBeApi~=1.2',
-        'pandas~=1.3',
+        'flask>=2.2',
+        'pandas>=1.3',
         'py4jps>=1.0.26', 
-        'requests~=2.28',
-        'fuzzywuzzy~=0.18',
-        'python-Levenshtein~=0.20'
+        'requests>=2.28',
+        'darts~=0.22.0',
     ]
 )
