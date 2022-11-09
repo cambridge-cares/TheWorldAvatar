@@ -111,7 +111,7 @@
                     "type": "vector",
                     "cluster": true,
                     "clusterMaxZoom": 14,
-                    "clusterRadius": 1000,
+                    "clusterRadius": 100,
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
@@ -147,13 +147,14 @@
                     "id": "metoffice_cluster",
                     "name":  "MetOffice Weather Stations",
                     "source": "metoffice",
+                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
-                    "minzoom": 5, 
+                    "minzoom": 4, 
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "weather",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",

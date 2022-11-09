@@ -44,6 +44,12 @@ The ensure expected behaviour of the Feature Info Agent, the following pre-requi
 * **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added Feature Info Agent. To add the routing, please run:
 
 
+```diff
+- Pending To Dos 
+    - update visualised (fudged) building data with actual data after running building matching agent
+    - refine clustering with vector tiles
+```
+
 <!-- Links -->
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
 [example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
