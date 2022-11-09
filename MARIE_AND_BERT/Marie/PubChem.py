@@ -129,7 +129,8 @@ class PubChemEngine:
             scores_top_k = [scores[index].item() for index in indices_top_k]
             return labels_top_k, scores_top_k
         except:
-            self.marie_logger.error(f" ")
+            self.marie_logger.error('The attempt to find answer failed')
+            self.marie_logger.error(traceback.format_exc())
             return traceback.format_exc()
 
     def extract_head_ent(self, _question):

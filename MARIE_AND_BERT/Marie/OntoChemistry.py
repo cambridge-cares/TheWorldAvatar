@@ -7,7 +7,7 @@ import torch
 
 from KGToolbox.NHopExtractor import HopExtractor
 from Marie.Util.location import DATA_DIR
-from Marie.Util.Models.StandAloneBERT2EmbeddingInferred import StandAloneBERT
+from Marie.Util.Models.OntoScoreModel import OntoScoreModel
 from Marie.Util.Logging import MarieLogger
 from transformers import BertTokenizer
 
@@ -15,6 +15,9 @@ from transformers import BertTokenizer
 class OntoChemistryEngine:
     def __init__(self):
         self.marie_logger = MarieLogger()
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        self.max_length = 12
+
         self.dataset_dir = os.path.join(DATA_DIR, 'ontocompchem_latent_40')
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name='ontocompchem_calculation')
         i2e_file = open(os.path.join(self.dataset_dir, 'idx2entity.pkl'), 'rb')
@@ -24,30 +27,61 @@ class OntoChemistryEngine:
         self.device = torch.device("cpu")
         self.ent_embedding = pd.read_csv(os.path.join(self.dataset_dir, 'ent_embedding.tsv'), sep='\t', header=None)
         self.rel_embedding = pd.read_csv(os.path.join(self.dataset_dir, 'rel_embedding.tsv'), sep='\t', header=None)
-        self.score_model = StandAloneBERT(device=self.device, ent_embedding=self.ent_embedding,
+        self.score_model = OntoScoreModel(device=self.device, ent_embedding=self.ent_embedding,
                                           rel_embedding=self.rel_embedding, for_training=True,
-                                          idx2entity=self.idx2entity, load_model=True, dataset_dir=self.dataset_dir,
+                                          idx2entity=self.subgraph_extractor.entity_labels, load_model=False,
+                                          dataset_dir=self.dataset_dir,
                                           model_name='score_model_general')
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-        self.max_length = 12
+
+        model_path = os.path.join(self.dataset_dir, 'score_model_general')
+        print("model path", model_path)
+        # self.score_model.load_pretrained_model(model_path)
 
     def test(self):
-        head = self.entity2idx['1b206169-7539-3491-85ec-a40dfe351a2a']
-        candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
-        question, head, tails = self.prepare_prediction_batch(question='what is the geometry of', head_entity=head,
-                                                              candidate_entities=candidate_entities)
-        rst = self.score_model.predict(question=question, head=head, tail=tails)
-        _, indices_top_k = torch.topk(rst, k=5, largest=True)
-        labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
-        print(labels_top_k)
+        good_counter = 0
+        bad_counter = 0
+        df_test = pd.read_csv(os.path.join(DATA_DIR, 'CrossGraph', 'ontochemistry_cross_score.tsv'), sep='\t')
+        df_test = df_test.sample(frac=0.01)
+        for idx, row in df_test.iterrows():
+            question = row['question']
+            head = row['head']
+            answer = row['answer']
+            labels, _ = self.run(head, question)
+            print("===============")
+            print()
+            if answer in labels:
+                good_counter += 1
+            else:
+                bad_counter += 1
+        print('Good:', good_counter)
+        print('Bad: ', bad_counter)
+        # good_counter = 0
+        # bad_counter = 0
+        # df_test_2 = pd.read_csv(os.path.join(DATA_DIR, 'ontocompchem_latent_40', 'score_model_training.tsv'), sep='\t')
+        # df_test_2 = df_test_2.sample(frac=0.01)
+        # for idx, row in df_test_2.iterrows():
+        #     question = row['question']
+        #     head = row['head']
+        #     tail = row['tail']
+        #     head = self.idx2entity[head]
+        #     # tail = self.idx2entity[tail]
+        #     labels, _ = self.run(head, question)
+        #     # labels = [l.strip() for l in labels]
+        #     if tail in labels:
+        #         good_counter += 1
+        #     else:
+        #         bad_counter += 1
+        # print('Good:', good_counter)
+        # print('Bad: ', bad_counter)
 
     def run(self, head_entity, question):
         head = self.entity2idx[head_entity]
         candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
         question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
                                                               candidate_entities=candidate_entities)
-        scores = self.score_model.predict(question=question, head=head, tail=tails)
-        _, indices_top_k = torch.topk(scores, k=5, largest=True)
+        scores = self.score_model.find_answers(question=question, head=head, tail=tails)
+        k = min(5, len(tails))
+        _, indices_top_k = torch.topk(scores, k=k, largest=True)
         labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
         score_top_k = [scores[index].item() for index in indices_top_k]
         return labels_top_k, score_top_k
