@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Buildings",
-            "stack": "http://localhost:3838",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
             "sources": [
                 {
                     "id": "area-of-interest",
@@ -104,7 +104,7 @@
         },
         {
             "name": "Reporting Stations",
-            "stack": "http://localhost:3838",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
             "sources": [
                 {
                     "id": "metoffice",  
@@ -195,7 +195,7 @@
         },
         {
             "name": "Population data",
-            "stack": "http://localhost:3838",
+            "stack": "http://165.232.172.16:3838/KINGS-LYNN",
             "sources": [
                 {
                     "id": "openpopgrid",
