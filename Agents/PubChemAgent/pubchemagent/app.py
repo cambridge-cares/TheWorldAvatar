@@ -9,11 +9,21 @@ def query_with_inchi(inchi):
         # main get data
         data = get_ontospecies_data(IRI)
         return (data, 'TWA')
+
     else:
 
         data = pug_access.pug_request('InChI', inchi)
-        props = pug_access.get_props(data)
+        props, identifiers = pug_access.get_props(data)
         CID = pug_access.get_cid(data)
+        charge = pug_access.get_charge(data)
+        props_3d = pug_access.pug_request_prop_3d(CID)
+        exp_props = pug_access.pug_request_exp_prop(CID)
+        uses = pug_access.pug_request_uses(CID)
+        sh_props = pug_access.pug_request_sh_prop(CID)
+        atom_id = pug_access.get_atoms(data)
+
         cid = CID['cid']
         insert_ontospecies_data(str(cid), props)      
         return (props, 'PubChem')
+
+        
