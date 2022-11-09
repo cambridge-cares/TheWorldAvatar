@@ -44,19 +44,6 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
     cov_iris, covariates = None, None
     lowerbound, upperbound = None, None
 
-    try:
-        # load model
-        model = load_pretrained_model(
-            model_path_ckpt_link, model_path_pth_link)
-        use_pretrained_model = True
-
-    except Exception as e:
-        # if pretrained model fails, use prophet
-        use_pretrained_model = False
-        #logger.info(f"Could not forecast with pretrained model. Prophet is used. \nError: {e}")
-        model = Prophet()
-        model.model_name = "Prophet"
-
     # calculate lower and upper bound for the input data for faster retrieval
     # if forecast_start_date is not given, load whole series
     if forecast_start_date is not None:
@@ -71,7 +58,11 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
             lowerbound = pd.Timestamp(dt.datetime.strptime(
                 forecast_start_date, time_format)) - ts_freq * (data_length + 1)
             lowerbound = lowerbound.strftime(time_format)
+    
     try:
+        # load model
+        model = load_pretrained_model(
+            model_path_ckpt_link, model_path_pth_link)
         # identify the dataIRI for right mapping function
         predecessor_type = get_predecessor_type_by_predicate(
             dataIRI, OHN_HASHEATDEMAND, kgClient)
@@ -79,16 +70,23 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
         df, cov_iris, covariates = mapping_type_data_function[predecessor_type](
             dataIRI, kgClient, tsClient, lowerbound, upperbound)
         #logger.info('Retrieving instantiated timeseries for dataIRI ...')
-    except:
-        # use default mapping function if could not identify the dataIRI
+        use_pretrained_model = True
+
+    except Exception as e:
+        # if pretrained model fails, use prophet
+        use_pretrained_model = False
+        #logger.info(f"Could not forecast with pretrained model. Prophet is used. \nError: {e}")
+        model = Prophet()
+        model.model_name = "Prophet"
         predecessor_type = 'Default'
         try:
+            # use default mapping function if could not identify the dataIRI
             df, _, _ = mapping_type_data_function[predecessor_type](
                 dataIRI, kgClient, tsClient)
         except Exception as e:
             raise KGException(
                 'Error in retrieving instantiated timeseries for dataIRI: {}. {}'.format(dataIRI, e))
-
+        
     # remove timezone
     df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
 
@@ -143,6 +141,7 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
         model.fit(series)
         forecast = model.predict(n=horizon)
         input_length = len(series)
+        
 
     # metadata
     # input series range
