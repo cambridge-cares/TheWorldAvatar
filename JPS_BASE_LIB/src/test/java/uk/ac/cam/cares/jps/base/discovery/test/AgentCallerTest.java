@@ -1,52 +1,29 @@
 package uk.ac.cam.cares.jps.base.discovery.test;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.http.client.utils.URIBuilder;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.*;
-import org.junit.runner.RunWith;
-import org.junit.Before;
-
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.mock.web.MockHttpServletRequest ;
-import org.springframework.mock.web.MockHttpServletResponse ;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.* ;
-
-import java.lang.ClassNotFoundException;
-import java.lang.NoSuchMethodException;
-import java.lang.IllegalAccessException;
-import java.lang.InstantiationException;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.methods.HttpGet;
-import org.json.JSONObject;
-
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
-import java.io.BufferedReader;
 import java.nio.charset.Charset;
+
+import static org.junit.Assert.*;
 
 
 public class AgentCallerTest {
 
-    @BeforeEach
-    public void setUp() {
-    }
 
-    @AfterEach
-    public void tearDown() {
-    }
 
     @Test
     public void testgetHostPort() throws ClassNotFoundException, NoSuchMethodException,
@@ -62,17 +39,6 @@ public class AgentCallerTest {
 
     }
 
-
-    @Test
-    public void testexecuteGetSingleStringInput() {
-        String t1 = "http://localhost:8080/" ;
-        String t2 = AgentCaller.executeGet(t1);
-        assertNotNull(t2);
-        assertTrue(t2.length() > 0);
-        String t3 = "test";
-        assertThrows(JPSRuntimeException.class,
-                ()-> {AgentCaller.executeGet(t3) ;}) ;
-    }
 
     @Test
     public void testexecuteGetMultipleStringInputs() {
@@ -104,20 +70,6 @@ public class AgentCallerTest {
                 ()-> {AgentCaller.executePost(invalidPath,body) ;}) ;
     }
 
-
-    @Test
-    public void testExecutePut() {
-        String path = "https://httpbin.org/anything" ;
-        String body = "test" ;
-        String jsonparam = "test" ;
-        String res1 = AgentCaller.executePut(path,body,null);
-        assertNotNull(res1);
-        assertTrue(res1.length() > 0);
-        String res2 = AgentCaller.executePut(path,body,jsonparam);
-        assertNotNull(res2);
-        assertTrue(res2.length() > 0);
-
-    }
 
     @Test
     public void testgetUriBuilderForPath() throws ClassNotFoundException, NoSuchMethodException,
@@ -173,22 +125,6 @@ public class AgentCallerTest {
         assertNotNull(res);
     }
 
-    @Test
-    // This test method is currently not working as it was not possible to deploy the .war
-    // file obtained by building the code in JPS_BASE. The executegetWithURLKey() method of
-    // the AgentCaller class calls the get method of the KeyValueManager class. The latter method
-    // tries to access a URL beginning with "http://localhost:8080//JPS_BASE/keys/get".
-
-    void testexecuteGetWithURLKey() {
-        String url = "https://httpbin.org/anything" ;
-        url = "agent" ;
-        MediaType contentType = MediaType.TEXT_CSV;
-        String k1 = "k1" ;
-        String v1 = "v1" ;
-        String res = AgentCaller.executeGetWithURLKey(url,contentType,k1,v1);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
 
     @Test
     public void testexecuteGetWithJsonParameter() {
@@ -264,16 +200,6 @@ public class AgentCallerTest {
         assertTrue(res.length() > 0);
     }
 
-    @Test
-    public void getRequestBody() {
-        String url = "https://httpbin.org/anything" ;
-        String res = AgentCaller.getRequestBody(url);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-        String invalidurl = "invalid";
-        assertThrows(JPSRuntimeException.class,
-                ()-> {AgentCaller.getRequestBody(invalidurl) ;}) ;
-    }
 
     @Test
     public void testprintToResponse() throws UnsupportedEncodingException {
