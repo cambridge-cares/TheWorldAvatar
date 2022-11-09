@@ -54,19 +54,19 @@
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
-                    "position": [7.6226484, 49.1804827, 414.5]
+                    "position": [7.6226484, 49.1804827, 415.0]
                 },
                 {
                     "id": "erlenbrunnerstr45-ceiling-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_ceiling.json",
-                    "position": [7.6226484, 49.1804827, 414.5]
+                    "position": [7.6226484, 49.1804827, 415.0]
                 },
                 {
                     "id": "erlenbrunnerstr45-solarpanel-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_solarpanel.json",
-                    "position": [7.6226484, 49.1804827, 414.5]
+                    "position": [7.6226484, 49.1804827, 415.0]
                 },
                 {
                     "id": "measurementstation-tiles-source",
