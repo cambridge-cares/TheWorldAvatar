@@ -16,6 +16,6 @@ setup(
         'pandas>=1.3',
         'py4jps>=1.0.26', 
         'requests>=2.28',
-        'darts~=0.22.0',
+        'darts~=0.21.0',
     ]
 )
