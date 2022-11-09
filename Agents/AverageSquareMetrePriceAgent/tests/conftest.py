@@ -337,13 +337,6 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
         return inputs, postcode, price
 
 
-def initialise_timestamps(derivation_client, derivation_inputs):
-    # Add timestamp to pure inputs
-    for input in derivation_inputs:
-        derivation_client.addTimeInstance(input)
-        derivation_client.updateTimestamp(input)
-
-
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():
     """Remove handlers from all loggers"""

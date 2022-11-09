@@ -80,7 +80,7 @@ RUN pip install gunicorn
 WORKDIR /app
 COPY ./avgsqmpriceagent ./avgsqmpriceagent
 
-# Overwrite/Mock all stack interactions with pre-defined settings from testing stack
+# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 COPY ./tests/mockutils/env_configs_mock.py ./avgsqmpriceagent/utils/env_configs.py
 COPY ./tests/mockutils/stack_configs_mock.py ./avgsqmpriceagent/utils/stack_configs.py
 # Adjust relative import statement

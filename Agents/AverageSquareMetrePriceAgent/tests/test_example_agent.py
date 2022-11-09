@@ -76,7 +76,12 @@ def test_example_data_instantiation(initialise_clients):
         (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, True),   # local agent instance test
         (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, True),  
         (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, False),  # deployed docker agent test
-        (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, False),  
+        pytest.param(
+            cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, False, 
+            marks=pytest.mark.skip(reason="Mocking call to ONS API within Dockerised agent \
+                                           quite tricky as usual mocking functions not available \
+                                           outside testing environment and would require overwriting \
+                                           module imports when building the Docker image."))
     ],
 )
 def test_monitor_derivations(
@@ -148,8 +153,13 @@ def test_monitor_derivations(
     # Verify correct number of triples (incl. timestamp & agent triples)
     assert sparql_client.getAmountOfTriples() == triples    
 
-    # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
+        # Patch RDB URL for TimeSeriesClient to ensure that Postgres is not accessed from inside the Container
+        # If patching an object, you have to always patch the object as used in the module, e.g. 
+        # if you have imported it in the form: from x import y in your module module, you have to patch 
+        # module.y instead of x.y. Documentation: https://docs.python.org/3/library/unittest.mock.html#id6
+        mocker.patch('avgsqmpriceagent.kg_operations.tsclient.DB_URL', rdb_url)
+        # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
