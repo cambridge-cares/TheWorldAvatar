@@ -11,10 +11,10 @@ location_dir=locations/
 echo "Location path: $dest$location_dir"
 
 echo "Copying upstream configuration file..."
-docker cp ./psdt-feature-info-agent_upstream.conf $cname:$dest
+docker cp ./KINGS-LYNN_feature-info-agent_upstream.conf $cname:$dest
 
 echo "Copying location configuration file..."
-docker cp ./psdt-feature-info-agent.conf $cname:$dest$location_dir
+docker cp ./KINGS-LYNN_feature-info-agent.conf $cname:$dest$location_dir
 
 echo "Testing nginx configuration inside the container..."
 docker exec -it $cname sh -c "nginx -t"
