@@ -34,7 +34,11 @@ def api_forecast():
     # Retrieve data IRI to be updated
     try:
         dataIRI = str(query['dataIRI'])
-        
+        # remove < and > from dataIRI
+        if dataIRI.startswith('<'):
+            dataIRI = dataIRI[1:]
+        if dataIRI.endswith('>'):
+            dataIRI = dataIRI[:-1]
     except Exception as ex:
         #logger.('Invalid "dataIRI" provided.')
         raise InvalidInput('Invalid "dataIRI" provided.') from ex
@@ -44,7 +48,8 @@ def api_forecast():
         horizon = int(query['horizon'])
     except Exception as ex:
         #logger.info('No horizon, using default.')
-        horizon = 7
+        raise InvalidInput('Invalid "horizon" provided.') from ex
+
     if horizon <= 0:
         #logger.('Invalid "horizon" provided. Must be higher than 0.')
         raise InvalidInput('Invalid "horizon" provided. Must be higher than 0.')
@@ -74,8 +79,9 @@ def api_forecast():
     
     try:
         # Forecast dataIRI
-        forecast(dataIRI, horizon, forecast_start_date, model_path_ckpt_link, model_path_pth_link)
-        return jsonify({'status': '200'})
+        res = forecast(dataIRI, horizon, forecast_start_date, model_path_ckpt_link, model_path_pth_link)
+        res['status'] = '200'
+        return jsonify(res)
     except Exception as ex:
         #logger.("Unable to forecast.", ex)
         return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)})
