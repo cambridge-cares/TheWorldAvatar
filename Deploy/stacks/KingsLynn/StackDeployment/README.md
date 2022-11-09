@@ -187,15 +187,28 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 
 ## <u>5) Additional data incorporation </u>
 
-### MetOffice Agent
+## MetOffice Agent
 
 - no explicit namespace is created, default `kb` is used
 All sensor data (flood, AQ, metoffice) in KB
 
-### AirQuality Agent
+## AirQuality Agent
 
-### River Levels Agent
+## River Levels Agent
 
+> The following description refers to commit `03bdd20501a9901d390c76fdd3b298f6ea672c66` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+
+The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river level data from the [Environment Agency] into the KG. Details on building and deploying the agent are provided in its README and only summarised here: 
+
+* Building the agent requires both a `settings.xml` and `settings-security.xml` to be provided in the `docker/.m2` sub-repository of the agent to be able to download TWA packages from Github
+* Both the `datum.json` and `river_stations.csv` files provided in the [RiverLevelAgent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
+* To deploy the agent to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily:
+    ```bash
+    bash ./stack.sh start KINGS-LYNN
+    ```
+```diff
+- Please note: The agent populates all station data into the default "kb" namespace of Blazegraph
+```
 
 &nbsp;
 # Tracking instantiated building information
@@ -207,6 +220,7 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
@@ -222,7 +236,9 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
 [EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
+[RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
 <!-- repositories -->
 [Utilities]: ../Utilities
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
+[RiverLevelAgent input folder]: /StackDeployment/inputs/RiverLevelAgent
