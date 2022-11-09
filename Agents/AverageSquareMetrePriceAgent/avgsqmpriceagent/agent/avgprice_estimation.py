@@ -52,7 +52,7 @@ class AvgSqmPriceAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
 
-    def validate_input_values(self, inputs):
+    def validate_input_values(self, inputs, derivationIRI=None):
         """
         Check whether received input values are suitable to perform average price
         estimation. Throw exception if data is not suitable.
@@ -60,16 +60,11 @@ class AvgSqmPriceAgent(DerivationAgent):
 
         Arguments:
             inputs {dict} -- Dictionary of inputs with input concepts as keys and values as list
+            derivationIRI {str} -- IRI of the derivation instance (optional)
 
         Returns:
             postcode_iri {str}, ppi_iri {str}, tx_records {list}
         """
-
-        # TODO: Potentially add derivationIRI to logger and exception message
-        # With pyderivationagent 1.2.2, this is not easily possible, as derivationIRI is hidden
-        # to `process_request_parameters`. Potentially to be revisited if method gets changed to
-        # `process_request_parameters(self, derivation_iri, derivation_inputs, derivation_outputs)`
-        # in a next version of pyderivationagent
 
         # Check whether postcode is available
         if inputs.get(OBE_POSTALCODE):
@@ -78,11 +73,11 @@ class AvgSqmPriceAgent(DerivationAgent):
             if len(pc) == 1:
                 postcode_iri = pc[0]
             else:
-                self.logger.error("More than one Postcode IRI provided.")
-                raise Exception("More than one Postcode IRI provided.")                
+                self.logger.error(f"Derivation {derivationIRI}: More than one Postcode IRI provided.")
+                raise Exception(f"Derivation {derivationIRI}: More than one Postcode IRI provided.")                
         else:
-            self.logger.error("Postcode IRI is missing.")
-            raise Exception("Postcode IRI is missing.")
+            self.logger.error(f"Derivation {derivationIRI}: Postcode IRI is missing.")
+            raise Exception(f"Derivation {derivationIRI}: Postcode IRI is missing.")
 
         # Check whether property price index is available
         if inputs.get(OBE_PROPERTY_PRICE_INDEX):
@@ -91,19 +86,19 @@ class AvgSqmPriceAgent(DerivationAgent):
             if len(ppi) == 1:
                 ppi_iri = ppi[0]
             else:
-                self.logger.error("More than one Property Price Index IRI provided.")
-                raise Exception("More than one Property Price Index IRI provided.")
+                self.logger.error(f"Derivation {derivationIRI}: More than one Property Price Index IRI provided.")
+                raise Exception(f"Derivation {derivationIRI}: More than one Property Price Index IRI provided.")
         else:
-            self.logger.error("Property Price Index IRI is missing.")
-            raise Exception("Property Price Index IRI is missing.")
+            self.logger.error(f"Derivation {derivationIRI}: Property Price Index IRI is missing.")
+            raise Exception(f"Derivation {derivationIRI}: Property Price Index IRI is missing.")
 
 
         # Check whether previous transactions are available
         if inputs.get(LRPPI_TRANSACTION_RECORD):
             tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
         else:
-            self.logger.error("Previous property sales transactions are missing.")
-            raise Exception("Previous property sales transactions are missing.")
+            self.logger.error(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
+            raise Exception(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
 
         return postcode_iri, ppi_iri, tx_iris
 
@@ -124,7 +119,9 @@ class AvgSqmPriceAgent(DerivationAgent):
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
-        postcode_iri, ppi_iri, tx_records = self.validate_input_values(inputs)
+        derivIRI = derivation_inputs.getDerivationIRI()
+        postcode_iri, ppi_iri, tx_records = self.validate_input_values(inputs=inputs,
+                                                                       derivationIRI=derivIRI)
         
         # Assess average price per sqm in case all required inputs are available
         # (i.e. all inputs have been marked up successfully)
