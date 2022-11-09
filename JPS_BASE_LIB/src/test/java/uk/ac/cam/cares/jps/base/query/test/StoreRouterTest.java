@@ -205,6 +205,17 @@ class StoreRouterTest {
 		assertFalse(StoreRouter.isRemoteTargetResourceID("test/ontokin"));
 	}
 
+	@Test
+	public void testGetRouterStoreClient(){
+
+		StoreRouter storeRouter = StoreRouter.getInstance();
+
+		TripleStoreClientInterface storeClient = storeRouter.getRouterStoreClient();
+
+		assertNotNull(storeClient);
+		assertEquals(StoreRouter.storeRouterEndpoint, storeClient.getQueryEndpoint());
+	}
+
 	///////////////////////////////////////////
 	//Mock ontokgrouter triple store
 		
