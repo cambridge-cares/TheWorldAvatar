@@ -76,10 +76,18 @@ def api_forecast():
         #logger.info('No model_path_pth_link, using Prophet.')
         model_path_pth_link = ''
     
-    
+    # retrieve data_length
+    try:
+        # data length is the length of the time series which is loaded as input to the model
+        # prophet will use all of it, but TFT will use it just to scale the data and then uses 'input_chunk_length' to predict
+
+        data_length = int(query['data_length'])
+    except Exception as ex:
+        #logger.info('No data_length, using default.')
+        data_length = 365*24
     try:
         # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, model_path_ckpt_link, model_path_pth_link)
+        res = forecast(dataIRI, horizon, forecast_start_date, model_path_ckpt_link, model_path_pth_link, data_length)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:

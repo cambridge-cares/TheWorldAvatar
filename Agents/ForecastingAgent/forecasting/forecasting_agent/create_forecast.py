@@ -43,9 +43,6 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
     ts_freq = dt.timedelta(hours=1)
     cov_iris, covariates = None, None
     lowerbound, upperbound = None, None
-    # data length is the length of the time series which is loaded as input to the model
-    # prophet will use all of it, but TFT will use it just to scale the data and then uses 'input_chunk_length' to predict
-    data_length = 365 * 24
 
     try:
         # load model
@@ -128,10 +125,6 @@ def forecast(dataIRI, horizon=24 * 7, forecast_start_date=None, model_path_ckpt_
         scaler = Scaler()
         series_scaled = scaler.fit_transform(series)
         #logger.info(f'Scaled timeseries for better performance of Transformer model')
-        if len(series_scaled) < input_length:
-            raise ValueError(
-                f"given series is too short, must be at least input_length {input_length} long, Prophet is used instead")
-
         # make prediction
         try:
             forecast = model.predict(

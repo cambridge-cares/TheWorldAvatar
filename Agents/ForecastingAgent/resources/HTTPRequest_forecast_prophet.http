@@ -14,6 +14,7 @@ Content-Type: application/json
 
       //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
       "horizon": 168,
-      "forecast_start_date": "2019-10-17T01:00:00Z"
+      "forecast_start_date": "2019-10-17T01:00:00Z",
+      "data_length": 17520
     }
 }

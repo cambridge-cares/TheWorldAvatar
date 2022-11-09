@@ -14,6 +14,7 @@ Content-Type: application/json
       "horizon": 168,
       "model_path_ckpt_link": "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1", 
       "model_path_pth_link": "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
-      "forecast_start_date": "2019-10-17T01:00:00Z"
+      "forecast_start_date": "2019-10-17T01:00:00Z",
+      "data_length": 1680
     }
 }
