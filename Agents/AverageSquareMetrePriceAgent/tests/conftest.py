@@ -105,6 +105,11 @@ TBOX_TRIPLES = 21
 ABOX_TRIPLES = 77 # 14 per building + 7 overaching ones
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
+DERIV_STATUS_TRIPLES = 2        # derivation status triples
+AGENT_SERVICE_TRIPLES = 5       # agent service triples
+DERIV_INPUT_TRIPLES = 2 + 3*3   # triples for derivation input message
+DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
+
 
 # List of all transactions (to mock ONS API call)
 ALL_TRANSACTION_RECORDS = [TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI,

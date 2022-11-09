@@ -99,7 +99,7 @@ def test_monitor_derivations(
     sparql_client, derivation_client, rdb_url = initialise_clients
 
     # Initialise all triples in test_triples + initialise time series in RDB
-    # It first DELETES ALL DATA in the specified SPARQL/RDB endpoint
+    # It first DELETES ALL DATA in the specified SPARQL/RDB endpoints
     # It then SPARQL updates all triples stated in test_triples folder to SPARQL endpoint +
     # Initialises PropertyPriceIndex time series and uploads test data to RDB
     cf.initialise_triples(sparql_client)
@@ -108,29 +108,49 @@ def test_monitor_derivations(
                              rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
                              dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
                              dates=cf.DATES, values=cf.VALUES)
-    # Add time stamp to pure inputs
-    cf.initialise_timestamps(derivation_client, derivation_input_set)
-    # Verify correct number time mark up triples
-    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES \
-                         + cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set))
+
+    # Verify correct number of triples (not marked up with timestamp yet)
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
 
     # Create agent instance and register agent in KG
-    # NOTE Successful agent registration within the KG is required to properly pick up derivations
-    # -> Here we always set `register_agent=True` to guarantee that Blazegraph will be ready when
-    # the agent is initialised. In a real deployment, the agent MUST be registered in the KG when 
-    # spinning up the agent container, i.e. REGISTER_AGENT=true in env file
+    # EXPLANATION: 
+    # 1) Test Docker stack spins up Blazegraph, Postgres and Agent container, where agent
+    #    endpoints (loaded from mocked `stack_configs_mock.py`) contain `docker.host.internal`
+    #    to ensure intra-container communication
+    # 2) However, successful agent registration within the KG cannot be guaranteed as both are within 
+    #    the same Stack and sequence of startup (i.e. agent registration only after KG is available)
+    #    cannot be guaranteed; however, this is required to properly pick up derivations
+    # 3) Hence, the Dockerised agent is started without initial registration within the Stack and
+    #    registration is done within the test to guarantee that Blazegraph will be ready
+    # 4) The "belated" registration of the Dockerised agent can be achieved by registering "another local"
+    #    agent instance with the same ONTOAGENT_SERVICE_IRI, while registering a "new" agent with a 
+    #    different ONTOAGENT_SERVICE_IRI will actually register a local agent instance in the KG
     agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
+
+    # Assert that there's currently no instance having rdf:type of the output signature in the KG
+    assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OBE_AVERAGE_SM_PRICE)
+
+    # Create derivation instance for new information
+    # As of pyderivationagent==1.3.0 this also initialises all timestamps for pure inputs
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, derivation_input_set)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    
+    # Expected number of triples after derivation registration
+    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
+    triples += len(derivation_input_set) + 1    # number of inputs + derivation instance type
+    triples += cf.AGENT_SERVICE_TRIPLES
+    triples += cf.DERIV_STATUS_TRIPLES
+    triples += cf.DERIV_INPUT_TRIPLES
+    triples += cf.DERIV_OUTPUT_TRIPLES
+
+    # Verify correct number of triples (incl. timestamp & agent triples)
+    assert sparql_client.getAmountOfTriples() == triples    
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
         agent._start_monitoring_derivations()
-
-    # Assert that there's currently no instances has rdf:type of the output signature in the KG
-    assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OBE_AVERAGE_SM_PRICE)
-
-    # Create derivation instance for new information, the timestamp of this derivation is 0
-    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, derivation_input_set)
-    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
@@ -167,6 +187,6 @@ def test_monitor_derivations(
 
     print("All check passed.")
 
-    # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
+    # Shutdown the scheduler to clean up if it's local agent test
     if local_agent_test:
         agent.scheduler.shutdown()
