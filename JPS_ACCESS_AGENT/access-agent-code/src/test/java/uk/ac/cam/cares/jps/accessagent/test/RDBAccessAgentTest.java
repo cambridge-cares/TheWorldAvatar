@@ -2,19 +2,16 @@ package uk.ac.cam.cares.jps.accessagent.test;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
-import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 import uk.ac.cam.cares.jps.accessagent.RDBAccessAgent;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RDBStoreRouter;
 
 import javax.ws.rs.BadRequestException;
