@@ -490,6 +490,7 @@ class Manager {
     public static findStack(feature, properties) {
         switch(Manager.PROVIDER) {
             case MapProvider.CESIUM: {
+                console.log(feature);
 
                 if(feature instanceof Cesium.Cesium3DTileFeature) {
                     // Feature within 3D tileset
@@ -508,7 +509,23 @@ class Manager {
                         // No way to determine what layer this feature came from
                         return null;
                     }
+                } else if(feature.hasOwnProperty("primitive") && feature["primitive"] instanceof Cesium.Cesium3DTileset) {
+                     // Feature within 3D tileset, for some reason using a different Cesium data object?
+                     let tileset = feature.primitive;
 
+                    if(tileset.hasOwnProperty("layerID")) {
+                        let layerID = tileset["layerID"];
+
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
                 } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                     // WMS feature on cesium
                     let layer = feature["imageryLayer"];
