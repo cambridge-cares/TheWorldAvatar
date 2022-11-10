@@ -5,6 +5,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -19,6 +21,8 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 
 public class AgentCallerTest {
@@ -128,7 +132,8 @@ public class AgentCallerTest {
 
     @Test
     public void testexecuteGetWithJsonParameter() {
-        String path = "/HelloServlet-0.0.1-SNAPSHOT/sayhello" ;
+
+        String path = "https://httpbin.org/anything" ;
         JSONObject json = new JSONObject();
         json.put("test1", "value1");
         String strjson = json.toString();
@@ -136,9 +141,15 @@ public class AgentCallerTest {
         assertNotNull(res);
         assertTrue(res.length() > 0);
 
-        String invalidPath = "somepath" ;
-        assertThrows(JPSRuntimeException.class,
-                ()-> {AgentCaller.executeGetWithJsonParameter(invalidPath,strjson) ;}) ;
+        try (MockedStatic<AgentCaller> aacMock = mockStatic(AgentCaller.class)) {
+
+            //Do not execute  the executeGet(HttpGet request) method of the AgentCaller class - it is tested separately
+            ((MockedStatic<?>) aacMock).when(() -> AgentCaller.executeGet((HttpGet) any(Object.class)))
+                    .thenAnswer((Answer<Void>) invocation -> null);
+            //Call method that invokes the executeGet method of AgentCaller inside
+            assertNull(AgentCaller.executeGetWithJsonParameter(path,strjson));
+
+        }
 
     }
 
