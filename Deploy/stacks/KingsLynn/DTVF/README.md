@@ -29,8 +29,7 @@ The Feature Info Agent is used to retrieve meta data for visualisation(s). Detai
 
 The required `.sparql` files to be placed inside the agent before building the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository (as well as to be found in the `resource` folders of the respective input agents (i.e. MetOfficeAgent, EPCInstantiationAgent)).
 
-To build the Agent image and deploy it to the spun up stack, please run the following commands from the [FeatureInfoAgent] directory (after providing the above files):
-
+To build the Agent image and deploy it to the spun up stack, please run the following commands from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM):
 
 ```bash
 # Build the agent image
@@ -38,7 +37,7 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
  # Deploy the agent
  bash ./stack.sh start <STACK_NAME>
 ```
-
+After deploying the agent, the NGINX routing configuration needs to be added. **Please note** that this is required after each agent startup, details are provided below.
 
 &nbsp;
 ## Important Pre-requisites
@@ -47,7 +46,7 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 
 * **Allow CORS (i.e. Cross-Origin Resource Sharing)**: The FIA relies on CORS information to retrieve metadata from the stack after clicking on any displayed feature. A current work-around to enable this is installing a browser plug-in to blanket-allow CORS requests. However, one should be aware of the security implications of this!
 
-* **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack nginx configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
+* **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack NGINX configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
 
     ```bash
     # Run helper script to add Feature Info Agent NGINX configuration
