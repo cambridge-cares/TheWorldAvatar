@@ -1,0 +1,140 @@
+[PrefixDeclaration]
+xsd:		http://www.w3.org/2001/XMLSchema#
+ub:         http://www.theworldavatar.com/kg/ontoubemmp/
+be:         http://www.theworldavatar.com/kg/ontobuiltenv/
+beai:       http://www.theworldavatar.com/kg/ontobuiltenvadmininfo/
+om:         http://www.ontology-of-units-of-measure.org/resource/om-2/
+oum:        https://www.theworldavatar.com/kg/ontouom/
+gml:        http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+db:         http://www.purl.org/oema/enaeq/
+bot:        http://w3id.org/bot#
+bim:        http://www.theworldavatar.com/ontology/ontobim/OntoBIM.owl#
+iri:        https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	photovoltaik
+target		iri:OntoCityGML/Building_{ID} a gml:Building .
+            iri:DABGEO/Building_{ID} a db:Building ;
+                be:hasOntoCityGMLRepresentation iri:OntoCityGML/Building_{ID} ;
+                beai:locatedInDistrict {gemarkung_nr}^^xsd:string ;
+                beai:locatedInDistrict {gemarkung_name}^^xsd:string ;
+                beai:belongsToManagementGroup {vg_nr}^^xsd:string ;
+                beai:belongsToAdminCommunity {vg_name}^^xsd:string ;
+                beai:belongsToCommunity {gem_nr}^^xsd:string ;
+                beai:belongsToCommunity {gem_name}^^xsd:string ;
+                beai:locatedInCounty {kreis_nr}^^xsd:string ;
+                beai:locatedInCounty {kreis_name}^^xsd:string ;
+                beai:hasGovernorateNumber {regierung_nr}^^xsd:integer ;
+                beai:hasBuildingID {geb_id}^^xsd:string ;
+                ub:receivesRadiation iri:OntoUBEMMP/AnnualSolarIrradiationQuantity_{ID} ;
+                ub:hasDevice iri:OntoUBEMMP/PVRoofPanels_{ID} ;
+                bot:containsElement iri:Roof_{ID} .
+            iri:OntoUBEMMP/AnnualSolarIrradiationQuantity_{ID} a ub:AnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualSolarIrradiationValue_{ID} .
+            iri:OntoUBEMMP/AnnualSolarIrradiationValue_{ID} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {win_median}^^xsd:double .
+            iri:OntoUBEMMP/PVRoofPanels_{ID} a ub:RoofPVPanels ;
+                ub:hasSpecificYield iri:OntoUBEMMP/SpecificYieldQuantity_{ID} ;
+                db:producesEnergy iri:OntoUBEMMP/AnnualElectricitySupplyQuantity_{ID} ;
+                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{ID} ;
+                ub:hasPeakPower iri:OntoUBEMMP/PeakPowerQuantity_{ID} .
+            iri:OntoUBEMMP/SpecificYieldQuantity_{ID} a oum:SpecificYield ;
+                om:hasValue iri:OntoUBEMMP/SpecificYieldValue_{ID} .
+            iri:OntoUBEMMP/SpecificYieldValue_{ID} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerKilowatt ;
+                om:hasNumericalValue {kwh_kwp}^^xsd:double .
+            iri:OntoUBEMMP/AnnualElectricitySupplyQuantity_{ID} a ub:AnnualElectricitySupply ;
+                om:hasDimension om:energy-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualElectricitySupplyValue_{ID} .
+            iri:OntoUBEMMP/AnnualElectricitySupplyValue_{ID} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {str_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 30 degree south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{ID} a ub:AnnualCO2Savings ;
+                om:hasDimension om:mass-Dimension ;
+                om:hasValue iri:OntoUBEMMP/AnnualCO2SavingsValue_{ID} .
+            iri:OntoUBEMMP/AnnualCO2SavingsValue_{ID} a om:Measure ;
+                om:hasUnit om:kilogram ;
+                om:hasNumericalValue {co2_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at 0.504 kg/kWh (assuming module efficiency 19.5%). In the case of flat surfaces, an elevation of 30° south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/PeakPowerQuantity_{ID} a om:Power ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue iri:OntoUBEMMP/PeakPowerValue_{ID} .
+            iri:OntoUBEMMP/PeakPowerValue_{ID} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {kw_19_5}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 30 degree south was taken as a basis for photovoltaic systems."^^xsd:string .
+            iri:OntoUBEMMP/OWAnnualElectricitySupplyQuantity_{ID} a ub:AnnualElectricitySupply ;
+                om:hasDimension om:energy-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWAnnualElectricitySupplyValue_{ID} .
+            iri:OntoUBEMMP/OWAnnualElectricitySupplyValue_{ID} a om:Measure ;
+                om:hasUnit om:kilowattHour ;
+                om:hasNumericalValue {str_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:OntoUBEMMP/OWAnnualCO2SavingsQuantity_{ID} a ub:AnnualCO2Savings ;
+                om:hasDimension om:mass-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWAnnualCO2SavingsValue_{ID} .
+            iri:OntoUBEMMP/OWAnnualCO2SavingsValue_{ID} a om:Measure ;
+                om:hasUnit om:kilogram ;
+                om:hasNumericalValue {co2_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at 0.504 kg/kWh (assuming module efficiency 19.5%). In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:OntoUBEMMP/OWPeakPowerQuantity_{ID} a om:Power ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWPeakPowerValue_{ID} .
+            iri:OntoUBEMMP/OWPeakPowerValue_{ID} a om:Measure ;
+                om:hasUnit om:kilowatt ;
+                om:hasNumericalValue {kw_19_5_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at photovoltaic module efficiency of 19.5%. In the case of flat areas, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string .
+            iri:Roof_{ID} a bim:Roof ;
+                ub:receivesRadiation iri:OntoUBEMMP/RoofAnnualSolarIrradiationQuantity_{ID} ;
+                ub:receivesRadiation iri:OntoUBEMMP/OWRoofAnnualSolarIrradiationQuantity_{ID} ;
+                bim:hasSlope  iri:OM/SlopeAngleQuantity_{ID} ;
+                bim:hasOrientation iri:OM/OrientationAngleQuantity_{ID} ;
+                bim:isPVPanelSuitable {eigngpvi}^^xsd:boolean ;
+                bim:hasArea iri:OM/SolarSuitableAreaQuantity_{ID} .
+            iri:OntoUBEMMP/RoofAnnualSolarIrradiationQuantity_{ID} a ub:RoofAnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/RoofAnnualSolarIrradiationValue_{ID} .
+            iri:OntoUBEMMP/RoofAnnualSolarIrradiationValue_{ID} a om:Measure ;
+                oum:hasUnit om:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {radabs}^^xsd:double .
+            iri:OntoUBEMMP/OWRoofAnnualSolarIrradiationQuantity_{ID} a ub:OWRoofAnnualSolarIrradiation ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OntoUBEMMP/OWRoofAnnualSolarIrradiationValue_{ID} .
+            iri:OntoUBEMMP/OWRoofAnnualSolarIrradiationValue_{ID} a om:Measure ;
+                oum:hasUnit om:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {radabs_OW}^^xsd:double .
+            iri:OM/SolarSuitableAreaQuantity_{ID} a bim:SolarSuitableRoofArea ;
+                om:hasDimension om:area-Dimension ;
+                om:hasValue iri:OntoBIM/2DSolarSuitableAreaValue_{ID} ;
+                om:hasValue iri:OntoBIM/3DSolarSuitableAreaValue_{ID} ;
+                om:hasValue iri:OntoBIM/3DOWSolarSuitableAreaValue_{ID} .
+            iri:OntoBIM/2DSolarSuitableAreaValue_{ID} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {area_2d}^^xsd:double ;
+                ub:hasCalculationBasis "Rounded 2D surface suitable for solar use."^^xsd:string.
+            iri:OntoBIM/3DSolarSuitableAreaValue_{ID} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {modarea}^^xsd:double ;
+                ub:hasCalculationBasis "Gross roof area size suitable for solar use in m² (3D area). In the case of flat roofs, an elevation of 30° south was taken as a basis for PV systems."^^xsd:string.
+            iri:OntoBIM/3DOWSolarSuitableAreaValue_{ID} a om:Measure ;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue {modarea_OW}^^xsd:double ;
+                ub:hasCalculationBasis "Gross roof area size suitable for solar use in m² (3D area). In the case of flat roofs, an elevation of 10° to the east and west was taken as a basis for PV systems."^^xsd:string.
+            iri:OM/SlopeAngleQuantity_{ID} a om:Angle ;
+                om:hasDimension om:dimensionOne ;
+                om:hasValue iri:SlopeAngleValue_{ID} .
+            iri:OM/SlopeAngleValue_{ID} a om:Measure ;
+                om:hasUnit om:degree ;
+                om:hasNumericalValue {neigung}^^xsd:double .
+            iri:OM/OrientationAngleQuantity_{ID} a om:Angle ;
+                om:hasDimension om:dimensionOne ;
+                om:hasValue iri:OrientationAngleValue_{ID} .
+            iri:OM/OrientationAngleValue_{ID} a om:Measure ;
+                om:hasUnit om:degree ;
+                om:hasNumericalValue {richtung}^^xsd:double .
+source      SELECT oid, geb_id, CONCAT(geb_id, oid) AS ID, win_median, radabs, radabs_OW, kwh_kwp, str_19_5, co2_19_5, kw_19_5, str_19_5_OW, co2_19_5_OW, kw_19_5_OW, eigngpvi, area_2d, modarea, modArea_OW, richtung, neigung, gemarkung_nr, gemarkung_name, vg_nr, vg_name, gem_nr, gem_name, kreis_nr, kreis_name, regierung_nr FROM "photovoltaik"
+           ]]
+
