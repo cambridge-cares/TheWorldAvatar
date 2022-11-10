@@ -3,6 +3,7 @@ from rdflib import Graph
 from rdflib import RDF
 import pytest
 import time
+import copy
 
 import avgsqmpriceagent.datamodel as dm
 
@@ -188,12 +189,15 @@ def test_monitor_derivations(
     # Verify price
     assert len(price) == 1
     assert price[0] == expected_avg
+
     # Verify inputs (i.e. derived from)
+    # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
+    derivation_input_set_copy = copy.deepcopy(derivation_input_set)
     for i in inputs:
         for j in inputs[i]:
-            assert j in derivation_input_set
-            derivation_input_set.remove(j)
-    assert len(derivation_input_set) == 0
+            assert j in derivation_input_set_copy
+            derivation_input_set_copy.remove(j)
+    assert len(derivation_input_set_copy) == 0
 
     print("All check passed.")
 
