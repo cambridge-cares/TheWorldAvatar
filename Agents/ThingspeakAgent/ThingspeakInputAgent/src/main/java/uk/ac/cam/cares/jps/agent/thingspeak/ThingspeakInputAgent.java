@@ -268,9 +268,13 @@ public class ThingspeakInputAgent{
         // First save the values as Object //
     	//readingsMap is a map with keys as String and each key is mapped to a list of objects.
         Map<String, List<Object>> readingsMapTimeStamp = new HashMap<>();
-
+        
         JSONArray jsonarray1 = new JSONArray();
+        try {
         jsonarray1 = readings.getJSONArray("feeds");
+        } catch (Exception e) {
+        	throw new JSONException("Some keys are missing in the readings!");
+        }
 
         for (int j = 0; j < jsonarray1.length(); j++) {
                 // Get the timestamp and add it to the corresponding list
@@ -315,10 +319,15 @@ public class ThingspeakInputAgent{
      * @param readings The JSON Object to convert
      * @return The readings in form of a Map
      */
-    private Map<String, List<?>> jsonObjectToMap(JSONObject readings) {
+    public Map<String, List<?>> jsonObjectToMap(JSONObject readings) {
         // First save the values as Object //
+    	String[] keys;
+    	try {
     	//readingsMap is a map with keys as String and each key is mapped to a list of objects.
-    	String[] keys = new String[readings.getJSONObject("channel").length()];
+    	keys = new String[readings.getJSONObject("channel").length()];
+    	} catch (Exception e) {
+    		throw new JSONException("Some keys are missing in the readings!");
+    	}
         Map<String, List<Object>> readingsMap = new HashMap<>();
         // Go through the readings in the JSON object one by one
             // Iterate through the keys of the JSON object   
