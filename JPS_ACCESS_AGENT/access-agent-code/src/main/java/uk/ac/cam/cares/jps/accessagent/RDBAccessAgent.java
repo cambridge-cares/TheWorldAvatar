@@ -111,12 +111,22 @@ public class RDBAccessAgent extends JPSAgent {
 
         try {
             logInputParams(requestParams, false);
-            String rdbUrl = RDBStoreRouter.getRDBUrl(targetIRI);
+            String rdbUrl = getRDBUrl(targetIRI);
             return rdbUrl;
 
         } catch (RuntimeException e) {
             logInputParams(requestParams, true);
             throw new JPSRuntimeException(e);
+        }
+    }
+
+    public String getRDBUrl(String targetIRI){
+        try {
+            String url = RDBStoreRouter.getRDBUrl(targetIRI);
+            return url;
+        }catch (RuntimeException e){
+            LOGGER.error("Failed to obtain RDB url");
+            throw new JPSRuntimeException("Failed to obtain RDB url");
         }
     }
 
