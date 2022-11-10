@@ -86,7 +86,7 @@ public class ThingspeakAPIConnector {
      */
     private JSONObject retrieveReadings() throws IOException, JSONException {
 
-        if (APIKey != null) {
+        if (!APIKey.contains("None")) {
     	String basicReadingPath = String.join("/","https://api.thingspeak.com/channels", channelNumber, "feeds.json?api_key=" + APIKey + "&results=" + results);     
         
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
