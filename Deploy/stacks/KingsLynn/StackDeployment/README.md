@@ -48,6 +48,8 @@ bash ./stack.sh remove KINGS-LYNN -v
 
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
 
+After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` as required by the Digital Twin Visualisation Framework. In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and select Restart). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
+
 &nbsp;
 ## Spinning up the core Stack remotely via SSH
 
