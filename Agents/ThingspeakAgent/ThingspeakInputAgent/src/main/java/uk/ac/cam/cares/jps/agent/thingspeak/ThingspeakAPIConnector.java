@@ -28,6 +28,7 @@ public class ThingspeakAPIConnector {
     private String channelNumber;
     private String APIKey;
     private String results;
+    String pathUrl = "https://api.thingspeak.com/channels/" ;
     
     /**
      * Logger for reporting info/errors.
@@ -50,10 +51,11 @@ public class ThingspeakAPIConnector {
      * @param APIKey the key required to read readings from the Thingspeak channel
      * @param results the number of readings to retrieve from the channel
      */
-    public ThingspeakAPIConnector(String channelNumber, String APIKey, String results) {
+    public ThingspeakAPIConnector(String channelNumber, String APIKey, String results, String url) {
         this.channelNumber = channelNumber;
         this.APIKey = APIKey;
         this.results = results;
+        this.pathUrl = url;
         
     }
 
@@ -85,9 +87,9 @@ public class ThingspeakAPIConnector {
      * @return Readings in a JSON Object
      */
     private JSONObject retrieveReadings() throws IOException, JSONException {
-
+    	
         if (!APIKey.contains("None")) {
-    	String basicReadingPath = String.join("/","https://api.thingspeak.com/channels", channelNumber, "feeds.json?api_key=" + APIKey + "&results=" + results);     
+    	String basicReadingPath = pathUrl + channelNumber + "/feeds.json?api_key=" + APIKey + "&results=" + results;     
         
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readingRequest = new HttpGet(basicReadingPath);
@@ -105,7 +107,7 @@ public class ThingspeakAPIConnector {
         }
     } 
         else {
-    	String basicReadingPath = String.join("/","https://api.thingspeak.com/channels", channelNumber, "feeds.json?results=" + results);     
+    	String basicReadingPath = pathUrl +  channelNumber + "/feeds.json?results=" + results;     
         
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readingRequest = new HttpGet(basicReadingPath);
@@ -157,6 +159,12 @@ public class ThingspeakAPIConnector {
                 this.results = prop.getProperty("thingspeak.results");
             } else {
                 throw new IOException("Properties file is missing \"thingspeak.results=<results>\"");
+            }
+            
+            if (prop.containsKey("path.url")) {
+                this.pathUrl = prop.getProperty("path.url");
+            } else {
+                throw new IOException("Properties file is missing \"path.url=<path_url>\"");
             }
 
         }
