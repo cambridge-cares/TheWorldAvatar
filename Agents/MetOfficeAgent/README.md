@@ -211,7 +211,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [Github container registry]: https://ghcr.io
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5000/]: http://localhost:5000/
-[Java Development Kit version >=11]: https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot
+[Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
