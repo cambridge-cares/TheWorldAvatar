@@ -203,8 +203,14 @@ public class ThingspeakInputAgent{
     public void updateData(JSONObject Readings)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
-    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(Readings);
-    	Map<String, List<?>> ReadingsMap = jsonObjectToMap(Readings);
+    	Map<String, List<?>> timeStampReadingsMap = new HashMap<>();
+    	Map<String, List<?>> ReadingsMap = new HashMap<>();
+    	try {
+    	timeStampReadingsMap = jsonObjectToMapForTimeStamp(Readings);
+    	ReadingsMap = jsonObjectToMap(Readings);
+    	} catch (JSONException e) {
+    		throw new IllegalArgumentException("Readings can not be empty!", e);
+    	}
         
         
         // Only do something if all readings contain data

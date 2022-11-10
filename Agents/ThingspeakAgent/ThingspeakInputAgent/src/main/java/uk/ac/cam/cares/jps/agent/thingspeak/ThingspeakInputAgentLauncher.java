@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.thingspeak;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -257,7 +256,7 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
             if (prop.containsKey("db.user")) {
                 this.dbUsername = prop.getProperty("db.user");
             } else {
-                throw new IOException("Properties file is missing \"db.user=<db_username>\"");
+                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
             }
             if (prop.containsKey("db.password")) {
                 this.dbPassword = prop.getProperty("db.password");
