@@ -1,9 +1,9 @@
 # The Stack Data Uploader
 
-> In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`.
+> :memo: **Note:** In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`.
 You will need to substitute in appropriate values before running any commands.
 
-> Unless otherwise stated all paths listed in this readme are relative to the [`Deploy/stacks/dynamic/stack-data-uploader`](.) directory in the TheWorldAvatar repository.
+> :memo: **Note:** Unless otherwise stated all paths listed in this readme are relative to the [`Deploy/stacks/dynamic/stack-data-uploader`](.) directory in the TheWorldAvatar repository.
 
 ## Introduction
 
@@ -59,7 +59,7 @@ The following table shows the top level nodes allowed in a configuration file.
 This is the name of the dataset.
 If left unspecified it is set to the name of the configuration file, without the .json extension.
 This is the value that should be specified in the `"externalDatasets"` node of another dataset.
->If the dataset's name matches the name of the stack it is being loaded into then only that dataset and its associated external datasets will be loaded.
+> :memo: **Note:** If the dataset's name matches the name of the stack it is being loaded into then only that dataset and its associated external datasets will be loaded.
 
 #### `"datasetDirectory"`
 The directory within `inputs/data/` that contains the data files associated with this dataset.
@@ -69,13 +69,13 @@ Setting the `"skip"` value of a dataset to `true` will cause the data uploader t
 
 #### `"database"`
 The name of the database within Postgres to which appropriate data will be uploaded.
->The database will be created if it doesn't already exist.
+> :memo: **Note:** The database will be created if it doesn't already exist.
 
->**Ontop can only access the default 'postgres' database so it is usually best not to change this value**.
+> :warning: **Warning:** Ontop can only access the default 'postgres' database so it is usually best not to change this value.
 
 #### `"workspace"`
 The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added.
->The workspace will be created if it doesn't already exist.
+> :memo: **Note:** The workspace will be created if it doesn't already exist.
 
 #### `"externalDatasets"`
 Any datasets that are named under this node will be included if this dataset is loaded by name, either because the stack has the same name or because it appears in the `"externalDatasets"` list of another dataset that is loaded by name.
