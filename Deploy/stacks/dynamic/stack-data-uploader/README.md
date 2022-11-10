@@ -130,8 +130,8 @@ A description of how each is processed and a summary of the available configurat
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
 The data loader does two things when uploading vector data: 
-1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
-The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html#vector-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
 
 The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
@@ -144,57 +144,57 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-This sets the value of the [`-a_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs) argument passed to `ogr2ogr`.
+This sets the value of the [`-a_srs`][ogr2ogr-a_srs] argument passed to `ogr2ogr`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-This sets the value of the [`-t_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs) argument passed to `ogr2ogr`.
-It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs) argument, rather than `-a_srs`.
+This sets the value of the [`-t_srs`][ogr2ogr-t_srs] argument passed to `ogr2ogr`.
+It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][ogr2ogr-s_srs] argument, rather than `-a_srs`.
 
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
 These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
-All of the vector drivers are listed [here](https://gdal.org/drivers/vector/index.html#vector-drivers) with links to their documentation.
-The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-oo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo) option.
+All of the vector drivers are listed [here][vector-drivers] with links to their documentation.
+The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-oo`][ogr2ogr-oo] option.
 
 ##### `"layerCreationOptions"`
 All vector datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
 In general these options should not need to be set explicitly as the `ogr2ogr` tool can usually work them out from the source dataset, or use default values.
 However, setting one or more of them may be required to fix specific problems with the input dataset.
-The layer creation options provided by the PostGIS driver are described [here](https://gdal.org/drivers/vector/pg.html#layer-creation-options).
-The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-lco`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco) option.
+The layer creation options provided by the PostGIS driver are described [here][vector-postgis-lco].
+The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-lco`][ogr2ogr-lco] option.
 
 ##### `"outputDatasetOpenOptions"`
 The PostGIS driver has a few options to control how the `ogr2ogr` tool connects to the database.
 However, all of the essential information (database name, port number, username, etc.) is set automatically so these settings should only be changed if absolutely necessary.
-The dataset open options provided by the PostGIS driver are described [here](https://gdal.org/drivers/vector/pg.html#dataset-open-options).
-The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-doo`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo) option.
+The dataset open options provided by the PostGIS driver are described [here][vector-postgis-doo].
+The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-doo`][ogr2ogr-doo] option.
 
 ##### `"otherOptions"`
 Several non-driver specific options are also available.
 These can be set as key-array-valued pairs within an `"otherOptions"` object.
 This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
-A list of possible options can be found on the [vector common options](https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs) and [ogr2ogr options](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) pages.
+A list of possible options can be found on the [vector common options][vector-common] and [ogr2ogr options][ogr2ogr] pages.
 
 ##### `"envVars"`
 A few aspects of some of the drivers can also be set via environment variables.
 These can be set as key-value pairs within an `"envVars"` object.
 
 ##### Common drivers
-- [Comma Separated Value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
-- [ESRI Shapefile / DBF](https://gdal.org/drivers/vector/shapefile.html#esri-shapefile-dbf)
-- [PostgreSQL / PostGIS](https://gdal.org/drivers/vector/pg.html#postgresql-postgis) (mainly as the output)
+- [Comma Separated Value (.csv)][vector-csv]
+- [ESRI Shapefile / DBF][vector-shapefile]
+- [PostgreSQL / PostGIS][vector-postgis] (mainly as the output)
 
 #### GeoServer Options
 For vector data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
 These settings are generally only required to add dynamic (value-based) styling to the layers for visualisation.
 Within that the following nodes can be added.
-- `"virtualTable"` creates a [SQL View](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html) which is specified as follows:
+- `"virtualTable"` creates a [SQL View][geoserver-sql] which is specified as follows:
   - `"name"` a name is required.
   - `"sql"` an SQL query that defines the virtual table is required.
-  - `"keyColumn"` specify column for [parameter](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) key.
+  - `"keyColumn"` specify column for [parameter][geoserver-sql-params] key.
   - `"escapeSql"` is Boolean `true` or `false`.
     This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
   - `"geometry"` specifies the geometry with the following `key:value` pairs.
@@ -202,22 +202,22 @@ Within that the following nodes can be added.
     - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
-  - `"parameter"` specify individual [parameters](https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters) with the following `key:value` pairs.
+  - `"parameter"` specify individual [parameters][geoserver-sql-params] with the following `key:value` pairs.
     - `"name"` parameter name.
     - `"defaultValue"` default value of parameter.
     - `"regexpValidator"` validation regular expression.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
-These are the most commonly used options, for more see the examples [here](https://docs.geoserver.org/stable/en/user/rest/) and [here](https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer).
+These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
       
 ### Raster data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
 The data loader does three things when uploading raster data: 
-1. It uses the GDAL [`gdal_translate`](https://gdal.org/programs/gdal_translate.html#gdal-translate) tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)](https://gdal.org/drivers/raster/cog.html#raster-cog) files stored in the stack.
+1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
   This is an extension of the GeoTIFF format and both are very efficient to read.
-  The full list of file formats that `gdal_translate` supports is given [here](https://gdal.org/drivers/raster/index.html#raster-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
-2. It uses the PostGIS [`raster2pgsql`](https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader) tool to register the GeoTIFF files in the PostGIS database.
+  The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
+2. It uses the PostGIS [`raster2pgsql`][postgis-raster-loader] tool to register the GeoTIFF files in the PostGIS database.
    The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
 3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
 
@@ -229,39 +229,39 @@ These can be specified within an `"gdalTranslateOptions"` object (previously jus
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs).
-This sets the value of the [`-a_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs) argument passed to `gdal_translate`.
+A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
+This sets the value of the [`-a_srs`][gdal-translate-a_srs] argument passed to `gdal_translate`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs).
-This sets the value of the [`-t_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs) argument passed to `gdal_translate`.
-It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`](https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs) argument, rather than `-a_srs`.
+A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
+This sets the value of the [`-t_srs`][gdal-translate-t_srs] argument passed to `gdal_translate`.
+It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][gdal-translate-s_srs] argument, rather than `-a_srs`.
 
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
 These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
-All of the raster drivers are listed [here](https://gdal.org/drivers/raster/index.html#raster-drivers) with links to their documentation.
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-oo`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo) option.
+All of the raster drivers are listed [here][raster-drivers] with links to their documentation.
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-oo`][gdal-translate-oo] option.
 
 ##### `"creationOptions"`
 All raster datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
 In general these options should not need to be set explicitly as the `gdal_translate` tool can usually work them out from the source dataset, or use default values.
 However, setting one or more of them may be required to fix specific problems with the input dataset.
-The creation options provided by the COG driver are described [here](https://gdal.org/drivers/raster/cog.html#creation-options).
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-co`](https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co) option.
+The creation options provided by the COG driver are described [here][raster-cog-co].
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-co`][gdal-translate-co] option.
 
 ##### `"otherOptions"`
 Several non-driver specific options are also available.
 These can be set as key-array-valued pairs within an `"otherOptions"` object.
 This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
-A list of possible options can be found on the [raster common options](https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs) and [gdal_translate options](https://gdal.org/programs/gdal_translate.html#gdal-translate) pages.
+A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
 
 ##### Common drivers
-- [GeoTIFF](https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format)
-- [COG – Cloud Optimized GeoTIFF](https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator) (mainly as the output)
+- [GeoTIFF][raster-geotiff]
+- [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
 
 #### GeoServer Options
 
@@ -274,19 +274,20 @@ Within that the following nodes can be added.
 
 The `"tabular"` data type should be used to load non-geospatial data.
 The data loader just does one thing when uploading tabular data: 
-1. It uses the GDAL [`ogr2ogr`](https://gdal.org/programs/ogr2ogr.html#ogr2ogr) tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
-As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv), and Microsoft Excel's [XLS](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format) and [XLSX](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet) formatted files.
-The full list of file formats that `ogr2ogr` supports is given [here](https://gdal.org/drivers/vector/index.html#vector-drivers) although some of these might not be available depending on the exact GDAL Docker image being used, see [here](https://github.com/OSGeo/gdal/tree/master/docker) for details.
+1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
+The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 
 #### GDAL Options
 
 These are the same as listed in the vector [GDAL Options](#gdal-options) although obviously the options specific to geospatial data will not be relevant.
 
 ##### Common drivers
-- [Comma Separated Value (.csv)](https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
-- [XLS - MS Excel format](https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format)
-- [XLSX - MS Office Open XML spreadsheet](https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet)
-- [PostGIS](https://gdal.org/drivers/raster/postgisraster.html#postgisraster-postgis-raster-driver) (mainly as the output)
+- [Comma Separated Value (.csv)][vector-csv]
+- [XLS - MS Excel format][vector-xls]
+- [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
+- [PostGIS][vector-postgis] (mainly as the output)
+
 ## Prerequisites
 
 These are the same as listed in [The Stack Manager](../stack-manager/README.md#prerequisites).
@@ -418,7 +419,7 @@ This way you can look at look at the user interfaces of the various services (se
 ### Quick Fixes
 
 #### General
-- For certain vector geometries (e.g. `MULTILINESTRING` and `LINESTRING`) it is necessary to use [`-nlt`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt) to specify the geometry in the following way.
+- For certain vector geometries (e.g. `MULTILINESTRING` and `LINESTRING`) it is necessary to use [`-nlt`][ogr2ogr-nlt] to specify the geometry in the following way.
     ```json
     "ogr2ogrOptions": {
         "otherOptions": {
@@ -427,7 +428,7 @@ This way you can look at look at the user interfaces of the various services (se
     }
     ```
 
-- To upload only specific properties/fields from a source dataset their names can be specified as comma-separated values for the [`"-select"`](https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-select) option under [`"otherOption"`](#otheroptions).
+- To upload only specific properties/fields from a source dataset their names can be specified as comma-separated values for the [`"-select"`][ogr2ogr-select] option under [`"otherOption"`](#otheroptions).
     In the example below only the fields with the names `field1`, `field3`, `field4` and `field8` would be uploaded with other fields, for example `field2` and `field5`, being ignored.
     ```json
     "ogr2ogrOptions": {
@@ -438,12 +439,12 @@ This way you can look at look at the user interfaces of the various services (se
         }
     }
     ```
-    The [cropmap](../example_datasets/inputs/config/cropmap.json) example shows this being used to remove some fields (containing calculated areas and perimeters) that were not constantly named across all of the [crop-map-of-england-crome-2020](https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020) Shapefiles.
+    The [cropmap](../example_datasets/inputs/config/cropmap.json) example shows this being used to remove some fields (containing calculated areas and perimeters) that were not constantly named across all of the [crop-map-of-england-crome-2020][crome-2020] Shapefiles.
 
 
-#### [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb)
+#### [ESRI File Geodatabase][vector-gdb]
 
-- As described in the GDAL documentation [ESRI File Geodatabase](https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb) datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
+- As described in the GDAL documentation [ESRI File Geodatabase][vector-gdb] datasets must be stored in a directory/folder with a name that ends with the `.gdb` extension.
     For improved efficiency this folder can be added to a zip file with the `.gdb.zip` extension.
     For example:
     ``` sh
@@ -460,3 +461,47 @@ This way you can look at look at the user interfaces of the various services (se
             a0000000a.spx
             ...
     ```
+
+[gdal-docker]:    (https://github.com/OSGeo/gdal/tree/master/docker)
+[ogr2ogr]:        (https://gdal.org/programs/ogr2ogr.html#ogr2ogr)
+[vector-common]:  (https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs)
+[ogr2ogr-a_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs)
+[ogr2ogr-s_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs)
+[ogr2ogr-t_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs)
+[ogr2ogr-oo]:     (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo)
+[ogr2ogr-lco]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco)
+[ogr2ogr-doo]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo)
+[ogr2ogr-nlt]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt)
+[ogr2ogr-select]: (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-select)
+
+[vector-drivers]:     (https://gdal.org/drivers/vector/index.html#vector-drivers)
+[vector-shapefile]:   (https://gdal.org/drivers/vector/shapefile.html#esri-shapefile-dbf)
+[vector-csv]:         (https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
+[vector-xls]:         (https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format)
+[vector-xlsx]:        (https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet)
+[vector-postgis]:     (https://gdal.org/drivers/vector/pg.html#postgresql-postgis)
+[vector-postgis-lco]: (https://gdal.org/drivers/vector/pg.html#layer-creation-options)
+[vector-postgis-doo]: (https://gdal.org/drivers/vector/pg.html#dataset-open-options)
+[vector-gdb]:         (https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb)
+
+[geoserver-sql]:         (https://docs.geoserver.org/latest/en/user/data/database/sqlview.html)
+[geoserver-sql-params]:  (https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters)
+[geoserver-rest]:        (https://docs.geoserver.org/stable/en/user/rest/)
+[geoserver-rest-layers]: (https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer)
+
+[gdal-translate]:       (https://gdal.org/programs/gdal_translate.html#gdal-translate)
+[raster-common]:        (https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs)
+[gdal-translate-a_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs)
+[gdal-translate-s_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs)
+[gdal-translate-t_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs)
+[gdal-translate-oo]:    (https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo)
+[gdal-translate-co]:    (https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co)
+
+[raster-drivers]: (https://gdal.org/drivers/raster/index.html#raster-drivers)
+[raster-cog]:     (https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator)
+[raster-cog-co]:  (https://gdal.org/drivers/raster/cog.html#creation-options)
+[raster-geotiff]: (https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format)
+
+[postgis-raster-loader]: (https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader)
+
+[crome-2020]: (https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020)
