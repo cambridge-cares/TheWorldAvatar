@@ -4,7 +4,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -235,7 +235,7 @@ public class AgentCallerTest {
     }
 
     @Test
-    void decodePercentage() {
+    public void decodePercentage() {
         String path = "test" ;
         String res = AgentCaller.encodePercentage(path);
         assertEquals(res,path);
