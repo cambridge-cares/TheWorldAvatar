@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -13,6 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
@@ -40,6 +43,8 @@ public class ThingspeakInputAgent{
      * The time series client to interact with the knowledge graph and data storage
      */
     private TimeSeriesClient<OffsetDateTime> tsClient;
+    
+    private RemoteRDBStoreClient RDBClient;
     /**
      * A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
      */
@@ -106,6 +111,14 @@ public class ThingspeakInputAgent{
     }
 
     /**
+     * Setter for the remote rdb store client.
+     * @param tsClient The time series client to use.
+     */
+    public void setRDBClient(RemoteRDBStoreClient RDBClient) {
+        this.RDBClient = RDBClient;
+    }
+
+    /**
      * Reads the JSON key to IRI mappings from files in the provided folder.
      * @param mappingFolder The path to the folder in which the mapping files are located.
      */
@@ -134,8 +147,9 @@ public class ThingspeakInputAgent{
     /**
      * Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do no exist
      * using the time series client.
+     * @throws SQLException 
      */
-    public void initializeTimeSeriesIfNotExist() {
+    public void initializeTimeSeriesIfNotExist() throws SQLException {
         // Iterate through all mappings (each represents one time series)
         for (JSONKeyToIRIMapper mapping: mappings) {
             // The IRIs used by the current mapping
@@ -145,8 +159,8 @@ public class ThingspeakInputAgent{
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
-                try {
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                try (Connection conn = RDBClient.getConnection()) {
+                tsClient.initTimeSeries(iris, classes, timeUnit, conn);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
@@ -160,12 +174,13 @@ public class ThingspeakInputAgent{
      * that should be attached to the time series has no attachment using the time series client.
      * @param iris The IRIs that should be attached to the same time series provided as list of strings.
      * @return True if all IRIs have a time series attached, false otherwise.
+     * @throws SQLException 
      */
-    private boolean timeSeriesExist(List<String> iris) {
+    private boolean timeSeriesExist(List<String> iris) throws SQLException {
         // If any of the IRIs does not have a time series the time series does not exist
         for(String iri: iris) {
-        	try {
-	            if (!tsClient.checkDataHasTimeSeries(iri)) {
+        	try (Connection conn = RDBClient.getConnection()) {
+	            if (!tsClient.checkDataHasTimeSeries(iri, conn)) {
 	                return false;
 	            }
 	        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
@@ -206,8 +221,8 @@ public class ThingspeakInputAgent{
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
                 OffsetDateTime endDataTime;
-                try{
-                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                try (Connection conn = RDBClient.getConnection()) {
+                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0), conn);
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not get max time!");
                 }
@@ -221,8 +236,8 @@ public class ThingspeakInputAgent{
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
-                	try {
-                    tsClient.addTimeSeriesData(ts);
+                	try (Connection conn = RDBClient.getConnection()) {
+                    tsClient.addTimeSeriesData(ts, conn);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!");

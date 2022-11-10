@@ -2,11 +2,20 @@ package uk.ac.cam.cares.jps.agent.thingspeak;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
+import java.util.Properties;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -29,6 +38,12 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
 	 String agentProperties;
 	 String apiProperties;
 	 String clientProperties;
+	 
+	 String dbUrl;
+	 String dbUsername;
+	 String dbPassword;
+	 String sparqlQueryEndpoint;
+	 String sparqlUpdateEndpoint;
     /**
      * Logger for reporting info/errors.
      */
@@ -38,6 +53,7 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
      */
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
     private static final String AGENT_ERROR_MSG = "The Thingspeak input agent could not be constructed!";
+    private static final String LOADCONFIG_ERROR_MSG = "Unable to load timeseries client parameters from properties file!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the Thingspeak API connector needed to interact with the API!";
@@ -59,7 +75,6 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
             String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
             String[] args = new String[] {agentProperties,clientProperties,apiProperties};
             jsonMessage = initializeAgent(args);
-            
             requestParams = jsonMessage;
             }
       else {
@@ -116,7 +131,7 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
      *             2) time series client 3) API connector.
      */
     
-    public static JSONObject initializeAgent(String[] args) {
+    public JSONObject initializeAgent(String[] args) {
 
         // Ensure that there are three properties files
         if (args.length != 3) {
@@ -136,13 +151,30 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.accumulate("Result", "Input agent object initialized.");
-
+        
+        try {
+			loadTSClientConfigs(args[1]);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new JPSRuntimeException(LOADCONFIG_ERROR_MSG, e);
+		}
+        
+        RemoteStoreClient kbClient = new RemoteStoreClient();
+        kbClient.setQueryEndpoint(sparqlQueryEndpoint);
+        kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
+        TimeSeriesClient<OffsetDateTime> tsClient;
+        
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+        agent.setRDBClient(rdbStoreClient);
+        /*
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
+        */
         try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            //tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+        	tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
             agent.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
+        } catch (JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
@@ -152,7 +184,7 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
         try {
             agent.initializeTimeSeriesIfNotExist();
         }
-        catch (JPSRuntimeException e) {
+        catch (Exception e) {
             LOGGER.error(INITIALIZE_ERROR_MSG,e);
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
@@ -178,10 +210,10 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
-        LOGGER.info(String.format("Retrieved %d electrical, temperature and humdity readings.",
+        LOGGER.info(String.format("Retrieved %d readings.",
                 Readings.length()));
         jsonMessage.accumulate("Result", "Retrieved " + Readings.length() +  
-        		" electrical, temperature and humdity readings.");
+        		" readings.");
         // If readings are not empty there is new data
         if(!Readings.isEmpty()) {
             // Update the data
@@ -197,5 +229,53 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
         }
 		return jsonMessage;
     }
+    
+    /**
+     * Reads the parameters needed to connect to the API from a properties file and saves it in fields.
+     * @param filepath Path to the properties file from which to read the parameters
+     */
+    private void loadTSClientConfigs(String filepath) throws IOException {
+        // Check whether properties file exists at specified location
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
+        }
+        // Read username and password for ThingsBoard API from properties file
+        // Try-with-resource to ensure closure of input stream
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            // Get timeseries client parameters from properties file
+            if (prop.containsKey("db.url")) {
+                this.dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+                this.dbUsername = prop.getProperty("db.user");
+            } else {
+                throw new IOException("Properties file is missing \"db.user=<db_username>\"");
+            }
+            if (prop.containsKey("db.password")) {
+                this.dbPassword = prop.getProperty("db.password");
+            } else {
+                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+            if (prop.containsKey("sparql.query.endpoint")) {
+                this.sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+                this.sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
+            }
+
+        }
+}
 
 }
