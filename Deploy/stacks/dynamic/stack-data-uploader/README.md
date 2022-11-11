@@ -476,46 +476,47 @@ This way you can look at look at the user interfaces of the various services (se
             ...
     ```
 
-[gdal-docker]:    (https://github.com/OSGeo/gdal/tree/master/docker)
-[ogr2ogr]:        (https://gdal.org/programs/ogr2ogr.html#ogr2ogr)
-[vector-common]:  (https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs)
-[ogr2ogr-a_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs)
-[ogr2ogr-s_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs)
-[ogr2ogr-t_srs]:  (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs)
-[ogr2ogr-oo]:     (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo)
-[ogr2ogr-lco]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco)
-[ogr2ogr-doo]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo)
-[ogr2ogr-nlt]:    (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt)
-[ogr2ogr-select]: (https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-select)
 
-[vector-drivers]:     (https://gdal.org/drivers/vector/index.html#vector-drivers)
-[vector-shapefile]:   (https://gdal.org/drivers/vector/shapefile.html#esri-shapefile-dbf)
-[vector-csv]:         (https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv)
-[vector-xls]:         (https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format)
-[vector-xlsx]:        (https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet)
-[vector-postgis]:     (https://gdal.org/drivers/vector/pg.html#postgresql-postgis)
-[vector-postgis-lco]: (https://gdal.org/drivers/vector/pg.html#layer-creation-options)
-[vector-postgis-doo]: (https://gdal.org/drivers/vector/pg.html#dataset-open-options)
-[vector-gdb]:         (https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb)
+[gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
+[ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
+[vector-common]:  https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs
+[ogr2ogr-a_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs
+[ogr2ogr-s_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs
+[ogr2ogr-t_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs
+[ogr2ogr-oo]:     https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-oo
+[ogr2ogr-lco]:    https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-lco
+[ogr2ogr-doo]:    https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-doo
+[ogr2ogr-nlt]:    https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt
+[ogr2ogr-select]: https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-select
 
-[geoserver-sql]:         (https://docs.geoserver.org/latest/en/user/data/database/sqlview.html)
-[geoserver-sql-params]:  (https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters)
-[geoserver-rest]:        (https://docs.geoserver.org/stable/en/user/rest/)
-[geoserver-rest-layers]: (https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer)
+[vector-drivers]:     https://gdal.org/drivers/vector/index.html#vector-drivers
+[vector-shapefile]:   https://gdal.org/drivers/vector/shapefile.html#esri-shapefile-dbf
+[vector-csv]:         https://gdal.org/drivers/vector/csv.html#comma-separated-value-csv
+[vector-xls]:         https://gdal.org/drivers/vector/xls.html#xls-ms-excel-format
+[vector-xlsx]:        https://gdal.org/drivers/vector/xlsx.html#xlsx-ms-office-open-xml-spreadsheet
+[vector-postgis]:     https://gdal.org/drivers/vector/pg.html#postgresql-postgis
+[vector-postgis-lco]: https://gdal.org/drivers/vector/pg.html#layer-creation-options
+[vector-postgis-doo]: https://gdal.org/drivers/vector/pg.html#dataset-open-options
+[vector-gdb]:         https://gdal.org/drivers/vector/openfilegdb.html#esri-file-geodatabase-openfilegdb
 
-[gdal-translate]:       (https://gdal.org/programs/gdal_translate.html#gdal-translate)
-[raster-common]:        (https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs)
-[gdal-translate-a_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs)
-[gdal-translate-s_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs)
-[gdal-translate-t_srs]: (https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs)
-[gdal-translate-oo]:    (https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo)
-[gdal-translate-co]:    (https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co)
+[geoserver-sql]:         https://docs.geoserver.org/latest/en/user/data/database/sqlview.html
+[geoserver-sql-params]:  https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters
+[geoserver-rest]:        https://docs.geoserver.org/stable/en/user/rest/
+[geoserver-rest-layers]: https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer
 
-[raster-drivers]: (https://gdal.org/drivers/raster/index.html#raster-drivers)
-[raster-cog]:     (https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator)
-[raster-cog-co]:  (https://gdal.org/drivers/raster/cog.html#creation-options)
-[raster-geotiff]: (https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format)
+[gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
+[raster-common]:        https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs
+[gdal-translate-a_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
+[gdal-translate-s_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs
+[gdal-translate-t_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
+[gdal-translate-oo]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo
+[gdal-translate-co]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co
 
-[postgis-raster-loader]: (https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader)
+[raster-drivers]: https://gdal.org/drivers/raster/index.html#raster-drivers
+[raster-cog]:     https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator
+[raster-cog-co]:  https://gdal.org/drivers/raster/cog.html#creation-options
+[raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
-[crome-2020]: (https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020)
+[postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[crome-2020]: https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020
