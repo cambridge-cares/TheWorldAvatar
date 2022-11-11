@@ -188,7 +188,7 @@ public class TimeSeriesClient<T> {
 	 * @param durations
 	 * @param units
 	 */
-    private void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
 
 		// create random time series IRI
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
@@ -1042,7 +1042,6 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass list of data classes for each dataIRI
 	 * @param timeUnit time unit as (full) IRI
 	 */
-	@Deprecated
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
 		try (Connection conn = rdbClient.getConnection()) {
 			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
@@ -1058,7 +1057,6 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit time unit as (full) IRI
 	 * @param conn connection to the RDB
 	 */
-	@Deprecated
 	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn) {
 
 		// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
@@ -1111,7 +1109,6 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 * @param conn
 	 */
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
 		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
 	}
@@ -1125,7 +1122,6 @@ public class TimeSeriesClient<T> {
 	 * @param srid
 	 * @param conn
 	 */
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
 		// create random time series IRI
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
@@ -1171,7 +1167,6 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 */
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
 		try (Connection conn = rdbClient.getConnection()) {
 			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
@@ -1188,7 +1183,6 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 * @param srid
 	 */
-	@Deprecated
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
 		try (Connection conn = rdbClient.getConnection()) {
 			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);

@@ -731,7 +731,6 @@ public class TimeSeriesSparql {
 	 * @param dbURL URL of the database where the timeseries data is stored provided as string
 	 * @param timeUnit the time unit of the time series (optional)
 	 */
-	@Deprecated
 	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
 		// Construct time series IRI
 		Iri tsIRI;
@@ -780,7 +779,6 @@ public class TimeSeriesSparql {
 		kbClient.executeUpdate(modify.getQueryString());
 	}
 
-	@Deprecated
 	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
 		ModifyQuery modify = Queries.MODIFY();
 
