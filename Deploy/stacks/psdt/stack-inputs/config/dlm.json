@@ -1,6 +1,6 @@
 {
     "name": "dlm",
-    "database": "psdt",
+    "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "dlm",
     "dataSubsets": [

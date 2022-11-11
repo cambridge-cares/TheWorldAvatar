@@ -1,6 +1,6 @@
 {
     "name": "osm",
-    "database": "psdt",
+    "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "osm",
     "dataSubsets": [

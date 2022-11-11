@@ -1,6 +1,6 @@
 {
     "name": "dgm1",
-    "database": "psdt",
+    "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "dgm1",
     "dataSubsets": [

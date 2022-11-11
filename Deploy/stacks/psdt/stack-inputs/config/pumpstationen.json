@@ -1,6 +1,6 @@
 {
     "name": "pumpstationen",
-    "database": "psdt",
+    "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "pumpstationen",
     "dataSubsets": [

@@ -1,6 +1,6 @@
 {
     "name": "solarkataster",
-    "database": "psdt",
+    "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "photovoltaik",
     "dataSubsets": [
