@@ -389,7 +389,7 @@ public class TimeSeriesSparql {
 
 	}
 
-	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, Iri type, List<Duration> durations, List<ChronoUnit> units) {
+	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<Iri> types, List<Duration> durations, List<ChronoUnit> units) {
 		ModifyQuery modify = Queries.MODIFY();
 		// set prefix declarations
 		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
@@ -404,9 +404,9 @@ public class TimeSeriesSparql {
 				throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
 			}
 
-			modify.insert(tsIRI.isA(type));
+			modify.insert(tsIRI.isA(types.get(i)));
 
-			if(type.equals(AverageTimeSeries)){
+			if(types.get(i).equals(AverageTimeSeries)){
 
 				if(durations.get(i).getNano()!=0){
 					LOGGER.warn("Nano is ignored");
