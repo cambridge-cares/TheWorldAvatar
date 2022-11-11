@@ -242,13 +242,8 @@ public class TimeSeriesSparql {
 	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
 	 * @param dbURL URL of the database where the timeseries data is stored provided as string
 	 * @param timeUnit the time unit of the time series (optional)
-	 * @param type type of TimeSeries data to be instantiated. (optional)
-	 *             Allowed values:
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulative,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/CumulativeTotal,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Instantaneous,
-	 *             https://www.theworldavatar.com/kg/ontotimeseries/Average
-	 *             If not specified, default value: TimeSeries
+	 * @param type type of TimeSeries data to be instantiated.
+	 *             Allowed values of type enum: Type.AVERAGE, Type.INSTANTANEOUS, Type.STEPWISECUMULATIVE, Type.CUMULATIVETOTAL
 	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
 	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
 	 *             Allowed values of type ChronoUnit:
