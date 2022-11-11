@@ -106,8 +106,8 @@ public class TimeSeriesClient<T> {
 		// Step1: Initialise time series in knowledge base
 		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
 		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-		String tsIRI;
-		Iri timeseriesType;
+		String tsIRI = null;
+		Iri timeseriesType = null;
 
 		if(type.equals(Type.AVERAGE)){
 			timeseriesType = TimeSeriesSparql.AverageTimeSeries;
@@ -124,9 +124,6 @@ public class TimeSeriesClient<T> {
 		else if(type.equals(Type.INSTANTANEOUS)){
 			timeseriesType = TimeSeriesSparql.InstantaneousTimeSeries;
 			tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
-		}
-		else {
-			throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type + " is invalid");
 		}
 
 		String rdbURL;
@@ -194,8 +191,8 @@ public class TimeSeriesClient<T> {
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
 		List<Iri> timeSeriesTypes = new ArrayList<>(dataIRIs.size());
 
-		String tsIRI;
-		Iri timeSeriesType;
+		String tsIRI = null;
+		Iri timeSeriesType = null;
 
 		for (int i = 0; i < dataIRIs.size(); i++) {
 			if (type.get(i).equals(Type.AVERAGE)){
@@ -214,9 +211,7 @@ public class TimeSeriesClient<T> {
 				tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
 			}
-			else {
-				throw new JPSRuntimeException(exceptionPrefix + "TimeSeries type: " + type.get(i) + " is invalid");
-			}
+			
 			tsIRIs.add(i, tsIRI);
 			timeSeriesTypes.add(i, timeSeriesType);
 		}
