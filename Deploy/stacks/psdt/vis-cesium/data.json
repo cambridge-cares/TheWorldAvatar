@@ -359,7 +359,7 @@
                     "id": "solarirradiation-source",
                     "type": "wms",
                     "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
-                    "wmsLayer": "twa:Einstrahlung",
+                    "wmsLayer": "twa:einstrahlung",
                     "transparency": true,
                     "format": "image/png"
                 },
@@ -367,7 +367,7 @@
                     "id": "solarpv-source",
                     "type": "wms",
                     "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
-                    "wmsLayer": "twa:Photovoltaik",
+                    "wmsLayer": "twa:photovoltaik",
                     "transparency": true,
                     "format": "image/png"
                 },
@@ -375,7 +375,7 @@
                     "id": "solarthermal-source",
                     "type": "wms",
                     "uri": "http://localhost:3838//geoserver/twa/wms?&service=WMS&",
-                    "wmsLayer": "twa:Solarthermie",
+                    "wmsLayer": "twa:solarthermie",
                     "transparency": true,
                     "format": "image/png"
                 }
