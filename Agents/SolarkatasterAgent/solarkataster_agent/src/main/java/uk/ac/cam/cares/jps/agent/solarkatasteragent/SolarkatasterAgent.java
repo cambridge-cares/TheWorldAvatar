@@ -1,0 +1,239 @@
+package uk.ac.cam.cares.jps.agent.solarkatasteragent;
+
+import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.util.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import org.checkerframework.checker.units.qual.A;
+import org.jooq.SQL;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
+import org.apache.jena.query.Query;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+@WebServlet(urlPatterns = {"/run"})
+public class SolarkatasterAgent extends JPSAgent {
+
+    // Logger for reporting info/errors
+    private static final Logger LOGGER = LogManager.getLogger(SolarkatasterAgent.class);
+
+    public static final String KEY_OID = "oid";
+    public static final String KEY_GEB = "geb_id";
+    public static final String KEY_JAN = "jan_median";
+    public static final String KEY_FEB = "feb_median";
+    public static final String KEY_MRZ = "mrz_median";
+    public static final String KEY_APR = "apr_median";
+    public static final String KEY_MAI = "mai_median";
+    public static final String KEY_JUN = "jun_median";
+    public static final String KEY_JUL = "jul_median";
+    public static final String KEY_AUG = "aug_median";
+    public static final String KEY_SEP = "sep_median";
+    public static final String KEY_OKT = "okt_median";
+    public static final String KEY_NOV = "nov_median";
+    public static final String KEY_DEZ = "dez_median";
+    public List<String> TIME_SERIES = Arrays.asList(KEY_JAN, KEY_FEB, KEY_MRZ, KEY_APR, KEY_MAI, KEY_JUN, KEY_JUL, KEY_AUG, KEY_SEP, KEY_OKT, KEY_NOV, KEY_DEZ);
+    public static final String KEY_TABLE = "table";
+
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+    private String timeseriesDBUrl;
+    private String tsUser;
+    private String tsPassword;
+    private TimeSeriesClient tsClient;
+    private RemoteRDBStoreClient tsRDBStoreClient;
+    private RemoteRDBStoreClient rdbStoreClient;
+    private RemoteStoreClient storeClient;
+
+    private String ubemURI;
+    private String ubemSolar;
+    private String timeSeriesUri;
+    private String timeSeriesAverage;
+
+    /**
+     * Processes HTTP requests with originating details.
+     * @param requestParams Request parameters in a JSONObject.
+     * @param request HTTP Servlet Request.
+     * @return response in JSON format.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        return processRequestParameters(requestParams);
+    }
+
+    /**
+     * Processes HTTP requests.
+     * @param requestParams Request parameters as a JSONObject.
+     * @return response in JSON format.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+        if (validateInput(requestParams)){
+            readConfig();
+
+            ArrayList<List> dataArrayList= new ArrayList<>();
+
+            JSONArray dataArray = getData(requestParams.getString(KEY_TABLE));
+
+            dataArrayList = parseDataToLists(dataArray);
+
+            createTimeSeries(dataArrayList.get(0));
+
+            try{
+                tsClient.bulkaddTimeSeriesData(dataArrayList.get(1), tsRDBStoreClient.getConnection());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
+            }
+        }
+        return requestParams;
+    }
+
+    /**
+     * Checks the incoming JSON request for validity.
+     * @param requestParams JSON request parameters.
+     * @return request validity
+     */
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.get(KEY_TABLE).toString().isEmpty()){
+            throw new BadRequestException();
+        }
+        return true;
+    }
+
+    /**
+     * Gets variables from config.properties
+     */
+    private void readConfig() {
+        ResourceBundle config = ResourceBundle.getBundle("config");
+
+        ubemURI = config.getString("uri.ontology.ubem");
+        ubemSolar = ubemURI + "SolarIrradiationValue";
+        timeSeriesUri = config.getString("uri.ontology.ts");
+        timeSeriesAverage = timeSeriesUri + "Average";
+        dbUrl = config.getString("db.url");
+        dbUser = config.getString("db.user");
+        dbPassword = config.getString("db.password");
+        timeseriesDBUrl = config.getString("timeseriesDB.url");
+        tsUser = config.getString("ts.user");
+        tsPassword = config.getString("ts.password");
+
+        rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+        storeClient = new RemoteStoreClient(config.getString("timeseries.query.endpoint"), config.getString("timeseries.update.endpoint"));
+        tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
+        tsRDBStoreClient = new RemoteRDBStoreClient(timeseriesDBUrl, tsUser, tsPassword);
+    }
+
+    /**
+     * Executes query for Solarkataster time series parameters
+     * @param tableName name of table for which to query from
+     * @return SQL query response as a JSONArray
+     */
+    private JSONArray getData(String tableName){
+        return rdbStoreClient.executeQuery(getQueryString(tableName));
+    }
+
+    /**
+     * Construct query as a string for Solarkataster time series parameters
+     * @param tableName name of table for which to query Solarkataster data from
+     * @return SQL query as a string
+     */
+    private String getQueryString(String tableName) {
+        String query;
+
+        query = "SELECT " + KEY_OID + ", " +KEY_GEB;
+
+        for (int i = 0; i < TIME_SERIES.size(); i++){
+            query = query + ", " + TIME_SERIES.get(i);
+        }
+
+        return query + " FROM \"" + tableName + "\"";
+    }
+
+    /**
+     * Constructs and returns a list of doubles of the TIME_SERIES parameters value in data
+     * @param data SQL query response for one building
+     * @return List of Double
+     */
+    private List<Double> getDoubleList (JSONObject data) {
+        List<Double> dataList = new ArrayList<>();
+
+        for (int i = 0; i < TIME_SERIES.size(); i++){
+            if(data.has(TIME_SERIES.get(i))){
+                dataList.add(data.getDouble(TIME_SERIES.get(i)));
+            }
+            else{
+                dataList.add(Double.NaN);
+            }
+        }
+
+        return dataList;
+    }
+
+    /**
+     * Initialise time series that will be be associated with dataIRI
+     * @param dataIRI IRIs to which the timeseriesIRI will be associated to
+     */
+    private void createTimeSeries(List<List<String>> dataIRI) {
+        int n = dataIRI.size();
+
+        List<List<Class<?>>> dataClass = Collections.nCopies(n, Arrays.asList(Double.class));
+        List<String> timeUnit = Collections.nCopies(n, null);
+        List<String> type = Collections.nCopies(n, timeSeriesAverage);
+        List<Duration> durations = Collections.nCopies(n, Duration.ofDays(31));
+        List<ChronoUnit> units = Collections.nCopies(n, ChronoUnit.MONTHS);
+
+        try {
+            tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, tsRDBStoreClient.getConnection(), type, durations, units);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+    /**
+     * Parse dataArray into dataIRIs and corresponding TimeSeries
+     * @param dataArray JSONArray of SQL query results
+     * @return ArrayList of dataIRIs and TimeSeries
+     */
+    private ArrayList<List> parseDataToLists(JSONArray dataArray) {
+        ArrayList<List> output = new ArrayList<>();
+
+        JSONObject temp;
+        String id;
+        List<TimeSeries<Double>> tsList = new ArrayList<>();
+        List<List<String>> dataIRI = new ArrayList<>();
+        List<?> times = Collections.nCopies(12, null);
+
+        for (int i = 0; i < dataArray.length(); i++){
+            temp = dataArray.getJSONObject (i);
+            id = temp.getString(KEY_GEB) + String.valueOf(temp.getInt(KEY_OID));
+            dataIRI.add(Arrays.asList(ubemSolar + "_" + id));
+            tsList.add(new TimeSeries(times, dataIRI.get(i), Arrays.asList(getDoubleList(temp))));
+        }
+
+        output.add(dataIRI);
+        output.add(tsList);
+
+        return output;
+    }
+}
+
