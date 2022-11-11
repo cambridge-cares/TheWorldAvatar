@@ -13,6 +13,21 @@ WHERE {
 } LIMIT 10 
 """
 
+ONTOSPECIES_ALL_PROPERTIES_TEMPLATE = """
+SELECT DISTINCT %
+WHERE {
+    %s 
+}
+"""
+
+
+ONTOSPECIES_ALL_SPECIES = """
+SELECT DISTINCT ?species
+
+WHERE {
+	?species rdf:type <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 
+}
+"""
 
 ONTOCOMPCHEM_ALL_SPEICES = """
 PREFIX oc:  <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
@@ -50,7 +65,6 @@ ONTOCOMPCHEM_ALL_CALCULATION_QUERY = """
             }} 
 
 """
-
 
 ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY = """
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
