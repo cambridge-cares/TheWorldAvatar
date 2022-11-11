@@ -3,6 +3,7 @@ import requests
 from typing import Optional, Tuple
 import json
 from unit_parse import parser
+from rdkit import Chem
 
 class pug_api():
     def __init__(self):
@@ -66,29 +67,28 @@ class pug_api():
                 Reference=data.get('Record').get('Reference')
                 if 'Section' in data.get('Record').get('Section')[0].get('Section')[0]:
                     data = data.get('Record').get('Section')[0].get('Section')[0].get('Section')
+                    i=1
                     for prop in data:
-                        i=1
                         prop_list = prop.get('Information')
                         key = prop.get('TOCHeading')
-                        exp_prop[key]={}
                         for item in prop_list:
+                            exp_prop[i]={}
                             if 'StringWithMarkup' in item.get('Value'):
                                 value = item.get('Value').get('StringWithMarkup')
                                 for i_value in value:
-                                    exp_prop[key][i]={}
                                     ep_string = i_value.get('String')
                                     if key in thermo_list:
                                         ep_string = pug_api.thermo_parser(ep_string)
                             else:
                                 value = item.get('Value')
-                                exp_prop[key][i]={}
                                 ep_string = value.get('Number')
                             reference_num = item.get('ReferenceNumber')
                             for r in Reference:
                                 if r.get('ReferenceNumber') == reference_num:
-                                    reference=r.get('URL')                                      
-                            exp_prop[key][i]['value'] = ep_string
-                            exp_prop[key][i]['reference'] = reference
+                                    reference=r.get('URL')     
+                            exp_prop[i]['key'] = key.replace(' ', '')                                      
+                            exp_prop[i]['value'] = ep_string
+                            exp_prop[i]['provenance'] = reference
                             i=i+1
         else:
             print("\'Experimental Properties\' do not exist in record")
@@ -190,6 +190,7 @@ class pug_api():
         
         # request uses
         uses = {}
+        i=0
         for i_key in list:
             output= 'JSON?heading=' + i_key
             link = pubchem_domain_full+input_domain+input_identifier+output
@@ -206,13 +207,12 @@ class pug_api():
                         if r.get('ReferenceNumber') == reference_num:
                             reference=r.get('URL')
                     key = i_key.replace('+',' ')
-                    uses[key]={}
-                    i=1
                     for i_value in value:
-                        uses[key][i]={}
+                        uses[i]={}
+                        uses[i]['key']=key.replace(' ', '')
                         use_string = i_value.get('String')
-                        uses[key][i]['value'] = use_string
-                        uses[key][i]['reference'] = reference
+                        uses[i]['value'] = use_string
+                        uses[i]['provenance'] = reference
                         i=i+1
                 else:
                     print('\'' + i_key.replace('+',' ') + '\'' + " does not exist in record")    
@@ -269,22 +269,6 @@ class pug_api():
         id = data.get('PC_Compounds')[0].get('id')
         return id.get('id')
 
-    # Method for retrieving atom IDs
-    def get_atoms(self, data : dict) -> dict[str , list] :
-        atom_ids = data.get('PC_Compounds')[0].get('atoms')
-        return atom_ids
-
-    # Method for retrieving atom bonds
-    def get_bonds(data : dict) -> dict[str, list]:
-        atom_bonds = data.get('PC_Compounds')[0].get('bonds')
-        return atom_bonds 
-
-
-    #************Future Development***************#
-    # Methods for atom coordinations, charges, and counts
-    def get_coords(data : dict):
-        pass
-
     def get_charge(self, data : dict) -> dict[str, int]:
         charge={}
         key = 'charge'
@@ -292,8 +276,25 @@ class pug_api():
         charge[key] = value
         return charge
 
-    def get_count(data : dict):
-        pass  
+    # Method for retrieving atom IDs
+    def get_structure(self, data : dict) -> dict[str , list] :
+        atom_ids = data.get('PC_Compounds')[0].get('atoms')
+        atom_bonds = data.get('PC_Compounds')[0].get('bonds')
+        atom_coords = data.get('PC_Compounds')[0].get('coords')
+        i=0
+        for atoms in atom_ids.get('aid'):
+            pass
+
+        return atom_bonds 
+
+    def CanonicalOrdering(mol):
+        # canonical ordering
+        m = Chem.MolFromXYZFile('pubchemagent/pug/ethanol.xyz')
+        m.UpdatePropertyCache()
+        order = Chem.CanonicalRankAtoms(m, includeChirality=True)
+        #print(list(order))
+        m_neworder = tuple(zip(*sorted([(j, i) for i, j in enumerate(Chem.CanonicalRankAtoms(m))])))[1]
+        #m_renum = Chem.RenumberAtoms(m, m_neworder)
 
 # Testing the module itself
 if __name__ == "__main__":
@@ -304,17 +305,17 @@ if __name__ == "__main__":
                     'InChI=1/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3', 
                     'InChI=1/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
         data = pug_access.pug_request('InChI', inchi)
-        props, identifiers = pug_access.get_props(data)
+        comp_props, identifiers = pug_access.get_props(data)
         cid = pug_access.get_cid(data)
         charge = pug_access.get_charge(data)
         data_3d = pug_access.pug_request_prop_3d(cid)
-        props_3d, v = pug_access.get_props(data_3d)
+        #props_3d, v = pug_access.get_props(data_3d)
         exp_props = pug_access.pug_request_exp_prop(cid)
         uses = pug_access.pug_request_uses(cid)
         sh_props = pug_access.pug_request_sh_prop(cid)
-        atom_id = pug_access.get_atoms(data)
+        atom_id = pug_access.get_structure(data)
 
-        print(cid['cid'], props['Preferred IUPAC Name'], '\n', atom_id)
+       # print(cid['cid'], props['Preferred IUPAC Name'], '\n', atom_id)
 
     for smiles in ['C1=CC=CC=C1', 
                   'CCC#CC1=CC=CC=C1', 

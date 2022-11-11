@@ -98,7 +98,7 @@ def test_data_insert(OsIRI):
     """
     return insert_str
 
-def pubchem_prop_insert(uuid, cid, props):
+def pubchem_prop_insert_ali(uuid, cid, props):
     insert_str = """
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -130,7 +130,7 @@ def pubchem_prop_insert(uuid, cid, props):
     return insert_str
 
 
-def pubchem_prop_insert_2(uuid, props):
+def pubchem_prop_insert(uuid, props):
     insert_str = """
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -150,5 +150,28 @@ def pubchem_prop_insert_2(uuid, props):
     """.replace('#uuid#', uuid)
     for item in props.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(props.get(item)))
+        
+    return insert_str
+
+def pubchem_identifiers_insert(uuid, identifiers):
+    insert_str = """
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX otk: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    
+    INSERT DATA
+    {
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> rdf:type os:#key# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:* <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:value #value# .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:hasProvenance #provenance# .
+    }    
+    """.replace('#uuid#', uuid)
+    for item in identifiers.keys():
+        insert_str=insert_str.replace('#'+str(item)+'#',str(identifiers.get(item)))
         
     return insert_str

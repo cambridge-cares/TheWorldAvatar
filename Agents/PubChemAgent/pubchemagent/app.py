@@ -23,7 +23,11 @@ def query_with_inchi(inchi):
         atom_id = pug_access.get_atoms(data)
 
         cid = CID['cid']
-        insert_ontospecies_data(str(cid), props)      
+        uuid = create_uuid()
+        insert_ontospecies_props(uuid, props)
+        insert_ontospecies_props(uuid, exp_props) 
+        insert_ontospecies_props(uuid, sh_props)  
+        insert_ontospecies_props(uuid, uses)     
         return (props, 'PubChem')
 
         
