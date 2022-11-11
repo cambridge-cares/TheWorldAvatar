@@ -1,5 +1,6 @@
 import torch
 from torch import nn, no_grad
+from torch.nn.functional import one_hot
 from transformers import BertModel, BertTokenizer, AdamW
 
 
@@ -9,15 +10,52 @@ class CrossGraphAlignmentModel(nn.Module):
         super(CrossGraphAlignmentModel, self).__init__()
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-uncased')
+        # self.bert_reduction_layer = nn.Linear(768, 512)
         self.bert_reduction_layer = nn.Linear(768, 2)
-        self.score_factor_layer = nn.Linear(4, 1)
-        self.criterion = nn.MarginRankingLoss(margin=2, reduction='none').to(self.device)
+        self.bert_reduction_layer_2 = nn.Linear(512, 256)
+        self.bert_reduction_layer_3 = nn.Linear(256, 2)
+        self.domain_factor_layer = nn.Linear(2, 1)
+        self.domain_question_factor_layer = nn.Linear(4, 1)
+        self.criterion = nn.MarginRankingLoss(margin=0.5, reduction='none').to(self.device)
+        self.sigmoid = nn.Sigmoid()
+        self.relu = nn.ReLU()
+
+
+    def adjust_score_svm(self, triple):
+        """
+        Use Support Vector Machine to find the decision plane ...
+        :param triple: question, score, domain, forms X = {x1, x2, x3}
+        :return:
+        """
+        question = triple[0]
+        score = triple[1].to(self.device)
+
+
+
 
     def adjust_score(self, triple):
-        max_len = 12
+        """
+        Score adjustment has 3 inputs: question, score, domain
+        The purpose is to train a model that
+        :param triple:
+        :return:
+        """
         question = triple[0]
         score = triple[1].to(self.device)
         domain = triple[2].to(self.device)
+        domain = one_hot(domain, num_classes=2).type(torch.FloatTensor).to(self.device)
+        domain_factor = self.domain_factor_layer(domain).to(self.device)
+        question_vector = self.process_question(question)
+
+        # =============== get domain - question factor ==================
+        domain_question_vector = torch.cat([question_vector, domain], dim=1).to(self.device)
+        domain_question_factor = self.domain_question_factor_layer(domain_question_vector).squeeze(-1)
+
+        adjusted_score = score + domain_question_factor
+        return adjusted_score
+
+    def process_question(self, question):
+        max_len = 12
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))
         attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
         pooled_output = self.bert(input_ids=input_ids.to(self.device),
@@ -25,19 +63,9 @@ class CrossGraphAlignmentModel(nn.Module):
                                   return_dict=False)[1].to(self.device)
 
         question_vector = self.bert_reduction_layer(pooled_output).to(self.device)
-        print('question shape', question_vector)
-        # question_vector = question_vector.repeat_interleave(5).to(self.device)
-        # print('question shape', question_vector)
-        # question_vector = torch.transpose(question_vector, 0, -1)
-        # print('question shape', question_vector)
-        # question_vector = torch.stack([question_vector[0], question_vector[1]])
-        # print('question shape', question_vector)
-
-        score_and_domain = torch.stack([torch.transpose(score, 0, -1), torch.transpose(domain, 0, -1)], dim=0)
-        score_and_domain = torch.transpose(score_and_domain, 0, 1)
-        concat_vector = torch.cat([question_vector, score_and_domain], dim=-1).type(torch.FloatTensor).to(self.device)
-        adjusted_score = self.score_factor_layer(concat_vector).to(self.device).squeeze(1)
-        return adjusted_score
+        # question_vector = self.bert_reduction_layer_2(question_vector).to(self.device)
+        # question_vector = self.bert_reduction_layer_3(question_vector).to(self.device)
+        return question_vector
 
     def loss(self, positive_distances, negative_distances):
         target = torch.tensor([1], dtype=torch.long, device=self.device)
@@ -51,7 +79,18 @@ class CrossGraphAlignmentModel(nn.Module):
         :param fake_answer: (question, score, domain)
         :return:
         """
+
         true_answer_score = self.adjust_score(true_answer).to(self.device)
         fake_answer_score = self.adjust_score(fake_answer).to(self.device)
+        # print(true_answer_score)
+        # print(fake_answer_score)
+        outrank = torch.sum(true_answer_score > fake_answer_score) / len(true_answer_score)
+        mean_diff = (true_answer_score - fake_answer_score).mean().item()
+        return self.loss(true_answer_score, fake_answer_score).to(self.device), outrank, mean_diff
 
-        return self.loss(true_answer_score, fake_answer_score).to(self.device)
+    def predict(self, triple):
+        """
+
+        :param triple: (question, score, domain)
+        :return:
+        """

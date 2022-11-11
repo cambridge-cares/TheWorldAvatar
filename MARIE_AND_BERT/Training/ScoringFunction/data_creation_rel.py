@@ -25,7 +25,7 @@ rel2idx = pickle.load(r2i_path)
 file_path = os.path.join(DATA_DIR, 'pubchem.csv')
 # how much does benenze weigh?
 
-input_file = csv.DictReader(open(file_path).readlines()[0:5])
+input_file = csv.DictReader(open(file_path).readlines()[0:50])
 
 species_name_mapping = {}
 entity_list = []
