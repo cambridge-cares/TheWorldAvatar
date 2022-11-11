@@ -52,8 +52,6 @@ public class RDBAccessAgent extends JPSAgent {
 
             JSONObject JSONResult = new JSONObject();
 
-            LOGGER.info("Initialising StoreAccessHandler to perform "+method+" request.");
-
             switch (method) {
                 case HttpGet.METHOD_NAME:
                     JSONResult = new JSONObject().put("result", performGet(requestParams));
