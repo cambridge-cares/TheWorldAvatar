@@ -1,16 +1,11 @@
 package uk.ac.cam.cares.jps.agent.solarkatasteragent;
 
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import org.checkerframework.checker.units.qual.A;
-import org.jooq.SQL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -19,7 +14,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import org.apache.jena.query.Query;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -28,9 +22,6 @@ import java.time.temporal.ChronoUnit;
 
 @WebServlet(urlPatterns = {"/run"})
 public class SolarkatasterAgent extends JPSAgent {
-
-    // Logger for reporting info/errors
-    private static final Logger LOGGER = LogManager.getLogger(SolarkatasterAgent.class);
 
     public static final String KEY_OID = "oid";
     public static final String KEY_GEB = "geb_id";
@@ -62,8 +53,6 @@ public class SolarkatasterAgent extends JPSAgent {
 
     private String ubemURI;
     private String ubemSolar;
-    private String timeSeriesUri;
-    private String timeSeriesAverage;
 
     /**
      * Processes HTTP requests with originating details.
@@ -126,8 +115,6 @@ public class SolarkatasterAgent extends JPSAgent {
 
         ubemURI = config.getString("uri.ontology.ubem");
         ubemSolar = ubemURI + "SolarIrradiationValue";
-        timeSeriesUri = config.getString("uri.ontology.ts");
-        timeSeriesAverage = timeSeriesUri + "Average";
         dbUrl = config.getString("db.url");
         dbUser = config.getString("db.user");
         dbPassword = config.getString("db.password");
@@ -158,7 +145,7 @@ public class SolarkatasterAgent extends JPSAgent {
     private String getQueryString(String tableName) {
         String query;
 
-        query = "SELECT " + KEY_OID + ", " +KEY_GEB;
+        query = "SELECT " + KEY_OID + ", " + KEY_GEB;
 
         for (int i = 0; i < TIME_SERIES.size(); i++){
             query = query + ", " + TIME_SERIES.get(i);
@@ -196,7 +183,7 @@ public class SolarkatasterAgent extends JPSAgent {
 
         List<List<Class<?>>> dataClass = Collections.nCopies(n, Arrays.asList(Double.class));
         List<String> timeUnit = Collections.nCopies(n, null);
-        List<String> type = Collections.nCopies(n, timeSeriesAverage);
+        List<TimeSeriesClient.Type> type = Collections.nCopies(n, TimeSeriesClient.Type.AVERAGE);
         List<Duration> durations = Collections.nCopies(n, Duration.ofDays(31));
         List<ChronoUnit> units = Collections.nCopies(n, ChronoUnit.MONTHS);
 
