@@ -98,6 +98,43 @@ public class TimeSeriesSparql {
 	 */
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesSparql.class);
 
+	//Custom Class to store numeric duration and the corresponding temporal unit pair to be able to map the pair to the averaging period iri
+	public class CustomDuration {
+
+		private final Double value;
+		private final String unit;
+		private int hashCode;
+
+		public CustomDuration(Double value, String unit) {
+			this.value = value;
+			this.unit = unit;
+			this.hashCode = Objects.hash(value, unit);
+		}
+
+		public double getValue() {
+			return value;
+		}
+
+		public String getUnit() {
+			return unit;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			CustomDuration that = (CustomDuration) o;
+			return value.equals(that.value) && unit.equals(that.unit);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.hashCode;
+		}
+	}
+
 	/**
      * Standard constructor
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
@@ -363,9 +400,7 @@ public class TimeSeriesSparql {
 	//each (numericDuration, temporalUnit) pair in kg is unique and associated to a unique Averaging Period
 	public HashMap createDurationIRIMapping(){
 
-		HashMap<List<Object>, String> durationMap = new HashMap<>();
-
-		List<Object> values;
+		HashMap<CustomDuration, String> durationMap = new HashMap<>();
 
 		SelectQuery query = Queries.SELECT();
 		Variable durIRI = SparqlBuilder.var("durIRI");
@@ -377,8 +412,8 @@ public class TimeSeriesSparql {
 		JSONArray result = kbClient.executeQuery(query.getQueryString());
 
 		for (int i=0; i < result.length(); i++){
-			values = Arrays.asList(Double.valueOf(result.getJSONObject(i).getString("value")), result.getJSONObject(i).getString("unit"));
-			durationMap.put(values, result.getJSONObject(i).getString("durIRI"));
+			CustomDuration duration = new CustomDuration(Double.valueOf(result.getJSONObject(i).getString("value")), result.getJSONObject(i).getString("unit"));
+			durationMap.put(duration, result.getJSONObject(i).getString("durIRI"));
 		}
 		return durationMap;
 
@@ -389,7 +424,7 @@ public class TimeSeriesSparql {
 		// set prefix declarations
 		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
 
-		HashMap<List<Object>, String> durationMap = createDurationIRIMapping();
+		HashMap<CustomDuration, String> durationMap = createDurationIRIMapping();
 
 		for (int i = 0; i < tsIRIs.size(); i++) {
 			Iri tsIRI;
@@ -419,14 +454,14 @@ public class TimeSeriesSparql {
 				Double numericValue = Double.valueOf(durations.get(i).getSeconds()/ units.get(i).getDuration().getSeconds());
 				String temporalUnit = temporalUnitMap.get(units.get(i));
 
-				List<Object> value = Arrays.asList(numericValue, temporalUnit);
+				CustomDuration key = new CustomDuration(numericValue, temporalUnit);
 				//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
 				//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
 //				String durationIRI = getDurationIRI(temporalUnit, numericValue);
 				String durationIRI = null;
 
-				if (durationMap.containsKey(value)){
-					durationIRI = durationMap.get(value);
+				if (durationMap.containsKey(key)){
+					durationIRI = durationMap.get(key);
 				}
 
 				if(durationIRI!=null){
