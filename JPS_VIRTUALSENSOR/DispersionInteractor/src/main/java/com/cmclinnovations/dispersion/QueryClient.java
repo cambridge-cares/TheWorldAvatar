@@ -140,11 +140,11 @@ public class QueryClient {
         inputs.add(nxIri);
         inputs.add(nyIri);
 
-        Derivation derivation = derivationClient.createSyncDerivationForNewInfo(Config.AERMOD_AGENT_IRI, inputs, DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONWITHTIMESERIES);
+        String derivation = derivationClient.createDerivationWithTimeSeries(List.of(matrixIri, dispLayerIri, shipsLayerIri), Config.AERMOD_AGENT_IRI, inputs);
         
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
-        return derivation.getIri();
+        return derivation;
     }
 
     /**
