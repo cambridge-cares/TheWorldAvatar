@@ -1,21 +1,40 @@
 package com.cmclinnovations.aermod;
 
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.locationtech.jts.geom.Geometry;
 
 import com.cmclinnovations.aermod.objects.Ship;
@@ -25,14 +44,14 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class Aermod {
     private static final Logger LOGGER = LogManager.getLogger(Aermod.class);
-    private Path simulationDirectory;
     private Path aermetDirectory;
     private Path aermodDirectory;
+    private Path simulationDirectory;
     private static final String AERMET_INPUT = "aermet_input.inp";
 
     public Aermod(Path simulationDirectory) {
-        LOGGER.info("Creating directory for simulation files");
         this.simulationDirectory = simulationDirectory;
+        LOGGER.info("Creating directory for simulation files");
         simulationDirectory.toFile().mkdirs();
 
         this.aermetDirectory = simulationDirectory.resolve("aermet");
@@ -148,7 +167,7 @@ public class Aermod {
         }
     }
 
-    int createPointsFile(List<Ship> ships, String simulationSrid) {
+    int createPointsFile(List<Ship> ships, int simulationSrid) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ships.size(); i++) {
             Ship ship = ships.get(i);
@@ -156,7 +175,7 @@ public class Aermod {
 
             String originalSrid = "EPSG:" + ship.getLocation().getSrid();
             double[] xyOriginal = {ship.getLocation().getX(), ship.getLocation().getY()};
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, simulationSrid, xyOriginal);
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
             double area = Math.PI * Math.pow(ship.getChimney().getDiameter()/2, 2); // m2
             double density = ship.getChimney().getMixtureDensityInKgm3(); // kg/m3
@@ -186,14 +205,14 @@ public class Aermod {
         }
     }
 
-    public int createAermodInputFile(Geometry scope, int nx, int ny, String srid) {
+    public int createAermodInputFile(Geometry scope, int nx, int ny, int srid) {
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
 
         String originalSRID = "EPSG:" + scope.getSRID();
         
         for (int i = 0; i < scope.getCoordinates().length; i++) {
-            double[] xyTransformed = CRSTransformer.transform(originalSRID, srid, scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
+            double[] xyTransformed = CRSTransformer.transform(originalSRID, "EPSG:" + srid, scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
 
             xDoubles.add(xyTransformed[0]);
             yDoubles.add(xyTransformed[1]);
@@ -234,5 +253,100 @@ public class Aermod {
             return 0;
         }
         return 0;
+    }
+
+    String uploadToFileServer() {
+        // upload to file server via HTTP POST
+        MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
+        multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve("1HR_PLOTFILE.DAT").toFile()));
+
+        HttpPost httpPost = new HttpPost(EnvConfig.FILE_SERVER + simulationDirectory.getFileName() + "/");
+        httpPost.setEntity(multipartBuilder.build());
+
+        String auth = "fs_user" + ":" + "fs_pass"; // default credentials for the file server container
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+        httpPost.setHeader("Authorization", "Basic " + encodedAuth);
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(httpPost);) {
+            String fileURL = response.getFirstHeader("dispersionMatrix").getValue();
+            LOGGER.info("File URL at file server: {}", fileURL);
+            return fileURL;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * executes get request from python-service to postprocess
+     */
+    public JSONObject getGeoJSON(String outputFileURL, int srid) {
+        URI httpGet;
+        try {
+            URIBuilder builder = new URIBuilder(EnvConfig.PYTHON_SERVICE_URL);
+            builder.setParameter("dispersionMatrix", outputFileURL);
+            builder.setParameter("srid", String.valueOf(srid));
+            httpGet = builder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed at building URL");
+            throw new RuntimeException(e);
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+            String result = EntityUtils.toString(httpResponse.getEntity());
+            return new JSONObject(result);
+        } catch (IOException e) {
+            LOGGER.error("Failed at making connection with python service");
+            throw new RuntimeException(e);
+        } catch (JSONException e) {
+            LOGGER.error("Failed to parse result from python service for aermod geojson");
+            throw new RuntimeException(e);
+        }
+    }
+
+    void createDataJson(String shipLayerName, String dispersionLayerName) {
+        URI shipWmsUri;
+        URI dispWmsUri;
+        try {
+            // wms endpoints template without the layer name
+            URIBuilder shipWms = new URIBuilder("http://geoserver:8080/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile");
+            shipWms.addParameter("layers", EnvConfig.GEOSERVER_WORKSPACE + ":" + shipLayerName);
+            shipWmsUri = shipWms.build();
+
+            URIBuilder dispWms = new URIBuilder("http://geoserver:8080/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true");
+            dispWms.addParameter("layers", EnvConfig.GEOSERVER_WORKSPACE + ":" + dispersionLayerName);
+            dispWmsUri = dispWms.build();
+        } catch (URISyntaxException e) {
+            return;
+        }
+        
+        JSONObject group = new JSONObject();
+        group.put("name", "Plymouth"); // hardcoded
+        group.put("stack", "http://featureInfoAgent");
+
+        // sources
+        JSONArray sources = new JSONArray();
+        JSONObject shipSource = new JSONObject();
+        shipSource.put("id", "ship-source");
+        shipSource.put("type", "vector");
+        shipSource.put("tiles", new JSONArray().put(shipWmsUri));
+
+        JSONObject dispersionSource = new JSONObject();
+        dispersionSource.put("id", "dispersion-source");
+        dispersionSource.put("type", "raster");
+        dispersionSource.put("tiles", new JSONArray().put(dispWmsUri));
+
+        sources.put(shipSource).put(dispersionSource);
+        group.put("sources", sources);
+
+        // layers
+        JSONArray layers = new JSONArray();
+        JSONObject shipLayer = new JSONObject();
+        shipLayer.put("id", "ships-layer");
+        shipLayer.put("type", "circle");
+        shipLayer.put("name", "Ships");
+        shipLayer.put("source", "ship-source");
+        shipLayer.put("source-layer", shipLayerName);
+        shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
     }
 }

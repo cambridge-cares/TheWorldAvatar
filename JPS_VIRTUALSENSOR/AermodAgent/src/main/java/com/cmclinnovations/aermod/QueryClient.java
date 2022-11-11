@@ -97,6 +97,11 @@ public class QueryClient {
     // Location type
     private static final Iri LOCATION = P_DISP.iri("Location");
 
+    // outputs (belongsTo)
+    private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
+    private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
+    private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
+
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
@@ -376,6 +381,62 @@ public class QueryClient {
             }
         });
         return weatherData;
+    }
+
+    void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer, long timeStamp) {
+        // first query the IRIs
+        SelectQuery query = Queries.SELECT();
+
+        Variable entity = query.var();
+        Variable entityType = query.var();
+
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        query.where(entity.has(belongsTo, iri(derivation)).andIsA(entityType)).prefix(P_DISP).select(entity,entityType).distinct();
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        String dispersionMatrixIri = null;
+        String dispersionLayerIri = null;
+        String shipLayerIri = null;
+        for (int i = 0; i < queryResult.length(); i++) {
+            String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
+
+            switch (entityTypeIri) {
+                case DISPERSION_MATRIX:
+                    dispersionMatrixIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+                    break;
+                case DISPERSION_LAYER:
+                    dispersionLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+                    break;
+                case SHIPS_LAYER:
+                    shipLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+                    break;
+                default:
+                    LOGGER.error("Unknown entity type: <{}>", entityType);
+                    return;
+            }
+        }
+
+        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null) {
+            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI is null");
+            return;
+        }
+
+        List<List<?>> values = new ArrayList<>();
+        values.add(List.of(dispersionMatrix));
+        values.add(List.of(dispersionLayer));
+        values.add(List.of(shipLayer));
+
+        TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp), List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
+
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tsClientLong.addTimeSeriesData(timeSeries, conn);
+        } catch (SQLException e) {
+            LOGGER.error("Failed at closing connection");
+            LOGGER.error(e.getMessage());
+            return;
+        }
     }
 
     @Deprecated

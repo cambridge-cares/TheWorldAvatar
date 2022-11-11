@@ -1,23 +1,20 @@
 package com.cmclinnovations.aermod;
 
-import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
@@ -25,12 +22,19 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.locationtech.jts.geom.Geometry;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
+import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -38,7 +42,6 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 @WebServlet(urlPatterns = {"/"})
 public class AermodAgent extends DerivationAgent {
@@ -98,11 +101,12 @@ public class AermodAgent extends DerivationAgent {
 
         //compute srid
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
-        String srid;
+        int srid;
         if (scope.getCentroid().getCoordinate().getY() < 0) {
-        	srid = "EPSG:327" + centreZoneNumber;
+        	srid = Integer.valueOf("327" + centreZoneNumber);
+            
         } else {
-        	srid = "EPSG:326" + centreZoneNumber;
+        	srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
         // create emissions input
@@ -113,6 +117,32 @@ public class AermodAgent extends DerivationAgent {
 
         aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod();
+        String outputFileURL = aermod.uploadToFileServer();
+        JSONObject geoJSON = aermod.getGeoJSON(outputFileURL, srid);
+
+        // layer name
+        String dispLayerName = "disp_" + simulationDirectory.getFileName();
+        String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
+
+        // upload to PostGIS using GDAL
+        GDALClient gdalClient = new GDALClient();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(), new Ogr2OgrOptions(), true);
+
+        // create geoserver layer based for that
+        GeoServerClient geoServerClient = new GeoServerClient();
+
+        // make sure style is uploaded first
+        uploadStyle(geoServerClient);
+
+        // then create a layer with that style as default
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+        geoServerVectorSettings.setDefaultStyle("dispersion_style");
+        geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerName, geoServerVectorSettings);
+
+        // ships_ is hardcoded here and in ShipInputAgent
+
+
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerName, shipLayerName, simulationTime);
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {
@@ -155,6 +185,33 @@ public class AermodAgent extends DerivationAgent {
         } catch (URISyntaxException e) {
             LOGGER.fatal(e.getMessage());
             throw new JPSRuntimeException("Failed at building URL for update request",e);
+        }
+    }
+
+    void uploadStyle(GeoServerClient geoServerClient) {
+        RESTEndpointConfig geoserverEndpointConfig = geoServerClient.readEndpointConfig("geoserver", RESTEndpointConfig.class);
+        GeoServerRESTManager manager = new GeoServerRESTManager(geoserverEndpointConfig.getUrl(), geoserverEndpointConfig.getUserName(), geoserverEndpointConfig.getPassword());
+
+        if (!manager.getReader().existsStyle(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DISPERSION_STYLE_NAME)) {
+            try {
+                File sldFile = new File(getClass().getClassLoader().getResource("dispersion.sld").toURI());
+
+                if (manager.getPublisher().publishStyleInWorkspace(EnvConfig.GEOSERVER_WORKSPACE, sldFile, EnvConfig.DISPERSION_STYLE_NAME)) {
+                    LOGGER.info("GeoServer style created");
+                } else {
+                    throw new RuntimeException("GeoServer style cannot be created");
+                }
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    void updateDataJson(String shipLayer, String dispersionLayer) {
+        try (FileInputStream fileInputStream = new FileInputStream(new File(EnvConfig.VIS_DATA_JSON))) {
+            JSONObject jsonObject = new JSONObject(new JSONTokener(fileInputStream));
+        } catch (IOException e) {
+
         }
     }
 

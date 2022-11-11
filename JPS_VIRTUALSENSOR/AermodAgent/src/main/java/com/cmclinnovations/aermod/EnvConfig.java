@@ -7,6 +7,11 @@ public class EnvConfig {
     public static final String DATABASE = System.getenv("DATABASE");
     public static final String WEATHER_AGENT = System.getenv("WEATHER_AGENT");
     public static final String SIMULATION_DIR = System.getenv("SIMULATION_DIR");
+    public static final String FILE_SERVER = System.getenv("FILE_SERVER_URL");
+    public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
+    public static final String DISPERSION_LAYER = System.getenv("DISPERSION_LAYER");
+    public static final String DISPERSION_STYLE_NAME = System.getenv("DISPERSION_STYLE_NAME");
+    public static final String VIS_DATA_JSON = System.getenv("VIS_DATA_JSON");
 
     private EnvConfig() {
         throw new IllegalStateException();
