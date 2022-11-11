@@ -483,14 +483,20 @@ class Manager {
     }
 
     /**
+     * Given a selected feature, this function trys to determine the id of the layer
+     * containing it. If found, this is then used to find the original group housing
+     * the layer and then the stack URL attached to this group.
      * 
-     * @param feature 
-     * @returns 
+     * Note: this is bloated as Cesium does not have a common abstraction for feature
+     * objects, each has its own annoying structure.
+     * 
+     * @param feature selected geographical feature.
+     *  
+     * @returns stack URL (or null) 
      */
     public static findStack(feature, properties) {
         switch(Manager.PROVIDER) {
             case MapProvider.CESIUM: {
-                console.log(feature);
 
                 if(feature instanceof Cesium.Cesium3DTileFeature) {
                     // Feature within 3D tileset
@@ -546,6 +552,7 @@ class Manager {
                     }
 
                 } else {
+                    // Something else, try to find the layerID
                     let entity = feature["id"];
 
                     if(entity !== null && entity !== undefined) {
