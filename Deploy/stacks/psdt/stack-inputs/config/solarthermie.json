@@ -35,5 +35,8 @@
             "name": "solarthermie",
             "file": "solarthermie.sld"
         }
+    ],
+    "mappings": [
+        "solarthermie.obda"
     ]
 }
