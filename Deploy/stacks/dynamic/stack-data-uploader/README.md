@@ -35,7 +35,21 @@ inputs/
 ## The Dataset configuration file
 
 Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
+
+### Example datasets
+
 There are several example configuration files in the [`example_datasets`](../example_datasets/) directory.
+These need to be copied into the [stack-data-uploader/inputs/](./inputs/) directory for them to be used.
+The following table provides a description of each example:
+
+| Example | Description |
+| ------- | ----------- |
+| [cropmap-simple](../example_datasets/inputs/config/cropmap-simple.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. |
+| [cropmap](../example_datasets/inputs/config/cropmap.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../example_datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../example_datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. |
+| [elevation](../example_datasets/inputs/config/elevation.json) | Uploads a set of [GeoTiff files](../example_datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../example_datasets/inputs/config/elevation.sld)) is also provided for reference. |
+| [forestry](../example_datasets/inputs/config/forestry.json) | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer. |
+| [population](../example_datasets/inputs/config/population.json) | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer. |
+| [treesAndHills](../example_datasets/inputs/config/treesAndHills.json) | An example of how to use the `"externalDatasets"` node to load multiple datasets by name. |
 
 ### Datasets
 
