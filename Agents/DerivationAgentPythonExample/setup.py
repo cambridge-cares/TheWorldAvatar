@@ -12,9 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.3.0', 'pydantic==1.9.0',
-    # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
-    ],
+    install_requires=['pyderivationagent>=1.4.0', 'pydantic==1.9.0'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
@@ -23,5 +21,5 @@ setup(
             "pytest-rerunfailures>=10.2"
         ],
     },
-    include_package_data= True
+    include_package_data=True
 )

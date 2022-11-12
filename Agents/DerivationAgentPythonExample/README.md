@@ -2,7 +2,7 @@
 
 
 ## Purpose
-This agent folder is intended as a template that one can copy and adapt to turn their own Python code into a derivation agent. The example requires [`pyderivationagent`](https://pypi.org/project/pyderivationagent/)>=1.3.0.
+This agent folder is intended as a template that one can copy and adapt to turn their own Python code into a derivation agent. The example requires [`pyderivationagent`](https://pypi.org/project/pyderivationagent/)>=1.4.0.
 
 This document covers four stages: development, test, publish and deployment. For each stage, a step-by-step instruction is provided. Before continuing with this tutorial, it is recommended to read the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of `pyderivationagent` and all the relevant links.
 
@@ -36,11 +36,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ### Package installation
 
-The following command can be used to install the `pyderivationagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency of `pyderivationagent`. Therefore, in order to make the derivation agent working, we need to install `agentlogging` manually. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `pyderivationagent` package.
 
 ```sh
 (<venv_name>) $ pip install pyderivationagent
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://access.redhat.com/documentation/en-us/openjdk/11/html-single/installing_and_using_openjdk_11_for_windows/index). For linux environment, one can install via:
