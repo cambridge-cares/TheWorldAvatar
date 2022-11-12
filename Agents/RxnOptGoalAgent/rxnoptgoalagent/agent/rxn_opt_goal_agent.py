@@ -19,7 +19,7 @@ import time
 import os
 import io
 
-import agentlogging
+from py4jps import agentlogging
 
 from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
 from rxnoptgoalagent.data_model import *
@@ -86,7 +86,7 @@ class RxnOptGoalAgent(ABC):
                 fs_password - password that set for the fs_user used to access the file server endpoint specified by fs_url
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
                 #TODO register_agent - boolean value, whether to register the agent to the knowledge graph
-                logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/utils/python-utils/agentlogging/logging.py
+                logger_name - logger names for getting correct loggers from py4jps.agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/py4jps/agentlogging/logging.py
         """
 
         # initialise flask app with its configuration

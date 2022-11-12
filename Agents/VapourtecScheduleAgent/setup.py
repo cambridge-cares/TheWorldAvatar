@@ -12,9 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.3.0', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.1.2'
-        # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
-    ],
+    install_requires=['pyderivationagent>=1.4.0', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.1.2'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
