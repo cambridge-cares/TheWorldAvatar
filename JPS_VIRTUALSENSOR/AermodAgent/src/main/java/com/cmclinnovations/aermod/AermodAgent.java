@@ -140,9 +140,15 @@ public class AermodAgent extends DerivationAgent {
         geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerName, geoServerVectorSettings);
 
         // ships_ is hardcoded here and in ShipInputAgent
-
-
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerName, shipLayerName, simulationTime);
+        if (aermod.createDataJson(shipLayerName, dispLayerName) != 0) {
+            LOGGER.error("Failed to create data.json file for visualisation, terminating");
+            return;
+        }
+
+        if (aermod.modifyDataFilePermissions() != 0) {
+            LOGGER.error("Failed to modify permissions for data.json");
+        }
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {
@@ -204,14 +210,6 @@ public class AermodAgent extends DerivationAgent {
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    void updateDataJson(String shipLayer, String dispersionLayer) {
-        try (FileInputStream fileInputStream = new FileInputStream(new File(EnvConfig.VIS_DATA_JSON))) {
-            JSONObject jsonObject = new JSONObject(new JSONTokener(fileInputStream));
-        } catch (IOException e) {
-
         }
     }
 

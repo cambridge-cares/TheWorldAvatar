@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -304,22 +305,14 @@ public class Aermod {
         }
     }
 
-    void createDataJson(String shipLayerName, String dispersionLayerName) {
-        URI shipWmsUri;
-        URI dispWmsUri;
-        try {
-            // wms endpoints template without the layer name
-            URIBuilder shipWms = new URIBuilder("http://geoserver:8080/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile");
-            shipWms.addParameter("layers", EnvConfig.GEOSERVER_WORKSPACE + ":" + shipLayerName);
-            shipWmsUri = shipWms.build();
+    int createDataJson(String shipLayerName, String dispersionLayerName) {
+        // wms endpoints template without the layer name
+        String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
+            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
 
-            URIBuilder dispWms = new URIBuilder("http://geoserver:8080/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true");
-            dispWms.addParameter("layers", EnvConfig.GEOSERVER_WORKSPACE + ":" + dispersionLayerName);
-            dispWmsUri = dispWms.build();
-        } catch (URISyntaxException e) {
-            return;
-        }
-        
+        String dispWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
+            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, dispersionLayerName);
+
         JSONObject group = new JSONObject();
         group.put("name", "Plymouth"); // hardcoded
         group.put("stack", "http://featureInfoAgent");
@@ -329,12 +322,12 @@ public class Aermod {
         JSONObject shipSource = new JSONObject();
         shipSource.put("id", "ship-source");
         shipSource.put("type", "vector");
-        shipSource.put("tiles", new JSONArray().put(shipWmsUri));
+        shipSource.put("tiles", new JSONArray().put(shipWms));
 
         JSONObject dispersionSource = new JSONObject();
         dispersionSource.put("id", "dispersion-source");
         dispersionSource.put("type", "raster");
-        dispersionSource.put("tiles", new JSONArray().put(dispWmsUri));
+        dispersionSource.put("tiles", new JSONArray().put(dispWms));
 
         sources.put(shipSource).put(dispersionSource);
         group.put("sources", sources);
@@ -347,6 +340,53 @@ public class Aermod {
         shipLayer.put("name", "Ships");
         shipLayer.put("source", "ship-source");
         shipLayer.put("source-layer", shipLayerName);
+        shipLayer.put("minzoom", 4);
         shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+        JSONObject dispersionLayer = new JSONObject();
+        dispersionLayer.put("type", "raster");
+        dispersionLayer.put("name", "Dispersion");
+        dispersionLayer.put("source", "dispersion-source");
+        dispersionLayer.put("source-layer", dispersionLayerName);
+        dispersionLayer.put("minzoom", 4);
+        dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+        layers.put(shipLayer).put(dispersionLayer);
+        group.put("layers", layers);
+
+        JSONObject data = new JSONObject();
+        data.put("name", "All Data");
+        data.put("groups", new JSONArray().put(group));
+
+        File dataJson = Paths.get(EnvConfig.VIS_FOLDER, "data.json").toFile();
+        
+        try {
+            Files.deleteIfExists(dataJson.toPath());
+        } catch(IOException e) {
+            LOGGER.error("Failed to delete file");
+            return 1;
+        }
+
+        return writeToFile(dataJson.toPath(), data.toString(4));
+    }
+
+    /**
+     * required for current way of writing into a volume shared by visualisation container
+     * without this the visualisation container cannot access the file
+     * @return
+     */
+    int modifyDataFilePermissions() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", "data.json"}, null, new File(EnvConfig.VIS_FOLDER));
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+            return 0;
+        } catch (IOException e) {
+            return 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
     }
 }

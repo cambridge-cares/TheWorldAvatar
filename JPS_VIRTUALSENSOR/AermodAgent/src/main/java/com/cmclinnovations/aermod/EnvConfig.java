@@ -11,7 +11,8 @@ public class EnvConfig {
     public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
     public static final String DISPERSION_LAYER = System.getenv("DISPERSION_LAYER");
     public static final String DISPERSION_STYLE_NAME = System.getenv("DISPERSION_STYLE_NAME");
-    public static final String VIS_DATA_JSON = System.getenv("VIS_DATA_JSON");
+    public static final String VIS_FOLDER = System.getenv("VIS_FOLDER");
+    public static final String GEOSERVER_URL = System.getenv("GEOSERVER_URL");
 
     private EnvConfig() {
         throw new IllegalStateException();

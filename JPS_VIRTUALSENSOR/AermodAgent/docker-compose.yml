@@ -20,7 +20,8 @@ services:
       - SIMULATION_DIR=/root/aermod/simulations
       - FILE_SERVER_URL=http://file-server:8080/FileServer/
       - DISPERSION_STYLE_NAME=dispersion_style
-      - VIS_DATA_JSON=/vis_data/data.json
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
     configs:
       - postgis
       - blazegraph
