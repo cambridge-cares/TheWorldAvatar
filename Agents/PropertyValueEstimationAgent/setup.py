@@ -12,9 +12,9 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    include_package_data= True,
+    include_package_data=True,
     install_requires= [
-        'flask==2.2.0',
+        'flask==2.1.0',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.1',
         'py4jps==1.0.29', 
