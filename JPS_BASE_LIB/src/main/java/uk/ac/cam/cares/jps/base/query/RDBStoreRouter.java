@@ -16,6 +16,18 @@ import uk.ac.cam.cares.jps.base.router.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
+/**
+ * This class is developed to obtain the RDB url from the knowledge base <br>
+ * using the {@link uk.ac.cam.cares.jps.base.query.RDBStoreRouter#getRDBUrl} getRDBUrl method.<br>
+ * It reduces the burden on users to modify the RDB url when the web server changes. <br>
+ * The users will always refer to the relational database using the same IRI. <br>
+ *
+ * The RDBStoreRouterEndpoint should be set using the environment variable RDB_STOREROUTER_ENDPOINT.<br>
+ * Otherwise, the default endpoint from the jps.properties file is used.
+ *
+ * @author Mehal Agarwal
+ */
+
 public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
 
     private static Logger LOGGER = LogManager.getLogger(RDBStoreRouter.class);
@@ -37,6 +49,10 @@ public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
     public static String RDBStoreRouterEndpoint;
     public static final String RDB_STOREROUTER_ENDPOINT_NAME = "RDB_STOREROUTER_ENDPOINT";
 
+    /**
+     * Static initialisation of the RDB store router endpoint from environment variable
+     * or, if one does not exist, from the jps.properties file.
+     */
     static{
         RDBStoreRouterEndpoint = System.getenv(RDB_STOREROUTER_ENDPOINT_NAME);
         if(RDBStoreRouterEndpoint == null) {
@@ -71,7 +87,16 @@ public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
         return rdbStoreRouter;
     }
 
-
+    /**
+     * Returns the url for a Postgresql database based on a targetResourceID provided as the input.<br>
+     * It supports repository/namespace type of resource. <br>
+     * For example:<br>
+     *  - "http://theworldavatar.com/kb/ontokin" or "ontokin"<br>
+     *  - "http://theworldavatar.com/kb/ontospecies" or "ontospecies"<br>
+     *  - "http://theworldavatar.com/kb/ontocompchem" or "ontocompchem"
+     * @param targetRDBResourceID the IRI, namespace of an RDF repository/namespace.
+     * @return RDB Url
+     */
     public static String getRDBUrl(String targetRDBResourceID){
 
         String rdbUrl = null;
@@ -99,6 +124,11 @@ public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
         return rdbUrl;
     }
 
+    /**
+     * Get the RDB url from the ontordbrouter triple store for the targetResourceLabel.
+     * @param targetResourceLabel
+	 * @param storeClient
+	 */
     @Override
     public String getFromStore(String targetResourceLabel, TripleStoreClientInterface storeClient){
 
@@ -128,10 +158,23 @@ public class RDBStoreRouter extends AbstractCachedRouter<String, String> {
 
     }
 
+    /**
+     * Get the namespace ("label") from the target resource ID for a remote store,
+     * this will be matched against the label in ontordbrouter.
+     * @param targetResourceID
+     * @return
+     */
     public static String getLabelFromTargetResourceID(String targetResourceID) {
         return targetResourceID.substring(targetResourceID.lastIndexOf(SLASH)+1).trim();
     }
 
+    /**
+     * Check that the targetResourceID is either a valid IRI or namespace label for a remote resource.
+     * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9)
+     * or the special characters - and _
+     * @param targetRDBResourceID
+     * @return
+     */
     public static boolean isRemoteTargetResourceID(String targetRDBResourceID) {
         if(InputValidator.checkIfValidIRI(targetRDBResourceID)){
             return true;

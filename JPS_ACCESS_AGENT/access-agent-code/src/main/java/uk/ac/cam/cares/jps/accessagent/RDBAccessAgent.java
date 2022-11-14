@@ -16,6 +16,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+/**
+ * The purpose of the RDBAccessAgent servlet is to handle HTTP requests to obtain the RDB url needed to create
+ * an instance of {@link uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient}.
+ * This agent extends the JPSAgent framework and can be called using methods in the
+ * RDBAccessAgentCaller class in jps_base_lib.
+ *
+ * All requests must provide a "targetresourceiri" {@link JPSConstants#TARGETIRI} and
+ * use the HTTP GET method.
+ *
+ * @author Mehal Agarwal
+ */
+
 @WebServlet(urlPatterns = {RDBAccessAgent.ACCESS_RDB_URL, RDBAccessAgent.CLEAR_CACHE_URL})
 public class RDBAccessAgent extends JPSAgent {
     public static final String ACCESS_RDB_URL = "/rdbaccess";
@@ -103,6 +115,11 @@ public class RDBAccessAgent extends JPSAgent {
         }
     }
 
+    /**
+     * Perform HTTP GET. This will get the RDB url.
+     * @param requestParams
+     * @return RDB url
+     */
     public String performGet(JSONObject requestParams) {
 
         String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
@@ -118,6 +135,11 @@ public class RDBAccessAgent extends JPSAgent {
         }
     }
 
+    /**
+     * Used to obtain the RDB Url.
+     * @param targetIRI
+     * @return RDB url
+     */
     public String getRDBUrl(String targetIRI){
         try {
             String url = RDBStoreRouter.getRDBUrl(targetIRI);
@@ -135,14 +157,13 @@ public class RDBAccessAgent extends JPSAgent {
         String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
         String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
         String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-        String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
 
         StringBuffer b = new StringBuffer(method);
         b.append(" with requestedUrl=").append(requestUrl);
         b.append(", path=").append(path);
         b.append(", contentType=").append(contentType);
         b.append(", targetiri=").append(targetIRI);
-        b.append(", targetgraph=").append(graphIRI);
+
         if (hasErrorOccured) {
             LOGGER.error(b.toString());
         } else {
