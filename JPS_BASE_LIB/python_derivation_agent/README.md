@@ -32,11 +32,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `pyderivationagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency, therefore, in order to make the semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `pyderivationagent`. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `pyderivationagent` package.
 
 ```sh
 (<venv_name>) $ pip install pyderivationagent
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use #
