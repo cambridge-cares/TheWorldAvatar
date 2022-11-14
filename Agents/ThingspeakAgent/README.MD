@@ -131,6 +131,8 @@ Modify `api.properties` and `client.properties` in the `config` folder according
 THINGSPEAK_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
+Modify 'allFields.properties' in the `mapping` folder within the `config` folder accordingly based on what variables or parameters you are retrieving from the Thingspeak server.
+
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
