@@ -1,11 +1,13 @@
-# Access Agent and RDB Access Agent
+# TripleStoreAccess Agent and RDBAccess Agent
 
 ## Purpose
 
-<b>Access Agent:</B> The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph. 
+The purpose of the TripleStoreAccessAgent and RDBAccessAgent is to provide access and/or routing to triple stores and relational databases respectively.
+
+<b>Triple Store Access Agent:</B> The purpose of this agent is to handle HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph. 
 The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods in the AccessAgentCaller class in jps_base_lib or by extending the JPSAgent class.
 
-<b> RDB Access Agent: </b>The  purpose of the RDB Access Agent is to handle HTTP requests to obtain the url required to create a connection to a PostgreSQL database. This agent extends the JPSAgent framework 
+<b> RDB Access Agent: </b>The  purpose of this agent is to handle HTTP requests to obtain the url required to create a connection to a PostgreSQL database. This agent extends the JPSAgent framework 
 and can be called using the getRDBUrl method in the RDBAccessAgentCaller class in jps_base_lib or by extending the JPSAgent class. 
 
 
@@ -14,12 +16,12 @@ and can be called using the getRDBUrl method in the RDBAccessAgentCaller class i
 <!------------------------------------------------------------->
 ## Deploying a local AccessAgent
 
-The access-agent-dev-stack contains the <b>Access Agent</b> and <b>RDBAccessAgent</b> (on port 48888) and a <b>Blazegraph</b> (on port 48889). 
+The access-agent-dev-stack contains the <b>Triple Store Access Agent</b> and <b>RDBAccessAgent</b> (on port 48888) and a <b>Blazegraph</b> (on port 48889). 
 
-The purpose of the Blazegraph is to store routing information used by the access agent in your dev environment. 
-Routing information is stored in the default "kb" namespace and the access agent is configured to use this is as the STOREROUTER_ENDPOINT.
+The purpose of the Blazegraph is to store routing information used by the triple store access agent in your dev environment. 
+Routing information is stored in the default "kb" namespace and the triple store access agent is configured to use this is as the STOREROUTER_ENDPOINT.
 
-The uplaoding of routing information for the RDB Access Agent is described in the [Uploading Routing Information](#Uploading-routing-information) section below.
+The uploading of routing information for the RDB Access Agent is described in the [Uploading Routing Information](#Uploading-routing-information) section below.
 ### Spining up the Access Agent dev stack
 
 From the command line, in the access-agent-dev-stack directory, run:
@@ -30,7 +32,7 @@ Images for the two containers are pulled from the Cambridge CARES container regi
 
 ### Uploading Routing Information
 
-<b> Access Agent: </b> 
+<b> Triple Store Access Agent: </b> 
 
 In order to upload routing information to the dev stack, populate the routing.json file in access-agent-dev-stack directory with the routing information you want to upload.
 You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. The routing.json file contains two examples. Note: the host "localhost" in the endpoint url needs to be replaced by "host.docker.internal" (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
@@ -64,13 +66,13 @@ database 'test'. Replace all occurrences of test with the name of the database a
 
 ### Calling the Agent in your dev environment 
 
-The access agent and RDB access agent are accessible at localhost:48888, or host.docker.internal:48888 from inside a Docker container (on Windows/Mac).
+The triple store access agent and RDB access agent are accessible at localhost:48888, or host.docker.internal:48888 from inside a Docker container (on Windows/Mac).
 
-The <b>AccessAgent</b> is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
+The <b>Triple Store Access Agent</b> is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
 The <b>RDB Access Agent</b> is usually called using the getRDBUrl found in the RDBAccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. The method takes one argument: the targetResourceID.
 
-There are three ways to call your local access/rdb-access agent:
+There are three ways to call your local TripleStoreAccess/RDBAccess agent:
 1. Set url.accessagent.host in the jps.properties file in jps_base_lib.
 2. Set the ACCESSAGENT_HOST environment variable. This is recommended if running your code from a docker container and can be done in the docker-compose file.
 3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
