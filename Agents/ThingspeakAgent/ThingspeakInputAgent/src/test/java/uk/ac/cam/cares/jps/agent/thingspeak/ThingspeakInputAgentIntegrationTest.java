@@ -56,7 +56,7 @@ public class ThingspeakInputAgentIntegrationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    // ThingsBoard Input Agent
+    // Thingspeak Input Agent
     private ThingspeakInputAgent agent;
     // Time series client for connection with KG and database
     private TimeSeriesClient<OffsetDateTime> tsClient;

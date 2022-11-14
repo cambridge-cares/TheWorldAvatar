@@ -225,7 +225,7 @@ public class ThingspeakInputAgentLauncherTest {
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), agentPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("thingsboard.mappingfolder=TEST_MAPPINGS");
+            writer.write("thingspeak.mappingfolder=TEST_MAPPINGS");
         }
     }
 
@@ -245,10 +245,10 @@ public class ThingspeakInputAgentLauncherTest {
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), apiPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("thingsboard.username=username\n");
-            writer.write("thingsboard.password=password\n");
-            writer.write("path.url=http://localhost:9090\n");
-            writer.write("device.token=f6e2fac0-4b9a-11ec-bc75-d14ed3d0d946");
+            writer.write("thingspeak.channelNumber=12345\n");
+            writer.write("thingspeak.apiKey=testapikey\n");
+            writer.write("thingspeak.results=1\n");
+            writer.write("path.url=https://api.thingspeak.com/channels/\n");
            
         }
     }

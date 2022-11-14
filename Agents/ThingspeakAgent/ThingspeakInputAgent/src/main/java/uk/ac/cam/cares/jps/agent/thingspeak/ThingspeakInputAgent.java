@@ -494,8 +494,7 @@ public class ThingspeakInputAgent{
         	//As such it should be a String
         	return String.class;
         else {
-        	//Default is Double since ThingsBoard main purpose is to store measurements from sensors
-        	//As such there should not be any readings stored in ThingsBoard that is considered to be boolean, String or integer
+        	//Default is Double
         	return Double.class;
         }
     }

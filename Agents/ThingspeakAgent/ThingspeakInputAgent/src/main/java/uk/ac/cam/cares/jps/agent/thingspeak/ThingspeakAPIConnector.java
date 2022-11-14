@@ -41,7 +41,7 @@ public class ThingspeakAPIConnector {
     private static final String READINGS_ERROR_MSG ="Readings could not be retrieved";
     
     /**
-     * Keys to be retrieved from ThingsBoard
+     * Keys to be retrieved
      */
     private String keys;
 
@@ -137,7 +137,6 @@ public class ThingspeakAPIConnector {
         if (!file.exists()) {
             throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
         }
-        // Read username and password for ThingsBoard API from properties file
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
 

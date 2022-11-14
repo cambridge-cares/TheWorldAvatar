@@ -239,7 +239,6 @@ public class ThingspeakInputAgentLauncher extends JPSAgent {
         if (!file.exists()) {
             throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
         }
-        // Read username and password for ThingsBoard API from properties file
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
 
