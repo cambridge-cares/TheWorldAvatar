@@ -83,6 +83,7 @@ import matplotlib.pyplot as plt
 from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
 import pandas as pd
 import seaborn
+from adjustText import adjust_text
 
 ## create configuration objects
 SLASH = '/'
@@ -522,20 +523,31 @@ class OptimalPowerFlowAnalysis:
         self.nF_feasibleNormalised = (self.F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
         feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
 
-        plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.6, s=20, facecolors='#728FCE', edgecolors='none')
+        plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.3, s=20, facecolors='#728FCE', edgecolors='none')
         plt.scatter(self.nF_feasibleNormalised[:, 0], self.nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
+        
+        optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
+        x_data = []
+        y_data = []
         for i in indexOfOptima:
-            i_ = indexOfOptima.index(i)
-            plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
-            weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-            plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data') #, arrowprops=dict(arrowstyle='->'))     
+            x_data.append(self.nF_feasibleNormalised[i, 0])
+            y_data.append(self.nF_feasibleNormalised[i, 1])
+            plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')
+        pointAndText = [plt.text(x_, y_, label, fontsize= 8) for x_, y_, label in zip(x_data, y_data, optima_label_list)]
+        adjust_text(pointAndText, only_move={'text': 'y'}, arrowprops=dict(arrowstyle='-', color='grey')) 
+        # for i in indexOfOptima:
+        #     i_ = indexOfOptima.index(i)
+        #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
+        #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+        #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
         plt.title("Normalised Objective Space")
         plt.xlabel("Normalised SMR Investment and Risk Cost (-)")
         plt.ylabel("Normalised Load-Demand Distance (-)") 
         plt.legend()
+        # plt.tight_layout()
         plt.savefig('SMR_%s.png' % str(self.numberOfSMRToBeIntroduced), dpi = 1200)
-        plt.savefig('SMR_%s.svg' % str(self.numberOfSMRToBeIntroduced))
-        ##plt.show() ## show must come after the savefig
+        ## plt.savefig('SMR_%s.svg' % str(self.numberOfSMRToBeIntroduced))
+        ## plt.show() ## show must come after the savefig
         ##plt.close()
         plt.cla()
         ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
@@ -815,11 +827,12 @@ class OptimalPowerFlowAnalysis:
         self.annualisedOPEXList = []
         self.totalCostList = []
         self.resultsList = []
+        self.OPEXRatioList = []
         
         # set up numerical method: Newton's Method
         ppopt = ppoption(OUT_ALL = 0, VERBOSE = 2) 
         
-        for ppc in self.ppc_List:
+        for ppc in self.ppc_List: ## the length of the ppc_List should equal to the number of the weights
             i = self.ppc_List.index(ppc)
             ##-- starts opf analysis --##
             results = runopf(ppc, ppopt)
@@ -836,7 +849,9 @@ class OptimalPowerFlowAnalysis:
             
             annualisedOPEX = round((totalOperationCost_OPF * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))), 2)
             self.annualisedOPEXList.append(annualisedOPEX)
+            OPEXRatio = round(annualisedOPEX/(annualisedOPEX + self.retrofittingCostList[i]), 2)
             self.totalCostList.append(round((annualisedOPEX + self.retrofittingCostList[i]), 2))
+            self.OPEXRatioList.append(OPEXRatio)
             # percentageOfOPEX = round(self.annualisedOPEX/self.totalCost, 2)
             # percentageOfCAPEX = round((1- percentageOfOPEX),2)
 
@@ -861,8 +876,10 @@ class OptimalPowerFlowAnalysis:
         None.
 
         """
+        self.SMRTotalOutputList = []
+        self.SMRTotalOperationalRationList = []
         
-        for index_ in range(len(self.resultsList)): ## the length of the results
+        for index_ in range(len(self.resultsList)): ## the length of the results equals to the length of the weights
             results = self.resultsList[index_]
             GeneratorObjectList_EachWeight = self.GeneratorObjectList[index_]
             SMRSiteObjectList_EachWeight = self.SMRSiteObjectList[index_]
@@ -955,6 +972,16 @@ class OptimalPowerFlowAnalysis:
                         setattr(self.ObjectSet.get(objectiveName), key, generatorPostResult[index_gen][index])        
                     index_regen += 1
                     index_gen += 1
+
+                totalSMROutput = 0
+                for SMRName in SMRSiteObjectList_EachWeight:
+                    totalSMROutput += round(float(self.ObjectSet[SMRName].PG_OUTPUT),2)
+                self.SMRTotalOutputList.append(totalSMROutput)
+                if self.numberOfSMRToBeIntroduced == 0:
+                    ratio = 0
+                else:
+                    ratio = round((totalSMROutput / (self.numberOfSMRToBeIntroduced * self.SMRCapability)), 2)
+                self.SMRTotalOperationalRationList.append(ratio)
 
             #FIXME: modify the ModelPythonObjectOntologiser method 
             ## self.ModelPythonObjectOntologiser() 
@@ -1123,69 +1150,101 @@ class OptimalPowerFlowAnalysis:
     
     def CarbonEmissionCalculator(self):
         self.totalCO2EmissionList = []
+        self.annualisedTotalEmissionCostList = []
+        self.emissionCostContributionList_OPEX = []
+        self.emissionCostContributionList_TotalCost = []
         for GeneratorObjectList_EachWeight in self.GeneratorObjectList:
             totalCO2Emission = 0
+            emissionCost = 0
+            totalEmissionCostOverLifespan = 0
             for gen in GeneratorObjectList_EachWeight:
-                totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)       
-            print("Total CO2 Emission is:", totalCO2Emission, "t/hr")
+                totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor) 
+                emissionCost += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor) * self.CarbonTaxForOPF 
             self.totalCO2EmissionList.append(totalCO2Emission)
+            annualEmissionCost = emissionCost * 8760
+            for l in range(self.projectLifeSpan):
+                ## l starts frm 0, therefore it is no need to use -(l-1) bus just use -l
+                totalEmissionCostOverLifespan += annualEmissionCost * (1 + float(self.bankRate)) **(-l)
+            annualisedTotalEmissionCostOverLifespan = round((totalEmissionCostOverLifespan * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))), 2)
+            self.annualisedTotalEmissionCostList.append(annualisedTotalEmissionCostOverLifespan)
+        
+        for annualisedOPEX in self.annualisedOPEXList:
+            emissionCostContribution_OPEX = round((annualisedTotalEmissionCostOverLifespan / annualisedOPEX), 2)
+            self.emissionCostContributionList_OPEX.append(emissionCostContribution_OPEX)
+        for totalAnnualisedCost in self.totalCostList:
+            emissionCostContribution_TotalCost = round((annualisedTotalEmissionCostOverLifespan / totalAnnualisedCost), 2)
+            self.emissionCostContributionList_TotalCost.append(emissionCostContribution_TotalCost)          
         return 
 
-## FIXME: the code should be updated according to the changed code
-    def EnergySupplyBreakDownPieChartCreator(self):
-        genTypeLabel = []
-        outPutData = []
-        for gen in self.GeneratorObjectList:
-            if not self.ObjectSet[gen].fueltype in genTypeLabel:
-                genTypeLabel.append(self.ObjectSet[gen].fueltype)
-                outPutData.append(float(self.ObjectSet[gen].PG_OUTPUT))
-            else:
-                i = genTypeLabel.index(self.ObjectSet[gen].fueltype) 
-                outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)
+    def EnergySupplyBreakDownPieChartCreator(self, weighterList, CarbonTaxForOPF, weatherCondition):
+        for w in range(len(self.GeneratorObjectList)): ## the length of GeneratorObjectList should equal to the number of the weights
+            genListForEachWeight = self.GeneratorObjectList[w]
+            genTypeLabel = []
+            outPutData = []
+            for gen in genListForEachWeight:
+                if not self.ObjectSet[gen].fueltype in genTypeLabel:
+                    genTypeLabel.append(self.ObjectSet[gen].fueltype)
+                    outPutData.append(float(self.ObjectSet[gen].PG_OUTPUT))
+                else:
+                    i = genTypeLabel.index(self.ObjectSet[gen].fueltype) 
+                    outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)
 
-        totalOutputOfSMR = 0
-        if len(self.SMRSiteObjectList) > 0:
-            for regen in self.SMRSiteObjectList:
-                 totalOutputOfSMR += self.ObjectSet[regen].PG_OUTPUT
-            genTypeLabel.append(self.newGeneratorType)
-            outPutData.append(totalOutputOfSMR)
+            totalOutputOfSMR = 0
+            if len(self.SMRSiteObjectList) > 0:
+                SMRListForEachWeight = self.SMRSiteObjectList[w]
+                for regen in SMRListForEachWeight:
+                    totalOutputOfSMR += self.ObjectSet[regen].PG_OUTPUT
+                genTypeLabel.append(self.newGeneratorType)
+                outPutData.append(totalOutputOfSMR)
 
-        percentage = []
-        sum_up = sum(outPutData)
-        for output in outPutData:
-            p = round(output/sum_up, 2)
-            percentage.append(p * 100)
+            percentage = []
+            sum_up = sum(outPutData)
+            for output in outPutData:
+                p = round(output/sum_up, 2)
+                percentage.append(p * 100)
 
-        print(genTypeLabel)
-        print(percentage)
-        print(outPutData)
+            print(genTypeLabel)
+            print(percentage)
+            print(outPutData)
 
-        otherCapa = 0
-        labelToBeDeleted = []
-        dataToBeDeleted = []
-        for label in genTypeLabel:
-            if not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
-                i = genTypeLabel.index(label)
-                labelToBeDeleted.append(label)
-                dataToBeDeleted.append(outPutData[i])
-                otherCapa += outPutData[i] 
+            ## Old code for generating the pie chart
+            otherCapa = 0
+            labelToBeDeleted = []
+            dataToBeDeleted = []
+            for label in genTypeLabel:
+                if label in ['SourGas']:
+                    op = outPutData[genTypeLabel.index(label)]
+                    outPutData[genTypeLabel.index('NaturalGas')] += op
+                    labelToBeDeleted.append('SourGas')
+                    dataToBeDeleted.append(op)
+                elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                    i = genTypeLabel.index(label)
+                    labelToBeDeleted.append(label)
+                    dataToBeDeleted.append(outPutData[i])
+                    otherCapa += outPutData[i] 
 
-        for label in labelToBeDeleted:
-            genTypeLabel.remove(label)
-        
-        for data in dataToBeDeleted:
-            outPutData.remove(data)
+            for label in labelToBeDeleted:
+                genTypeLabel.remove(label)
+            
+            for data in dataToBeDeleted:
+                outPutData.remove(data)
 
-        outPutData.append(otherCapa)
-        genTypeLabel.append('Others')
+            outPutData.append(otherCapa)
+            genTypeLabel.append('Others')
 
-        print(genTypeLabel)
-        print(outPutData)
+            print(genTypeLabel)
+            print(outPutData)
 
-        plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
-        plt.title('Energy Supply BreakDown')
-        plt.axis('equal')
-        plt.show()     
+            plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
+            plt.title('Energy Supply BreakDown')
+            plt.axis('equal')
+            plt.tight_layout()
+            path = 'EnergyBreakdown_PieChart_weight_' + str(round(weighterList[w],2)) + '_weather_' + str(weatherCondition) + '_carbonTax_' + str(CarbonTaxForOPF) + '.png' 
+            plt.savefig(path, dpi = 1200)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()     
         return 
 
     def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, file_label):
@@ -1391,10 +1450,11 @@ class OptimalPowerFlowAnalysis:
             print("---  There is this folder!  ---")
 
     """Create the heatmap for total cost and CO2 emission"""
-    def dataHeatmapCreator(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+    def dataHeatmapCreator_totalCostAndEmission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
         self.weightRecorder = []
+        self.minTotalCostIndexRecoder = []
 
         ## colour pattern, "crest" was used at the first time
         cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
@@ -1403,6 +1463,7 @@ class OptimalPowerFlowAnalysis:
             matrix_minTotalCost = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_minCO2Emission = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_weight = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_minTotalCostIndex = numpy.zeros((rowNum, colNum), dtype = float)
             matrix_minTotalCostForAnnotation = numpy.zeros((rowNum, colNum), dtype = float)
             #row = 0
             for i in range(rowNum): ## SMR design index
@@ -1412,49 +1473,56 @@ class OptimalPowerFlowAnalysis:
                     results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
                     totalCost = results_sameCarbonTaxAndSameWeather[0]
                     minTotalCost = min(totalCost)
+                    indexList = []
+                    for i_tc in range(len(totalCost)):
+                        tc = totalCost[i_tc]
+                        if tc == minTotalCost:
+                            indexList.append(i_tc)
+                    index_minTotalCost = max(indexList) #totalCost.index(minTotalCost)
                     CO2EmissionOftheMinimumCost = results_sameCarbonTaxAndSameWeather[1][totalCost.index(minTotalCost)]
                     matrix_minTotalCost[i, j] = minTotalCost
                     matrix_minTotalCostForAnnotation[i, j] = float(minTotalCost)/1E10
                     matrix_minCO2Emission[i, j] = CO2EmissionOftheMinimumCost
-                    matrix_weight[i, j] = round(weighterList[totalCost.index(minTotalCost)], 2)                    
-                    #col += 1
-                #row += 1
+                    matrix_weight[i, j] = round(weighterList[totalCost.index(minTotalCost)], 2)   
+                    matrix_minTotalCostIndex[i, j] = int(index_minTotalCost)                 
+                    
             self.weightRecorder.append(matrix_weight)
+            self.minTotalCostIndexRecoder.append(matrix_minTotalCostIndex)
             
             ## Draw the heatmap of total cost
-            seaborn.heatmap(matrix_minTotalCost, linewidth=0.002, cmap=cmap, annot=matrix_minTotalCostForAnnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
+            seaborn.heatmap(matrix_minTotalCost, linewidth=0.004, cmap=cmap, annot=matrix_minTotalCostForAnnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=3.0E10)
             plt.title("Total cost at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
             plt.tight_layout()
             plt.savefig('TotalCost_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
-            plt.savefig('TotalCost_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            ## plt.savefig('TotalCost_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
             plt.clf()
             plt.close()
             plt.cla()
 
             ## Draw the heatmap of carbon emission
-            seaborn.heatmap(matrix_minCO2Emission, linewidth=0.002, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':6.5}, vmin=0, vmax=6000)
+            seaborn.heatmap(matrix_minCO2Emission, linewidth=0.004, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':7}, vmin=0, vmax=6000)
             plt.title("Carbon emission at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
             plt.tight_layout()
             plt.savefig('CarbonEmission_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
-            plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            ## plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
             plt.clf()
             plt.close()
             plt.cla()
 
-            ## Draw the heatmap of carbon emission
-            seaborn.heatmap(matrix_weight, linewidth=0.002, cmap=cmap, annot=True, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.5, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            ## Draw the heatmap of weight
+            seaborn.heatmap(matrix_weight, linewidth=0.004, cmap=cmap, annot=True, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.5, annot_kws={'size':7.5}, vmin=0, vmax=1)
             plt.title("Picked weight at weather condition %s" % weatherConditionList[k][2])
             plt.xlabel("Carbon tax (£)")
             plt.ylabel("SMR Number") 
             plt.tight_layout()
             plt.savefig('weight_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
-            plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            ## plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             plt.show()
             plt.clf()
             plt.close()
@@ -1477,37 +1545,307 @@ class OptimalPowerFlowAnalysis:
                         matrix_CO2EmissionAtEachWeight[i,j] = co2Emission[m]
  
                 ## Draw the heatmap of total cost
-                seaborn.heatmap(matrix_totalCostAtEachWeight, linewidth=0.002, cmap=cmap, annot=matrix_totalCostAtEachWeightForAnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
-                title = "Total cost at weather condition" + weatherConditionList[k][2] + " (weight = " + str(weighterList[m]) + ")"
+                seaborn.heatmap(matrix_totalCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_totalCostAtEachWeightForAnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
+                title = "Total cost at weather condition " + weatherConditionList[k][2] + " (weight = " + round(str(weighterList[m]), 2) + ")"
                 plt.title(title)
                 plt.xlabel("Carbon tax (£)")
                 plt.ylabel("SMR Number") 
                 plt.tight_layout()
-                label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.png'
-                label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.svg'
+                label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.png'
+                ## label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.svg'
                 plt.savefig(label_png, dpi = 1200)
-                plt.savefig(label_svg)
+                ## plt.savefig(label_svg)
                 plt.show()
                 plt.clf()
                 plt.close()
                 plt.cla()
 
                 ## Draw the heatmap of carbon emission
-                seaborn.heatmap(matrix_CO2EmissionAtEachWeight, linewidth=0.002, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':6.5}, vmin=0, vmax=6000)
-                title = "Carbon emission at weather condition " + weatherConditionList[k][2] + " (weight = " + str(weighterList[m]) + ")"
+                seaborn.heatmap(matrix_CO2EmissionAtEachWeight, linewidth=0.004, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':7}, vmin=0, vmax=6000)
+                title = "Carbon emission at weather condition " + weatherConditionList[k][2] + " (weight = " + round(str(weighterList[m]), 2) + ")"
                 plt.title(title)
                 plt.xlabel("Carbon tax (£)")
                 plt.ylabel("SMR Number") 
                 plt.tight_layout()
-                label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.png'
-                label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(weighterList[m]) + '.svg'
+                label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.png'
+                ## label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.svg'
                 plt.savefig(label_png, dpi = 1200)
-                plt.savefig(label_svg)
+                ## plt.savefig(label_svg)
                 plt.show()
                 plt.clf()
                 plt.close()
                 plt.cla()        
         return
+
+    """Create the OPEXRatio"""
+    def dataHeatmapCreator_OPEXRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+        rowNum = len(NumberOfSMRUnitList)
+        colNum = len(CarbonTaxForOPFList)
+
+        ## colour pattern, "crest" was used at the first time
+        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
+        cmap = "crest"
+        
+        for k in range(len(weatherConditionList)):
+            indexMatrix = self.minTotalCostIndexRecoder[k]
+            matrix_OPEXRatio = numpy.zeros((rowNum, colNum), dtype = float)
+           
+            for i in range(rowNum): ## SMR design index
+                SMRdesign = dataMatrix[i]
+                indexRow = indexMatrix[i]
+                for j in range(colNum): ## carbon tax index
+                    OPEXRatio = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
+                    matrix_OPEXRatio[i, j] = OPEXRatio
+                             
+            ## Draw the heatmap of total cost
+            seaborn.heatmap(matrix_OPEXRatio, linewidth=0.004, cmap=cmap, annot=matrix_OPEXRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0.5, vmax=1)
+            plt.title("OPEX contribution at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('OPEXRatio_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+        return
+    
+    """Create the SMR output and operational retio"""
+    def dataHeatmapCreator_SMROutputAndOperationalRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+        rowNum = len(NumberOfSMRUnitList)
+        colNum = len(CarbonTaxForOPFList)
+
+        ## colour pattern, "crest" was used at the first time
+        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
+        
+        ## heat map for different weather conditions
+        for k in range(len(weatherConditionList)):
+            indexMatrix = self.minTotalCostIndexRecoder[k]
+            matrix_SMROutput = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_SMROperationalRatio = numpy.zeros((rowNum, colNum), dtype = float)
+           
+            for i in range(rowNum): ## SMR design index
+                SMRdesign = dataMatrix[i]
+                indexRow = indexMatrix[i]
+                for j in range(colNum): ## carbon tax index
+                    SMROutput = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
+                    SMROperationalRatio = round(SMRdesign[j][k][1][int(indexRow[j])], 2)
+                    matrix_SMROutput[i, j] = SMROutput
+                    matrix_SMROperationalRatio[i, j] = SMROperationalRatio
+                             
+            ## Draw the heatmap of SMR output
+            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+            seaborn.heatmap(matrix_SMROutput, linewidth=0.004, cmap=cmap, annot=matrix_SMROutput, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2.6E4)
+            plt.title("SMR total output at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('SMROutput_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of SMR operational ratio
+            seaborn.heatmap(matrix_SMROperationalRatio, linewidth=0.004, cmap="crest", annot=matrix_SMROperationalRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            plt.title("SMR operational ratio at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('SMROperationalRatio_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+        ## Draw the heatmap at each weight
+        for k in range(len(weatherConditionList)):
+            for m in range(len(weighterList)):
+                matrix_SMROutputAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_SMROperationalRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                for i in range(rowNum): ## SMR design index
+                    SMRdesign = dataMatrix[i]
+                    for j in range(colNum): ## carbon tax index
+                        results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
+                        SMROutput = results_sameCarbonTaxAndSameWeather[0]
+                        SMROperationalRatio = results_sameCarbonTaxAndSameWeather[1]
+                        matrix_SMROutputAtEachWeight[i,j] = SMROutput[m]
+                        matrix_SMROperationalRatioAtEachWeight [i,j] = SMROperationalRatio[m]
+                        
+
+            ## Draw the heatmap of SMR output
+            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+            seaborn.heatmap(matrix_SMROutput, linewidth=0.004, cmap=cmap, annot=matrix_SMROutput, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2.6E4)
+            title = "SMR total output at weather condition " + weatherConditionList[k][2] + " (weight = " + round(str(weighterList[m]), 2) + ")"
+            plt.title(title)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            label_png = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.png'
+            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.svg'
+            plt.savefig(label_png, dpi = 1200)
+            ## plt.savefig(label_svg)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of SMR operational ratio
+            seaborn.heatmap(matrix_SMROperationalRatio, linewidth=0.004, cmap="crest", annot=matrix_SMROperationalRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            title = "SMR operational ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + round(str(weighterList[m]), 2) + ")"
+            plt.title(title)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            label_png = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.png'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + round(str(weighterList[m]), 2) + '.svg'
+            plt.savefig(label_png, dpi = 1200)
+            ## plt.savefig(label_svg)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+        return
+    
+    """This method is used to create emission heatmap"""
+    def dataHeatmapCreator_CO2Emission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+        rowNum = len(NumberOfSMRUnitList)
+        colNum = len(CarbonTaxForOPFList)
+
+        ## colour pattern, "crest" was used at the first time
+        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
+        
+        ## heat map for different weather conditions: pick the beat solution regardless of the weight
+        for k in range(len(weatherConditionList)):
+            indexMatrix = self.minTotalCostIndexRecoder[k]
+            matrix_EmissionCost = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_EmissionOPEXRatio = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_EmissionTotalCostRatio = numpy.zeros((rowNum, colNum), dtype = float)
+            matrix_EmissionCost_Annotation = numpy.zeros((rowNum, colNum), dtype = float)
+            for i in range(rowNum): ## SMR design index
+                SMRdesign = dataMatrix[i]
+                indexRow = indexMatrix[i]
+                for j in range(colNum): ## carbon tax index
+                    emissionCost = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
+                    emissionOPEXRatio = round(SMRdesign[j][k][1][int(indexRow[j])], 2)
+                    emissionTotalCostRatio = round(SMRdesign[j][k][2][int(indexRow[j])], 2)
+                    matrix_EmissionCost[i, j] = emissionCost
+                    matrix_EmissionOPEXRatio[i, j] = emissionOPEXRatio
+                    matrix_EmissionCost_Annotation[i, j] = emissionOPEXRatio / 1E8
+                    matrix_EmissionTotalCostRatio[i, j] = emissionTotalCostRatio
+                             
+            ## Draw the heatmap of emission cost
+            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+            seaborn.heatmap(matrix_EmissionCost, linewidth=0.004, cmap=cmap, annot = matrix_EmissionCost_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=5E8)
+            plt.title("Emission cost at weather condition %s" % weatherConditionList[k][2])
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('emissionCost_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of emission OPEX ratio
+            seaborn.heatmap(matrix_EmissionOPEXRatio, linewidth=0.004, cmap="crest", annot=matrix_EmissionOPEXRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            plt.title("Emission cost and OPEX ratio at weather condition %s" % weatherConditionList[k][2], fontsize = 11)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('emissionCostOPEXRatio_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of emission/TotalCost ratio
+            seaborn.heatmap(matrix_EmissionTotalCostRatio, linewidth=0.004, cmap="crest", annot=matrix_EmissionTotalCostRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            plt.title("Emission cost and Total Cost ratio at weather condition %s" % weatherConditionList[k][2], fontsize = 10)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            plt.savefig('emissionCostTotalCostRatio_Heatmap_%s.png' % str(weatherConditionList[k][2]), dpi = 1200)
+            ## plt.savefig('OPEXRatio_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+        ## Draw the heatmap at each weight
+        for k in range(len(weatherConditionList)):
+            for m in range(len(weighterList)):
+                matrix_emissionCostAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_emissionCostAtEachWeight_Annotation = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_emissionCostOPEXRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                matrix_emissionCostTotalCostRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
+                for i in range(rowNum): ## SMR design index
+                    SMRdesign = dataMatrix[i]
+                    for j in range(colNum): ## carbon tax index
+                        results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
+                        emissionCost = results_sameCarbonTaxAndSameWeather[0]
+                        emissionCostOPEXRatio = results_sameCarbonTaxAndSameWeather[1]
+                        emissionCostTotalCostRatio = results_sameCarbonTaxAndSameWeather[2]
+                        matrix_emissionCostAtEachWeight[i,j] = emissionCost[m]
+                        matrix_emissionCostAtEachWeight_Annotation[i,j] = emissionCost[m] / 1E8
+                        matrix_emissionCostOPEXRatioAtEachWeight[i,j] = emissionCostOPEXRatio[m]
+                        matrix_emissionCostTotalCostRatioAtEachWeight[i,j] = emissionCostTotalCostRatio[m]
+                        
+            ## Draw the heatmap of emission cost
+            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+            seaborn.heatmap(matrix_emissionCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_emissionCostAtEachWeight_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=5E8)
+            title = "Emission cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            plt.title(title)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.png'
+            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            plt.savefig(label_png, dpi = 1200)
+            ## plt.savefig(label_svg)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of emission cost and OPEX ratio
+            seaborn.heatmap(matrix_emissionCostOPEXRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostOPEXRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            title = "Emission cost and OPEX ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            plt.title(title, fontsize = 11)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.png'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            plt.savefig(label_png, dpi = 1200)
+            ## plt.savefig(label_svg)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+
+            ## Draw the heatmap of emission cost and total cost ratio
+            seaborn.heatmap(matrix_emissionCostTotalCostRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostTotalCostRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+            title = "Emission cost and total cost ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            plt.title(title,fontsize = 10)
+            plt.xlabel("Carbon tax (£)")
+            plt.ylabel("SMR Number") 
+            plt.tight_layout()
+            label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.png'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            plt.savefig(label_png, dpi = 1200)
+            ## plt.savefig(label_svg)
+            plt.show()
+            plt.clf()
+            plt.close()
+            plt.cla()
+        return
+        
 
     """Develope the data matrix"""
     def resultsSheetCreator(self, weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, dataMatrix, fileName:str = None):
@@ -1650,15 +1988,21 @@ if __name__ == '__main__':
     ## TODO: stop generating the JSON files
     generateVisualisationJSON = True
 
-    pop_size = 800
+    # pop_size = 800
+    # n_offsprings = 1000
+    # numberOfGenerations = 350
+
+
+## TODO: for test the SMR over than 50
+    pop_size = 1000
     n_offsprings = 1000
-    numberOfGenerations = 350
+    numberOfGenerations = 400
 
     ## For error shooting
-    NumberOfSMRUnitList = [10]#[0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 54, 60, 65]
-    weighterList = [0] #, 0.25, 0.5, 0.75, 1] 
-    CarbonTaxForOPFList = [10] #[0, 10, 20, 40, 60, 80, 100, 120, 150, 200] 
-    weatherConditionList = [[0.67, 0.74, "WHSH"]]#, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    NumberOfSMRUnitList = [0, 1, 5, 10, 15, 20, 22, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60, 65]
+    weighterList =[0, 0.25, 0.5, 0.75, 0.85, 0.9, 1] ## TODO: add one more weight
+    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100, 120, 150, 200] 
+    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
     
 #############10 BUS Model#################################################################################################################################################################
     # testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
@@ -1750,22 +2094,31 @@ if __name__ == '__main__':
     #     testOPF_29BusModel.visualisationFileCreator_ClosedGenerator('pre-opf_29BusModel_' + str(smrUnit) + '_SMRs_retrofitted_ClosedPlants_CarbonTax' + str(CarbonTaxForOPF))
     #     print(summary)
     # print(summary)
-
+###TODO: check all of the index in the for loop. avoid using the same index
 ####================ OLD demanding assessment method: without pre-OPF ================####
     testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
     ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
     testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
     summary_eachSMRDesign = []
+    SMROutputAndOperationalRatio_eachSMRDesign = []
+    ratio_eachSMRDesign = []
+    emission_eachSMRDesign = []
     for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
         print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
         testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
         testOPF_29BusModel.optimaPicker(weighterList)
         ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
         summary_eachCarbonTax = []
+        SMR_eachCarbonTax = []
+        ratio_eachCarbonTax = []
+        emission_eachCarbonTax = []
         for CarbonTaxForOPF in CarbonTaxForOPFList:
             ## generatorNameList = []
             ## before decommssion: find the potential decommssion power plant 
             summary_eachWeather = []
+            ratio_eachWeather = []
+            SMR_eachWeather = []
+            emission_eachWeather = []
             for weatherCondition in weatherConditionList:
                 testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
                 testOPF_29BusModel.OPFModelInputFormatter()
@@ -1773,13 +2126,30 @@ if __name__ == '__main__':
                 testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON)
                 testOPF_29BusModel.CarbonEmissionCalculator()
                 ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
-                re = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
-                summary_eachWeather.append(re)
+                re_totalCostAndTotalEmission = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
+                re_OPEXRatio = [testOPF_29BusModel.OPEXRatioList]
+                smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRationList]
+                re_emission = [testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost]
+                summary_eachWeather.append(re_totalCostAndTotalEmission)
+                ratio_eachWeather.append(re_OPEXRatio)
+                SMR_eachWeather.append(smr_outputAndRatio)
+                emission_eachWeather.append(re_emission)
+                testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator(weighterList, CarbonTaxForOPF, weatherCondition)
             summary_eachCarbonTax.append(summary_eachWeather)
+            ratio_eachCarbonTax.append(ratio_eachWeather)
+            SMR_eachCarbonTax.append(SMR_eachWeather)
+            emission_eachCarbonTax.append(emission_eachWeather)
         summary_eachSMRDesign.append(summary_eachCarbonTax)
+        ratio_eachSMRDesign.append(ratio_eachCarbonTax)
+        SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
+        emission_eachSMRDesign.append(emission_eachCarbonTax)
     testOPF_29BusModel.resultsSheetCreator(weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-    testOPF_29BusModel.dataHeatmapCreator(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
-    print(testOPF_29BusModel.weightRecorder)        
+    testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
+    testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
+    testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
+    
+    
+    # #testOPF_29BusModel.dataHeatmapCreator_OPEXRatio(ratio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)         
             # ## find the decommssioned power plant
             # testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
 

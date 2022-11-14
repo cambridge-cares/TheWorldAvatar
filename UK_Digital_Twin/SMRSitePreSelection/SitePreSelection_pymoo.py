@@ -74,12 +74,15 @@ class siteSelector(Problem):
         ## 1.1 This constraint limits that for each site there is only one status (either hosting 0 or 1 or 2  or 3 or 4 SMR units) ##
         for i in range(len(self.generatorToBeReplacedList)): 
             g = 0 
-            g_Name = 'g_' + str(i) ## defining the name of the constraint function, the number of the ieq constraints is the number of the sites  
+            ## g_Name = 'g_' + str(i) ## defining the name of the constraint function, the number of the ieq constraints is the number of the sites  
             for n in range(self.N):
                 numOfBV = int(i * self.N + n) ## the index of the binary variable x 
                 g += x[:, numOfBV]
-            self.varSets[g_Name] = g - 1 ## the constaint looks like: x1 + x2 + x3 + x4 <= 1, while the sum up equal to 0, it means that there is no SMR being placed
-            g_list.append(self.varSets[g_Name])
+            g = g - 1 ## the constaint looks like: x1 + x2 + x3 + x4 <= 1, while the sum up equal to 0, it means that there is no SMR being placed
+            g_list.append(g)
+
+            ## self.varSets[g_Name] = g - 1 ## the constaint looks like: x1 + x2 + x3 + x4 <= 1, while the sum up equal to 0, it means that there is no SMR being placed
+            ## g_list.append(self.varSets[g_Name])
 
         ## 1.2 Safty distance constrain: distance_i,j >= safeDistance ## 
         for cp in self.contradictedPairs:
@@ -90,7 +93,7 @@ class siteSelector(Problem):
                 numOfBV2 = int(cp[1] * self.N + n) 
                 g1 += x[:, numOfBV1]
                 g2 += x[:, numOfBV2]
-            g12 = g1 + g2 -1
+            g12 = g1 + g2 - 1
             cp_list.append(g12)
         out["G"] = np.column_stack(g_list + cp_list)  ## iequality constraints 
 
