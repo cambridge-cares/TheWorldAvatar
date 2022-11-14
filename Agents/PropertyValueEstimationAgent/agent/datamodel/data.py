@@ -1,10 +1,10 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 23 Oct 2022                            #
+# Date: 14 Nov 2022                            #
 ################################################
 
 # The purpose of this module is to provide necessary data/constants for the 
-# `avgsqmprice` agent (i.e. its TimeSeriesClient)
+# `propertyvalueestimation` agent (i.e. its TimeSeriesClient)
 # Please note: The TimeSeries data has been instantiated using the PropertySalesInstantiationAgent;
 #              hence, the settings here need to match the ones used by that agent
 # For details on HM Land Registry's Price Paid Data PPD data, see:
@@ -13,10 +13,6 @@
 from agent.kg_operations.javagateway import jpsBaseLibGW
 
 
-# Endpoint of Office for National Statistics (ONS) public SPARQL API
-# (required to potentially retrieve nearby postcodes)
-ONS_ENDPOINT = 'http://statistics.data.gov.uk/sparql'
-
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
 # However, YearMonth not supported by TimeSeriesClient RDB implementation
 # --> Used xsd:date, i.e. ISO 8601 YYYY-MM-DD, during instantiation (via PropertySalesInstantiationAgent)
@@ -24,7 +20,7 @@ TIME_FORMAT_LONG = '%Y-%m-%d'
 TIME_FORMAT_SHORT = '%Y-%m'
 
 # OM / UOM unit symbols
-GBP_PER_SM = '£ m-2'
+GBP = '£'
 
 
 ### Create required JAVA classes ###

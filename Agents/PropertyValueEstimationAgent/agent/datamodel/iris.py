@@ -5,15 +5,12 @@ RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
-# Office for National Statistics (ONS)
-ONS1 = 'http://statistics.data.gov.uk/def/spatialrelations/'
-ONS2 = 'http://statistics.data.gov.uk/def/postcode/'
 # HM Land Registry
 LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
-UOM = 'https://theworldavatar.com/resource/ontouom/'
+UOM = 'https://www.theworldavatar.com/kg/ontouom/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
@@ -27,6 +24,7 @@ OBE_HAS_ADDRESS = OBE + 'hasAddress'
 OBE_HAS_ADMIN_DISTRICT = OBE + 'hasAdministrativeDistrict'
 OBE_HAS_IDENTIFIER = OBE + 'hasIdentifier'
 OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
+OBE_HAS_MARKET_VALUE = OBE + 'hasMarketValue'
 OBE_HAS_POSTALCODE = OBE + 'hasPostalCode'
 OBE_HAS_TOTAL_FLOOR_AREA = OBE + 'hasTotalFloorArea'
 OBE_HAS_UNIT_NAME = OBE + 'hasUnitName'
@@ -57,13 +55,8 @@ OM_MEASURE = OM + 'Measure'
 OM_NUM_VALUE = OM + 'hasNumericalValue'
 OM_SYMBOL = OM + 'symbol'
 OM_UNIT = OM + 'Unit'
+OM_GBP = OM + 'poundSterling'
 UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
-
-# ONS
-ONS_EASTING = ONS1 + 'epsg-27700/easting'
-ONS_NORTHING = ONS1 + 'epsg-27700/northing'
-ONS_POSTCODE = ONS2 + 'unit'
-ONS_WITHIN_SOSA = ONS1 + 'within#superoutputarealowerlayer'
 
 # UKHPI
 UKHPI_INDEX = UKHPI + 'housePriceIndex'
