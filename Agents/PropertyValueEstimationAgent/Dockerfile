@@ -44,11 +44,11 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/avgsqmpriceagent/avgsqmpriceagent:create_app()
+ENV FLASK_APP=app/agent/agent:create_app()
 ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/avgsqmpriceagent
+WORKDIR /app/agent
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
@@ -61,10 +61,10 @@ RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./avgsqmpriceagent ./avgsqmpriceagent
+COPY ./agent ./agent
 
 # Set the entrypoint
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "agent:create_app()"]
 
 
 #------------------------------------------------------
@@ -76,16 +76,16 @@ RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./avgsqmpriceagent ./avgsqmpriceagent
+COPY ./agent ./agent
 
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
-COPY ./tests/mockutils/env_configs_mock.py ./avgsqmpriceagent/utils/env_configs.py
-COPY ./tests/mockutils/stack_configs_mock.py ./avgsqmpriceagent/utils/stack_configs.py
+COPY ./tests/mockutils/env_configs_mock.py ./agent/utils/env_configs.py
+COPY ./tests/mockutils/stack_configs_mock.py ./agent/utils/stack_configs.py
 # Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./avgsqmpriceagent/utils/stack_configs.py
+RUN sed -i "s|env_configs_mock|env_configs |g" ./agent/utils/stack_configs.py
 
 # Set the entrypoint
 # --preload flag is added to provide more information in the container to help with debugging
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "agent:create_app()", "--preload"]
 
 #==================================================================================================
