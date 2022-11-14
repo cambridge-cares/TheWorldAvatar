@@ -28,7 +28,7 @@ docker-compose up -d --no-build
 ```
 Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. (Note: Credentials are required to pull from the CMCL registry. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
 
-### Uploading routing information
+### Uploading Routing Information
 
 <b> Access Agent: </b> 
 
