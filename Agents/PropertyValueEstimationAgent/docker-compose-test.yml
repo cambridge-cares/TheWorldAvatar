@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  avgsqmprice_agent:
-    image: ghcr.io/cambridge-cares/avgsqmprice_agent_test:1.0.0-SNAPSHOT
+  propertyvalue_agent:
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.0.0-SNAPSHOT
     build:
       context: .
       target: test
@@ -16,8 +16,8 @@ services:
       - DATABASE=postgres
       - NAMESPACE=buildings
       #--- Derivation Agent parameters ---#
-      - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5010/AvgSqmPrice
+      - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_PropertyValueEstimation/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5011/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false

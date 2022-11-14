@@ -25,8 +25,6 @@ from agent.kg_operations.tsclient import TSClient
 class AvgSqmPriceAgent(DerivationAgent):
 
     def __init__(self, **kwargs):
-        # Set transaction threshold for average calculation
-        self.threshold = kwargs.pop('threshold')
         # Initialise DerivationAgent parent instance
         super().__init__(**kwargs)
 
