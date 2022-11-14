@@ -15,8 +15,6 @@ services:
       - STACK_NAME=TESTS
       - DATABASE=postgres
       - NAMESPACE=buildings
-      #--- Agent parameters ---#
-      - THRESHOLD=''
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service
       - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5010/AvgSqmPrice

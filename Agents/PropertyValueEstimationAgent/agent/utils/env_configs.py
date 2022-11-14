@@ -22,7 +22,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE, THRESHOLD
+    global DATABASE, NAMESPACE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -44,21 +44,6 @@ def retrieve_settings():
     if NAMESPACE == '':
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
-
-    # Retrieve threshold of required number of sales transactions (i.e. before
-    # retrieving further data from nearest postcodes according to ONS)
-    THRESHOLD = os.getenv('THRESHOLD')
-    if THRESHOLD is None:
-        THRESHOLD = 5
-        logger.warning(f'No "THRESHOLD" value has been provided in environment variables. Using default value {THRESHOLD}.')
-        warnings.warn(f'No "THRESHOLD" value has been provided in environment variables. Using default value {THRESHOLD}.')
-    else:
-        try:
-            THRESHOLD = int(THRESHOLD)
-        except ValueError:
-            THRESHOLD = 5
-            logger.warning(f'Invalid "THRESHOLD" value has been provided in environment variables. Using default value {THRESHOLD}.')
-            warnings.warn(f'Invalid "THRESHOLD" value has been provided in environment variables. Using default value {THRESHOLD}.')
 
 
 # Run when module is imported

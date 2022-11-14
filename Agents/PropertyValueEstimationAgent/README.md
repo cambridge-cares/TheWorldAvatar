@@ -23,8 +23,6 @@ Before building and deploying the Docker image, several key properties need to b
 
 ### **1) The environment variables used by the agent container**
 ```bash
-# Agent configuration
-THRESHOLD                     # Minimum number of sales transactions required to assess average
 # Stack & Stack Clients configuration
 STACK_NAME                    # Name of stack to which agent shall be deployed
 DATABASE                      # PostGIS/PostgreSQL database name (default: `postgres`)
