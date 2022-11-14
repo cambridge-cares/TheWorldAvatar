@@ -8,7 +8,7 @@ services:
     environment:
         LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
         STOREROUTER_ENDPOINT: "http://blazegraph-access-agent:8080/blazegraph/namespace/kb/sparql"
-        RDB_STOREROUTER_ENDPOINT: "http://host.docker.internal:9999/blazegraph/namespace/ontordbrouter/sparql"
+        RDB_STOREROUTER_ENDPOINT: "http://www.theworldavatar.com/blazegraph/namespace/ontordbrouter/sparql"
     pull_policy: if_not_present
     ports:
       - 48888:8080
