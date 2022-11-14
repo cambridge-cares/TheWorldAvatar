@@ -14,12 +14,12 @@ setup(
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     include_package_data= True,
     install_requires= [
-        'flask==2.1.0',
+        'flask==2.2.0',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.1',
-        'py4jps==1.0.27', 
+        'py4jps==1.0.29', 
         'requests==2.28.1',
-        'pyderivationagent==1.3.0'
+        'pyderivationagent==1.4.0'
     ],
     extras_require={
         "dev": [

@@ -28,8 +28,6 @@ COPY ./setup.py .
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -e .
-# Installation of agentlogging (potentially to be excluded to avoid performance issues)
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Add StackClients py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
