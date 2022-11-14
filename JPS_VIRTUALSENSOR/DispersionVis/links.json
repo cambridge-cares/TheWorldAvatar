@@ -1,0 +1,17 @@
+{
+    "intro": "Here are some relevant links",
+    "links": [
+        {
+            "text": "DOME 4.0 project website",
+            "url": "https://dome40.eu/"
+        },
+        {
+            "text": "CMCL website",
+            "url": "www.cmcl.io"
+        },
+        {
+            "text": "Dipersion modelling tool used (AERMOD)",
+            "url": "https://www.epa.gov/scram/air-quality-dispersion-modeling-preferred-and-recommended-models#aermod"
+        }
+    ]
+}
