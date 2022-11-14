@@ -6,150 +6,22 @@
 # The purpose of this module is to provide functionality to execute KG queries
 # and updates using the PySparqlClient module from pyderivationagent
 
-import json
 import uuid
-import urllib.parse
-import requests
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from agent.datamodel.iris import *
 from agent.datamodel.data import GBP_PER_SM, ONS_ENDPOINT
-from agent.errorhandling.exceptions import APIException
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
 
 
 class KGClient(PySparqlClient):
-    
-    #
-    # EXTERNAL SPARQL QUERIES
-    #
-    def get_nearby_postcodes(self, postcode_str:str) -> str:
-        # Retrieve postcodes within same Super Output Area (SOA, middle layer) as given postcode
-        # including their easting and northing coordinates    
-        query = f"""
-            SELECT ?pc ?easting ?northing
-            WHERE {{
-                ?s <{RDF_TYPE}> <{ONS_POSTCODE}> ; 
-                <{RDFS_LABEL}> \"{postcode_str}\" ; 
-                <{ONS_WITHIN_SOSA}> ?sosa . 
-                ?sosa ^<{ONS_WITHIN_SOSA}> ?pc_iri . 
-                ?pc_iri <{RDF_TYPE}> <{ONS_POSTCODE}> ; 
-                        <{RDFS_LABEL}> ?pc ; 
-                        <{ONS_NORTHING}> ?northing ; 
-                        <{ONS_EASTING}> ?easting . 
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        query = urllib.parse.quote(query)
-        # Perform GET request
-        url = ONS_ENDPOINT + '.json?query=' + query
-        res = requests.get(url)
-        if res.status_code != 200:
-            logger.error('Error retrieving data from ONS API.')
-            raise APIException('Error retrieving data from ONS API.')
-
-        # Extract and unwrap results
-        data = json.loads(res.text)
-        return data
-
-
     #
     # SPARQL QUERIES
     #
-    def get_postcode_iris(self, postcodes:list) -> list:
-        # Retrieve IRI(s) of postcode(s) with given label(s)
-        values_statement = self.format_literal_values_statement(postcodes)
-        query = f"""
-            SELECT ?pc_iri
-            WHERE {{        
-            VALUES ?pc {{ {values_statement} }}
-            ?pc_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
-                    <{RDFS_LABEL}> ?pc . 
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-        postcode_iris = [r['pc_iri'] for r in res]
-        return postcode_iris
-
-
-    def get_postcode_strings(self, postcode_iris:list) -> list:
-        # Retrieve string(s)/label(s) of postcode IRI(s)
-        values_statement = self.format_iris_values_statement(postcode_iris)
-        query = f"""
-            SELECT ?pc
-            WHERE {{    
-            VALUES ?pc_iri {{ {values_statement} }}    
-            ?pc_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
-                    <{RDFS_LABEL}> ?pc . 
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-        postcode_strs = [r['pc'] for r in res]
-        return postcode_strs
-
-
-    def get_tx_iris_for_postcodes(self, postcode_iris:list) -> list:
-        # Retrieve IRIs of all transactions for postcode(s)
-        values_statement = self.format_iris_values_statement(postcode_iris)
-        query = f"""
-            SELECT ?tx_iri
-            WHERE {{   
-            VALUES ?pc_iri {{ {values_statement} }}     
-            ?property <{RDF_TYPE}>/<{RDFS_SUBCLASS}>* <{OBE_PROPERTY}> ;
-                    <{OBE_HAS_LATEST_TRANSACTION}> ?tx_iri ;
-                    <{OBE_HAS_ADDRESS}>/<{OBE_HAS_POSTALCODE}> ?pc_iri . 
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-        tx_iris = [r['tx_iri'] for r in res]
-        return tx_iris
-
-
-    def get_tx_count_for_postcodes(self, postcodes:list) -> str:
-        # Retrieve number of available sales transactions for postcode(s) and
-        # return dictionary with postcode as key and number of transactions as value
-        values_statement = self.format_literal_values_statement(postcodes)    
-        query = f"""
-            SELECT DISTINCT ?pc (count(?tx) as ?txs )
-            WHERE {{   
-            VALUES ?pc {{ {values_statement} }}     
-            ?property <{RDF_TYPE}>/<{RDFS_SUBCLASS}>* <{OBE_PROPERTY}> ;
-                    <{OBE_HAS_ADDRESS}>/<{OBE_HAS_POSTALCODE}>/<{RDFS_LABEL}> ?pc ;
-                    <{OBE_HAS_LATEST_TRANSACTION}> ?tx ;
-            }}
-            GROUP BY ?pc
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-        tx_map = {r['pc']: r['txs'] for r in res}
-        return tx_map
-
-
-    def get_ppi_iri(self, postcode_iri:str) -> str:
-        # Retrieve IRI of Property Price Index for postcode
-        query = f"""
-            SELECT DISTINCT ?ppi_iri
-            WHERE {{        
-            <{postcode_iri}> ^<{OBE_HAS_POSTALCODE}>/<{OBE_HAS_ADMIN_DISTRICT}> ?local_authority .
-            ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?ppi_iri .
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-        if len(res) == 1:
-            ppi = res[0]['ppi_iri']
-        else:
-            ppi = None
-        return ppi
-
-
     def get_avgsm_price_iri(self, postcode_iri:str) -> str:
         # Retrieve IRI of average square metre price for postcode
         query = f"""
