@@ -1086,7 +1086,7 @@ public class TimeSeriesClient<T> {
 	 * @param conn
 	 */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
-		List<Type> types = null;
+		List<Type> types = new ArrayList<>(dataIRIs.size());
 		for (int i = 0; i < dataIRIs.size(); i++) {
 			types.add(Type.GENERAL);
 		}
