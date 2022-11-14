@@ -640,7 +640,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration"/>
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/Concentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of a specific air pollutant as amount of material per unit volume of air (e.g. mass concentration).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air pollutant concentration</rdfs:label>
@@ -835,7 +835,28 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides concentration</rdfs:label>
     </owl:Class>
-    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon dioxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
+    </owl:Class>
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
+    </owl:Class>
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/NormalRange -->
