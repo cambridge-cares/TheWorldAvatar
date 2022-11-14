@@ -3,9 +3,9 @@
 # Date: 14 Nov 2022                            #
 ################################################
 
-# The purpose of this module is to instantiate/update the average square metre 
-# price of properties for a postcode based on instantiated HM Land Registry's Price
-# Paid Data transactions in the KG (using asynchronous derivation framework)
+# The purpose of this module is to instantiate/update the estimated value of a property
+# based on instantiated HM Land Registry's Price Paid Data transactions and/or the 
+# average square metre price per postcode in the KG (using asynchronous derivation framework)
 
 import uuid
 import pandas as pd
@@ -35,13 +35,13 @@ class AvgSqmPriceAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
-        return [OBE_POSTALCODE, OBE_PROPERTY_PRICE_INDEX,
-                LRPPI_TRANSACTION_RECORD]
+        return [LRPPI_TRANSACTION_RECORD, OBE_PROPERTY_PRICE_INDEX,
+                OBE_AVERAGE_SM_PRICE, OM_AREA]
 
 
     def agent_output_concepts(self) -> list:
         # Output concept (i.e. result) of the Derivation
-        return [OBE_AVERAGE_SM_PRICE]
+        return [OM_AMOUNT_MONEY]
 
 
     def validate_inputs(self, http_request) -> bool:
@@ -52,7 +52,7 @@ class AvgSqmPriceAgent(DerivationAgent):
 
     def validate_input_values(self, inputs, derivationIRI=None):
         """
-        Check whether received input values are suitable to perform average price
+        Check whether received input values are suitable to perform property value
         estimation. Throw exception if data is not suitable.
         -> relevant for asynchronous derivation
 
@@ -61,68 +61,65 @@ class AvgSqmPriceAgent(DerivationAgent):
             derivationIRI {str} -- IRI of the derivation instance (optional)
 
         Returns:
-            postcode_iri {str}, ppi_iri {str}, tx_records {list}
+            transaction_iri {str}, prop_price_index_iri  {str}, 
+            avgsqm_price_iri {str}, floor_area_iri {str}
         """
 
-        # Check whether postcode is available
-        if inputs.get(OBE_POSTALCODE):
-            pc = inputs.get(OBE_POSTALCODE)
-            # Check whether only one postcode has been provided
-            if len(pc) == 1:
-                postcode_iri = pc[0]
-            else:
-                self.logger.error(f"Derivation {derivationIRI}: More than one Postcode IRI provided.")
-                raise Exception(f"Derivation {derivationIRI}: More than one Postcode IRI provided.")                
-        else:
-            self.logger.error(f"Derivation {derivationIRI}: Postcode IRI is missing.")
-            raise Exception(f"Derivation {derivationIRI}: Postcode IRI is missing.")
+        # Initialise return values
+        transaction_iri, prop_price_index_iri, avgsqm_price_iri, floor_area_iri = (None,)*4
 
-        # Check whether property price index is available
-        if inputs.get(OBE_PROPERTY_PRICE_INDEX):
-            ppi = inputs.get(OBE_PROPERTY_PRICE_INDEX)
-            # Check whether only one property price index has been provided
-            if len(ppi) == 1:
-                ppi_iri = ppi[0]
-            else:
-                self.logger.error(f"Derivation {derivationIRI}: More than one Property Price Index IRI provided.")
-                raise Exception(f"Derivation {derivationIRI}: More than one Property Price Index IRI provided.")
-        else:
-            self.logger.error(f"Derivation {derivationIRI}: Property Price Index IRI is missing.")
-            raise Exception(f"Derivation {derivationIRI}: Property Price Index IRI is missing.")
+        # Create dict between input concepts and return values
+        input_concept_dict = {LRPPI_TRANSACTION_RECORD: transaction_iri,
+                              OBE_PROPERTY_PRICE_INDEX: prop_price_index_iri,
+                              OBE_AVERAGE_SM_PRICE: avgsqm_price_iri,
+                              OM_AREA: floor_area_iri}
 
+        # Verify that max. one instance per concept is provided
+        for i in input_concept_dict:
+            # Check whether input is available
+            if inputs.get(i):
+                inp = inputs.get(i)
+                # Check whether only one input has been provided
+                if len(inp) == 1:
+                    input_concept_dict[i] = inp[0]
+                else:
+                    inp_name = i[i.rfind('/')+1:]
+                    self.logger.error(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
+                    raise Exception(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
 
-        # Check whether previous transactions are available
-        if inputs.get(LRPPI_TRANSACTION_RECORD):
-            tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
-        else:
-            self.logger.error(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
-            raise Exception(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
+        # Verify that either
+        # 1) TransactionRecord and PropertyPriceIndex or
+        # 2) AveragePricePerSqm and TotalFloorArea are provided
+        if not ((transaction_iri and prop_price_index_iri) or \
+                (avgsqm_price_iri and floor_area_iri)):
+            self.logger.error(f"Derivation {derivationIRI}: Unsuitable set of inputs provided.")
+            raise Exception(f"Derivation {derivationIRI}: Unsuitable set of inputs provided.")
 
-        return postcode_iri, ppi_iri, tx_iris
+        return transaction_iri, prop_price_index_iri, avgsqm_price_iri, floor_area_iri 
 
     
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         """
             This method takes 
-                1 IRI of OntoBuiltEnv:PostalCode
-                1 IRI of OntoBuiltEnv:PropertyPriceIndex
-                list of IRIs of LRPPI:TransactionRecord
-            and generates
-                1 IRI of OntoBuiltEnv:AveragePricePerSqm
+                1 IRI of LRPPI:TransactionRecord & 1 IRI of OntoBuiltEnv:PropertyPriceIndex
+                or 
+                1 IRI of OntoBuiltEnv:AveragePricePerSqm & 1 IRI of OM:Area
+            to assess the estimated value of a property and generate
+                1 IRI of OM:AmountOfMoney
                 (actually, this includes an entire set of triples due to ontology
-                 of units of measure representation of OBE:AveragePricePerSqm)
+                 of units of measure representation of OM:AmountOfMoney)
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        postcode_iri, ppi_iri, tx_records = self.validate_input_values(inputs=inputs,
-                                                                       derivationIRI=derivIRI)
+        tx_iri, ppi_iri, avgsqm_iri,area_iri = self.validate_input_values(inputs=inputs,
+                                                    derivationIRI=derivIRI)
         
-        # Assess average price per sqm in case all required inputs are available
-        # (i.e. all inputs have been marked up successfully)
+        # Assess property value estimate in case all required inputs are available
+        # (i.e. relevant inputs have been marked up successfully)
         g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
                                                      ppi_iri=ppi_iri,
                                                      tx_records=tx_records)        
