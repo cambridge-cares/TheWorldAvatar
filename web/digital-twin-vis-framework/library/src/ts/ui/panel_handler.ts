@@ -197,9 +197,12 @@ class PanelHandler {
 
         // Get required details
         let iri = properties["iri"];
+        let endpoint = properties["endpoint"];
+
         let stack = Manager.findStack(feature, properties);
-        console.log("Attempting to contact agent with stack at '" + stack + "'");
-        console.log("Will submit IRI for query '" + iri + "'");
+        console.log("Attempting to contact agent with stack at '" + stack + "'...");
+        console.log("   ...will submit IRI for query '" + iri + "'");
+        console.log("   ...will submit endpoint for query '" + endpoint + "'");
 
         if(iri == null || stack == null) {
             console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
@@ -225,7 +228,10 @@ class PanelHandler {
         
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        let params = { "iri": iri };
+        let params = { 
+            "iri": iri,
+            "endpoint": endpoint
+        };
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
