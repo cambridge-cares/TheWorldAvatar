@@ -88,12 +88,11 @@ class AvgSqmPriceAgent(DerivationAgent):
                     raise Exception(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
 
         # Verify that either
-        # 1) TransactionRecord and PropertyPriceIndex or
-        # 2) AveragePricePerSqm and TotalFloorArea are provided
+        # 1) TransactionRecord & PropertyPriceIndex or
+        # 2) AveragePricePerSqm & TotalFloorArea are provided
         if not ((transaction_iri and prop_price_index_iri) or \
                 (avgsqm_price_iri and floor_area_iri)):
-            self.logger.error(f"Derivation {derivationIRI}: Unsuitable set of inputs provided.")
-            raise Exception(f"Derivation {derivationIRI}: Unsuitable set of inputs provided.")
+            self.logger.info(f"Derivation {derivationIRI}: Insufficient set of inputs provided.")
 
         return transaction_iri, prop_price_index_iri, avgsqm_price_iri, floor_area_iri 
 
@@ -115,21 +114,24 @@ class AvgSqmPriceAgent(DerivationAgent):
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        tx_iri, ppi_iri, avgsqm_iri,area_iri = self.validate_input_values(inputs=inputs,
+        tx_iri, ppi_iri, avgsqm_iri, area_iri = self.validate_input_values(inputs=inputs,
                                                     derivationIRI=derivIRI)
         
         # Assess property value estimate in case all required inputs are available
         # (i.e. relevant inputs have been marked up successfully)
-        g = self.estimate_average_square_metre_price(postcode_iri=postcode_iri,
-                                                     ppi_iri=ppi_iri,
-                                                     tx_records=tx_records)        
+        g = self.estimate_average_square_metre_price(transaction_iri=tx_iri,
+                                                     prop_price_index_iri=ppi_iri, 
+                                                     avgsqm_price_iri=avgsqm_iri, 
+                                                     floor_area_iri=area_iri)        
+
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
 
 
-    def estimate_average_square_metre_price(self, postcode_iri:str = None, 
-                                            tx_records:list = None,
-                                            ppi_iri:str = None):
+    def estimate_average_square_metre_price(self, transaction_iri:str = None,
+                                            prop_price_index_iri:str = None, 
+                                            avgsqm_price_iri:str = None, 
+                                            floor_area_iri:str = None):
         """
         Retrieves instantiated sales transaction data for provided transaction record
         IRIs and calculates the average square metre price for the postcode
@@ -145,6 +147,12 @@ class AvgSqmPriceAgent(DerivationAgent):
 
         # Initialise return triples
         triples = None
+
+        # Check if transaction record and property price index are provided
+        # (i.e. market value assessment based on previous transaction as prio 1)
+
+
+        # Otherwise assess market value based
 
         if postcode_iri and ppi_iri:
         
@@ -215,69 +223,11 @@ class AvgSqmPriceAgent(DerivationAgent):
         return g
 
 
-    def get_transactions_from_nearest_postcodes(self, postcode_iri:str, threshold:int):
-        """
-            Retrieves postcodes in same Super Output Area from ONS API, queries the
-            instantiated number of transactions for them from the KG and orders them
-            by increasing distance from target pc - returns the closest postcodes
-            required to reach the threshold of transactions 
-            
-            Arguments:
-                postcode_iri (str): Postcode IRI instantiated per OntoBuiltEnv
-                threshold (int): Minimum number of transactions wanted
-
-            Returns:
-                List of sales transaction IRIs
-        """
-
-        # Retrieve postcode string from KG
-        postcode_str = self.sparql_client.get_postcode_strings([postcode_iri])[0]
-
-        # Retrieve nearby postcodes with easting and northing from ONS endpoint
-        data = self.sparql_client.get_nearby_postcodes(postcode_str)
-        df = pd.DataFrame(data['results']['bindings'])
-        for c in df.columns:
-            df[c] = df[c].apply(lambda x: x['value'])
-        # Set postcode as index and ensure float coordinate values
-        df.set_index('pc', inplace=True)
-        df = df.astype(float)
-
-        # Set target postcode as reference point for distance calculation
-        pref = df.loc[postcode_str]
-        # Assess distance from target postcode
-        df['dist'] = df.apply(lambda x: self.euclidean_distance(x, pref), axis=1)
-
-        # Retrieve number of available transactions per postcode
-        tx_map = self.sparql_client.get_tx_count_for_postcodes(df.index.to_list())
-        df['tx_count'] = df.index.map(tx_map)
-        df.dropna(inplace=True)
-        df['tx_count'] = df['tx_count'].astype(int)    
-        # Keep only nearest postcodes required to reach `threshold` transactions
-        df.sort_values(by='dist', inplace=True)
-        df['total_tx'] = df['tx_count'].cumsum()
-        df['helper'] = df['total_tx'].shift(1)
-        df.fillna(0, inplace=True)
-        df = df.loc[(df['helper'] < threshold)]
-
-        # Retrieve transaction IRIs for determined postcodes
-        pc_iris = self.sparql_client.get_postcode_iris(df.index.tolist())
-        txns = self.sparql_client.get_tx_iris_for_postcodes(pc_iris)
-
-        return txns
-
-
-    def euclidean_distance(self, pointA, pointB):
-        return (
-        ((pointA[0] - pointB[0]) ** 2) +
-        ((pointA[1] - pointB[1]) ** 2)
-    ) ** 0.5  # fast sqrt
-
-
 def default():
     """
         Instructional message at the app root.
     """
-    msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
+    msg  = "This is an asynchronous agent to estimate the market value of a particular property (i.e. building, flat).<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertyValueEstimationAgent/Agents/PropertyValueEstimationAgent<BR>"
     return msg
