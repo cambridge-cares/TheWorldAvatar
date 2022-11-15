@@ -56,7 +56,7 @@ def num_instances_with_type():
 def get_predecessor_type_by_predicate(dataIRI, predicate, kgClient):
     # get predecessor type of dataIRI
     query = f"""
-    SELECT ?predecessorType
+    SELECT ?predecessorType 
     WHERE {{
         ?o <{predicate}> <{dataIRI}> . 
         ?o <{RDF_TYPE}> ?predecessorType . 
@@ -64,6 +64,16 @@ def get_predecessor_type_by_predicate(dataIRI, predicate, kgClient):
     predecessor_type = kgClient.performQuery(query)[0]["predecessorType"]
     return predecessor_type
 
+def get_predecessor_type_and_predicate(dataIRI, kgClient):
+    # get predecessor type of dataIRI
+    query = f"""
+    SELECT ?predecessorType ?predicate
+    WHERE {{
+        ?o ?predicate <{dataIRI}> . 
+        ?o <{RDF_TYPE}> ?predecessorType . 
+        }}"""
+    res = kgClient.performQuery(query)
+    return {r["predicate"]: r["predecessorType"] for r in res}
 
 def get_ts_value_iri(dataIRI, kgClient):
     # get ts value iri of dataIRI
@@ -75,58 +85,63 @@ def get_ts_value_iri(dataIRI, kgClient):
     ts_value_iri = kgClient.performQuery(query)[0]["tsValueIRI"]
     return ts_value_iri
 
-def get_df_for_heat_supply(ts_iri, kgClient, tsClient,  lowerbound= None, upperbound= None):
+def check_cov_matches_rdf_type(row, rdf_type):
+    if 'type_with_measure' in row and row['type_with_measure'] == rdf_type or 'type_without_measure' in row and row['type_without_measure'] == rdf_type:
+        return True
+    else: 
+        return False
+def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df = None):
     cov_iris = []
-    heat_supply_ts_iri = get_ts_value_iri(ts_iri, kgClient)
-    heat_supply_dates, heat_supply_ts = get_ts_data(heat_supply_ts_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-    df_heat_supply = pd.DataFrame(zip(heat_supply_ts, heat_supply_dates), columns=["ForecastColumn", "Date"])
-
-    # find covariates
-    # find ts by specific data iri. This just works for the data iri that is used and unique.
+    
+    # find covariates by specific type of ts iri. 
+    # This just works for the data iri that is used and has unique type.
+    # e.g. in district heating it is not possible to find the covariates for the ts type of EnergyInTimeInterval, because its not unique
+    # the covariate must be found through different identification
     ts_by_type = kgClient.performQuery(get_ts_by_type())
+    # two different types of ts:
+    # 1. ts with MEASURE
+    # 2. ts without MEASURE
     for row in ts_by_type:
-        if 'type' in row and row['type'] == ONTOEMS_AIRTEMPERATURE:
-            data_iri = row['tsIRI']
-            cov_iris.append(data_iri)
-            air_temp_dates, air_temp = get_ts_data(data_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-            df_air_temp = pd.DataFrame(zip(air_temp, air_temp_dates), columns=["AirTemp", "Date"])
-        elif 'type2' in row and  row['type2'] == OHN_ISPUBLICHOLIDAY:
-            data_iri = row['tsIRI']
-            cov_iris.append(data_iri)
-            public_holiday_dates, public_holiday = get_ts_data(data_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-            df_public_holiday = pd.DataFrame(zip(public_holiday, public_holiday_dates), columns=["isHoliday", "Date"])
+        if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE):
+            cov_iris.append(row['tsIRI'])
+            air_temp_dates, air_temp = get_ts_data(row['tsIRI'], tsClient,  lowerbound= lowerbound, upperbound = upperbound)
+            df_air_temp = pd.DataFrame(zip(air_temp, air_temp_dates), columns=["cov", "Date"])
+        
+        if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
+            cov_iris.append(row['tsIRI'])
+            public_holiday_dates, public_holiday = get_ts_data(row['tsIRI'], tsClient,  lowerbound= lowerbound, upperbound = upperbound)
+            df_public_holiday = pd.DataFrame(zip(public_holiday, public_holiday_dates), columns=["cov", "Date"])
             
-
-    # merge public holidays air temp and heat supply
-    df = pd.merge(df_public_holiday, df_air_temp, on="Date", how="outer")
-    df = pd.merge(df, df_heat_supply, on="Date", how="outer")
-    df = df.sort_values(by="Date")
-    df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
+    #df = merge_ts(df_public_holiday, df_air_temp)
+    
+    # create covariates list with time covariates for the forecast
+    # Attention: be aware to have same order of covariates as during training 
     covariates = concatenate(
         [
-            get_data_cov(df, "AirTemp"),
-            get_time_cov(df, {"dayofyear": True, "dayofweek": True, "hour": True}),
-            get_data_cov(df, "isHoliday"),
+            get_data_cov(df_air_temp, "cov"),
+            # use dates of other covariate to extract time covariates
+            # if no other covariate is available, use df of orginal series
+            # TODO:
+            # in that case you need to extend the time range of the original series
+            # in order to have enough data for the future time covariates (length of forecast horizon) 
+            get_time_cov(df_air_temp, {"dayofyear": True, "dayofweek": True, "hour": True}),
+            get_data_cov(df_public_holiday, "cov"),
         ],
         axis="component",
     ) 
+    
+    # add darts covariates as string
     cov_iris += ['dayofyear', 'dayofweek', 'hour']
-    return df, cov_iris, covariates
+    return cov_iris, covariates
 
-def get_df_no_covariates(iri, kgClient, tsClient,  lowerbound= None, upperbound= None):
-    
-    try:
-        # try if ts hasValue where the actual ts is stored
-        ts_iri = get_ts_value_iri(iri, kgClient)
-    except:
-        ts_iri = iri
-        
-    dates, values = get_ts_data( ts_iri, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-    df = pd.DataFrame(zip(values, dates), columns=["ForecastColumn", "Date"])
-    df = df.sort_values(by="Date")
-    df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
-    
-    return df, None, None
+def merge_ts(*dfs):
+    # merge columns
+    df = dfs[0]
+    for c in dfs[1:]:
+        df = df.merge(df, c, on="Date", how="outer")
+    return df
+
+
 
 def get_unit(dataIRI, kgClient):
     # get unit of dataIRI
@@ -290,7 +305,7 @@ def get_ts_by_type():
      type of the dataIRI.
      
      It distinguishes between measures and non-measures. 
-     The type of Timeseries with measures is returned under the key 'type' and those without measures are returned under the key 'type2'.
+     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
      """
 
      return f"""
@@ -299,12 +314,12 @@ def get_ts_by_type():
 
      prefix ts: <{TS}>
 
-     SELECT  distinct ?dataIRI ?tsIRI ?type ?type2
+     SELECT  distinct ?dataIRI ?tsIRI ?type_with_measure ?type_without_measure
      WHERE {{
       
        ?tsIRI ts:hasTimeSeries ?ts . 
-       ?tsIRI rdf:type ?type2 .
-       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type }} . 
+       ?tsIRI rdf:type ?type_without_measure .
+       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type_with_measure }} . 
        
      }}
      """

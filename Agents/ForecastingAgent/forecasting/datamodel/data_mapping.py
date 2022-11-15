@@ -11,13 +11,9 @@
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
 from forecasting.datamodel.iris import *
-from forecasting.utils.useful_queries import get_df_for_heat_supply, get_df_no_covariates
+
 
 from forecasting.kgutils.javagateway import jpsBaseLibGW
-
-mapping_type_data_function = {
-    'Default': get_df_no_covariates,
-    OHN_CONSUMER : get_df_for_heat_supply}
 
 
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM

@@ -64,7 +64,7 @@ Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.
 - **data_length** if `forecast_start_date` is specified, `data_length` determines the number of values loaded before this date. Then, this data is used directly as input to prophet or to scale the input for the pre-trained neural method case (the actual input is the last subset of this data with the size of the model's input)
 
 ## Custom data loading functions
-If you use your own pretrained darts model which needs additional covariates, you can follow the example of the `get_df_for_heat_supply()` function. You need to map this function to for example an rdfs type in [mapping_type_data_function](./forecasting/datamodel/data_mapping.py), which you can then identify in [the agent](./forecasting/forecasting_agent/create_forecast.py). Be aware that the created covariates should be in the same order as during training.
+If you use your own pretrained darts model which needs additional covariates, you can follow the example of the `get_covs_heat_supply()` function. You need to map this function to for example an rdfs type in [mapping_type_data_function](./forecasting/datamodel/data_mapping.py), which you can then identify in [the agent](./forecasting/forecasting_agent/create_forecast.py). Be aware that the created covariates should be in the same order as during training.
 
 
 &nbsp;

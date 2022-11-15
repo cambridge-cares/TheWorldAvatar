@@ -19,22 +19,18 @@ from darts.dataprocessing.transformers import Scaler
 
 def get_data_cov(df, col):
     """
-    It takes a path to a csv file and a list of column names, and returns a TimeSeries object with the
-    data from those columns
+    It takes a dataframe and a column name as input, and returns a scaled time series
     
-    :param path: the path to the data
-    :param col_names: a list of the column names of the covariates you want to use
-    :return: A list of TimeSeries objects
+    :param df: the dataframe containing the data
+    :param col: the column name of the dataframe that you want to use
+    :return: A time series object
     """
-    # covs scaler
-    covs = None
-    #print(col)
+
     cov = TimeSeries.from_dataframe(df, time_col='Date', value_cols=col)
     scaler_cov = Scaler()
     cov_scaled = scaler_cov.fit_transform(cov)
-    covs = cov_scaled if covs is None else concatenate([covs, cov_scaled],
-                                                        axis="component",)
-    return covs
+    return cov_scaled
+
 def get_time_cov(df, cov:dict):
     """
     It takes a df and returns a covariate matrix with the following columns:

@@ -1,10 +1,3 @@
-// Example HTTP request to update transaction record for single property
-
-// property_iris: IRI of instantiated building to instantiate/update property sales data for
-//                (trailing '<' and '>' are optional/not required)
-// min_confidence: (optional) minimum confidence score for address matching when retrieveing property sales
-//                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
-//                 (default: 90)
 
 POST http://127.0.0.1:5000/api/forecastingAgent/forecast
 Content-Type: application/json
@@ -14,7 +7,7 @@ Content-Type: application/json
 
       //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
       "horizon": 168,
-      "forecast_start_date": "2019-10-17T01:00:00Z",
-      "data_length": 17520
-    }
+      "force_mapping": "DEFAULT", 
+      "forecast_start_date": "2019-10-17T01:00:00Z"
+      }
 }
