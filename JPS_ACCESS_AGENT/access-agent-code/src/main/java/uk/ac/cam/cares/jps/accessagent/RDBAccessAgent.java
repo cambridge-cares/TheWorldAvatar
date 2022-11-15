@@ -36,12 +36,12 @@ public class RDBAccessAgent extends JPSAgent {
     /**
      * Logger for error output.
      */
-    private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(RDBAccessAgent.class);
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        JSONObject result = processRequestParameters(requestParams,null);
-        return result;
+        //Do nothing
+        return new JSONObject();
     }
 
     @Override
