@@ -109,6 +109,7 @@ class HPLCMethod(BaseOntology):
     hasResponseFactor: List[ResponseFactor]
     hasRetentionTime: List[RetentionTime]
     usesInternalStandard: InternalStandard
+    retentionTimeMatchThreshold: float
     rdfs_comment: str
     localFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment
     remoteFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment

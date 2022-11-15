@@ -551,6 +551,7 @@ def test_get_hplc_method(initialise_triples):
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
     assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_method.usesInternalStandard == internal_standard
+    assert hplc_method.retentionTimeMatchThreshold >= 0
     assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
     assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
 
@@ -560,6 +561,7 @@ def test_get_hplc_method_given_hplc_report(initialise_triples):
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
     assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_method.usesInternalStandard == internal_standard
+    assert hplc_method.retentionTimeMatchThreshold >= 0
     assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
     assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
 

@@ -1526,10 +1526,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_rt = {rt.refersToSpecies:rt.hasValue.hasNumericalValue for rt in hplc_method.hasRetentionTime}
         rt_diff = {key: abs(hplc_rt[key] - retention_time.hasValue.hasNumericalValue) for key in hplc_rt}
         key_min_rt_diff = min(rt_diff, key=rt_diff.get)
-        if rt_diff.get(key_min_rt_diff) < hplc.RETENTION_TIME_MATCH_THRESHOLD:
+        if rt_diff.get(key_min_rt_diff) < hplc_method.retentionTimeMatchThreshold:
             return key_min_rt_diff
         else:
-            logger.warning(f"No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance ({retention_time}) given RETENTION_TIME_MATCH_THRESHOLD of {hplc.RETENTION_TIME_MATCH_THRESHOLD} and OntoHPLC:HPLCMethod ({hplc_method.instance_iri})")
+            logger.warning(f"No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance ({retention_time}) given RETENTION_TIME_MATCH_THRESHOLD of {hplc_method.retentionTimeMatchThreshold} and OntoHPLC:HPLCMethod ({hplc_method.instance_iri})")
             return None
 
     def get_internal_standard(self, hplc_method_iri: str) -> InternalStandard:
@@ -1579,17 +1579,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_hplc_method(self, hplc_method_iri: str) -> HPLCMethod:
         hplc_method_iri = trimIRI(hplc_method_iri)
-        query = PREFIX_RDF + """SELECT ?type ?r ?species ?measure ?unit ?value
-                   WHERE {
-                       VALUES ?type {<%s> <%s>}.
-                       <%s> <%s>|<%s> ?r.
-                       ?r rdf:type ?type; <%s> ?species; <%s> ?measure.
-                       ?measure <%s> ?unit; <%s> ?value.
-                   }
-                """ % (ONTOHPLC_RESPONSEFACTOR, ONTOHPLC_RETENTIONTIME, hplc_method_iri, ONTOHPLC_HASRESPONSEFACTOR, ONTOHPLC_HASRETENTIONTIME,
-                    ONTOHPLC_REFERSTOSPECIES, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        query = f"""
+            SELECT ?type ?r ?species ?measure ?unit ?value ?rt_match_threshold
+            WHERE {{
+                VALUES ?type {{ <{ONTOHPLC_RESPONSEFACTOR}> <{ONTOHPLC_RETENTIONTIME}> }}.
+                <{hplc_method_iri}> <{ONTOHPLC_HASRESPONSEFACTOR}>|<{ONTOHPLC_HASRETENTIONTIME}> ?r.
+                ?r a ?type; <{ONTOHPLC_REFERSTOSPECIES}> ?species; <{OM_HASVALUE}> ?measure.
+                ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
+                <{hplc_method_iri}> <{ONTOHPLC_RETENTIONTIMEMATCHTHRESHOLD}> ?rt_match_threshold.
+            }}"""
 
         response = self.performQuery(query)
+        try:
+            rt_match_threshold = dal.get_the_unique_value_in_list_of_dict(response, 'rt_match_threshold')
+        except Exception as e:
+            raise Exception(f"HPLCMethod {hplc_method_iri} has more than one retentionTimeMatchThreshold: {dal.get_unique_values_in_list_of_dict(response, 'rt_match_threshold')}") from e
 
         list_rf = [] # list of ResponseFactor
         list_rt = [] # list of RetentionTime
@@ -1623,6 +1627,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasResponseFactor=list_rf,
             hasRetentionTime=list_rt,
             usesInternalStandard=self.get_internal_standard(hplc_method_iri),
+            retentionTimeMatchThreshold=rt_match_threshold,
             rdfs_comment=comment
         )
         return hplc_method
@@ -1793,7 +1798,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         hasPeakArea=_mark_as_unidentified.get(ONTOHPLC_PEAKAREA),
                         atRetentionTime=_mark_as_unidentified.get(ONTOHPLC_RETENTIONTIME),
                         unidentified=True,
-                        rdfs_comment = f"""Species unidentified due to multiple peaks identified within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc.RETENTION_TIME_MATCH_THRESHOLD} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies}, and there exist other peaks closer to the reference retention time compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
+                        rdfs_comment = f"""Species unidentified due to multiple peaks identified within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc_method.retentionTimeMatchThreshold} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies}, and there exist other peaks closer to the reference retention time compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
                     )
                     list_chrom_pts.append(_unidentified_chrom_pt)
 

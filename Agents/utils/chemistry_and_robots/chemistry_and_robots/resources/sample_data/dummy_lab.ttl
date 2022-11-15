@@ -443,6 +443,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     # ontohplc:hasResponseFactor :ResponseFactor_8;
     # ontohplc:hasRetentionTime :RetentionTime_8;
     ontohplc:usesInternalStandard SinglePhase:PhaseComponent_InternalStandard;
+    ontohplc:retentionTimeMatchThreshold "0.15"^^xsd:double;
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 

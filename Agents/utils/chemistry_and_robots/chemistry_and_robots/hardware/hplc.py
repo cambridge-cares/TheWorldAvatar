@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import uuid
 
-RETENTION_TIME_MATCH_THRESHOLD = 0.15
 
 def read_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_extension: str) -> list:
     """This method extracts the chromatogram points from the given raw HPLC report."""
