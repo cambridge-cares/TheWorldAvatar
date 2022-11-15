@@ -18,6 +18,7 @@ services:
       LAYERNAME: "river_stations"
       GEOSERVER_WORKSPACE: "river_stations"
       ONTOP_FILE: "/app/classes/ontop.obda"
+      BLAZEGRAPH_NAMESPACE: "kb"
     volumes:
       - ./datum.json:/datum.json
       - ./river_stations.csv:/river_stations.csv
