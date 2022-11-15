@@ -145,80 +145,61 @@ class AvgSqmPriceAgent(DerivationAgent):
             Current average square metre price for postcode    
         """
 
-        # Initialise return triples
-        triples = None
+        # Initialise market value and return triples
+        market_value = None
+        triples = ''
 
-        # Check if transaction record and property price index are provided
-        # (i.e. market value assessment based on previous transaction as prio 1)
-
-
-        # Otherwise assess market value based
-
-        if postcode_iri and ppi_iri:
-        
+        # Prio 1: Check if transaction record and property price index are provided
+        # (i.e. market value assessment based on previous transaction)
+        if transaction_iri and prop_price_index_iri:
             # Initialise TS client
             ts_client = TSClient(kg_client=self.sparql_client)
+            # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
+            # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
+            # (https://landregistry.data.gov.uk/app/ukhpi/doc)
+            try:
+                # Retrieve time series in try-with-resources block to ensure closure of RDB connection
+                with ts_client.connect() as conn:
+                    ts = ts_client.tsclient.getTimeSeries([prop_price_index_iri], conn)
+                dates = [d.toString() for d in ts.getTimes()]
+                values = [v for v in ts.getValues(prop_price_index_iri)]
+            except Exception as ex:
+                self.logger.error('Error retrieving/unwrapping Property Price Index time series')
+                raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
 
-            # In case less than `threshold` transactions are provided/available 
-            # for current postcode, include transactions from nearby postcodes
-            if len(tx_records) < self.threshold:
-                tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, self.threshold)
+            # Create UKHPI series with conditioned date index
+            ukhpi = pd.Series(index=dates, data=values)
+            ukhpi = ukhpi.astype(str)
+            ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
+            ukhpi.sort_index(ascending=False, inplace=True)
+            ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
 
-            if tx_records:
-                # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
-                # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
-                # (https://landregistry.data.gov.uk/app/ukhpi/doc)
-                try:
-                    # Retrieve time series in try-with-resources block to ensure closure of RDB connection
-                    with ts_client.connect() as conn:
-                        ts = ts_client.tsclient.getTimeSeries([ppi_iri], conn)
-                    dates = [d.toString() for d in ts.getTimes()]
-                    values = [v for v in ts.getValues(ppi_iri)]
-                except Exception as ex:
-                    self.logger.error('Error retrieving/unwrapping Property Price Index time series')
-                    raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
+            # 2) Retrieve previous sales transaction details for previous transaction IRI
+            #    and adjust to current market value
+            res = self.sparql_client.get_transaction_details(transaction_iri)
+            ukhpi_now = ukhpi.iloc[0]
+            ukhpi_old = ukhpi[res['date']]
+            market_value = res['price'] * ukhpi_now / ukhpi_old
 
-                # Create UKHPI series with conditioned date index
-                ukhpi = pd.Series(index=dates, data=values)
-                ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
-                ukhpi.sort_index(ascending=False, inplace=True)
-                ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
+        # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
+        elif avgsqm_price_iri and floor_area_iri and not market_value:
+            # TODO: How to handle cases where avgsqm_price is just not calculated yet?            
+            res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
+            market_value = res['floor_area'] * res['avg_price']
 
-                # 2) Retrieve sales transaction details for transaction IRIs
-                res = self.sparql_client.get_tx_details_and_floor_areas(tx_records)
-                cols = ['tx_iri', 'price', 'date', 'floor_area']
-                df = pd.DataFrame(columns=cols, data=res)
-                # Ensure date index and value columns are in correct format
-                df['date'] = pd.to_datetime(df['date'], format=TIME_FORMAT_LONG)
-                df['date'] = df['date'].dt.strftime(TIME_FORMAT_SHORT)
-                df['price'] = df['price'].astype(float)
-                df['floor_area'] = df['floor_area'].astype(float)
+        if market_value:
+            # Round property market value to full kGBP
+            market_value = round(market_value/1000)*1000
+            # Create instantiation/update triples
+            market_value_iri = KB + 'AmountOfMoney' + str(uuid.uuid4())
+            triples = self.sparql_client.instantiate_property_value(property_iri=res['property_iri'],
+                                                                    property_value_iri=market_value_iri, 
+                                                                    property_value=market_value)
 
-                # 3) Calculate current square metre price for all transactions
-                # Assess original square metre price
-                df['avg_orig'] = df['price'] / df['floor_area']
-                # Assess current square metre price
-                df['ukhpi_orig'] = df['date'].map(ukhpi)
-                df['ukhpi_curr'] = ukhpi[0]
-                df['avg_curr'] = df['avg_orig'] / df['ukhpi_orig'] * df['ukhpi_curr']
-
-                # Assess average current square metre price
-                avg = round(df['avg_curr'].mean())
-
-                # Instantiate/update current average square metre price in KG
-                avgsm_price_iri = self.sparql_client.get_avgsm_price_iri(postcode_iri)
-                if not avgsm_price_iri:
-                    avgsm_price_iri = KB + 'AveragePricePerSqm_' + str(uuid.uuid4())
-                
-                # Create instantiation/update triples
-                triples = self.sparql_client.instantiate_average_price(avg_price_iri=avgsm_price_iri,
-                                                    postcode_iri=postcode_iri,
-                                                    avg_price=avg)
-                update_query = f'INSERT DATA {{ {triples} }}'
-
-                # Create rdflib graph with update triples
-                g = Graph()
-                g.update(update_query)
+        # Create rdflib graph with update triples
+        update_query = f'INSERT DATA {{ {triples} }}'
+        g = Graph()
+        g.update(update_query)
 
         return g
 
