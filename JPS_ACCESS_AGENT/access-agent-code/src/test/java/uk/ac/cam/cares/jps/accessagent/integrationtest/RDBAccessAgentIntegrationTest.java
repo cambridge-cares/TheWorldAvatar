@@ -32,7 +32,7 @@ public class RDBAccessAgentIntegrationTest {
 
     //User defined variables
     //set the desired access agent version number here
-    static final String ACCESS_AGENT_VERSION = "1.5.0-snapshot-1";
+    static final String ACCESS_AGENT_VERSION = "1.6.0";
 
     //////////////////////////////////////////////////
 
