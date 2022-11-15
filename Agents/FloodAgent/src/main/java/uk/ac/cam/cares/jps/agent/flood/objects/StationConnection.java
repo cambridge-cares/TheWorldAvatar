@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.agent.flood.objects;
 
-public class Connection {
+public class StationConnection {
     private Station upstream;
     private Station downstream;
 
-    public Connection(Station upstream, Station downstream) {
+    public StationConnection(Station upstream, Station downstream) {
         this.upstream = upstream;
         this.downstream = downstream;
         upstream.setDownstream(downstream);
