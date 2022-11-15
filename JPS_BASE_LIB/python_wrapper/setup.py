@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='py4jps',
-    version='1.0.28',
+    version='1.0.29',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
@@ -11,8 +11,8 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_namespace_packages(exclude=('tests')),
-    install_requires= ['py4j==0.10.9.1','docopt'],
+    packages=find_namespace_packages(exclude=['tests', 'tests.*']),
+    install_requires=['py4j==0.10.9.1','docopt','concurrent_log_handler'],
     include_package_data= True,
     entry_points={
         'console_scripts': [
