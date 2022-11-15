@@ -54,6 +54,8 @@ public class SolarkatasterAgent extends JPSAgent {
     private String ubemURI;
     private String ubemSolar;
 
+    public SolarkatasterAgent() {readConfig();}
+
     /**
      * Processes HTTP requests with originating details.
      * @param requestParams Request parameters in a JSONObject.
@@ -73,8 +75,6 @@ public class SolarkatasterAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)){
-            readConfig();
-
             ArrayList<List> dataArrayList;
 
             JSONArray dataArray = getData(requestParams.getString(KEY_TABLE));
