@@ -22,7 +22,7 @@ COPY utilities/geojson_creator.py utilities/geojson_creator.py
 COPY utilities/SparqlErrors.py utilities/SparqlErrors.py
 COPY utilities/utils_argo.py utilities/utils_argo.py
 COPY kingslynnagent/__init__.py kingslynnagent/__init__.py
-COPY kingslynnagent/query_buildings_open_data_dockerised_dockerised.py kingslynnagent/query_buildings_open_data_dockerised_dockerised.py
+COPY kingslynnagent/query_buildings_open_data.py kingslynnagent/query_buildings_open_data.py
 
 # Run the script
-CMD [ "python3", "-m", "kingslynnagent.query_buildings_open_data_dockerised_dockerised"]
+CMD [ "python3", "-m", "kingslynnagent.query_buildings_open_data"]
