@@ -501,14 +501,14 @@
 
 
 
-    <!-- http://theworldavatar.com/kg/ontouom/Concentration -->
+    <!-- https://theworldavatar.com/kg/ontouom/Concentration -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/kg/ontouom/Concentration"/>
+    <owl:Class rdf:about="https://theworldavatar.com/kg/ontouom/Concentration"/>
     
 
 
-    <!-- http://theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
+    <!-- https://theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
@@ -524,7 +524,7 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:subClassOf rdf:resource="https://theworldavatar.com/kg/ontouom/Concentration"/>
     </owl:Class>
 
     
