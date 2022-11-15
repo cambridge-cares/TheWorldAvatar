@@ -438,6 +438,10 @@ class RxnOptGoalAgent(ABC):
         if goal_set_instance is None:
             return f"""The GoalSet IRI {_goal_set_iri} is not found in the triplestore {self.kg_url}. Please check the IRI and try again."""
 
+        # the goal set is not iterated for the first time yet if no results are found
+        if len(goal_set_instance.get_best_results()) == 0:
+            return f"""The current active GoalSet IRI {_goal_set_iri} is not iterated for the first time yet. Please wait for the first iteration to finish and try again."""
+
         # query the devTime of each reaction experiment that the performance indicators referring to
         _obj_dct = {}
         _goal_res_query_lst = []
