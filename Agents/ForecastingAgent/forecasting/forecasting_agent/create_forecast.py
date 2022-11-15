@@ -29,7 +29,6 @@ from forecasting.kgutils.tsclient import TSClient
 from forecasting.utils.properties import *
 from forecasting.utils.tools import *
 from forecasting.utils.useful_queries import *
-from resources.forecast_properties import MAPPING, TIME_FORMAT
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
@@ -80,7 +79,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_mapping=None):
     else:
         model = Prophet()
         model.model_name = "Prophet"
-        model.input_length = len(series)
+        input_length = len(series)
 
     print(f"Forecasting with {model.model_name} model")
     if 'scale_data' in mapping and mapping['scale_data']:

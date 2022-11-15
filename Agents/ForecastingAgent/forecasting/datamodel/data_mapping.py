@@ -1,30 +1,18 @@
-################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 16 Oct 2022                            #
-################################################
 
-# The purpose of this module is to provide a mapping between retrieved 
-# HM Land Registry's Price Paid Data property types and instantiated property
-# types according to OntoBuiltEnv
 
-# For details on PPD data, see:
-# https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
+
 
 from forecasting.datamodel.iris import *
 
 
 from forecasting.kgutils.javagateway import jpsBaseLibGW
 
+from forecasting.utils.useful_queries import get_covs_heat_supply
+from forecasting.datamodel.data_mapping import *
 
-# Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
-# However, YearMonth not supported by TimeSeriesCLient RDB implementation
-# --> Use to xsd:date, i.e. ISO 8601 YYYY-MM-DD
-TIME_FORMAT = 'YYYY-MM-DD'
-TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
+import datetime as dt
 
-### Create required JAVA classes ###
 
-# Create data class for time entries (LocalDate)
 # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 Instant = jpsBaseLibView.java.time.Instant
@@ -36,3 +24,31 @@ DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
 DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
 INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
 BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
+
+
+
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+MAPPING = {}
+
+# Default mapping which uses Prophet and loads just dataIRI without covariates
+MAPPING['DEFAULT']=  {
+        'frequency': dt.timedelta(hours=1),
+        'data_length': 365 * 24,
+        'train_again': True,
+        'ts_data_type': DOUBLE,
+    }
+
+MAPPING['TFT_HEAT_SUPPLY'] = {
+        'load_covariates_func': get_covs_heat_supply,
+        'model': {
+            "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
+            "model_path_pth_link":  "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
+        },
+        'frequency': MAPPING['DEFAULT']['frequency'],
+        'data_length': MAPPING['DEFAULT']['data_length'],
+        'scale_data': True,
+        'ts_data_type': MAPPING['DEFAULT']['ts_data_type'],
+        'train_again': False,
+    }
+
