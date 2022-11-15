@@ -7,8 +7,6 @@ package uk.ac.cam.cares.derivation.example;
  */
 
 public class InstancesDatabase {
-    public static String Input = null;
-    public static String Average = null;
-    public static String DerivedDifference = null;
-    public static String DerivedAverage = null;
+	public static String Input = null;
+	public static String Average = null;
 }

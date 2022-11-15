@@ -1,0 +1,55 @@
+Starting log at Thu Sep  2 15:34:29 2021
+find me all the pesticides
+--------------
+Topics identified ["wiki"] 
+
+
+me all pesticides
+--------------
+Intents and entities {"intent": "batch_attribute_query", "entities": [{"attribute": ["P5480"]}, {"class": ["Q131656"]}]} 
+
+
+me all pesticides
+--------------
+SPARQL constructed ["\n            \n        SELECT ?oLabel ?v ?v2 ?unitLabel\n        WHERE\n         {\n          ?o wdt:P31 wd:Q131656 . # class\n          ?o wdt:P5480 ?v . # attribute\n          OPTIONAL {\n                ?o p:P5480/psv:P5480 ?value . # attribute x 2 \n                ?value wikibase:quantityAmount ?v2 .\n                ?value wikibase:quantityUnit ?unit .\n          }\n          SERVICE wikibase:label { bd:serviceParam wikibase:language  \"[AUTO_LANGUAGE],en\". }\n        } LIMIT 50 # class, attribute, attribute, attribute\n         "] 
+
+
+CCCC(=O)CCCCC(CC)CC
+--------------
+Topics identified ["wiki", "ontokin"] 
+
+
+cccc(=o)ccccc(cc)cc
+--------------
+Intents and entities {"intent": "about_query", "entities": [{"species": ["Q82104532"]}]} 
+
+
+cccc(=o)ccccc(cc)cc
+--------------
+SPARQL constructed ["\n            PREFIX schema: <http://schema.org/>\n            SELECT *\n            WHERE \n            {\n              wd:Q82104532 rdfs:label ?v .\n              wd:Q82104532 schema:description ?v2.\n              SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" }\n              FILTER ( lang(?v) = \"en\" )\n              FILTER ( lang(?v2) = \"en\" )\n            }\n            \n            "] 
+
+
+cccc(=o)ccccc(cc)cc
+--------------
+Result got {"head": {"vars": ["v", "v2"]}, "results": {"bindings": [{"v": {"xml:lang": "en", "type": "literal", "value": "9-ethylundecan-4-one"}, "v2": {"xml:lang": "en", "type": "literal", "value": "chemical compound"}}]}} 
+
+
+C4H7BRO
+--------------
+Topics identified ["wiki", "ontokin"] 
+
+
+c4h7bro
+--------------
+Intents and entities {"intent": "about_query", "entities": [{"species": ["Q9127828"]}]} 
+
+
+c4h7bro
+--------------
+SPARQL constructed ["\n            PREFIX schema: <http://schema.org/>\n            SELECT *\n            WHERE \n            {\n              wd:Q9127828 rdfs:label ?v .\n              wd:Q9127828 schema:description ?v2.\n              SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" }\n              FILTER ( lang(?v) = \"en\" )\n              FILTER ( lang(?v2) = \"en\" )\n            }\n            \n            "] 
+
+
+c4h7bro
+--------------
+Result got {"head": {"vars": ["v", "v2"]}, "results": {"bindings": [{"v": {"xml:lang": "en", "type": "literal", "value": "1-bromobutan-2-one"}, "v2": {"xml:lang": "en", "type": "literal", "value": "chemical compound"}}]}} 
+

@@ -5,6 +5,8 @@ services:
     image: java_agent_eg:1.0.0
     build: .
     container_name: java_agent_eg
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
       - "58085:8080"
 

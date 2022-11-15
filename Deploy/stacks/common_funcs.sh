@@ -79,7 +79,7 @@ is_valid_stack()
 {
   local stack=$1
   case "$stack" in
-    "agent"|"db"|"web")
+    "agent"|"dafni"|"db"|"web"|"cares-agent"|"cares-db")
       return $TRUE ;;
     *)
       return $FALSE ;;
@@ -170,6 +170,10 @@ write_env_file()
     rm "$env_filename"
   fi
 
+  if [ -e "${env_filename}.extra" ]; then
+    cp "${env_filename}.extra" "$env_filename"
+  fi
+
   # Determine network name
   local network_name="$stack-$mode"
   if [ $use_test_config -eq $TRUE ]; then
@@ -183,6 +187,15 @@ write_env_file()
   fi
   
   echo "Generating environment variables file..."
+
+  # Use default env file if it exists
+  local default_env_filename=".env"
+  if [ -e "$default_env_filename" ]; then
+    cp $default_env_filename "$env_filename"
+    # Handle the case where .env doesn't end with a newline
+    echo "" >> "$env_filename"
+  fi
+
   local hash="$(git rev-parse --short=6 HEAD)"
   local builder="$(git config user.name)"
   echo "HASH=$hash" >> "$env_filename"

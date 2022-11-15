@@ -32,3 +32,4 @@ call %SDK%\bin\x86\rc.exe glpk_cli_dll.rc
 set INCLUDE=
 set LIB=
 pause
+

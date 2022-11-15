@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -275,7 +276,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Adds the definedBy annotation property to the current object property.
+	 * Adds a logical formula to the current object property.
 	 * 
 	 * @param property
 	 * @param quantifier
@@ -352,7 +353,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		} else if(quantifier !=null && !quantifier.isEmpty()
 				&& quantifier.trim().equalsIgnoreCase("maximum 1")){
 			addMaximumOneQuantification(objectProperty, domainClass, rangeClass);
-		} 
+		}
 	}
 	
 	/**
@@ -419,13 +420,27 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
+			
+			for (String singleType : type.split(",")) {
+				switch (singleType.toLowerCase().trim()) {
+				case "functional property":
+					manager.applyChange(
+							new AddAxiom(ontology, dataFactory.getOWLFunctionalDataPropertyAxiom(dataProperty)));
+					break;
+				}
+			}
+			
 			addDomain(dataProperty, domain);
 			addRange(dataProperty, range);
 			OWLDataProperty parentProperty = null;
@@ -446,15 +461,52 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * range are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
-		addDomain(objectProperty, domain, quantifier);
+
+		for (String singleType : type.split(",")) {
+			switch (singleType.toLowerCase().trim()) {
+			case "reflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLReflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "transitive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLTransitiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "symmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLSymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "asymmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLAsymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "irreflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLIrreflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			case "inverse functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			}
+		}
+
+		addDomain(objectProperty, domain);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -496,10 +548,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -507,7 +558,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfDomain(objectProperty, domain.split("UNION"));
 		} else if(domain.contains("INTERSECTION")){
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(quantifier==null || quantifier.isEmpty()){
+		} else if(domain!=null || !domain.isEmpty()){
 			addSingleClassDomain(objectProperty, domain);
 		}
 	}
@@ -547,7 +598,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfRange(objectProperty, range.split("UNION"));
 		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		}else if(quantifier==null || quantifier.isEmpty()){
+		}else if(range!=null || !range.isEmpty()){
 			addSingleClassRange(objectProperty, range);
 		}
 	}

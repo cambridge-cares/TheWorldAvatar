@@ -1,0 +1,73 @@
+{
+    "goals": {
+        "hpo": true,
+        "contour_plot": false,
+        "best_trial_retraining": true,
+        "transfer_learning": false,
+        "predict": false
+    },
+    "numerical_settings": {
+        "seed": 1,
+        "cudnn_deterministic": true,
+        "cudnn_benchmark": false
+    },
+    "logging_settings": {
+        "log_main_dir": "./logs/svr",
+        "log_sub_dir_prefix": "svr_train_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
+    "dataset": {
+        "src": "./data/processed/qsar_aquatic_toxicity.csv",
+        "transform_type": "z-transform",
+        "x_column": [
+            "TPSA(Tot)",
+            "SAacc",
+            "H-050",
+            "MLOGP",
+            "RDCHI",
+            "GATS1p",
+            "nN",
+            "C-040"
+        ],
+        "y_column": [
+            "LC50 [-LOG(mol/L)]"
+        ],
+        "split": [
+            0.7,
+            0.15,
+            0.15
+        ]
+    },
+    "model": {
+        "name": "SVR",
+        "model_specific": {
+            "kernel": "rbf",
+            "C": {
+                "type": "loguniform",
+                "low": 1e-8,
+                "high": 10000.0
+            },
+            "epsilon": {
+                "type": "loguniform",
+                "low": 1e-15,
+                "high": 1.0
+            }
+        }
+    },
+    "training": {
+        "metric": "mse",
+        "cross_validation": 5,
+        "direction": "minimize",
+        "trials": 100,
+        "study_name": "svr_test_aq_tox",
+        "storage": "sqlite:///logs/svr/svr_test_aq_tox.db",
+        "storage_timeout": 1000,
+        "load_if_exists": true,
+        "jobs": 1
+    },
+    "post_processing": {
+        "contour_plot_alt_dir": null,
+        "regression_plot": true
+    }
+}

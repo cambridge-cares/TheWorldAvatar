@@ -7,19 +7,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.region.Region;
+//import uk.ac.cam.cares.jps.base.region.Region;
+import uk.ac.cam.cares.jps.coordination.Region;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.ship.HKUPollutionRetriever;
 import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 
 @WebServlet("/CollectorCoordination")
-public class CoordinationDataCollection extends HttpServlet {
+public class CoordinationDataCollection extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 		
 	public JSONObject executeSGDataADMS() {
@@ -77,7 +80,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo.toString());
 	}
 	
-	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	/*protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
@@ -114,7 +117,58 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		System.out.println("it is executed");
 	}
-	
-	
+	*/
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParam){
+		if(validateInput(requestParam)){
+			String scenarioUrl = null;
+			String scenarioName = requestParam.optString("scenarioname");
+			scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+			JPSContext.putScenarioUrl(requestParam, scenarioUrl);
+
+
+			System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
+
+
+//		new HKUWeatherRetriever().readWritedata();
+//		System.out.println(" finished reading writing data weather");
+//		new HKUPollutionRetriever().readWritedata();
+//		System.out.println(" finished reading writing airpollution weather");
+
+
+			//retrieveShipdata();
+			try {
+				JSONObject episode=executeSGDataEPISODE();
+				JSONObject adms=executeSGDataADMS();
+//			JSONObject episodeHK=executeHKDataEPISODE();
+//			JSONObject admsHK=executeHKDataADMS();
+
+				callAgent(adms,episode);
+//			callAgent(admsHK,episodeHK);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//executeHKData(jo);
+
+			System.out.println("it is executed");
+		}
+		return  requestParam;
+	}
+
+	@Override
+	public  boolean validateInput(JSONObject requestParams)throws BadRequestException {
+		boolean validate= true;
+		if(requestParams.isEmpty()){
+			throw new BadRequestException("RequestParam is empty.");
+		}else if(!requestParams.has("scenarioname") || requestParams.isNull("scenarioname")){
+			throw new BadRequestException("RequestParam either does not contain key:scenarioname or key:scenarioname is null.");
+		}else{
+			String name= requestParams.optString("scenarioname");
+			if(name.isEmpty()){
+				throw new BadRequestException("The value of key:scenarioname is empty.");
+			}
+		}
+		return validate;
+	}
 
 }
