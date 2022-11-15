@@ -1,8 +1,9 @@
-# King's Lynn Agent
+# CReDo Phase1 Buildings Agent
 
-The target of this agent is to provide functionality for an interoperable city environment, combining static built environment and dynamic (real-time) time series data. The exact scope and focus will change during development.
+The target of this agent (i.e. rather the provided scripts) is to provide functionality to retrieve instantiated OntoCityGml buildings as GeoJSON files for visualisations.
 
-Please note, that this project is still **highly work in progress**!
+The `query_buildings_open_data.py` script queries the data as locally run script, while the `query_buildings_open_data_dockerised.py` queries the data via a dockerised agent. Both scripts focus on the open OS data used for CReDO phase 1.
+
 
 ## Preparation
 ### 1. Installing the project (on Windows)
