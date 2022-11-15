@@ -1360,6 +1360,12 @@ def test_collect_triples_for_chromatogram_point(initialise_triples):
         assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_RECORDS), URIRef(pt.instance_iri)) in g
         assert if_object_collected_in_graph(g, pt)
 
+def test_get_all_laboratories(initialise_triples):
+    sparql_client = initialise_triples
+    labs = sparql_client.get_all_laboratories()
+    assert len(labs) == 1
+    assert labs[0] == TargetIRIs.DUMMY_LAB_IRI.value
+
 @pytest.mark.skip(reason="TODO")
 def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples):
     pass

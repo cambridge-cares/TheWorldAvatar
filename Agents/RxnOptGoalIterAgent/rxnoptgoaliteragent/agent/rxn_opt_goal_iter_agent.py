@@ -18,7 +18,7 @@ class RxnOptGoalIterAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(RxnOptGoalIterSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTOGOAL_GOALSET, ONTOCAPE_CHEMICALREACTION, ONTOREACTION_REACTIONEXPERIMENT]
+        return [ONTOGOAL_GOALSET, ONTOCAPE_CHEMICALREACTION, ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_LABORATORY]
 
     def agent_output_concepts(self) -> list:
         return [ONTOGOAL_RESULT]
@@ -33,7 +33,6 @@ class RxnOptGoalIterAgent(DerivationAgent):
             raise Exception(f"Exactly one goal set is expected, but found: {list_goal_set_iri}")
         goal_set_iri = list_goal_set_iri[0]
         goal_set_instance = self.sparql_client.get_goal_set_instance(goal_set_iri)
-
 
         # II. Get the chemical reaction and reaction experiment
         # NOTE reaction experiment might not in the derivation inputs as this might be the first reaction where no prior data is available
@@ -51,8 +50,11 @@ class RxnOptGoalIterAgent(DerivationAgent):
         if ONTOREACTION_REACTIONEXPERIMENT in _full_derivation_inputs:
             list_rxn_exp_instance = self.sparql_client.getReactionExperiment(derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT))
 
+        # III. Get the laboratory
+        # If not provied as input, then the vapourtec schedule agent will assume all laboratories in the knowledge graph are available
+        list_laboratory_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else []
 
-        # III. Create a set of derivations
+        # IV. Create a set of derivations
         # Create and upload the DesignOfExperiment triples to triple store as pure input, and add timestamp
         doe_instance = self.sparql_client.generate_doe_instance_from_goal(
             goal_set=goal_set_instance,
@@ -74,13 +76,12 @@ class RxnOptGoalIterAgent(DerivationAgent):
         # TODO: [next iteration] implement a more generic way of deciding the agent to perform the derivation, here we took a shortcut to use the first agent (Step.canBePerformedBy[0])
         doe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri])
         self.logger.info(f"Initialised successfully, created asynchronous doe derivation instance: {doe_derivation_iri}")
-        exe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri])
+        exe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri] + list_laboratory_iri)
         self.logger.info(f"Initialised successfully, created asynchronous exe derivation instance: {exe_derivation_iri}")
         postpro_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(postpro_step.canBePerformedBy[0], [exe_derivation_iri])
         self.logger.info(f"Initialised successfully, created asynchronous postproc derivation instance: {postpro_derivation_iri}")
 
-
-        # IV. Create derivation outputs after experiment is finished
+        # V. Create derivation outputs after experiment is finished
         # Monitor the status of the postpro_derivation_iri, until it produced outputs
         interested_performance_indicators = [goal.desires().clz for goal in goal_set_instance.hasGoal]
         new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri, interested_performance_indicators)

@@ -1,3 +1,8 @@
+# Disable excessive debug logging from numba and matplotlib module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from abc import ABC
@@ -24,10 +29,6 @@ from py4jps import agentlogging
 from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
 from rxnoptgoalagent.data_model import *
 
-# Disable excessive debug logging from numba and matplotlib module
-import logging
-logging.getLogger("numba").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 # TODO find a better place to put this
 AVAILABLE_RXN_OPT_PLAN_LIST = ['http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan']
@@ -203,6 +204,7 @@ class RxnOptGoalAgent(ABC):
             # TODO [next iteration] where do we encode a list of available rxnoptplan?
             # TODO [next iteration] how to specify resource limitations (digital twin of hardware)?
             rxn_opt_goal_plan=[{'iri': plan, 'display': plan} for plan in AVAILABLE_RXN_OPT_PLAN_LIST],
+            available_labs=[{'iri': lab, 'display': lab} for lab in self.get_available_labs()],
         )
 
 
@@ -221,7 +223,8 @@ class RxnOptGoalAgent(ABC):
         all_parameters = ["chem_rxn", "cycleAllowance", "deadline",
                           "first_goal_clz", "first_goal_desires", "first_goal_num_val", "first_goal_unit",
                           "rxn_opt_goal_plan",
-                          "second_goal_clz", "second_goal_desires", "second_goal_num_val", "second_goal_unit"]
+                          "second_goal_clz", "second_goal_desires", "second_goal_num_val", "second_goal_unit",
+                          "labs"]
         if not all([p in parameters and bool(parameters[p]) for p in all_parameters]):
             return f"""The request parameters are incomplete, required parameters: {all_parameters}.
                     Received parameters: {parameters}.
@@ -301,6 +304,9 @@ class RxnOptGoalAgent(ABC):
             [goal.desires().clz for goal in goal_list]
         )
 
+        # Get the list of available labs
+        available_labs = parameters.getlist('labs')
+
         # Construct the list for derivation inputs
         derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp + [chem_rxn_iri]
 
@@ -309,9 +315,8 @@ class RxnOptGoalAgent(ABC):
         # which is DIFFERENT from the IRI of ROG agent (self.goal_agent_iri)
         # TODO [next iteration] in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
         # TODO [next iteration] but in the future, this information should obtained by ROG agent from the KG
-        # TODO [NOW!!!] the derivations should be created in line with the available resources
-        rogi_derivation_1 = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
-        rogi_derivation_2 = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
+        # NOTE one derivation is assigend to one lab, therefore we create amount of derivations based on the amount of labs available
+        lst_rogi_derivation = [self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs + [_]) for _ in available_labs]
 
         # TODO [next iteration] optimise the following code that deals with the ROGI iterations
         # Add a periodical job to monitor the goal iterations for the created ROGI derivation
@@ -324,7 +329,7 @@ class RxnOptGoalAgent(ABC):
         if not self.scheduler.running:
             self.scheduler.start()
         self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
-        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: [rogi_derivation_1, rogi_derivation_2], self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
+        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: lst_rogi_derivation, self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
 
     def monitor_goal_iterations(self):
         """
@@ -473,3 +478,8 @@ class RxnOptGoalAgent(ABC):
         fig.savefig(img)
         img.seek(0)
         return send_file(img, mimetype='image/png')
+
+    def get_available_labs(self):
+        # TODO [future work] display the available labs to webpage dynamically after specified the chemical reaction to optimise
+        # query the laboratory that has vapourtec reactors
+        return self.sparql_client.get_all_laboratories()

@@ -2282,6 +2282,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['hplc_report']
 
+    def get_all_laboratories(self) -> list:
+        query = f"""SELECT DISTINCT ?lab WHERE {{?lab a <{ONTOLAB_LABORATORY}>.}}"""
+        response = self.performQuery(query)
+        return [list(res.values())[0] for res in response]
+
     def check_if_triple_exist(self, s, p, o) -> bool:
         lst = [s, p, o]
         for i in range(len(lst)):

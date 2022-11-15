@@ -148,6 +148,17 @@
 
             <br><br>
 
+            <!-- laboratories involved -->
+            <div class="laboratories">
+                <span class="laboratories">Please tick the laboratories to be involved in the campaign:</span><br><br>
+                <!-- laboratories -->
+                {% for lab in available_labs %}
+                    <input type="checkbox" name="labs" value="{{ lab.iri }}">{{lab.display}}<br>
+                {% endfor %}
+            </div><br><br>
+
+            <br><br>
+
             <!-- submit button -->
             <input type="submit" value="Submit">
         </form>

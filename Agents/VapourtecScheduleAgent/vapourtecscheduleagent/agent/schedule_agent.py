@@ -19,7 +19,7 @@ class VapourtecScheduleAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTOREACTION_REACTIONEXPERIMENT]
+        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_LABORATORY]
 
     def agent_output_concepts(self) -> list:
         return [ONTOHPLC_HPLCREPORT]
@@ -38,8 +38,11 @@ class VapourtecScheduleAgent(DerivationAgent):
             )
 
         rxn_exp_instance = list_rxn_exp_instance[0]
-        self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(rxn_exp_instance.dict()))
+        self.logger.debug("Collected ReactionExperiment from the knowledge graph: ")
+        self.logger.debug(json.dumps(rxn_exp_instance.dict()))
+
+        # Get the laboratory
+        list_lab_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else None
 
         # Check until it's the turn for the given reaction experiment
         # TODO the queue dict should contain the reactor that the previous experiment were assigned to
@@ -58,6 +61,7 @@ class VapourtecScheduleAgent(DerivationAgent):
         # This function also locates the digital twin of HPLC connected to the vapourtec_rs400
         preferred_rs400, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
             rxn_exp_instance,
+            list_of_labs=list_lab_iri,
             less_desired_reactors=less_desired_reactors
         )
         while (preferred_rs400, associated_hplc) == (None, None):
