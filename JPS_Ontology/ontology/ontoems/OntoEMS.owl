@@ -522,7 +522,7 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/kg/ontouom/Concentration"/>
     </owl:Class>
 
