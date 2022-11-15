@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.solarkatasteragent;
 
+import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
@@ -22,7 +23,6 @@ import java.time.temporal.ChronoUnit;
 
 @WebServlet(urlPatterns = {"/run"})
 public class SolarkatasterAgent extends JPSAgent {
-
     public static final String KEY_OID = "oid";
     public static final String KEY_GEB = "geb_id";
     public static final String KEY_JAN = "jan_median";
@@ -75,7 +75,7 @@ public class SolarkatasterAgent extends JPSAgent {
         if (validateInput(requestParams)){
             readConfig();
 
-            ArrayList<List> dataArrayList= new ArrayList<>();
+            ArrayList<List> dataArrayList;
 
             JSONArray dataArray = getData(requestParams.getString(KEY_TABLE));
 
@@ -83,8 +83,8 @@ public class SolarkatasterAgent extends JPSAgent {
 
             createTimeSeries(dataArrayList.get(0));
 
-            try{
-                tsClient.bulkaddTimeSeriesData(dataArrayList.get(1), tsRDBStoreClient.getConnection());
+            try (Connection conn = tsRDBStoreClient.getConnection()){
+                tsClient.bulkaddTimeSeriesData(dataArrayList.get(1), conn);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -101,7 +101,12 @@ public class SolarkatasterAgent extends JPSAgent {
      */
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.get(KEY_TABLE).toString().isEmpty()){
+        try {
+            if (requestParams.get(KEY_TABLE).toString().isEmpty()) {
+                throw new BadRequestException();
+            }
+        }
+        catch (Exception e){
             throw new BadRequestException();
         }
         return true;
@@ -187,8 +192,8 @@ public class SolarkatasterAgent extends JPSAgent {
         List<Duration> durations = Collections.nCopies(n, Duration.ofDays(31));
         List<ChronoUnit> units = Collections.nCopies(n, ChronoUnit.MONTHS);
 
-        try {
-            tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, tsRDBStoreClient.getConnection(), type, durations, units);
+        try (Connection conn = tsRDBStoreClient.getConnection()){
+            tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, conn, type, durations, units);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -208,10 +213,10 @@ public class SolarkatasterAgent extends JPSAgent {
         String id;
         List<TimeSeries<Double>> tsList = new ArrayList<>();
         List<List<String>> dataIRI = new ArrayList<>();
-        List<?> times = Collections.nCopies(12, null);
+        List<?> times = Collections.nCopies(TIME_SERIES.size(), null);
 
         for (int i = 0; i < dataArray.length(); i++){
-            temp = dataArray.getJSONObject (i);
+            temp = dataArray.getJSONObject(i);
             id = temp.getString(KEY_GEB) + String.valueOf(temp.getInt(KEY_OID));
             dataIRI.add(Arrays.asList(ubemSolar + "_" + id));
             tsList.add(new TimeSeries(times, dataIRI.get(i), Arrays.asList(getDoubleList(temp))));
