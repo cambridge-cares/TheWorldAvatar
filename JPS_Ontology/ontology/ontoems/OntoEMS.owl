@@ -501,21 +501,18 @@
 
 
 
-    <!-- https://theworldavatar.com/kg/ontouom/Concentration -->
+    <!-- https://www.theworldavatar.com/kg/ontouom/Concentration -->
 
 
-    <owl:Class rdf:about="https://theworldavatar.com/kg/ontouom/Concentration"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     
 
 
-    <!-- https://theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
+    <!-- https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
-        <rdfs:label xml:lang="en">Mass concentration is defined as the mass of a constituent divided by the volume of the mixture</rdfs:label>
-        <om:alternativeLabel xml:lang="en">mass concentration</om:alternativeLabel>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
-        <om:symbol>C</om:symbol> 
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/> 
     </owl:Class>
 
 
@@ -524,7 +521,7 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
-        <rdfs:subClassOf rdf:resource="https://theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     </owl:Class>
 
     
@@ -662,7 +659,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of a specific air pollutant as amount of material per unit volume of air (e.g. mass concentration).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air pollutant concentration</rdfs:label>
