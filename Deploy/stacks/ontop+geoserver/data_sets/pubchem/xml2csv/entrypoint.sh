@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Running processing code..."
-/upload_to_pgsql.sh
+/xml2csv.sh 
 echo "Processing code complete"
 
 # If the KEEP_ALIVE variable was set, tail /dev/null to prevent the container exiting

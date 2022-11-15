@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Ensure the script exits if one of the sub-processes fails
 set -e
