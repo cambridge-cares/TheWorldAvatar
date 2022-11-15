@@ -15,14 +15,16 @@ Key properties of the **`TimeSeriesClient`** class:
 Both classes support a time series to consist of several individual (but related) measures, which share the same time column. Any generic Java types (e.g. date time, integer, double etc.) are supported and a robust mapping between any dataIRI (stored in KG) and the respective values (stored in RDB) is ensured. 
 Initialising any new time series using the `TimeSeriesClient` creates all required relationships in the KG as well as corresponding table(s) in the RDB. Adding or deleting time series data only adds or deletes data points in the RDB. Deleting time series via the `TimeSeriesClient` deletes all associated relationships from the KG as well as corresponding table(s) in the RDB. Detailed descriptions of particular functions are provided in the respective docstrings. 
 
+## Note on PostGIS support
+The TimeSeriesClient supports storing and querying geometries in PostGIS by providing objects of org.postgis.Geometry. You must ensure that the PostGIS extension is enabled in PostgreSQL to use this.
 
 ## Time series instantiation
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+ts  : https://www.theworldavatar.com/kg/ontotimeseries/
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
-kb  : http://www.theworldavatar.com/kb/ontotimeseries/
+kb  : https://www.theworldavatar.com/kg/ontotimeseries/
 ```
 
 ### Instantiation in KG ###
@@ -67,7 +69,7 @@ This table contains all information for `time series 2`.
 | t1 | ... | ... | ... |
 | t2 | ... | ... | ... |
 
-## Examples on how to use the TimeSeriesClient
+## Examples on how to use the TimeSeriesClient ##
 - **Integration tests**:
 Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images.  
 You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'
@@ -78,6 +80,24 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
    * [FloodAgent] queries water level data from the Environment Agency, stores it in the KG, and retrieves it for visualisation (Java)
    * [TimeSeriesExample] provides a minimum working example on how to instantiate time series data which is attached to some geospatial reference, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
    * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
+
+### Updated Design ##
+The Agent examples above utilize the older version of `TimeSeriesClient`.<br> 
+The updated design to use the `TimeSeriesClient`: <br>
+- An instance of the `TimeSeriesClient` can be created with a pre-defined kbClient and the class type for the time values. 
+- The methods in `TimeSeriesClient` used to interact with the database require a **java.sql.Connection** object containing the connection to the database to be passed as an argument. 
+- To create the connection object: 
+  - Create an instance of `RemoteRDBStoreClient` and use `RemoteRDBStoreClient.getConnection()` method to obtain the connection object.
+
+**Example:**<br>
+`RDBStoreClient rdbStoreClient = new RDBStoreClient(url, user, password);`<br>
+`try (Connection conn = rdbStoreClient.getConnection()) {`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`TimeSeries ts = TimeSeriesClient.getTimeSeriesWithinBounds(dataIRIs, lowerbound, upperbound, conn);`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`TimeSeriesClient.addTimeSeriesData(ts, conn);`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`// other methods can be called similarly in this block`<br>
+`}`
+* Note: The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources) as shown in the example above. This is to ensure the connection is closed automatically by Java.
+* Note: The README is to be updated to exemplify an agent that utilises the updated `TimeSeriesClient` design. 
 
 [//]: # (These are reference links used in the body)
 

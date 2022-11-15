@@ -1,0 +1,23 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+.idea/
+*venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets
+
+## Directories
+tmp_base/
+tmp_stack/
+output/*
+!.gitignore
+
+## User defined
+*.egg-info
+

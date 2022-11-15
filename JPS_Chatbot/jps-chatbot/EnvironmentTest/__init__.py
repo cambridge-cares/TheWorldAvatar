@@ -1,1 +1,0 @@
-from EnvironmentTest.chatbot import calculate

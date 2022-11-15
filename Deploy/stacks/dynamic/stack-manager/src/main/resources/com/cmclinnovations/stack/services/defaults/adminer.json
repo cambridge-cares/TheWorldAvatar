@@ -1,0 +1,16 @@
+{
+    "ServiceSpec": {
+        "Name": "adminer",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "adminer:latest"
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080",
+            "externalPath": "/adminer/ui"
+        }
+    }
+}
