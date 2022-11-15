@@ -1,0 +1,48 @@
+@prefix OntoCAPERxn:    <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> .
+@prefix OntoCAPEMat:	<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> .
+@prefix OntoCAPEPha:	<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix OntoCAPEUpp:	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix OntoSpecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
+@prefix OntoKin:	    <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> .
+@prefix OntoDoE:		<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix OntoRxn:	    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix OntoUoM:		<http://theworldavatar.com/resource/ontouom/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix skos:           <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:	    	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:		    <http://www.w3.org/2000/01/rdf-schema#> .
+
+###########################################################
+## Part of OntoRxn ontology for /subPropertyOf relationship ##
+###########################################################
+OntoRxn:ResidenceTime rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionTemperature rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionPressure rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:StoichiometryRatio rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionScale rdfs:subClassOf OntoRxn:ReactionCondition .
+
+OntoRxn:EnvironmentalFactor rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:Yield rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator .
+
+OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnPressure rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasStoichiometryRatio rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnScale rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+
+OntoRxn:hasEnvironmentalFactor rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+
+############################################################################
+## Subclass relationship between ReactionExperiment and ReactionVariation ##
+############################################################################
+OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .

@@ -4,5 +4,6 @@ public enum StatusType {
 	REQUESTED,
 	INPROGRESS,
 	FINISHED,
+	ERROR,
 	NOSTATUS
 }
