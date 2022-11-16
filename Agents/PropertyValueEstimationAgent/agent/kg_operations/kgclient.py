@@ -41,6 +41,7 @@ class KGClient(PySparqlClient):
             # In case date or price (or both) are missing (i.e. empty SPARQL result), return Nones
             res = dict(zip(['price', 'date', 'property_iri'], (None,)*3))
         else:
+            res = res[0]
             # Cast price to float
             try:
                 res['price'] = float(res['price'])
@@ -48,7 +49,7 @@ class KGClient(PySparqlClient):
                 res['price'] = None
             # Extract relevant date (YYYY-MM) from string
             try:
-                dt.datetime.strptime(res['date'], TIME_FORMAT_LONG).strftime(TIME_FORMAT_SHORT)
+                res['date'] = dt.datetime.strptime(res['date'], TIME_FORMAT_LONG).strftime(TIME_FORMAT_SHORT)
             except:
                 res['date'] = None
         return res
@@ -75,6 +76,7 @@ class KGClient(PySparqlClient):
             # In case floor area or average price (or both) are missing (i.e. empty SPARQL result), return Nones
             res = dict(zip(['floor_area', 'avg_price', 'property_iri'], (None,)*3))
         else:
+            res = res[0]
             # Cast floor area and average price to float
             for key in ['floor_area', 'avg_price']:
                 try:

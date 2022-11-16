@@ -66,28 +66,29 @@ DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(AGENT_ENV).DERIVATION_INS
 # IRIs of derivation's (pure) inputs
 # NOTE Should be consistent with the ones in test_triples/example_abox.ttl
 TEST_TRIPLES_BASE_IRI = 'https://www.example.com/kg/ontobuiltenv/'
+
 # PropertyPriceIndex
 PRICE_INDEX_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'PropertyPriceIndex_1'
-# PostCodes
-POSTCODE_INSTANCE_IRI_1 = TEST_TRIPLES_BASE_IRI + 'PostalCode_1'
-POSTCODE_INSTANCE_IRI_2 = TEST_TRIPLES_BASE_IRI + 'PostalCode_2'
+# AveragePricePerSqm
+AVERAGE_SQM_PRICE = TEST_TRIPLES_BASE_IRI + 'AveragePricePerSqm_1'
 # TransactionRecords
 TRANSACTION_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_1'
 TRANSACTION_INSTANCE_2_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_2'
 TRANSACTION_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_3'
-TRANSACTION_INSTANCE_4_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_4'
-TRANSACTION_INSTANCE_5_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_5'
-DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
-                       TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
-                       TRANSACTION_INSTANCE_3_IRI]
-POSTCODE_1 = 'ABC 123'
-# test against previously calculated average value from Excel (rounded)
-AVGPRICE_1 = 3351
-DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
-                       TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
-POSTCODE_2 = 'DEF 456'
-AVGPRICE_2 = 3600
+# FloorArea
+FLOOR_AREA_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Area_1'
+FLOOR_AREA_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Area_3'
 
+# Define input sets to test
+DERIVATION_INPUTS_1 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
+                       AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_1_IRI]
+DERIVATION_INPUTS_2 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
+                       AVERAGE_SQM_PRICE]
+DERIVATION_INPUTS_3 = [AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_3_IRI]
+DERIVATION_INPUTS_4 = [TRANSACTION_INSTANCE_2_IRI, TRANSACTION_INSTANCE_3_IRI]
+# Test against pre-calculated value estimates from Excel (rounded)
+MARKET_VALUE_1 = 936000
+MARKET_VALUE_2 = 938000
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
@@ -107,14 +108,8 @@ TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
-DERIV_INPUT_TRIPLES = 2 + 3*3   # triples for derivation input message
+DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-
-
-# List of all transactions (to mock ONS API call)
-ALL_TRANSACTION_RECORDS = [TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI,
-                           TRANSACTION_INSTANCE_3_IRI, TRANSACTION_INSTANCE_4_IRI,
-                           TRANSACTION_INSTANCE_5_IRI]
 
 
 # ----------------------------------------------------------------------------------
@@ -305,19 +300,16 @@ def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
     return dates, values
 
 
-def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
-    # Returns details associated with AvgSqmPrice instance
+def get_marketvalue_details(sparql_client, market_value_iri):
+    # Returns details associated with Market Value instance (OM:AmountOfMoney)
     query = f"""
-        SELECT ?postcode ?price ?input_iri ?input_type
+        SELECT ?value ?input_iri ?input_type
         WHERE {{
-        <{avgsqmprice_iri}> <{RDF_TYPE}> <{OBE_AVERAGE_SM_PRICE}> ; 
-                            <{OM_HAS_VALUE}> ?measure ; 
-                            <{OBE_REPRESENTATIVE_FOR}> ?postcode_iri ; 
-                            <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
+        <{market_value_iri}> <{RDF_TYPE}> <{OM_AMOUNT_MONEY}> ; 
+                             <{OM_HAS_VALUE}> ?measure ; 
+                             <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
         ?measure <{RDF_TYPE}> <{OM_MEASURE}> ;  
-                 <{OM_NUM_VALUE}> ?price . 
-        ?postcode_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
-                      <{RDFS_LABEL}> ?postcode . 
+                 <{OM_NUM_VALUE}> ?value . 
         ?input_iri <{RDF_TYPE}> ?input_type . 
         }}
         """
@@ -328,12 +320,10 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
         # Derivation inputs (i.e. isDerivedFrom)
         key = set([x['input_type'] for x in response])
         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
-        # Postcode
-        postcode = list(set([x['postcode'] for x in response]))
-        # Price
-        price = list(set([int(x['price']) for x in response]))
+        # Market Value
+        market_value = list(set([float(x['value']) for x in response]))
 
-        return inputs, postcode, price
+        return inputs, market_value
 
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873

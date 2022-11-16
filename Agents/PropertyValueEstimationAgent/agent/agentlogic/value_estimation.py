@@ -65,23 +65,20 @@ class PropertyValueEstimationAgent(DerivationAgent):
             avgsqm_price_iri {str}, floor_area_iri {str}
         """
 
-        # Initialise return values
-        transaction_iri, prop_price_index_iri, avgsqm_price_iri, floor_area_iri = (None,)*4
-
         # Create dict between input concepts and return values
-        input_concept_dict = {LRPPI_TRANSACTION_RECORD: transaction_iri,
-                              OBE_PROPERTY_PRICE_INDEX: prop_price_index_iri,
-                              OBE_AVERAGE_SM_PRICE: avgsqm_price_iri,
-                              OM_AREA: floor_area_iri}
+        input_dict = {LRPPI_TRANSACTION_RECORD: None,
+                      OBE_PROPERTY_PRICE_INDEX: None,
+                      OBE_AVERAGE_SM_PRICE: None,
+                      OM_AREA: None}
 
         # Verify that max. one instance per concept is provided
-        for i in input_concept_dict:
+        for i in input_dict:
             # Check whether input is available
             if inputs.get(i):
                 inp = inputs.get(i)
                 # Check whether only one input has been provided
                 if len(inp) == 1:
-                    input_concept_dict[i] = inp[0]
+                    input_dict[i] = inp[0]
                 else:
                     inp_name = i[i.rfind('/')+1:]
                     self.logger.error(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
@@ -90,11 +87,12 @@ class PropertyValueEstimationAgent(DerivationAgent):
         # Verify that either
         # 1) TransactionRecord & PropertyPriceIndex or
         # 2) AveragePricePerSqm & TotalFloorArea are provided
-        if not ((transaction_iri and prop_price_index_iri) or \
-                (avgsqm_price_iri and floor_area_iri)):
+        if not ((input_dict[LRPPI_TRANSACTION_RECORD] and input_dict[OBE_PROPERTY_PRICE_INDEX]) or \
+                (input_dict[OBE_AVERAGE_SM_PRICE] and input_dict[OM_AREA])):
             self.logger.info(f"Derivation {derivationIRI}: Insufficient set of inputs provided.")
 
-        return transaction_iri, prop_price_index_iri, avgsqm_price_iri, floor_area_iri 
+        return input_dict[LRPPI_TRANSACTION_RECORD], input_dict[OBE_PROPERTY_PRICE_INDEX], \
+               input_dict[OBE_AVERAGE_SM_PRICE], input_dict[OM_AREA] 
 
     
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
@@ -170,7 +168,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
             # Create UKHPI series with conditioned date index
             ukhpi = pd.Series(index=dates, data=values)
-            ukhpi = ukhpi.astype(str)
+            ukhpi = ukhpi.astype(float)
             ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
             ukhpi.sort_index(ascending=False, inplace=True)
             ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
