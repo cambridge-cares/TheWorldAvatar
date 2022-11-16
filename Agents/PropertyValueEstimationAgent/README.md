@@ -188,21 +188,41 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
 &nbsp;
 ### To perform the local agent integration tests, please follow these steps:
 
-1. It is highly recommended to use a virtual environment for testing. The virtual environment can be created as follows:
+1. It is highly recommended to use a virtual environment for testing. The virtual environment can be created and activated as follows:
+
     `(Windows)`
     ```bash
-    $ python -m venv avg_venv
-    $ avg_venv\Scripts\activate.bat
-    (avg_venv) $
+    $ python -m venv prop_venv
+    $ prop_venv\Scripts\activate.bat
+    (prop_venv) $
+    ```
+
+    `(Linux)`
+    ```bash
+    $ sudo apt-get install python3-pip
+    $ pip3 install virtualenv
+    $ python3 -m venv prop_venv
+    $ source prop_venv/bin/activate
+    (prop_venv) $
     ```
 2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
+
     `(Windows)`
     ```bash
-    $ python -m pip install --upgrade pip
+    (prop_venv) $ python -m pip install --upgrade pip
     # Install all required packages from setup.py, incl. pytest etc.
-    python -m pip install -e .[dev]
+    (prop_venv) $ python -m pip install -e .[dev]
     ```
-    Please note: If developing/testing in WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package.
+
+    Please note: If developing/testing in Linux/WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package:
+    `(Linux)`
+    ```bash
+    (prop_venv) $ python3 -m pip install --upgrade pip
+    # Install prerequsisites for building psycopg2
+    (prop_venv) $ sudo apt install libpq-dev python3-dev
+    # Install all required packages from setup.py, incl. pytest etc.
+    (prop_venv) $ python3 -m pip install -e .[dev]
+    ```
 
 3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
     ```bash
@@ -218,6 +238,9 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
    ```
    Running the tests likely creates a few left over Docker volumes. They might need to be removed manually thereafter.
 
+python3 -m pip install --upgrade pip
+sudo apt install libpq-dev python3-dev
+python3 -m pip install -e .[dev]
 
 
 &nbsp;
