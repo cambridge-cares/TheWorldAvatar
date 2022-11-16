@@ -25,6 +25,7 @@ import os
 import io
 
 from py4jps import agentlogging
+from pyderivationagent import PyDerivationClient
 
 from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
 from rxnoptgoalagent.data_model import *
@@ -125,14 +126,11 @@ class RxnOptGoalAgent(ABC):
 
         # initialise the derivation_client with SPARQL Query and Update endpoint
         self.derivation_instance_base_url = derivation_instance_base_url
-        if kg_user is None:
-            self.store_client = self.sparql_client.jpsBaseLib_view.RemoteStoreClient(
-                self.kg_url, self.kg_update_url)
-        else:
-            self.store_client = self.sparql_client.jpsBaseLib_view.RemoteStoreClient(
-                self.kg_url, self.kg_update_url, self.kg_user, self.kg_password)
-        self.derivation_client = self.sparql_client.jpsBaseLib_view.DerivationClient(
-            self.store_client, derivation_instance_base_url)
+        self.derivation_client = PyDerivationClient(
+            derivation_instance_base_url=self.derivation_instance_base_url,
+            query_endpoint=self.kg_url, update_endpoint=self.kg_update_url,
+            kg_user=self.kg_user, kg_password=self.kg_password,
+        )
 
         # initialise the logger
         self.logger = agentlogging.get_logger(logger_name)
@@ -146,11 +144,19 @@ class RxnOptGoalAgent(ABC):
         # add the route for the goal result plot
         self.app.add_url_rule('/goal/result', 'rxn_opt_goal_result', self.goal_result_page, methods=['GET'])
 
+        # add the route for activating existing goal set
+        self.app.add_url_rule('/goal/reactivate', 'rxn_opt_goal_reactivate', self.goal_reactivate_page, methods=['GET'])
+        # add the url pattern that handles the POST request for activating existing goal set
+        self.app.add_url_rule('/goal_reactivate', 'goal_reactivate_rxnoptgoal', self.reactivate_existing_goal_set, methods=['POST'])
+
         # add the url pattern that handles the goal request
         url_pattern = urlparse(self.goal_agent_endpoint).path
         url_pattern_name = url_pattern.strip('/').replace('/', '_') + '_rxnoptgoal'
         self.app.add_url_rule(url_pattern, url_pattern_name, self.handle_rxn_opt_goal_request, methods=['POST'])
         self.logger.info(f"The endpoint to handle goal request is added as: {url_pattern}")
+
+        # initialise the current_active_goal_set as None
+        self.current_active_goal_set = None
 
         # TODO think about if we need the registeration of the goal agent
         # # register the agent to the KG if required
@@ -357,8 +363,9 @@ class RxnOptGoalAgent(ABC):
             # check if any of the goals are met
             unmet_goals = goal_set_instance.get_unmet_goals()
             if len(unmet_goals) == 0:
-                self.logger.info("All goals are met. Stop monitoring the goal iterations.")
+                self.logger.info(f"All goals are met. Stop monitoring the iterations of goal set {self.current_active_goal_set}.")
                 self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
+                self.current_active_goal_set = None
             else:
                 # check if the restriction is still okay
                 if goal_set_instance.if_restrictions_are_okay():
@@ -408,7 +415,7 @@ class RxnOptGoalAgent(ABC):
                                 BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
                             }}
                     }}"""
-                    self.logger.info(f"SPARQL update: {update}")
+                    self.logger.debug(f"SPARQL update: {update}")
                     self.sparql_client.performUpdate(update)
                     # update the timestamp of the goal_set instance as the restriction (cycleAllowance) is updated
                     self.derivation_client.updateTimestamp(goal_set_instance.instance_iri)
@@ -418,6 +425,7 @@ class RxnOptGoalAgent(ABC):
                 else:
                     self.logger.info(f"Restrictions are not okay. Stop monitoring the goal iterations. Current best results: { goal_set_instance.get_best_results() }")
                     self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
+                    self.current_active_goal_set = None
         else:
             self.logger.info(f"The ROGI derivations {rogi_derivation_lst} of GoalSet <{self.current_active_goal_set}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
 
@@ -427,7 +435,7 @@ class RxnOptGoalAgent(ABC):
         """
         if 'goal_set' in request.args:
             _goal_set_iri = request.args['goal_set']
-        elif hasattr(self, 'current_active_goal_set'):
+        elif self.current_active_goal_set is not None:
             _goal_set_iri = self.current_active_goal_set
         else:
             return f"""No GoalSet IRI is provided. Nor is any GoalSet currently running.
@@ -482,6 +490,38 @@ class RxnOptGoalAgent(ABC):
         fig.savefig(img)
         img.seek(0)
         return send_file(img, mimetype='image/png')
+
+    def goal_reactivate_page(self):
+        return render_template(
+            'rxn_opt_goal_reactivate.html',
+            goal_set_iri=[{'iri': _, 'display': _} for _ in self.sparql_client.get_all_existing_goal_set()]
+        )
+
+    def reactivate_existing_goal_set(self):
+        goal_set_iri = request.form['goal_set']
+        # Add a periodical job to monitor the goal iterations for the created ROGI derivation
+        if self.current_active_goal_set is not None:
+            return jsonify({'status': 'null', 'message': f"Another GoalSet <{self.current_active_goal_set}> is currently running. For now, only one GoalSet can be run at a time."})
+
+        # Assign the current active goal set
+        self.current_active_goal_set = goal_set_iri
+        # Update the restriction with the new information from the form
+        self.sparql_client.update_goal_set_restrictions(
+            goal_set_iri,
+            cycle_allowance=request.form['cycleAllowance'] if 'cycleAllowance' in request.form and bool(request.form['cycleAllowance']) else None,
+            deadline=datetime.timestamp(datetime.fromisoformat(request.form['deadline'])) if 'deadline' in request.form and bool(request.form['deadline']) else None,
+        )
+        self.derivation_client.updateTimestamp(goal_set_iri)
+        self.scheduler.add_job(
+            id=f'monitor_goal_set__{getShortName(goal_set_iri)}',
+            func=self.monitor_goal_iterations,
+            trigger='interval', seconds=self.goal_monitor_time_interval
+        )
+        if not self.scheduler.running:
+            self.scheduler.start()
+        self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
+
+        return jsonify({'status': 'success', 'message': f"GoalSet <{goal_set_iri}> is reactivated."})
 
     def get_available_labs(self):
         # TODO [future work] display the available labs to webpage dynamically after specified the chemical reaction to optimise

@@ -389,3 +389,33 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             raise Exception(f"More than one rxn found as the latest experiment for rogi derivation {rogi_derivation}: {response}")
         else:
             return response[0]['rxn']
+
+    # TODO add unit test
+    def get_all_existing_goal_set(self):
+        query = f"""SELECT DISTINCT ?goal_set WHERE {{ ?goal_set a <{ONTOGOAL_GOALSET}>. }}"""
+        response = self.performQuery(query)
+        return [list(x.values())[0] for x in response]
+
+    # TODO add unit test
+    def update_goal_set_restrictions(
+        self,
+        goal_set_iri: str,
+        cycle_allowance: int=None,
+        deadline: float=None
+    ):
+        _delete = ""
+        _insert = ""
+        _where = f"""
+            WHERE {{
+                <{goal_set_iri}> <{ONTOGOAL_HASRESTRICTION}> ?restriction.
+                ?restriction <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance.
+                ?restriction <{ONTOGOAL_DEADLINE}> ?deadline.
+            }}"""
+        if cycle_allowance is not None:
+            _delete += f"?restriction <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance."
+            _insert += f"?restriction <{ONTOGOAL_CYCLEALLOWANCE}> {cycle_allowance}."
+        if deadline is not None:
+            _delete += f"?restriction <{ONTOGOAL_DEADLINE}> ?deadline."
+            _insert += f"""?restriction <{ONTOGOAL_DEADLINE}> "{datetime.fromtimestamp(deadline)}"^^<{XSD.dateTime.toPython()}>."""
+        update = f"""DELETE {{ {_delete} }} INSERT {{ {_insert} }} {_where}"""
+        self.performUpdate(update)
