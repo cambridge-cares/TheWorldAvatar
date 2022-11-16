@@ -55,7 +55,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved
 # automatically from the respective Docker services
 
-# Provide names of respetive Docker services
+# Provide names of respective Docker services
 # NOTE These names need to match the ones given in the `docker-compose-test.yml` file
 KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -208,8 +208,8 @@ def create_example_agent():
             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=host_docker_internal_to_localhost(QUERY_ENDPOINT),
-            kg_update_url=host_docker_internal_to_localhost(UPDATE_ENDPOINT),
+            kg_url=QUERY_ENDPOINT,
+            kg_update_url=UPDATE_ENDPOINT,
             # NOTE For agent endpoint, we keep this as it is for now (i.e. start with http://host.docker.internal)
             # As the agent endpoint is not accessed from outside the docker network
             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
@@ -224,9 +224,6 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-
-def host_docker_internal_to_localhost(endpoint: str):
-    return endpoint.replace("host.docker.internal:", "localhost:")
 
 
 def initialise_triples(sparql_client):

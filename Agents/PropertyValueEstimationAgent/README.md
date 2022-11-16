@@ -142,7 +142,7 @@ git config core.fileMode false
 
 The Average Square Metre Price Estimation Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoBuiltEnv] properties (i.e. `total floor area`, `transaction records`, and `property price index`) and automatically update associated `average price per square metre` instances in the KG. As the agent adopts `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
-After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5010/`.
+After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5011/`.
 
 ## Asynchronous derivation operation
 Once the Agent is deployed, it periodically (every week, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved to the [docker compose file] instead.
@@ -236,11 +236,7 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     # Add `-s` flag to see live logs
     pytest -s --docker-compose=./docker-compose-test.yml
    ```
-   Running the tests likely creates a few left over Docker volumes. They might need to be removed manually thereafter.
-
-python3 -m pip install --upgrade pip
-sudo apt install libpq-dev python3-dev
-python3 -m pip install -e .[dev]
+   It has been observed that running the above command might fail due to Docker communication issues. Rerunning it should solve those issues. Failing tests likely creates left over Docker volumes, which might need to be removed manually thereafter.
 
 
 &nbsp;

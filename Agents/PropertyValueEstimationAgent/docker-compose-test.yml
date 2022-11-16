@@ -33,7 +33,7 @@ services:
       #--- Miscellaneous ---#
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
-      - "5010:5000"
+      - "5011:5000"
 
   # Blazegraph
   blazegraph_agent_test:

@@ -75,6 +75,8 @@ def test_example_data_instantiation(initialise_clients):
     "derivation_input_set, expect_exception, expected_estimate, local_agent_test",
     [
         (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_2, False, cf.MARKET_VALUE_1, True),
+        (cf.DERIVATION_INPUTS_3, False, cf.MARKET_VALUE_2, True),
         (cf.DERIVATION_INPUTS_4, True, cf.EXCEPTION_STATUS_1, True),
     ],
 )
@@ -143,27 +145,24 @@ def test_monitor_derivations(
     assert sparql_client.getAmountOfTriples() == triples    
 
     if local_agent_test:
-        # Patch RDB URL for TimeSeriesClient to ensure that Postgres is not accessed from inside the Container
-        # If patching an object, you have to always patch the object as used in the module, e.g. 
-        # if you have imported it in the form: from x import y in your module module, you have to patch 
-        # module.y instead of x.y. Documentation: https://docs.python.org/3/library/unittest.mock.html#id6
-        mocker.patch('agent.kg_operations.tsclient.DB_URL', rdb_url)
         # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 
     if expect_exception:
+        # Verify that agent throws (i.e. instantiates) correct Exception message for
+        # erroneous derivation markup
         time.sleep(10)
         exception = cf.get_derivation_status(sparql_client, derivation_iri)
         assert expected_estimate in exception
 
     else:
-        # Query timestamp of the derivation for every 20 seconds until it's updated
+        # Query timestamp of the derivation for every 10 seconds until it's updated
         currentTimestamp_derivation = 0
         while currentTimestamp_derivation == 0:
             time.sleep(10)
             currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
-        # Assert that there's now an instance having rdf:type of the output signature in the KG
+        # Assert that there's now an instance with rdf:type of the output signature in the KG
         assert sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OM_AMOUNT_MONEY)
 
         # Verify correct number of triples (incl. timestamp & agent triples)
@@ -174,7 +173,7 @@ def test_monitor_derivations(
         derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
         print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
         
-        # Verify that there are 2 derivation outputs (i.e. AveragePrice and Measure IRIs)
+        # Verify that there are 2 derivation outputs (i.e. AmountOfMoney and Measure IRIs)
         assert len(derivation_outputs) == 2
         assert dm.OM_AMOUNT_MONEY in derivation_outputs
         assert len(derivation_outputs[dm.OM_AMOUNT_MONEY]) == 1
