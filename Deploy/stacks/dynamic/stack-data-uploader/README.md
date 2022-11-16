@@ -9,6 +9,34 @@ You will need to substitute in appropriate values before running any commands.
 
 The Stack Data Uploader is designed to make it easier to ingest static data files into a stack.
 
+## Running the Stack Data Uploader
+
+#### 0. Prerequisites
+These are the same as listed in [The Stack Manager](../stack-manager/README.md#prerequisites).
+
+#### 1. Initialise the stack
+You should initialise the stack by following the instructions in [Spinning up a Stack](../stack-manager/README.md#spinning-up-a-stack).
+
+#### 2. Check the examples
+Example dataset files can be found in the [`example_datasets`](../example_datasets/) directory.
+Descriptions of each example can be found in the [Example datasets](#example-datasets) section.
+
+#### 3. Copy in data files
+
+The source files need to be copied into the [`inputs/data/`](./inputs/data/) directory.
+The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section.
+
+#### 4. Create a configuration file
+Create a JSON file in the [`inputs/config/`](./inputs/config/) directory to define how the data is to be uploaded.
+The structure of this file is described in the [The Dataset configuration file](#the-dataset-configuration-file) section.
+
+#### 5. Running the data uploader
+
+From a terminal in the [`stack-data-uploader`](.) directory, start the `stack-data-uploader` container by running the following:
+```console
+./stack.sh start <STACK NAME>
+```
+
 ## Datasets and subsets
 
 Data files are grouped into *datasets*, each of which has its own configuration file and data directory.
@@ -32,14 +60,11 @@ inputs/
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
-## The Dataset configuration file
-
-Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
 
 ### Example datasets
 
 There are several example configuration files in the [`example_datasets`](../example_datasets/) directory.
-These need to be copied into the [stack-data-uploader/inputs/](./inputs/) directory for them to be used.
+You can follow the instructions in the [README.md](../example_datasets/README.md) to load in one of the example datasets.
 The following table provides a description of each example:
 
 | Example | Description |
@@ -50,6 +75,10 @@ The following table provides a description of each example:
 | [forestry](../example_datasets/inputs/config/forestry.json) | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer. |
 | [population](../example_datasets/inputs/config/population.json) | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer. |
 | [treesAndHills](../example_datasets/inputs/config/treesAndHills.json) | An example of how to use the `"externalDatasets"` node to load multiple datasets by name. |
+
+## The Dataset configuration file
+
+Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
 
 ### Datasets
 
@@ -122,18 +151,32 @@ A list of GeoServer style file definition objects.
 The styles defined here wll be loaded into the GeoServer workspace associated with the dataset.
 Each entry requires the following values to be specified:
 
-| Key      | Description                                           |
-| -------- | ----------------------------------------------------- |
-| `"name"` | The name of the style as it will be used in GeoServer |
-| `"file"` | The name of the file containing the style definition  |
+| Key      | Description                                               |
+| -------- | --------------------------------------------------------- |
+| `"name"` | The name of the style, it will need to be prefixed by the dataset's workspace when referenced in GeoServer |
+| `"file"` | The style file's path, relative to the dataset directory  |
 
 Currently only `.sld` style files are supported.
+Worked examples of different SLD styles can be found in the [GeoServer manual][sld-cookbook].
 If required in the future support for other style formats might be add as GeoServer does support several other formats natively and a few more if the required plugins are loaded.
+
+An example of a style specification in the configuration file is:
+```json
+"styles": [
+    {
+        "name": "elevation",
+        "file": "elevation.sld"
+    }
+]
+```
 
 #### `"mappings"`
 A list of Ontop mapping file definition objects provided as paths relative to the [`"datasetDirectory"`](#datasetDirectory).
 Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
 Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader would need changes to include matching support.
+
+The OBDA file for the cropmap example ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
+The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
 ## Data types
 
@@ -223,7 +266,7 @@ Within that the following nodes can be added.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
-      
+
 ### Raster data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
@@ -302,88 +345,74 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 - [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
 - [PostGIS][vector-postgis] (mainly as the output)
 
-## Prerequisites
 
-These are the same as listed in [The Stack Manager](../stack-manager/README.md#prerequisites).
+## OBDA mapping file
 
-You should also initialise the stack by following the instructions in [Spinning up a Stack](../stack-manager/README.md#spinning-up-a-stack).
+The general layout of the file is as follows:
 
-## Running the Stack Data Uploader
+### Comments
 
-To load static data files into the stack please follow the instructions below:
+Comments are not natively supported in the Ontop OBDA format but the data uploader will strip them out before passing the mappings to Ontop.
+Comments are started by a `#` character and can appear at the start of a line, that contains no "code", or at the end of one that does.
+When a comment follows "code" the `#` character must be preceded by at least one white-space character.
+For example:
+``` bash
+# Comment at the start of a line, whole line.
+SELECT var1 var2 # Comment following some "code"
+```
 
-1. Open the Workspace in the [`Deploy/stacks/dynamic`](..) directory in VSCode (or go to the [`stack-data-uploader`](.) subdirectory within it in a `bash` terminal).
+### Prefix declarations
+This is where the RDF prefixes should be defined, these can then be used when specifying triple patterns in the mappings.
+It starts with a `[PrefixDeclaration]` tag, followed by the prefix-IRI base pairs, without angled-brackets `<>`.
+```obda
+[PrefixDeclaration]
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+ex:     http://example.org/
+```
 
-2. To start you can follow the instructions in the [README.md](../example_datasets/README.md) file in the [`example_datasets`](../example_datasets/) directory to load in one of the example datasets.
-To load another data set, put the relevant data in the [`inputs/data/`](./inputs/data) directory.
-The stack uploader supports vector, raster, and non-geospatial tabular data; these can come in a variety of file formats including JSON, GeoJSON, JPEG, PNG, Shapefile, and CSV.
+### Mapping declarations
 
-3. Create a JSON file in [`inputs/config/`](./inputs/config/) to configure how the data is to be uploaded.
-The steps to create such a file are detailed in full here but it is recommended that you also look at the example configurations in the `example_datasets` directory.
-The following is a template for a basic config file.
-It is necessary that you replace any placeholders, `<...>`, with values appropriate for your data.
-    ```json
-    {
-        "database": "postgres",
-        "workspace": "the_world_avatar",
-        "datasetDirectory": "<directory in ./data in which the data is stored>",
-        "dataSubsets": [
-            {
-                "type": "<vector, raster, or tabular>",
-                "skip": false,
-                "schema": "public",
-                "table": "<what you wish to name your table>",
-                "subdirectory": "<subdirectory in datasetDirectory in which the data subset is stored>"
-            },
-            {
-                <... another subset>
-            },
-            <...>
-        ]
-    }
-    ``` 
-    
-4. You can create a `.sld` GeoServer style in the config directory and upload it.
-In GeoServer the style will be named `the_world_avatar:<style name>` as it is created within the `the_world_avatar` workspace.
-The following node can be added to the top level of the config file.
-    ```json
-    "styles": [
-        {
-            "name": "<style name>",
-            "file": "<style file>.sld"
-        }
-    ]
-    ```
+The mapping declarations section starts with this line:
+```[MappingDeclaration] @collection [[```
+and is closed by the following line:
+```]]```
 
-5. Create a `.obda` file in the `datasetDirectory` to specify the mapping.
-Once again you can look at the examples in the [`example_datasets`](../example_datasets/) directory or follow this simplified template.
-    ```obda
-    [PrefixDeclaration]
-    ex:     http://example.org/
+Each mapping has three parts:
+| Label | Description |
+| ----- | ----------- |
+| mappingId | The unique name of the mapping |
+| target    | Template of the [Turtle format][turtle] triple patterns that will exist in Ontop's virtual knowledge graph. Placeholders for values extracted from the PostGIS database are specified as `{value}`.
+| source    | SQL query used to determine the values to replace the placeholders in the *target* block.
 
-    # can comment like this
+Ontop effectively takes the result of the SQL `SELECT` query written in the *source* block and for each row creates a set of virtual triples by substituting the SQL variables into the Turtle formatted template in the *target* block. In practice Ontop performs direct mappings, query rewriting, and other optimisations to improve the efficiency of running SPARQL queries over these virtual triples.
 
-    [MappingDeclaration] @collection [[
-    mappingId <name of first mapping> 
-    target    <Turtle query to specify triples using columns from SQL in {}> 
-    source    <SQL query to make table of data to be mapped>
+A simple example of a mapping is:
+```
+mappingId   exampleMapping
+target      ex:building{id} ex:hasName "{name}"^^xsd:string;
+                ex:hasId {id}^^xsd:integer .
+source      SELECT id, name
+            FROM buildings
+```
+Here the the PostgreSQL table `buildings` is assumed to contain the columns `id` (containing integers) and `name` (containing strings).
+For each row in that table two virtual triples will be created `ex:building{id} ex:hasName "{name}"^^xsd:string` and `ex:building{id} ex:hasId {id}^^xsd:integer`.
 
-    mappingId <name of second mapping> 
-    target    <Turtle query> # can also comment like this
-    source    <SQL query>
-    ]]
-    ```
-    Add the following as a top level node in the config file.
-    ```json
-    "mappings": [
-        "<name of mapping file>.obda"
-    ]
-    ```
+For example if the `buildings` table was as follows then the subsequent virtual triples would be created.
 
-6. From a terminal in the [`stack-data-uploader`](.) directory, start the `stack-data-uploader` container by running the following:
-    ```console
-    ./stack.sh start <STACK NAME>
-    ```
+| id | name | .... |
+| --- | --- | --- |
+| 1234 | "building 1" | ... |
+| 1235 | "building 2" | ... |
+
+`ex:building1234 ex:hasName "building 1"^^xsd:string`
+`ex:building1234 ex:hasId 1234^^xsd:integer`
+`ex:building1235 ex:hasName "building 2"^^xsd:string`
+`ex:building1235 ex:hasId 1235^^xsd:integer`
+
+#### SPARQL queries on Ontop
+
+Ontop supports a wide range of [SPARQL 1.1](https://ontop-vkg.org/guide/compliance.html#sparql-1-1) and [GeoSPARQL 1.0](https://ontop-vkg.org/guide/compliance.html#geosparql-1-0) features.
+The [cropmap](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda) example OBDA file shows how to use the PostGIS function [`ST_ASTEXT`](https://postgis.net/docs/ST_AsText.html) and the [`http://www.opengis.net/ont/geosparql#wktLiteral`](http://www.opengis.net/ont/geosparql#wktLiteral) to make it possible to run GeoSPARQL queries.
 
 ## Using Specific Data Sets
 
@@ -402,13 +431,7 @@ If you want to use a few config files you can create one master config file name
 
 ## Debugging the Stack Data Uploader in VSCode
 
-1. Add the following entry into top level node the JSON file `stack-data-uploader/.vscode/settings.json`, creating the file if it doesn't exist.
-    ```json
-    "debug.port": "<DEBUG PORT>"
-    ```
-    A value around `5007` for `<DEBUG PORT>` should be appropriate, this must be different to the one specified for the `stack-manager`.
-
-2. In the `Run and Debug` side panel of VSCode run the `Debug (stack-data-uploader)` configuration.
+1. In the `Run and Debug` side panel of VSCode run the `Debug (stack-data-uploader)` configuration.
 
 ## Developing the Stack Data Uploader in VSCode
 
@@ -476,6 +499,7 @@ This way you can look at look at the user interfaces of the various services (se
             ...
     ```
 
+[Turtle]: https://www.w3.org/TR/2014/REC-turtle-20140225/
 
 [gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
 [ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
@@ -503,6 +527,7 @@ This way you can look at look at the user interfaces of the various services (se
 [geoserver-sql-params]:  https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters
 [geoserver-rest]:        https://docs.geoserver.org/stable/en/user/rest/
 [geoserver-rest-layers]: https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer
+[sld-cookbook]:          https://docs.geoserver.org/stable/en/user/styling/sld/cookbook/index.html
 
 [gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
 [raster-common]:        https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs
