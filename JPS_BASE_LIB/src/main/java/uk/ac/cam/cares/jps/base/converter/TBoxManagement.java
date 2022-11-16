@@ -918,8 +918,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
-					classInOwl = dataFactory.getOWLClass(
+					if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+						classInOwl = dataFactory.getOWLClass(
+								tBoxConfig.gettBoxIri().concat(classLabel.replace(" ", "")));						
+					} else{
+						classInOwl = dataFactory.getOWLClass(
 							tBoxConfig.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
+					}
 				}
 			}
 		}
@@ -946,8 +951,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLDataProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLDataProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));
+		} else {
+			return dataFactory.getOWLDataProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -970,8 +980,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLObjectProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLObjectProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));			
+		} else {
+			return dataFactory.getOWLObjectProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -1102,8 +1117,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addDataProperty(OWLDataProperty identifierProperty, String propertyValue, String individialName) throws JPSRuntimeException {
 		OWLLiteral literal = createOWLLiteral(dataFactory, propertyValue);
-		OWLIndividual individual = dataFactory
+		OWLIndividual individual;
+		if(ontologyIRI.toString().endsWith(SLASH)) {
+			individual = dataFactory
+					.getOWLNamedIndividual(ontologyIRI.toString().concat(individialName));
+		} else {
+			individual = dataFactory
 				.getOWLNamedIndividual(ontologyIRI.toString().concat("#").concat(individialName));
+		}
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyAssertionAxiom(identifierProperty, individual, literal)));
 	}
@@ -1149,8 +1170,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
-			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+			OWLAnnotationProperty commit;
+			if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+					.gettBoxIri().concat(tBoxConfig.getCompChemGitCommitHash())));
+			} else {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
 					.gettBoxIri().concat("#").concat(tBoxConfig.getCompChemGitCommitHash())));
+			}
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
 		}
