@@ -2,8 +2,11 @@ import json
 import os
 import pickle
 import time
-
+import sys
 import pandas as pd
+
+sys.path.append('..')
+from Marie.Util.location import DATA_DIR
 
 
 class HopExtractor:
@@ -70,6 +73,7 @@ class HopExtractor:
             one_hop_idx_dict = {}  # idx to idx dict
             three_hop_dict = {}  # label to label dict
             three_hop_idx_dict = {}  # idx to idx dict
+            counter = 0
             for entity in self.ent_labels:
                 entity_idx = self.entity2idx[entity]
                 neighbour_rows = self.triples[self.triples.isin([entity]).any(axis=1)]
@@ -80,6 +84,9 @@ class HopExtractor:
                 neighbours_idx = [self.entity2idx[n] for n in neighbours]
                 one_hop_dict[entity] = neighbours
                 one_hop_idx_dict[entity_idx] = neighbours_idx
+                counter += 1
+                print(f"{counter} out of {len(self.ent_labels)}")
+
 
             for entity in self.ent_labels:
                 entity_idx = self.entity2idx[entity]
@@ -117,10 +124,9 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    from Marie.Util.location import DATA_DIR
-
+    ontology = "ontokin"
     # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
-    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, 'ontocompchem_calculation'),
-                                dataset_name='ontocompchem_calculation')
+    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/{ontology}'),
+                                dataset_name=ontology)
 
     print(time.time() - START_TIME)

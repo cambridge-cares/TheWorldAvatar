@@ -19,6 +19,68 @@ WHERE {
     %s 
 }
 """
+ONTOKIN_ALL_SPECIES = """
+SELECT DISTINCT ?species ?label ?dipolemoment ?dipolemoment_unit 
+
+WHERE {
+	?species rdf:type <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species> .
+	?species rdfs:label ?label .  
+	OPTIONAL{
+	?species <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasDipoleMoment> ?dipolemoment . 
+	}
+}  LIMIT 100 
+"""
+
+
+ONTOKIN_ALL_PROPERTIES_ALL_SPECIES = """
+SELECT DISTINCT ?species ?label ?transport ?DipoleMoment ?DipoleMoment_unit ?LennardJonesDiameter ?LennardJonesDiameter_unit  
+?LennardJonesWellDepth ?LennardJonesWellDepth_unit ?Polarizability ?Polarizability_unit ?RotationalRelaxationCollisionNumber 
+?RotationalRelaxationCollisionNumber_unit ?SpeciesGeometry
+
+WHERE {
+	?species rdf:type <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species> .
+	?species rdfs:label ?label .  
+    ?species <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasTransportModel> ?transport . 
+	
+  	OPTIONAL{
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasDipoleMoment> ?DipoleMoment . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasDipoleMomentUnits> ?DipoleMoment_unit . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasLennardJonesDiameter> ?LennardJonesDiameter . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasLennardJonesDiameterUnits> ?LennardJonesDiameter_unit . 
+    }
+    OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasLennardJonesWellDepth> ?LennardJonesWellDepth . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasLennardJonesWellDepthUnits> ?LennardJonesWellDepth_unit . 
+    }
+    OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPolarizability> ?Polarizability . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPolarizabilityUnits> ?Polarizability_unit . 
+    }
+     OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasRotationalRelaxationCollisionNumber> ?RotationalRelaxationCollisionNumber . 
+    }
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPolarizabilityUnits> ?RotationalRelaxationCollisionNumber_unit . 
+    }	
+  	OPTIONAL {
+      ?transport <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasSpeciesGeometry> ?SpeciesGeometry . 
+    }
+
+}  
+ 
+"""
+
+
 
 
 ONTOSPECIES_ALL_SPECIES = """
