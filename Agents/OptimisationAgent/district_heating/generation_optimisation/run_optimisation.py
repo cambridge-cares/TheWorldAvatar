@@ -5,31 +5,12 @@ Run heat generation cost optimization as model-predictive-control model
 """
 
 import os
-import pickle
-import copy
-import re
-from collections import defaultdict
 
-import utils
-import json
-from setup import jpsBaseLibView
-import numpy as np
-import pandas as pd
 import datetime as dt
 from pathlib import Path
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-
-from statsmodels.tsa.arima.model import ARIMA
-from pmdarima.preprocessing import FourierFeaturizer
 
 from district_heating.generation_optimisation import cost_optimization as optima
 from district_heating.generation_optimisation import load_input
-from district_heating.generation_optimisation import cost_optimization_preprocessing as preprocessing
-from district_heating.generation_optimisation import cost_optimization_postprocessing as postprocessing
-from district_heating.timeseries_forecasting import timeseries_forecasting
-from district_heating.timeseries_forecasting import create_SARIMAX_model
-
 
 ####################     MPC OPTIMIZATION RUN    ####################
 
@@ -37,7 +18,7 @@ if __name__ == '__main__':
 
     # define optimization period
     start = '2020-01-01 00:00:00'   # optimization start (first time step to be forecasted): [2018, 2020]
-    opt_period = 24 * 1           # number of time steps to forecast/optimise (max. 24 * 364)
+    opt_period = int(24 * 0.25)           # number of time steps to forecast/optimise (max. 24 * 364)
     mpc_horizon = 24                # number of time steps to forecast and optimise per MPC cycle (MPC horizon)
 
     # specify gas demand/electricity output model ['efficiency', 'models']
@@ -56,31 +37,41 @@ if __name__ == '__main__':
     prices, swps = optima.create_optimization_setup(setup_dict)
 
 
-    ##### Loads external data file - replaced with dtaa from KG? #####
+    #TODO: Forecasting data has been queried from KG and copied into the required dataframe format in the following method,
+    # but fails to run with overall optimization code due to indexing error - needs to be fixed
 
+    ts_input = load_input.define_forecasting_inputs()
     # load (external) forecast data required for heat load and grid temperature forecasting which are not explicit
     # parts of municipal utility or market prices objects, i.e. ambient temperature
-    root = Path(__file__).parent
-    ts_input = '..\\..\\data\\input\\processed\\fully_conditioned_timeseries.csv'
-    ts_input = pd.read_csv(os.path.join(root, ts_input), index_col=0, parse_dates=True, dayfirst=True)
+    # root = Path(__file__).parent
+    # ts_input = '..\\..\\data\\input\\processed\\fully_conditioned_timeseries.csv'
+    # ts_input = pd.read_csv(os.path.join(root, ts_input), index_col=0, parse_dates=True, dayfirst=True)
 
     if start[:4] == '2018':
         # create artificial training/fit history for MHKW grid temperatures for 2018 forecasts
         ts_input.loc['2017', ['MHKW Temp Vorlauf (degC)', 'MHKW Temp Ruecklauf (degC)']] = \
             ts_input.loc['2018', ['MHKW Temp Vorlauf (degC)', 'MHKW Temp Ruecklauf (degC)']].values
-    ts_input.dropna(inplace=True)
+    # ts_input.dropna(inplace=True)
+
 
     # define continuous output/log files for mpc optimisation
+    root = Path(__file__).parent
     out_file_gt = os.path.join(root, '..\\..\\data\\output\\optimization\\GasTurbine_planning_' + str(mpc_horizon)
                                + 'h_' + dt.datetime.now().strftime("%Y%m%d-%H%M") + '.txt')
     out_file_opt = os.path.join(root, '..\\..\\data\\output\\optimization\\HeatGeneration_optimisation_'
                                 + str(mpc_horizon) + 'h_' + dt.datetime.now().strftime("%Y%m%d-%H%M") + '.txt')
 
+
     ############# 2)  optimze heat generation modes   #############
 
+    # Running in histeval= True mode to not do forecasting (histeval = false is currently failing)
     # optimize operating modes
     res, res_wogt, res_wgt, fcs = optima.mpc_optimization(swps, prices, ts_input, index, opt_period, mpc_horizon,
-                                                          out_file_gt, out_file_opt, histeval=False, live_updates=False)
+                                                          out_file_gt, out_file_opt, histeval=True, live_updates=False)
+
+    #TODO:
+    # Write timeseries data to KG
+    # update.update_timeseries_data(res, index)
 
     # output to console
     titles = {'Heat generation w/o GT': res_wogt, 'Heat generation w/ GT': res_wgt, 'Optimized heat generation': res}
@@ -91,18 +82,9 @@ if __name__ == '__main__':
         print('Minimal heat generation/sourcing cost: %.2f €' % titles[i]['Min_cost'].sum())
         print('Average heat generation/sourcing cost: %.2f €/MWh' % (titles[i]['Min_cost'].sum()/titles[i]['Q_demand'].sum()))
 
-    # write results
-    root = Path(__file__).parent
-    file = os.path.join(root, '..\\..\\data\\output\\optimization\\optimization_results_' + method + '_' +
-                        dt.datetime.now().strftime("%Y%m%d-%H%M") + '.csv')
-    res.to_csv(file)
-    if not fcs.empty:
-        file = os.path.join(root, '..\\..\\data\\output\\optimization\\optimization_forecasts_' +
-                             dt.datetime.now().strftime("%Y%m%d-%H%M") + '.csv')
-        fcs.to_csv(file)
 
 
-    ########### The following sections (3 and 4) are currently not to be included in the optimisation agent ##########
+    #TODO: Remove/refactor following sections (Sections 3 and 4)
 
     # ############# 3)  calculate cost, gas demand, and electricity for actual 'non-optimized' generation   #############
     #

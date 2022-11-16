@@ -1746,7 +1746,7 @@ def mpc_optimization(municipal_utility, market_prices, fc_input, datetime_index,
         forecasts_out = pd.DataFrame()
     else:
         # initialise DataFrame for ('mpc_horizon' ahead) forecasts
-        forecasts_out = pd.DataFrame(index=datetime_index, columns=fc_input.columns.drop(['Aussentemperatur (degC)']))
+        forecasts_out = pd.DataFrame(index=datetime_index, columns=fc_input.columns.drop(['Aussentemperatur']))
 
         # specify SARIMA(X) forecast models
         season = 24                  # periods (hours) per seasonal cycle
@@ -2007,8 +2007,6 @@ def mpc_optimization(municipal_utility, market_prices, fc_input, datetime_index,
                 # summarise all relevant data for printing in DataFrame
                 df = pd.DataFrame({'Datum, Uhrzeit': [d.strftime('%d.%m.%Y-%H:%M') for d in
                                                       datetime_index[t: t + mpc_horizon]],
-                                   'Lufttemperatur, degC': fc_input.loc[datetime_index[t: t + mpc_horizon],
-                                                                        'Aussentemperatur (degC)'].values,
                                    'Strompreis, EUR/MWh': prices.el_spot.values,
                                    'Waermebedarf, MWh': mu.q_demand.values,
                                    'MHKW Bezug, MWh': opt['MHKW_ToP'].values,

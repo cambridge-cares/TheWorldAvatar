@@ -18,7 +18,14 @@ global DB_URL, DB_USER, DB_PASSWORD
 PREFIXES = {
     # Namespace for this example data
     'ts': 'https://www.theworldavatar.com/kg/ontotimeseries/',
+    'ohn': 'https://www.theworldavatar.com/kg/ontoheatnetwork/',
+    'om': 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
+    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+    'oems': 'https://www.theworldavatar.com/kg/ontoems/'
 }
+
+# Define time format for timeseries
+FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 def read_properties_file(filepath):
     """

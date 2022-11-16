@@ -3,14 +3,13 @@ Load input timeseries data from the knowledge graph
 """
 import os
 import pickle
+
+from district_heating.generation_optimisation import create_queries
 import utils
-import json
-import re
 
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from setup import jpsBaseLibView
+from javagateway import jpsBaseLibView
 
 def define_data_setup(opt_period, method='efficiency', scaler=None):
     """
@@ -28,42 +27,34 @@ def define_data_setup(opt_period, method='efficiency', scaler=None):
     :returns DataFrame history: DataFrame containing historic heat generation by SWPS (for comparison purposes)
     """
 
-    # Initialise remote KG client with query and update endpoints
-    KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
-
-    # Initialise TimeSeriesCla
+    # Initialise TimeSeriesClass
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
 
-    query = utils.create_sparql_prefix('ts') + \
-            '''SELECT ?dataIRI \
-               WHERE { ?dataIRI ts:hasTimeSeries ?o }'''
-    # Execute query
-    response = KGClient.execute(query)
+    # Execute queries to obtain optimisation inputs
+    response_list, title_list = create_queries.query_optimisation_inputs()
 
-    # Convert JSONArray String back to list
-    response = json.loads(response)
+    # Unpack nested list
+    unpacked_list = [x for l in response_list for x in l]
 
     df_list = []
-    # Append query results to list
-    for r in response:
+
+    # Append query results to dataframe
+    for r in unpacked_list:
         timeseries = TSClient.getTimeSeries([r['dataIRI']])
         values = timeseries.getValues(r['dataIRI'])
-
-        ### This is too specific a way of finding the title of the data, need a better way ###
-        title = re.findall('_(.+?)_', r['dataIRI'])
-        df = pd.DataFrame(list(values), columns=[title])
+        df = pd.DataFrame(list(values))
         df_list.append(df)
         dates = timeseries.getTimes()
 
-    # Create dataframe
+    # Create overall dataframe and assign titles
     opt_data = pd.concat(df_list, axis=1)
+    opt_data.columns = title_list
 
     # Set dataframe index as the dates extracted from timeseries data
     opt_data = opt_data.set_index((d.toString().replace("T", " ").replace("Z", "")) for d in dates)
 
-    root = Path(__file__).parent
     # keep only data up to length 'opt_period' time steps ('1h')
     data = opt_data.iloc[:opt_period].copy()
 
@@ -76,7 +67,7 @@ def define_data_setup(opt_period, method='efficiency', scaler=None):
     # # drop DateTime index in 'data' DataFrame to ensure internal consistency
     data.reset_index(drop=True, inplace=True)
 
-    ### Following part uses an input data model - to be replaced with data from KG? ###
+    #TODO: Update this with model created using data extracted from KG
     ###   load fitted gas consumption/demand models for heat boilers and gas turbine  ###
 
     if method == 'models':
@@ -92,7 +83,7 @@ def define_data_setup(opt_period, method='efficiency', scaler=None):
         gt_el_power_model = pickle.load(open(os.path.join(root, path_gt_model, 'SWPS_GT_el_power.sav'), 'rb'))
 
 
-    ######### Following part not to be included in agent (calculating non-optimised actual heat demand/cost)  ##########
+    ##### Following part not currently included in agent (calculating non-optimised actual heat demand/cost) #####
     ###   extract heat generation history (for comparison later)   ###
 
     # ensure same column structure as used by 'minimize_generation_cost' and 'optimize_operating_modes'
@@ -101,9 +92,6 @@ def define_data_setup(opt_period, method='efficiency', scaler=None):
     # # align headers with optimization naming structure
     # history.columns = ['SWPS_GT', 'MHKW_ToP', 'Kessel4', 'Kessel5', 'Kessel6']
 
-
-
-    ###   Changes made by Srishti: Contents of dataframe changed to Series   ###
     ###   define model parameters   ###
     params = {
         # define market prices
@@ -299,3 +287,42 @@ def define_data_setup(opt_period, method='efficiency', scaler=None):
                                            'temp_return': pd.Series(params['dh7'][i], name='temp_return')})
 
     return setup, index
+
+
+# Create input dataframe needed for forecasting data
+def define_forecasting_inputs():
+
+    # Initialise TimeSeriesClass
+    Instant = jpsBaseLibView.java.time.Instant
+    instant_class = Instant.now().getClass()
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
+
+    # Execute queries to obtain forecasting inputs
+    response_list, title_list = create_queries.query_forecasting_inputs()
+
+    # Unpack nested list
+    unpacked_list = [x for l in response_list for x in l]
+
+    df_list = []
+
+    # Append query results to dataframe
+    for r in unpacked_list:
+        timeseries = TSClient.getTimeSeries([r['dataIRI']])
+        values = timeseries.getValues(r['dataIRI'])
+        df = pd.DataFrame(list(values))
+        df_list.append(df)
+        dates = timeseries.getTimes()
+
+    # Create overall dataframe and assign titles
+    data = pd.concat(df_list, axis=1)
+    data.columns = title_list
+
+    # Set dataframe index as the dates extracted from timeseries data
+    data = data.set_index((d.toString().replace("T", " ").replace("Z", "")) for d in dates)
+
+    # Add two more columns for MHKW Temp Vorlauf (degC) and MHKW Temp Ruecklauf (degC). These columns are updated later.
+    data["MHKWTempVorlauf"] = np.nan
+    data["MHKWTempRuecklauf"] = np.nan
+
+    return data
+

@@ -16,4 +16,4 @@ torch == 1.7.1
 tabulate == 0.8.9
 configobj~=5.0
 psycopg2~=2.9
-py4jps==1.0.15
+py4jps==1.0.29
