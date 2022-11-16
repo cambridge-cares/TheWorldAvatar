@@ -29,9 +29,9 @@
 :Building_1 
     rdf:type dabgeo:Building ;  
     obe:hasAddress :Address_1 ;  
-    obe:hasLatestTransactionRecord :Transaction_1 ;  
-    obe:hasTotalFloorArea :Area_1 .  
-:Transaction_1 rdf:type lrppi:TransactionRecord ;  
+    obe:hasLatestTransactionRecord :Transaction_1 ; 
+    obe:hasTotalFloorArea :Area_1 . 
+:Transaction_1 rdf:type lrppi:TransactionRecord ; 
                lrppi:transactionDate "2000-06-20"^^xsd:date ; 
                lrppi:pricePaid "300000"^^xsd:integer . 
 :Area_1 rdf:type om:Area ; 
@@ -58,6 +58,18 @@
 :Address_3 rdf:type icontact:Address ; 
            obe:hasPostalCode :PostalCode_1 ; 
            obe:hasAdministrativeDistrict :District_1 . 
+
+:Building_4 
+    rdf:type dabgeo:Building ; 
+    obe:hasAddress :Address_4 ; 
+    obe:hasLatestTransactionRecord :Transaction_2 ; 
+    obe:hasLatestTransactionRecord :Transaction_3 ; 
+:Transaction_2 rdf:type lrppi:TransactionRecord ; 
+               lrppi:transactionDate "2001-01-01"^^xsd:date ; 
+               lrppi:pricePaid "200000"^^xsd:integer . 
+:Transaction_3 rdf:type lrppi:TransactionRecord ; 
+               lrppi:transactionDate "2002-01-01"^^xsd:date ; 
+               lrppi:pricePaid "200000"^^xsd:integer . 
 
 :PostalCode_1 rdf:type obe:PostalCode ; 
               rdfs:label "ABC 123"^^xsd:string . 
