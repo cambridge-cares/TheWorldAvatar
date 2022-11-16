@@ -1,4 +1,4 @@
-import tests.conftest as cft
+from . import conftest as cft
 
 def create_rng_app():
     rng_agent = cft.create_rng_agent()

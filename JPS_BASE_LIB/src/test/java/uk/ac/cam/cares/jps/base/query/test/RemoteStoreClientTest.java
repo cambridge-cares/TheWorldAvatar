@@ -132,6 +132,22 @@ public class RemoteStoreClientTest {
 		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
 	}
+	/**
+	 * Checks if the connection URL established for the update endpoint (URL)<p>
+	 * is the expected one.
+	 *
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionURLForUpdateEndpointTest() throws SQLException{
+		String updateEndpoint = "http://localhost:8080/test";
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		kbClient.setUpdateEndpoint(updateEndpoint);
+		assertNotNull(kbClient.getConnectionUrl());
+		assertEquals("jdbc:jena:remote:update=".concat(updateEndpoint), kbClient.getConnectionUrl());
+	}
+
+
 
 	/**
 	 * Checks if the connection URL established for the query endpoint (URL)<p>

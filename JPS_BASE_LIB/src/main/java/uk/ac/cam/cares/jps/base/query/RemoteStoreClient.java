@@ -576,7 +576,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         if (connectionUrl.isEmpty()) {
             throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
         }
-        if (isConnectionQueryUrlValid(connectionUrl)) {
+        if (isConnectionQueryUrlValid(connectionUrl) || isConnectionUpdateUrlValid(connectionUrl)) {
             RemoteEndpointDriver.register();
             return DriverManager.getConnection(connectionUrl);
         } else {
