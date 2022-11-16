@@ -16,20 +16,9 @@ class CrossGraphAlignmentModel(nn.Module):
         self.bert_reduction_layer_3 = nn.Linear(256, 2)
         self.domain_factor_layer = nn.Linear(2, 1)
         self.domain_question_factor_layer = nn.Linear(4, 1)
-        self.criterion = nn.MarginRankingLoss(margin=0.5, reduction='none').to(self.device)
+        self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(self.device)
         self.sigmoid = nn.Sigmoid()
         self.relu = nn.ReLU()
-
-
-    def adjust_score_svm(self, triple):
-        """
-        Use Support Vector Machine to find the decision plane ...
-        :param triple: question, score, domain, forms X = {x1, x2, x3}
-        :return:
-        """
-        question = triple[0]
-        score = triple[1].to(self.device)
-
 
 
 
@@ -44,7 +33,6 @@ class CrossGraphAlignmentModel(nn.Module):
         score = triple[1].to(self.device)
         domain = triple[2].to(self.device)
         domain = one_hot(domain, num_classes=2).type(torch.FloatTensor).to(self.device)
-        domain_factor = self.domain_factor_layer(domain).to(self.device)
         question_vector = self.process_question(question)
 
         # =============== get domain - question factor ==================
@@ -63,8 +51,7 @@ class CrossGraphAlignmentModel(nn.Module):
                                   return_dict=False)[1].to(self.device)
 
         question_vector = self.bert_reduction_layer(pooled_output).to(self.device)
-        # question_vector = self.bert_reduction_layer_2(question_vector).to(self.device)
-        # question_vector = self.bert_reduction_layer_3(question_vector).to(self.device)
+
         return question_vector
 
     def loss(self, positive_distances, negative_distances):
@@ -82,15 +69,13 @@ class CrossGraphAlignmentModel(nn.Module):
 
         true_answer_score = self.adjust_score(true_answer).to(self.device)
         fake_answer_score = self.adjust_score(fake_answer).to(self.device)
-        # print(true_answer_score)
-        # print(fake_answer_score)
         outrank = torch.sum(true_answer_score > fake_answer_score) / len(true_answer_score)
         mean_diff = (true_answer_score - fake_answer_score).mean().item()
         return self.loss(true_answer_score, fake_answer_score).to(self.device), outrank, mean_diff
 
     def predict(self, triple):
         """
-
         :param triple: (question, score, domain)
         :return:
         """
+        return self.adjust_score(triple).to(self.device)

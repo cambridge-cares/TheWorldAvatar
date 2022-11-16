@@ -1,6 +1,6 @@
 import time
 
-from Marie.PubChem import PubChemEngine
+from Marie.CrossGraphQAEngine import CrossGraphQAEngine
 import json
 from flask import Flask, request
 from flask import render_template, send_from_directory
@@ -11,16 +11,16 @@ logger = MarieLogger()
 
 app = Flask(__name__)
 logger.info("============= Initializing the server ===========")
-logger.info("1. Initializing Pubchem Engine")
-my_pubchem_engine = PubChemEngine()
-logger.info(" - Done initializing Pubchem Engine")
+logger.info("1. Initializing Cross Graph Engine")
+my_qa_engine = CrossGraphQAEngine()
+logger.info(" - Done initializing Cross Graph Engine")
 logger.info("============= Server is ready to go! ===========")
 
 
 def answer_question(question):
     logger.info("=======================================================================================")
     logger.info(f" The server received a question: {question}")
-    answer = my_pubchem_engine.run(question=str(question).strip())
+    answer = my_qa_engine.run(question=str(question).strip())
     logger.info(f" The server returned answers: {json.dumps(answer)}")
     logger.info("=======================================================================================")
     return answer
@@ -71,24 +71,24 @@ def stream_debug():
     return app.response_class(generate_debug_log(), mimetype='text/plain')
 
 
-@app.route('/full_test')
-def full_test():
-    return my_pubchem_engine.self_inspection()
-
-
-@app.route('/test_entity_linking')
-def test_entity_linking():
-    return my_pubchem_engine.test_entity_linking()
-
-
-@app.route('/test_score_model')
-def test_score_model():
-    return my_pubchem_engine.test_score_model()
-
-
-@app.route('/test_value_lookup')
-def test_value_lookup():
-    return my_pubchem_engine.test_value_lookup()
+# @app.route('/full_test')
+# def full_test():
+#     return my_pubchem_engine.self_inspection()
+#
+#
+# @app.route('/test_entity_linking')
+# def test_entity_linking():
+#     return my_pubchem_engine.test_entity_linking()
+#
+#
+# @app.route('/test_score_model')
+# def test_score_model():
+#     return my_pubchem_engine.test_score_model()
+#
+#
+# @app.route('/test_value_lookup')
+# def test_value_lookup():
+#     return my_pubchem_engine.test_value_lookup()
 
 
 @app.route('/hand_shake_pubchem')

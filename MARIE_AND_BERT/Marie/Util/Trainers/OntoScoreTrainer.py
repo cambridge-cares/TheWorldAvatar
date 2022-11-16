@@ -18,13 +18,14 @@ from Marie.Util.Models.OntoScoreModel import OntoScoreModel
 
 class Trainer():
 
-    def __init__(self, batch_size=64, epoch_num=100, learning_rate=0.1, gamma=0.1):
+    def __init__(self, batch_size=64, epoch_num=100, learning_rate=0.1, gamma=0.1, dataset_dir = None, dataset_name = None):
         self.batch_size = batch_size
         self.epoch_num = epoch_num
         self.learning_rate = learning_rate
         use_cuda = torch.cuda.is_available()
         self.device = torch.device("cuda" if use_cuda else "cpu")
-        self.dataset_dir = os.path.join(DATA_DIR, "ontocompchem_latent_40")
+        self.dataset_dir = dataset_dir
+        self.dataset_name = dataset_name
         print(f'=========== USING {self.device} ===============')
 
         dataset_path = os.path.join(DATA_DIR, self.dataset_dir, 'score_model_training.tsv')
@@ -40,7 +41,7 @@ class Trainer():
         self.rel_embedding = dataset_full.rel_embedding
         self.ent_embedding_num = self.ent_embedding.shape[0]
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.dataset_dir),
-                                          dataset_name="ontocompchem_calculation")
+                                          dataset_name=self.dataset_name)
         self.model = OntoScoreModel(device=self.device, ent_embedding=self.ent_embedding,
                                     rel_embedding=self.rel_embedding, for_training=True,
                                     idx2entity=self.hop_extractor.entity_labels, load_model=False,
@@ -143,9 +144,9 @@ class Trainer():
             for test_batch in tqdm(self.test_dataloader):
                 total_loss_test = 0
                 q, h, t, s = test_batch
-                # predicted_y = self.model.predict(q, h, t, s)
-                # test_accuracy = self.measure_hit_binary(predicted_y, s)
-                # total_test_accuracy += test_accuracy
+                predicted_y = self.model.predict(q, h, t, s)
+                test_accuracy = self.measure_hit_binary(predicted_y, s)
+                total_test_accuracy += test_accuracy
                 hit_1_rate, hit_5_rate, hit_10_rate = self.rank_candidates(test_batch)
                 total_hit_1_rate += hit_1_rate
                 total_hit_5_rate += hit_5_rate
@@ -188,7 +189,9 @@ class Trainer():
             f.close()
 
         for epoch in range(self.epoch_num):
-            self.evaluate()
+            self.train()
+            if (epoch + 1) % 100 == 0:
+                self.evaluate()
 
 
 if __name__ == '__main__':
@@ -198,5 +201,5 @@ if __name__ == '__main__':
     batch_size = 32
     gamma = 0.5
     print(f"learning rate: {l_r}, epoch_num: {epoch_num}, batch_size: {batch_size}, gamma: {gamma}")
-    my_trainer = Trainer(batch_size=batch_size, epoch_num=epoch_num, learning_rate=l_r, gamma=gamma)
+    my_trainer = Trainer(batch_size=batch_size, epoch_num=epoch_num, learning_rate=l_r, gamma=gamma, dataset_dir="CrossGraph/ontokin", dataset_name="ontokin")
     my_trainer.run()

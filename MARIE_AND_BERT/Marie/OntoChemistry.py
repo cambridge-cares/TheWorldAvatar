@@ -53,26 +53,6 @@ class OntoChemistryEngine:
                 good_counter += 1
             else:
                 bad_counter += 1
-        print('Good:', good_counter)
-        print('Bad: ', bad_counter)
-        # good_counter = 0
-        # bad_counter = 0
-        # df_test_2 = pd.read_csv(os.path.join(DATA_DIR, 'ontocompchem_latent_40', 'score_model_training.tsv'), sep='\t')
-        # df_test_2 = df_test_2.sample(frac=0.01)
-        # for idx, row in df_test_2.iterrows():
-        #     question = row['question']
-        #     head = row['head']
-        #     tail = row['tail']
-        #     head = self.idx2entity[head]
-        #     # tail = self.idx2entity[tail]
-        #     labels, _ = self.run(head, question)
-        #     # labels = [l.strip() for l in labels]
-        #     if tail in labels:
-        #         good_counter += 1
-        #     else:
-        #         bad_counter += 1
-        # print('Good:', good_counter)
-        # print('Bad: ', bad_counter)
 
     def run(self, head_entity, question):
         head = self.entity2idx[head_entity]

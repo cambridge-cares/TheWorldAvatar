@@ -7,7 +7,7 @@ from torch import nn, no_grad
 import os
 from transformers import BertModel
 sys.path.append("../../..")
-from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR
+from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 
 
 class OntoScoreModel(nn.Module):
@@ -27,7 +27,7 @@ class OntoScoreModel(nn.Module):
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         self.dropout = nn.Dropout(0)
         self.dropout_relation = nn.Dropout(0.1)
-        self.linear = nn.Linear(768, 80)  # keep this model ...
+        self.linear = nn.Linear(768, 160)  # keep this model ...
         self.sigmoid = nn.Sigmoid()
         self.for_training = for_training
         if self.for_training:
@@ -50,8 +50,10 @@ class OntoScoreModel(nn.Module):
         self.load_model = load_model
         self.dataset_dir = dataset_dir
         self.model_name = model_name
-        self.model_path = os.path.join(self.dataset_dir, self.model_name)
-        self.load_state_dict(torch.load(self.model_path, map_location=self.device))
+        self.model_path = os.path.join(DATA_DIR, self.dataset_dir, self.model_name)
+
+        if os.path.exists(self.model_path):
+            self.load_state_dict(torch.load(self.model_path, map_location=self.device))
         # TODO: load the embeddings and divide them into two parts re and im
 
     # def load_pretrained_model(self, path):
