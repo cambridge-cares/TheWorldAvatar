@@ -15,7 +15,7 @@ class ComplexDataset(torch.utils.data.Dataset):
     # in this case, each data unit contains a head, a rel, a tail
     # the output is the
 
-    def __init__(self, df, data_folder=None):
+    def __init__(self, df, data_folder=None, dataset_name=None):
         # TODO: make sure the
         if data_folder is None:
             e2i_path = open(os.path.join(DATA_DIR, f'entity2idx.pkl'), 'rb')
@@ -23,8 +23,8 @@ class ComplexDataset(torch.utils.data.Dataset):
         else:
             e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
-        _full_dir = os.path.join(DATA_DIR, 'ontocompchem_calculation')
-        self.hop_extractor = HopExtractor(dataset_dir=_full_dir, dataset_name="ontocompchem_calculation")
+        _full_dir = os.path.join(DATA_DIR, f'{data_folder}')
+        self.hop_extractor = HopExtractor(dataset_dir=_full_dir, dataset_name=dataset_name)
         self.entity2idx = pickle.load(e2i_path)
         self.relation2idx = pickle.load(r2i_path)
         self.df = df
@@ -36,22 +36,31 @@ class ComplexDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.df)
 
+    def create_fake_triple(self, s, p, o):
+        all_neighbours = self.hop_extractor.extract_neighbour_from_idx(s)
+        flag = True
+        while flag:
+            fake_o = random.choice(all_neighbours)
+            fake_triple = (s, p, fake_o, 0)
+            triple_str = f'{s}_{p}_{fake_o}'
+            flag = self.hop_extractor.check_triple_existence(triple_str)
+            if not flag:
+                return fake_triple
+
     def create_all_triples(self):
         triples = []
         for idx, row in self.df.iterrows():
             s = self.entity2idx[row[0]]
             p = self.relation2idx[row[1]]
             o = self.entity2idx[row[2]]
-            all_neighbours = self.hop_extractor.extract_neighbour_from_idx(s)
             true_triple = (s, p, o, 1)
-            fake_o = random.choice(all_neighbours)
-            fake_triple = (s, p, fake_o, 0)
+            fake_triple = self.create_fake_triple(s, p, o)
             triples.append(true_triple)
             triples.append(fake_triple)
         return triples
 
     def __getitem__(self, idx):
-        return self.all_triples[idx],  self.all_triples[idx]
+        return self.all_triples[idx], self.all_triples[idx]
 
 
 if __name__ == '__main__':

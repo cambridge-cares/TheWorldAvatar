@@ -17,7 +17,7 @@ class Trainer:
     def __init__(self, model, dataset_name: str, epochs: int = 100, learning_rate: float = 0.01, gamma: float = 0.9,
                  data_folder='ontocompchem_calculation', save_model: bool = False, complex: bool = True,
                  pointwise: bool = False,
-                 batch_size: int = 64):
+                 batch_size: int = 64, test_step: int = 20):
         """
         :param model:
         :param dataset_name:
@@ -39,6 +39,7 @@ class Trainer:
         self.complex = complex
         self.data_folder = data_folder
         self.pointwise = pointwise
+        self.test_step = test_step
         train_triplets = [line.split('\t') for line in
                           open(os.path.join(DATA_DIR,
                                             f'{data_folder}/{self.dataset_name}-train.txt')).read().splitlines()]
@@ -46,11 +47,14 @@ class Trainer:
 
         if self.pointwise:
             df_train = pd.read_csv(os.path.join(DATA_DIR,
-                                            f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
+                                                f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
             df_test = pd.read_csv(os.path.join(DATA_DIR,
-                                            f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
-            self.train_set = ComplexDataset(df_train, data_folder=data_folder)
-            self.test_set = ComplexDataset(df_test, data_folder=data_folder)
+                                               f'{data_folder}/{self.dataset_name}-test.txt'), sep="\t", header=None)
+
+            df_test = df_test.sample(frac=0.05)
+
+            self.train_set = ComplexDataset(df_train, data_folder=data_folder, dataset_name=self.dataset_name)
+            self.test_set = ComplexDataset(df_test, data_folder=data_folder, dataset_name=self.dataset_name)
         else:
             self.train_set = Dataset(train_triplets, data_folder=data_folder)
             self.test_set = Dataset(test_triplets, data_folder=data_folder)
@@ -63,7 +67,7 @@ class Trainer:
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.data_folder),
-                                          dataset_name=self.data_folder)
+                                          dataset_name=self.dataset_name)
 
     def train(self):
         for epoch_num in tqdm(range(self.epochs)):
@@ -77,8 +81,7 @@ class Trainer:
                 else:
                     loss = self.model(pos_train, neg_train)
 
-
-                loss.mean().backward()
+                loss.backward()
                 loss = loss.data.cuda()
                 self.optimizer.step()
                 self.step += 1
@@ -86,10 +89,10 @@ class Trainer:
             print('total_loss_train: ', total_loss_train)
             print('current learning rate', self.scheduler.get_lr())
 
-            if (epoch_num + 1) % 200 == 0:
+            if (epoch_num + 1) % self.test_step == 0:
                 self.scheduler.step()
 
-            if epoch_num % 20 == 0:
+            if epoch_num % self.test_step == 0:
                 if self.pointwise:
                     self.evaluate_pointwise()
                 else:
@@ -102,6 +105,9 @@ class Trainer:
         total_hit_1 = 0
         total_hit_5 = 0
         total_hit_10 = 0
+        filtered_total_hit_1 = 0
+        filtered_total_hit_5 = 0
+        filtered_total_hit_10 = 0
         for positive_triplets, _ in tqdm(self.test_dataloader):
             ground_truth_triplets = torch.transpose(torch.stack(positive_triplets), 0, 1).type(torch.LongTensor)
             for i, triplet in enumerate(ground_truth_triplets):
@@ -117,22 +123,50 @@ class Trainer:
                 else:
                     tail_all = self.hop_extractor.extract_neighbour_from_idx(head.item())
                     tail_true_idx = tail_all.index(tail_true.item())
+                    tail_filtered = []
+                    for tail in tail_all:
+                        # find the
+                        triple_str = f"{head.item()}_{rel.item()}_{tail}"
+                        if not self.hop_extractor.check_triple_existence(triple_str):
+                            tail_filtered.append(tail)
+
+                    tail_filtered.append(tail_true.item())
+                    tail_true_idx_filterd = tail_filtered.index(tail_true.item())
+
                     tail_all = torch.LongTensor(tail_all)
+                    head_filtered = head.repeat(len(tail_filtered))
+                    rel_filtered = rel.repeat(len(tail_filtered))
+                    tail_filtered = torch.LongTensor(tail_filtered)
+
                     head_tensor = head.repeat(len(tail_all))
                     rel_tensor = rel.repeat(len(tail_all))
+
                     true_idx = tail_true_idx
 
                 new_triplets = torch.stack((head_tensor, rel_tensor, tail_all)).type(torch.LongTensor)
                 prediction = self.model.predict(new_triplets)
+
+                filtered_triplets = torch.stack((head_filtered, rel_filtered, tail_filtered)).type(torch.LongTensor)
+                prediction_filtered = self.model.predict(filtered_triplets)
+
                 total_counter += 1
                 total_hit_1 += self.hit_at_k(prediction, true_idx, k=1, largest=largest)
                 total_hit_5 += self.hit_at_k(prediction, true_idx, k=5, largest=largest)
                 total_hit_10 += self.hit_at_k(prediction, true_idx, k=10, largest=largest)
 
+                filtered_total_hit_1 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=1, largest=largest)
+                filtered_total_hit_5 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=5, largest=largest)
+                filtered_total_hit_10 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=10, largest=largest)
+
         print('Current Hit 10 rate:', total_hit_10, ' out of ', total_counter, ' ratio is: ',
               total_hit_10 / total_counter)
         print('Current Hit 5 rate:', total_hit_5, ' out of ', total_counter, ' ratio is: ', total_hit_5 / total_counter)
         print('Current Hit 1 rate:', total_hit_1, ' out of ', total_counter, ' ratio is: ', total_hit_1 / total_counter)
+
+        print('Current Filtered Hit 10 rate:', filtered_total_hit_10, ' out of ', total_counter, ' ratio is: ',
+              filtered_total_hit_10 / total_counter)
+        print('Current Filtered Hit 5 rate:', filtered_total_hit_5, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_5 / total_counter)
+        print('Current Filtered Hit 1 rate:', filtered_total_hit_1, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_1 / total_counter)
 
     def hit_at_k(self, predictions, ground_truth_idx, k: int = 10, largest=False):
         k = min(k, len(predictions))
@@ -181,7 +215,7 @@ class Trainer:
             print(f'average prediction accuracy for positive {average_prediction_pos}')
             print(f'average prediction accuracy for negative {average_prediction_neg}')
 
-            self.k_hit_evaluation(largest=True)
+            self.k_hit_evaluation(largest=True, global_compare=False)
 
     def evaluate_pairwise(self):
         total_loss_val = 0
