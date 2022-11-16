@@ -5,6 +5,7 @@
 #              i.e. initialising a new jps gateway here while PySparqlClient relies
 #              on the gateway from pyderivationagent
 # Hence, the gateway created within pyderivationagent shall be used
+
 from pyderivationagent.kg_operations.gateway import jpsBaseLibGW
 
 from py4jps.resources import StackClients

@@ -3,7 +3,7 @@
 # Date: 14 Nov 2022                            #
 ################################################
 
-# The purpose of this module is to instantiate/update the estimated value of a property
+# The purpose of this module is to instantiate/update the estimated market value of a property
 # based on instantiated HM Land Registry's Price Paid Data transactions and/or the 
 # average square metre price per postcode in the KG (using asynchronous derivation framework)
 
@@ -120,29 +120,30 @@ class PropertyValueEstimationAgent(DerivationAgent):
         # Assess property value estimate in case all required inputs are available
         # (i.e. relevant inputs have been marked up successfully)
         g = self.estimate_property_market_value(transaction_iri=tx_iri,
-                                                     prop_price_index_iri=ppi_iri, 
-                                                     avgsqm_price_iri=avgsqm_iri, 
-                                                     floor_area_iri=area_iri)        
+                                                prop_price_index_iri=ppi_iri, 
+                                                avgsqm_price_iri=avgsqm_iri, 
+                                                floor_area_iri=area_iri)        
 
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
 
 
     def estimate_property_market_value(self, transaction_iri:str = None,
-                                            prop_price_index_iri:str = None, 
-                                            avgsqm_price_iri:str = None, 
-                                            floor_area_iri:str = None):
+                                       prop_price_index_iri:str = None, 
+                                       avgsqm_price_iri:str = None, 
+                                       floor_area_iri:str = None):
         """
-        Retrieves instantiated sales transaction data for provided transaction record
-        IRIs and calculates the average square metre price for the postcode
+        Estimate market value of property (i.e. building or flat) based on given inputs.
+        Prio1: LRPPI:TransactionRecord & OntoBuiltEnv:PropertyPriceIndex
+        Prio2: OntoBuiltEnv:AveragePricePerSqm & OM:Area
 
         Arguments:
-            postcode_iri - IRI of postcode for which to estimate average square metre price
-            tx_records - list of sales transaction IRIs (within postcode) which to consider
-                        when estimating average square metre price
-            ppi_iri - Property Price Index IRI of local authority associated with postcode
+            transaction_iri {str} - IRI of LRPPI:TransactionRecord
+            prop_price_index_iri {str} - IRI of OntoBuiltEnv:PropertyPriceIndex
+            avgsqm_price_iri {str} - IRI of OntoBuiltEnv:AveragePricePerSqm
+            floor_area_iri {str} - IRI of OM:Area
         Returns:
-            Current average square metre price for postcode    
+            Graph to instantiate/update property market value
         """
 
         # Initialise market value and return triples
@@ -183,7 +184,8 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
         # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
         elif avgsqm_price_iri and floor_area_iri and not market_value:
-            # TODO: How to handle cases where avgsqm_price is just not calculated yet?            
+            # TODO: How to handle cases where avgsqm_price is just not calculated yet?
+            # --> Suggestion: Avoid this case by marking AvgSqmPrice as Synchronous Derivation initially
             res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
             market_value = res['floor_area'] * res['avg_price']
 
@@ -196,7 +198,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
                                                                     property_value_iri=market_value_iri, 
                                                                     property_value=market_value)
 
-        # Create rdflib graph with update triples
+        # Create rdflib graph with update triples (empty for unavailable market value)
         update_query = f'INSERT DATA {{ {triples} }}'
         g = Graph()
         g.update(update_query)
