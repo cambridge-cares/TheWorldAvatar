@@ -21,7 +21,8 @@ from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, 
                                                DATABASE, DB_USER, DB_PASSWORD
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
-                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
+                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, \
+                                              ONTODERIVATION_DERIVATIONASYN, ONTODERIVATION_HASSTATUS
 from pyderivationagent.conf import config_derivation_agent
 
 from agent.datamodel.iris import *
@@ -89,6 +90,7 @@ DERIVATION_INPUTS_4 = [TRANSACTION_INSTANCE_2_IRI, TRANSACTION_INSTANCE_3_IRI]
 # Test against pre-calculated value estimates from Excel (rounded)
 MARKET_VALUE_1 = 936000
 MARKET_VALUE_2 = 938000
+EXCEPTION_STATUS_1 = "More than one 'TransactionRecord' IRI provided"
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
@@ -110,6 +112,7 @@ DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
+MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
 
 
 # ----------------------------------------------------------------------------------
@@ -324,6 +327,26 @@ def get_marketvalue_details(sparql_client, market_value_iri):
         market_value = list(set([float(x['value']) for x in response]))
 
         return inputs, market_value
+
+
+def get_derivation_status(sparql_client, derivation_iri):
+    # Returns status comment of derivation
+    # TODO: Test for ERROR status code; however not available in pyderivationagent.data_model.iris
+    #       despite version 1.4.0
+    query = f"""
+        SELECT ?exception
+        WHERE {{
+        <{derivation_iri}> <{RDF_TYPE}> <{ONTODERIVATION_DERIVATIONASYN}> ; 
+                           <{ONTODERIVATION_HASSTATUS}> ?status . 
+        ?status <{RDFS_COMMENT}> ?exception . 
+        }}
+        """
+    response = sparql_client.performQuery(query)
+    if len(response) == 0:
+        return None
+    else:
+        response = response[0]
+        return str(response['exception'])
 
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873

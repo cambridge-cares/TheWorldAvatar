@@ -71,20 +71,11 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-# def test_get_all_metoffice_stations_exceptions(center, radius, expected_msg):
-
-#     with pytest.raises(InvalidInput) as excinfo:
-#     # Check correct exception type
-#         get_all_metoffice_stations(circle_center=center, circle_radius=radius)
-#         pytest.fail
-#     # Check correct exception message
-#     assert expected_msg in str(excinfo.value)
-
-
 @pytest.mark.parametrize(
     "derivation_input_set, expect_exception, expected_estimate, local_agent_test",
     [
-        (cf.DERIVATION_INPUTS_1, True, cf.MARKET_VALUE_1, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_4, True, cf.EXCEPTION_STATUS_1, True),
     ],
 )
 def test_monitor_derivations(
@@ -112,7 +103,8 @@ def test_monitor_derivations(
                              dates=cf.DATES, values=cf.VALUES)
 
     # Verify correct number of triples (not marked up with timestamp yet)
-    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+    assert sparql_client.getAmountOfTriples() == triples
 
     # Create agent instance and register agent in KG
     # EXPLANATION: 
@@ -139,7 +131,6 @@ def test_monitor_derivations(
     print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
     
     # Expected number of triples after derivation registration
-    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
     triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
     triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
     triples += len(derivation_input_set) + 1    # number of inputs + derivation instance type
@@ -160,41 +151,51 @@ def test_monitor_derivations(
         # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 
-    # Query timestamp of the derivation for every 20 seconds until it's updated
-    currentTimestamp_derivation = 0
-    while currentTimestamp_derivation == 0:
+    if expect_exception:
         time.sleep(10)
-        currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
+        exception = cf.get_derivation_status(sparql_client, derivation_iri)
+        assert expected_estimate in exception
 
-    # Assert that there's now an instance having rdf:type of the output signature in the KG
-    assert sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OM_AMOUNT_MONEY)
+    else:
+        # Query timestamp of the derivation for every 20 seconds until it's updated
+        currentTimestamp_derivation = 0
+        while currentTimestamp_derivation == 0:
+            time.sleep(10)
+            currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
-    # Query the output of the derivation instance
-    derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
-    print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
-    
-    # Verify that there are 2 derivation outputs (i.e. AveragePrice and Measure IRIs)
-    assert len(derivation_outputs) == 2
-    assert dm.OM_AMOUNT_MONEY in derivation_outputs
-    assert len(derivation_outputs[dm.OM_AMOUNT_MONEY]) == 1
-    assert dm.OM_MEASURE in derivation_outputs
-    assert len(derivation_outputs[dm.OM_MEASURE]) == 1
-    
-    # Verify the values of the derivation output
-    market_value_iri = derivation_outputs[dm.OM_AMOUNT_MONEY][0]
-    inputs, market_value = cf.get_marketvalue_details(sparql_client, market_value_iri)
-    # Verify market value
-    assert len(market_value) == 1
-    assert pytest.approx(market_value[0], rel=1e-5) == expected_estimate
+        # Assert that there's now an instance having rdf:type of the output signature in the KG
+        assert sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OM_AMOUNT_MONEY)
 
-    # Verify inputs (i.e. derived from)
-    # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
-    derivation_input_set_copy = copy.deepcopy(derivation_input_set)
-    for i in inputs:
-        for j in inputs[i]:
-            assert j in derivation_input_set_copy
-            derivation_input_set_copy.remove(j)
-    assert len(derivation_input_set_copy) == 0
+        # Verify correct number of triples (incl. timestamp & agent triples)
+        triples += cf.MARKET_VALUE_TRIPLES
+        assert sparql_client.getAmountOfTriples() == triples    
+
+        # Query the output of the derivation instance
+        derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
+        print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
+        
+        # Verify that there are 2 derivation outputs (i.e. AveragePrice and Measure IRIs)
+        assert len(derivation_outputs) == 2
+        assert dm.OM_AMOUNT_MONEY in derivation_outputs
+        assert len(derivation_outputs[dm.OM_AMOUNT_MONEY]) == 1
+        assert dm.OM_MEASURE in derivation_outputs
+        assert len(derivation_outputs[dm.OM_MEASURE]) == 1
+        
+        # Verify the values of the derivation output
+        market_value_iri = derivation_outputs[dm.OM_AMOUNT_MONEY][0]
+        inputs, market_value = cf.get_marketvalue_details(sparql_client, market_value_iri)
+        # Verify market value
+        assert len(market_value) == 1
+        assert pytest.approx(market_value[0], rel=1e-5) == expected_estimate
+
+        # Verify inputs (i.e. derived from)
+        # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
+        derivation_input_set_copy = copy.deepcopy(derivation_input_set)
+        for i in inputs:
+            for j in inputs[i]:
+                assert j in derivation_input_set_copy
+                derivation_input_set_copy.remove(j)
+        assert len(derivation_input_set_copy) == 0
 
     print("All check passed.")
 

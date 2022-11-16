@@ -81,8 +81,8 @@ class PropertyValueEstimationAgent(DerivationAgent):
                     input_dict[i] = inp[0]
                 else:
                     inp_name = i[i.rfind('/')+1:]
-                    self.logger.error(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
-                    raise Exception(f"Derivation {derivationIRI}: More than one {inp_name} IRI provided.")
+                    self.logger.error(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
+                    raise Exception(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
 
         # Verify that either
         # 1) TransactionRecord & PropertyPriceIndex or
