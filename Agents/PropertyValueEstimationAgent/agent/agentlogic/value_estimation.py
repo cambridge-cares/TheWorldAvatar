@@ -119,7 +119,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
         
         # Assess property value estimate in case all required inputs are available
         # (i.e. relevant inputs have been marked up successfully)
-        g = self.estimate_average_square_metre_price(transaction_iri=tx_iri,
+        g = self.estimate_property_market_value(transaction_iri=tx_iri,
                                                      prop_price_index_iri=ppi_iri, 
                                                      avgsqm_price_iri=avgsqm_iri, 
                                                      floor_area_iri=area_iri)        
@@ -128,7 +128,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
         derivation_outputs.addGraph(g)
 
 
-    def estimate_average_square_metre_price(self, transaction_iri:str = None,
+    def estimate_property_market_value(self, transaction_iri:str = None,
                                             prop_price_index_iri:str = None, 
                                             avgsqm_price_iri:str = None, 
                                             floor_area_iri:str = None):
