@@ -499,31 +499,6 @@
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/WindSpeed"/>
     </owl:Class>
 
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/Concentration -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/> 
-    </owl:Class>
-
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
-    </owl:Class>
-
     
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Angle -->
@@ -645,6 +620,17 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
+
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">volume fraction</rdfs:label>
+    </owl:Class>
     
 
 
@@ -689,6 +675,30 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted by the atmospheric column of air above the point in question (adjusted to mean sea level).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atmospheric pressure</rdfs:label>
+    </owl:Class>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon dioxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
+    </owl:Class>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
     </owl:Class>
     
 
@@ -855,27 +865,6 @@
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides concentration</rdfs:label>
     </owl:Class>
 
-
-    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon dioxide in the ambient air.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
-    </owl:Class>
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
-    </owl:Class>
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/NormalRange -->
@@ -1186,8 +1175,26 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontouom/Concentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     
 
+
+    <!-- https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mass concentration</rdfs:label>
+    </owl:Class>
+
+    
 
     <!-- https://semanticscience.org/resource/SIO_000638 -->
 
