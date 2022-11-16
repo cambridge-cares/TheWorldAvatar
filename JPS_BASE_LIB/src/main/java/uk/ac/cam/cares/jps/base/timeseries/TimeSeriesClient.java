@@ -172,11 +172,26 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 * @param conn
+	 * @param type
 	 * @param durations
 	 * @param units
      */
 	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
 		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, durations, units);
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 * @param conn
+	 * @param type
+	 * @param units
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<ChronoUnit> units) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, null, units);
 	}
 
 	/**
@@ -191,7 +206,7 @@ public class TimeSeriesClient<T> {
 	 * @param durations
 	 * @param units
 	 */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
+    private void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
 
 		// create random time series IRI
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
