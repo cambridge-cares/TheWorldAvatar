@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,9 +25,14 @@ class FileManagerTest {
     private static Path emptyTempDir;
     @TempDir
     private static Path multiFileTempDir;
-    private static final String endpointKey = "sparql.query.endpoint";
-    private static final String endpointValue = "http://www.test.org/test/";
+    private static final String queryEndpoint = "http://www.test.org/test/sparql";
+    private static final String updateEndpoint = "http://www.test.org/test/sparql";
+    private static final String dbUrl = "jdbc:postgresql://host.docker.internal:5432/test";
+    private static final String dbUser = "user";
+    private static final String dbPass = "pass";
     private static final String clientProperties = "client.properties";
+    private static final String missingProperties = "missing.properties";
+
 
     @BeforeAll
     static void initTestExcelData() {
@@ -80,38 +86,75 @@ class FileManagerTest {
     }
 
     @Test
-    void testRetrieveEndpoint() throws IOException {
+    void testRetrieveClientProperties() throws IOException {
         Path propertiesPath = tempDir.resolve(clientProperties);
         genSampleProperties(propertiesPath);
-        assertEquals(endpointValue, FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey));
+        Map<String, String> testProperties = FileManager.retrieveClientProperties(propertiesPath.toString());
+        assertEquals(queryEndpoint, testProperties.get(FileManager.QUERY_ENDPOINT_KEY));
+        assertEquals(updateEndpoint, testProperties.get(FileManager.UPDATE_ENDPOINT_KEY));
+        assertEquals(dbUrl, testProperties.get(FileManager.RDB_URL_KEY));
+        assertEquals(dbUser, testProperties.get(FileManager.RDB_USER_KEY));
+        assertEquals(dbPass, testProperties.get(FileManager.RDB_PASS_KEY));
     }
 
     @Test
-    void testRetrieveEndpointFailNoFile() {
+    void testRetrieveClientPropertiesFailNoFile() {
         Path propertiesPath = emptyTempDir.resolve(clientProperties);
         JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class,
-                () -> FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey), "JPSRuntimeException was expected");
+                () -> FileManager.retrieveClientProperties(propertiesPath.toString()), "JPSRuntimeException was expected");
         assertEquals("No client.properties file detected! Please place the file in the config directory.", thrown.getMessage());
     }
 
     @Test
-    void testRetrieveEndpointFailNoKey() throws IOException {
+    void testRetrieveClientPropertiesFailNoKeys() throws IOException {
         Path propertiesPath = tempDir.resolve(clientProperties);
-        genPropertiesNoEndpoint(propertiesPath);
-        assertNull(FileManager.retrieveEndpoint(propertiesPath.toString(), endpointKey));
+        genPropertiesNoValues(propertiesPath);
+        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class,
+                () -> FileManager.retrieveClientProperties(propertiesPath.toString()), "JPSRuntimeException was expected");
+        assertEquals("Missing Properties:\n" +
+                "sparql.query.endpoint is missing! Please add the input to client.properties.\n" +
+                "sparql.update.endpoint is missing! Please add the input to client.properties.\n" +
+                "db.url is missing! Please add the input to client.properties.\n" +
+                "db.user is missing! Please add the input to client.properties.\n" +
+                "db.password is missing! Please add the input to client.properties.\n", thrown.getMessage());
+    }
+
+    @Test
+    void testRetrieveClientPropertiesFailMissingKeys() throws IOException {
+        Path propertiesPath = tempDir.resolve(missingProperties);
+        genPropertiesMissingValues(propertiesPath);
+        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class,
+                () -> FileManager.retrieveClientProperties(propertiesPath.toString()), "JPSRuntimeException was expected");
+        assertEquals("Missing Properties:\n" +
+                "sparql.update.endpoint is missing! Please add the input to client.properties.\n" +
+                "db.user is missing! Please add the input to client.properties.\n" +
+                "db.password is missing! Please add the input to client.properties.\n", thrown.getMessage());
     }
 
     private static void genSampleProperties(Path propertiesPath) throws IOException {
         Properties prop = new Properties();
-        prop.setProperty(endpointKey, endpointValue);
+        prop.setProperty(FileManager.QUERY_ENDPOINT_PROPERTY, queryEndpoint);
+        prop.setProperty(FileManager.UPDATE_ENDPOINT_PROPERTY, updateEndpoint);
+        prop.setProperty(FileManager.RDB_URL_PROPERTY, dbUrl);
+        prop.setProperty(FileManager.RDB_USER_PROPERTY, dbUser);
+        prop.setProperty(FileManager.RDB_PASS_PROPERTY, dbPass);
         try (OutputStream output = Files.newOutputStream(propertiesPath)) {
             prop.store(output, null);
         }
     }
 
-    private static void genPropertiesNoEndpoint(Path propertiesPath) throws IOException {
+    private static void genPropertiesMissingValues(Path propertiesPath) throws IOException {
         Properties prop = new Properties();
-        prop.setProperty("fail", endpointValue);
+        prop.setProperty(FileManager.QUERY_ENDPOINT_PROPERTY, queryEndpoint);
+        prop.setProperty(FileManager.RDB_URL_PROPERTY, dbUrl);
+        try (OutputStream output = Files.newOutputStream(propertiesPath)) {
+            prop.store(output, null);
+        }
+    }
+
+    private static void genPropertiesNoValues(Path propertiesPath) throws IOException {
+        Properties prop = new Properties();
+        prop.setProperty("fail", queryEndpoint);
         try (OutputStream output = Files.newOutputStream(propertiesPath)) {
             prop.store(output, null);
         }

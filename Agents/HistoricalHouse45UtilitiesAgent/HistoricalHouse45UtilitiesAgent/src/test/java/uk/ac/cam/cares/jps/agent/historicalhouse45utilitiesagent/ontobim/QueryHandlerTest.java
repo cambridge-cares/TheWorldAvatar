@@ -29,7 +29,7 @@ class QueryHandlerTest {
 
     private static List<String> genExpectedSelectBuilderPrefixList() {
         List<String> results = new ArrayList<>();
-        results.add("ontotimeseries: <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#>");
+        results.add("ontotimeseries: <https://www.theworldavatar.com/kg/ontotimeseries/>");
         results.add("rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
         results.add("bot:  <https://w3id.org/bot#>");

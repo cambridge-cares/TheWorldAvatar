@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent.ontobim.OntoBimAdapter;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.FileNotFoundException;
@@ -36,8 +37,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Send the file path of two properties files in the following order: 1) Time series client " +
-            "2) IRI mappings to excel headers. Do note that the second properties file need not exist and would be generated on the first build process.";
+    private static final String ARGUMENT_MISMATCH_MSG = "Require 2 arguments! Please send only the file path to the Excel properties and workbook. " +
+            "Do note that the properties file need not exist and would be generated on the first build process.";
     private static final String PARSER_ERROR_MSG = "Could not construct the Excel parser needed to interact with the Excel Workbook!";
     private static final String GET_READINGS_ERROR_MSG = "Readings could not be retrieved!";
     private static final String HANDLER_ERROR_MSG = "Could not construct the time series Properties handler!";
@@ -52,13 +53,13 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility/"; // The prefix to use for generating IRI
     public static final int rowStart = 3;
-    protected static String queryEndpoint;
-    protected static String updateEndpoint;
+    protected static Map<String, String> clientConfig;
     private static String dateKey;
 
     // Optional arguments
     private static int[] dateArrays;
     private static BuildingIRISingleton singleton;
+
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
@@ -76,7 +77,6 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             if (requestParams.has(KEY_CITYGML_BUILDING_INST)) {
                 singleton.setOntoCityGmlBuildingIri(requestParams.getString(KEY_CITYGML_BUILDING_INST));
             }
-            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String excelProperties = FileManager.PROPERTIES;
             String excelFile;
             try {
@@ -84,9 +84,9 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
             }
-            String[] parameters = new String[]{clientProperties, excelProperties, excelFile};
-            queryEndpoint = FileManager.retrieveEndpoint(clientProperties, "sparql.query.endpoint");
-            updateEndpoint = FileManager.retrieveEndpoint(clientProperties, "sparql.update.endpoint");
+            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
+            clientConfig = FileManager.retrieveClientProperties(clientProperties);
+            String[] parameters = new String[]{excelProperties, excelFile};
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -124,8 +124,8 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
     public JSONObject initializeAgent(String[] args) {
         JSONObject jsonMessage = new JSONObject();
-        // Ensure that there are two properties files and one Excel file
-        if (args.length != 3) {
+        // Ensure that there are one properties file and one Excel file
+        if (args.length != 2) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -135,7 +135,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         // Create an Excel parser object to retrieve Excel content
         ExcelParser parser;
         try {
-            parser = new ExcelParser(args[2], dateKey);
+            parser = new ExcelParser(args[1], dateKey);
         } catch (FileNotFoundException e) {
             LOGGER.error(PARSER_ERROR_MSG + e);
             throw new JPSRuntimeException(PARSER_ERROR_MSG, e);
@@ -166,21 +166,25 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
         // Generate data IRI mappings to measures names and store in an external properties file
         Map<String, String> iriMappings;
         try {
-            iriMappings = handler.generateIRIMappings(args[1]);
+            iriMappings = handler.generateIRIMappings(args[0]);
         } catch (IOException e) {
             LOGGER.error(GET_IRIMAP_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_IRIMAP_ERROR_MSG, e);
         }
         LOGGER.info("Data IRI mappings to their Excel header names have been generated/retrieved. " +
-                "They can be found in a properties file at: " + args[1]);
+                "They can be found in a properties file at: " + args[0]);
 
         // Initialize and set the time series client for this agent
         DateTSClientDecorator agentTSClient;
         try {
+            RemoteStoreClient kbClient = new RemoteStoreClient(
+                    clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
+                    clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY));
+            TimeSeriesClient<LocalDate> tsClient = new TimeSeriesClient<>(kbClient, LocalDate.class);
             agentTSClient = new DateTSClientDecorator(dateKey, dateArrays);
-            TimeSeriesClient<LocalDate> tsClient = new TimeSeriesClient<>(LocalDate.class, args[0]);
             agentTSClient.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
+            agentTSClient.setRDBClient(clientConfig.get(FileManager.RDB_URL_KEY), clientConfig.get(FileManager.RDB_USER_KEY), clientConfig.get(FileManager.RDB_PASS_KEY));
+        } catch (JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
@@ -188,7 +192,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
 
         // Initialize the time series database if it doesn't exist
         try {
-            agentTSClient.initializeTimeSeriesIfNotExist(excelReadings, iriMappings);
+            agentTSClient.initializeTimeSeries(excelReadings, iriMappings);
         } catch (Exception e) {
             LOGGER.error(INITIALIZE_ERROR_MSG, e);
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
@@ -201,10 +205,11 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
         }
 
-        OntoBimAdapter.addSupplementaryTriples(queryEndpoint, updateEndpoint, singleton);
+        OntoBimAdapter.addSupplementaryTriples(
+                clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
+                clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY), singleton);
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");
-
         return jsonMessage;
     }
 }

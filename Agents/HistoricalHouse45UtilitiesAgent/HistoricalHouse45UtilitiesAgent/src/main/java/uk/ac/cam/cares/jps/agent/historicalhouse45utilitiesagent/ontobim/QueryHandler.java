@@ -19,7 +19,7 @@ class QueryHandler {
     private static final String SAREF_URI = "https://saref.etsi.org/core/";
     private static final String SKOS_URI = "http://www.w3.org/2004/02/skos/core#";
     private static final String QUDT_URI = "http://qudt.org/schema/qudt/";
-    private static final String TIMESERIES_URI = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+    private static final String TIMESERIES_URI = "https://www.theworldavatar.com/kg/ontotimeseries/";
     private static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
     private static final String ONTOBUILTENV_URI = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl#";
     private static final String BIM_URI = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";

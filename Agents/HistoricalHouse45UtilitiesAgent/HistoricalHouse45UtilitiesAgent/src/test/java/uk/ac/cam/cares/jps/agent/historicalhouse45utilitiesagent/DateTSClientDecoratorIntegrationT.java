@@ -1,6 +1,11 @@
 package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent;
 
-import org.junit.jupiter.api.*;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -11,6 +16,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,6 +38,7 @@ public class DateTSClientDecoratorIntegrationT {
             .withExposedPorts(9999);
     private TimeSeriesClient<LocalDate> tsClient;
     private static DateTSClientDecorator testDecorator;
+    private static RemoteStoreClient kbClient;
     // Lists of test values
     private static List<Double> measureValues;
     private static List<Double> ratesValues;
@@ -41,6 +48,12 @@ public class DateTSClientDecoratorIntegrationT {
     private static Map<String, String> testMappings;
     private static List<String> testIRIs;
     private static final String testPrefix = "example:prefix/api_";
+    private static final String RDF_PREFIX = "rdf";
+    private static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private static final String RDF_TYPE = RDF_PREFIX + ":type";
+    private static final String TIMESERIES_KEY = "timeseries";
+    private static final String TIMESERIES_VAR = "?" + TIMESERIES_KEY;
+    private static final String TIMESERIES_CLASS = "<https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulativeTimeSeries>";
 
     @BeforeAll
     static void genTestData() {
@@ -70,62 +83,55 @@ public class DateTSClientDecoratorIntegrationT {
         // Get host and port name to form KG endpoint
         String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
         endpoint = endpoint + "/blazegraph/namespace/kb/sparql"; // Default namespace is "kb"
-        RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setUpdateEndpoint(endpoint);
-        kbClient.setQueryEndpoint(endpoint);
+        kbClient = new RemoteStoreClient(endpoint, endpoint);
 
         // Initialise TimeSeriesClient with pre-configured kb client
-        tsClient = new TimeSeriesClient<>(kbClient, LocalDate.class, null, "postgres", "postgres");
-        // Configure RDB access
-        tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        tsClient = new TimeSeriesClient<>(kbClient, LocalDate.class);
 
         // Set TSClient for the targeted test class
         testDecorator = new DateTSClientDecorator("dates");
         testDecorator.setTsClient(tsClient);
+        testDecorator.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
     }
 
     @Test
-    @Order(0)
-    void testInitializeTimeSeriesIfNotExists() {
-        testDecorator.initializeTimeSeriesIfNotExist(testReadings, testMappings);
+    void testInitializeTimeSeries() throws SQLException {
+        testDecorator.initializeTimeSeries(testReadings, testMappings);
         // Check that there is only one time series added
-        assertEquals(1, tsClient.countTimeSeries());
+        assertEquals(1, countTimeSeries());
         // Check that all IRIs have a time series and are attached to the same time series
         String testTSIRI;
         for (String iri : testIRIs) {
-            assertTrue(tsClient.checkDataHasTimeSeries(iri));
+            assertTrue(tsClient.checkDataHasTimeSeries(iri, testDecorator.getRDBClient().getConnection()));
             testTSIRI = tsClient.getTimeSeriesIRI(iri);
             assertEquals(testTSIRI, tsClient.getTimeSeriesIRI(iri));
         }
     }
 
     @Test
-    @Order(1)
-    void testInitializeTimeSeriesIfNotExistsWithExistingTimeSeries() {
+    void testInitializeTimeSeriesWithExistingTimeSeries() {
         // Create spy to verify executions on the time series client
         TimeSeriesClient<LocalDate> tsClientSpy = Mockito.spy(tsClient);
         testDecorator.setTsClient(tsClientSpy);
-
         // Run code twice but should only be initialized once
-        testDecorator.initializeTimeSeriesIfNotExist(testReadings, testMappings);
-        testDecorator.initializeTimeSeriesIfNotExist(testReadings, testMappings);
-        assertEquals(1, tsClient.countTimeSeries());
+        testDecorator.initializeTimeSeries(testReadings, testMappings);
+        testDecorator.initializeTimeSeries(testReadings, testMappings);
+        assertEquals(1, countTimeSeries());
         Mockito.verify(tsClientSpy, Mockito.times(1)).
-                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
+                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
-    @Order(2)
-    void testUpdateDataForEmptyDatabase() {
-        testDecorator.initializeTimeSeriesIfNotExist(testReadings, testMappings);
+    void testUpdateDataForEmptyDatabase() throws SQLException {
+        testDecorator.initializeTimeSeries(testReadings, testMappings);
         testDecorator.updateData(testReadings, testMappings);
 
-        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs);
+        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
         assertAll(
                 () -> assertEquals(testReadings.get("dates").size(), postgresTSData.getTimes().size()),
                 // Test data will be returned in LocalDate as time series client is set to LocalDate
-                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0))),
-                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0))),
+                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
                 // Verify test data is accurate
                 () -> assertEquals(measureValues, postgresTSData.getValues(testIRIs.get(0))),
                 () -> assertEquals(ratesValues, postgresTSData.getValues(testIRIs.get(1)))
@@ -133,9 +139,8 @@ public class DateTSClientDecoratorIntegrationT {
     }
 
     @Test
-    @Order(3)
-    void testUpdateDataForPrecedingDatabase() {
-        testDecorator.initializeTimeSeriesIfNotExist(testReadings, testMappings);
+    void testUpdateDataForPrecedingDatabase() throws SQLException {
+        testDecorator.initializeTimeSeries(testReadings, testMappings);
         testDecorator.updateData(testReadings, testMappings);
 
         // Extract a sub Map of test data
@@ -149,14 +154,34 @@ public class DateTSClientDecoratorIntegrationT {
         testDecorator.updateData(updatedReadings, testMappings);
 
         // Test if data has been updated to new values and old values are no longer present
-        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs);
+        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
         assertAll(
                 () -> assertEquals(updatedReadings.get("dates").size(), postgresTSData.getTimes().size()),
-                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0))),
-                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0))),
+                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
                 () -> assertNotEquals(measureValues, postgresTSData.getValues(testIRIs.get(0))),
                 () -> assertEquals(updatedMeasureValues, postgresTSData.getValues(testIRIs.get(0)))
         );
     }
 
+    private static int countTimeSeries() {
+        // Create the select query
+        SelectBuilder builder = new SelectBuilder();
+        builder.addPrefix(RDF_PREFIX, RDF_URI);
+        builder.addVar(TIMESERIES_VAR)
+                .addWhere(TIMESERIES_VAR, RDF_TYPE, TIMESERIES_CLASS);
+        // Set and execute query
+        kbClient.setQuery(builder.buildString());
+        JSONObject timeseriesResult = kbClient.executeQuery().getJSONObject(0);
+
+        // Retrieve object class, and if true, return the count of timeseries accordingly
+        Class<?> objClass = timeseriesResult.get(TIMESERIES_KEY).getClass();
+        if (objClass.equals(JSONArray.class)) {
+            return timeseriesResult.getJSONArray(TIMESERIES_KEY).length();
+        } else if (objClass.equals(String.class) && timeseriesResult.getString(TIMESERIES_KEY).isEmpty()) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }
