@@ -81,8 +81,12 @@ class DataGroup {
             let node = layersJSON[i];
 
             let source = this.findSource(node["source"]);
+            if(source === null || source === undefined) {
+                console.error("Layer with id '" + node["id"] + "' references a source that is not defined, will skip it!");
+                continue;
+            }
             node["source"] = source.id;
-
+           
             let layer = null;
             let layerID = this.id + "." + node["id"];
 
@@ -111,9 +115,10 @@ class DataGroup {
                     }
 
                     // Register this layer to this connected stack
-                    if(Manager.STACK_LAYERS.hasOwnProperty(stack)) {
-                        Manager.STACK_LAYERS[stack].push(layerID);
+                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack] = [];
                     }
+                    Manager.STACK_LAYERS[stack].push(layerID);
                 break;
 
                 default:
