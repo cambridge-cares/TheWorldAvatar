@@ -2,7 +2,7 @@
 #==================================================================================================
 FROM maven:3.8.6-eclipse-temurin-11-focal as builder
 
-# Copy all files into root's home, including the source, pom file, ./m2 directory, credentials and config files
+# Copy all files into root's home, including the source, pom file, ./m2 directory, and credentials files
 ADD /HistoricalHouse45UtilitiesAgent /root/HistoricalHouse45UtilitiesAgent
 ADD /credentials /root/credentials
 ADD /.m2 /root/.m2

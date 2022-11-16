@@ -194,6 +194,7 @@ public class HistoricalHouse45UtilitiesAgentTest {
             try (MockedConstruction<TSPropertiesHandler> mockHandler = Mockito.mockConstruction(TSPropertiesHandler.class)) {
                 try (MockedConstruction<DateTSClientDecorator> mockDecorator = Mockito.mockConstruction(DateTSClientDecorator.class)) {
                     try (MockedConstruction<TimeSeriesClient> mockTSClient = Mockito.mockConstruction(TimeSeriesClient.class)) {
+                        // Mock static methods
                         try (MockedStatic<OntoBimAdapter> mockAdaptor = Mockito.mockStatic(OntoBimAdapter.class)) {
                             new HistoricalHouse45UtilitiesAgent().initializeAgent(args);
                             // Verify all methods are performed

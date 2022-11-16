@@ -1,8 +1,8 @@
 # Historical House45 Utilities Agent
 
-Using the JPS-base-lib's [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries),
-this agent extracts time series data from an Excel workbook, and stores them and their corresponding instances into the 
-knowledge graph (KG) and a relational database (RDB). 
+Using the JPS-base-lib's time-series client, this agent extracts time series data from an Excel workbook, and stores them 
+and their corresponding instances into the knowledge graph (KG) and a relational database (RDB). It is currently intended
+to only instantiate the utilities consumption of House 45, and link the time series to the respective Building IRIs.
 
 When called for the first time, it will initialize the KG and RDB. Subsequently, only new data will be updated or inserted.
 More details on the classes, public methods, and documentation is available in the source code.
@@ -73,7 +73,7 @@ in inconsistencies in both KG and RDB. In such circumstances, please reset the n
 
 ### 2. Building the Agent
 This agent is designed to be an executable war and deployed as a web servlet on Tomcat. Then, a POST request would
-need to be sent to the specific URL to initiate the agent. This is achieved using the Docker platform. Alternative
+need to be sent to the specific URL to initiate the agent. This is achieved using the Docker platform. Alternate
 build processes are not within this document's scope.  
 
 #### 2.1 Preparation
@@ -91,10 +91,11 @@ which must have a 'scope' that [allows you to publish and install packages](http
 In the `root/config` directory, modify the `client.properties` to specify the KG and RDB endpoints accordingly. This must be done before creating the image.
 
 This agent is designed for easy modifications and generalization. All modifiable inputs are available in the `HistoricalHouse45UtilitiesAgent` class:
+- `iriPrefix`field: Please modify this field for your desired namespace
 - `rowStart` field
 - `dateKey`field at `processRequestParameters` method
 - `dateArrays`field at `processRequestParameters` method 
-- `iriPrefix`field
+
 
 #### 2.2 Docker Deployment
 Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
@@ -103,28 +104,30 @@ docker-compose up -d
 ```
 
 *Integration tests (`DateTSClientDecoratorIntegrationT` and `QueryHandlerIntegrationT`) are ignored in the default Maven test settings and when building the agent in Docker. 
-They can be run in a CLI with `mvn integration-test`, and must not be included when creating the Docker image. The test containers are unable to access the host Docker daemon from within the container.
+They can be run in a CLI with `mvn clean integration-test`, and must not be included when creating the Docker image. The test containers are unable to access the host Docker daemon from within the container.
 
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor
-In the `root/data` directory, please place the Excel workbook, and if there is a preceding file, the [mapping file](#13-mapping-file),
-which must be named as `excel.properties`. Note that the mapping file will be automatically generated otherwise.
+In the `root/data` directory, please place the Excel workbook. If there is a preceding [mapping file](#13-mapping-file),
+it must be named as `excel.properties`. Note that the mapping file will be automatically generated otherwise.
 
 ##### 2.3.2 POST Request Parameters
 The agent currently accepts two parameters.
 
 1. Client.properties File Path - Mandatory
+
 This is the file path to retrieve the login credentials necessary to access the SPARQL and RDB endpoints. It can be invoked with the `clientProperties` key.
 
 2. OntoCityGML Building IRI - Optional
+
 This links the OntoBIM Building instance to the building instance in the OntoCityGML ontology via the `hasOntoCityGMLRepresentation` property. 
 It is not required to link the building instances if they do not exist.
 
-It can be invoked with the `cityGmlBuildingIri` key.
+If required, it can be invoked with the `cityGmlBuildingIri` key.
 
 ##### 2.3.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3050/historical-house45-utilities-agent/retrieve`.
-Two parameters are required. A sample request is as follows:
+At least one parameter is required. A sample request is as follows:
 ```
 POST http://localhost:3050/historical-house45-utilities-agent/retrieve
 Content-Type: application/json
@@ -138,4 +141,4 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["Data updated with new readings from Excel Workbook.","Timeseries Data has been updated."]}
 ```
 #### 2.4 Post-Build
-All the data are available in both the KG and RDB. The mapping files can be retrieved from the `data` directory.
+The instantiated data will be available in the KG and RDB, and requires their own queries to access. The mapping files can be retrieved from the `data` directory.

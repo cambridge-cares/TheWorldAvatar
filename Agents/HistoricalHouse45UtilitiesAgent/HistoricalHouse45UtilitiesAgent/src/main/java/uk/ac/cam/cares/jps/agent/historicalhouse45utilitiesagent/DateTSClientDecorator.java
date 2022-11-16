@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * A decorator for the Time Series client in the JPS base library, that provides functionality specific to this agent.
+ * A decorator that interacts the Time Series client in the JPS-base-lib dependency. It provides functionality specific to this agent.
  *
  * @author qhouyee
  */
