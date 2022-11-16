@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,16 +15,36 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-public class Utils {
+/**
+ * Misc utilities.
+ */
+public final class Utils {
     
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(Utils.class);
 
-    // combine time series list into a single time series object
-    // time series client is needed to query if value needed is from the day before
-    public static TimeSeries<Instant> getCombinedTimeSeries(TimeSeriesClient<Instant> tsClient, List<TimeSeries<Instant>> tsList) {
+    /**
+     * Constructor.
+     */
+    private Utils() {
+        // No
+    }
+
+    /**
+     * Combine timeseries objects into a single timeseries objects. For some reason this is
+     * required by the timeseries client before a conversion to JSON can happen.
+     * 
+     * Code taken from Kok Foong.
+     * 
+     * @param tsClient time series client
+     * @param tsList list of time series instances
+     * 
+     * @return combined timeseries instance.
+     */
+    @SuppressWarnings("all")
+    public static TimeSeries<Instant> getCombinedTimeSeries(TimeSeriesClient<Instant> tsClient, Collection<TimeSeries<Instant>> tsList) {
     	if (tsList.size() > 1) {
     		// this will sort in ascending order
     		List<TimeSeries<Instant>> ts_sorted = tsList.stream().sorted(Comparator.comparing(ts -> ts.getTimes().size())).collect(Collectors.toList());
@@ -80,8 +101,9 @@ public class Utils {
     		
     		return new TimeSeries<>(longestTimeList, dataIRIs, valuesList);
     	} else {
-    		return tsList.get(0);
+    		return tsList.iterator().next();
     	}
     }
 
 }
+// End of class.

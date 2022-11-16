@@ -1,27 +1,83 @@
 # Feature Info Agent
 
-This agent acts as a single access point for visualisations, allowing them to query for data on an individual feature (i.e. location). When a HTTP request is received, this agent uses the IRI within the request to query the relevant knowledge graphs and/or relational databases to return relevant feature metadata that the visualisation can then display.
+This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and timeseries data of an individual feature (i.e. a single geographical location) before display within the visualisation's side panel.
 
-**Note: This version of the agent is a VERY rough implementation and should not be used outside of very specific use cases. It currently relies on hardcoded SPARQL queries, and will not work out-of-the box for any old data sets. Future improvements will make this more generic, at which point the agent could be used more widely.**
+## Overview
 
-# Requirements
+The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
 
-Display of meta and timeseries data within visualisations is supported by the DTVF, however this functionality is still under development and requires data to be hosted within a [stack instance](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), with an instance of this agent running, and the geospatial data to meet certain standards. If these conditions are not met, any metadata baked directly into the geospatial data is shown instead; it's recommended to use this approach for now.
+1. Check if the configuration has been loaded
+   1. If not, then load it.
+2. Check the incoming route
+   1. Throw error if an unknown route
+3. If `/status` route:
+   1. Return current status of the agent
+4. If `/get` route:
+   1. Check validity of incoming request
+      1. If malformed, send a BAD_REQUEST response
+      2. Determine the class representing the IRI
+         1. If query successful but no class returned, send a NO_CONTENT response
+      3. Look up corresponding meta query for that class
+         1. If none found, send a NO_CONTENT response
+      4. Run query to get metadata
+      5. Parse resulting metadata into approved DTVF format
+      6. Look up corresponding timeseries query for that class
+         1. If none found, log warning but continue
+         2. If found, run query
+            1. If no data found, quietly continue
+      7. Build and return final JSON object
 
-## Agent Setup
+## Restrictions
 
-Before deploying this agent to your stack instance, a few stages of setup must be completed.
+At the time of writing, the FIA has a few restrictions that all users should be aware of. These are as follows:
 
-1. Ensure that your data has been marked up with RDF classes.
-2. Write a query in a `*.sparql` file that gathers the desired metadata and returns it within a table format that contains rows of two/three columns: `label` for the property name, `value` for its value, and optionally a `unit` column with the unit string.
-3. Add the query file to the `code/WEB-INF/queries` directory.
-4. Update the code within the `Lookups` class to map your class IRI to the name of the newly added query file (see line 53 for an example).
-5. Build the agent and deploy to the stack.
+- The FIA can only be run within a [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager)
+- The FIA can only report on metadata and timeseries that are contained within the same stack
+- The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute to return)
 
-## Geospatial data
+## Requirements
 
-For the FeatureInfoAgent to work in tandem with visualisations, the geospatial data provided to the visualisaton (via local files or Geoserver), needs to meet certain requirements. The data needs to contain `name`, `iri`, and `endpoint` fields for each individual location.
+For the FIA to function, a number of configuration steps need to take place before deployment. Additionally, incoming HTTP requests to the agent must meet a set format. These are detailed in the subsections below.
 
-  * The `name` field needs to contain the human readable name of the feature.
-  * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.
-  * The `endpoint` field needs to contain the URL of the Blazegraph namespace containing data on the feature. Note that this can be absolute or relative to the FeatureInfoAgent's location.
+It is also neccessary for users to have good knowledge of Docker, JSON, and to be familiar with management of the Stack system.
+
+### Configuration
+
+Follow the below configuration steps within the `queries` directory.
+
+- Create a JSON configuration file named `fia-config.json`.
+  - This configuration file should be a JSON object containing the following parameters:
+    - `database_name`: This is a **required** string parameter. It should match the PostGreSQL database name that contains your timeseries data.
+    - `queries`: This is a **required** array of objects defining a mapping between class names and the names of files containing pre-written SPARQL queries. Each object needs to contain the following string parameters:
+      -  `class`: Full name of the class.
+      -  `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
+      -  `timeFile`: Name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
+    - `hours`: This is an optional integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
+  - Add the aforementioned metadata and timeseries query files.
+
+#### Query Restrictions
+
+To properly parse the metadata and timeseries queries, the agent requires queries to fulfill a set format.
+
+For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
+
+- `[IRI]`: The IRI of the location in the request will be injected
+- `[ONTOP]`: The URL of the Ontop service within the stack will be injected
+
+Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. Any other colums will be ignored.
+
+<img src="meta-query-example.jpg" alt="Example result of a metadata query" width="75%"/>
+
+Queries for timeseries data need to return the measurement/forecast IRIs (that will be used to grab the actual values from PostGreSQL), as well as parameters associated with each measurement/forecast. Required columns are `Measurement` (or `Forecast`) containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
+
+<img src="time-query-example.jpg" alt="Example result of a timeseries query" width="75%"/>
+
+### Requests
+
+All incoming requests should use the `/get` route, contain a JSON-formatted body (compatible with the agent framework in the JPS Base Lib), and contain a single `iri` parameter.
+
+In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
+
+## Deployment
+
+To deploy the agent, follow the generic steps for deploying a stack-enabled agent.

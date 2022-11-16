@@ -1,23 +1,37 @@
 package com.cmclinnovations.featureinfo;
 
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 
+import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.kg.ClassHandler;
+import com.cmclinnovations.featureinfo.kg.MetaHandler;
+import com.cmclinnovations.featureinfo.kg.TimeHandler;
+
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * This agent expects a HTTP request containing a JSON string with the "iri" and "endpoint" for an individual
@@ -40,106 +54,118 @@ public class FeatureInfoAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(FeatureInfoAgent.class);
 
     /**
+     * Reads and stores configuration details.
+     */
+    public static ConfigStore CONFIG = new ConfigStore();
+
+    /**
      * Is the FeatureInfoAgent in a valid state.
      */
     private static boolean VALID = true;
 
+    /**
+     * Override for KG client to allow mocking during tests
+     */
+    protected static RemoteStoreClient RS_CLIENT_OVER;
+
+    /**
+     * Override for Timeseries client to allow mocking during tests
+     */
+    protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
+
+    /**
+     * Load the configuration file.
+     */
+    private static void loadConfig() {
+        try {
+            CONFIG.load();
+        } catch(Exception exception) {
+            FeatureInfoAgent.VALID = false;
+            LOGGER.error("Could not initialise agent configuration!", exception);
+        }
+    }
     /**
      * Perform required setup.
      *
      * @throws ServletException if in invalid state
      */
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public synchronized void init() throws ServletException {
+        try {
+            super.init();
+            if(CONFIG == null) FeatureInfoAgent.loadConfig();
 
-        // Test the logging
-        LOGGER.debug("This is a test DEBUG message");
-        LOGGER.info("This is a test INFO message");
-        LOGGER.warn("This is a test WARN message");
-        LOGGER.error("This is a test ERROR message");
-        LOGGER.fatal("This is a test FATAL message");
-        System.out.println("This is a test SYSTEM.OUT message");
+            // Test the logging
+            LOGGER.debug("This is a test DEBUG message");
+            LOGGER.info("This is a test INFO message");
+            LOGGER.warn("This is a test WARN message");
+            LOGGER.error("This is a test ERROR message");
+            LOGGER.fatal("This is a test FATAL message");
+            System.out.println("This is a test SYSTEM.OUT message");
+
+        } catch(Exception exception) {
+            FeatureInfoAgent.VALID = false;
+            LOGGER.error("Could not initialise an agent instance!", exception);
+        }
     }
 
     /**
      * Processes HTTP requests with originating details.
      *
-     * @param requestParams Request parameters in a JSONObject.
-     * @param request HTTP Servlet Request.
-     *
-     * @return response in JSON format.
-     */
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        return new JSONObject();
-    }
-
-    /**
-     * Processes HTTP requests.
-     *
      * @param requestParams Request parameters as a JSONObject.
-     *
+     * @param request HTTP Servlet Request.
+     * 
      * @return response in JSON format.
      */
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    @SuppressWarnings("java:S1989")
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("Request received at: " + datetime);
-        LOGGER.info("Request contents are: " + requestParams);
+        LOGGER.info("Request received at: {}", datetime);
 
-        // Check if in valid state
-        if(!VALID) {
-            throw new InternalServerErrorException("FeatureInfoAgent could not start in a valid state.");
-        }
+        if(this.check(response)) {
+            // Parse request as JSON
+            JSONObject requestParams = AgentCaller.readJsonParameter(request);
 
-        // Get the URL path
-        String url = request.getRequestURI();
-        url = url.substring(url.lastIndexOf("/"), url.length());
-        if (url.contains("?")) url = url.split("?")[0];
+            // Get the requested route
+            String url = request.getRequestURI();
+            url = url.substring(url.lastIndexOf("/"), url.length());
+            if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
 
-        // Run logic based on request path
-        switch (url) {
-            case "/get":
-            case "get":
-                LOGGER.info("Detected request to get meta and time data...");
-
-                // Check if request is valid
-                try {
-                    validateInput(requestParams);
-                } catch (BadRequestException brExcep) {
-                    throw brExcep;
+            // Run logic based on request path
+            switch (url) {
+                case "/get":
+                case "get": {
+                    LOGGER.info("Detected request to get meta and timeseries data.");
+                    this.runLogic(requestParams, response);
                 }
+                break;
 
-                try {
-                    // Get and return all available information
-                    Manager grabber = new Manager(
-                        requestParams.getString("iri"),
-                        requestParams.optString("endpoint", null),
-                        this.getServletContext()
-                    );
-                    grabber.readProperties();
+                case "/status":
+                case "status": {
+                    LOGGER.info("Detected request to get agent status...");
 
-                    return grabber.grabAll();
-                } catch(Exception excep) {
-                    LOGGER.error(excep);
-                    throw new ServerErrorException(excep.getMessage(), Response.Status.INTERNAL_SERVER_ERROR, excep);
+                    if(CONFIG != null && FeatureInfoAgent.VALID) {
+                        response.setStatus(Response.Status.OK.getStatusCode());
+                        response.getWriter().write("{\"description\":\"Ready to serve.\"}");
+                    } else {
+                        response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+                        response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
+                    }
                 }
+                break;
 
-            case "/status":
-            case "status":
-                LOGGER.info("Detected request to get agent status...");
+                default: {
+                    LOGGER.info("Detected an unknown request route...");
+                    response.setStatus(Response.Status.NOT_IMPLEMENTED.getStatusCode());
+                    response.getWriter().write("{\"description\":\"Unknown route, only '/get' and '/status' are permitted.\"}");
+                }
+                break;
+            }
+        } 
 
-                // Send response
-                JSONObject response = new JSONObject();
-                response.put("status", Integer.toString(200));
-                response.put("description", "Ready for requests.");
-                return response;
-
-            default:
-                return new JSONObject();
-        }
+        response.getWriter().flush();
     }
 
     /**
@@ -148,17 +174,209 @@ public class FeatureInfoAgent extends JPSAgent {
      * @param requestParams JSON request parameters.
      * 
      * @return request validity.
-     * 
      * @throws BadRequestException if request is malformed.
      */
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         // Check that there's an iri
         if (requestParams.isNull("iri")) {
-            LOGGER.error("Could not find the 'iri' field.");
-            throw new BadRequestException("Request does not have required 'iri' field.");
+            LOGGER.warn("Could not find the required 'iri' field.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Runs the main agent logic for the /get route (on valid request)
+     * @param response
+     * @throws IOException
+     */
+    private void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
+        // Check if request is valid
+        boolean validRequest = validateInput(requestParams);
+        if(!validRequest) {
+            response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+            response.getWriter().write("{\"description\":\"Bad request, no 'iri' parameter.\"}");
+            return;
         }
 
+        // Get the request parameters
+        String iri = requestParams.optString("iri");
+        LOGGER.info("Incoming 'iri' is {}", iri);
+
+        try {
+            // Determine the class match
+            String classMatch = this.getClass(iri, response);
+            if(classMatch != null) {
+                // Get the metadata
+                JSONArray metaArray = this.getMetadata(iri, classMatch, response);
+
+                // Get the timeseries
+                JSONArray timeArray = this.getTimeseries(iri, classMatch, response);
+
+                // Combine into single response
+                JSONObject result = new JSONObject();
+                result.put("meta", metaArray);
+                if(timeArray != null) result.put("time", timeArray);
+
+                // Return result
+                response.setStatus(Response.Status.OK.getStatusCode());
+                response.getWriter().write(result.toString());
+                LOGGER.info("Response has been sent, request is done.");
+            }
+
+        } catch(Exception exception) {
+            LOGGER.error("An unexpected exception has occured, please see the log file!", exception);
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
+        }
+    }
+
+    /**
+     * Determine the class match for the input IRI.
+     * 
+     * @param iri asset IRI
+     * @param response servlet response
+     * 
+     * @return name of matching class
+     */
+    private String getClass(String iri, HttpServletResponse response) throws IOException {
+        // Get Blazegraph endpoints
+        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+
+        // Build class handler
+        ClassHandler handler = new ClassHandler(iri, endpoints);
+
+        // Construct clients
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
+
+        // Determine the class match
+        try {
+            String classMatch = handler.getClassMatch();
+
+            if(classMatch == null) {
+                response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+                response.getWriter().write("{\"description\":\"Internal error occurred, could not query to determine classes.\"}");
+                return null;
+            } else if(classMatch.isEmpty()) {
+                response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
+                response.getWriter().write("{\"description\":\"Queries sent, but no classes could be determined.\"}");
+                return null;
+            }
+
+            LOGGER.info("Discovered class match is: {}", classMatch);
+            return classMatch;
+
+        } catch(Exception exception) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not contact endpoints to determine class names.\"}");
+        }
+        return null;
+    }
+
+    /**
+     * Queries for KG metadata.
+     * 
+     * @param iri asset IRI
+     * @param classMatch name of matching class
+     * @param response server response object
+     * 
+     * @returns metadata
+     */
+    protected JSONArray getMetadata(String iri, String classMatch, HttpServletResponse response) throws Exception {
+        // Get Blazegraph endpoints
+        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+
+        // Build metadata handler
+        MetaHandler handler = new MetaHandler(iri, classMatch, endpoints);
+
+        // Construct clients
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
+
+        // Run queries
+        LOGGER.info("Running query to gather metadata...");
+        JSONArray result = handler.getData(response);
+
+        if(result == null) {
+            LOGGER.warn("...result from metadata query was null!");
+        } else {
+            LOGGER.info("...have result, contains {} entries.", result.length());
+        }
+        return result;
+    }
+
+    /**
+     * Queries for timeseries data.
+     * 
+     * @param iri asset IRI
+     * @param classMatch name of matching class
+     * @param response server response object
+     * 
+     * @returns metadata
+     */
+    protected JSONArray getTimeseries(String iri, String classMatch, HttpServletResponse response) throws Exception {
+        // Get postgres endpoint details
+        Optional<ConfigEndpoint> postEndpoint = CONFIG.getPostgresEndpoint();
+        if(!postEndpoint.isPresent()) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not determine the PostgreSQL endpoint.\"}");
+            return null;
+        }
+        
+        // Construct clients
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
+            rsClient, 
+            Instant.class,
+            postEndpoint.get().url(),
+            postEndpoint.get().username(),
+            postEndpoint.get().password()
+        );
+
+        // Get Blazegraph endpoints
+        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+
+        // Build timeseries handler
+        TimeHandler handler = new TimeHandler(iri, classMatch, endpoints);
+        handler.setClients(
+            (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
+            (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
+        );
+
+        // Set the number of hours to get data for
+        if(CONFIG.getSetting("hours") != null) {
+            handler.setHours(Integer.parseInt(CONFIG.getSetting("hours").toString()));
+        }
+
+        
+        // Run queries and return timeseries JSON
+        LOGGER.info("Running query to gather timeseries...");
+        JSONArray result =  handler.getData(response);
+
+        if(result == null) {
+            LOGGER.warn("...result from timeseries query was null!");
+        } else {
+            LOGGER.info("...have result, contains {} entries.", result.length());
+        }
+        return result;
+    }
+
+    /**
+     * Check that the request is valid and the agent is in a valid state.
+     * 
+     * @param response HTTP response
+     */
+    private boolean check(HttpServletResponse response) throws IOException {
+        // Check if in valid state
+        if(CONFIG == null || !VALID)  {
+            LOGGER.error("FeatureInfoAgent could not start in a valid state.");
+
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
+            return false;
+        }
         return true;
     }
 
