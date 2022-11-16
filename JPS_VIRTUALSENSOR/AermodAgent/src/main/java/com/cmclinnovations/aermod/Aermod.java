@@ -37,6 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
@@ -351,7 +353,7 @@ public class Aermod {
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        layers.put(shipLayer).put(dispersionLayer);
+        layers.put(dispersionLayer).put(shipLayer);
         group.put("layers", layers);
 
         JSONObject data = new JSONObject();
@@ -388,5 +390,32 @@ public class Aermod {
             Thread.currentThread().interrupt();
             return 0;
         }
+    }
+
+    /**
+     * this file sets the centre of the map on first load
+     */
+    int createVisSettingsFile(Point centroid) {
+        JSONObject start = new JSONObject();
+        start.put("center", new JSONArray().put(centroid.getX()).put(centroid.getY()));
+        start.put("zoom", 10.5);
+        
+        JSONObject search = new JSONObject();
+        search.put("Name", "name");
+        search.put("ID", "id");
+
+        JSONObject overall = new JSONObject();
+        overall.put("start", start);
+        overall.put("search", search);
+
+        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settingsJson.json").toFile();
+        try {
+            Files.deleteIfExists(settingsJson.toPath());
+        } catch(IOException e) {
+            LOGGER.error("Failed to delete settings.json");
+            return 1;
+        }
+
+        return writeToFile(settingsJson.toPath(), overall.toString(4));
     }
 }

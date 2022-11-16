@@ -147,7 +147,12 @@ public class AermodAgent extends DerivationAgent {
         }
 
         if (aermod.modifyDataFilePermissions() != 0) {
-            LOGGER.error("Failed to modify permissions for data.json");
+            LOGGER.error("Failed to modify permissions for data.json, terminating");
+            return;
+        }
+
+        if (aermod.createVisSettingsFile(scope.getCentroid()) != 0) {
+            LOGGER.error("Failed to create settings file, terminating agent request");
         }
     }
     
