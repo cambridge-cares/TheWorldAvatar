@@ -5,6 +5,18 @@ You will need to substitute in appropriate values before running any commands.
 
 > :memo: **Note:** Unless otherwise stated all paths listed in this readme are relative to the [`Deploy/stacks/dynamic/stack-data-uploader`](.) directory in the TheWorldAvatar repository.
 
+## Table of Contents
+1. [Table of Contents](table-of-contents)
+2. [Introduction](#introduction)
+3. [Running the Stack Data Uploader](#running-the-stack-data-uploader)
+4. [Datasets and Subsets](#datasets-and-subsets)
+5. [The Dataset Configuration File](#the-dataset-configuration-file)
+6. [Data Types](#data-types)
+7. [OBDA Mapping file](#obda-mapping-file)
+8. [Using Specific Data Sets](#using-specific-data-sets)
+9. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
+10. [Developing the Stack Data Uploader in VSCode](developing-the-stack-data-uploader-in-vscode)
+
 ## Introduction
 
 The Stack Data Uploader is designed to make it easier to ingest static data files into a stack.
@@ -37,7 +49,7 @@ From a terminal in the [`stack-data-uploader`](.) directory, start the `stack-da
 ./stack.sh start <STACK NAME>
 ```
 
-## Datasets and subsets
+## Datasets and Subsets
 
 Data files are grouped into *datasets*, each of which has its own configuration file and data directory.
 
@@ -61,7 +73,7 @@ inputs/
         table.csv
 ```
 
-### Example datasets
+### Example Datasets
 
 There are several example configuration files in the [`example_datasets`](../example_datasets/) directory.
 You can follow the instructions in the [README.md](../example_datasets/README.md) to load in one of the example datasets.
@@ -76,12 +88,9 @@ The following table provides a description of each example:
 | [population](../example_datasets/inputs/config/population.json) | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer. |
 | [treesAndHills](../example_datasets/inputs/config/treesAndHills.json) | An example of how to use the `"externalDatasets"` node to load multiple datasets by name. |
 
-## The Dataset configuration file
+## The Dataset Configuration File
 
 Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
-
-### Datasets
-
 The following table shows the top level nodes allowed in a configuration file.
 
 | Key                                       | Required?                                                        | Default value                            | Description                                                                                                |
@@ -89,20 +98,20 @@ The following table shows the top level nodes allowed in a configuration file.
 | [`"name"`](#name)                         | No                                                               | The filename without the .json extension | The name of the dataset                                                                                    |
 | [`"datasetDirectory"`](#datasetDirectory) | No                                                               | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset              |
 | [`"skip"`](#skip)                         | No                                                               | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                         |
-| [`"database"`](#database)                 | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                        |
-| [`"workspace"`](#workspace)               | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added         |
-| [`"externalDatasets"`](#externaldatasets) | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name |
-| [`"dataSubsets"`](#dataSubsets)           | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                            |
-| [`"styles"`](#styles)                     | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                          |
-| [`"mappings"`](#mappings)                 | No[<sup>1</sup>](#1-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                            |
+| [`"database"`](#database)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                        |
+| [`"workspace"`](#workspace)               | No[*](#*-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added         |
+| [`"externalDatasets"`](#externaldatasets) | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name |
+| [`"dataSubsets"`](#dataSubsets)           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                            |
+| [`"styles"`](#styles)                     | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                          |
+| [`"mappings"`](#mappings)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                            |
 
-##### <sup>1</sup> At least one of these needs to be populated.
+##### * At least one of these needs to be populated.
 
 #### `"name"`
 This is the name of the dataset.
 If left unspecified it is set to the name of the configuration file, without the .json extension.
 This is the value that should be specified in the `"externalDatasets"` node of another dataset.
-> :memo: **Note:** If the dataset's name matches the name of the stack it is being loaded into then only that dataset and its associated external datasets will be loaded.
+> :memo: **Note:** If the dataset's name matches the name of the stack it is being loaded into then only that dataset and its associated external datasets will be loaded. More information on that in [Using Specific Data Sets](#using-specific-data-sets).
 
 #### `"datasetDirectory"`
 The directory within `inputs/data/` that contains the data files associated with this dataset.
@@ -178,12 +187,12 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
-## Data types
+## Data Types
 
 The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data) and [`tabular`](#tabular-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
-### Vector data
+### Vector Data
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
 The data loader does two things when uploading vector data: 
@@ -239,7 +248,7 @@ A list of possible options can be found on the [vector common options][vector-co
 A few aspects of some of the drivers can also be set via environment variables.
 These can be set as key-value pairs within an `"envVars"` object.
 
-##### Common drivers
+##### Common Drivers
 - [Comma Separated Value (.csv)][vector-csv]
 - [ESRI Shapefile / DBF][vector-shapefile]
 - [PostgreSQL / PostGIS][vector-postgis] (mainly as the output)
@@ -267,7 +276,7 @@ Within that the following nodes can be added.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
 
-### Raster data
+### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
 The data loader does three things when uploading raster data: 
@@ -316,7 +325,7 @@ These can be set as key-array-valued pairs within an `"otherOptions"` object.
 This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
 A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
 
-##### Common drivers
+##### Common Drivers
 - [GeoTIFF][raster-geotiff]
 - [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
 
@@ -327,7 +336,7 @@ Within that the following nodes can be added.
 - `"layerSettings"`
   - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
-## Tabular data
+### Tabular Data
 
 The `"tabular"` data type should be used to load non-geospatial data.
 The data loader just does one thing when uploading tabular data: 
@@ -339,14 +348,14 @@ The full list of file formats that `ogr2ogr` supports is given [here][vector-dri
 
 These are the same as listed in the vector [GDAL Options](#gdal-options) although obviously the options specific to geospatial data will not be relevant.
 
-##### Common drivers
+##### Common Drivers
 - [Comma Separated Value (.csv)][vector-csv]
 - [XLS - MS Excel format][vector-xls]
 - [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
 - [PostGIS][vector-postgis] (mainly as the output)
 
 
-## OBDA mapping file
+## OBDA Mapping File
 
 The general layout of the file is as follows:
 
@@ -361,7 +370,7 @@ For example:
 SELECT var1 var2 # Comment following some "code"
 ```
 
-### Prefix declarations
+### Prefix Declarations
 This is where the RDF prefixes should be defined, these can then be used when specifying triple patterns in the mappings.
 It starts with a `[PrefixDeclaration]` tag, followed by the prefix-IRI base pairs, without angled-brackets `<>`.
 ```obda
@@ -370,7 +379,7 @@ rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
 ex:     http://example.org/
 ```
 
-### Mapping declarations
+### Mapping Declarations
 
 The mapping declarations section starts with this line:
 ```[MappingDeclaration] @collection [[```
@@ -404,12 +413,12 @@ For example if the `buildings` table was as follows then the subsequent virtual 
 | 1234 | "building 1" | ... |
 | 1235 | "building 2" | ... |
 
-`ex:building1234 ex:hasName "building 1"^^xsd:string`
-`ex:building1234 ex:hasId 1234^^xsd:integer`
-`ex:building1235 ex:hasName "building 2"^^xsd:string`
+`ex:building1234 ex:hasName "building 1"^^xsd:string`<br>
+`ex:building1234 ex:hasId 1234^^xsd:integer`<br>
+`ex:building1235 ex:hasName "building 2"^^xsd:string`<br>
 `ex:building1235 ex:hasId 1235^^xsd:integer`
 
-#### SPARQL queries on Ontop
+#### SPARQL Queries on Ontop
 
 Ontop supports a wide range of [SPARQL 1.1](https://ontop-vkg.org/guide/compliance.html#sparql-1-1) and [GeoSPARQL 1.0](https://ontop-vkg.org/guide/compliance.html#geosparql-1-0) features.
 The [cropmap](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda) example OBDA file shows how to use the PostGIS function [`ST_ASTEXT`](https://postgis.net/docs/ST_AsText.html) and the [`http://www.opengis.net/ont/geosparql#wktLiteral`](http://www.opengis.net/ont/geosparql#wktLiteral) to make it possible to run GeoSPARQL queries.
