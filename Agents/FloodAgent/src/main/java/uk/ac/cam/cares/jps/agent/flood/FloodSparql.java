@@ -267,6 +267,7 @@ public class FloodSparql {
 			properties.put("geom_iri", String.format("%s/geometry", station.getIri()));
 			properties.put("name", String.format("Environment Agency: %s (%s)", station.getLabel(), station.getIdentifier()));
 			properties.put("type", station.getIconImage());
+			properties.put("endpoint", this.storeClient.getQueryEndpoint());
             feature.put("properties", properties);
 
 			features.put(feature);
