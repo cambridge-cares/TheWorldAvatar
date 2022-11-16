@@ -1199,20 +1199,16 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Extracts the OWL or RDF file name from the IRI of the file.
+	 * Extracts the name of the OWL file being created from the IRI of TBox.
 	 * 
 	 * @param iri
 	 * @return
 	 */
 	private String getOntologyFileNameFromIri(String iri){
-		if (!(iri.contains(FILE_EXT_OWL) || iri.contains(FILE_EXT_RDF))){
-			return null; 
-		}
-		if(iri.contains(SLASH)){
-			String tokens[] = iri.split(SLASH);
-			return tokens[tokens.length-1];
-		} else if(iri.contains(BACKSLASH)){
-			String tokens[] = iri.split(BACKSLASH);
+		String tokens[] = iri.split(SLASH);
+		if(iri.endsWith(SLASH)){
+			return tokens[tokens.length-2];
+		} else if(iri.contains(SLASH)){
 			return tokens[tokens.length-1];
 		} else{
 			return null;
