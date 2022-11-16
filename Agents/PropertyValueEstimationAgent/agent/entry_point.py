@@ -6,7 +6,7 @@ logging.getLogger("py4j").setLevel(logging.ERROR)
 from pyderivationagent.conf import config_derivation_agent
 
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.agentlogic import AvgSqmPriceAgent
+from agent.agentlogic import PropertyValueEstimationAgent
 from agent.agentlogic import default
 
 def create_app():
@@ -18,19 +18,19 @@ def create_app():
     #               agent_config = config_derivation_agent()
     #
     # 2) For deployment as Flask app within Docker container, but outside the Stack
-    #    (i.e. using 'docker compose up' with docker-compose.yml and avgsqmpriceagent.env files)
-    #       a) Create `avgsqmpriceagent.env` file (based on `avgsqmpriceagent.env.example`)
-    #       b) Include `env_file` node in `docker-compose.yml` with path to the `avgsqmpriceagent.env` file
+    #    (i.e. using 'docker compose up' with docker-compose.yml and agent.env files)
+    #       a) Create `agent.env` file (based on `agent.env.example`)
+    #       b) Include `env_file` node in `docker-compose.yml` with path to the `agent.env` file
     #       c) Retrieve environment variables here using:
     #               agent_config = config_derivation_agent()
     #
     # 3) For deployment as Flask app outside Docker container 
-    #       a) Create `avgsqmpriceagent.env` file (based on `avgsqmpriceagent.env.example`)
+    #       a) Create `agent.env` file (based on `agent.env.example`)
     #       b) Retrieve environment variables here using local path to .env file:
-    #               agent_config = config_derivation_agent('./avgsqmpriceagent.env')
+    #               agent_config = config_derivation_agent('./agent.env')
     agent_config = config_derivation_agent()
 
-    agent = AvgSqmPriceAgent(
+    agent = PropertyValueEstimationAgent(
         # Settings read from environment variables (.env file, docker-compose)
         register_agent=agent_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 

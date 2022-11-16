@@ -22,7 +22,7 @@ from agent.kg_operations.kgclient import KGClient
 from agent.kg_operations.tsclient import TSClient
 
 
-class AvgSqmPriceAgent(DerivationAgent):
+class PropertyValueEstimationAgent(DerivationAgent):
 
     def __init__(self, **kwargs):
         # Initialise DerivationAgent parent instance
