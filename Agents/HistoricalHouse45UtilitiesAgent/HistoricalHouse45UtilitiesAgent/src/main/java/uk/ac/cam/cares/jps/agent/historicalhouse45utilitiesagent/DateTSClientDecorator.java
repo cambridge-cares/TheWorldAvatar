@@ -77,7 +77,7 @@ class DateTSClientDecorator {
      * @param excelReadings Excel readings parsed from the Excel Workbook
      * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
      */
-    protected void initializeTimeSeries(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
+    protected void initializeTimeSeries(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) throws SQLException {
         List<String> excelHeaders = new ArrayList<>(iriMappings.keySet());
         List<String> iris = new ArrayList<>(iriMappings.values());
         // If IRIs do not have a time series linked, initialize the corresponding time series
@@ -90,9 +90,6 @@ class DateTSClientDecorator {
             try (Connection conn = rdbClient.getConnection()) {
                 tsClient.initTimeSeries(iris, classes, this.timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-            } catch (SQLException e) {
-                LOGGER.error(e);
-                throw new JPSRuntimeException(e);
             }
         }
     }

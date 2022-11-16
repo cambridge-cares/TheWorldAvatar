@@ -109,7 +109,7 @@ public class DateTSClientDecoratorIntegrationT {
     }
 
     @Test
-    void testInitializeTimeSeriesWithExistingTimeSeries() {
+    void testInitializeTimeSeriesWithExistingTimeSeries() throws SQLException {
         // Create spy to verify executions on the time series client
         TimeSeriesClient<LocalDate> tsClientSpy = Mockito.spy(tsClient);
         testDecorator.setTsClient(tsClientSpy);

@@ -247,13 +247,6 @@
             <artifactId>commons-io</artifactId>
             <version>2.10.0</version>
         </dependency>
-        <!--  Used to mock environment variables in testing  -->
-        <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>1.2.0</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
