@@ -45,7 +45,7 @@
 :Building_2 
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_1 ; 
-    obe:hasLatestTransactionRecord :Transaction_1 ; 
+    obe:hasLatestTransactionRecord :Transaction_1 . 
 
 :Building_3 
     rdf:type dabgeo:Building ; 
@@ -63,7 +63,7 @@
     rdf:type dabgeo:Building ; 
     obe:hasAddress :Address_4 ; 
     obe:hasLatestTransactionRecord :Transaction_2 ; 
-    obe:hasLatestTransactionRecord :Transaction_3 ; 
+    obe:hasLatestTransactionRecord :Transaction_3 . 
 :Transaction_2 rdf:type lrppi:TransactionRecord ; 
                lrppi:transactionDate "2001-01-01"^^xsd:date ; 
                lrppi:pricePaid "200000"^^xsd:integer . 
