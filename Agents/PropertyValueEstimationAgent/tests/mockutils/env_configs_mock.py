@@ -1,0 +1,2 @@
+DATABASE='postgres'
+NAMESPACE='kb'
