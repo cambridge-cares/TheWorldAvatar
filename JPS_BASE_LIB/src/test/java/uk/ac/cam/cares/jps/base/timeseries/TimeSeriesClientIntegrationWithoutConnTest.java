@@ -24,8 +24,10 @@ import static org.mockito.Mockito.*;
  * have connection in their argument
  */
 
-//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
-//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+// @Ignore("Requires both triple store endpoint and postgreSQL database set up
+// and running (using testcontainers)\n" +
+// "Requires Docker to run the tests. When on Windows, WSL2 as backend is
+// required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationWithoutConnTest {
     // TimeSeries client (with RDB and Sparql client)
@@ -37,10 +39,13 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
     private static String timeUnit;
 
     // Will create two Docker containers for Blazegraph and postgreSQL
-    // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+    // NOTE: requires access to the docker.cmclinnovations.com registry from the
+    // machine the test is run on.
 
-    // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
-    // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+    // Create Docker container with Blazegraph image from CMCL registry (image uses
+    // port 9999)
+    // For more information regarding the registry, see:
+    // https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
     private GenericContainer<?> blazegraph = new GenericContainer<>(
             DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
@@ -58,16 +63,22 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
          * Initialise 1st time series with 3 associated data series
          */
         dataIRI_1 = new ArrayList<>();
-        dataIRI_1.add("http://data1"); dataIRI_1.add("http://data2"); dataIRI_1.add("http://data3");
-        // Specify type of data for each column (most data will be in doubles, but one can specify different data types)
+        dataIRI_1.add("http://data1");
+        dataIRI_1.add("http://data2");
+        dataIRI_1.add("http://data3");
+        // Specify type of data for each column (most data will be in doubles, but one
+        // can specify different data types)
         dataClass_1 = new ArrayList<>();
-        dataClass_1.add(Double.class); dataClass_1.add(String.class); dataClass_1.add(Integer.class);
+        dataClass_1.add(Double.class);
+        dataClass_1.add(String.class);
+        dataClass_1.add(Integer.class);
         /*
          * Initialise 2nd time series with only one associated data series
          */
         dataIRI_2 = new ArrayList<>();
         dataIRI_2.add("http://data4");
-        // Specify type of data for each column (most data will be in doubles, but one can specify different data types)
+        // Specify type of data for each column (most data will be in doubles, but one
+        // can specify different data types)
         dataClass_2 = new ArrayList<>();
         dataClass_2.add(Double.class);
     }
@@ -86,7 +97,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
                     "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
         }
 
-        // Set endpoint to the triple store. The host and port are read from the container
+        // Set endpoint to the triple store. The host and port are read from the
+        // container
         String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
         // Default namespace in blazegraph is "kb"
         endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
@@ -103,7 +115,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
     }
 
-    // Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished
+    // Cleaning up containers after each test, otherwise unused containers will
+    // first be killed when all tests finished
     @After
     public void stopContainers() {
         if (blazegraph.isRunning()) {
@@ -158,15 +171,18 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
 
         // Verify correct instantiation in both kb and database
         Assert.assertEquals(1, tsClient.countTimeSeries());
-        Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+        Assert.assertEquals(dataIRI_1.size(),
+                tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
         TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
         Assert.assertEquals(dataIRI_1.size(), ts.getDataIRIs().size());
 
-        // Delete 1st data series - verify deletion and that other data series are still unaltered
+        // Delete 1st data series - verify deletion and that other data series are still
+        // unaltered
         String dataIRI = dataIRI_1.remove(0);
         tsClient.deleteIndividualTimeSeries(dataIRI);
         Assert.assertEquals(1, tsClient.countTimeSeries());
-        Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+        Assert.assertEquals(dataIRI_1.size(),
+                tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
         ts = tsClient.getTimeSeries(dataIRI_1);
         Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
@@ -175,11 +191,13 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
                 () -> tsClient.deleteIndividualTimeSeries(finalDataIRI));
         Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
 
-        // Delete 2nd data series - verify deletion and that other data series are still unaltered
+        // Delete 2nd data series - verify deletion and that other data series are still
+        // unaltered
         dataIRI = dataIRI_1.remove(0);
         tsClient.deleteIndividualTimeSeries(dataIRI);
         Assert.assertEquals(1, tsClient.countTimeSeries());
-        Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+        Assert.assertEquals(dataIRI_1.size(),
+                tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
         Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
         ts = tsClient.getTimeSeries(dataIRI_1);
         Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
@@ -267,7 +285,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         TimeSeries<Instant> ts2 = tsClient.getTimeSeries(dataIRI_2);
         Assert.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
 
-        // Delete 1st time series - verify deletion and that 2nd time series is still unaltered
+        // Delete 1st time series - verify deletion and that 2nd time series is still
+        // unaltered
         String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
         tsClient.deleteTimeSeries(tsIRI);
         Assert.assertEquals(1, tsClient.countTimeSeries());
@@ -280,7 +299,8 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         TimeSeries<Instant> ts3 = tsClient.getTimeSeries(dataIRI_2);
         Assert.assertEquals(ts2.getDataIRIs(), ts3.getDataIRIs());
 
-        // Delete 2nd time series - verify deletion and that nothing remains in KG and database
+        // Delete 2nd time series - verify deletion and that nothing remains in KG and
+        // database
         tsIRI = tsClient.getTimeSeriesIRI(dataIRI_2.get(0));
         tsClient.deleteTimeSeries(tsIRI);
         Assert.assertEquals(0, tsClient.countTimeSeries());

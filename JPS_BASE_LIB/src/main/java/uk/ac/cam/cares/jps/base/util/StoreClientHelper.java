@@ -13,10 +13,16 @@ import java.sql.SQLException;
  * @author Mehal Agarwal (ma988@cam.ac.uk)
  */
 
-public class StoreClientHelper {
+public final class StoreClientHelper {
+
+    // All methods should be "static".
+    // This private constructor added to prevent instantiation.
+    private StoreClientHelper() {
+    }
 
     /**
      * Converts query results from java.sql.ResultSet into JSONArray
+     * 
      * @param rs query results in java.sql.ResultSet format
      * @return query results in JSONArray format
      * @throws SQLException
@@ -28,37 +34,48 @@ public class StoreClientHelper {
         while (rs.next()) {
             int numColumns = rsmd.getColumnCount();
             JSONObject obj = new JSONObject();
-            for (int i = 1; i < numColumns + 1; i++) {
-                String column_name = rsmd.getColumnName(i);
-                if (rsmd.getColumnType(i) == java.sql.Types.ARRAY) {
-                    obj.put(column_name, rs.getArray(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BIGINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BOOLEAN) {
-                    obj.put(column_name, rs.getBoolean(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.BLOB) {
-                    obj.put(column_name, rs.getBlob(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DOUBLE) {
-                    obj.put(column_name, rs.getDouble(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.FLOAT) {
-                    obj.put(column_name, rs.getFloat(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.INTEGER) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.NVARCHAR) {
-                    obj.put(column_name, rs.getNString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.VARCHAR) {
-                    obj.put(column_name, rs.getString(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TINYINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.SMALLINT) {
-                    obj.put(column_name, rs.getInt(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.DATE) {
-                    obj.put(column_name, rs.getDate(column_name));
-                } else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP) {
-                    obj.put(column_name, rs.getTimestamp(column_name));
-                } else {
-                    obj.put(column_name, rs.getObject(column_name));
+            for (int i = 1; i <= numColumns; i++) {
+                final Object value;
+                String columnName = rsmd.getColumnName(i);
+                switch (rsmd.getColumnType(i)) {
+                    case java.sql.Types.ARRAY:
+                        value = rs.getArray(columnName);
+                        break;
+                    case java.sql.Types.BOOLEAN:
+                        value = rs.getBoolean(columnName);
+                        break;
+                    case java.sql.Types.BLOB:
+                        value = rs.getBlob(columnName);
+                        break;
+                    case java.sql.Types.DOUBLE:
+                        value = rs.getDouble(columnName);
+                        break;
+                    case java.sql.Types.FLOAT:
+                        value = rs.getFloat(columnName);
+                        break;
+                    case java.sql.Types.INTEGER:
+                    case java.sql.Types.TINYINT:
+                    case java.sql.Types.SMALLINT:
+                    case java.sql.Types.BIGINT:
+                        value = rs.getInt(columnName);
+                        break;
+                    case java.sql.Types.NVARCHAR:
+                        value = rs.getNString(columnName);
+                        break;
+                    case java.sql.Types.VARCHAR:
+                        value = rs.getString(columnName);
+                        break;
+                    case java.sql.Types.DATE:
+                        value = rs.getDate(columnName);
+                        break;
+                    case java.sql.Types.TIMESTAMP:
+                        value = rs.getTimestamp(columnName);
+                        break;
+                    default:
+                        value = rs.getObject(columnName);
+                        break;
                 }
+                obj.put(columnName, value);
             }
             json.put(obj);
         }

@@ -23,6 +23,9 @@ volumes:
       - com.docker.stack.namespace:${STACK_NAME}
 
 configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
   postgis:
     name: ${STACK_NAME}_postgis
     external: true
