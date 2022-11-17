@@ -20,6 +20,10 @@ TIME_FORMAT_LONG = '%Y-%m-%d'
 TIME_FORMAT_SHORT = '%Y-%m'
 
 # OM / UOM unit symbols
+# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
+#       claiming to use utf-8 encoding while actually using iso-8859-1
+#       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
+# Details: https://github.com/blazegraph/database/issues/224
 GBP_SYMBOL = '£'
 
 

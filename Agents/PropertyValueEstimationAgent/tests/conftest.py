@@ -322,11 +322,8 @@ def get_marketvalue_details(sparql_client, market_value_iri):
         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
         # Market Value and monetary unit
         market_value = list(set([float(x['value']) for x in response]))
-        # TODO: Uploading GBP symbol to Blazegraph results in 'Â£' instead of just '£'
-        #       likely due to encoding discrepancies along the way 
-        #       --> Simple removing of 'Â' upon retrieval to be revisited
-        unit = list(set([str(x['unit']).replace('Â','') for x in response]))
-
+        # NOTE: Fix encoding issue with pound sterling
+        unit = list(set([str(x['unit']).encode('ISO-8859-1').decode('utf-8') for x in response]))
         return inputs, market_value, unit
 
 
