@@ -81,3 +81,5 @@ In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespa
 ## Deployment
 
 To deploy the agent, follow the generic steps for deploying a stack-enabled agent.
+
+It is worth noting however that the docker compose setup for this agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former before running the container should automatically make them available to the agent.

@@ -30,7 +30,6 @@ WORKDIR /app
 COPY --from=builder /root/code/output/feature-info-agent##2.0.0.war $CATALINA_HOME/webapps/
 COPY --from=builder /root/code/feature-info.properties /root/feature-info.properties
 COPY ./tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
-COPY ./queries /app
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
