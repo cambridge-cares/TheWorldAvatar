@@ -132,6 +132,8 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df = None)
 
 def get_df_of_ts(tsIRI,tsClient ,lowerbound, upperbound, column_name = "cov", date_name = "Date"):
     dates, values = get_ts_data(tsIRI, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
+    if len(values) == 0:
+        raise ValueError(f"no values for tsIRI {tsIRI}")
     df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name ])
     # remove time zone
     df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
