@@ -21,6 +21,7 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERI
                                               ONTODERIVATION_DERIVATIONASYN, ONTODERIVATION_HASSTATUS, \
                                               ONTODERIVATION_ERROR
 from pyderivationagent.conf import config_derivation_agent
+from pyderivationagent import PyDerivationClient
 
 from agent.datamodel.iris import *
 from agent.datamodel.data import DATACLASS, TIME_FORMAT_SHORT
@@ -177,9 +178,10 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     sparql_client = KGClient(sparql_endpoint, sparql_endpoint)
 
     # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=sparql_client.query_endpoint,
+        update_endpoint=sparql_client.update_endpoint,
     )
 
     yield sparql_client, derivation_client, rdb_url

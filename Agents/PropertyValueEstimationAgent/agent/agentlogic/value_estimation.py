@@ -191,7 +191,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
             # Round property market value to full kGBP
             market_value = round(market_value/1000)*1000
             # Create instantiation/update triples
-            market_value_iri = KB + 'AmountOfMoney' + str(uuid.uuid4())
+            market_value_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
             triples = self.sparql_client.instantiate_property_value(property_iri=res['property_iri'],
                                                                     property_value_iri=market_value_iri, 
                                                                     property_value=market_value)
