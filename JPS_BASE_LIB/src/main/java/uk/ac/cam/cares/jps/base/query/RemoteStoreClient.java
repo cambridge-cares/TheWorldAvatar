@@ -46,10 +46,11 @@ import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -57,10 +58,10 @@ import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
 
 /**
- * This class allows to establish connection with remote knowledge repositories
- * to perform SPARQL query and update operations. It supports many triple
- * stores such as Blazegraph and RDF4J. It requires to set the end point URL for
- * the intended type of operation. See some example end point URLS:
+ * This class allows to establish connection with remote knowledge
+ * repositories to perform SPARQL query and update operations. It supports many
+ * triple stores such as Blazegraph and RDF4J. It requires to set the end point
+ * URL for the intended type of operation. See some example end point URLS:
  * <p>
  * Blazegraph query end point URL:
  * http://localhost:8080/blazegraph/namespace/kb/sparql
@@ -83,10 +84,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
-
-    // Connection and Statement objects
-    Connection conn;
-    Statement stmt;
 
     private String queryEndpoint;
     private String updateEndpoint;
@@ -290,7 +287,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             try {
                 // normalise the URI before checking if it contains the "/blazegraph/namespace/"
                 // so that this works on both Linux and Windows OS
-                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath()
+                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath().toString()
                         .contains("/blazegraph/namespace/")) {
                     return true;
                 }
@@ -336,20 +333,28 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: connection URL for the update operation is empty.");
-            }
-            if (isConnectionUpdateUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                return stmt.executeUpdate(query);
-            } else {
-                throw new JPSRuntimeException(
-                        "RemoteStoreClient: connection URL for the update operation is not valid.");
-            }
+        try (Connection conn = getConnection()) {
+            return executeUpdate(query, conn);
         } catch (SQLException e) {
-            throw new JPSRuntimeException("Failed to execute update.", e);
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Executes the update operation supplied by the calling method and returns
+     * results.
+     *
+     * @param query
+     * @param conn  connection to the remote store
+     * @return
+     */
+    public int executeUpdate(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            return stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: error when executing SPARQL update:\n" + query, e);
         }
     }
 
@@ -357,33 +362,17 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * Executes the update operation by HTTP POST and returns the HttpResponse
      * instance. This method was tested for blazegraph and rdf4j triple store. The
      * entity of response from blazegraph endpoint will be something look like:
-     * 
-     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-     * "http://www.w3.org/TR/html4/loose.dtd">
-     * <html>
-     * <head>
-     * <meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8">
-     * <title>blazegraph&trade; by SYSTAP</title>
-     * </head>
-     * <body>
      * <p>
-     * totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0,
-     * whereClause=0ms, deleteClause=0ms, insertClause=0ms
-     * </p>
-     * <hr>
+     * {@code COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1}
      * <p>
-     * COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1
-     * </p>
-     * </body>
-     * </html>
-     * 
      * So one can parse this string to determine the amount of triples got updated
-     * by regex matching "mutationCount=([0-9]+)".
+     * by regex matching "{@code mutationCount=([0-9]+)}".
      * 
      * However, the rdf4j endpoint will only return HTTP 204 No Content status -
      * there is no way to know if the SPARQL update actually changed any triples.
      * 
      * @param query
+     * 
      * @return
      */
     public CloseableHttpResponse executeUpdateByPost(String query) {
@@ -401,16 +390,18 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
         LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", this.updateEndpoint, query);
         // then send the post request
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(postRequest);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 300) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            // the returned CloseableHttpResponse should be handled with try-with-resources
+            CloseableHttpResponse response = httpClient.execute(postRequest);
+            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
                 throw new JPSRuntimeException(
-                        "SPARQL update execution by HTTP POST failed. Response status code = " + statusCode);
+                        "SPARQL update execution by HTTP POST failed. Response status code ="
+                                + response.getStatusLine().getStatusCode());
             }
             return response;
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("SPARQL update execution by HTTP POST failed.", ex);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: SPARQL update execution by HTTP POST failed: " + query, e);
         }
     }
 
@@ -425,7 +416,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Excute sparql query
+     * Execute sparql query
      *
      * @param query
      * @return JSONArray as String
@@ -452,31 +443,39 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Executes the query supplied by the calling method and returns results as a
-     * JSONArray.
+     * Executes the query supplied by the calling method and returns results
+     * as a JSONArray.
      *
      * @param query
      * @return
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results;
-        try {
-            String connectionUrl = getConnectionUrl();
-            if (connectionUrl.isEmpty()) {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
-            }
-            if (isConnectionQueryUrlValid(connectionUrl)) {
-                connect(connectionUrl);
-                java.sql.ResultSet rs = stmt.executeQuery(query);
-                results = StoreClientHelper.convert(rs);
-            } else {
-                throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
-            }
+        try (Connection conn = getConnection()) {
+            return executeQuery(query, conn);
         } catch (SQLException e) {
-            throw new JPSRuntimeException("Failed to execute query.", e);
+            throw new JPSRuntimeException(e.getMessage(), e);
         }
-        return results;
+    }
+
+    /**
+     * Executes the query supplied by the calling method and returns results
+     * as a JSONArray.
+     *
+     * @param query
+     * @param conn  connection to the remote store
+     * @return
+     */
+    public JSONArray executeQuery(String query, Connection conn) {
+        try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                java.sql.ResultSet.CONCUR_READ_ONLY)) {
+            java.sql.ResultSet rs = stmt.executeQuery(query);
+            JSONArray results = StoreClientHelper.convert(rs);
+            return results;
+        } catch (Exception e) {
+            throw new JPSRuntimeException(
+                    "RemoteStoreClient: error when executing SPARQL query:\n" + query, e);
+        }
     }
 
     /**
@@ -529,24 +528,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Establishes connection to triple store and sets the Statement Object
-     */
-    protected void connect(String connectionUrl) {
-        try {
-            if (this.conn == null || this.conn.isClosed()) {
-                RemoteEndpointDriver.register();
-                conn = DriverManager.getConnection(connectionUrl);
-                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            }
-        } catch (SQLException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Generates the URL of the remote data repository's EndPoint, which<br>
-     * might require authentication either to perform a data retrieval or<br>
-     * an update query.
+     * Generates the URL of the remote data repository's EndPoint, which might
+     * require authentication either to perform a data retrieval or an update query.
      *
      * @return
      */
@@ -571,15 +554,34 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(JenaDriver.PARAM_USERNAME, this.userName));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
         }
         if (this.password != null) {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(JenaDriver.PARAM_PASSWORD, this.password));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
         }
         return sb.toString();
+    }
+
+    /**
+     * Establish connection to remote store
+     * 
+     * @return connection object to the remote store
+     * @throws SQLException
+     */
+    public Connection getConnection() throws SQLException {
+        String connectionUrl = getConnectionUrl();
+        if (connectionUrl.isEmpty()) {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is empty");
+        }
+        if (isConnectionQueryUrlValid(connectionUrl) || isConnectionUpdateUrlValid(connectionUrl)) {
+            RemoteEndpointDriver.register();
+            return DriverManager.getConnection(connectionUrl);
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: the URL to connect to the endpoint is not valid");
+        }
     }
 
     /**
@@ -591,7 +593,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     private String generateEndpointProperty(String endpointType, String endpointURL) {
-        return endpointType + "=" + endpointURL;
+        StringBuilder sb = new StringBuilder();
+        sb.append(endpointType);
+        sb.append("=");
+        sb.append(endpointURL);
+        return sb.toString();
     }
 
     /**
@@ -599,16 +605,15 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * repository based on user provided inputs via one of the parameterised
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing a
-     *                      connection with the remote repository to perform a query
-     *                      operation
-     * @return
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      a connection with the remote repository to perform a
+     *                      query operation
      */
     public boolean isConnectionQueryUrlValid(String connectionUrl) {
-        if (connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
-                .concat(HTTP_PROTOCOL))
-                || connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
-                        .concat(HTTPS_PROTOCOL))) {
+        if (connectionUrl.startsWith(getQueryEndpointConnectionPrefixes()
+                + HTTP_PROTOCOL)
+                || connectionUrl.startsWith(getQueryEndpointConnectionPrefixes()
+                        + HTTPS_PROTOCOL)) {
             return isConnectionUrlValid(connectionUrl);
         }
         return false;
@@ -616,11 +621,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
     /**
      * Checks the validity of the URL generated for connecting to a remote
-     * repository based on user provided inputs via one of the parameterised
+     * repository based on user provided inputs via one of the parametrised
      * constructors or setter methods.
      *
-     * @param connectionUrl provided URL that is to be used for establishing a
-     *                      connection with the remote repository to perform an
+     * @param connectionUrl provided URL that is to be used for establishing
+     *                      a connection with the remote repository to perform an
      *                      update operation
      * @return
      */
@@ -629,15 +634,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         // the executeUpdate() method. This is why it is crucial to check
         // if the provided update URL is correctly encoded.
         if (isConnectionQueryUrlValid(connectionUrl)) {
-            if (connectionUrl.contains(getUpdateEndpointConnectionParameter().concat(HTTP_PROTOCOL))
-                    || connectionUrl.contains(
-                            getUpdateEndpointConnectionParameter().concat(HTTPS_PROTOCOL))) {
+            if (connectionUrl.contains(getUpdateEndpointConnectionParameter() + HTTP_PROTOCOL)
+                    || connectionUrl.contains(getUpdateEndpointConnectionParameter() + HTTPS_PROTOCOL)) {
                 return true;
             }
         }
-        if (connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTP_PROTOCOL))
-                || connectionUrl
-                        .startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTPS_PROTOCOL))) {
+        if (connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes() + HTTP_PROTOCOL)
+                || connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes() + HTTPS_PROTOCOL)) {
             return isConnectionUrlValid(connectionUrl);
         }
         return false;
@@ -673,7 +676,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      *
      * @return
      */
-    private String getQueryEndpointConnectionPrfixes() {
+    private String getQueryEndpointConnectionPrefixes() {
         return JenaDriver.DRIVER_PREFIX
                 + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
                 + RemoteEndpointDriver.PARAM_QUERY_ENDPOINT
@@ -699,19 +702,21 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      */
     private String getUpdateEndpointConnectionParameter() {
-        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT + "=";
+        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+                + "=";
     }
 
     /**
      * If a list of SPARQL endpoints and a query are passed to this method, it
-     * evaluates<br>
-     * the query against all the endpoints and returns the result in JSON
-     * format.<br>
+     * evaluates the query against all the endpoints and returns the result in JSON
+     * format.
      * <br>
-     * Endpoints should be provided as shown in the following two examples:<br>
+     * Endpoints should be provided as shown in the following two examples:
+     * <br>
      * 1. OntoSpecies KB endpoint:
-     * http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql 2.
-     * OntoCompChem KB endpoint:
+     * http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql
+     * </br>
+     * 2. OntoCompChem KB endpoint:
      * http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql
      *
      * @param endpoints a list of endpoints.
@@ -727,12 +732,14 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         BindingSet bSet;
         // Creates a federation with all provided endpoints.
         Repository repository = FedXFactory.createSparqlFederation(endpoints);
-        try (// Establishes a connection with all the endpoints.
-                RepositoryConnection conn = repository.getConnection()) {
+        try {
+            // Establishes a connection with all the endpoints.
+            RepositoryConnection conn = repository.getConnection();
             // Prepares the query for execution against all the endpoints.
             TupleQuery tq = conn.prepareTupleQuery(query);
-            try (// Evaluates the query against all the endpoints.
-                    TupleQueryResult tqRes = tq.evaluate()) {
+            try {
+                // Evaluates the query against all the endpoints.
+                TupleQueryResult tqRes = tq.evaluate();
                 // Processes the result
                 while (tqRes.hasNext()) {
                     obj = new JSONObject();
@@ -754,10 +761,14 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                     }
                     json.put(obj);
                 }
+            } catch (TupleQueryResultHandlerException e) {
+                e.printStackTrace();
             }
-        } finally {
-            repository.shutDown();
+            conn.close();
+        } catch (RepositoryException e) {
+            e.printStackTrace();
         }
+        repository.shutDown();
         return json;
     }
 
@@ -838,11 +849,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * upload a file to the endpoint using its REST API only tested the xml format
-     * with Blazegraph and RDF4j, this may vary between stores the update endpoint
-     * for rdf4j is
-     * <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
-     * The query and update endpoints for Blazegraph are the same
+     * Upload a file to the endpoint using its REST API.
+     * Only tested the xml format with Blazegraph and RDF4j, this may vary between
+     * stores. The update endpoint for rdf4j is
+     * <p>
+     * {@code <BASE_HTTP_URL\>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements}.
+     * <p>
+     * The query and update endpoints for Blazegraph are the same.
      * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig,
      * nq, rsj, json
      *
@@ -854,7 +867,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * same method as above but receives extension as a separate argument
+     * Same method as above but receives extension as a separate argument
      * 
      * @param file
      * @param extension

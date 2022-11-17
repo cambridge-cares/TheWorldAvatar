@@ -44,7 +44,7 @@ public class Dataset {
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
-        this.datasetDirectory = (null != datasetDirectory) ? datasetDirectory : Path.of(name);
+        this.datasetDirectory = datasetDirectory;
         this.database = database;
         this.namespace = namespace;
         this.workspaceName = (null != workspaceName) ? workspaceName : name;
@@ -64,7 +64,7 @@ public class Dataset {
     }
 
     public Path getDirectory() {
-        return Path.of("/inputs", "data").resolve(datasetDirectory);
+        return Path.of("/inputs", "data").resolve((null != datasetDirectory) ? datasetDirectory : Path.of(name));
     }
 
     public String getDatabase() {

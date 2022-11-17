@@ -30,7 +30,7 @@
 
   <!-- Unspecified Metre Ontology -->
 
-  <om:Unit rdf:about="http://theworldavatar.com/resource/ontouom/metreUnspecified">
+  <om:Unit rdf:about="https://www.theworldavatar.com/kg/ontouom/metreUnspecified">
     <rdfs:label xml:lang="en">metre</rdfs:label>
     <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
     <om:symbol>m</om:symbol>
