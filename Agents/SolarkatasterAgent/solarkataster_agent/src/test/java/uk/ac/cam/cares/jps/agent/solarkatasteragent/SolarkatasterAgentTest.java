@@ -20,6 +20,18 @@ import java.sql.Connection;
 
 public class SolarkatasterAgentTest {
     @Test
+    public void testSolarkatasterAgent() {
+        SolarkatasterAgent agent;
+
+        try {
+            agent = new SolarkatasterAgent();
+            assertNotNull(agent);
+        }
+        catch (Exception e) {
+            fail();
+        }
+    }
+    @Test
     public void testProcessReqeustParameters() throws Exception {
         // Test processRequestParameters(JSONObject requestParams, HttpServletRequest request)
         SolarkatasterAgent agentHTTP = spy(new SolarkatasterAgent());
