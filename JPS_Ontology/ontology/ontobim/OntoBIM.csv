@@ -69,8 +69,14 @@ https://saref.etsi.org/core/Appliance,Class,https://saref.etsi.org/core/Device,I
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A commercial and home appliance that maintains a lower internal temperature relative to the room temperature.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Fridge
 https://saref.etsi.org/core/Mete,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/core/,Meter
 ElectricityMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device built to accurately detect and display the electricity consumption rates in a form readable by a human being.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Electricity Meter
+WaterMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device built to accurately detect and display the water consumption rates in a form readable by a human being.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Water Meter
+OilMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device built to accurately detect and display the oil consumption rates in a form readable by a human being.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Oil Meter
 PollutionMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device built to accurately detect and display the air pollution rates in a form readable by a human being.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Pollution Meter
 https://saref.etsi.org/core/Sensor,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/core/,Sensor
+IlluminanceSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that can measure and transmit data on ambient light.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Illuminance Sensor
+CarbonDioxideGasSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that can measure and transmit data on the amount of atmospheric CO2 gas.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Carbon Dioxide Gas Sensor
+WeatherStation,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that can measure and transmit data on atmospheric and soil conditions.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Weather Station
+WeatherStation,Class,https://www.theworldavatar.com/kg/ontoems/ReportingStation,EQUIVALENT-TO,,,,A sensor that can measure and transmit data on atmospheric and soil conditions.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Weather Station
 https://saref.etsi.org/saref4bldg/BuildingDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/saref4bldg/,Building Device
 https://saref.etsi.org/saref4bldg/SolarDevice,Class,https://saref.etsi.org/saref4bldg/BuildingDevice,IS-A,,,,,https://saref.etsi.org/saref4bldg/,Solar Device
 SolarPanel,Class,https://saref.etsi.org/saref4bldg/SolarDevice,IS-A,,,,A solar device that converts solar radiation into electric current for electricity needs.,http://www.theworldavatar.com/ontology/ontobim/ontoBIM,Solar Panel

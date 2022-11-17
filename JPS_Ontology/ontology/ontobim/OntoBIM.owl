@@ -1522,6 +1522,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CarbonDioxideGasSensor -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CarbonDioxideGasSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that can measure and transmit data on the amount of atmospheric CO2 gas.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon Dioxide Gas Sensor</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint -->
 
 
@@ -1788,6 +1800,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#IlluminanceSensor -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#IlluminanceSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that can measure and transmit data on ambient light.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Illuminance Sensor</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#InclinedRoof -->
 
 
@@ -1887,6 +1911,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The 3D geometric model representation of an element in a IFC model.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3D Model Representation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#OilMeter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#OilMeter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device built to accurately detect and display the oil consumption rates in a form readable by a human being.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oil Meter</rdfs:label>
     </owl:Class>
     
 
@@ -2138,6 +2174,31 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#WaterMeter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#WaterMeter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device built to accurately detect and display the water consumption rates in a form readable by a human being.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water Meter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#WeatherStation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#WeatherStation">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that can measure and transmit data on atmospheric and soil conditions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobim/ontoBIM</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Weather Station</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window -->
 
 
@@ -2328,6 +2389,13 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/ReportingStation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
     
 
 
