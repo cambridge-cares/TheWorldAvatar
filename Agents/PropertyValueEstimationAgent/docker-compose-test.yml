@@ -6,6 +6,9 @@ services:
     build:
       context: .
       target: test
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: propertyvalueestimation
     environment:
       # The following environment variables are required for the agent Docker container to start
       # Similar as in the `agent_test.env` file for local testing, triple store endpoints are just 

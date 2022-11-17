@@ -4,3 +4,6 @@ services:
     build:
       context: .
       target: prod
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: propertyvalueestimation

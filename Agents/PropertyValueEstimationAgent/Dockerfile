@@ -1,4 +1,4 @@
-# Install the Average Square Metre Price Agent in Docker container
+# Install the Property Market Value Estimation Agent in Docker container
 #==================================================================================================
 
 #------------------------------------------------------
@@ -7,7 +7,7 @@
 FROM python:3.9.14-slim-buster as base
 # Meta data
 LABEL authors = "mh807@cam.ac.uk"
-LABEL description = "Assess average square metre price for instantiated properties in same postcode."
+LABEL description = "Assess market value estimate for instantiated properties (i.e. buildings, flats)."
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -24,6 +24,11 @@ COPY ./tmp_stack ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+
+# Access build arguments from docker-compose.yml
+# (Use ENV instead of ARG for variable to be available in ENTRYPOINT command)
+ARG agentdir
+ENV AGENTDIR=${agentdir}
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
@@ -44,11 +49,12 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/agent/agent:create_app()
+# TODO: path to be verified on DO
+ENV FLASK_APP=app/$AGENTDIR/agent:create_app()
 ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/agent
+WORKDIR /app/$AGENTDIR
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
@@ -61,10 +67,11 @@ RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./agent ./agent
+COPY ./$AGENTDIR ./$AGENTDIR
 
 # Set the entrypoint
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "agent:create_app()"]
+# Use shell form to enable variable substitution (https://stackoverflow.com/a/37904830)
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()"
 
 
 #------------------------------------------------------
@@ -76,16 +83,17 @@ RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./agent ./agent
+COPY ./$AGENTDIR ./$AGENTDIR
 
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
-COPY ./tests/mockutils/env_configs_mock.py ./agent/utils/env_configs.py
-COPY ./tests/mockutils/stack_configs_mock.py ./agent/utils/stack_configs.py
+COPY ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
+COPY ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
 # Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./agent/utils/stack_configs.py
+RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
 # Set the entrypoint
 # --preload flag is added to provide more information in the container to help with debugging
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "agent:create_app()", "--preload"]
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload
+
 
 #==================================================================================================

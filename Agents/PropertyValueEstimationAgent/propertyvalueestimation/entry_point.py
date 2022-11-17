@@ -1,8 +1,8 @@
 from pyderivationagent.conf import config_derivation_agent
 
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.agentlogic import PropertyValueEstimationAgent
-from agent.agentlogic import default
+from propertyvalueestimation.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from propertyvalueestimation.agent import PropertyValueEstimationAgent
+from propertyvalueestimation.agent import default
 
 def create_app():
     # Depending on the deployment environment, different ways to retrieve/set the 

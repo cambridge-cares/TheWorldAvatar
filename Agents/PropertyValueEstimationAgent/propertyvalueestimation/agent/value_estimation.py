@@ -15,11 +15,11 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-from agent.datamodel.iris import *
-from agent.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
-from agent.errorhandling.exceptions import TSException
-from agent.kg_operations.kgclient import KGClient
-from agent.kg_operations.tsclient import TSClient
+from propertyvalueestimation.datamodel.iris import *
+from propertyvalueestimation.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
+from propertyvalueestimation.errorhandling.exceptions import TSException
+from propertyvalueestimation.kg_operations.kgclient import KGClient
+from propertyvalueestimation.kg_operations.tsclient import TSClient
 
 
 class PropertyValueEstimationAgent(DerivationAgent):

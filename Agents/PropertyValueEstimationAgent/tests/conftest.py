@@ -23,11 +23,11 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERI
 from pyderivationagent.conf import config_derivation_agent
 from pyderivationagent import PyDerivationClient
 
-from agent.datamodel.iris import *
-from agent.datamodel.data import DATACLASS, TIME_FORMAT_SHORT
-from agent.kg_operations.kgclient import KGClient
-from agent.kg_operations.tsclient import TSClient
-from agent.agentlogic import PropertyValueEstimationAgent
+from propertyvalueestimation.datamodel.iris import *
+from propertyvalueestimation.datamodel.data import DATACLASS, TIME_FORMAT_SHORT
+from propertyvalueestimation.kg_operations.kgclient import KGClient
+from propertyvalueestimation.kg_operations.tsclient import TSClient
+from propertyvalueestimation.agent import PropertyValueEstimationAgent
 
 
 # ----------------------------------------------------------------------------------

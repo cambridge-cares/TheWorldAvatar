@@ -4,8 +4,8 @@ import pytest
 import time
 import copy
 
-import agent.datamodel as dm
-from agent.datamodel.data import GBP_SYMBOL
+import propertyvalueestimation.datamodel as dm
+from propertyvalueestimation.datamodel.data import GBP_SYMBOL
 
 from . import conftest as cf
 

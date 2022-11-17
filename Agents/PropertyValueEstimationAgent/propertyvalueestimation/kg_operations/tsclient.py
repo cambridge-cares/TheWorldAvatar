@@ -10,10 +10,10 @@ from contextlib import contextmanager
 
 from py4jps import agentlogging
 
-from agent.datamodel.data import TIMECLASS
-from agent.errorhandling.exceptions import TSException
-from agent.kg_operations.javagateway import jpsBaseLibGW
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from propertyvalueestimation.datamodel.data import TIMECLASS
+from propertyvalueestimation.errorhandling.exceptions import TSException
+from propertyvalueestimation.kg_operations.javagateway import jpsBaseLibGW
+from propertyvalueestimation.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')

@@ -8,8 +8,8 @@
 
 from py4jps import agentlogging
 
-from agent.kg_operations.javagateway import stackClientsGw
-from agent.utils.env_configs import DATABASE, NAMESPACE
+from propertyvalueestimation.kg_operations.javagateway import stackClientsGw
+from propertyvalueestimation.utils.env_configs import DATABASE, NAMESPACE
 
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
