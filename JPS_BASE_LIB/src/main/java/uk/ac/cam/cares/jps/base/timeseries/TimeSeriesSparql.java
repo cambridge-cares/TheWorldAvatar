@@ -86,10 +86,10 @@ public class TimeSeriesSparql {
 	private static final Variable tsType = Queries.SELECT().var();
 	private static final ValuesPattern vp = new ValuesPattern(tsType, types);
 
-	//	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList("unitSecond", "unitMinute", "unitHour", "unitDay", "unitWeek", "unitMonth", "unitYear"));
+	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList("unitSecond", "unitMinute", "unitHour", "unitDay", "unitWeek", "unitMonth", "unitYear"));
 
 	//EnumMap of allowed temporalUnit types
-	private static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
+	public static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
 	static {
 		temporalUnitMap.put(ChronoUnit.SECONDS, ns_time+"unitSecond");
 		temporalUnitMap.put(ChronoUnit.MINUTES, ns_time+"unitMinute");
@@ -192,59 +192,135 @@ public class TimeSeriesSparql {
 
 	}
 
+	/////////////////////////////////
+//	AVERAGE TIME SERIES UTILITIES
+	////////////////////////////////
+
 	/**
-	 * Check whether given duration IRI is attached to an Average time series
-	 * @param durationIRI duration IRI provided as string
-	 * @return True if durationIRI exists and is attached to an Average time series, false otherwise
+	 * Returns the custom duration object containing the numerical duration value and temporal unit
+	 * associated with the avergae time series iri.
+	 * Returns null if the average time series does not exist or if the given time series is not of average time series type.
+	 * @param tsIRI Average time series
+	 * @return custom duration with numerical duration and temporal unit
 	 */
-	private boolean checkDurationHasAverageTimeSeries(String durationIRI) {
-		String query = String.format("ask {?a <%s> <%s>}", (ns_ontology + "hasAveragingPeriod"), durationIRI);
-		kbClient.setQuery(query);
-		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+	protected CustomDuration getCustomDuration(String tsIRI){
+
+		CustomDuration duration = null;
+		SelectQuery query = Queries.SELECT();
+		Variable value = SparqlBuilder.var("value");
+		Variable unit = SparqlBuilder.var("unit");
+		Variable dur = SparqlBuilder.var("dur");
+		TriplePattern queryPattern_1 = iri(tsIRI).has(hasAveragingPeriod, dur);
+		TriplePattern queryPattern_2 = dur.has(numericDuration, value).andHas(unitType, unit);
+
+		query.select(value, unit).where(queryPattern_1, queryPattern_2).prefix(prefix_time).prefix(prefix_ontology);
+
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+		if(!result.isEmpty()){
+			duration = new CustomDuration(Double.valueOf(result.getJSONObject(0).getString("value")), result.getJSONObject(0).getString("unit"));
+		}
+
+		return duration;
 	}
 
 	/**
-	 * Check whether a particular Average time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI AverageTimeSeries IRI provided as string
-	 * @return True if an average time series instance with the tsIRI exists, false otherwise
+	 * Check if an averaging period with given temporalUnit and numericDuration already exists in the knowledge graph.
+	 * Returns null if such an averaging period doesn't exist.
+	 * @param temporalUnit unit type of the averaging period
+	 * @param numericValue numerical duration of the averaging period
+	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
 	 */
-	private boolean checkAverageTimeSeriesExists(String timeSeriesIRI) {
-		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "AverageTimeSeries"));
-		kbClient.setQuery(query);
-		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+	public String getDurationIRI(String temporalUnit, Double numericValue) {
+
+		String durationIRI = null;
+		String queryString = "periodIRI";
+
+		SelectQuery query = Queries.SELECT();
+		Variable periodIRI = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(temporalUnit));
+
+		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
+
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+		if(!result.isEmpty()){
+			durationIRI = result.getJSONObject(0).getString(queryString);
+		}
+
+		return durationIRI;
 	}
 
 	/**
-	 * Check whether a particular Instantaneous time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI InstantaneousTimeSeries IRI provided as string
-	 * @return True if an Instantaneous time series instance with the tsIRI exists, false otherwise
+	 * Creates a hashMap containing the (numericDuration, temporalUnit) mapping to averaging period IRI
+	 * for all the averaging period Iris in the kb
+	 * @return hashMap containing (numericDuration, temporalUnit) mapping to averaging period IRI
 	 */
-	private boolean checkInstantaneousTimeSeriesExists(String timeSeriesIRI) {
-		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "InstantaneousTimeSeries"));
-		kbClient.setQuery(query);
-		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+	public HashMap createDurationIRIMapping(){
+
+		HashMap<CustomDuration, String> durationMap = new HashMap<>();
+
+		SelectQuery query = Queries.SELECT();
+		Variable durIRI = SparqlBuilder.var("durIRI");
+		Variable value = SparqlBuilder.var("value");
+		Variable unit = SparqlBuilder.var("unit");
+
+		TriplePattern queryPattern = durIRI.has(numericDuration, value).andHas(unitType, unit);
+		query.select(durIRI, value, unit).where(queryPattern).prefix(prefix_time);
+		JSONArray result = kbClient.executeQuery(query.getQueryString());
+
+		for (int i=0; i < result.length(); i++){
+			CustomDuration duration = new CustomDuration(Double.valueOf(result.getJSONObject(i).getString("value")), result.getJSONObject(i).getString("unit"));
+			durationMap.put(duration, result.getJSONObject(i).getString("durIRI"));
+		}
+		return durationMap;
+
 	}
 
 	/**
-	 * Check whether a particular CumulativeTotal time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI CumulativeTotalTimeSeries IRI provided as string
-	 * @return True if a CumulativeTotal time series instance with the tsIRI exists, false otherwise
+	 * * Removes average time series and all associated connections from kb (i.e. remove all triples with tsIRI as subject or object)
+	 * @param tsIRI
 	 */
-	private boolean checkCumulativeTotalTimeSeriesExists(String timeSeriesIRI) {
-		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "CumulativeTotalTimeSeries"));
-		kbClient.setQuery(query);
-		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+	protected void removeAverageTimeSeries(String tsIRI){
+		// sub query to search for all triples with tsIRI as the subject/object
+		SubSelect sub = GraphPatterns.select();
+		Variable predicate1 = SparqlBuilder.var("a");
+		Variable predicate2 = SparqlBuilder.var("b");
+		Variable subject = SparqlBuilder.var("c");
+		Variable object1 = SparqlBuilder.var("d");
+		Variable predicate3 = SparqlBuilder.var("e");
+		Variable object2 = SparqlBuilder.var("f");
+		Variable durIRI = SparqlBuilder.var("durIRI");
+
+		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object1);
+		TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));
+		TriplePattern delete_tp3 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+		TriplePattern delete_tp4 = durIRI.has(predicate3, object2);
+		sub.select(predicate1, predicate2, predicate3, subject, object1, object2, durIRI).where(delete_tp1, delete_tp2, delete_tp3, delete_tp4);
+
+		// insert subquery into main sparql update
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp1, delete_tp2, delete_tp3, delete_tp4).where(sub).prefix(prefix_ontology);
+
+		kbClient.setQuery(modify.getQueryString());
+		kbClient.executeUpdate();
 	}
 
-	/**
-	 * Check whether a particular StepwiseCumulative time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI StepwiseCumulativeTimeSeries IRI provided as string
-	 * @return True if a StepwiseCumulative time series instance with the tsIRI exists, false otherwise
-	 */
-	private boolean checkStepwiseCumulativeTimeSeriesExists(String timeSeriesIRI) {
-		String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "StepwiseCumulativeTimeSeries"));
-		kbClient.setQuery(query);
-		return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+	protected String getAveragingPeriod(String tsIRI){
+
+		String averagingPeriodIRI = null;
+
+		SelectQuery query = Queries.SELECT();
+		String queryString = "durIRI";
+		Variable durIRI = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+
+		query.select(durIRI).where(queryPattern).prefix(prefix_ontology);
+		kbClient.setQuery(query.getQueryString());
+		JSONArray result = kbClient.executeQuery();
+		if(!result.isEmpty()){
+			averagingPeriodIRI = kbClient.executeQuery().getJSONObject(0).getString(queryString);
+		}
+		return averagingPeriodIRI;
+
 	}
 
 	/**
@@ -380,55 +456,6 @@ public class TimeSeriesSparql {
 		}
 
 		kbClient.executeUpdate(modify.getQueryString());
-	}
-
-	/**
-	 * Check if an averaging period with given temporalUnit and numericDuration already exists in the knowledge graph.
-	 * @param temporalUnit unit type of the averaging period
-	 * @param numericValue numerical duration of the averaging period
-	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
-	 */
-	public String getDurationIRI(String temporalUnit, Double numericValue) {
-
-		String durationIRI = null;
-		String queryString = "periodIRI";
-
-		SelectQuery query = Queries.SELECT();
-		Variable periodIRI = SparqlBuilder.var(queryString);
-		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(temporalUnit));
-
-		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
-
-		JSONArray result = kbClient.executeQuery(query.getQueryString());
-		if(!result.isEmpty()){
-			durationIRI = result.getJSONObject(0).getString(queryString);
-		}
-
-		return durationIRI;
-
-	}
-
-	// (numericDuration, temporalUnit) -> durationIRI
-	//each (numericDuration, temporalUnit) pair in kg is unique and associated to a unique Averaging Period
-	public HashMap createDurationIRIMapping(){
-
-		HashMap<CustomDuration, String> durationMap = new HashMap<>();
-
-		SelectQuery query = Queries.SELECT();
-		Variable durIRI = SparqlBuilder.var("durIRI");
-		Variable value = SparqlBuilder.var("value");
-		Variable unit = SparqlBuilder.var("unit");
-
-		TriplePattern queryPattern = durIRI.has(numericDuration, value).andHas(unitType, unit);
-		query.select(durIRI, value, unit).where(queryPattern).prefix(prefix_time);
-		JSONArray result = kbClient.executeQuery(query.getQueryString());
-
-		for (int i=0; i < result.length(); i++){
-			CustomDuration duration = new CustomDuration(Double.valueOf(result.getJSONObject(i).getString("value")), result.getJSONObject(i).getString("unit"));
-			durationMap.put(duration, result.getJSONObject(i).getString("durIRI"));
-		}
-		return durationMap;
-
 	}
 
 	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<Iri> types, List<Duration> durations, List<ChronoUnit> units) {
@@ -586,49 +613,6 @@ public class TimeSeriesSparql {
 		}
 	}
 
-	/**
-	 * Get Average time series IRI associated with given averaging period IRI
-	 * <p>Returns empty list if durationIRI does not exist or does not have associated Average time series
-	 * @param durationIRI averaging period IRI provided as string
-	 * @return The corresponding Average timeseries IRI as string
-	 */
-	protected List<String> getAverageTimeSeries(String durationIRI){
-
-		String queryString = "tsIRI";
-		SelectQuery query = Queries.SELECT();
-
-		Variable data = SparqlBuilder.var(queryString);
-		TriplePattern queryPattern = data.has(hasAveragingPeriod, iri(durationIRI));
-
-		query.select(data).where(queryPattern).prefix(prefix_ontology);
-
-		return getInstances(query, queryString);
-	}
-
-	/**
-	 * Remove averaging period and all associated connections from kb (i.e. remove all triples with averagingPeriodIRI as subject or object)
-	 * @param averagingPeriodIRI Averaging Period IRI provided as string
-	 */
-	protected void removeAveragingPeriod(String averagingPeriodIRI){
-		// sub query to search for all triples with tsIRI as the subject/object
-		SubSelect sub = GraphPatterns.select();
-		Variable predicate1 = SparqlBuilder.var("a");
-		Variable predicate2 = SparqlBuilder.var("b");
-		Variable subject = SparqlBuilder.var("c");
-		Variable object = SparqlBuilder.var("d");
-
-		TriplePattern delete_tp1 = iri(averagingPeriodIRI).has(predicate1, object);
-		TriplePattern delete_tp2 = subject.has(predicate2, iri(averagingPeriodIRI));
-		sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
-
-		// insert subquery into main sparql update
-		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1, delete_tp2).where(sub);
-
-		kbClient.setQuery(modify.getQueryString());
-		kbClient.executeUpdate();
-	}
-
     /**
      * Remove time series and all associated connections from kb (i.e. remove all triples with tsIRI as subject or object)
      * @param tsIRI timeseries IRI provided as string
@@ -637,40 +621,45 @@ public class TimeSeriesSparql {
 
 		if (checkTimeSeriesExists(tsIRI)) {
 
-			if(getTimeSeriesType(tsIRI).equals(Average+"TimeSeries")){
-				SelectQuery query = Queries.SELECT();
-				String queryString = "durIRI";
+			SelectQuery query = Queries.SELECT();
+			String queryKey = "numTs";
 
-				Variable durIRI = SparqlBuilder.var(queryString);
-				TriplePattern queryPattern = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+			Variable ts = SparqlBuilder.var("ts");
+			Variable durIRI = SparqlBuilder.var("durIRI");
+			Variable numTs = SparqlBuilder.var(queryKey);
 
-				query.select(durIRI).where(queryPattern).prefix(prefix_ontology);
-				kbClient.setQuery(query.getQueryString());
-				String averagingPeriodIRI = kbClient.executeQuery().getJSONObject(0).getString(queryString);
-				List<String> avgTsIris = getAverageTimeSeries(averagingPeriodIRI);
+			GraphPattern queryPattern_1 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+			GraphPattern queryPattern_2 = ts.has(hasAveragingPeriod, durIRI);
 
-				if(avgTsIris.size()==1){
-					removeAveragingPeriod(averagingPeriodIRI);
-				}
+			Assignment count = Expressions.count(ts).as(numTs);
+
+			query.select(count).where(queryPattern_1, queryPattern_2).prefix(prefix_ontology);
+			kbClient.setQuery(query.getQueryString());
+
+			Integer avgTsIris = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
+
+			if(avgTsIris==1){
+				removeAverageTimeSeries(tsIRI);
 			}
+			else {
+				// sub query to search for all triples with tsIRI as the subject/object
+				SubSelect sub = GraphPatterns.select();
+				Variable predicate1 = SparqlBuilder.var("a");
+				Variable predicate2 = SparqlBuilder.var("b");
+				Variable subject = SparqlBuilder.var("c");
+				Variable object = SparqlBuilder.var("d");
 
-			// sub query to search for all triples with tsIRI as the subject/object
-			SubSelect sub = GraphPatterns.select();
-			Variable predicate1 = SparqlBuilder.var("a");
-			Variable predicate2 = SparqlBuilder.var("b");
-			Variable subject = SparqlBuilder.var("c");
-			Variable object = SparqlBuilder.var("d");
+				TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
+				TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));
+				sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
 
-			TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
-			TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));
-			sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
+				// insert subquery into main sparql update
+				ModifyQuery modify = Queries.MODIFY();
+				modify.delete(delete_tp1, delete_tp2).where(sub);
 
-			// insert subquery into main sparql update
-			ModifyQuery modify = Queries.MODIFY();
-			modify.delete(delete_tp1, delete_tp2).where(sub);
-
-			kbClient.setQuery(modify.getQueryString());
-			kbClient.executeUpdate();
+				kbClient.setQuery(modify.getQueryString());
+				kbClient.executeUpdate();
+			}
 		}
 	}
 
@@ -720,7 +709,6 @@ public class TimeSeriesSparql {
 	public String getTimeSeries(String dataIRI) {
 
 		String result = null;
-
 		if (checkDataHasTimeSeries(dataIRI)) {
 
 			String queryString = "tsIRI";
@@ -734,7 +722,6 @@ public class TimeSeriesSparql {
 			kbClient.setQuery(query.getQueryString());
 			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
 		}
-
 		return result;
 
 	}
@@ -748,7 +735,6 @@ public class TimeSeriesSparql {
 	public String getDbUrl(String tsIRI) {
 
 		String result = null;
-
 		if (checkTimeSeriesExists(tsIRI)) {
 
 			String queryString = "dbURL";
@@ -762,7 +748,6 @@ public class TimeSeriesSparql {
 			kbClient.setQuery(query.getQueryString());
 			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
 		}
-
 		return result;
 	}
 
@@ -847,14 +832,7 @@ public class TimeSeriesSparql {
 		return instanceIRIs;
 	}
 
-	/**
-	 * Instantiate the time series instance in the knowledge base (time unit is optional)
-	 * @param timeSeriesIRI timeseries IRI provided as string
-	 * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
-	 * @param dbURL URL of the database where the timeseries data is stored provided as string
-	 * @param timeUnit the time unit of the time series (optional)
-	 */
-	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+	protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, Iri type, String durationIRI, Double duration, String unit){
 		// Construct time series IRI
 		Iri tsIRI;
 		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
@@ -866,10 +844,33 @@ public class TimeSeriesSparql {
 			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
 		}
 
-		// Check that the time series IRI is not yet in the Knowledge Graph
-		if (checkTimeSeriesExists(timeSeriesIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
+		ModifyQuery modify = Queries.MODIFY();
+		// set prefix declarations
+		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+
+		// define type
+		modify.insert(tsIRI.isA(type));
+
+		if(type.equals(AverageTimeSeries)){
+
+			//numeric Duration
+			if(duration <=0.0){
+				throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration must be a positive value");
+			}
+
+			//Check if the given temporal unit is one of the allowed values.
+			// Where, allowed values are of type ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+			if(!temporalUnitType.contains(unit)){
+				throw new JPSRuntimeException(exceptionPrefix + "Temporal Unit: " + unit + " of invalid type");
+			}
+
+			modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+			modify.insert(iri(durationIRI).isA(Duration));
+			modify.insert(iri(durationIRI).has(unitType, iri(unit)));
+			modify.insert(iri(durationIRI).has(numericDuration, duration));
+
 		}
+
 		// Check that the data IRIs are not attached to a different time series IRI already
 		for (String iri: dataIRI) {
 			String ts = getTimeSeries(iri);
@@ -878,12 +879,6 @@ public class TimeSeriesSparql {
 			}
 		}
 
-		ModifyQuery modify = Queries.MODIFY();
-
-		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb);
-		// define type
-		modify.insert(tsIRI.isA(TimeSeries));
 		// relational database URL
 		modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
 
@@ -897,33 +892,6 @@ public class TimeSeriesSparql {
 		if (timeUnit != null) {
 			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
 			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
-		}
-
-		kbClient.executeUpdate(modify.getQueryString());
-	}
-
-	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
-		ModifyQuery modify = Queries.MODIFY();
-
-		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb);
-
-		for (int i = 0; i < tsIRIs.size(); i++) {
-			Iri ts = iri(tsIRIs.get(i));
-			modify.insert(ts.isA(TimeSeries));
-			// relational database URL
-			modify.insert(ts.has(hasRDB, literalOf(rdbURL)));
-
-			// link each data to time series
-			for (String data : dataIRIs.get(i)) {
-				modify.insert(iri(data).has(hasTimeSeries,ts));
-			}
-
-			if (timeUnit != null) {
-				if (timeUnit.get(i) != null) {
-					modify.insert(ts.has(hasTimeUnit, literalOf(timeUnit.get(i))));
-				}
-			}
 		}
 
 		kbClient.executeUpdate(modify.getQueryString());
