@@ -31,8 +31,7 @@ MAPPING = {}
 Required:
 'ts_data_type': Data type from jpsBaseLibView.java.lang
 'frequency': The frequency of the time series data
-'data_length': The length of the time series data, which is loaded before the forecast_start_data.
-    If the data_length is 0, the whole time series data is loaded.
+'data_length': The maximum length of the time series data, which is loaded before the forecast_start_data.
     The data is used to:
         1. Train the model if `train_again` is True or
         2. To scale the data if `scale` is True
@@ -50,6 +49,20 @@ Required:
     'model_path_ckpt_link': The link to the darts checkpoint file of the model
     'model_path_pth_link': The link to the darts pth file of the model
     
+Optinal:
+'load_covariates_func': The function which is used to load the covariates. If not provided, no covariates are loaded.
+    Be aware, that the returend covariates must have be given for the whole 'horizon'. 
+    If the covariates are not long enough, Prophet is used, which does not require covariates
+    .
+    The function must return parameters:
+    'covariates_iris': A list if iris, which are used.
+    'covariates': A darts series object, which can be passed into model.predict()
+    
+    The function will recieve the following parameters:
+    'kgClient': The kgClient
+    'tsClient': The tsClient
+    'lowerbound': The lowerbound of the time series data (can be None)
+    'upperbound': The upperbound of the time series data (can be None)
 
     
 """
@@ -61,7 +74,7 @@ MAPPING['DEFAULT'] = {
         'scale_data': False,
     },
     'frequency': dt.timedelta(hours=1),
-    'data_length': 300,  # 365 * 24 * 2, # 300
+    'data_length': 1000,  # 365 * 24 * 2, # 300
     'ts_data_type': DOUBLE,
 
 }
