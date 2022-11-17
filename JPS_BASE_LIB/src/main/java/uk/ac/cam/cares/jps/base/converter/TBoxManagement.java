@@ -594,9 +594,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(range==null || range.isEmpty()){
 			return;
 		}
-		if(range.contains("UNION") && (quantifier==null || quantifier.isEmpty())){
+		if(range.contains("UNION")){
 			addUnionOfRange(objectProperty, range.split("UNION"));
-		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
+		} else if(range.contains("INTERSECTION")){
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
 		}else if(range!=null || !range.isEmpty()){
 			addSingleClassRange(objectProperty, range);
