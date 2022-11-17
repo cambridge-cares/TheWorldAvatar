@@ -16,6 +16,7 @@ You will need to substitute in appropriate values before running any commands.
 8. [Using Specific Data Sets](#using-specific-data-sets)
 9. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
 10. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
+11. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
