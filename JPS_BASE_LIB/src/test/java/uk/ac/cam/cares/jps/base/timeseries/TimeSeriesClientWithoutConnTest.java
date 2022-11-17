@@ -294,7 +294,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
-                .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+                .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0));
 
         try {
