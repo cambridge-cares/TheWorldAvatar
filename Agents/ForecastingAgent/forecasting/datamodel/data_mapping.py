@@ -33,22 +33,28 @@ MAPPING = {}
 
 # Default mapping which uses Prophet and loads just dataIRI without covariates
 MAPPING['DEFAULT']=  {
+        'fc_model': {
+            'train_again': True,
+            'name': 'prophet',
+            'scale_data': False,
+            },
         'frequency': dt.timedelta(hours=1),
-        'data_length': 365 * 24,
-        'train_again': True,
+        'data_length': 300, #365 * 24 * 2, # 300 
         'ts_data_type': DOUBLE,
+
     }
 
 MAPPING['TFT_HEAT_SUPPLY'] = {
         'load_covariates_func': get_covs_heat_supply,
-        'model': {
+        'fc_model': {
             "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
             "model_path_pth_link":  "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
+            'train_again': False,
+            'name': 'tft',
+            'scale_data': True,
         },
         'frequency': MAPPING['DEFAULT']['frequency'],
         'data_length': MAPPING['DEFAULT']['data_length'],
-        'scale_data': True,
         'ts_data_type': MAPPING['DEFAULT']['ts_data_type'],
-        'train_again': False,
     }
 

@@ -4,7 +4,7 @@
 ################################################
 
 # The purpose of this module is to forecast a time series using a trained model or Prophet
-
+from dateutil.parser import isoparse
 import datetime as dt
 import os
 import time
@@ -39,180 +39,220 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_mapping=None):
     kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     tsClient = TSClient(kg_client=kgClient)
 
-    covariates_iris, covariates, input_length = None, None, None
+    covariates =  None
 
     # get the mapping dictionary either from the a specific force_mapping
     # or from identifying the dataIRI
-    mapping = {}
     if force_mapping is not None:
         print(f'Using forced  mapping {force_mapping}')
         mapping_name = force_mapping
     else:
         mapping_name = get_mapping(dataIRI, kgClient)
 
-    mapping = MAPPING[mapping_name]
-    mapping['name'] = mapping_name
-    mapping['dataIRI'] = dataIRI
-    mapping['horizon'] = horizon
-    mapping['forecast_start_date'] = pd.Timestamp(dt.datetime.strptime(
-        forecast_start_date, TIME_FORMAT))
+    res = MAPPING[mapping_name].copy()
+    res['mapping_name'] = mapping_name
+    res['dataIRI'] = dataIRI
+    res['horizon'] = horizon
+    print('Using mapping: ', res)
+
+        
+    if forecast_start_date is not None:
+        res['forecast_start_date'] = pd.Timestamp(isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
+    else:
+        res['forecast_start_date'] = None
 
     # use mapping function to get the correct dataIRI timeseries and its covariates
-    series, covariates, mapping = load_ts_data(
-        mapping, kgClient, tsClient)
-
+    series, covariates = load_ts_data(
+        res, kgClient, tsClient)
+    
     # split series at forecast_start_date 
     # if more time steps are available after forecast_start_date
     # backtest can be performed later
     try:
-        series, backtest_series = series.split_after(mapping['forecast_start_date'])
-    except:
+        series, backtest_series = series.split_before(res['forecast_start_date'])
+    except ValueError as e:
+        # Timestamp out of series range
+        print(f'Cannot split series at {res["forecast_start_date"]} - out of range')
         backtest_series = None
         
+
     # load the model
-    if 'model' in mapping:
+    # TODO: If you have multiple models and you need different loading functions,
+    # you can add them here. Maybe even add a function to the mapping dictionary
+    if 'model_path_ckpt_link' in res['fc_model']:
         model = load_pretrained_model(
-            mapping)
-        # TODO: other models than TFT can have different key
-        input_length = model.model_params['input_chunk_length']
+            res)
+        # other models than TFT can have different key then 'input_chunk_length'
+        res['fc_model']['input_length'] = model.model_params['input_chunk_length']
 
     else:
         model = Prophet()
-        model.model_name = "Prophet"
-        input_length = len(series)
+        res['fc_model']['input_length'] = len(series)
+        
+    forecast = get_forecast(series, covariates, model, res)
+    # metadata
+    # input series range
+    print(f"Input data range: {series.start_time()} - {series.end_time()}")
+    start_date = series.end_time() - series.freq * (res['fc_model']['input_length'] - 1)
+    end_date = series.end_time()
+    print(f"Model input range: {start_date} - {end_date}")
+    print(f"Model output range: {forecast.start_time()} - {forecast.end_time()}")
+    print(f'Done with forecast using  ')
 
-    print(f"Forecasting with {model.model_name} model")
-    if 'scale_data' in mapping and mapping['scale_data']:
+    res['model_input_interval'] = [start_date, end_date]
+    res['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
+    res['created_at'] = pd.to_datetime('now')
+    
+    
+    # delete not json serializable objects from res
+    keys_to_delete = ['load_covariates_func', 'time_delta', 'ts_data_type', 'frequency']
+    for key in keys_to_delete:
+        if key in res:
+            del res[key]
+    
+    #res = {}
+    
+    #instantiate_forecast(res = res, forecast=forecast, tsClient=tsClient, kgClient=kgClient)
+
+    if backtest_series is not None:
+        # calculate error if future target is available
+        res['error'] = calculate_error(backtest_series, forecast)
+        print(res['error'])
+    return res
+
+def get_forecast(series, covariates, model, res):
+    
+    print(f"Forecasting with {res['fc_model']['name']} model")
+    if res['fc_model']['scale_data']:
         # neural methods perform better with scaled inputs
         scaler = Scaler()
         series = scaler.fit_transform(series)
 
-    # make prediction with covariates
+    # make forecast with covariates
     if covariates is not None:
-        # prediction failed often, because of wrong dtype -> convert to same dtype
-        series = series.astype('float32')
-        covariates = covariates.astype('float32')
-
-        if 'train_again' in mapping and mapping['train_again']:
+        if res['fc_model']['train_again']:
+            # TODO: add option to train model with covariates
             # train again with covariates
             model.fit(series, future_covariates=covariates)
 
-        forecast = model.predict(
-            n=horizon, future_covariates=covariates, series=series)
+        try:
+            forecast = model.predict(
+                n=res['horizon'], future_covariates=covariates, series=series)
+        except RuntimeError as e:
+            # prediction failed often, because of wrong dtype -> convert to same dtype
+            series = series.astype('float32')
+            covariates = covariates.astype('float32')
+            forecast = model.predict(
+                n=res['horizon'], future_covariates=covariates, series=series)
+        
 
     # make prediction without covariates
     else:
-        if 'train_again' in mapping and mapping['train_again']:
+        if res['fc_model']['train_again']:
             model.fit(series)
 
-        forecast = model.predict(n=horizon)
+        forecast = model.predict(n=res['horizon'])
 
-    if 'scale_data' in mapping and mapping['scale_data']:
+    if res['fc_model']['scale_data']:
         # scale back
         forecast = scaler.inverse_transform(forecast)
-
-    # metadata
-    # input series range
-    print(f"Input data range: {series.start_time()} - {series.end_time()}")
-    start_date = series.end_time() - series.freq * input_length
-    end_date = series.end_time()
-    print(f"Model input range: {start_date} - {end_date}")
-    print(f"Model output range: {forecast.start_time()} - {forecast.end_time()}")
-    print(f'Done with forecast using {model.model_name}')
-
-    # data type
-    ts_data_type = DOUBLE
-
-    res = instantiate_forecast(forecast=forecast, dataIRI=dataIRI, model_name=model.model_name, forecast_input_length=input_length,
-                               covariates=covariates, tsClient=tsClient, data_type=ts_data_type, cov_iris=covariates_iris, kgClient=kgClient)
-    #logger.info('Done with instantiating forecast')
-
-    # calculate error if future target is available
-    if backtest_series is not None:
-        #logger.info(f'Calculate error')
-        target = backtest_series[:horizon]
-        error = {}
-        error['mape'] = mape(forecast, target)
-        error['mase'] = mase(forecast, target, series)
-        error['smape'] = smape(forecast, target)
-        error['mse'] = mse(forecast, target)
-        error['rmse'] = rmse(forecast, target)
-        res['error'] = error
-        print(error)
-    return res
+        
+    return forecast
 
 
-def load_ts_data(mapping, kgClient, tsClient):
+
+
+def calculate_error(target, forecast):
+    """Calculate error metrics between target and forecast
+
+    Args:
+        target (TimeSeries): target timeseries
+        forecast (TimeSeries): forecast timeseries
+
+    Returns:
+        dict: dictionary with error metrics
+    """
+    error = {}
+    error['mape'] = mape(target, forecast)
+    error['smape'] = smape(target, forecast)
+    error['mse'] = mse(target, forecast)
+    error['rmse'] = rmse(target, forecast)
+    return error
+
+def load_ts_data(res, kgClient, tsClient):
 
     #logger.info('Loading timeseries from KG')
     # get the data
     try:
         # try if ts hasValue where the actual ts is stored
-        ts_iri = get_ts_value_iri(mapping['dataIRI'], kgClient)
+        res['ts_iri'] = get_ts_value_iri(res['dataIRI'], kgClient)
     except KeyError as e:
-        ts_iri = mapping['dataIRI']
+        res['ts_iri'] = res['dataIRI']
 
-    if mapping['forecast_start_date'] is None:
-        # get the last value of ts and set it as forecast start date
-        latest = tsClient.tsclient.getLatestData(ts_iri, tsClient.conn)
-        mapping['forecast_start_date'] = latest['timestamp']
+    if res['forecast_start_date'] is None:
+        # get the last value of ts and set next date as forecast start date
+        latest = tsClient.tsclient.getLatestData(res['ts_iri'], tsClient.conn)
+        res['forecast_start_date']  = pd.Timestamp(isoparse(latest.getTimes()[0].toString())).tz_convert('UTC').tz_localize(None) + res['frequency']       
 
     # calculate lower and upper bound for timeseries to speed up query
-    lowerbound, upperbound = get_ts_lower_upper_bound(mapping)
+    lowerbound, upperbound = get_ts_lower_upper_bound(res)
 
-    # load timeseries which should be forecasted
-    dates, values = get_ts_data(
-        ts_iri, tsClient,  lowerbound=lowerbound, upperbound=upperbound)
-    df = pd.DataFrame(zip(values, dates), columns=["ForecastColumn", "Date"])
-
-    if 'load_covariates_func' in mapping:
+    if 'load_covariates_func' in res:
         # load covariates
-        covariates_iris, covariates = mapping['load_covariates_func'](
+        covariates_iris, covariates = res['load_covariates_func'](
             kgClient, tsClient, lowerbound, upperbound)
+        res['fc_model']['covariates_iris'] = covariates_iris
+
+        # check if covariates are given for complete future horizon from forecast_start_date
+        if covariates is not None and( res['forecast_start_date'] + res['frequency'] * (res['horizon'] - 1) > covariates.end_time()):
+            # use default model
+            print(f'\n\nNot enough covariates for complete future horizon. Default model is used instead.')
+            res['fc_model'] = MAPPING['DEFAULT']['fc_model'].copy()
+            covariates = None            
     else:
         covariates = None
-        covariates_iris = None
+    
+    # load timeseries which should be forecasted
+    df =  get_df_of_ts(res['ts_iri'], tsClient ,lowerbound, upperbound, column_name = "Series", date_name = "Date")
 
     # df to darts timeseries
-    df = df.sort_values(by="Date")
-    # remove timezone
-    df.Date = pd.to_datetime(df.Date).dt.tz_localize(None)
     series = TimeSeries.from_dataframe(
-        df, time_col='Date', value_cols="ForecastColumn")  # , fill_missing_dates =True
+        df, time_col='Date', value_cols="Series")  # , fill_missing_dates =True
     # remove nan values at beginning and end
     series = series.strip()
 
-    mapping['covariates_iris'] = covariates_iris
-    mapping['ts_iri'] = ts_iri
-    mapping['bounds'] = {'lowerbound': lowerbound, 'upperbound': upperbound}
+
+    res['loaded_data_bounds'] = {'lowerbound': lowerbound, 'upperbound': upperbound}
+    
     print('Done with loading timeseries from KG and TSDB')
-    return series, covariates, mapping
+    return series, covariates
 
 
-def get_ts_lower_upper_bound(mapping):
+def get_ts_lower_upper_bound(res):
     # upper bound is forecast_start_date + horizon
-    upperbound = mapping['forecast_start_date'] + mapping['frequency'] * (mapping['horizon'] + 1)
+    upperbound = res['forecast_start_date'] + res['frequency'] * (res['horizon'] - 1)
 
     # lower bound is forecast_start_date - input_length
-    lowerbound = mapping['forecast_start_date'] - mapping['frequency'] * (mapping['data_length'] + 1)
+    lowerbound = res['forecast_start_date'] - res['frequency'] * (res['data_length'])
     return lowerbound.strftime(TIME_FORMAT), upperbound.strftime(TIME_FORMAT)
 
 
-def load_pretrained_model(mapping, forece_download=False):
-    model_path_ckpt_link, model_path_pth_link = mapping['model']['model_path_ckpt_link'], mapping['model']['model_path_pth_link']
+def load_pretrained_model(res, forece_download=False):
+    model_path_ckpt_link, model_path_pth_link = res['fc_model']['model_path_ckpt_link'], res['fc_model']['model_path_pth_link']
 
     # try to load from checkpoint link
     path_ckpt = ""
     path_pth = ""
     path_to_store = Path(__file__).parent.absolute() / \
-        mapping['name'] / 'checkpoints'
+        'Models' / res['fc_model']['name'] / 'checkpoints'
 
     # TODO: until now we need to download both, checkpoint and model file
     # maybe you find a better way to just have one link
     
     if os.path.exists(path_to_store) and not forece_download:
         # model already exists
-        pass
+        path_ckpt = path_to_store / "best-model.ckpt"
+        path_pth = ""
     else:
         # create folder
         os.makedirs(path_to_store)
@@ -234,7 +274,7 @@ def load_pretrained_model(mapping, forece_download=False):
     #    path_pth.__str__())
     model = TFTModel.load_from_checkpoint(
         path_ckpt.parent.parent.__str__())
-    model.model_name = model_path_ckpt_link.__str__()
+    res['fc_model']['name'] = model_path_ckpt_link.__str__()
     print(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
@@ -245,45 +285,46 @@ def load_pretrained_model(mapping, forece_download=False):
     return model
 
 
-def instantiate_forecast(forecast, dataIRI, model_name, forecast_input_length, covariates, tsClient, data_type, cov_iris, kgClient):
+def instantiate_forecast(res, forecast, tsClient, kgClient):
     #  instantiate forecast in KG
     forecast_iri = KB + 'Forecast_' + str(uuid.uuid4())
     update = ""
 
     try:
         # get unit from dataIRI and add to forecast
-        unit = {OM_HASUNIT: get_unit(dataIRI, kgClient)}
+        unit = {OM_HASUNIT: get_unit(res['dataIRI'], kgClient)}
+        res['unit'] = unit[OM_HASUNIT]
     except KGException as e:
         # no measurement -> no unit
         unit = {}
 
-    time_format = get_time_format(dataIRI, kgClient)
+    time_format = get_time_format(res['dataIRI'], kgClient)
 
     ONTOEMS_HASFORECASTINPUTLENGHT = ONTOEMS + "hasForecastInputLength"
     ONTOEMS_HASCOVARIATE = ONTOEMS + "hasCovariate"
     ONTOEMS_HASFORECASTMODEL = ONTOEMS + "hasForecastModel"
-    covariate_update = {ONTOEMS_HASCOVARIATE: cov_iris} if cov_iris else {}
+    covariate_update = {ONTOEMS_HASCOVARIATE: res['covariates_iris']} if res['covariates_iris'] else {}
     update += get_properties_for_subj(subj=forecast_iri, verb_obj={
         RDF_TYPE: ONTOEMS_FORECAST,
         **unit,
         **covariate_update,
     }, verb_literal={
-        ONTOEMS_HASFORECASTMODEL: model_name,
-        ONTOEMS_HASFORECASTINPUTLENGHT: forecast_input_length,
+        ONTOEMS_HASFORECASTMODEL: res['fc_model']['name'] ,
+        ONTOEMS_HASFORECASTINPUTLENGHT: res['forecast_input_length'],
     })
 
     # call client
-    tsClient.tsclient.initTimeSeries([forecast_iri], [data_type], time_format,
+    tsClient.tsclient.initTimeSeries([forecast_iri], [res['data_type']], time_format,
                                      tsClient.conn)
     ts = TSClient.create_timeseries([str(x) for x in forecast.time_index], [
                                     forecast_iri], [forecast.values().squeeze().tolist()])
     tsClient.tsclient.addTimeSeriesData(ts, tsClient.conn)
 
-    update += get_properties_for_subj(subj=dataIRI, verb_obj={
+    update += get_properties_for_subj(subj=res['dataIRI'], verb_obj={
         ONTOEMS_HASFORECASTEDVALUE: forecast_iri})
 
     kgClient.performUpdate(add_insert_data(update))
-    return {'forecast_iri': forecast_iri, 'model': model_name, 'forecast_input_length': forecast_input_length, 'covariates': cov_iris}
+    res['forecast_iri'] = forecast_iri
 
 
 def get_mapping(dataIRI, kgClient):
@@ -293,7 +334,7 @@ def get_mapping(dataIRI, kgClient):
     predecessor_dict = get_predecessor_type_and_predicate(dataIRI, kgClient)
 
     # use properties to identify the right mapping function
-
+    # TODO: specify identification in mapping functions
     # case 1 - heat supply data identified
     if OHN_HASHEATDEMAND in predecessor_dict and predecessor_dict[OHN_HASHEATDEMAND] == OHN_CONSUMER:
         # get the data

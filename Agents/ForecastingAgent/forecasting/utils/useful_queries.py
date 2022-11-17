@@ -103,17 +103,13 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df = None)
     # 2. ts without MEASURE
     for row in ts_by_type:
         if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE):
+            df_air_temp = get_df_of_ts(row['tsIRI'], tsClient, lowerbound= lowerbound, upperbound = upperbound)
             cov_iris.append(row['tsIRI'])
-            air_temp_dates, air_temp = get_ts_data(row['tsIRI'], tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-            df_air_temp = pd.DataFrame(zip(air_temp, air_temp_dates), columns=["cov", "Date"])
-        
-        if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
-            cov_iris.append(row['tsIRI'])
-            public_holiday_dates, public_holiday = get_ts_data(row['tsIRI'], tsClient,  lowerbound= lowerbound, upperbound = upperbound)
-            df_public_holiday = pd.DataFrame(zip(public_holiday, public_holiday_dates), columns=["cov", "Date"])
             
-    #df = merge_ts(df_public_holiday, df_air_temp)
-    
+        if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
+            df_public_holiday = get_df_of_ts(row['tsIRI'], tsClient, lowerbound= lowerbound, upperbound = upperbound)
+            cov_iris.append(row['tsIRI'])
+            
     # create covariates list with time covariates for the forecast
     # Attention: be aware to have same order of covariates as during training 
     covariates = concatenate(
@@ -133,6 +129,13 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df = None)
     # add darts covariates as string
     cov_iris += ['dayofyear', 'dayofweek', 'hour']
     return cov_iris, covariates
+
+def get_df_of_ts(tsIRI,tsClient ,lowerbound, upperbound, column_name = "cov", date_name = "Date"):
+    dates, values = get_ts_data(tsIRI, tsClient,  lowerbound= lowerbound, upperbound = upperbound)
+    df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name ])
+    # remove time zone
+    df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
+    return df
 
 def merge_ts(*dfs):
     # merge columns
