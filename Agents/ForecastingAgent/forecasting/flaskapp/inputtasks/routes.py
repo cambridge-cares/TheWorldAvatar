@@ -96,16 +96,9 @@ def forecastingAgent_help():
     msg += 'The forecasting agent can be used to forecast a time series. \n'
     msg += 'The following parameters are required: \n'
     msg += 'dataIRI: the IRI of the time series to be forecasted \n'
-    msg += 'horizon: the number of steps to forecast \n\n'
-    msg += 'The following parameters are optional: \n'
-    msg += 'forecast_start_date: the date from which to start the forecast (optional, if not provided the most recent date will be used) \n'
-    msg += 'data_length: the length of the time series which is loaded as input. This determines two things:\n'
-    msg += '1. For the prophet model, this is the length of the time series which is used to fit the model. \n'
-    msg += '2. For the pretrained models, this is the length of the time series which is used to scale the data. \n'
-    msg += 'The pretrained models use their own input length parameter (for TFT "input_chunk_length") as data length for the forecast.\n'
-    msg += 'The default value for data_length is stored in forecast_properties.py and can be changed there. \n'
-    msg += 'The default value is: ' + str(DEFAULT_DATA_LENGTH) + '\n'
-    
+    msg += 'horizon: the number of steps to forecast \n'
+    msg += 'Checkout the README.md for more information.'
+
 
     res = {'status': '200', 'msg': msg}
     return jsonify(res)
