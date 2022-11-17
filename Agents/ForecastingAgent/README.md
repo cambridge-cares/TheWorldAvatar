@@ -1,6 +1,6 @@
 # Forecasting Agent
 
-The `Forecasting Agent` forecasts an existing time series in an RDB by passing in the dataIRI. It reinstantiates the forecasted time series in under the same dataIRI.
+The "Forecasting Agent" forecasts an existing time series in an RDB using its dataIRI. The agent re-instantiates the forecasted time series under the same dataIRI. Different pre-trained models can be used, and if none matches the dataIRI, a new Prophet model is fitted to predict the new data.
 
 
 <span style="color:red">Tests are currently still excluded.</span>
@@ -36,9 +36,9 @@ python -m pip install -e .
 ```
 If you use later a model pretrained with 'darts', conflicts can occur while loading the model, if your version differs from the version with which the model was trained.
 
-### **3) An instantiated knowledge graph with a time series**
+### **3) Instantiated knowledge graph with time series**
 
-In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the one provided by [the time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
+In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the ontology provided by [the time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
 
 ### **4) Endpoints**
 
@@ -53,18 +53,23 @@ Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.
 
 &nbsp;
 ## Send http requests
-[HTTPRequest_forecast](./resources/HTTPRequest_forecast.http) shows a sample request to forecast a dataIRI. 
+[HTTPRequest_forecast](./resources/HTTP_request_forecast.http) shows a sample request to forecast a dataIRI. 
 
 ### Input parameters
 - **dataIRI** is the IRI of the existing TS, which should receive the hasForecastedValue instantiation.
-- **horizon** the time steps the agent predicts autorecursively into the future.
-- **model_path_ckpt_link** checkpoint file of the save darts model.
-- **model_path_pth_link** model.pth.tar file of model.
-- **forecast_start_date** the start day of the forecast, if not specified, simple the last value is taken as a starting point. If 'forecast_start_date' is set, the code can be much faster, because lower and upper bound are calculated and therefore the time series to retrieve is smaller.
-- **data_length** if `forecast_start_date` is specified, `data_length` determines the number of values loaded before this date. Then, this data is used directly as input to prophet or to scale the input for the pre-trained neural method case (the actual input is the last subset of this data with the size of the model's input)
+- **horizon** the time steps the agent forecasts autorecursively into the future.
+- **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
+- **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
+If not set the default value from the [mapping file] is used.
+- **force_mapping** if specified this configuration from the [mapping file] is used. Otherwise the agent identifies the `dataIRI`.   
 
-## Custom data loading functions
-If you use your own pretrained darts model which needs additional covariates, you can follow the example of the `get_covs_heat_supply()` function. You need to map this function to for example an rdfs type in [mapping_type_data_function](./forecasting/datamodel/data_mapping.py), which you can then identify in [the agent](./forecasting/forecasting_agent/create_forecast.py). Be aware that the created covariates should be in the same order as during training.
+
+## Custom configurations and new models
+Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` configuration in the [mapping file]. 
+
+To identify a specific `dataIRI` and map it to your configuration, edit the `get_config` function in the [mapping file]. First retrieve properties like the rdf type or label of your `dataIRI` to identify it uniquely. Next compare the properties with your required properties following the example in `get_config`. Finally return if match the dictionary key of our configuration of the MAPPING dictionary from the [mapping file].  
+
+
 
 
 &nbsp;
@@ -75,6 +80,8 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 
 <!-- Links -->
 <!-- websites -->
+[agent file]: /forecasting/forecasting_agent/agent.py
+[mapping file]: /forecasting/datamodel/data_mapping.py
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Container registry on Github]: https://ghcr.io

@@ -235,7 +235,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     try:
         # try if ts hasValue where the actual ts is stored
         cfg['ts_iri'] = get_ts_value_iri(cfg['dataIRI'], kgClient)
-    except KeyError as e:
+    except IndexError as e:
         cfg['ts_iri'] = cfg['dataIRI']
 
     if cfg['forecast_start_date'] is None:
@@ -403,7 +403,7 @@ def instantiate_forecast(cfg, forecast, tsClient, kgClient):
         **unit,
         **covariate_update,
     }, verb_literal={
-        ONTOEMS_HASFORECASTMODEL: cfg['fc_model']['name'],
+        #ONTOEMS_HASFORECASTMODEL: cfg['fc_model']['name'],
         ONTOEMS_HASFORECASTINPUTLENGHT: cfg['forecast_input_length'],
     })
 
@@ -440,7 +440,6 @@ def get_config(dataIRI, kgClient):
     if OHN_HASHEATDEMAND in predecessor_dict and predecessor_dict[OHN_HASHEATDEMAND] == OHN_CONSUMER:
         # get the data
         mappping_name = 'TFT_HEAT_SUPPLY'
-        print(f'Using mapping TFT_HEAT_SUPPLY')
 
     # add more cases here ordered by priority
     # elif case 2 ...
@@ -451,4 +450,5 @@ def get_config(dataIRI, kgClient):
         mappping_name = 'DEFAULT'
         print(f'Using mapping DEFAULT')
 
+    print(f'Using mapping {mappping_name}')
     return mappping_name
