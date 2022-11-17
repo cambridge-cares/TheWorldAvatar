@@ -8,7 +8,7 @@ oum:        https://www.theworldavatar.com/kg/ontouom/
 gml:        http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
 db:         http://www.purl.org/oema/enaeq/
 bot:        http://w3id.org/bot#
-bim:        http://www.theworldavatar.com/ontology/ontobim/OntoBIM.owl#
+bim:        http://www.theworldavatar.com/ontology/ontobim/ontoBIM#
 iri:        https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
