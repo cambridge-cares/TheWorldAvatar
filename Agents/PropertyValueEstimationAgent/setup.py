@@ -19,7 +19,7 @@ setup(
         'pandas==1.5.1',
         'py4jps==1.0.29', 
         'requests==2.28.1',
-        'pyderivationagent==1.4.0'
+        'pyderivationagent==1.4.1'
     ],
     extras_require={
         "dev": [

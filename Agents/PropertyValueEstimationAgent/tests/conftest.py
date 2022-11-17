@@ -22,7 +22,8 @@ from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, 
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
                                               TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, \
-                                              ONTODERIVATION_DERIVATIONASYN, ONTODERIVATION_HASSTATUS
+                                              ONTODERIVATION_DERIVATIONASYN, ONTODERIVATION_HASSTATUS, \
+                                              ONTODERIVATION_ERROR
 from pyderivationagent.conf import config_derivation_agent
 
 from agent.datamodel.iris import *
@@ -328,14 +329,13 @@ def get_marketvalue_details(sparql_client, market_value_iri):
 
 def get_derivation_status(sparql_client, derivation_iri):
     # Returns status comment of derivation
-    # TODO: Test for ERROR status code; however not available in pyderivationagent.data_model.iris
-    #       despite version 1.4.0
     query = f"""
         SELECT ?exception
         WHERE {{
         <{derivation_iri}> <{RDF_TYPE}> <{ONTODERIVATION_DERIVATIONASYN}> ; 
                            <{ONTODERIVATION_HASSTATUS}> ?status . 
-        ?status <{RDFS_COMMENT}> ?exception . 
+        ?status <{RDF_TYPE}> <{ONTODERIVATION_ERROR}> ; 
+                <{RDFS_COMMENT}> ?exception . 
         }}
         """
     response = sparql_client.performQuery(query)
