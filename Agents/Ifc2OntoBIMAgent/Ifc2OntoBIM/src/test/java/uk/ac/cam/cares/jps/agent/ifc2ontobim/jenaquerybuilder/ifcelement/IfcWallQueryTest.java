@@ -30,7 +30,7 @@ class IfcWallQueryTest {
                 .append("  { \n")
                 .append("    ?element bim:hasGeometricRepresentation ?secondshaperep .\n")
                 .append("    ?secondshaperep rdf:type bim:ModelRepresentation3D .\n")
-                .append("    ?secondshaperep bim:hasRepresentationType ?shapereptype .\n")
+                .append("    ?secondshaperep bim:hasRepresentationType ?secondshapereptype .\n")
                 .append("    ?secondshaperep bim:hasSubContext ?secondsubcontext .\n")
                 .append("    ?secondsubcontext rdf:type bim:GeometricRepresentationSubContext .\n")
                 .append("    ?secondshaperep bim:hasRepresentationItem ?secondgeometry .\n")

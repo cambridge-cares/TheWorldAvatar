@@ -42,7 +42,7 @@ public class Dataset {
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
-        this.datasetDirectory = (null != datasetDirectory) ? datasetDirectory : Path.of(name);
+        this.datasetDirectory = datasetDirectory;
         this.workspaceName = (null != workspaceName) ? workspaceName : name;
         this.database = database;
         this.externalDatasets = (null != externalDatasets) ? externalDatasets : new ArrayList<>();
@@ -60,6 +60,10 @@ public class Dataset {
         this.name = name;
     }
 
+    private Path getDatasetDirectory() {
+        return (null != datasetDirectory) ? datasetDirectory : Path.of(name);
+    }
+
     public List<String> getExternalDatasets() {
         return externalDatasets;
     }
@@ -75,7 +79,7 @@ public class Dataset {
             GeoServerClient geoServerClient = new GeoServerClient();
             OntopClient ontopClient = new OntopClient();
 
-            Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
+            Path fullDatasetDir = Path.of("/inputs", "data").resolve(getDatasetDirectory());
             String fullDatasetDirStr = fullDatasetDir.toString();
 
             if (null != database) {

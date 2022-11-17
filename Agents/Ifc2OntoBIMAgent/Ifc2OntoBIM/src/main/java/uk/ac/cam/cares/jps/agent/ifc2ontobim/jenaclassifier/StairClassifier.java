@@ -44,9 +44,9 @@ public class StairClassifier {
                 .addVar("?landing")
                 .addVar("?structurecomponent");
         selectBuilder.addWhere("?stair", "rdf:type", "bim:Stair")
-                .addWhere("?stair", "bot:hasSubElement", "?landing")
+                .addWhere("?stair", "bim:hasStairSubElement", "?landing")
                 .addWhere("?landing", "rdf:type", "bim:Landing")
-                .addWhere("?stair", "bot:hasSubElement", "?structurecomponent")
+                .addWhere("?stair", "bim:hasStairSubElement", "?structurecomponent")
                 .addWhere("?structurecomponent", "rdf:type", "bim:StructuralComponent");
         return selectBuilder.buildString();
     }

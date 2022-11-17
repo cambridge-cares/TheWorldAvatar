@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides supplementary query statements relevant to coverings, including ceiling, flooring, and roofing.
@@ -11,8 +12,8 @@ class IfcCoveringQuery {
     /**
      * Switch function that adds the relevant statements according to input.
      *
-     * @param builder Construct Builder object to add Construct query statements.
-     * @param bimClass   The object's class name in the OntoBIM ontology.
+     * @param builder  Construct Builder object to add Construct query statements.
+     * @param bimClass The object's class name in the OntoBIM ontology.
      */
     protected static void addCoveringQueryComponents(ConstructBuilder builder, String bimClass) {
         switch (bimClass) {
@@ -28,10 +29,10 @@ class IfcCoveringQuery {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private static void addCeilingFilterQueryComponents(ConstructBuilder builder) {
-        builder.addWhere("?reltypedefine","rdf:type"," ifc:IfcRelDefinesByType")
-                .addWhere("?reltypedefine","ifc:relatedObjects_IfcRelDefines"," ?element")
-                .addWhere("?reltypedefine","ifc:relatingType_IfcRelDefinesByType"," ?elementtype")
-                .addWhere("?elementtype","rdf:type","ifc:IfcCoveringType")
-                .addWhere("?elementtype","ifc:predefinedType_IfcCoveringType","ifc:CEILING");
+        builder.addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, QueryHandler.RDF_TYPE, " ifc:IfcRelDefinesByType")
+                .addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, "ifc:relatedObjects_IfcRelDefines", IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, "ifc:relatingType_IfcRelDefinesByType", IfcElementConstructBuilder.ELEMENT_TYPE_VAR)
+                .addWhere(IfcElementConstructBuilder.ELEMENT_TYPE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCoveringType")
+                .addWhere(IfcElementConstructBuilder.ELEMENT_TYPE_VAR, "ifc:predefinedType_IfcCoveringType", "ifc:CEILING");
     }
 }

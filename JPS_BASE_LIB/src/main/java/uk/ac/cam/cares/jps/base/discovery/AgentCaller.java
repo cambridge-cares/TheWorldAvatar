@@ -216,9 +216,9 @@ public class AgentCaller {
      * @return
      */
     public static String executeGetWithJsonParameter(String path, String json) {
-        URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
-                .setPath(path);
 
+
+        URIBuilder builder = getUriBuilderForPath(path) ;
         builder.setParameter(JSON_PARAMETER_KEY, json);
 
         try {

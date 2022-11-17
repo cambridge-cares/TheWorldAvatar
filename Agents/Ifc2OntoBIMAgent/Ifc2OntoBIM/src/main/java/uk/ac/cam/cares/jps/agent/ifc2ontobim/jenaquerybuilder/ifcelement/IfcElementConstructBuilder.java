@@ -6,6 +6,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -14,6 +15,22 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author qhouyee
  */
 public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
+    public static final String ELEMENT_TYPE_VAR = "?elementtype";
+    public static final String SHAPEREP_VAR = "?shaperep";
+    public static final String INST_SHAPEREP_VAR = "?instshaperep";
+    public static final String SHAPEREP_TYPE_VAR = "?shapereptype";
+    public static final String SPATIAL_REL_VAR = "?spatialStructureRelationship";
+    public static final String MAPPED_ITEM_VAR = "?mappeditem";
+    public static final String REP_MAP_VAR = "?representationmap";
+    public static final String GEOM_VAR = "?geometry";
+    public static final String GEOM_TYPE_VAR = "?geomtype";
+    public static final String SUBCONTEXT_VAR = "?subcontext";
+    public static final String CART_TRANSFORMER_VAR = "?cartesiantransformer";
+    public static final String GEOM_AXISPLACEMENT_VAR = "?geomaxisplacement";
+    public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
+    public static final String REL_TYPE_DEF_VAR = "?reltypedefine";
+
+
     /**
      * Create the SPARQL query syntax for Construct queries of all Ifc elements.
      *
@@ -24,7 +41,7 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      */
     public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String bimClass) {
         // Replace ifcClass with their actual classes if identifiers are used
-        ifcClass= (ifcClass.equals("ifc:IfcSlabF")||ifcClass.equals("ifc:IfcSlabR")) ? "ifc:IfcSlab" : ifcClass;
+        ifcClass = (ifcClass.equals("ifc:IfcSlabF") || ifcClass.equals("ifc:IfcSlabR")) ? "ifc:IfcSlab" : ifcClass;
         this.createTemplateSparqlQuery(builder, ifcClass, bimClass);
         this.switchFunctionDependingOnInput(builder, ifcClass, bimClass);
         return builder.buildString();
@@ -55,12 +72,12 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
                 IfcStairQuery.addSubElementsQueryComponents(builder);
                 break;
             case "ifc:IfcCovering":
-                IfcCoveringQuery.addCoveringQueryComponents(builder,bimClass);
+                IfcCoveringQuery.addCoveringQueryComponents(builder, bimClass);
                 break;
         }
 
         // Spatial location are usually the same for most elements except for the following classes
-        if (!(bimClass.equals("bim:Roof")&&ifcClass.equals("ifc:IfcSlab"))) {
+        if (!(bimClass.equals("bim:Roof") && ifcClass.equals("ifc:IfcSlab"))) {
             this.addSpatialLocationQueryComponents(builder);
         }
         // Geometric representation are usually the same for most elements except for the following classes
@@ -75,10 +92,10 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addSpatialLocationQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?zone", "bot:containsElement", "?element");
-        builder.addWhere("?spatialStructureRelationship", "rdf:type", "ifc:IfcRelContainedInSpatialStructure")
-                .addWhere("?spatialStructureRelationship", "ifc:relatedElements_IfcRelContainedInSpatialStructure", "?element")
-                .addWhere("?spatialStructureRelationship", "ifc:relatingStructure_IfcRelContainedInSpatialStructure", "?zone");
+        builder.addConstruct(ZONE_VAR, "bot:containsElement", ELEMENT_VAR);
+        builder.addWhere(SPATIAL_REL_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelContainedInSpatialStructure")
+                .addWhere(SPATIAL_REL_VAR, "ifc:relatedElements_IfcRelContainedInSpatialStructure", ELEMENT_VAR)
+                .addWhere(SPATIAL_REL_VAR, "ifc:relatingStructure_IfcRelContainedInSpatialStructure", ZONE_VAR);
     }
 
     /**
@@ -88,20 +105,20 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addGeometricRepresentationQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?element", "bim:hasGeometricRepresentation", "?instshaperep")
-                .addConstruct("?instshaperep", "rdf:type", "bim:ModelRepresentation3D")
-                .addConstruct("?instshaperep", "bim:hasRepresentationType", "?shapereptype")
-                .addConstruct("?instshaperep", "bim:hasSubContext", "?subcontext") // Sub-context
-                .addConstruct("?subcontext", "rdf:type", "bim:GeometricRepresentationSubContext")
-                .addConstruct("?instshaperep", "bim:hasRepresentationItem", "?geometry") // Geometry
-                .addConstruct("?geometry", "rdf:type", "?geomtype")
-                .addConstruct("?instshaperep", "bim:hasTargetPlacement", "?cartesiantransformer") // Optional transformer operator
-                .addConstruct("?cartesiantransformer", "rdf:type", "bim:CartesianTransformationOperator")
-                .addConstruct("?instshaperep", "bim:hasSourcePlacement", "?geomaxisplacement") // Optional source placement
-                .addConstruct("?geomaxisplacement", "rdf:type", "bim:LocalPlacement");
+        builder.addConstruct(ELEMENT_VAR, "bim:hasGeometricRepresentation", INST_SHAPEREP_VAR)
+                .addConstruct(INST_SHAPEREP_VAR, QueryHandler.RDF_TYPE, "bim:ModelRepresentation3D")
+                .addConstruct(INST_SHAPEREP_VAR, "bim:hasRepresentationType", SHAPEREP_TYPE_VAR)
+                .addConstruct(INST_SHAPEREP_VAR, "bim:hasSubContext", SUBCONTEXT_VAR) // Sub-context
+                .addConstruct(SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, "bim:GeometricRepresentationSubContext")
+                .addConstruct(INST_SHAPEREP_VAR, "bim:hasRepresentationItem", GEOM_VAR) // Geometry
+                .addConstruct(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR)
+                .addConstruct(INST_SHAPEREP_VAR, "bim:hasTargetPlacement", CART_TRANSFORMER_VAR) // Optional transformer operator
+                .addConstruct(CART_TRANSFORMER_VAR, QueryHandler.RDF_TYPE, "bim:CartesianTransformationOperator")
+                .addConstruct(INST_SHAPEREP_VAR, "bim:hasSourcePlacement", GEOM_AXISPLACEMENT_VAR) // Optional source placement
+                .addConstruct(GEOM_AXISPLACEMENT_VAR, QueryHandler.RDF_TYPE, "bim:LocalPlacement");
         // Common query syntax related to geometric representation triples
-        builder.addWhere("?element", "ifc:representation_IfcProduct", "?productDefinitionShape")
-                .addWhere("?productDefinitionShape", "rdf:type", "ifc:IfcProductDefinitionShape");
+        builder.addWhere(ELEMENT_VAR, "ifc:representation_IfcProduct", PRODUCT_DEFINITION_VAR)
+                .addWhere(PRODUCT_DEFINITION_VAR, QueryHandler.RDF_TYPE, "ifc:IfcProductDefinitionShape");
         // Sub-query syntax
         this.addGeometricRepresentationUnionSubQuery(builder);
     }
@@ -121,42 +138,42 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
         NamespaceMapper.addSubqueryBuilderNamespaces(subgroupBuilder);
         SelectBuilder unionBuilder = subgroupBuilder.clone();
         // Query for the individual shape representation instances that are directly linked to specific geometries
-        subgroupBuilder.addWhere("?productDefinitionShape", "ifc:representations_IfcProductRepresentation/list:hasContents", "?instshaperep")
-                .addWhere("?instshaperep", "rdf:type", "ifc:IfcShapeRepresentation")
-                .addWhere("?instshaperep", "ifc:representationType_IfcRepresentation/express:hasString", "?shapereptype")
-                .addWhere("?instshaperep", "ifc:contextOfItems_IfcRepresentation", "?subcontext")
-                .addWhere("?subcontext", "rdf:type", "ifc:IfcGeometricRepresentationSubContext")
-                .addWhere("?instshaperep", "ifc:items_IfcRepresentation", "?geometry")
-                .addWhere("?geometry", "rdf:type", "?geomtype");
+        subgroupBuilder.addWhere(PRODUCT_DEFINITION_VAR, "ifc:representations_IfcProductRepresentation/list:hasContents", INST_SHAPEREP_VAR)
+                .addWhere(INST_SHAPEREP_VAR, QueryHandler.RDF_TYPE, "ifc:IfcShapeRepresentation")
+                .addWhere(INST_SHAPEREP_VAR, "ifc:representationType_IfcRepresentation/express:hasString", SHAPEREP_TYPE_VAR)
+                .addWhere(INST_SHAPEREP_VAR, "ifc:contextOfItems_IfcRepresentation", SUBCONTEXT_VAR)
+                .addWhere(SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcGeometricRepresentationSubContext")
+                .addWhere(INST_SHAPEREP_VAR, "ifc:items_IfcRepresentation", GEOM_VAR)
+                .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
 
         // ADD Optional for infinite list has next
         try {
-            subgroupBuilder.addFilter("!regex(str(?geomtype) ,'IfcMappedItem')");
+            subgroupBuilder.addFilter("!regex(str(" + GEOM_TYPE_VAR + ") ,'IfcMappedItem')");
         } catch (ParseException e) {
             throw new JPSRuntimeException(e);
         }
 
         // Query for the family representation instance when there is no geometry available for individual instances
         // In these cases, individual instances are linked as a mapped item and are nested from the individual instances
-        unionBuilder.addWhere("?productDefinitionShape", "ifc:representations_IfcProductRepresentation/list:hasContents", "?shaperep")
-                .addWhere("?shaperep", "rdf:type", "ifc:IfcShapeRepresentation")
-                .addWhere("?shaperep", "ifc:representationType_IfcRepresentation/express:hasString", Converters.makeLiteral("MappedRepresentation"))
-                .addWhere("?shaperep", "ifc:items_IfcRepresentation", "?mappeditem") // individual instances with no geometries
-                .addWhere("?mappeditem", "rdf:type", "ifc:IfcMappedItem")
-                .addWhere("?mappeditem", "ifc:mappingSource_IfcMappedItem", "?representationmap")
-                .addWhere("?mappeditem", "ifc:mappingTarget_IfcMappedItem", "?cartesiantransformer") // Transforms origin location to new location
-                .addWhere("?cartesiantransformer", "rdf:type", "ifc:IfcCartesianTransformationOperator3D")
-                .addWhere("?representationmap", "rdf:type", "ifc:IfcRepresentationMap")
+        unionBuilder.addWhere(PRODUCT_DEFINITION_VAR, "ifc:representations_IfcProductRepresentation/list:hasContents", SHAPEREP_VAR)
+                .addWhere(SHAPEREP_VAR, QueryHandler.RDF_TYPE, "ifc:IfcShapeRepresentation")
+                .addWhere(SHAPEREP_VAR, "ifc:representationType_IfcRepresentation/express:hasString", Converters.makeLiteral("MappedRepresentation"))
+                .addWhere(SHAPEREP_VAR, "ifc:items_IfcRepresentation", MAPPED_ITEM_VAR) // individual instances with no geometries
+                .addWhere(MAPPED_ITEM_VAR, QueryHandler.RDF_TYPE, "ifc:IfcMappedItem")
+                .addWhere(MAPPED_ITEM_VAR, "ifc:mappingSource_IfcMappedItem", REP_MAP_VAR)
+                .addWhere(MAPPED_ITEM_VAR, "ifc:mappingTarget_IfcMappedItem", CART_TRANSFORMER_VAR) // Transforms origin location to new location
+                .addWhere(CART_TRANSFORMER_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCartesianTransformationOperator3D")
+                .addWhere(REP_MAP_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRepresentationMap")
                 // Source placement structure is directly queried here as there is no IfcLocalPlacement instance in this specific case
-                .addWhere("?representationmap", "ifc:mappingOrigin_IfcRepresentationMap","?geomaxisplacement")
+                .addWhere(REP_MAP_VAR, "ifc:mappingOrigin_IfcRepresentationMap", GEOM_AXISPLACEMENT_VAR)
                 // Start of specific instance shape rep
-                .addWhere("?representationmap", "ifc:mappedRepresentation_IfcRepresentationMap", "?instshaperep")
-                .addWhere("?instshaperep", "rdf:type", "ifc:IfcShapeRepresentation")
-                .addWhere("?instshaperep", "ifc:representationType_IfcRepresentation/express:hasString", "?shapereptype")
-                .addWhere("?instshaperep", "ifc:contextOfItems_IfcRepresentation", "?subcontext") // Sub-context
-                .addWhere("?subcontext", "rdf:type", "ifc:IfcGeometricRepresentationSubContext")
-                .addWhere("?instshaperep", "ifc:items_IfcRepresentation", "?geometry") // Geometries
-                .addWhere("?geometry", "rdf:type", "?geomtype");
+                .addWhere(REP_MAP_VAR, "ifc:mappedRepresentation_IfcRepresentationMap", INST_SHAPEREP_VAR)
+                .addWhere(INST_SHAPEREP_VAR, QueryHandler.RDF_TYPE, "ifc:IfcShapeRepresentation")
+                .addWhere(INST_SHAPEREP_VAR, "ifc:representationType_IfcRepresentation/express:hasString", SHAPEREP_TYPE_VAR)
+                .addWhere(INST_SHAPEREP_VAR, "ifc:contextOfItems_IfcRepresentation", SUBCONTEXT_VAR) // Sub-context
+                .addWhere(SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcGeometricRepresentationSubContext")
+                .addWhere(INST_SHAPEREP_VAR, "ifc:items_IfcRepresentation", GEOM_VAR) // Geometries
+                .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
         subgroupBuilder.addUnion(unionBuilder);
         builder.addWhere(subgroupBuilder);
     }

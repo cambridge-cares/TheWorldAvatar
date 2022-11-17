@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v3.2.0</title>
+        <title>DTVF v3.3.2</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- JS -->
@@ -12,7 +12,7 @@
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.2.0/dtvf.min.js"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.2/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -24,7 +24,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.2.0/dtvf.min.css" rel="stylesheet" />
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.2/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -60,7 +60,7 @@
                 <!-- Terrain controls -->
                 <div id="terrainContainer" class="controlBlock">
                     <div id="controlTitle" class="controlTitle">
-                        <p>Terrain</p>
+                        <p>Imagery</p>
                         <div class="tooltip">
                             <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
                             <span class="tooltiptext">Toggle 3D terrain</span>
@@ -86,6 +86,14 @@
                     </div>
                 </div>
 
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
+                    </div>
+                </div>
+
                 <!-- Container for developer info -->
                 <div id="developerContainer" class="controlBlock" style="display: none;">
                     <div class="tooltip" id="coordEditor" style="float: right;">
@@ -93,23 +101,6 @@
                         <span class="tooltiptext">Change map position</span>
                     </div>
                     <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
-                </div>
-            </div>
-
-            <!-- Search controls -->
-            <div id="finderContainer" class="controlBlock expanded" style="display:none;">
-                <label style="width:100px; height:100%; display:inline-block; color:white; line-height:40px;">Search by</label>
-                <select name="search-select" id="search-select"></select>
-
-                <input type="text" id="findInput" name="findInput" placeholder="Enter search term..." style="height:100%; width:calc(100% - 390px); padding-left:10px;" oninput="manager.updateSearch(this)"></input>
-
-                <div class="tooltip" style="float:right; width:40px; height:100%; text-align:center; display:table; cursor:pointer;" onclick="manager.hideSearch()">
-                    <i class="fas fa-chevron-down" style="width:100%; height:100%; font-size:18pt! important; color:white; display:table-cell; vertical-align:middle;"></i>
-                    <span class="tooltiptext">Hide control</span>
-                </div>
-                <div class="tooltip" style="float:right; width:40px; height:100%; text-align:center; display:table; cursor:pointer;" onclick="manager.cancelSearch()">
-                    <i class="fas fa-times" style="width:100%; height:100%; font-size:18pt! important; color:white; display:table-cell; vertical-align:middle;"></i>
-                    <span class="tooltiptext">Cancel search</span>
                 </div>
             </div>
         </div>
@@ -172,7 +163,6 @@
             function start() {
                 // Initialise the map object
                 manager.initialiseMap();
-                
                
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
@@ -182,7 +172,7 @@
                     This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
                     together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
                     before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect version 3.2.0 of
+                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect version 3.3.2 of
                     the framework itself hosted on a remote CMCL server not the files within the repository.</p>
                     <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
                 `);
@@ -198,7 +188,6 @@
 
                 // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
-
                     // Load registered images and linked files
                     manager.loadImagesAndLinks().then(() => {
 

@@ -8,11 +8,14 @@ import org.apache.jena.rdf.model.Statement;
 import java.util.*;
 
 /**
- * Provides the functions to initialise a SPARQL query builder and execute all SPARQL query types.
+ * Provides the functions to initialise a SPARQL query builder, execute all SPARQL query types, and provides common properties.
  *
  * @author qhouyee
  */
 public class QueryHandler {
+    public static final String RDF_TYPE = "rdf:type";
+    public static final String RDFS_LABEL = "rdfs:label";
+
     /**
      * Initialise a SPARQL SELECT query builder.
      *

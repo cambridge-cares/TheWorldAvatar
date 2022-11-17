@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides query statements specific to the Ifc Project container class.
@@ -8,6 +9,11 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
  * @author qhouyee
  */
 public class IfcProjectConstructBuilder {
+    private final String PROJECT_VAR = "?project";
+    private final String REPCONTEXT_VAR = "?repcontext";
+    private final String ROOT_VAR = "?root";
+    private final String PHASE_VAR = "?phase";
+
     /**
      * Create the SPARQL query syntax for Construct queries.
      *
@@ -27,18 +33,18 @@ public class IfcProjectConstructBuilder {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void createProjectSparqlQuery(ConstructBuilder builder) {
-        builder.addConstruct("?project", "rdfs:label", "?name")
-                .addConstruct("?project", "bim:hasPhase", "?phase")
-                .addConstruct("?project", "bim:hasContext", "?repcontext")
-                .addConstruct("?project", "bim:hasRootZone", "?root");
+        builder.addConstruct(PROJECT_VAR, QueryHandler.RDFS_LABEL, IfcConstructBuilderTemplate.NAME_VAR)
+                .addConstruct(PROJECT_VAR, "bim:hasPhase", PHASE_VAR)
+                .addConstruct(PROJECT_VAR, "bim:hasContext", REPCONTEXT_VAR)
+                .addConstruct(PROJECT_VAR, "bim:hasRootZone", ROOT_VAR);
 
-        builder.addWhere("?project", "rdf:type", "ifc:IfcProject")
-                .addWhere("?project", "ifc:longName_IfcProject/express:hasString", "?name")
-                .addWhere("?project", "ifc:phase_IfcProject/express:hasString", "?phase")
-                .addWhere("?project", "ifc:representationContexts_IfcProject", "?repcontext")
-                .addWhere("?relaggregate", "rdf:type", "ifc:IfcRelAggregates")
-                .addWhere("?relaggregate", "ifc:relatingObject_IfcRelDecomposes", "?project")
-                .addWhere("?relaggregate", "ifc:relatedObjects_IfcRelDecomposes", "?root");
+        builder.addWhere(PROJECT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcProject")
+                .addWhere(PROJECT_VAR, "ifc:longName_IfcProject/express:hasString", IfcConstructBuilderTemplate.NAME_VAR)
+                .addWhere(PROJECT_VAR, "ifc:phase_IfcProject/express:hasString", PHASE_VAR)
+                .addWhere(PROJECT_VAR, "ifc:representationContexts_IfcProject", REPCONTEXT_VAR)
+                .addWhere(IfcConstructBuilderTemplate.RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
+                .addWhere(IfcConstructBuilderTemplate.RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", PROJECT_VAR)
+                .addWhere(IfcConstructBuilderTemplate.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", ROOT_VAR);
     }
 
     /**
@@ -48,17 +54,17 @@ public class IfcProjectConstructBuilder {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addGeometricRepresentationContextQueryComponent(ConstructBuilder builder) {
-        builder.addConstruct("?repcontext", "rdf:type", "bim:GeometricRepresentationContext")
-                .addConstruct("?repcontext", "bim:hasSpaceDimensions", "?spacedimensions")
-                .addConstruct("?repcontext", "bim:hasPrecision", "?modelprecision")
-                .addConstruct("?repcontext", "bim:hasTrueNorth", "?northdirection")
-                .addConstruct("?repcontext", "bim:hasWorldCoordinateSystem", "?modelplacement")
-                .addConstruct("?northdirection", "rdf:type", "bim:DirectionVector")
-                .addConstruct("?modelplacement", "rdf:type", "bim:LocalPlacement");
-        builder.addWhere("?repcontext", "rdf:type", "ifc:IfcGeometricRepresentationContext")
-                .addWhere("?repcontext", "ifc:worldCoordinateSystem_IfcGeometricRepresentationContext", "?modelplacement")
-                .addWhere("?repcontext", "ifc:coordinateSpaceDimension_IfcGeometricRepresentationContext/express:hasInteger", "?spacedimensions")
-                .addWhere("?repcontext", "ifc:precision_IfcGeometricRepresentationContext/express:hasDouble", "?modelprecision")
-                .addWhere("?repcontext", "ifc:trueNorth_IfcGeometricRepresentationContext", "?northdirection");
+        builder.addConstruct(REPCONTEXT_VAR, QueryHandler.RDF_TYPE, "bim:GeometricRepresentationContext")
+                .addConstruct(REPCONTEXT_VAR, "bim:hasSpaceDimensions", "?spacedimensions")
+                .addConstruct(REPCONTEXT_VAR, "bim:hasPrecision", "?modelprecision")
+                .addConstruct(REPCONTEXT_VAR, "bim:hasTrueNorth", "?northdirection")
+                .addConstruct(REPCONTEXT_VAR, "bim:hasWorldCoordinateSystem", "?modelplacement")
+                .addConstruct("?northdirection", QueryHandler.RDF_TYPE, "bim:DirectionVector")
+                .addConstruct("?modelplacement", QueryHandler.RDF_TYPE, "bim:LocalPlacement");
+        builder.addWhere(REPCONTEXT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcGeometricRepresentationContext")
+                .addWhere(REPCONTEXT_VAR, "ifc:worldCoordinateSystem_IfcGeometricRepresentationContext", "?modelplacement")
+                .addWhere(REPCONTEXT_VAR, "ifc:coordinateSpaceDimension_IfcGeometricRepresentationContext/express:hasInteger", "?spacedimensions")
+                .addWhere(REPCONTEXT_VAR, "ifc:precision_IfcGeometricRepresentationContext/express:hasDouble", "?modelprecision")
+                .addWhere(REPCONTEXT_VAR, "ifc:trueNorth_IfcGeometricRepresentationContext", "?northdirection");
     }
 }

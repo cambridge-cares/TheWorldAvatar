@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides a template query in the form of a Construct Builder that is common for all Spatial Zones and Elements classes.
@@ -8,7 +9,16 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
  * @author qhouyee
  */
 abstract public class IfcConstructBuilderTemplate {
+    public static final String ZONE_VAR = "?zone";
+    public static final String ELEMENT_VAR = "?element";
+    public static final String NAME_VAR = "?name";
+    public static final String UID_VAR = "?uid";
+    public static final String RELAGGR_VAR = "?relaggregates";
+    public static final String PLACEMENT_VAR = "?localplacement";
+    public static final String ELEVATION_VAR = "?elevation";
+
     protected abstract void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String botClass);
+
     /**
      * A final template method that calls the required common methods.
      * All subclasses will call this method to generate a common SPARQL Construct query template.
@@ -45,13 +55,13 @@ abstract public class IfcConstructBuilderTemplate {
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
      */
     private void addBaseQueryComponents(ConstructBuilder builder, String ifcClass, String bimClass) {
-        builder.addConstruct("?element", "rdf:type", bimClass)
-                .addConstruct("?element", "bim:hasIfcId", "?uid")
-                .addConstruct("?element", "rdfs:label", "?name");
+        builder.addConstruct(ELEMENT_VAR, QueryHandler.RDF_TYPE, bimClass)
+                .addConstruct(ELEMENT_VAR, "bim:hasIfcId", UID_VAR)
+                .addConstruct(ELEMENT_VAR, QueryHandler.RDFS_LABEL, NAME_VAR);
 
-        builder.addWhere("?element", "rdf:type", ifcClass)
-                .addWhere("?element", "ifc:globalId_IfcRoot/express:hasString", "?uid")
-                .addWhere("?element", "ifc:name_IfcRoot/express:hasString", "?name");
+        builder.addWhere(ELEMENT_VAR, QueryHandler.RDF_TYPE, ifcClass)
+                .addWhere(ELEMENT_VAR, "ifc:globalId_IfcRoot/express:hasString", UID_VAR)
+                .addWhere(ELEMENT_VAR, "ifc:name_IfcRoot/express:hasString", NAME_VAR);
     }
 
     /**
@@ -61,11 +71,11 @@ abstract public class IfcConstructBuilderTemplate {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addModelPositionQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct("?element", "bim:hasLocalPosition", "?localplacement")
-                .addConstruct("?localplacement", "rdf:type", "bim:LocalPlacement");
+        builder.addConstruct(ELEMENT_VAR, "bim:hasLocalPosition", PLACEMENT_VAR)
+                .addConstruct(PLACEMENT_VAR, QueryHandler.RDF_TYPE, "bim:LocalPlacement");
 
         // Ifc Placement query structure
-        builder.addWhere("?element", "ifc:objectPlacement_IfcProduct", "?localplacement")
-                .addWhere("?localplacement", "rdf:type", "ifc:IfcLocalPlacement");
+        builder.addWhere(ELEMENT_VAR, "ifc:objectPlacement_IfcProduct", PLACEMENT_VAR)
+                .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcLocalPlacement");
     }
 }

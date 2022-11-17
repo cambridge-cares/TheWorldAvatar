@@ -80,9 +80,9 @@
             "type": "shell",
             "label": "update-py4jps",
             // Linux (n/a option to be commented out):
-            "command": "bash ./build_py4jps_resources.sh",   
+            "command": "bash ./build_py4jps_stackclient_resource.sh",   
             // Windows (n/a option to be commented out): 
-            // "command": "build_py4jps_resources.sh",      
+            // "command": "build_py4jps_stackclient_resource.sh",      
         }
     ],
     "inputs": [

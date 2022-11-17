@@ -188,10 +188,12 @@ class IfcElementConstructBuilderTest {
 
     private List<String> genExpectedResultsForStair() {
         List<String> expected = new ArrayList<>();
-        expected.add("?relagg   rdf:type              ifc:IfcRelAggregates ;\n" +
+        expected.add("?relaggregates\n" +
+                "              rdf:type              ifc:IfcRelAggregates ;\n" +
                 "              ifc:relatingObject_IfcRelDecomposes  ?element ;\n" +
                 "              ifc:relatedObjects_IfcRelDecomposes  ?stairflight .");
-        expected.add("?relagg   ifc:relatedObjects_IfcRelDecomposes  ?landing .");
+        expected.add("?relaggregates\n" +
+                "              ifc:relatedObjects_IfcRelDecomposes  ?landing .");
         expected.add("?landing  rdf:type              ifc:IfcSlab .");
         expected.add("?landing  ifc:objectPlacement_IfcProduct  ?landingplacement ;\n" +
                 "              ifc:representation_IfcProduct  ?landingdefinition .\n" +
