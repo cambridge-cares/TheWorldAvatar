@@ -21,7 +21,10 @@ PREFIXES = {
     'ohn': 'https://www.theworldavatar.com/kg/ontoheatnetwork/',
     'om': 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'oems': 'https://www.theworldavatar.com/kg/ontoems/'
+    'oems': 'https://www.theworldavatar.com/kg/ontoems/',
+    'kg': 'https://www.theworldavatar.com/kg/pms_dh/',
+    'ocape': 'http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#'
+
 }
 
 # Define time format for timeseries

@@ -9,7 +9,7 @@ import os
 import datetime as dt
 from pathlib import Path
 
-from district_heating.generation_optimisation import cost_optimization as optima
+from district_heating.generation_optimisation import cost_optimization as optima, update_results_to_kg
 from district_heating.generation_optimisation import load_input
 
 ####################     MPC OPTIMIZATION RUN    ####################
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         # create artificial training/fit history for MHKW grid temperatures for 2018 forecasts
         ts_input.loc['2017', ['MHKW Temp Vorlauf (degC)', 'MHKW Temp Ruecklauf (degC)']] = \
             ts_input.loc['2018', ['MHKW Temp Vorlauf (degC)', 'MHKW Temp Ruecklauf (degC)']].values
-    # ts_input.dropna(inplace=True)
+    ts_input.dropna(inplace=True)
 
 
     # define continuous output/log files for mpc optimisation
@@ -69,9 +69,8 @@ if __name__ == '__main__':
     res, res_wogt, res_wgt, fcs = optima.mpc_optimization(swps, prices, ts_input, index, opt_period, mpc_horizon,
                                                           out_file_gt, out_file_opt, histeval=True, live_updates=False)
 
-    #TODO:
     # Write timeseries data to KG
-    # update.update_timeseries_data(res, index)
+    update_results_to_kg.update_timeseries_data(res, index)
 
     # output to console
     titles = {'Heat generation w/o GT': res_wogt, 'Heat generation w/ GT': res_wgt, 'Optimized heat generation': res}
