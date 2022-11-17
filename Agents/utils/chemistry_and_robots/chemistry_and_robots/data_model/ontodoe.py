@@ -8,6 +8,8 @@ from pyderivationagent.data_model.utils import *
 from chemistry_and_robots.data_model.base_ontology import BaseOntology
 from chemistry_and_robots.data_model.ontoreaction import *
 
+import chemistry_and_robots.data_model.unit_conversion as unit_conv
+
 class Strategy(BaseOntology):
     clz: str = ONTODOE_STRATEGY
 
@@ -131,6 +133,52 @@ class Domain(BaseOntology):
                 g.add((URIRef(self.instance_iri), URIRef(ONTODOE_HASFIXEDPARAMETER), URIRef(fixed_parameter.instance_iri)))
 
         return g
+
+    def filter_reaction_experiment_as_beliefs(self, rxn_exp_list: List[ReactionExperiment]) -> List[ReactionExperiment]:
+        filtered_rxn_exp_list = []
+        for rxn_exp in rxn_exp_list:
+            _skip = False
+            for var in self.hasDesignVariable:
+                if isinstance(var, ContinuousVariable):
+                    _con = rxn_exp.get_reaction_condition(var.refersTo.clz, var.positionalID)
+                    if _con is None:
+                        _skip = True
+                        break
+                    _dq = unit_conv.DimensionalQuantity(
+                        hasUnit=_con.hasValue.hasUnit,
+                        hasNumericalValue=_con.hasValue.hasNumericalValue,
+                    ).convert_to(var.refersTo.hasUnit)
+                    if not (var.lowerLimit <= _dq.hasNumericalValue <= var.upperLimit):
+                        # the reaction experiment does not satisfy the domain, so skip it
+                        _skip = True
+                        break
+                elif isinstance(var, CategoricalVariable):
+                # TODO [future work]: implement
+                    raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+                else:
+                    raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+
+            # check for fixed parameters if the same, only if the reaction experiment is not skipped
+            if not _skip and self.hasFixedParameter is not None:
+                # all fixed parameters must be the same
+                for fixed in self.hasFixedParameter:
+                    _con_fixed = rxn_exp.get_reaction_condition(fixed.refersTo.clz, fixed.positionalID)
+                    if _con_fixed is None:
+                        _skip = True
+                        break
+                    _dq_fixed = unit_conv.DimensionalQuantity(
+                        hasUnit=_con_fixed.hasValue.hasUnit,
+                        hasNumericalValue=_con_fixed.hasValue.hasNumericalValue,
+                    ).convert_to(fixed.refersTo.hasValue.hasUnit)
+                    if not _dq_fixed.hasNumericalValue == fixed.refersTo.hasValue.hasNumericalValue:
+                        # the reaction experiment does not satisfy the domain, so skip it
+                        _skip = True
+                        break
+
+            if not _skip:
+                filtered_rxn_exp_list.append(rxn_exp)
+
+        return filtered_rxn_exp_list
 
 class SystemResponse(BaseOntology):
     clz: str = ONTODOE_SYSTEMRESPONSE

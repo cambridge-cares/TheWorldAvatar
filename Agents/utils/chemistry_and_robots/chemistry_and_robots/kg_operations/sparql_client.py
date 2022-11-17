@@ -41,14 +41,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if not isinstance(target_perfind_iri_or_lst, list):
             target_perfind_iri_or_lst = [target_perfind_iri_or_lst]
         target_perfind_iri_or_lst = trimIRI(target_perfind_iri_or_lst)
-        # TODO think about if we would like to force all rxn_exp to have all target_perfind_iri_or_lst?
-        # or it's fine if the rxn_exp only has some of the target_perfind_iri_or_lst (current implementation)?
+        # NOTE here we force all rxn_exp to have all target_perfind_iri_or_lst
+        # NOTE the reaction condition side of selection will be done in other places, e.g. ROGI agent
+        _q = ""
+        for i in range(len(target_perfind_iri_or_lst)):
+            _q = _q + f"""?rxn_exp ?p_{i} ?o_{i}. ?o_{i} a <{target_perfind_iri_or_lst[i]}>. """
         query = f"""SELECT DISTINCT ?rxn_exp
                     WHERE {{
                         ?rxn_exp <{ONTOREACTION_ISVARIATIONOF}>*/<{ONTOREACTION_ISOCCURENCEOF}> <{chem_rxn_iri}>.
-                        VALUES ?target_perfind {{ <{'> <'.join(target_perfind_iri_or_lst)}> }}
-                        ?rxn_exp ?has_perf_ind ?perf_ind.
-                        ?perf_ind a ?target_perfind.
+                        {_q}
                     }}
                 """
         response = self.performQuery(query)
@@ -354,7 +355,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response = self.performQuery(query)
-        logger.debug(response)
+        # logger.debug(response)
 
         try:
             unique_chem_rxn = dal.get_the_unique_value_in_list_of_dict(response, 'chem_rxn')

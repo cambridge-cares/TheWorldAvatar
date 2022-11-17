@@ -55,7 +55,9 @@ class RxnOptGoalIterAgent(DerivationAgent):
         list_laboratory_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else []
 
         # IV. Create a set of derivations
-        # Create and upload the DesignOfExperiment triples to triple store as pure input, and add timestamp
+        # Create and upload the DesignOfExperiment triples to triple store as pure input
+        # NOTE the timestamp will be added automatically when marking up the derivations
+        # NOTE not all list_rxn_exp_instance passed in will be used, only those have reaction conditions within the range will be used
         doe_instance = self.sparql_client.generate_doe_instance_from_goal(
             goal_set=goal_set_instance,
             chem_rxn=chem_rxn_instance,

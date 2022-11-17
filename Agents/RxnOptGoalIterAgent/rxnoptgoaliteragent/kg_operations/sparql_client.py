@@ -234,7 +234,17 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             )
             list_system_responses.append(sys_res)
 
-        logger.info(f"Reaction experiments as beliefs:{[rxn.instance_iri for rxn in rxn_exp_as_beliefs] if rxn_exp_as_beliefs is not None else None}")
+        # construct doe domain
+        constructed_domain = Domain(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=getNameSpace(goal_set.instance_iri),
+            hasDesignVariable=list_design_variables,
+            hasFixedParameter=list_fixed_parameters,
+        )
+
+        filtered_rxn_exp_as_beliefs = constructed_domain.filter_reaction_experiment_as_beliefs(rxn_exp_as_beliefs)
+        logger.info(f"Reaction experiments chosen as beliefs:{[rxn.instance_iri for rxn in filtered_rxn_exp_as_beliefs]}")
+
         # construct design of experiment instance
         doe_instance = DesignOfExperiment(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -245,17 +255,12 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
             ),
-            hasDomain=Domain(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(goal_set.instance_iri),
-                hasDesignVariable=list_design_variables,
-                hasFixedParameter=list_fixed_parameters,
-            ),
+            hasDomain=constructed_domain,
             hasSystemResponse=list_system_responses,
             utilisesHistoricalData=HistoricalData(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
-                refersTo=rxn_exp_as_beliefs,
+                refersTo=filtered_rxn_exp_as_beliefs,
                 # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
             ),
             designsChemicalReaction=chem_rxn.instance_iri,

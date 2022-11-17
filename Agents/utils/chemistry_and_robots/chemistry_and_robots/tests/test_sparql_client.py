@@ -1128,7 +1128,10 @@ def test_get_all_rxn_exp_given_chem_rxn(initialise_triples):
     sparql_client = initialise_triples
 
     lst_rxn_exp = sparql_client.get_all_rxn_exp_given_chem_rxn(TargetIRIs.CHEMICAL_REACTION_IRI.value)
-    assert dal.check_if_two_lists_equal(lst_rxn_exp, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_NEW_RXN_EXP.value)
+    assert dal.check_if_two_lists_equal(
+        lst_rxn_exp,
+        TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_NEW_RXN_EXP.value + TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value
+    )
 
 def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     sparql_client = initialise_triples
@@ -1368,9 +1371,24 @@ def test_get_all_laboratories(initialise_triples):
     assert len(labs) == 1
     assert labs[0] == TargetIRIs.DUMMY_LAB_IRI.value
 
-@pytest.mark.skip(reason="TODO")
-def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples):
-    pass
+@pytest.mark.parametrize(
+    "rxn_con_list,expected_rxn",
+    [
+        (onto.ONTOREACTION_YIELD, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD], []),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD, onto.ONTOREACTION_RUNMATERIALCOST], []),
+        ([onto.ONTOREACTION_SPACETIMEYIELD], []),
+    ],
+)
+def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples, rxn_con_list, expected_rxn):
+    sparql_client = initialise_triples
+    res = sparql_client.get_all_rxn_exp_with_target_perfind_given_chem_rxn(
+        TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        rxn_con_list
+    )
+    assert dal.check_if_two_lists_equal(res, expected_rxn)
 
 @pytest.mark.skip(reason="TODO")
 def test_locate_possible_input_chemical(initialise_triples):
