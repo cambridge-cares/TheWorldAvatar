@@ -1,0 +1,16 @@
+// Example HTTP request to update transaction record for single property
+
+// property_iris: IRI of instantiated building to instantiate/update property sales data for
+//                (trailing '<' and '>' are optional/not required)
+// min_confidence: (optional) minimum confidence score for address matching when retrieveing property sales
+//                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
+//                 (default: 90)
+
+POST http://165.232.172.16:5002/api/landregistry/update
+Content-Type: application/json
+
+{ "query": {
+      "property_iris": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat_3c3e2d5f-31fb-41fe-849a-dc7f30bc761a",
+      "min_confidence": 95
+    }
+}

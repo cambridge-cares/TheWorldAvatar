@@ -52,11 +52,7 @@ class ControlHandler {
 	 */
 	showControls() {
         this.setupCollapses();
-
-        //Ensure selected terrain option is right
-        let terrainContainer = document.getElementById("terrainContainer");
-        let terrainSelect = terrainContainer.querySelector("input[id='" + window.terrain + "']") as HTMLInputElement;
-        if(terrainSelect != null) terrainSelect.checked = true;
+        this.generateImageryOptions();
 	}
 
 	/**
@@ -137,6 +133,37 @@ class ControlHandler {
 			</table>
 		`;
         this.editingCoords = true;
+    }
+
+    /**
+     * Generates controls to change the underlying map imagery based on the "imagery"
+     * property of the current global settings.
+     */
+    public generateImageryOptions() {
+        let container = document.getElementById("imageryContainer");
+        let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+
+        let defaultImagery = imagerySettings["default"];
+
+        Object.keys(imagerySettings).forEach(function(key) {
+            if(key !== "default") {
+                let buttonHTML = `<input type="radio" name="terrain" id="` + key + `"`;
+
+                switch(Manager.PROVIDER) {
+                    case MapProvider.MAPBOX:
+                        buttonHTML += ` onclick="MapboxUtils.changeTerrain(this.id)"`;
+                    break;
+
+                    case MapProvider.CESIUM:
+                        buttonHTML += ` onclick="CesiumUtils.changeTerrain(this.id)"`;
+                    break;
+                }
+                buttonHTML += (key === defaultImagery) ? " checked>" : ">";
+
+                let labelHTML = `<label for="` + key + `">` + key + `</label><br/>`;
+                container.innerHTML += buttonHTML + labelHTML;
+            }
+        })
     }
 
 }

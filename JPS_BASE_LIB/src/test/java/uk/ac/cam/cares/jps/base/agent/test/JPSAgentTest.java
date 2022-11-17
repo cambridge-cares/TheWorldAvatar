@@ -1,21 +1,36 @@
 package uk.ac.cam.cares.jps.base.agent.test;
 
-import junit.framework.TestCase;
-import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import static org.junit.Assert.assertThrows;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.Part;
+import javax.ws.rs.BadRequestException;
+
+import org.json.JSONObject;
+
+import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 public class JPSAgentTest extends TestCase {
 
@@ -28,52 +43,30 @@ public class JPSAgentTest extends TestCase {
         }
     }
 
-    public void testProcessRequestParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testProcessRequestParameters() {
         JPSAgent jpsa = new JPSAgent();
-        assertNotNull(jpsa.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class));
-        assertNotNull(jpsa.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class, HttpServletRequest.class));
-
-        Method processRequestParameters = jpsa.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class);
-        Method processRequestParametersWithRequest = jpsa.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class, HttpServletRequest.class);
-
-        JSONObject input = new JSONObject();
+        JSONObject requestParams = new JSONObject();
         HttpServletRequest request = getMockRequest();
 
-        try {
-            assertTrue(input.toString().equals(processRequestParameters.invoke(jpsa, input).toString()));
-        } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
-        }
+        assertThrows("By default a 'BadRequestException' should be thrown if no 'request' argument is passed.",
+                BadRequestException.class, () -> jpsa.processRequestParameters(requestParams));
 
-        try {
-            assertTrue(input.toString().equals(processRequestParametersWithRequest.invoke(jpsa, input, request).toString()));
-        } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
-        }
+        assertThrows("By default a 'BadRequestException' should be thrown if an empty 'request' argument is passed.",
+                BadRequestException.class, () -> jpsa.processRequestParameters(requestParams, request));
 
     }
 
-    public void testValidateInput() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testValidateInput() {
         JPSAgent jpsa = new JPSAgent();
-        assertNotNull(jpsa.getClass().getDeclaredMethod("validateInput", JSONObject.class));
-        Method validateInput = jpsa.getClass().getDeclaredMethod("validateInput", JSONObject.class);
-        validateInput.setAccessible(true);
-        JSONObject input = new JSONObject();
 
-        boolean valid = false;
+        JSONObject requestParams = new JSONObject();
 
-        try {
-            valid = (boolean) validateInput.invoke(jpsa, input);
-            assertTrue(valid);
-        } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getTargetException().getStackTrace()[6].getClassName());
-        }
+        assertThrows("By default a 'BadRequestException' should be thrown if an empty 'request' argument is passed.",
+                BadRequestException.class, () -> jpsa.validateInput(requestParams));
 
-        input.put("a", "b");
+        requestParams.put("a", "b");
 
-        valid = (boolean) validateInput.invoke(jpsa, input);
-
-        assertTrue(valid);
+        assertTrue(jpsa.validateInput(requestParams));
 
     }
 
@@ -400,7 +393,8 @@ public class JPSAgentTest extends TestCase {
             }
 
             @Override
-            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+                    throws IllegalStateException {
                 return null;
             }
 

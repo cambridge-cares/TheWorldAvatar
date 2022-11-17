@@ -18,8 +18,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
@@ -46,7 +48,7 @@ class AccessAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.4.0";
+	static final String ACCESS_AGENT_VERSION = "1.6.1";
 	
 	//////////////////////////////////////////////////
 	
@@ -101,6 +103,7 @@ class AccessAgentIntegrationTest {
 	
 	@BeforeEach
 	void setupEach() {
+				
 		try {	
 			targetStoreContainer.start();					
 		} catch (Exception e) {
@@ -204,6 +207,26 @@ class AccessAgentIntegrationTest {
         
         String result = targetStoreClient.get(null, testContentType);
 		assertTrue(IntegrationTestHelper.removeWhiteSpace(result).contains(IntegrationTestHelper.removeWhiteSpace(newContent)));
+	}
+	
+	@Test
+	void testClearCache() {
+		
+		//insert test data 
+		targetStoreClient.insert(null, testContent, testContentType);
+		
+		JSONArray ja = AccessAgentCaller.queryStore(targetResourceID, query);
+		JSONObject jo = ja.getJSONObject(0); 
+		assertEquals("http://www.example.com/test/o",jo.get("o").toString());
+			
+		String url = "http://" + ACCESS_AGENT_CONTAINER.getHost() 
+			+ ":" + ACCESS_AGENT_CONTAINER.getFirstMappedPort() + "/access-agent/clearcache";
+		JSONObject response = new JSONObject(Http.execute(Http.get(url,null)));		
+		assertEquals("Cache cleared.",response.getString(JPSConstants.RESULT_KEY));
+		
+		ja = AccessAgentCaller.queryStore(targetResourceID, query);
+		jo = ja.getJSONObject(0); 
+		assertEquals("http://www.example.com/test/o",jo.get("o").toString());
 	}
 		
 }

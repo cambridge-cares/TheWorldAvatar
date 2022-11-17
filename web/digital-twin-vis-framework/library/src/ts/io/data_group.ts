@@ -29,14 +29,14 @@ class DataGroup {
     public name: string;
 
     /**
-     * Optional map settings.
-     */
-    public mapOptions: Object;
-
-    /**
      * Unique, dynamically generated, ID
      */
     public id: string;
+
+    /**
+     * 
+     */
+    public defaultExpanded: boolean = true; 
 
     /**
      * Constructor
@@ -81,13 +81,23 @@ class DataGroup {
             let node = layersJSON[i];
 
             let source = this.findSource(node["source"]);
+            if(source === null || source === undefined) {
+                console.error("Layer with id '" + node["id"] + "' references a source that is not defined, will skip it!");
+                continue;
+            }
             node["source"] = source.id;
-
+           
             let layer = null;
+            let layerID = this.id + "." + node["id"];
+
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    let layerID = this.id + "." + node["id"];
-                    layer = new MapBoxLayer(layerID, node["name"], source);
+                    layer = new MapboxLayer(layerID, node["name"], source);
+
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
 
                     // Register this layer to this connected stack
                     if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
@@ -96,6 +106,21 @@ class DataGroup {
                     Manager.STACK_LAYERS[stack].push(layerID);
                 break;
     
+                case MapProvider.CESIUM:
+                    layer = new CesiumLayer(layerID, node["name"], source);
+
+                    // Store display order if present
+                    if(node.hasOwnProperty("order")) {
+                        layer.order = node["order"];
+                    }
+
+                    // Register this layer to this connected stack
+                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack] = [];
+                    }
+                    Manager.STACK_LAYERS[stack].push(layerID);
+                break;
+
                 default:
                     throw new Error("Unknown map provider specified!");
                 break;

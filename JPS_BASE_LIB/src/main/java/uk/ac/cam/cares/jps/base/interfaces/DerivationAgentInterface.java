@@ -19,6 +19,7 @@ public interface DerivationAgentInterface {
 	 * Shall implement logic transforming derivationInputs to derivationOutputs.
 	 * 
 	 * @param derivationInputs
+	 * @param derivationOutputs
 	 * @return
 	 */
 	void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs);
@@ -37,6 +38,7 @@ public interface DerivationAgentInterface {
 	 * isDerivedUsing the instantiated agent.
 	 * 
 	 * @param agentIRI
+	 * @param periodicalTimescale
 	 */
-	void monitorAsyncDerivations(String agentIRI);
+	void monitorAsyncDerivations(String agentIRI, long periodicalTimescale);
 }

@@ -5,6 +5,11 @@
 abstract class MapHandler {
 
     /**
+     * Username for mapping libary (may be null).
+     */
+    public static MAP_USER: String = "cmclinnovations";
+ 
+    /**
      * API key for mapping libary (may be null).
      */
     public static MAP_API: String;
@@ -53,11 +58,4 @@ abstract class MapHandler {
      * @param layer definition of layer to create.
      */
     public abstract plotLayer(group: DataGroup, layer: DataLayer);
-}
-
-/**
- * Possible map providing libraries.
- */
-enum MapProvider {
-    MAPBOX
 }
