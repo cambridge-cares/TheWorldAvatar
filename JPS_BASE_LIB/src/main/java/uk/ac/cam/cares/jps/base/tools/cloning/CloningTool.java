@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * This class implements a cloning tool for Triple Stores. 
@@ -38,9 +38,9 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * In case of failure, the user should clear the target store.     
  * <p>
  * <b>How to use the tool:</b> 
- * The simplest way to use the cloning tool is from a {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} object with the methods 
- * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneTo cloneTo} and 
- * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneFrom cloneFrom}.
+ * The simplest way to use the cloning tool is from a {@link uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface TripleStoreClientInterface} object with the methods
+ * {@link uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface#cloneTo cloneTo} and
+ * {@link uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface#cloneFrom cloneFrom}.
  * <br>
  * Alternatively, a CloningTool object can be instantiated. This allows control 
  * over the step size, overlap and to override the requirement for an empty 
@@ -93,7 +93,7 @@ public class CloningTool {
 	
 	/**
 	 * Set the step size with the default overlap ratio 
-	 * @param stepsize
+	 * @param stepSize
 	 */
 	public void setStepsize(int stepSize) {
 		this.stepSize = stepSize;
@@ -140,7 +140,7 @@ public class CloningTool {
 	 * @param source store client
 	 * @param target store client
 	 */
-	public void clone(StoreClientInterface source, StoreClientInterface target) {
+	public void clone(TripleStoreClientInterface source, TripleStoreClientInterface target) {
 		
 		int targetCount = target.getTotalNumberOfTriples();
 		final int originalTargetCount = targetCount;
@@ -213,7 +213,7 @@ public class CloningTool {
 	 * @param target store
 	 * @param constructQuery
 	 */
-	public void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
+	public void performCloneStep(TripleStoreClientInterface source, TripleStoreClientInterface target, String constructQuery) {
 		Model model = source.executeConstruct(constructQuery);
 		target.executeUpdate(getSparqlInsert(model));
 	}
@@ -305,7 +305,7 @@ public class CloningTool {
 	 * @param storeClient
 	 * @return
 	 */
-	public Integer countBlanks(StoreClientInterface storeClient) {
+	public Integer countBlanks(TripleStoreClientInterface storeClient) {
 		String query = "SELECT (COUNT(*) AS ?triples)"
 				+"WHERE { ?s ?p ?o."
 				+ "FILTER(  isblank(?s) || isblank(?o) )}";

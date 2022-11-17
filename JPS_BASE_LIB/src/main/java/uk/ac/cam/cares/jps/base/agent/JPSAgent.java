@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
 import uk.ac.cam.cares.jps.base.router.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
@@ -106,7 +107,11 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
-    
+
+    public String getRDBUrl(String targetResourceID) {
+        return RDBAccessAgentCaller.getRDBUrl(targetResourceID);
+    }
+
     /**
      * Send a HTTP GET request to an agent with JSON parameters
      * 

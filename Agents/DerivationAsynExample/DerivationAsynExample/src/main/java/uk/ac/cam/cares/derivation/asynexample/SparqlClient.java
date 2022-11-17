@@ -3,6 +3,7 @@ package uk.ac.cam.cares.derivation.asynexample;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,13 +39,16 @@ public class SparqlClient {
 	public static Iri MaxValue = p_namespace.iri("MaxValue");
 	public static Iri MinValue = p_namespace.iri("MinValue");
 	public static Iri Difference = p_namespace.iri("Difference");
+	public static Iri DifferenceReverse = p_namespace.iri("DifferenceReverse");
 	public static Iri ListOfRandomPoints = p_namespace.iri("ListOfRandomPoints");
 	public static Iri Point = p_namespace.iri("Point");
 	public static Iri UpperLimit = p_namespace.iri("UpperLimit");
 	public static Iri LowerLimit = p_namespace.iri("LowerLimit");
 	public static Iri NumberOfPoints = p_namespace.iri("NumberOfPoints");
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-	
+	public static Iri InputPlaceholderExceptionThrow = p_namespace.iri("InputPlaceholderExceptionThrow");
+	public static Iri OutputPlaceholderExceptionThrow = p_namespace.iri("OutputPlaceholderExceptionThrow");
+
 	// property
 	public static Iri hasPoint = p_namespace.iri("hasPoint");
 	public static Iri hasValue = p_namespace.iri("hasValue");
@@ -256,7 +260,21 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return numberOfPoints_iri;
     }
-    
+
+	/**
+	 * This method creates a InputPlaceholderExceptionThrow instance.
+	 * <iri> a <InputPlaceholderExceptionThrow>
+	 * <iri> a owl:NamedIndividual
+	 * @return
+	 */
+	public String createInputPlaceholderExceptionThrow() {
+		String inputPlaceholderExceptionThrowIRI = namespace + UUID.randomUUID().toString();
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(iri(inputPlaceholderExceptionThrowIRI).isA(InputPlaceholderExceptionThrow).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+		storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+		return inputPlaceholderExceptionThrowIRI;
+	}
+
     /**
      * This method queries ?x a <UpperLimit>.
      * @return
@@ -361,6 +379,34 @@ public class SparqlClient {
 			return new String();
 		}
     }
+
+	/**
+	 * This method queries ?x a <DifferenceReverse>, ?x <hasValue> ?v, ?v <numericalValue> ?value.
+	 * @return
+	 */
+	 public Map<String, Integer> getDiffReverseValues() {
+		SelectQuery query = Queries.SELECT();
+
+		String diffReverseKey = "diffReverse";
+		String valueKey = "value";
+		Variable ul_iri = SparqlBuilder.var(diffReverseKey);
+		Variable value_iri = query.var();
+		Variable value = SparqlBuilder.var(valueKey);
+		GraphPattern queryPattern = GraphPatterns.and(
+			ul_iri.isA(DifferenceReverse).andHas(hasValue,value_iri),
+			value_iri.has(numericalValue,value));
+
+		query.prefix(p_namespace).select(ul_iri, value).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, Integer> diffReverseValues = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			diffReverseValues.put(queryResult.getJSONObject(i).getString(diffReverseKey), queryResult.getJSONObject(i).getInt(valueKey));
+		}
+
+		return diffReverseValues;
+	}
 
 	/**
      * This method queries ?x a <ListOfRandomPoints>.
@@ -625,39 +671,6 @@ public class SparqlClient {
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
     	return queryResult.getJSONObject(0).getInt(key);
-    }
-    
-    /**
-     * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
-     * @param service
-     * @param httpUrl
-     * @param inputTypes
-     * @param outputTypes
-     */
-    public void createOntoAgentInstance(String service, String httpUrl, List<String> inputTypes, List<String> outputTypes) {
-    	String operation = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	
-    	ModifyQuery modify = Queries.MODIFY();
-    	
-    	modify.insert(iri(service).isA(Service).andHas(hasOperation, iri(operation)));
-    	modify.insert(iri(operation).isA(Operation).andHas(hasInput, iri(mcInput)).andHas(hasOutput, iri(mcOutput)).andHas(hasHttpUrl, iri(httpUrl)));
-    	modify.insert(iri(mcInput).isA(MessageContent));
-    	for (String input : inputTypes) {
-    		String mpInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcInput).has(hasMandatoryPart, iri(mpInput)));
-    		modify.insert(iri(mpInput).isA(MessagePart).andHas(hasType, iri(input)));
-    	}
-    	
-    	modify.insert(iri(mcOutput).isA(MessageContent));
-    	for (String output : outputTypes) {
-    		String mpOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcOutput).has(hasMandatoryPart, iri(mpOutput)));
-    		modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
-    	}
-    	
-    	storeClient.executeUpdate(modify.prefix(p_namespace,p_agent).getQueryString());
     }
     
     /**

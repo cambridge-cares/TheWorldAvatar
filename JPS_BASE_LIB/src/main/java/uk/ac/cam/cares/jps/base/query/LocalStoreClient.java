@@ -29,21 +29,21 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
- * Local in-memory implementation of the {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface},
+ * Local in-memory implementation of the {@link uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface TripleStoreClientInterface},
  * designed to serve as a temporary store.
  * 
  * This class uses {@link org.apache.jena.rdfconnection.RDFConnection RDFConnection} to provide SPARQL access to an in-memory dataset. 
  * 
- * @see uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface
+ * @see uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface TripleStoreClientInterface
  * @see org.apache.jena.rdfconnection.RDFConnection RDFConnection
  * 
  * @author csl37
  *
  */
-public class LocalStoreClient implements StoreClientInterface {
+public class LocalStoreClient implements TripleStoreClientInterface {
 
 	private static Logger LOGGER = LogManager.getLogger(LocalStoreClient.class);
 	

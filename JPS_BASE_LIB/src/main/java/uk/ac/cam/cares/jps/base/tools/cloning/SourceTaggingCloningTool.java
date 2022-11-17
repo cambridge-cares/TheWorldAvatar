@@ -22,7 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 public class SourceTaggingCloningTool {
 
@@ -103,11 +103,11 @@ public class SourceTaggingCloningTool {
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
-	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB) {
+	public void clone(TripleStoreClientInterface sourceKB, TripleStoreClientInterface targetKB) {
 		clone(sourceKB, null, targetKB, null);
 	}
 	
-	public void clone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph){
+	public void clone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 	}
 	
@@ -122,7 +122,7 @@ public class SourceTaggingCloningTool {
 	 * @param targetKB
 	 * @param target graph
 	 */
-	protected void performClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	private void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
 		// Count all triples
 		WhereBuilder whereCountAll = new WhereBuilder()
@@ -303,7 +303,7 @@ public class SourceTaggingCloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkCount(StoreClientInterface kbClient, String graph) {
+	public boolean checkCount(TripleStoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO);
@@ -317,7 +317,7 @@ public class SourceTaggingCloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkNoTags(StoreClientInterface kbClient, String graph) {
+	public boolean checkNoTags(TripleStoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
