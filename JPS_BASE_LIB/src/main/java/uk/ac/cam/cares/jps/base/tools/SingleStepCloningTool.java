@@ -10,30 +10,36 @@ import org.apache.jena.update.UpdateRequest;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * Tool for cloning triples in a single step 
+ * Tool for cloning triples (not quads) in a single step 
  * using a SPARQL construct query and SPARQL update. 
- * Note: this tool should only be used for small stores.
+ * <p>
+ * NOTE: <br> 
+ * - This tool should only be used for small stores. <br>
+ * - This tool does not support cloning a quad store; however,
+ * 	 triples can be cloned to/from a named graph.
  * 
  * @author csl37
  *
  */
 public class SingleStepCloningTool {
-
+	
+	static final Var varG = Var.alloc("g");
 	static final Var varS = Var.alloc("s");
 	static final Var varP = Var.alloc("p");
 	static final Var varO = Var.alloc("o");
 	
 	/**
-	 * Clone default (null) graph from source store to target store.
+	 * Clone triples from source store to target store.
 	 * @param sourceStore
 	 * @param targetStore
 	 */
 	public void clone(StoreClientInterface sourceStore, StoreClientInterface targetStore) {
+		
 		clone(sourceStore, null, targetStore, null);
 	}
 	
 	/**
-	 * Clone named graph from source store to named graph in target store.
+	 * Clone a named graph from source store to a named graph (or default/null graph) in target store.
 	 * @param sourceStore
 	 * @param sourceGraph
 	 * @param targetStore
@@ -51,7 +57,7 @@ public class SingleStepCloningTool {
 	}
 	
 	/**
-	 * Build sparql construct query to get triples.
+	 * Build sparql construct query to get quads.
 	 * @param graph/context (optional)
 	 * @return construct query
 	 */
@@ -74,7 +80,7 @@ public class SingleStepCloningTool {
 	}
 	
 	/**
-	 * Build sparql update to insert triples.
+	 * Build sparql update to insert quads.
 	 * @param graph
 	 * @param results
 	 * @return updaterequest
