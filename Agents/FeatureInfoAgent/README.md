@@ -71,15 +71,17 @@ To properly parse the metadata and timeseries queries, the agent requires the re
 
 Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. Any other colums will be ignored.
 
-<div style="width:100%; text-align:center; margin:25px;">
+
+<p align="center">
     <img src="meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
-</div>
+</p>
 
 Queries for timeseries data need to return the measurement/forecast IRIs (that will be used to grab the actual values from PostGreSQL), as well as parameters associated with each measurement/forecast. Required columns are `Measurement` (or `Forecast`) containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
 
-<div style="width:100%; text-align:center; margin:25px;">
+
+<p align="center">
     <img src="time-query-example.jpg" alt="Example result of a timeseries query" width="75%"/>
-</div>
+</p>
 
 ### Requests
 
