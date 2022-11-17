@@ -61,7 +61,7 @@ public class SingleStepCloningTool {
 	 * @param graph/context (optional)
 	 * @return construct query
 	 */
-	private static Query buildSparqlConstruct(String graph) {
+	public static Query buildSparqlConstruct(String graph) {
 		
 		ConstructBuilder builder = new ConstructBuilder()
 				.addConstruct(varS, varP, varO);
@@ -85,7 +85,7 @@ public class SingleStepCloningTool {
 	 * @param results
 	 * @return updaterequest
 	 */
-	private static UpdateRequest buildSparqlUpdate(String graph, Model results) {
+	public static UpdateRequest buildSparqlUpdate(String graph, Model results) {
 		
 		// Build update
 		UpdateBuilder builder = new UpdateBuilder();
