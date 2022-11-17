@@ -82,7 +82,7 @@ def api_forecast():
         
     try:
         # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, force_mapping, data_length = None)
+        res = forecast(dataIRI, horizon, forecast_start_date, force_mapping, data_length = data_length)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:
