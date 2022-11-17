@@ -28,7 +28,6 @@ public class SourceTaggingCloningTool {
 
 	String strTag = "_Tag";	//Tag ending
 	
-	//TODO check this
 	int countTotal;		//Total number of triple to clone
 	boolean quads;		//Is the source KBClient a quads store?
 	int stepSize;
@@ -59,11 +58,30 @@ public class SourceTaggingCloningTool {
 	/////////////////////////
 	
 	/**
+	 * Default constructor for triple store
+	 */
+	public SourceTaggingCloningTool(){
+		this.stepSize = 1000000; //set default step size value to 1000000
+		this.quads = false;
+		createTag();
+	}
+	
+	/**
+	 * Instantiate cloning tool 
+	 * @param isQuads
+	 */
+	public SourceTaggingCloningTool(boolean isQuads){
+		this.stepSize = 1000000; //set default step size value to 1000000
+		this.quads = isQuads;
+		createTag();
+	}
+	
+	/**
 	 * Instantiate cloning tool with step size and whether data is quads. 
 	 * @param stepSize
 	 * @param isQuads
 	 */
-	SourceTaggingCloningTool(int stepSize, boolean isQuads){
+	public SourceTaggingCloningTool(int stepSize, boolean isQuads){
 		this.stepSize = stepSize;
 		this.quads = isQuads;
 		createTag();
@@ -79,6 +97,16 @@ public class SourceTaggingCloningTool {
 		strTag += String.valueOf(hash);
 	}
 
+	/**
+	 * Clone all triples/quads from source repository to target repository.
+	 * WARNING: any context will be lost in the target.
+	 * @param sourceKB
+	 * @param targetKB
+	 */  
+	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB) {
+		clone(sourceKB, null, targetKB, null);
+	}
+	
 	public void clone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph){
 		performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 	}
@@ -96,6 +124,11 @@ public class SourceTaggingCloningTool {
 	 */
 	protected void performClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
 		
+		// Count all triples
+		WhereBuilder whereCountAll = new WhereBuilder()
+				.addWhere(varS, varP, varO);		    
+	    countTotal = countTriples(sourceKB, sourceGraph, whereCountAll);
+		
 		// Count triples excluding blank nodes
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
@@ -111,11 +144,20 @@ public class SourceTaggingCloningTool {
 		
 		untagSource(sourceKB, sourceGraph, steps, stepSize);
 		
-		//TODO throw error
-		checkCount(sourceKB,sourceGraph);
-		checkNoTags(sourceKB,sourceGraph);
-		checkCount(targetKB,targetGraph);
-		checkNoTags(sourceKB,sourceGraph);
+		// Perform checks
+		if(!checkCount(sourceKB,sourceGraph)) {
+			throw new JPSRuntimeException("Source count does not match initial count!");
+		}
+		if(!checkNoTags(sourceKB,sourceGraph)) {
+			throw new JPSRuntimeException("Source store still contains tags!");
+		}
+		if(!checkCount(targetKB,targetGraph)) {
+			throw new JPSRuntimeException("Target count does not match initial count!");
+		}
+		if(!checkNoTags(targetKB,targetGraph)) {
+			throw new JPSRuntimeException("Target store still contains tags!");
+		}			
+				
 	}
 	
 	/**
