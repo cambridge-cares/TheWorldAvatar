@@ -9,7 +9,7 @@ import traceback
 #import agentlogging
 import json
 from forecasting.errorhandling.exceptions import InvalidInput
-from forecasting.forecasting_agent.create_forecast import forecast
+from forecasting.forecasting_agent.agent import forecast
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
@@ -73,10 +73,16 @@ def api_forecast():
     except KeyError as ex:
         force_mapping = None
     
-    
+    # Retrieve data_length 
+    try:
+        data_length = int(query['data_length'])
+        print('data_length: ' + str(data_length))
+    except KeyError as ex:
+        data_length = None
+        
     try:
         # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, force_mapping)
+        res = forecast(dataIRI, horizon, forecast_start_date, force_mapping, data_length = None)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:

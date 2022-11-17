@@ -1,7 +1,5 @@
 
 
-
-
 from forecasting.datamodel.iris import *
 
 
@@ -26,35 +24,33 @@ INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
 BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
 
 
-
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 MAPPING = {}
 
 # Default mapping which uses Prophet and loads just dataIRI without covariates
-MAPPING['DEFAULT']=  {
-        'fc_model': {
-            'train_again': True,
-            'name': 'prophet',
-            'scale_data': False,
-            },
-        'frequency': dt.timedelta(hours=1),
-        'data_length': 300, #365 * 24 * 2, # 300 
-        'ts_data_type': DOUBLE,
+MAPPING['DEFAULT'] = {
+    'fc_model': {
+        'train_again': True,
+        'name': 'prophet',
+        'scale_data': False,
+    },
+    'frequency': dt.timedelta(hours=1),
+    'data_length': 300,  # 365 * 24 * 2, # 300
+    'ts_data_type': DOUBLE,
 
-    }
+}
 
 MAPPING['TFT_HEAT_SUPPLY'] = {
-        'load_covariates_func': get_covs_heat_supply,
-        'fc_model': {
-            "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
-            "model_path_pth_link":  "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
-            'train_again': False,
-            'name': 'tft',
-            'scale_data': True,
-        },
-        'frequency': MAPPING['DEFAULT']['frequency'],
-        'data_length': MAPPING['DEFAULT']['data_length'],
-        'ts_data_type': MAPPING['DEFAULT']['ts_data_type'],
-    }
-
+    'load_covariates_func': get_covs_heat_supply,
+    'fc_model': {
+        "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
+        "model_path_pth_link":  "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
+        'train_again': False,
+        'name': 'tft',
+        'scale_data': True,
+    },
+    'frequency': MAPPING['DEFAULT']['frequency'],
+    'data_length': MAPPING['DEFAULT']['data_length'],
+    'ts_data_type': MAPPING['DEFAULT']['ts_data_type'],
+}

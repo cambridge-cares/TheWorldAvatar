@@ -72,8 +72,8 @@ def get_predecessor_type_and_predicate(dataIRI, kgClient):
         ?o ?predicate <{dataIRI}> . 
         ?o <{RDF_TYPE}> ?predecessorType . 
         }}"""
-    res = kgClient.performQuery(query)
-    return {r["predicate"]: r["predecessorType"] for r in res}
+    cfg = kgClient.performQuery(query)
+    return {r["predicate"]: r["predecessorType"] for r in cfg}
 
 def get_ts_value_iri(dataIRI, kgClient):
     # get ts value iri of dataIRI
