@@ -3,10 +3,22 @@ POST http://127.0.0.1:5000/api/forecastingAgent/forecast
 Content-Type: application/json
 
 { "query": {
-      //"dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_172bfe76-0c1c-4463-b03e-bae2c1f50f4d",
-      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
+      // Heat supply
+      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_172bfe76-0c1c-4463-b03e-bae2c1f50f4d",
+      
+      // GeneratedHeatAmount Gas Turbine
+      //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
+
+      //Grid connection Temperature
+      //"dataIRI": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
+      
+      //Availability HeatBoiler
+      //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
+
       "force_mapping" : "DEFAULT",
-      "forecast_start_date": "2019-10-17T01:00:00Z",
-      "horizon": 168
+      //"forecast_start_date": "2019-10-17T01:00:00Z",
+      //"forecast_start_date": "2020-10-17T01:00:00Z",
+      "horizon": 168, 
+      "data_length": 10000
     }
 }
