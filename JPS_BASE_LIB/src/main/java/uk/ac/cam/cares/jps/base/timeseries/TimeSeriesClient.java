@@ -380,7 +380,38 @@ public class TimeSeriesClient<T> {
 		// Extract "backup" information (dataIRIs, TimeUnit, DBUrl) for potential later re-instantiation (in case RDB deletion fails)
 		List<String> dataIRIs = rdfClient.getAssociatedData(tsIRI);
 		String timeUnit = rdfClient.getTimeUnit(tsIRI);  // can be null
-		
+
+		//Get time series type
+		String type = rdfClient.getTimeSeriesType(tsIRI);
+		Iri timeSeriesType = null;
+		if(type.equals(TimeSeriesSparql.Average+"TimeSeries")){
+			timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
+		}
+		else if(type.equals(TimeSeriesSparql.Instantaneous+"TimeSeries")){
+			timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
+		}
+		else if(type.equals(TimeSeriesSparql.StepwiseCumulative+"TimeSeries")){
+			timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
+		}
+		else if(type.equals(TimeSeriesSparql.CumulativeTotal+"TimeSeries")){
+			timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
+		}
+		else if(type.equals(TimeSeriesSparql.ns_ontology+"TimeSeries")){
+			timeSeriesType = TimeSeriesSparql.TimeSeries;
+		}
+
+		String temporalUnit = null;
+		Double numericDuration = null;
+		String durIRI = null;
+
+		if(timeSeriesType.equals(TimeSeriesSparql.AverageTimeSeries)){
+			TimeSeriesSparql.CustomDuration customDuration = rdfClient.getCustomDuration(tsIRI);
+			temporalUnit = customDuration.getUnit();
+			numericDuration = customDuration.getValue();
+			durIRI = rdfClient.getAveragingPeriod(tsIRI);
+
+		}
+
 		// Step1: Delete time series with all associations in knowledge base
 		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 		try {
@@ -410,7 +441,7 @@ public class TimeSeriesClient<T> {
 			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
 			//		a different exception depending on what the problem was, and how it should be handled
 			try {
-				rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
+				rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeSeriesType, durIRI, numericDuration, temporalUnit);
 			} catch (Exception eRdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
 						" , as database related deletion failed but KG triples were deleted.", eRdfCreate);
@@ -546,7 +577,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if a time series instance with the tsIRI exists, false otherwise
 	 */
     public boolean checkTimeSeriesExists(String tsIRI) {
-    	return rdfClient.checkTimeSeriesExists(tsIRI);
+		return rdfClient.checkTimeSeriesExists(tsIRI);
     }
     
 	/**
@@ -565,7 +596,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if tsIRI exists and has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
-    	return rdfClient.checkTimeUnitExists(tsIRI);
+		return rdfClient.checkTimeUnitExists(tsIRI);
     }
     
     /**
