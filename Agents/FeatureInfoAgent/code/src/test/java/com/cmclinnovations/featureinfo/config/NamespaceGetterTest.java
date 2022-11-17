@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the functionality of the NamespaceGetter class.
@@ -22,7 +22,7 @@ public class NamespaceGetterTest {
     /**
      * Read in mock HTTP response before running tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-blazegraph-namespaces.xml")) {
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));

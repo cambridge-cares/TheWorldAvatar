@@ -4,10 +4,12 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Controller;
 
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.EndpointType;
 import com.cmclinnovations.featureinfo.kg.ClassHandler;
 import com.cmclinnovations.featureinfo.kg.MetaHandler;
 import com.cmclinnovations.featureinfo.kg.TimeHandler;
@@ -72,6 +75,11 @@ public class FeatureInfoAgent extends JPSAgent {
      * Override for Timeseries client to allow mocking during tests
      */
     protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
+
+    /**
+     * If the request enforces an endpoint, cache it here.
+     */
+    private ConfigEndpoint enforcedEndpoint;
 
     /**
      * Load the configuration file.
@@ -138,6 +146,12 @@ public class FeatureInfoAgent extends JPSAgent {
                 case "/get":
                 case "get": {
                     LOGGER.info("Detected request to get meta and timeseries data.");
+
+                    // Enforce a Blazegraph endpoint if passed
+                    // NOTE: Disabled until we know if the federation is acceptable
+                    // if(requestParams.has("endpoint")) {
+                    //     this.enforceEndpoint(requestParams);
+                    // }
                     this.runLogic(requestParams, response);
                 }
                 break;
@@ -166,6 +180,24 @@ public class FeatureInfoAgent extends JPSAgent {
         } 
 
         response.getWriter().flush();
+    }
+
+    /**
+     * Enforce a single Blazegraph endpoint for requests.
+     * 
+     * @param requestParams HTTP request parameters.
+     */
+    private void enforceEndpoint(JSONObject requestParams) {
+        String endpoint = requestParams.getString("endpoint");
+        Pattern pattern = Pattern.compile("(?<=namespace\\/)(.*)(?=\\/sparql)");
+        Matcher matcher = pattern.matcher(endpoint);
+
+        if(matcher.find()) {
+            String name = matcher.group();
+            this.enforcedEndpoint = new ConfigEndpoint(name, endpoint, null, null, EndpointType.BLAZEGRAPH);
+        } else {
+            LOGGER.warn("Could not parse requested endpoint, will federate across all.");
+        }
     }
 
     /**
@@ -207,6 +239,7 @@ public class FeatureInfoAgent extends JPSAgent {
         try {
             // Determine the class match
             String classMatch = this.getClass(iri, response);
+            
             if(classMatch != null) {
                 // Get the metadata
                 JSONArray metaArray = this.getMetadata(iri, classMatch, response);
@@ -242,7 +275,7 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     private String getClass(String iri, HttpServletResponse response) throws IOException {
         // Get Blazegraph endpoints
-        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+        List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build class handler
         ClassHandler handler = new ClassHandler(iri, endpoints);
@@ -286,7 +319,7 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     protected JSONArray getMetadata(String iri, String classMatch, HttpServletResponse response) throws Exception {
         // Get Blazegraph endpoints
-        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+        List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build metadata handler
         MetaHandler handler = new MetaHandler(iri, classMatch, endpoints);
@@ -336,7 +369,7 @@ public class FeatureInfoAgent extends JPSAgent {
         );
 
         // Get Blazegraph endpoints
-        List<ConfigEndpoint> endpoints = CONFIG.getBlazegraphEndpoints();
+        List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build timeseries handler
         TimeHandler handler = new TimeHandler(iri, classMatch, endpoints);

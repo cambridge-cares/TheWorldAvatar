@@ -15,10 +15,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
 
@@ -48,7 +48,7 @@ public class ClassHandlerTest {
     /**
      * Read in mock config file before running tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
@@ -90,7 +90,7 @@ public class ClassHandlerTest {
     /**
      * Clean up after all tests have executed.
      */
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
           // Delete the temporary query file
           try {

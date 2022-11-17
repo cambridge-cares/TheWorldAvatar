@@ -20,10 +20,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
@@ -52,7 +52,7 @@ public class MetaHandlerTest {
     /**
      * Read in mock config file before running tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
@@ -94,7 +94,7 @@ public class MetaHandlerTest {
     /**
      * Clean up after all tests have executed.
      */
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
           // Delete the temporary query file
           try {

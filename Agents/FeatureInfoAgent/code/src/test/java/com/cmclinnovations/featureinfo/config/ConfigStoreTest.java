@@ -10,10 +10,10 @@ import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 
@@ -35,7 +35,7 @@ public class ConfigStoreTest {
      /**
      * Read in mock config file before running tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));

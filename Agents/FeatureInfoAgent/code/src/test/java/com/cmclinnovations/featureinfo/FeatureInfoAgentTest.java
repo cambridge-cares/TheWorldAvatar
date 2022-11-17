@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,14 +25,17 @@ import javax.ws.rs.core.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.Ignore;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
@@ -62,7 +66,7 @@ public class FeatureInfoAgentTest {
     /**
      * Read in mock config file before running tests.
      */
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
@@ -72,7 +76,6 @@ public class FeatureInfoAgentTest {
             while ((eachStringLine = bufferReader.readLine()) != null) {
                 stringBuilder.append(eachStringLine).append("\n");
             }
-
             CONFIG.loadFile(stringBuilder.toString());
 
         } catch(Exception exception) {
@@ -97,9 +100,15 @@ public class FeatureInfoAgentTest {
             Files.writeString(tempTime, "SAMPLE-TIME-QUERY");
             LOGGER.info("Written temporary query file for testing (" + tempTime.toString() + ").");
 
+            Path tempForced = Paths.get(tmpdir, "FeatureInfoAgentTest-Forces.sparql");
+            Files.writeString(tempForced, "FORCED-ENDPOINT-QUERY");
+            LOGGER.info("Written temporary query file for testing (" + tempForced.toString() + ").");
+
             // Add to the config
             CONFIG.addMetaQueryForClass("SAMPLE-CLASS", tempMeta.toString());
             CONFIG.addTimeQueryForClass("SAMPLE-CLASS", tempTime.toString());
+            CONFIG.addMetaQueryForClass("FORCED-ENDPOINT", tempForced.toString());
+
             FeatureInfoAgent.CONFIG = CONFIG;
 
         } catch(IOException exception) {
@@ -111,7 +120,7 @@ public class FeatureInfoAgentTest {
     /**
      * Clean up after all tests have executed.
      */
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
           // Delete the temporary query files
           try {
@@ -119,8 +128,10 @@ public class FeatureInfoAgentTest {
             
             Path tempMeta = Paths.get(tmpdir, "FeatureInfoAgentTest-Meta.sparql");
             Path tempTime = Paths.get(tmpdir, "FeatureInfoAgentTest-Time.sparql");
+            Path tempForced = Paths.get(tmpdir, "FeatureInfoAgentTest-Forces.sparql");
             Files.deleteIfExists(tempMeta);
             Files.deleteIfExists(tempTime);
+            Files.deleteIfExists(tempForced);
 
             LOGGER.info("Removed temporary query files.");
         } catch(IOException exception) {
@@ -286,7 +297,7 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock clients
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true);
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
         FeatureInfoAgent.TS_CLIENT_OVER = tsClient;
@@ -333,10 +344,13 @@ public class FeatureInfoAgentTest {
      */
     @Test
     public void testQueryNoTime() throws Exception {
+
+        System.out.println(FeatureInfoAgent.CONFIG.getMetaQuery("flarb"));
+
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock the RemoteStoreClient 
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(false);
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
 
         // Mock request
@@ -382,6 +396,7 @@ public class FeatureInfoAgentTest {
     @Test
     public void testBadConfig() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
+        FeatureInfoAgent.RS_CLIENT_OVER = null;
 
         // Mock request
         HttpServletRequest request = spy(HttpServletRequest.class);
@@ -413,24 +428,86 @@ public class FeatureInfoAgentTest {
             Assertions.assertTrue(jsonResult.toString().contains("Could not contact endpoints"), "Response body did not contain expected content!");
         } 
     }
+
+    /**
+     * Test the agent with an enforced Blazegraph endpoint.
+     * 
+     * NOTE: This tests a feature that is currently disabled (commented out). If it is
+     * re-enabled within the FeatureInfoAgent, then remove the @Ignore annotation.
+     */
+    @Test
+    @Ignore
+    public void testEnforcedEndpoint() throws Exception {
+        FeatureInfoAgent agent = new FeatureInfoAgent();
+
+        // Mock clients
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, "http://fake-website.com/blazegraph/namespace/test/sparql");
+        FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
+        TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
+        FeatureInfoAgent.TS_CLIENT_OVER = tsClient;
+
+        // Mock request
+        HttpServletRequest request = spy(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+        when(request.getRequestURI()).thenReturn("http://fake-website.com/feature-info-agent/get");
+
+        // Mock response with mocked writer
+        HttpServletResponse response = spy(MockHttpServletResponse.class);
+        StringWriter strWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(strWriter);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // Mock AgentCaller.readJsonParameter() method
+        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+            caller.when(() -> {
+                AgentCaller.readJsonParameter(ArgumentMatchers.any());
+            }).thenReturn(
+                new JSONObject("{\"iri\":\"http://fake-iri.com\", \"endpoint\":\"http://fake-website.com/blazegraph/namespace/test/sparql\"}")
+            );
+
+            // Run the agent
+            agent.doGet(request, response);
+
+            // Check the response code
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
+            
+            // Check against the expected result
+            JSONObject jsonResult = new JSONObject(strWriter.toString());
+            JSONObject expected = new JSONObject("{\"meta\": [{\"Forced\": \"Yes\"}]}");
+            Assertions.assertTrue(jsonResult.similar(expected), "JSON response did not match expected result!");
+        } 
+    }
+
     
     /**
      * Produces a mock RemoteStoreClient instance that returns the expected results.
      * 
      * @param mockTime should the query for measurements be mocked?
+     * @param endpoint enforced endpoint URL
      * @return
      */
-    private RemoteStoreClient mockRemoteStoreClient(boolean mockTime) throws Exception {
+    private RemoteStoreClient mockRemoteStoreClient(boolean mockTime, String endpoint) throws Exception {
         // Mock the RemoteStoreClient
         RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
         
-        // Mock result when querying for class
-        when(rsClient.executeFederatedQuery(
-            ArgumentMatchers.anyList(),
-            ArgumentMatchers.contains("?class")))
-            .thenReturn(
-                new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]")
-            );
+        if(endpoint != null) {
+            // Mock result when querying for class
+            when(rsClient.executeFederatedQuery(
+                (List<String>) MockitoHamcrest.argThat(Matchers.contains(endpoint)),
+                ArgumentMatchers.contains("?class")))
+                .thenReturn(
+                    new org.json.JSONArray("[{\"class\": \"FORCED-ENDPOINT\"}]")
+                );
+        } else {
+            // Mock result when querying for class
+            when(rsClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.contains("?class")))
+                .thenReturn(
+                    new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]")
+                );
+            }
+      
 
         // Mock result when querying for metadata
         when(rsClient.executeFederatedQuery(
@@ -447,6 +524,16 @@ public class FeatureInfoAgentTest {
                 eq("SAMPLE-TIME-QUERY")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Measurement\":\"http://measurement-iri.com\",\"Name\":\"Measurement One\",\"Unit\":\"m/s\"}]")
+                );
+        }
+
+        // Mock result when querying with a forced endpoint
+        if(endpoint != null) {
+            when(rsClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                eq("FORCED-ENDPOINT-QUERY")))
+                .thenReturn(
+                    new org.json.JSONArray("[{\"Property\":\"Forced\",\"Value\":\"Yes\"}]")
                 );
         }
 
