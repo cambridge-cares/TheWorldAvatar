@@ -106,7 +106,10 @@ docker push ghcr.io/cambridge-cares/access-agent:X.Y.Z
 ```
 where X.Y.Z is the new version number.
 
-### Integration test
+### Integration tests
 Once built, the AccessAgentIntegrationTests and RDBAccessAgentIntegrationTests can be run on the new version of the AccessAgent 
 by updating the ACCESS_AGENT_VERSION variable in the AccessAgentIntegrationTest class and the RDBAccessAgentIntegrationTest class
 before running the tests.
+
+The DeployedAccessAgentIntegrationTest can be run once the Access Agent has been deployed on The World Avatar server. 
+This will test the agent in a production environment and connection to the ontokgrouter and ontordbrouter endpoints.
