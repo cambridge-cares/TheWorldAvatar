@@ -62,6 +62,11 @@ public class CloningToolTestHelper {
 		return (boolean) obj.get("ASK");
 	}
 	
+	/**
+	* Remove all white spaces and non-visible characters
+	* @param str
+	* @return
+	*/
 	public static String removeWhiteSpace(String string) {
 		return string.replaceAll("\\s+","");
 	}
