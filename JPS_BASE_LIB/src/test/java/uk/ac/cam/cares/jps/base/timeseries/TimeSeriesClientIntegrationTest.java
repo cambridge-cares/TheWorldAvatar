@@ -511,7 +511,7 @@ public class TimeSeriesClientIntegrationTest {
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
 			doThrow(new JPSRuntimeException("")).when(rdfClient_spy).initTS(Mockito.any(), Mockito.any(), Mockito.any(),
-					Mockito.any());
+					Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
 			// Interrupt postgreSQL connection
 			postgres.stop();

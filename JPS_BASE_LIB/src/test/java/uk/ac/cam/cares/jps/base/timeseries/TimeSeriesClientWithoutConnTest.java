@@ -70,7 +70,7 @@ public class TimeSeriesClientWithoutConnTest {
     public void testInitTimeSeriesExceptionAfterStep1() throws NoSuchFieldException, IllegalAccessException, SQLException {
         // Set-up stubbing
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).
-                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString());
+                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
         setRDFMock();
         setRDBMock();
 
@@ -91,7 +91,7 @@ public class TimeSeriesClientWithoutConnTest {
         // KG reversion works //
         // Set-up stubbing
         Mockito.doNothing().when(mockSparqlClient).
-                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString());
+                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
         setRDFMock();
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).
                 initTimeSeriesTable(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(Connection.class));
@@ -117,7 +117,7 @@ public class TimeSeriesClientWithoutConnTest {
         // KG reversion does not work //
         // Set-up stubbing
         Mockito.doNothing().when(mockSparqlClient).
-                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString());
+                initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
         ArgumentCaptor<String> tsIRI = ArgumentCaptor.forClass(String.class);
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).
                 removeTimeSeries(tsIRI.capture());
@@ -242,6 +242,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).removeTimeSeries(tsIRI);
         setRDFMock();
         setRDBMock();
@@ -267,6 +268,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         setRDFMock();
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0), conn);
@@ -289,9 +291,10 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
-                .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+                .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0));
 
         try {
