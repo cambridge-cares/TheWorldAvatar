@@ -1,10 +1,6 @@
 # This module provides all pytest fixtures and other utility functions for the
 # actual integration tests
 
-# Avoid unnecessary logging information from py4j package
-import logging
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
@@ -329,6 +325,7 @@ def get_marketvalue_details(sparql_client, market_value_iri):
 
 def get_derivation_status(sparql_client, derivation_iri):
     # Returns status comment of derivation
+
     query = f"""
         SELECT ?exception
         WHERE {{
