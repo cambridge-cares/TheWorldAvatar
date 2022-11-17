@@ -122,7 +122,7 @@ public class SourceTaggingCloningTool {
 	 * @param targetKB
 	 * @param target graph
 	 */
-	private void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
+	protected void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
 		// Count all triples
 		WhereBuilder whereCountAll = new WhereBuilder()
@@ -167,7 +167,7 @@ public class SourceTaggingCloningTool {
 	 * @param steps
 	 * @param stepSize
 	 */
-	protected void untagSource(StoreClientInterface sourceKB, String sourceGraph, int steps, int stepSize) {
+	protected void untagSource(TripleStoreClientInterface sourceKB, String sourceGraph, int steps, int stepSize) {
 		for(int i = 0; i<steps; i++) {
 			Expr exprTagN = buildExprTagN(i);
 			WhereBuilder whereTagged = new WhereBuilder()
@@ -191,7 +191,7 @@ public class SourceTaggingCloningTool {
 	 * @param steps
 	 * @param stepSize
 	 */
-	protected void cloneLoop(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph, int steps, int stepSize) {
+	protected void cloneLoop(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph, int steps, int stepSize) {
 		
 		for(int i = 0; i<steps; i++) {
 			// Iterate tag
@@ -243,7 +243,7 @@ public class SourceTaggingCloningTool {
 	 * @param targetKB
 	 * @param targetGraph
 	 */
-	protected void cloneUntaggedTriples(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	protected void cloneUntaggedTriples(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 
 		Expr filterTag = exprFactory.or(
 				exprNotTagged(),
@@ -264,7 +264,7 @@ public class SourceTaggingCloningTool {
 	 * @param where statement
 	 * @return
 	 */
-	protected int countTriples(StoreClientInterface kbClient, String graph, WhereBuilder where) {
+	protected int countTriples(TripleStoreClientInterface kbClient, String graph, WhereBuilder where) {
 		String query = countQuery(graph, where);
 		JSONArray result = kbClient.executeQuery(query);
 	    JSONObject jsonobject = result.getJSONObject(0);

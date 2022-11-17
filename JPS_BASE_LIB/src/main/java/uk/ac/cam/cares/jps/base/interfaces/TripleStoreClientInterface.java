@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.base.interfaces;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.base.tools.CloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 /**
  * This interface is to be implemented by store clients

@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * Tool for cloning triples (not quads) in a single step 
@@ -33,7 +33,7 @@ public class SingleStepCloningTool {
 	 * @param sourceStore
 	 * @param targetStore
 	 */
-	public void clone(StoreClientInterface sourceStore, StoreClientInterface targetStore) {
+	public void clone(TripleStoreClientInterface sourceStore, TripleStoreClientInterface targetStore) {
 		
 		clone(sourceStore, null, targetStore, null);
 	}
@@ -45,7 +45,7 @@ public class SingleStepCloningTool {
 	 * @param targetStore
 	 * @param targetGraph
 	 */
-	public void clone(StoreClientInterface sourceStore, String sourceGraph, StoreClientInterface targetStore, String targetGraph) {
+	public void clone(TripleStoreClientInterface sourceStore, String sourceGraph, TripleStoreClientInterface targetStore, String targetGraph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);
