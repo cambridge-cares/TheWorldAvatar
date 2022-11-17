@@ -6,7 +6,7 @@ You will need to substitute in appropriate values before running any commands.
 > :memo: **Note:** Unless otherwise stated all paths listed in this readme are relative to the [`Deploy/stacks/dynamic/stack-data-uploader`](.) directory in the TheWorldAvatar repository.
 
 ## Table of Contents
-1. [Table of Contents](table-of-contents)
+1. [Table of Contents](#table-of-contents)
 2. [Introduction](#introduction)
 3. [Running the Stack Data Uploader](#running-the-stack-data-uploader)
 4. [Datasets and Subsets](#datasets-and-subsets)
@@ -15,7 +15,7 @@ You will need to substitute in appropriate values before running any commands.
 7. [OBDA Mapping file](#obda-mapping-file)
 8. [Using Specific Data Sets](#using-specific-data-sets)
 9. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
-10. [Developing the Stack Data Uploader in VSCode](developing-the-stack-data-uploader-in-vscode)
+10. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
 
 ## Introduction
 
