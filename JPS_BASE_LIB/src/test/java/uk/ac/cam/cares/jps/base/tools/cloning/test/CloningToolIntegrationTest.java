@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools.test;
+package uk.ac.cam.cares.jps.base.tools.cloning.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.tools.CloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 @Disabled("These integration tests are quite slow") 
 @Testcontainers

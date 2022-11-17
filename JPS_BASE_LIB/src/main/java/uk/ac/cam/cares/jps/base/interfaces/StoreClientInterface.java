@@ -5,7 +5,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.tools.CloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 
 /**
@@ -161,7 +161,7 @@ public interface StoreClientInterface {
      * Clone contents of <i>this</i> store to the target store.<br>
      * <b>Note:</b> cloning a large store is a slow process 
      * and the target store must be empty. <br>Before initiating a clone see 
-     * {@link uk.ac.cam.cares.jps.base.tools.CloningTool CloningTool} 
+     * {@link uk.ac.cam.cares.jps.base.tools.cloning.CloningTool CloningTool} 
      * for more details.
      * @param targetStoreClient
      */
@@ -174,7 +174,7 @@ public interface StoreClientInterface {
      * Clone contents of the source store to <i>this</i> store.<br>
      * <b>Note:</b> cloning a large store is a slow process 
      * and <i>this</i> store must be empty. <br>Before initiating a clone see 
-     * {@link uk.ac.cam.cares.jps.base.tools.CloningTool CloningTool} 
+     * {@link uk.ac.cam.cares.jps.base.tools.cloning.CloningTool CloningTool} 
      * for more details.
      * @param sourceStoreClient
      */

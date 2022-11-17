@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools;
+package uk.ac.cam.cares.jps.base.tools.cloning;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;

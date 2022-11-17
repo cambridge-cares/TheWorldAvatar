@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools.test;
+package uk.ac.cam.cares.jps.base.tools.cloning.test;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,7 +32,7 @@ import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
-import uk.ac.cam.cares.jps.base.tools.SourceTaggingCloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.SourceTaggingCloningTool;
 
 /**
  * Unit tests for Source Tagging Cloning Tool

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools;
+package uk.ac.cam.cares.jps.base.tools.cloning;
 
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
@@ -30,7 +30,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * Note that cloning is a slow process and success is not guaranteed.
  * To avoid corruption of source data, the source store is only ever queried/read-only.  
  * The tool requires that the target store is initially empty and will otherwise fail
- * (unless this condition is {@link uk.ac.cam.cares.jps.base.tools.CloningTool#overrideEmptyTarget() overridden}
+ * (unless this condition is {@link uk.ac.cam.cares.jps.base.tools.cloning.CloningTool#overrideEmptyTarget() overridden}
  * prior to starting the cloning process). <br>
  * The algorithm will attempt to increase the overlap if the initial overlap is too small.
  * The clone will fail and return an error after 5 failed attempts to adjust the overlap
@@ -44,7 +44,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * <br>
  * Alternatively, a CloningTool object can be instantiated. This allows control 
  * over the step size, overlap and to override the requirement for an empty 
- * target store. In this case the {@link uk.ac.cam.cares.jps.base.tools.CloningTool#clone clone}
+ * target store. In this case the {@link uk.ac.cam.cares.jps.base.tools.cloning.CloningTool#clone clone}
  * method should be used to clone from the source to the target store. 
  *  
  * @author csl37

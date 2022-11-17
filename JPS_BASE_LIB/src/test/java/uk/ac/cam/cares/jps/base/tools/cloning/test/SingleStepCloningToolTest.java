@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools.test;
+package uk.ac.cam.cares.jps.base.tools.cloning.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,7 +9,7 @@ import org.apache.jena.update.UpdateRequest;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-import uk.ac.cam.cares.jps.base.tools.SingleStepCloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.SingleStepCloningTool;
 
 class SingleStepCloningToolTest {
 
