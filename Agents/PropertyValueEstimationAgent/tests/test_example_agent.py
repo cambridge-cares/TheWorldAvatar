@@ -1,11 +1,11 @@
 from pathlib import Path
 from rdflib import Graph
-from rdflib import RDF
 import pytest
 import time
 import copy
 
 import agent.datamodel as dm
+from agent.datamodel.data import GBP_SYMBOL
 
 from . import conftest as cf
 
@@ -82,7 +82,7 @@ def test_example_data_instantiation(initialise_clients):
 )
 def test_monitor_derivations(
     initialise_clients, create_example_agent, derivation_input_set, expect_exception,
-    expected_estimate, local_agent_test, mocker    
+    expected_estimate, local_agent_test    
 ):
     """
         Test if derivation agent performs derivation update as expected, the `local_agent_test` 
@@ -125,7 +125,7 @@ def test_monitor_derivations(
     agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
 
     # Assert that there's currently no instance having rdf:type of the output signature in the KG
-    assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OM_AMOUNT_MONEY)
+    assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.OM_AMOUNT_MONEY)
 
     # Create derivation instance for new information
     # As of pyderivationagent>=1.3.0 this also initialises all timestamps for pure inputs
@@ -163,7 +163,7 @@ def test_monitor_derivations(
             currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
         # Assert that there's now an instance with rdf:type of the output signature in the KG
-        assert sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OM_AMOUNT_MONEY)
+        assert sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.OM_AMOUNT_MONEY)
 
         # Verify correct number of triples (incl. timestamp & agent triples)
         triples += cf.MARKET_VALUE_TRIPLES
@@ -182,10 +182,13 @@ def test_monitor_derivations(
         
         # Verify the values of the derivation output
         market_value_iri = derivation_outputs[dm.OM_AMOUNT_MONEY][0]
-        inputs, market_value = cf.get_marketvalue_details(sparql_client, market_value_iri)
+        inputs, market_value, unit = cf.get_marketvalue_details(sparql_client, market_value_iri)
         # Verify market value
         assert len(market_value) == 1
         assert pytest.approx(market_value[0], rel=1e-5) == expected_estimate
+        # Verify monetary unit symbol (due to previously observed encoding issues)
+        assert len(unit) == 1
+        assert unit[0] == GBP_SYMBOL
 
         # Verify inputs (i.e. derived from)
         # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests

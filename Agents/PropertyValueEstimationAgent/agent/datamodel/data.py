@@ -20,7 +20,7 @@ TIME_FORMAT_LONG = '%Y-%m-%d'
 TIME_FORMAT_SHORT = '%Y-%m'
 
 # OM / UOM unit symbols
-GBP = '£'
+GBP_SYMBOL = '£'
 
 
 ### Create required JAVA classes ###

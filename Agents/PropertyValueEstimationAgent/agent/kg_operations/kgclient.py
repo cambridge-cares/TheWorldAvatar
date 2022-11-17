@@ -8,12 +8,13 @@
 
 import uuid
 import datetime as dt
+from rdflib import URIRef, Literal
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from agent.datamodel.iris import *
-from agent.datamodel.data import GBP, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
+from agent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
@@ -86,23 +87,23 @@ class KGClient(PySparqlClient):
         return res
 
 
-    def instantiate_property_value(self, property_iri, property_value_iri, property_value) -> str:
-        # Returns INSERT DATA query to instantiate/update property market value estimation
+    def instantiate_property_value(self, graph, property_iri, property_value_iri, property_value) -> str:
+        # Returns rdflib Graph with triples to instantiate/update property market value estimation
         # Create unique IRIs for new instances
         measure_iri = KB + 'Measure_' + str(uuid.uuid4())
         
-        query = f"""
-            <{property_iri}> <{OBE_HAS_MARKET_VALUE}> <{property_value_iri}> . 
-            <{property_value_iri}> <{RDF_TYPE}> <{OM_AMOUNT_MONEY}> . 
-            <{property_value_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
-            <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
-            <{measure_iri}> <{OM_NUM_VALUE}> \"{property_value}\"^^<{XSD_INTEGER}> . 
-            <{measure_iri}> <{OM_HAS_UNIT}> <{OM_GBP}> . 
-            <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> . 
-        """
+        # Add triples to graph (RDF Triples to be provided as Python Tuples --> double brackets)
+        graph.add((URIRef(property_iri), URIRef(OBE_HAS_MARKET_VALUE), URIRef(property_value_iri)))
+        graph.add((URIRef(property_value_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
+        graph.add((URIRef(property_value_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
+        graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
+        graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(property_value, datatype=XSD_INTEGER)))
+        graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(OM_GBP)))
         #TODO: Triple with symbol potentially to be removed once OntoUOM contains
         #      all relevant units/symbols and is uploaded to the KB
-        return self.remove_unnecessary_whitespace(query)
+        graph.add((URIRef(OM_GBP), URIRef(OM_SYMBOL), Literal(GBP_SYMBOL, datatype=XSD_STRING)))
+
+        return graph
 
 
     def remove_unnecessary_whitespace(self, query: str) -> str:

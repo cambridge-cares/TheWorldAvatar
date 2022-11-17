@@ -146,7 +146,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
         # Initialise market value and return triples
         market_value = None
-        triples = ''
+        g = Graph()
 
         # Prio 1: Check if transaction record and property price index are provided
         # (i.e. market value assessment based on previous transaction)
@@ -182,8 +182,8 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
         # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
         elif avgsqm_price_iri and floor_area_iri and not market_value:
-            # TODO: How to handle cases where avgsqm_price is just not calculated yet?
-            # --> Suggestion: Avoid this case by marking AvgSqmPrice as Synchronous Derivation initially
+            # NOTE: To ensure availability of AvgSqmPrice (i.e. derivation being computed by
+            #       AvgSqmPrice Agent), AvgSqmPrice should be marked up as Synchronous Derivation
             res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
             market_value = res['floor_area'] * res['avg_price']
 
@@ -192,15 +192,12 @@ class PropertyValueEstimationAgent(DerivationAgent):
             market_value = round(market_value/1000)*1000
             # Create instantiation/update triples
             market_value_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
-            triples = self.sparql_client.instantiate_property_value(property_iri=res['property_iri'],
-                                                                    property_value_iri=market_value_iri, 
-                                                                    property_value=market_value)
-
-        # Create rdflib graph with update triples (empty for unavailable market value)
-        update_query = f'INSERT DATA {{ {triples} }}'
-        g = Graph()
-        g.update(update_query)
-
+            # Create rdflib graph with update triples 
+            g = self.sparql_client.instantiate_property_value(graph=g,
+                                                property_iri=res['property_iri'],
+                                                property_value_iri=market_value_iri, 
+                                                property_value=market_value)
+        # Return graph with SPARQL update (empty for unavailable market value)
         return g
 
 
@@ -208,6 +205,7 @@ def default():
     """
         Instructional message at the app root.
     """
+    # TODO: Update path to main upon merging
     msg  = "This is an asynchronous agent to estimate the market value of a particular property (i.e. building, flat).<BR>"
     msg += "<BR>"
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertyValueEstimationAgent/Agents/PropertyValueEstimationAgent<BR>"

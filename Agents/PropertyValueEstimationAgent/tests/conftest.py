@@ -300,14 +300,15 @@ def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
 
 
 def get_marketvalue_details(sparql_client, market_value_iri):
-    # Returns details associated with Market Value instance (OM:AmountOfMoney)
+    # Returns details associated with Market Value instance (om:AmountOfMoney)
     query = f"""
-        SELECT ?value ?input_iri ?input_type
+        SELECT ?value ?unit ?input_iri ?input_type
         WHERE {{
         <{market_value_iri}> <{RDF_TYPE}> <{OM_AMOUNT_MONEY}> ; 
                              <{OM_HAS_VALUE}> ?measure ; 
                              <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
-        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ;  
+        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                 <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit ; 
                  <{OM_NUM_VALUE}> ?value . 
         ?input_iri <{RDF_TYPE}> ?input_type . 
         }}
@@ -319,10 +320,14 @@ def get_marketvalue_details(sparql_client, market_value_iri):
         # Derivation inputs (i.e. isDerivedFrom)
         key = set([x['input_type'] for x in response])
         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
-        # Market Value
+        # Market Value and monetary unit
         market_value = list(set([float(x['value']) for x in response]))
+        # TODO: Uploading GBP symbol to Blazegraph results in 'Â£' instead of just '£'
+        #       likely due to encoding discrepancies along the way 
+        #       --> Simple removing of 'Â' upon retrieval to be revisited
+        unit = list(set([str(x['unit']).replace('Â','') for x in response]))
 
-        return inputs, market_value
+        return inputs, market_value, unit
 
 
 def get_derivation_status(sparql_client, derivation_iri):
