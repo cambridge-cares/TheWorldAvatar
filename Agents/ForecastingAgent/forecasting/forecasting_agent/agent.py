@@ -205,7 +205,11 @@ def calculate_error(target, forecast):
         dict: dictionary with error metrics
     """
     error = {}
-    error['mape'] = mape(target, forecast)
+    try:
+        error['mape'] = mape(target, forecast)
+    except ValueError as e:
+        # mape failed because of zero values
+        pass
     error['smape'] = smape(target, forecast)
     error['mse'] = mse(target, forecast)
     error['rmse'] = rmse(target, forecast)
