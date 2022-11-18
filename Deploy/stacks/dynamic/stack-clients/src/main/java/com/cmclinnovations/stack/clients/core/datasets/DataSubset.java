@@ -8,10 +8,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
+@JsonSubTypes({
+        @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
         @Type(value = Vector.class, names = { "Vector", "vector" }),
         @Type(value = Raster.class, names = { "Raster", "raster" }),
-        @Type(value = Triples.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }) })
+        @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }) })
 public abstract class DataSubset {
 
     private String name;
@@ -32,8 +33,8 @@ public abstract class DataSubset {
     public void load(Dataset dataset) {
         if (!skip) {
             loadInternal(dataset);
-    }
+        }
     }
 
     abstract void loadInternal(Dataset dataset);
-    }
+}

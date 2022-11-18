@@ -3,7 +3,6 @@ package com.cmclinnovations.stack.clients.core.datasets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
