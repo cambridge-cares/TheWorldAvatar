@@ -76,10 +76,19 @@ public class TimeSeriesSparql {
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 
 	//Time Series Type
-	public static final String Average = ns_ontology + "Average";
-	public static final String StepwiseCumulative = ns_ontology + "StepwiseCumulative";
-	public static final String CumulativeTotal = ns_ontology + "CumulativeTotal";
-	public static final String Instantaneous = ns_ontology + "Instantaneous";
+	public static final String AverageTypeString = ns_ontology+"AverageTimeSeries";
+	public static final String StepwiseCumulativeTypeString = ns_ontology+"StepwiseCumulativeTimeSeries";
+	public static final String CumulativeTotalTypeString = ns_ontology+"CumulativeTotalTimeSeries";
+	public static final String InstantaneousTypeString = ns_ontology+"InstantaneousTimeSeries";
+	public static final String TimeSeriesTypeString = ns_ontology+"TimeSeries";
+
+	//Timeseries IRI prefix
+	public static final String AverageIRIString = ns_ontology + "AverageTimeseries";
+	public static final String StepwiseCumulativeIRIString = ns_ontology + "StepwiseCumulativeTimeseries";
+	public static final String CumulativeTotalIRIString = ns_ontology + "CumulativeTotalTimeseries";
+	public static final String InstantaneousIRIString = ns_ontology + "InstantaneousTimeseries";
+	public static final String TimeSeriesIRIString = ns_ontology+"Timeseries";
+
 
 	//Values Pattern for TimeSeries types
 	private static final List<RdfObject> types = Arrays.asList(TimeSeries, CumulativeTotalTimeSeries, StepwiseCumulativeTimeSeries, AverageTimeSeries, InstantaneousTimeSeries);

@@ -112,23 +112,23 @@ public class TimeSeriesClient<T> {
 
 		if(type.equals(Type.AVERAGE)){
 			timeseriesType = TimeSeriesSparql.AverageTimeSeries;
-			tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+			tsIRI = TimeSeriesSparql.AverageIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.STEPWISECUMULATIVE)){
 			timeseriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
-			tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+			tsIRI = TimeSeriesSparql.StepwiseCumulativeIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.CUMULATIVETOTAL)){
 			timeseriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
-			tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
+			tsIRI = TimeSeriesSparql.CumulativeTotalIRIString+  "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.INSTANTANEOUS)){
 			timeseriesType = TimeSeriesSparql.InstantaneousTimeSeries;
-			tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+			tsIRI = TimeSeriesSparql.InstantaneousIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.GENERAL)){
 			timeseriesType = TimeSeriesSparql.TimeSeries;
-			tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+			tsIRI = TimeSeriesSparql.TimeSeriesIRIString + "_" + UUID.randomUUID();
 		}
 
 		// Obtain RDB URL from connection object, exception thrown when connection is down
@@ -182,20 +182,6 @@ public class TimeSeriesClient<T> {
 
 	/**
 	 * similar to initTimeSeries, but uploads triples in one connection
-	 * @param dataIRIs
-	 * @param dataClass
-	 * @param timeUnit
-	 * @param srid
-	 * @param conn
-	 * @param type
-	 * @param units
-	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<ChronoUnit> units) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, null, units);
-	}
-
-	/**
-	 * similar to initTimeSeries, but uploads triples in one connection
 	 * srid is used if the time series values contain geometries
 	 * @param dataIRIs
 	 * @param dataClass
@@ -217,23 +203,23 @@ public class TimeSeriesClient<T> {
 
 		for (int i = 0; i < dataIRIs.size(); i++) {
 			if (type.get(i).equals(Type.AVERAGE)){
-				tsIRI = TimeSeriesSparql.Average + "Timeseries_" + UUID.randomUUID();
+				tsIRI = TimeSeriesSparql.AverageIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
 			}
 			else if(type.get(i).equals(Type.STEPWISECUMULATIVE)){
-				tsIRI = TimeSeriesSparql.StepwiseCumulative + "Timeseries_" + UUID.randomUUID();
+				tsIRI = TimeSeriesSparql.StepwiseCumulativeIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
 			}
 			else if(type.get(i).equals(Type.CUMULATIVETOTAL)){
-				tsIRI = TimeSeriesSparql.CumulativeTotal+  "Timeseries_" + UUID.randomUUID();
+				tsIRI = TimeSeriesSparql.CumulativeTotalIRIString+  "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
 			}
 			else if(type.get(i).equals(Type.INSTANTANEOUS)){
-				tsIRI = TimeSeriesSparql.Instantaneous + "Timeseries_" + UUID.randomUUID();
+				tsIRI = TimeSeriesSparql.InstantaneousIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
 			}
 			else if(type.get(i).equals(Type.GENERAL)){
-				tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+				tsIRI = TimeSeriesSparql.TimeSeriesIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.TimeSeries;
 			}
 			tsIRIs.add(i, tsIRI);
@@ -384,19 +370,19 @@ public class TimeSeriesClient<T> {
 		//Get time series type
 		String type = rdfClient.getTimeSeriesType(tsIRI);
 		Iri timeSeriesType = null;
-		if(type.equals(TimeSeriesSparql.Average+"TimeSeries")){
+		if(type.equals(TimeSeriesSparql.AverageTypeString)){
 			timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
 		}
-		else if(type.equals(TimeSeriesSparql.Instantaneous+"TimeSeries")){
+		else if(type.equals(TimeSeriesSparql.InstantaneousTypeString)){
 			timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
 		}
-		else if(type.equals(TimeSeriesSparql.StepwiseCumulative+"TimeSeries")){
+		else if(type.equals(TimeSeriesSparql.StepwiseCumulativeTypeString)){
 			timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
 		}
-		else if(type.equals(TimeSeriesSparql.CumulativeTotal+"TimeSeries")){
+		else if(type.equals(TimeSeriesSparql.CumulativeTotalTypeString)){
 			timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
 		}
-		else if(type.equals(TimeSeriesSparql.ns_ontology+"TimeSeries")){
+		else if(type.equals(TimeSeriesSparql.TimeSeriesTypeString)){
 			timeSeriesType = TimeSeriesSparql.TimeSeries;
 		}
 
