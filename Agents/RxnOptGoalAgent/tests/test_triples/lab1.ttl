@@ -93,6 +93,7 @@
     OntoHPLC:hasResponseFactor :ResponseFactor_4;
     # internal standard
     OntoHPLC:usesInternalStandard :PhaseComponent_InternalStandard;
+    OntoHPLC:retentionTimeMatchThreshold "0.15"^^xsd:double;
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 
