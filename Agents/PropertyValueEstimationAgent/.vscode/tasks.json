@@ -79,6 +79,7 @@
         {
             "type": "shell",
             "label": "update-py4jps",
+            // TODO: Platform specific commands to be revisited at some point
             // Linux (n/a option to be commented out):
             "command": "bash ./build_py4jps_stackclients_resource.sh",   
             // Windows (n/a option to be commented out): 

@@ -84,7 +84,7 @@ bash ./stack.sh build
 bash ./stack.sh start <STACK NAME>
 ```
 
-The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
+The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations. **Please note** that minor adjustments might need to be made to the `launch.json` file depending on the operating system, i.e. comment out non applicable lines indicated by `TODO` keyword.
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
 
 > **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)

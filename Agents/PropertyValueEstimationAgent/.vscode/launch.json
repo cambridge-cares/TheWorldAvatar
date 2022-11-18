@@ -120,15 +120,12 @@
             "type": "command",
             // Get agentname (equivalent to agent repository name) from setup.py
             "command": "shellCommand.execute",
-            // TODO: Platform specific commands to be revisited
-            // Linux (n/a option to be commented out):
-            //"args": {
-            //    "command": "python3 setup.py --name",
-            //    "useFirstResult": true
-            //},
-            // Windows (n/a option to be commented out): 
             "args": {
-                "command": "python setup.py --name",
+            // TODO: Platform specific commands to be revisited at some point
+            // Linux (n/a option to be commented out):
+                "command": "python3 setup.py --name",
+            // Windows (n/a option to be commented out): 
+            //    "command": "python setup.py --name",
                 "useFirstResult": true
             }
         }
