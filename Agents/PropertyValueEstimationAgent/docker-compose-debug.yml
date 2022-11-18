@@ -8,4 +8,5 @@ services:
     ports:
       - "${DEBUG_PORT}:5678"
     volumes:
-      - ./agent:/app/agent
+      # repository name needs to match "agentdir" build arg in docker-compose-build.yml
+      - ./propertyvalueestimation:/app/propertyvalueestimation

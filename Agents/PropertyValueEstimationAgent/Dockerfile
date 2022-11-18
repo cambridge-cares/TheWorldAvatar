@@ -49,8 +49,7 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-# TODO: path to be verified on DO
-ENV FLASK_APP=app/$AGENTDIR/agent:create_app()
+ENV FLASK_APP=app/${AGENTDIR}:create_app()
 ENV FLASK_DEBUG=1
 
 # Launch application in container
