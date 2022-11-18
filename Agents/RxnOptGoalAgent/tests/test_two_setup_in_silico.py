@@ -176,7 +176,7 @@ def test_two_setup_rog(
     sample_goal_request = {
         "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
         "cycleAllowance": 20,
-        "deadline": "2022-11-12T17:05",
+        "deadline": "2022-12-12T17:05",
         "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
         "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
         "first_goal_num_val": 99,
@@ -186,6 +186,7 @@ def test_two_setup_rog(
         "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
         "second_goal_num_val": 0.001,
         "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
+        "labs": ['http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy', 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy']
     }
 
     with rog_agent.app.test_client() as test_client:
