@@ -73,10 +73,10 @@ Run the agent by sending a POST request with the required JSON Object to `http:/
 ```
 POST http://localhost:3025/ifc2ontobim-agent/retrieve
 Content-Type: application/json
-{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql"}
+{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
@@ -87,7 +87,7 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["File.ttl has been successfully converted!","File.ttl has been uploaded to endpoint","All ttl files have been generated in OntoBIM. Please check the directory."]}
 ```
 
-#### 2.3 Post-Build
+#### 2.4 Post-Build
 The generated TTL files can be retrieved at the `<root>/data/` directory.
 
 If an endpoint has been provided and only ONE IFC input is provided, the triples would be uploaded to the endpoint as well.
