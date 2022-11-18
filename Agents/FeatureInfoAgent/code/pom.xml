@@ -110,7 +110,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.6.0-272-SNAPSHOT</version>
+            <version>1.5.5</version>
         </dependency>
 
         <!-- Java servlet API, version pulled from parent -->
