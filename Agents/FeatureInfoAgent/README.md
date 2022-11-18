@@ -85,7 +85,7 @@ Queries for timeseries data need to return the measurement/forecast IRIs (that w
 
 ### Requests
 
-All incoming requests should use the `/get` route, contain a JSON-formatted body (compatible with the agent framework in the JPS Base Lib), and contain a single `iri` parameter. In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
+All incoming requests should use the `/get` route, containing a `query` parameter that has a JSON body (compatible with the agent framework in the JPS Base Lib), which in turn contains a single `iri` parameter. In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
 
 ## Deployment
 
