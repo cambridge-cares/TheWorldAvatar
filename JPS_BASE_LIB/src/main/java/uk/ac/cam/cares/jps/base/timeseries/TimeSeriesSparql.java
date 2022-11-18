@@ -24,10 +24,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.*;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.json.JSONArray;
@@ -98,7 +95,7 @@ public class TimeSeriesSparql {
 	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList("unitSecond", "unitMinute", "unitHour", "unitDay", "unitWeek", "unitMonth", "unitYear"));
 
 	//EnumMap of allowed temporalUnit types
-	public static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
+	private static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
 	static {
 		temporalUnitMap.put(ChronoUnit.SECONDS, ns_time+"unitSecond");
 		temporalUnitMap.put(ChronoUnit.MINUTES, ns_time+"unitMinute");
@@ -115,7 +112,7 @@ public class TimeSeriesSparql {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesSparql.class);
 
 	//Custom Class to store numeric duration and the corresponding temporal unit pair to be able to map the pair to the averaging period iri
-	public class CustomDuration {
+	protected class CustomDuration {
 
 		private final Double value;
 		private final String unit;
@@ -219,10 +216,10 @@ public class TimeSeriesSparql {
 		Variable value = SparqlBuilder.var("value");
 		Variable unit = SparqlBuilder.var("unit");
 		Variable dur = SparqlBuilder.var("dur");
-		TriplePattern queryPattern_1 = iri(tsIRI).has(hasAveragingPeriod, dur);
-		TriplePattern queryPattern_2 = dur.has(numericDuration, value).andHas(unitType, unit);
+		TriplePattern queryPattern1 = iri(tsIRI).has(hasAveragingPeriod, dur);
+		TriplePattern queryPattern2 = dur.has(numericDuration, value).andHas(unitType, unit);
 
-		query.select(value, unit).where(queryPattern_1, queryPattern_2).prefix(prefix_time).prefix(prefix_ontology);
+		query.select(value, unit).where(queryPattern1, queryPattern2).prefix(prefix_time).prefix(prefix_ontology);
 
 		JSONArray result = kbClient.executeQuery(query.getQueryString());
 		if(!result.isEmpty()){
@@ -263,7 +260,7 @@ public class TimeSeriesSparql {
 	 * for all the averaging period Iris in the kb
 	 * @return hashMap containing (numericDuration, temporalUnit) mapping to averaging period IRI
 	 */
-	public HashMap createDurationIRIMapping(){
+	public Map<CustomDuration, String> createDurationIRIMapping(){
 
 		HashMap<CustomDuration, String> durationMap = new HashMap<>();
 
@@ -299,15 +296,15 @@ public class TimeSeriesSparql {
 		Variable object2 = SparqlBuilder.var("f");
 		Variable durIRI = SparqlBuilder.var("durIRI");
 
-		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object1);
-		TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));
-		TriplePattern delete_tp3 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
-		TriplePattern delete_tp4 = durIRI.has(predicate3, object2);
-		sub.select(predicate1, predicate2, predicate3, subject, object1, object2, durIRI).where(delete_tp1, delete_tp2, delete_tp3, delete_tp4);
+		TriplePattern deleteTp1 = iri(tsIRI).has(predicate1, object1);
+		TriplePattern deleteTp2 = subject.has(predicate2, iri(tsIRI));
+		TriplePattern deleteTp3 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+		TriplePattern deleteTp4 = durIRI.has(predicate3, object2);
+		sub.select(predicate1, predicate2, predicate3, subject, object1, object2, durIRI).where(deleteTp1, deleteTp2, deleteTp3, deleteTp4);
 
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1, delete_tp2, delete_tp3, delete_tp4).where(sub).prefix(prefix_ontology);
+		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(sub).prefix(prefix_ontology);
 
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
@@ -444,7 +441,7 @@ public class TimeSeriesSparql {
 		// Check that the data IRIs are not attached to a different time series IRI already
 		for (String iri: dataIRI) {
 			String ts = getTimeSeries(iri);
-			if(!(ts == null)) {
+			if(ts != null) {
 				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
 			}
 		}
@@ -472,7 +469,7 @@ public class TimeSeriesSparql {
 		// set prefix declarations
 		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
 
-		HashMap<CustomDuration, String> durationMap = createDurationIRIMapping();
+		Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
 		for (int i = 0; i < tsIRIs.size(); i++) {
 			Iri tsIRI;
@@ -503,9 +500,9 @@ public class TimeSeriesSparql {
 				String temporalUnit = temporalUnitMap.get(units.get(i));
 
 				CustomDuration key = new CustomDuration(numericValue, temporalUnit);
+
 				//Check if a duration iri with given temporalUnit and numericDuration exists in the knowledge graph.
 				//If true, attach the Average TimeSeries to the existing duration IRI. Otherwise, create a new duration IRI.
-//				String durationIRI = getDurationIRI(temporalUnit, numericValue);
 				String durationIRI = null;
 
 				if (durationMap.containsKey(key)){
@@ -528,7 +525,7 @@ public class TimeSeriesSparql {
 			// Check that the data IRIs are not attached to a different time series IRI already
 			for (String iri: dataIRIs.get(i)) {
 				String ts = getTimeSeries(iri);
-				if(!(ts == null)) {
+				if(ts!=null) {
 					throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
 				}
 			}
@@ -538,8 +535,8 @@ public class TimeSeriesSparql {
 
 			// link each data to time series
 			for (String data : dataIRIs.get(i)) {
-				TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
-				modify.insert(ts_tp);
+				TriplePattern tsTp = iri(data).has(hasTimeSeries, tsIRI);
+				modify.insert(tsTp);
 			}
 
 			// optional: define time unit
@@ -637,12 +634,12 @@ public class TimeSeriesSparql {
 			Variable durIRI = SparqlBuilder.var("durIRI");
 			Variable numTs = SparqlBuilder.var(queryKey);
 
-			GraphPattern queryPattern_1 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
-			GraphPattern queryPattern_2 = ts.has(hasAveragingPeriod, durIRI);
+			GraphPattern queryPattern1 = iri(tsIRI).has(hasAveragingPeriod, durIRI);
+			GraphPattern queryPattern2 = ts.has(hasAveragingPeriod, durIRI);
 
 			Assignment count = Expressions.count(ts).as(numTs);
 
-			query.select(count).where(queryPattern_1, queryPattern_2).prefix(prefix_ontology);
+			query.select(count).where(queryPattern1, queryPattern2).prefix(prefix_ontology);
 			kbClient.setQuery(query.getQueryString());
 
 			Integer avgTsIris = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
@@ -658,13 +655,13 @@ public class TimeSeriesSparql {
 				Variable subject = SparqlBuilder.var("c");
 				Variable object = SparqlBuilder.var("d");
 
-				TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
-				TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));
-				sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
+				TriplePattern deleteTp1 = iri(tsIRI).has(predicate1, object);
+				TriplePattern deleteTp2 = subject.has(predicate2, iri(tsIRI));
+				sub.select(predicate1, predicate2, subject, object).where(deleteTp1, deleteTp2);
 
 				// insert subquery into main sparql update
 				ModifyQuery modify = Queries.MODIFY();
-				modify.delete(delete_tp1, delete_tp2).where(sub);
+				modify.delete(deleteTp1, deleteTp2).where(sub);
 
 				kbClient.setQuery(modify.getQueryString());
 				kbClient.executeUpdate();
@@ -692,19 +689,27 @@ public class TimeSeriesSparql {
 	 * Remove all time series from kb
 	 */
 	protected void removeAllTimeSeries() {
-		SubSelect sub = GraphPatterns.select(); // only used as variable generator
-		Variable predicate1 = sub.var();
-		Variable predicate2 = sub.var();
-		Variable subject = sub.var();
-		Variable object = sub.var();
-		Variable timeseries = sub.var();
 
-		TriplePattern delete_tp1 = timeseries.has(predicate1, object);
-		TriplePattern delete_tp2 = subject.has(predicate2, timeseries);
+		Variable predicate1 = SparqlBuilder.var("p1");
+		Variable predicate2 = SparqlBuilder.var("p2");
+		Variable predicate3 = SparqlBuilder.var("p3");
+		Variable subject1 = SparqlBuilder.var("s1");
+		Variable object1 = SparqlBuilder.var("o1");
+		Variable object2 = SparqlBuilder.var("o2");
+		Variable timeseries = SparqlBuilder.var("ts");
+		Variable dur = SparqlBuilder.var("dur");
+
+		TriplePattern deleteTp1 = timeseries.has(predicate1, object1);
+		TriplePattern deleteTp2 = subject1.has(predicate2, timeseries);
+		TriplePattern deleteTp3 = timeseries.has(hasAveragingPeriod, dur);
+		TriplePattern deleteTp4 = dur.has(predicate3, object2);
+
+		GraphPatternNotTriples optional1 = GraphPatterns.optional(deleteTp3);
+		GraphPatternNotTriples optional2 = GraphPatterns.optional(deleteTp4);
 
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1, delete_tp2).where(timeseries.isA(TimeSeries),delete_tp1,delete_tp2).prefix(prefix_ontology);
+		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(timeseries.isA(tsType), optional1, optional2, vp).prefix(prefix_ontology);
 
 		kbClient.executeUpdate(modify.getQueryString());
 	}
@@ -718,21 +723,20 @@ public class TimeSeriesSparql {
 	public String getTimeSeries(String dataIRI) {
 
 		String result = null;
-		if (checkDataHasTimeSeries(dataIRI)) {
+		String queryString = "tsIRI";
 
-			String queryString = "tsIRI";
+		SelectQuery query = Queries.SELECT();
+		Variable tsIRI = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
 
-			SelectQuery query = Queries.SELECT();
-			Variable tsIRI = SparqlBuilder.var(queryString);
-			TriplePattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
+		query.select(tsIRI).where(queryPattern).prefix(prefix_ontology);
 
-			query.select(tsIRI).where(queryPattern).prefix(prefix_ontology);
-
-			kbClient.setQuery(query.getQueryString());
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		if(!queryResult.isEmpty()){
 			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
 		}
 		return result;
-
 	}
 
 	/**
@@ -744,17 +748,17 @@ public class TimeSeriesSparql {
 	public String getDbUrl(String tsIRI) {
 
 		String result = null;
-		if (checkTimeSeriesExists(tsIRI)) {
+		String queryString = "dbURL";
 
-			String queryString = "dbURL";
+		SelectQuery query = Queries.SELECT();
+		Variable dbURL = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = iri(tsIRI).has(hasRDB, dbURL);
 
-			SelectQuery query = Queries.SELECT();
-			Variable dbURL = SparqlBuilder.var(queryString);
-			TriplePattern queryPattern = iri(tsIRI).has(hasRDB, dbURL);
+		query.select(dbURL).where(queryPattern).prefix(prefix_ontology);
 
-			query.select(dbURL).where(queryPattern).prefix(prefix_ontology);
-
-			kbClient.setQuery(query.getQueryString());
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		if(!queryResult.isEmpty()){
 			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
 		}
 		return result;
@@ -769,21 +773,19 @@ public class TimeSeriesSparql {
 	public String getTimeUnit(String tsIRI) {
 
 		String result = null;
+		String queryString = "timeUnit";
 
-		if (checkTimeSeriesExists(tsIRI) && checkTimeUnitExists(tsIRI)) {
+		SelectQuery query = Queries.SELECT();
+		Variable timeUnit = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = iri(tsIRI).has(hasTimeUnit, timeUnit);
 
-			String queryString = "timeUnit";
+		query.select(timeUnit).where(queryPattern).prefix(prefix_ontology);
 
-			SelectQuery query = Queries.SELECT();
-			Variable timeUnit = SparqlBuilder.var(queryString);
-			TriplePattern queryPattern = iri(tsIRI).has(hasTimeUnit, timeUnit);
-
-			query.select(timeUnit).where(queryPattern).prefix(prefix_ontology);
-
-			kbClient.setQuery(query.getQueryString());
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		if(!queryResult.isEmpty()){
 			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
 		}
-
 		return result;
 	}
 
@@ -883,7 +885,7 @@ public class TimeSeriesSparql {
 		// Check that the data IRIs are not attached to a different time series IRI already
 		for (String iri: dataIRI) {
 			String ts = getTimeSeries(iri);
-			if(!(ts == null)) {
+			if(ts != null) {
 				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
 			}
 		}
@@ -893,14 +895,13 @@ public class TimeSeriesSparql {
 
 		// link each data to time series
 		for (String data : dataIRI) {
-			TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
-			modify.insert(ts_tp);
+			TriplePattern tsTp = iri(data).has(hasTimeSeries, tsIRI);
+			modify.insert(tsTp);
 		}
 
 		// optional: define time unit
 		if (timeUnit != null) {
 			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
-			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
 		}
 
 		kbClient.executeUpdate(modify.getQueryString());

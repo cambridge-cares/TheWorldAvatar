@@ -382,7 +382,7 @@ public class TimeSeriesClient<T> {
 		else if(type.equals(TimeSeriesSparql.CumulativeTotalTypeString)){
 			timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
 		}
-		else if(type.equals(TimeSeriesSparql.TimeSeriesTypeString)){
+		else {
 			timeSeriesType = TimeSeriesSparql.TimeSeries;
 		}
 
