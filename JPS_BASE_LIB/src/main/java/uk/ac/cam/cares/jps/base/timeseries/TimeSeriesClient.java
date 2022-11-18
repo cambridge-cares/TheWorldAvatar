@@ -382,8 +382,11 @@ public class TimeSeriesClient<T> {
 		else if(type.equals(TimeSeriesSparql.CumulativeTotalTypeString)){
 			timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
 		}
-		else {
+		else if(type.equals(TimeSeriesSparql.TimeSeriesTypeString)){
 			timeSeriesType = TimeSeriesSparql.TimeSeries;
+		}
+		else {
+			throw new JPSRuntimeException(exceptionPrefix + "Invalid TimeSeries Type: "+type);
 		}
 
 		String temporalUnit = null;
