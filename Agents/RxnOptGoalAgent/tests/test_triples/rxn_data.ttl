@@ -220,7 +220,7 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 
 :RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterling;
+    om:hasUnit om:poundSterlingPerKilogram;
     om:hasNumericalValue "6.83"^^xsd:double;
 .
 

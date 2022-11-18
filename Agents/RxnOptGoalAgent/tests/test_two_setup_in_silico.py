@@ -185,7 +185,7 @@ def test_two_setup_rog(
         "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
         "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
         "second_goal_num_val": 0.001,
-        "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterling"
+        "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
     }
 
     with rog_agent.app.test_client() as test_client:

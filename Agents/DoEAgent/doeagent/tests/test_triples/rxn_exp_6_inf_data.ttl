@@ -109,7 +109,7 @@ exp6:RunMaterialCost_1
 
 exp6:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerLitre;
+    om:hasUnit om:poundSterlingPerKilogram;
     om:hasNumericalValue "INF"^^xsd:double;
 .
 
