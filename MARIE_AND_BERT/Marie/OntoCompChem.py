@@ -6,18 +6,22 @@ import pandas as pd
 import torch
 
 from KGToolbox.NHopExtractor import HopExtractor
+from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.OntoScoreModel import OntoScoreModel
 from Marie.Util.Logging import MarieLogger
 from transformers import BertTokenizer
 
+"""
+Use the comp-pubchem dictionary, retrieve 
+"""
 
-class OntoChemistryEngine:
+
+class OntoCompChemEngine:
     def __init__(self):
         self.marie_logger = MarieLogger()
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.max_length = 12
-
         self.dataset_dir = os.path.join(DATA_DIR, 'ontocompchem_latent_40')
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name='ontocompchem_calculation')
         i2e_file = open(os.path.join(self.dataset_dir, 'idx2entity.pkl'), 'rb')
@@ -35,7 +39,17 @@ class OntoChemistryEngine:
 
         model_path = os.path.join(self.dataset_dir, 'score_model_general')
         print("model path", model_path)
+        self.chemical_nel = ChemicalNEL()
+
         # self.score_model.load_pretrained_model(model_path)
+
+    def remove_head_entity(self, _question, _head_entity):
+        return _question.replace(_head_entity, '').strip()
+
+    def run(self, question):
+        head = self.chemical_nel.find_cid(question)
+        question = self.remove_head_entity(_question=question, _head_entity=head)
+        return self.find_answers(head_entity=head, question=question)
 
     def test(self):
         good_counter = 0
@@ -46,7 +60,7 @@ class OntoChemistryEngine:
             question = row['question']
             head = row['head']
             answer = row['answer']
-            labels, _ = self.run(head, question)
+            labels, _ = self.find_answers(head, question)
             print("===============")
             print()
             if answer in labels:
@@ -54,7 +68,7 @@ class OntoChemistryEngine:
             else:
                 bad_counter += 1
 
-    def run(self, head_entity, question):
+    def find_answers(self, head_entity, question):
         head = self.entity2idx[head_entity]
         candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
         question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
@@ -104,5 +118,5 @@ class OntoChemistryEngine:
 # 2. Score model
 # 3.
 if __name__ == '__main__':
-    my_ontochemistry_engine = OntoChemistryEngine()
+    my_ontochemistry_engine = OntoCompChemEngine()
     my_ontochemistry_engine.test()

@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from Marie.PubChem import PubChemEngine
-from Marie.OntoChemistry import OntoChemistryEngine
+from Marie.OntoCompChem import OntoCompChemEngine
 from Marie.Util.location import DATA_DIR
 
 
@@ -9,7 +9,7 @@ class CrossGraphDatasetCreator:
 
     def __init__(self):
         self.pubchem_engine = PubChemEngine()
-        self.ontochemistry_engine = OntoChemistryEngine()
+        self.ontochemistry_engine = OntoCompChemEngine()
 
     def get_answsers(self, question: str, head: str, domain: int):
         """

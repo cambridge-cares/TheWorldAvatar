@@ -44,6 +44,8 @@ class SubgraphExtractor:
         self.entity_dictionary['pubchem'] = tmp
 
     def retrieve_subgraph(self, _head_entity):
+        print("===============")
+        print(_head_entity)
         return self.entity_dictionary['pubchem'][_head_entity]
 
     def value_lookup(self, node_name):

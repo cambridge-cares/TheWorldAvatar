@@ -11,7 +11,6 @@ import chemparse
 import re
 
 
-
 def rearrange_formula(mention):
     formula_regex = r'[A-Z0-9\(\)+]+'
     if re.fullmatch(formula_regex, mention):
@@ -24,12 +23,15 @@ def rearrange_formula(mention):
 
 
 class ChemicalNEL:
-    def __init__(self):
+    """
+
+    """
+
+    def __init__(self, dataset_dir=None):
         self.marie_logger = MarieLogger()
         try:
-
-            self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, 'name_list.json')).read())
-            self.cid_dict = json.loads(open(os.path.join(DICTIONARY_DIR, 'cid_dict.json')).read())
+            self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_dir, 'name_list.json')).read())
+            self.name_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_dir, 'name_dict.json')).read())
             self.marie_logger.info("5. Done loading the dictionaries for entity linking")
         except:
             self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {__name__}.__init__")
@@ -45,27 +47,28 @@ class ChemicalNEL:
             # TODO: rearrange the chemical formula
             rearranged_mention_str = rearrange_formula(mention_str)
             confidence, key = self.fuzzy_search(rearranged_mention_str)[0]
-            return confidence, self.cid_dict[key], str(mention_str), key
+            return confidence, self.name_dict[key], str(mention_str), key
 
         except IndexError:
-            self.marie_logger.error(f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
+            self.marie_logger.error(
+                f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
             return None
 
     def cid_lookup(self, mention):
-        return self.cid_dict(mention)
+        return self.name_dict(mention)
 
     def fuzzy_search(self, mention):
         return self.fuzzyset.get(mention)
 
 
 if __name__ == '__main__':
-    cn = ChemicalNEL()
+    cn = ChemicalNEL(dataset_dir="ontocompchem")
     START_TIME = time.time()
     rst = cn.find_cid('what is the molar mass of CH2H2')
     print(rst)
     rst = cn.find_cid('what is the molar mass of H4C')
     print(rst)
-    rst = cn.find_cid('what is the molar mass of C1=CC=CC=C1')
+    rst = cn.find_cid('what is the molar mass of 2-Butyne')
     print(rst)
 
     print(time.time() - START_TIME)
