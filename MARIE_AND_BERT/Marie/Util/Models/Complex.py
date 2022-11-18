@@ -35,6 +35,8 @@ class Complex(nn.Module):
             self.re_ent = self._init_ent_embedding()
             self.im_ent = self._init_ent_embedding()
 
+        print("initialized embeddings")
+
     def _init_ent_embedding(self):
         """
         :param dim: dimension of the embedding
@@ -95,7 +97,7 @@ class Complex(nn.Module):
 
 if __name__ == '__main__':
 
-    target_ontology = "ontokin"
+    target_ontology = "ontochemistry"
     full_dir = os.path.join(DATA_DIR, 'CrossGraph', target_ontology)
     r2i_path = open(os.path.join(full_dir, f'relation2idx.pkl'), 'rb')
     e2i_path = open(os.path.join(full_dir, f'entity2idx.pkl'), 'rb')
@@ -103,7 +105,9 @@ if __name__ == '__main__':
     ent_num = len(pickle.load(e2i_path).keys())
     model = Complex(dim=80, rel_num=rel_num, ent_num=ent_num,
                     dataset_dir=os.path.join(DATA_DIR, 'CrossGraph', target_ontology), resume_training=False)
+    print("initialized model")
     trainer = Trainer(model=model, dataset_name=target_ontology, epochs=500, learning_rate=1,
                       pointwise=True, batch_size=32, save_model=True, complex=True, gamma=1,
                       data_folder=f"CrossGraph/{target_ontology}")
+    print("initialized trainer")
     trainer.train()

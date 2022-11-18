@@ -11,16 +11,14 @@ class CrossGraphAlignmentModel(nn.Module):
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         # self.bert_reduction_layer = nn.Linear(768, 512)
-        self.bert_reduction_layer = nn.Linear(768, 2)
+        self.bert_reduction_layer = nn.Linear(768, 4)
         self.bert_reduction_layer_2 = nn.Linear(512, 256)
         self.bert_reduction_layer_3 = nn.Linear(256, 2)
         self.domain_factor_layer = nn.Linear(2, 1)
-        self.domain_question_factor_layer = nn.Linear(4, 1)
+        self.domain_question_factor_layer = nn.Linear(8, 1)
         self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(self.device)
         self.sigmoid = nn.Sigmoid()
         self.relu = nn.ReLU()
-
-
 
     def adjust_score(self, triple):
         """
@@ -32,15 +30,16 @@ class CrossGraphAlignmentModel(nn.Module):
         question = triple[0]
         score = triple[1].to(self.device)
         domain = triple[2].to(self.device)
-        domain = one_hot(domain, num_classes=2).type(torch.FloatTensor).to(self.device)
+        domain = one_hot(domain, num_classes=4).type(torch.FloatTensor).to(self.device)
         question_vector = self.process_question(question)
 
         # =============== get domain - question factor ==================
         domain_question_vector = torch.cat([question_vector, domain], dim=1).to(self.device)
         domain_question_factor = self.domain_question_factor_layer(domain_question_vector).squeeze(-1)
 
-        adjusted_score = score + domain_question_factor
-        return adjusted_score
+        # adjusted_score = score + domain_question_factor
+        # return adjusted_score
+        return domain_question_factor
 
     def process_question(self, question):
         max_len = 12

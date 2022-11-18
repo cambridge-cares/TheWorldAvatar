@@ -13,14 +13,14 @@ class Dataset(torch.utils.data.Dataset):
     # in this case, each data unit contains a head, a rel, a tail
     # the output is the
 
-    def __init__(self, df, neg_rate=18, data_folder = None):
+    def __init__(self, df, neg_rate=18, dataset_path = None):
         # TODO: make sure the
-        if data_folder is None:
+        if dataset_path is None:
             e2i_path = open(os.path.join(DATA_DIR, f'entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'relation2idx.pkl'), 'rb')
         else:
-            e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
-            r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
+            e2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/entity2idx.pkl'), 'rb')
+            r2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/relation2idx.pkl'), 'rb')
 
 
         self.entity2idx = pickle.load(e2i_path)

@@ -39,10 +39,12 @@ class HopExtractor:
         self.idx_triples = self.make_idx_triples()
         self.entity_labels = list(self.entity2idx.keys())
         self.relation_labels = list(self.relation2idx.keys())
+        print("finished n-hop extractor")
         # self.head_tail_relation_map_full_path = os.path.join(self.dataset_dir, f'head_tail_relation_map.json')
         # self.head_tail_realtion_map = json.loads(open(head_tail_relation_map_full_path).read()
 
     def make_idx_triples(self):
+        print("making index triples")
         idx_triples = []
         for idx, row in self.triples.iterrows():
             s, p, o = row.values.tolist()
@@ -124,7 +126,7 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    ontology = "ontokin"
+    ontology = "ontospecies"
     # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/{ontology}'),
                                 dataset_name=ontology)

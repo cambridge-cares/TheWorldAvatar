@@ -16,7 +16,8 @@ from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 
 
 class CrossGraphTrainer:
-    def __init__(self, df, test_step=1, epoch_num=20, batch_size=16, learning_rate=1e-2, gamma=0.1, dataset_path = "CrossGraph", save_model=False,
+    def __init__(self, df, test_step=10, epoch_num=400, batch_size=1, learning_rate=1e-5, gamma=1,
+                 dataset_path="CrossGraph", save_model=False,
                  load_model=False):
         self.df = df
         self.dataset_path = dataset_path
@@ -44,12 +45,13 @@ class CrossGraphTrainer:
     def run(self):
         previous_rate = 0
         for epoch in tqdm(range(self.epoch_num)):
-            # outrank_rate = self.train()
-            # if previous_rate > outrank_rate:
-            #     self.scheduler.step()
-            # previous_rate = outrank_rate
+            outrank_rate = self.train()
+            if previous_rate > outrank_rate:
+                self.scheduler.step()
+            previous_rate = outrank_rate
             if epoch % self.test_step == 0:
-                self.evaluate()
+                pass
+                #  self.evaluate()
                 #  self.save_model()
 
     def train(self):
@@ -92,14 +94,24 @@ class CrossGraphTrainer:
         total_test_outrank_rate = total_test_outrank_rate / len(self.dataloader_test)
         print(f"total test outrank rate {total_test_outrank_rate}")
 
-
     def save_model(self):
         model_path = os.path.join(self.dataset_path, 'cross_graph_model')
         print(' - Saving the scoring model')
         torch.save(self.model.state_dict(), model_path)
 
+
 if __name__ == '__main__':
     dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
-    df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_pairs.tsv'), sep='\t')
+    df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_pairs.tsv'), sep='\t', index_col=0)
+    # filter df, remove all rows where fake_score is smaller than 1.0
+    df = df.loc[df['fake_score'] >= 1.0]
+    df = df.loc[df['true_score'] >= 1.0]
+    df = df.drop(columns=['head'])
+    df = df.reset_index(drop=True)
+    df = df.drop_duplicates()
+    df = df.reset_index(drop=True)
+
+    df_1 = pd.concat([df.loc[df['fake_domain'] == 0]] * 4, ignore_index=True)
+    df = pd.concat([df_1, df], ignore_index=True)
     my_cross_graph_trainer = CrossGraphTrainer(df, dataset_path=dataset_path)
     my_cross_graph_trainer.run()

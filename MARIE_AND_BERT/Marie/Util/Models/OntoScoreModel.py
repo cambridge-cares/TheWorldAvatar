@@ -27,7 +27,7 @@ class OntoScoreModel(nn.Module):
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         self.dropout = nn.Dropout(0)
         self.dropout_relation = nn.Dropout(0.1)
-        self.linear = nn.Linear(768, 160)  # keep this model ...
+        self.linear = nn.Linear(768, 80)  # keep this model ...
         self.sigmoid = nn.Sigmoid()
         self.for_training = for_training
         if self.for_training:

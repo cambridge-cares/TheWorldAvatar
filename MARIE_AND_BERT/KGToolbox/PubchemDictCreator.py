@@ -4,9 +4,40 @@
 import json
 import os
 import pickle
+from pubchempy import *
 
 import pandas as pd
-from Marie.Util.location import TRAINING_DIR
+from Marie.Util.location import TRAINING_DIR, DATA_DIR
+
+
+
+def add_missing_cid():
+    new_names = []
+    new_dict = {}
+    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph', 'missing_cid_list.json')).read())
+    for cid in missing_cid_list:
+        for key in get_info_from_pubchem(cid=cid):
+            if key is not None:
+                new_dict[key] = 'CID' + str(cid)
+                new_names = new_names + [key]
+
+    return list(set(new_names)), new_dict
+
+
+def get_info_from_pubchem(cid=None):
+    c = Compound.from_cid(cid)
+    formula = c.molecular_formula
+    smiles = c.canonical_smiles
+    iupac_name = c.iupac_name
+    return formula, smiles, iupac_name
+
+    # iupac_name
+    # molecular_formula
+    # cnonical smiles
+
+
+
+
 
 STOP_INDEX = 10001
 
@@ -27,6 +58,17 @@ CID_dict.update(CID_dict_smil)
 # print(df_pubchem)
 # print(CID_dict)
 name_list = [x for x in list(set(CID_dict.keys())) if str(x) != 'nan']
+
+
+new_names, new_dict = add_missing_cid()
+print(new_names, new_dict)
+for k,v in new_dict.items():
+    if k not in CID_dict:
+        CID_dict[k] = v
+
+name_list = name_list + new_names
+name_list = list(set(name_list))
+
 
 with open(os.path.join(TRAINING_DIR, 'name_list.json'), 'w') as f:
     f.write(json.dumps(name_list))

@@ -44,7 +44,7 @@ class Trainer:
                           open(os.path.join(DATA_DIR,
                                             f'{data_folder}/{self.dataset_name}-train.txt')).read().splitlines()]
         test_triplets = random.sample(train_triplets, round(len(train_triplets) * 0.2))
-
+        print("triples prepared")
         if self.pointwise:
             df_train = pd.read_csv(os.path.join(DATA_DIR,
                                                 f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)

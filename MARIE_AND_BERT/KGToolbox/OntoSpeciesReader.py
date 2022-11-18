@@ -21,8 +21,25 @@ class OntoSpeciesReader:
         self.p_label_list = []
         self.species_iri_list = []
         self.p_iri_name_mapping = {}
-
         self.species_mapping = {}
+        self.property_names = {"type": "type",
+                               "hasGeometryType_latent": "geometry type",
+                               "oc:hasFrequencies_latent": "vibration frequency",
+                               "oc:hasRotationalConstants_latent": "rotational constants",
+                               "oc:hasRotationalSymmetryNumber_latent": "rotational symmetry number ",
+                               "casRegistryID": "cas registry id",
+                               "inChI": "inchi",
+                               "SMILES": "smiles",
+                               "hasCharge": "charge",
+                               "hasMolecularWeight": "molecular weight",
+                               "hasMolecularFormula": "molecular formula",
+                               "hasGeometry": "geometry",
+                               "spinMultiplicity": "spin multiplicity",
+                               "hasAtom": "atoms",
+                               "hasAtomicBond": "atomic bond",
+                               "hasStandardEnthalpyOfFormation": "standard enthalpy of formation",
+                               "pubChemCID": "CID",
+                               }
 
     def query_blazegraph(self, query, namespace="ontospecies"):
         sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/" + namespace + "/sparql")
@@ -39,6 +56,8 @@ class OntoSpeciesReader:
             print(geomType, species)
 
     def find_all_properties_of_all_species(self):
+        triples = []
+
         property_list = pd.read_csv(os.path.join(self.dataset_path, 'species_properties.csv'), sep='\t')
         self.p_iri_list = property_list['iri'].values.tolist()
         self.p_iri_list = [p.replace('<', '').replace('>', '') for p in self.p_iri_list]
@@ -79,8 +98,6 @@ class OntoSpeciesReader:
                     f.close()
             print(f"{counter} of out {len(self.all_species_iri)}")
 
-
-
     def find_all_properties_of_one_species(self, species_iri=None):
         heads = 'SELECT DISTINCT' + ' '.join(['?' + p_name for p_name in self.p_iri_name]) + '\n'
         content = []
@@ -103,59 +120,55 @@ class OntoSpeciesReader:
         df_all_species.to_csv(os.path.join(self.dataset_path, 'all_species.tsv'), sep='\t')
         self.all_species_iri = list(set(self.all_species_iri))
 
-    def construct_value_dict(self):
+    def create_triples(self):
+        triples = []
         value_dict = {}
-        all_calculation = json.loads(open(os.path.join(ARCHIVE_DIR, 'ontocompchem_all_calculation.json')).read())
-        col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
-        for row in all_calculation['results']['bindings']:
-            species = row['species']['value'].split('/')[-1]
-            ocIRI = row['ocIRI']['value'].split('/')[-1]
-            for col_n in col_names:
-                if col_n in row:
-                    node = row[col_n]['value'].split('/')[-1]
-                    if node in value_dict:
-                        print('This is big problem')
-                    else:
-                        value_dict[node] = row[col_n + 'Value']['value']
+        all_species = json.loads(open(os.path.join(self.dataset_path, 'ontospecies.json')).read())
+        for species in all_species:
+            data = all_species[species]
+            if '#' in species:
+                short_species = species.split('#')[-1]
+            elif ':' in species and '/' not in species:
+                short_species = species.split(':')[-1]
+            else:
+                short_species = species.split('/')[-1]
+            vars = data["head"]["vars"]
+            for row in data["results"]["bindings"]:
+                for var in vars:
+                    if var in row and var != "type":
+                        d = row[var]
+                        value = d['value']
+                        data_type = d['type']
+                        if data_type == "uri":
+                            new_node = value.split('/')[-1]
+                        elif data_type == "literal":
+                            new_node = f"{short_species}_{var}"
+                            value_dict[new_node] = value
+                        else:
+                            new_node = "EMPTY"
 
-        with open(os.path.join(ARCHIVE_DIR, 'ontocompchem_value_dict.json'), 'w') as f:
+                        if "MolecularFormula_" not in new_node:
+                            triples.append((short_species, var, new_node))
+        df = pd.DataFrame(triples)
+        df = df.drop_duplicates()
+        df = df.reset_index(drop=True)
+        df.to_csv(os.path.join(self.dataset_path, 'ontospecies-train.txt'), sep='\t', header=False, index=False)
+
+
+        df_test = df.sample(frac=0.2)
+        df_test.to_csv(os.path.join(self.dataset_path, 'ontospecies-test.txt'), sep='\t', header=False, index=False)
+
+        with open(os.path.join(self.dataset_path, 'ontospecies_value_dict.json'),'w') as f:
             f.write(json.dumps(value_dict))
             f.close()
 
-    def construct_triples(self):
-
-        triples = []
-        all_calculation = json.loads(open(os.path.join(ARCHIVE_DIR, 'ontocompchem_all_calculation.json')).read())
-        col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
-        rel_dict = {'geomType': 'hasGeometryType', 'vibAnal': 'oc:hasFrequencies',
-                    'rotConsts': 'oc:hasRotationalConstants', 'rotSym': 'oc:hasRotationalSymmetryNumber'}
-        for row in all_calculation['results']['bindings']:
-            species = row['species']['value'].split('/')[-1]
-            ocIRI = row['ocIRI']['value'].split('/')[-1]
-            triples.append((ocIRI, 'oc:hasUniqueSpecies', species))
-            triples.append((species, 'type', "os:Species"))
-
-            for col_n in col_names:
-                if col_n in row:
-                    node = row[col_n]['value'].split('/')[-1]
-                    triples.append((ocIRI, 'gc:isCalculationOn', node))
-                    triples.append((node, rel_dict[col_n], node + 'Value'))
-
-        df_triples = pandas.DataFrame(triples, columns=["head", "rel", "tail"])
-        df_triples.to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation/ontocompchem_calculation-train.txt'),
-                          sep='\t', index=False, header=False)
-        df_triples.sample(frac=0.2).to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation'
-                                                                     '/ontocompchem_calculation-test.txt'),
-                                           sep='\t', index=False, header=False)
-        df_triples.sample(frac=0.2).to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation'
-                                                                     '/ontocompchem_calculation-valid.txt'),
-                                           sep='\t', index=False, header=False)
 
 
 if __name__ == '__main__':
     osr = OntoSpeciesReader()
-    osr.find_all_species()
-    osr.find_all_properties_of_all_species()
+    # osr.find_all_species()
+    # osr.find_all_properties_of_all_species()
+    osr.create_triples()
 
 # sample training unit: what is the geometry type of CH4, head CH4, tail: geometry, RotationalSymetry ...
 #  TODO: construct the path between species and RotationalSymmetry
