@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask App",
+            "name": "Python: Debug Flask App",
             "type": "python",
             "request": "launch",
             "module": "flask",
@@ -24,7 +24,7 @@
             "jinja": true
         },
         {
-            "name": "Python: Flask within Docker",
+            "name": "Python: Debug Flask within Docker",
             "type": "python",
             "request": "attach",
             "connect": {
@@ -35,6 +35,22 @@
                 {
                     "localRoot": "${workspaceFolder}/${input:agentname}/",
                     "remoteRoot": "/app/${input:agentname}/"
+                }
+            ]
+        },
+        {
+            "name": "Python: Debug dockerised Tests",
+            "type": "python",
+            "request": "attach",
+            "preLaunchTask": "compose-dockerised-test",
+            "connect": {
+                "host": "127.0.0.1",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
                 }
             ]
         },

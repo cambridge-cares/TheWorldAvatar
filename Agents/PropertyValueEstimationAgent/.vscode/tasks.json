@@ -84,6 +84,11 @@
             "command": "bash ./build_py4jps_stackclients_resource.sh",   
             // Windows (n/a option to be commented out): 
             // "command": "build_py4jps_stackclients_resource.sh",      
+        },
+        {
+            "type": "shell",
+            "label": "compose-dockerised-test",
+            "command": "docker compose -f docker-compose-test_dockerised.yml up -d --build"
         }
     ],
     "inputs": [

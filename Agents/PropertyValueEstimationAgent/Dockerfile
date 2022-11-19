@@ -74,6 +74,24 @@ ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()"
 
 
 #------------------------------------------------------
+# Debug testing image reusing the base
+#------------------------------------------------------
+FROM base as debug_test
+# Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
+RUN python -m pip install -e .[dev]
+RUN pip install debugpy
+
+# Copy docker-compose-file to spin up testcontainers
+COPY ./docker-compose-test.yml ./docker-compose.yml
+
+# Launch pytest in container (-s flag to enable more output/logging)
+WORKDIR /app
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest -s
+
+
+#------------------------------------------------------
 # Testing image reusing the base
 #------------------------------------------------------
 FROM base as test

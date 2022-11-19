@@ -122,6 +122,7 @@ MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
 def get_blazegraph_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
+        print(service)
         service_url = f"http://localhost:{service.host_port}/{url_route}"
 
         # This will run only once per entire test session
@@ -143,6 +144,7 @@ def get_blazegraph_service_url(session_scoped_container_getter):
 def get_postgres_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
+        print(service)
         service_url = f"jdbc:postgresql://localhost:{service.host_port}/{url_route}"
 
         # This will run only once per entire test session
@@ -197,20 +199,15 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 
 @pytest.fixture(scope="module")
 def create_example_agent():
-    def _create_example_agent(
-        register_agent:bool=False,
-        random_agent_iri:bool=False,
-    ):
+    def _create_example_agent():
         agent_config = config_derivation_agent(AGENT_ENV)
         agent = PropertyValueEstimationAgent(
-            register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            register_agent=agent_config.REGISTER_AGENT,
+            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
             kg_url=QUERY_ENDPOINT,
             kg_update_url=UPDATE_ENDPOINT,
-            # NOTE For agent endpoint, we keep this as it is for now (i.e. start with http://host.docker.internal)
-            # As the agent endpoint is not accessed from outside the docker network
             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
             app=Flask(__name__),

@@ -6,7 +6,7 @@ services:
       context: .
       target: debug
     ports:
-      - "${DEBUG_PORT}:5678"
+      - ${DEBUG_PORT}:5678
     volumes:
       # repository name needs to match "agentdir" build arg in docker-compose-build.yml
       - ./propertyvalueestimation:/app/propertyvalueestimation
