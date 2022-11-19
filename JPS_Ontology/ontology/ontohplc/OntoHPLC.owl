@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 August 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 November 2022</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoHPLC is an ontology developed for expressing a high performance liquid chromatography.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.4</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -34,7 +34,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit">
         <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#PeakArea"/>
-        <rdfs:range rdf:resource="http://theworldavatar.com/resource/ontouom/milli_absorbance_unit_multiplies_minute"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milliAbsorbanceUnitMinute-Time"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -44,6 +44,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#atRetentionTime">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramPoint"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#RetentionTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between chromatogram point and the retention time at which the point was referring to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -66,6 +68,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#generatedFor">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#ChemicalSolution"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the chemical solution it is generated for.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -76,6 +80,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasJob">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCJob"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the HPLC job it conducts.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -86,6 +92,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasPastReport">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the HPLC reports it generated in the past.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -96,6 +104,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasPeakArea">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramPoint"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#PeakArea"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chromatogram point and the peak area it calculated.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -106,6 +116,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasReport">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCJob"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC job and the report it generates.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -116,6 +128,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasResponseFactor">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCMethod"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ResponseFactor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC method and the response factor of each species under this method.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -126,6 +140,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#hasRetentionTime">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCMethod"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#RetentionTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC method and the ideal retention time of each species under this method.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -136,6 +152,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#indicatesComponent">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramPoint"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chromatogram point and the phase component it refers to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -146,6 +164,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#records">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramPoint"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the chromatogram data it records.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -164,6 +184,7 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relationship between the response factor/retention time and the species which the previous quantity is referring to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -174,6 +195,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#reportExtension">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="http://dbpedia.org/class/yago/WikicatFilenameExtensions"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the filename extension of the HPLC report it generates.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -184,6 +207,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#usesInternalStandard">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCMethod"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#InternalStandard"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the internal standard that was used during generating the report.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -194,6 +219,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#usesMethod">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCJob"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCMethod"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC job and the method it uses.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -204,6 +231,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/accomplishes">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#LiquidChromatography"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between HighPerformanceLiquidChromatography and the liquid chromatography task it can conduct.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -214,7 +243,21 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasCommand">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramMeasurement"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramMeasurementCommand"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between ChromatogramMeasurement function and ChromatogramMeasurementCommander command.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://saref.etsi.org/core/hasFunction -->
+
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasFunction">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramMeasurement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the chromatogram measurement function of HighPerformanceLiquidChromatography.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -225,6 +268,8 @@
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isAccomplishedBy">
         <owl:inverseOf rdf:resource="https://saref.etsi.org/core/accomplishes"/>
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#LiquidChromatography"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HighPerformanceLiquidChromatography"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the HighPerformanceLiquidChromatography that can accomplish the liquid chromatography task.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -236,6 +281,8 @@
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isCommandOf">
         <owl:inverseOf rdf:resource="https://saref.etsi.org/core/hasCommand"/>
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramMeasurementCommand"/>
+        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramMeasurement"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between ChromatogramMeasurementCommander command and ChromatogramMeasurement function it can achieve.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -311,6 +358,17 @@
     
 
 
+    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#unidentified -->
+
+
+    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#unidentified">
+        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#ChromatogramPoint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -360,13 +418,6 @@
     
 
 
-    <!-- http://theworldavatar.com/resource/ontouom/milli_absorbance_unit_multiplies_minute -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/milli_absorbance_unit_multiplies_minute"/>
-    
-
-
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Duration -->
 
 
@@ -385,6 +436,13 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/milliAbsorbanceUnitMinute-Time -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/milliAbsorbanceUnitMinute-Time"/>
     
 
 
@@ -673,22 +731,6 @@
 
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Task"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotations
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    <rdf:Description rdf:about="https://saref.etsi.org/core/hasFunction">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the chromatogram measurement function of HighPerformanceLiquidChromatography.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </rdf:Description>
 </rdf:RDF>
 
 
