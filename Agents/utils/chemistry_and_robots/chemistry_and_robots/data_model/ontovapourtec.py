@@ -206,7 +206,7 @@ class VapourtecState(Saref_State):
 
 class CollectionMethod(BaseOntology):
     clz: str = ONTOVAPOURTEC_COLLECTIONMETHOD
-    toReceptacle: str
+    toReceptacle: Optional[str] # NOTE this is made optional to accommodate ONTOVAPOURTEC_FRACTIONCOLLECTOR
     # when instantiation, the clz can be set to one of the following:
     # ONTOVAPOURTEC_SINGLERECEPTACLE, ONTOVAPOURTEC_FRACTIONCOLLECTOR
 
