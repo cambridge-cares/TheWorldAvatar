@@ -46,3 +46,4 @@ lastUploadedAt,Data Property,,,HPLCReport,decimal,only,,https://raw.githubuserco
 localFilePath,Data Property,,,HPLCMethod,string,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 remoteFilePath,Data Property,,,HPLCMethod,anyURI,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 localReportDirectory,Data Property,,,HighPerformanceLiquidChromatography,string,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
+unidentified,Data Property,,,ChromatogramPoint,boolean,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
