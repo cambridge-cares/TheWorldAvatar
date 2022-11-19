@@ -88,7 +88,7 @@
         {
             "type": "shell",
             "label": "compose-dockerised-test",
-            "command": "docker compose -f docker-compose-test_dockerised.yml up -d --build"
+            "command": "docker compose -f docker-compose-test_dockerised_debug.yml up -d --build"
         }
     ],
     "inputs": [

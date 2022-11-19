@@ -139,9 +139,9 @@
             "args": {
             // TODO: Platform specific commands to be revisited at some point
             // Linux (n/a option to be commented out):
-                "command": "python3 setup.py --name",
+            //    "command": "python3 setup.py --name",
             // Windows (n/a option to be commented out): 
-            //    "command": "python setup.py --name",
+                "command": "python setup.py --name",
                 "useFirstResult": true
             }
         }

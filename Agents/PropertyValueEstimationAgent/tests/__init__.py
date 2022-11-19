@@ -1,5 +1,6 @@
 # ----------------------------------------------------------------------------------
-# Mock importing modules, which depend on Stack deployment
+# This file mocks all module imports which depends on Stack deployment
+# Without this, creating the agent app will throw exceptions due to missing variables/imports
 #
 # On import of `tests` package's __init__.py, available objects for import can be replaced
 # in sys.modules, i.e. the updated objects will be returned by import statements:

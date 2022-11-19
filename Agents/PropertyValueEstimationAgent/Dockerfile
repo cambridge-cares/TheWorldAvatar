@@ -84,7 +84,9 @@ RUN python -m pip install -e .[dev]
 RUN pip install debugpy
 
 # Copy docker-compose-file to spin up testcontainers
-COPY ./docker-compose-test.yml ./docker-compose.yml
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+
+# Ensure SPARQL endpoints contain'docker.host.internal' for dockerised agent tests
 
 # Launch pytest in container (-s flag to enable more output/logging)
 WORKDIR /app
@@ -96,11 +98,18 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest -s
 #------------------------------------------------------
 FROM base as test
 # Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
+RUN python -m pip install -e .[dev]
 RUN pip install gunicorn
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./$AGENTDIR ./$AGENTDIR
+COPY ./tests ./tests
+
+# Copy docker-compose-file to spin up testcontainers
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 COPY ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
@@ -109,8 +118,7 @@ COPY ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
 # Set the entrypoint
-# --preload flag is added to provide more information in the container to help with debugging
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload
+ENTRYPOINT pytest
 
 
 #==================================================================================================

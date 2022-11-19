@@ -15,6 +15,7 @@ import os
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                                DATABASE, DB_USER, DB_PASSWORD
+from tests.mockutils.env_configs_mock import HOSTNAME
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
                                               TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, \
@@ -50,7 +51,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # DATABASE, DB_USER, DB_PASSWORD environment variables in the respective files:
 #   tests\mockutils\env_configs_mock.py
 #   tests\mockutils\stack_configs_mock.py
-# Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved
+# Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved 
 # automatically from the respective Docker services
 
 # Provide names of respective Docker services
@@ -120,10 +121,9 @@ MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
 
 @pytest.fixture(scope="session")
 def get_blazegraph_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route):
+    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
         service = session_scoped_container_getter.get(service_name).network_info[0]
-        print(service)
-        service_url = f"http://localhost:{service.host_port}/{url_route}"
+        service_url = f"http://{hostname}:{service.host_port}/{url_route}"
 
         # This will run only once per entire test session
         # It ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
@@ -142,17 +142,16 @@ def get_blazegraph_service_url(session_scoped_container_getter):
 
 @pytest.fixture(scope="session")
 def get_postgres_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route):
+    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
         service = session_scoped_container_getter.get(service_name).network_info[0]
-        print(service)
-        service_url = f"jdbc:postgresql://localhost:{service.host_port}/{url_route}"
+        service_url = f"jdbc:postgresql://{hostname}:{service.host_port}/{url_route}"
 
         # This will run only once per entire test session
         # It ensures that the requested PostgreSQL Docker service is ready to accept queries
         service_available = False
         while not service_available:
             try:
-                conn = pg.connect(host='localhost', port=service.host_port,
+                conn = pg.connect(host=hostname, port=service.host_port,
                                   user=DB_USER, password=DB_PASSWORD,
                                   database=DATABASE)
                 if conn.status == pg.extensions.STATUS_READY:
@@ -199,13 +198,18 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 
 @pytest.fixture(scope="module")
 def create_example_agent():
-    def _create_example_agent():
+    def _create_example_agent(
+        register_agent:bool=False,
+    ):
         agent_config = config_derivation_agent(AGENT_ENV)
         agent = PropertyValueEstimationAgent(
-            register_agent=agent_config.REGISTER_AGENT,
+            register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+            # NOTE Ensure SPARQL endpoints contain'docker.host.internal' for dockerised agent tests
+            # Set automatically for normal local as well as dockerised tests; however, requires
+            # manual adjustment in `stack_configs_mock.py` file for debugging within Docker
             kg_url=QUERY_ENDPOINT,
             kg_update_url=UPDATE_ENDPOINT,
             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
