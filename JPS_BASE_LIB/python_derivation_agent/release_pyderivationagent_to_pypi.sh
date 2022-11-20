@@ -1,9 +1,9 @@
 #!/bin/bash
-# J. Bai (jb2197@cam.ac.uk), based on https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by D. Nurkowski (danieln@cmclinnovations.com)
+# J. Bai (jb2197@cam.ac.uk), based on https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by D. Nurkowski (danieln@cmclinnovations.com)
 #
 # pyderivationagent release script
 #
-AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>, based on https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by Daniel Nurkowski <danieln@cmclinnovations.com>"
+AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>, based on https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 VENV_NAME='pyderivationagent_venv'
 TEST_VENV_NAME='test_venv'
@@ -11,6 +11,7 @@ PROJECT_NAME='pyderivationagent'
 TEST_PYPI="https://test.pypi.org/legacy/"
 STEP_NR=1
 NEXT_VERSION=''
+DEV_VERSION=''
 
 usage() {
     echo "==============================================================================================================="
@@ -19,21 +20,25 @@ usage() {
     echo "Please run the script with following options:"
     echo "---------------------------------------------------------------------------------------------------------------"
     echo " Usage:"
+    echo "  -d DEV_VERSION"
     echo "  -v NEXT_VERSION"
     echo "  -h"
     echo ""
     echo "Options"
-	echo "  -v              : Release the $PROJECT_NAME with the following version."
-	echo "  -h              : Print this usage message."
+    echo "  -d              : Release the $PROJECT_NAME to the TestPyPI repository (default)."
+    echo "  -v              : Release the $PROJECT_NAME with the following version."
+    echo "  -h              : Print this usage message."
     echo ""
-	echo "Example usage:"
+    echo "Example usage:"
     echo "./release_pyderivationagent_to_pypi.sh -v 0.0.5   - release version 0.0.5"
-	echo "==============================================================================================================="
-	read -n 1 -s -r -p "Press any key to continue"
+    echo "./release_pyderivationagent_to_pypi.sh -d 0.0.5a  - release version 0.0.5a to the TestPyPI repository"
+    echo "==============================================================================================================="
+    read -n 1 -s -r -p "Press any key to continue"
     exit
 }
 
 main() {
+    check_dev_version_number
     install_packages_for_building
     bump_pyderivationagent_version_number
     install_pyderivationagent_and_test
@@ -43,6 +48,24 @@ main() {
     release_to_pypi main-pypi
     test_release main-pypi
     read -n 1 -s -r -p "Press any key to continue"
+}
+
+check_dev_version_number() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Checking the $PROJECT_NAME stable release version number"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    if [[ "$NEXT_VERSION" =~ ^[0-9]*\.[0-9]*\.[0-9]*$ ]]
+    then
+        echo "Version number is correct. Proceeding with the stable release."
+    else
+        echo "The specified $PROJECT_NAME stable version number is $NEXT_VERSION, which is NOT correct. It should be something similar to 1.0.0. Aborting the release."
+        read -n 1 -s -r -p "Press any key to continue"
+        exit -1
+    fi
+
+    STEP_NR=$((STEP_NR+1))
 }
 
 install_packages_for_building() {
@@ -215,7 +238,6 @@ test_release() {
     $PYTHON_EXEC -m pip install testcontainers
     $PYTHON_EXEC -m pip install pytest-docker-compose
     $PYTHON_EXEC -m pip install pytest-rerunfailures
-    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
     run_pyderivationagent_tests $PYTHON_EXEC
 
@@ -223,6 +245,81 @@ test_release() {
     rm -rf $SPATH/../$TEST_VENV_NAME
 
     STEP_NR=$((STEP_NR+1))
+}
+
+###############################
+## functions for dev_release ##
+###############################
+dev_release() {
+    dev_release_check_dev_version_number
+    install_packages_for_building
+    dev_release_bump_pyderivationagent_version_number
+    dev_release_install_pyderivationagent_and_test
+    build_pyderivationagent_for_release
+    release_to_pypi test-pypi
+    read -n 1 -s -r -p "Press any key to continue"
+    exit
+}
+
+dev_release_check_dev_version_number() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Checking the $PROJECT_NAME dev version number"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    if [[ "$DEV_VERSION" =~ ^[0-9]*\.[0-9]*\.[0-9]*(a|b|rc)[0-9]*$ ]] # the version number should contain a, b or rc (alpha, beta or release candidate)
+    then
+        echo "Version number is correct. Proceeding with the dev release."
+    else
+        echo "The specified $PROJECT_NAME dev version number is $DEV_VERSION, which is NOT correct. It should contain a, b, or rc (alpha, beta or release candidate), e.g., 1.1.0b1. Aborting the release."
+        read -n 1 -s -r -p "Press any key to continue"
+        exit -1
+    fi
+
+    STEP_NR=$((STEP_NR+1))
+}
+
+dev_release_bump_pyderivationagent_version_number() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Bumping the $PROJECT_NAME version number to $DEV_VERSION"
+    echo "-------------------------------------------------------------------------"
+    echo ; echo
+
+    sed -bi "s/version=.*,/version='$DEV_VERSION',/" $SPATH/setup.py
+    sed -bi "s/__version__ = .*/__version__ = \"$DEV_VERSION\"/" $SPATH/$PROJECT_NAME/__init__.py
+
+    STEP_NR=$((STEP_NR+1))
+}
+
+dev_release_install_pyderivationagent_and_test() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Packaging the $PROJECT_NAME project"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    install_pyderivationagent $VENV_NAME $SPATH
+
+    dev_release_pyderivationagent_tests $PYTHON_EXEC
+
+    STEP_NR=$((STEP_NR+1))
+}
+
+dev_release_pyderivationagent_tests() {
+    echo "-------------------------------"
+    echo "Running the $PROJECT_NAME tests"
+    echo "-------------------------------"
+    echo
+    echo
+    echo $1
+    $1 -m pytest -s tests/test_conf.py tests/test_derivation_agent.py --reruns 5 --reruns-delay 5
+    TEST_RESULT=$?
+    if [ $TEST_RESULT -eq 0 ]; then
+        echo "All tests have completed successfully"
+    else
+        echo "Aborting the release. Some tests have failed. Please check the pytest detailed output for more details."
+        read -n 1 -s -r -p "Press any key to continue"
+        exit -1
+    fi
 }
 
 # Scan command-line arguments
@@ -237,6 +334,7 @@ do
         -h)
         usage;;
         -v) NEXT_VERSION=$2; shift 2;;
+        -d) DEV_VERSION=$2; shift 2; dev_release "$@";;
         *)
         # otherwise print the usage
         usage;;

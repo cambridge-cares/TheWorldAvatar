@@ -1,0 +1,11 @@
+# This file is provided in order to upload an image to the github Docker registry
+version: "3.8"
+
+services:
+  building-data-getter:
+    image: ghcr.io/cambridge-cares/building-data-getter:1.0.4
+    build:
+      context: .
+      labels:
+        authors: "jlai@cmclinnovations.com support@cmclinnovations.com"
+        description: "Retrieves building data for the Kings Lynn area from user-specified knowledge graph endpoints."

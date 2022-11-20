@@ -32,11 +32,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `pyderivationagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency, therefore, in order to make the semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `pyderivationagent`. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `pyderivationagent` package.
 
 ```sh
 (<venv_name>) $ pip install pyderivationagent
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use #
@@ -53,6 +52,9 @@ When creating a new derivation python agent, it's strongly advised to stick to t
     │   ├── agent                   # module that contains the agent logic
     │   │   ├── __init__.py
     │   │   └── your_agent.py       # your derivation agent
+    │   ├── conf                    # module that contains the agent logic
+    │   │   ├── __init__.py
+    │   │   └── your_conf.py        # specific configuration for your agent
     │   ├── data_model              # module that contains the dataclasses for concepts
     │   │   ├── __init__.py
     │   │   └── your_onto.py        # dataclasses for your ontology concepts 
@@ -80,9 +82,49 @@ from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 from youragent.kg_operations import YourSparqlClient
 from youragent.data_model import YOUR_CONCEPT
+from youragent.data_model import ANOTHER_CONCEPT
+from youragent.data_model import OUTPUT_CONCEPT
 from rdflib import Graph
 
+# NOTE For any developer to extend the DerivationAgent class, four @abstractmethod MUST be implemented
 class YourAgent(DerivationAgent):
+    ##########################################################
+    ## I. __init__ for custom configuration (if applicable) ##
+    ##########################################################
+    def __init__(self,
+        your_str_conf: str,
+        your_int_conf: int,
+        your_bool_conf: bool,
+        **kwargs
+    ):
+        super().__init__(**kwargs) # pass all other parameters to DerivationAgent.__init__, will throw error if unexpected input received
+        # Below you may want to assign your custom configuration
+        # How to provide them when instantiating agent will be detailed in your_conf.py, entry_point.py, and youragent.env.example
+        self.your_str_conf = your_str_conf
+        self.your_int_conf = your_int_conf
+        self.your_bool_conf = your_bool_conf
+
+    ###############################
+    ## II. Derivation agent part ##
+    ###############################
+    # Firstly, as the agent is designed to register itself in the knowledge graph when it is initialised
+    # One need to define the agent inputs/outputs by providing the concept IRIs as return values
+    # The registration is by default, which can be altered by setting flag REGISTER_AGENT=false in the env file
+    def agent_input_concepts(self) -> list:
+        # Assume two input concepts are used by the agent, then developer need to provide it in a list
+        return [YOUR_CONCEPT, ANOTHER_CONCEPT]
+
+    def agent_output_concepts(self) -> list:
+        # Assume one output concept is produced by the agent, then developer need to provide it in a list
+        # NOTE even ONE concept should be provided as a list
+        return [OUTPUT_CONCEPT]
+
+    def validate_inputs(self, http_request) -> bool:
+        # You may want to add some specific validation after the generic checks
+        if super().validate_inputs(http_request):
+            # do some specific checking
+            pass
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Provide your agent logic that converts the agent inputs to triples of new created instances
         # The derivation_inputs will be in the format of key-value pairs with the concept as key and instance iri as value
@@ -102,13 +144,11 @@ class YourAgent(DerivationAgent):
         # You may want to create instance of YourSparqlClient for specific queries/updates you would like to perform
         # YourSparqlClient should be defined in your_sparql.py that will be introduced later in this README.md file
         # This client can be initialised with the configuration you already initialised in YourAgent.__init__ method
-        self.sparql_client = YourSparqlClient(
-            self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword,
-            self.fs_url, self.fs_user, self.fs_password
-        )
+        # A convenient method get_sparql_client is provided to get sparql_client if provided YourSparqlClient as arg
+        sparql_client = self.get_sparql_client(YourSparqlClient)
 
         # Please note here we are using instance_iri of class YOUR_CONCEPT within the provided derivation_inputs
-        response = self.sparql_client.your_sparql_query(instance_iri)
+        response = sparql_client.your_sparql_query(instance_iri)
 
         # You may want to log something during agent execution
         self.logger.info("YourAgent has done something.")
@@ -118,7 +158,7 @@ class YourAgent(DerivationAgent):
         # e.g. <http://example/ExampleClass_UUID> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example/ExampleClass>.
         # <http://example/ExampleClass_UUID> <http://example/hasValue> 5.
         derivation_outputs.createNewEntity("http://example/ExampleClass_UUID", "http://example/ExampleClass")
-        derivation_outputs.addTriple("http://example/ExampleClass_UUID", "http://example/hasValue", 5)
+        derivation_outputs.addLiteral("http://example/ExampleClass_UUID", "http://example/hasValue", 5)
 
         # Alternatively, you may create an instance of rdflib.Graph and add the whole graph to derivation_outputs
         # In which case, the above triples can be added by:
@@ -126,6 +166,49 @@ class YourAgent(DerivationAgent):
         g.add((URIRef("http://example/ExampleClass_UUID"), RDF.type, URIRef("http://example/ExampleClass")))
         g.add((URIRef("http://example/ExampleClass_UUID"), URIRef("http://example/hasValue"), Literal(5)))
         derivation_outputs.addGraph(g)
+
+    ################################################################
+    ## III. Any other periodical job the necessary for your agent ##
+    ################################################################
+    # Additionally, if you would like to define your own periodical job to be executed, you may do it like blow:
+    def your_periodical_job(self):
+        # Here provide the job logic to be executed periodically
+        pass
+
+    @DerivationAgent.periodical_job # This decorator enables the _start_your_periodical_job() to be called when calling start_all_periodical_job()
+    def _start_your_periodical_job(self):
+        # You also need to provide a function so that your periodical job can be started on its own
+        # self.scheduler is an object of APScheduler class
+        self.scheduler.add_job(
+            id='your_periodical_job', # the name for the periodical job
+            func=self.your_periodical_job, # the function for the periodical job
+            trigger='interval', # trigger type
+            seconds=timescale_for_your_periodical_job # the time interval you prefer for the job execution
+        )
+    # The start of your periodical job can be done in two ways once instantiated YourAgent (assume an object named "your_agent"):
+    # Option 1:
+    # your_agent._start_your_periodical_job() # start your periodical job independently
+    # Option 2:
+    # your_agent.start_all_periodical_job() # start your periodical job together with all other periodical jobs (e.g. _start_monitoring_derivations)
+    # An example is also provided in entry_point.py later in this README.md file
+```
+
+`your_conf.py`
+
+```python
+from pyderivationagent.conf import AgentConfig
+from pyderivationagent.conf import config_generic
+
+# Similar to AgentConfig, here you may provide the configurations specific to your agent
+class YourConfig(AgentConfig):
+    YOUR_STR_CONF: str
+    YOUR_INT_CONF: int
+    YOUR_BOOL_CONF: bool
+
+def config_your_agent(env_file: str = None) -> YourConfig:
+    """Return configurations from either environment variables or env_file."""
+    # Remember to put YourConfig as the first input argument to config_generic
+    return config_generic(YourConfig, env_file)
 ```
 
 `your_onto.py`
@@ -203,16 +286,24 @@ class YourSparqlClient(PySparqlClient):
 
 ```python
 from pyderivationagent.conf import config_derivation_agent
+from youragent.conf import config_your_agent
 from youragent.agent import YourAgent
 
 def create_app():
     # If you would like to deploy your agent within a docker container (using docker-compose.yml and youragent.env which will be introduced later in this README.md file), then you may use:
-    agent_config = config_derivation_agent()
-    # Else, if you would like to create agent to run in your memory, then you may want to provide the path to youragent.env file as argument to function config_derivation_agent(), i.e.,
+    agent_config = config_your_agent() # here we assume custom config are required, for normal config, you may use:
+    # agent_config = config_derivation_agent()
+
+    # Else, if you would like to create agent to run in your memory, then you may want to provide the path to youragent.env file as argument to function config_your_agent(), i.e.,
+    # agent_config = config_your_agent("/path/to/youragent.env")
+    # Again, for normal config, you may use:
     # agent_config = config_derivation_agent("/path/to/youragent.env")
 
     # Create agent instance
     agent = YourAgent(
+        your_str_conf = agent_config.YOUR_STR_CONF, # remember to populate custom config if applicable
+        your_int_conf = agent_config.YOUR_INT_CONF, # remember to populate custom config if applicable
+        your_bool_conf = agent_config.YOUR_BOOL_CONF, # remember to populate custom config if applicable
         agent_iri = agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval = agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url = agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -226,11 +317,24 @@ def create_app():
         agent_endpoint = agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app = Flask(__name__)
         flask_config = FlaskConfig(),
-        logger_name = "dev"
+        register_agent = agent_config.REGISTER_AGENT,
+        logger_name = "dev",
+        # note that you can set the maximum number of threads to monitor async derivations at the same time
+        max_thread_monitor_async_derivations = agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        # note that you may choose NOT to supply below parameters if you DO NOT want email notifications
+        email_recipient = agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix = agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username = agent_config.EMAIL_USERNAME,
+        email_auth_json_path = agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations = agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     # Start listening sync/monitoring async derivations
-    agent.start_monitoring_derivations()
+    # There are two ways of doing this, the first way it to start the monitoring process independently by:
+    agent._start_monitoring_derivations() # Option 1
+    # Or, you can execute below line, which will start all periodical jobs that decorated with @DerivationAgent.periodical_job
+    # where _start_monitoring_derivations() will be called as well
+    # agent.start_all_periodical_job() # Option 2, particularly useful when custom periodical job is defined
 
     # Expose flask app of agent
     app = agent.app
@@ -251,11 +355,21 @@ KG_PASSWORD=
 FILE_SERVER_ENDPOINT=http://www.example.com/FileServer/
 FILE_SERVER_USERNAME=
 FILE_SERVER_PASSWORD=
-ONTOAGENT_OPERATION_HTTP_URL=/Example
-```
-You may want to commit this example file without credentials to git as a template for your agent configuration. At deployment, you can make a copy of this file, rename it to `youragent.env` and populate the credentials information. It is suggested to add `*.env` entry to your `.gitignore` of the agent folder, thus the renamed `youragent.env` (including credentials) will NOT be committed to git.
+ONTOAGENT_OPERATION_HTTP_URL=http://localhost:7000/Example
+REGISTER_AGENT=false
+MAX_THREAD_MONITOR_ASYNC_DERIVATIONS=1
+EMAIL_RECIPIENT=foo.1@bar.com;foo.2@bar.com
+EMAIL_SUBJECT_PREFIX=ExampleAgent
+EMAIL_USERNAME=my.gmail.address@gmail.com
+EMAIL_START_END_ASYNC_DERIVATIONS=false
 
-*NOTE: you may want to provide `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` as the internal port of the triple store (most likely blazegraph) docker container, e.g., `http://blazegraph:8080/blazegraph/namespace/kb/sparql` (`blazegraph:8080` depends on your specification in the `docker-compose.yml` which will be introduced later in this README.md file), if you would like to deploy your derivation agent and the triple store within the same docker stack. At deployment, configurations in this file will be picked up by `config_derivation_agent()` when instantiating the agent in `create_app()` of `entry_point.py`.*
+YOUR_STR_CONF=
+YOUR_INT_CONF=
+YOUR_BOOL_CONF=
+```
+You may want to commit this example file without credentials to git as a template for your agent configuration. At deployment, you can make a copy of this file, rename it to `youragent.env` and populate the credentials information. It is suggested to add `*.env` entry to your `.gitignore` of the agent folder, thus the renamed `youragent.env` (including credentials) will NOT be committed to git. For the usage of each default configuration, please refer to `pyderivationagent.conf.AgentConfig` class.
+
+*NOTE: you may want to provide `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` as the internal port of the triple store (most likely blazegraph) docker container, e.g., `http://blazegraph:8080/blazegraph/namespace/kb/sparql` (`blazegraph:8080` depends on your specification in the `docker-compose.yml` which will be introduced later in this README.md file), if you would like to deploy your derivation agent and the triple store within the same docker stack. An alternative to this is to add `extra_hosts: - host.docker.internal:host-gateway` to the `your_agent` service in `docker-compose.yml` (as shown in below) - then you can access the blazegraph via `http://host.docker.internal:27149/blazegraph/namespace/kb/sparql` (`host.docker.internal:27149` depends on your specification in the `docker-compose.yml`). Please also note that the host and port of `ONTOAGENT_OPERATION_HTTP_URL` (i.e., `localhost:7000` in `http://localhost:7000/Example`) should match the value provided in the `docker-compose.yml` to ensure it is resolvable for handling synchronous derivations once registered in the knowledge graph. At deployment, configurations in this file will be picked up by `config_derivation_agent()` when instantiating the agent in `create_app()` of `entry_point.py`.*
 
 `docker-compose.yml`
 
@@ -269,11 +383,18 @@ services:
     container_name: your_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      # Add email auth json path that to be read by the yagmail service
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - 7000:5000
+    # Note that "host.docker.internal" is only a placeholder string, you can replace it with anything, e.g. "localhost" (HOWEVER, NOTE THAT "localhost" IS NO LONGER WORKING AS OF py4jps 1.0.23, WHEREAS ANY OTHER PLACEHOLDER STRING STILL WORKS, AS DETAILED IN ISSUE https://github.com/cambridge-cares/TheWorldAvatar/issues/347)
+    # But please be aware that this can be unstable on some versions docker-desktop as noticed by other developers:
+    # https://github.com/docker/for-win/issues/8861
+    extra_hosts:
+      - host.docker.internal:host-gateway
     env_file:
       - ./youragent.env
 
@@ -293,12 +414,19 @@ services:
 secrets:
   blazegraph_password:
     file: tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth: # You may want to add below file name to your .gitignore
+    file: tests/dummy_services_secrets/email_auth.json
+
 ```
 
-You may refer to [DoEAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent) for a concrete implementation of the above suggested folder structure based on `pyderivationagent`. The design of `pyderivationagent` is continually evolving, and as the project grows, we hope to make it more accessible to developers and users.
+You may refer to [DoEAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent) for a concrete implementation of the above suggested folder structure based on `pyderivationagent`. The design of `pyderivationagent` is continually evolving, and as the project grows, we hope to make it more accessible to developers and users.
+
+## Set up email notification for exceptions
+The `DerivationAgent` class provides the feature to send email notifications to list of recipients specified by the developer. As the agent uses [yagmail](https://github.com/kootenpv/yagmail) package, a gmail account is required. The feature relies on [OAuth2](https://oauth.net/2/) for authorisation. A step-by-step instruction can be find [here](https://github.com/kootenpv/yagmail/issues/143#issuecomment-1161223461).
+
 
 ## Dockerised integration test
-The `pyderivationagent` package also provides two sets of dockerised integration tests, following the same context as [`DerivationAsynExample`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample). Interested developer may refer to the README of the Java example for more context, or `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/tests` for more technical details.
+The `pyderivationagent` package also provides dockerised integration tests, following the same context as [`DerivationAsynExample`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample). Interested developer may refer to the README of the Java example for more context, or `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/tests` for more technical details.
 
 One may execute below commands for each set of dockerised integration test:
 
@@ -318,6 +446,14 @@ One may execute below commands for each set of dockerised integration test:
     $ pytest -s --docker-compose=./docker-compose.test.yml ./tests/test_docker_integration.py
     ```
 
+- `ExceptionThrowAgent` and blazegraph deployed within the same docker stack and they communicate via internal port address
+
+    `(Linux)`
+    ```sh
+    $ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
+    $ pytest -s --docker-compose=./docker-compose.test.yml ./tests/test_exception_throw.py
+    ```
+
 Ideally, we would like to provide this set of dockerised integration test to demo how one may develop integration test for derivation agents. Any ideas/discussions/issues/PRs on how to make this more standardised and accessible to developers are more than welcome.
 
 # New features and package release #
@@ -332,20 +468,21 @@ The release procedure is currently semi-automated and requires a few items:
 - Docker-desktop is installed and running on your local machine
 - You have access to the docker.cmclinnovations.com registry on your local machine, for more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
-Please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES IN THE COMMANDS BELOW!)
+## Stable version release
+For a stable version release, please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
 
 WARNING: at the moment, releasing package from Windows OS has an issue that the package will not be installed correctly while executing "$PIPPATH --disable-pip-version-check install -e $SPATH"[dev]"" in install_script_pip.sh. Please use Linux to release future versions before the issue is fixed.
 
 `(Windows)`
 
 ```cmd
-$ cd \absolute_path_to\TheWorldAvatar\JPS_BASE_LIB\python_derivation_agent
+$ cd \<absolute_path_to>\TheWorldAvatar\JPS_BASE_LIB\python_derivation_agent
 $ release_pyderivationagent_to_pypi.sh -v x.x.x
 ```
 
 `(Linux)`
 ```sh
-$ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
+$ cd /<absolute_path_to>/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
 $ ./release_pyderivationagent_to_pypi.sh -v x.x.x
 ```
 
@@ -365,6 +502,19 @@ version='0.0.1',
 ```
 
 Finally, merge the release branch back to the feature branch and make a Pull Request for the feature branch to be merged back into the `main` branch.
+
+## Development version release
+For development version release, you may do it in your feature branch. The development package will be released to TestPyPI repository by default. Once you have collected the required information, the release process can then be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
+
+**NOTE: The development release requires the version number to contain a, b or rc (alpha, beta or release candidate) to be compatible with the pre-release configuration on TestPyPI. You may provide number at the end to differentiate different development version in the same pre-release stage, e.g., "1.1.0a1". In case no number is provided in the end (i.e., "1.0.0a"), "0" will be appended automatically to make it "1.0.0a0". For example, see [prerelease-example](https://pypi.org/project/prerelease-example/#history).**
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
+$ ./release_pyderivationagent_to_pypi.sh -d x.x.xa
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number and commit changes following the same procedure as in the stable version release, but no pull request is required.
 
 # Authors #
 

@@ -1,0 +1,32 @@
+{
+    "ServiceSpec": {
+        "Name": "gdal",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "osgeo/gdal:alpine-normal-3.5.3",
+                "Command": [
+                    "tail",
+                    "-f",
+                    "/dev/null"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    }
+}

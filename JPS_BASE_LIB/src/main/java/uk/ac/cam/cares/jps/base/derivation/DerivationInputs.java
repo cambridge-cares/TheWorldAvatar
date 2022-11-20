@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class DerivationInputs {
 	private Map<String, List<String>> inputs;
+	private String derivationIRI;
 
 	public static final String DERIVATIONINPUTS_SERIALISE_ERROR = "Serialise the given JSONObject to DerivationInputs is not supported: ";
 
@@ -29,7 +30,7 @@ public class DerivationInputs {
 	 * 
 	 * @param mappedInputs
 	 */
-	public DerivationInputs(JSONObject mappedInputs) {
+	public DerivationInputs(JSONObject mappedInputs, String derivationIRI) {
 		Map<String, List<String>> map = new HashMap<>();
 		Iterator<String> keys = mappedInputs.keys();
 		while (keys.hasNext()) {
@@ -45,6 +46,7 @@ public class DerivationInputs {
 			}
 		}
 		this.inputs = map;
+		this.derivationIRI = derivationIRI;
 	}
 
 	/**
@@ -52,7 +54,7 @@ public class DerivationInputs {
 	 * 
 	 * @param entities
 	 */
-	public DerivationInputs(List<Entity> entities) {
+	public DerivationInputs(List<Entity> entities, String derivationIRI) {
 		Map<String, List<String>> map = new HashMap<>();
 		for (Entity entity : entities) {
 			if (map.containsKey(entity.getRdfType())) {
@@ -62,6 +64,7 @@ public class DerivationInputs {
 			}
 		}
 		this.inputs = map;
+		this.derivationIRI = derivationIRI;
 	}
 
 	/**
@@ -71,8 +74,13 @@ public class DerivationInputs {
 	 * 
 	 * @param inputs
 	 */
-	public DerivationInputs(Map<String, List<String>> inputs) {
+	public DerivationInputs(Map<String, List<String>> inputs, String derivationIRI) {
 		this.inputs = inputs;
+		this.derivationIRI = derivationIRI;
+	}
+
+	public String getDerivationIRI() {
+		return this.derivationIRI;
 	}
 
 	public Map<String, List<String>> getInputs() {
@@ -88,6 +96,10 @@ public class DerivationInputs {
 	public List<String> getIris(String rdfType) {
 		// TODO do we need to throw exception when there's no key rdfType?
 		return this.getInputs().get(rdfType);
+	}
+
+	public List<String> getAllIris() {
+		return this.getInputs().values().stream().flatMap(i -> i.stream()).collect(Collectors.toList());
 	}
 
 	public void addToInputs(String rdfType, List<String> iris) {

@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  river-data-uploader:
+    image: docker.cmclinnovations.com/river-data-uploader:2.1-SNAPSHOT
+    configs:
+      - postgis
+      - geoserver
+      - blazegraph
+    secrets:
+      - postgis_password
+      - geoserver_password
+    environment:
+      DOWNLOAD_DATUM: "false"
+      DATUM_FILE: "/datum.json"
+      INSTANTIATE_CONNECTIONS: "true"
+      CONNECTIONS_FILE: "/river_stations.csv"
+      DATABASE: "postgres"
+      LAYERNAME: "river_stations"
+      GEOSERVER_WORKSPACE: "river_stations"
+      ONTOP_FILE: "/app/classes/ontop.obda"
+      BLAZEGRAPH_NAMESPACE: "kb"
+    volumes:
+      - ./datum.json:/datum.json
+      - ./river_stations.csv:/river_stations.csv
+      - logs:/root/.jps
+
+volumes:
+  logs:
+    name: "logs"

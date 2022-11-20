@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
 import uk.ac.cam.cares.jps.base.router.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
@@ -63,9 +64,12 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     /**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
-     * @param targetResourceID	target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param targetResourceID	target namespace or IRI <br>
+     * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
      * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
      */
@@ -84,9 +88,12 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     /**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
-     * @param targetResourceID	the target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param targetResourceID	the target namespace or IRI <br>
+     * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
      * @param sparqlUpdate		SPARQL update string
      */
     public void updateStore(String targetResourceID, String sparqlUpdate) {
@@ -100,7 +107,11 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
-    
+
+    public String getRDBUrl(String targetResourceID) {
+        return RDBAccessAgentCaller.getRDBUrl(targetResourceID);
+    }
+
     /**
      * Send a HTTP GET request to an agent with JSON parameters
      * 

@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  OntoChemPlant-agent:
+    image: ontochemplant-agent:1.2.0
+    build: .
+    container_name: OntoChemPlant-agent
+    ports:
+      - "1083:8080"
+
+    volumes:
+      - external_maven_repo:/root/.m2
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"

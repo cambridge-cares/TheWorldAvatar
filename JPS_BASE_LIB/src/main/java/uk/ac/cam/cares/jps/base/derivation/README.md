@@ -1,7 +1,7 @@
 # Namespace
 The namespaces used in this document:
 ```
-: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#
 msm : http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#
 time : http://www.w3.org/2006/time#
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
@@ -70,6 +70,29 @@ For synchronous agent responses, there are two types of derivations
    - It is assumed that the agents acting on these derivations add row(s) to some table(s), the entities under these derivations are not deleted and replaced.
    - The created derivation instances have rdf:type as `DerivationWithTimeSeries`.
 
+3. Derivation with or without time series, created for generating new information, initialised using `createSyncDerivationForNewInfo(String, List<String>, String)` or `createSyncDerivationForNewInfo(String, String, List<String>, String)`
+   - e.g. createSyncDerivationForNewInfo(agentIRI, inputsIRI, derivationType) when `agentURL` is unknown by the developer, in which case the agent HTTP endpoint will be queried by the framework
+   - Or developer can provide such HTTP endpoint to the method and use createSyncDerivationForNewInfo(agentIRI, agentURL, inputsIRI, derivationType) *NOTE that developer MUST make sure the provided `agentIRI` and `agentURL` matches with each other.*
+   - When calling this method, an HTTP request will be fired to the `agentURL` endpoint to request for computing new information with the provided inputs, i.e. the outputs of this derivation are to be generated. Therefore the developer MUST ensure the HTTP endpoint of the agent is up and running, also the computation is quick enough compared to the HTTP timeout setting. Moreover, *NONE* of the `inputsIRI` should be derived information of asynchronous derivations.
+   - The returned type of this method is `uk.ac.cam.cares.jps.base.derivation.Derivation`, developer can get the IRI of the created derivation and list of IRIs of the generated outputs via:
+     ```java
+     // create a derivation instance and get its outputs with a rdf:type of interest <http://this_is_a_specific_rdfType>
+     Derivation aDerivation = devClient.createSyncDerivationForNewInfo(agentIRI, inputsIRI, DerivationSparql.ONTODERIVATION_DERIVATION);
+     String derivationIRI = aDerivation.getIri();
+     List<String> outputsIRIsOfRdfType = aDerivation.getBelongsToIris("http://this_is_a_specific_rdfType");
+     ```
+   - This initialisation thus supports creating a graph of synchronous derivations on-the-fly without creating placeholder instances in the knowledge graph when only pure inputs exist:
+     ```java
+     // create a downstream derivation that takes the outputs of the derivation instance created just now as inputs
+     Derivation downstreamDerivation = devClient.createSyncDerivationForNewInfo(anotherAgentIRI, outputsIRIsOfRdfType, DerivationSparql.ONTODERIVATION_DERIVATION);
+     // again we retrieve its outputs with the interested rdf:type <http://specific_rdfType_of_downstream_derivation_outputs>
+     List<String> outputsOfDownstreamDerivation = derivation.getBelongsToIris("http://specific_rdfType_of_downstream_derivation_outputs");
+
+     // we can then combine these inputs to form yet another downstream derivation
+     List<String> combinedInputsIRI = Stream.concat(outputsIRIsOfRdfType.stream(), outputsOfDownstreamDerivation.stream()).collect(Collectors.toList());
+     Derivation yetAnotherDownstreamDerivation = devClient.createSyncDerivationForNewInfo(yetAnotherAgentIRI, combinedInputsIRI, DerivationSparql.ONTODERIVATION_DERIVATION);
+     ```
+
 For asynchronous agent operations, the derivation framework currently supports:
 1. Derivation without time series, created given the input instances, initialised using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.createAsyncDerivation(List<String>, String, List<String>, boolean)`
    - e.g. createDerivation(entities, agentIRI, inputs, forUpdate)
@@ -104,10 +127,10 @@ For asynchronous agent operations, the derivation framework currently supports:
      ```
 
 # Timestamps
-The DerivationClient compares the timestamp of the derivation instance with its input(s) to determine whether it's out-of-date. Each derivation instance is initialised with a timestamp automatically, timestamps for inputs have to be added manually using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.addTimeInstance(String)`.
+The DerivationClient compares the timestamp of the derivation instance with its input(s) to determine whether it's out-of-date. Timestamps for pure inputs can be added manually using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.addTimeInstanceCurrentTimestamp(String)`. This will attach a time instance with current timestamp. Or, a current timestamp will be automatically attached to the pure inputs if they don't have a timestamp already when marking up each derivation instance.
 
 # DerivationAgent
-To achieve one derivation agent that is able to handle both synchronous and asynchronous derivations, it is assumed that all agents extend the `uk.ac.cam.cares.jps.base.agent.DerivationAgent` class, which itself extends the `uk.ac.cam.cares.jps.base.agent.JPSAgent` class.
+To achieve one derivation agent that is able to handle both synchronous and asynchronous derivations, it is assumed that all agents extend the `uk.ac.cam.cares.jps.base.agent.DerivationAgent` class, which itself extends the `uk.ac.cam.cares.jps.base.agent.JPSAgent` class. Two constructor are provided in the class: `DerivationAgent()` (the default constructor) and `DerivationAgent(StoreClientInterface, String)`. The default constructor is required to allow the servlet to create the very first instance of `DerivationAgent` class before calling the `init()` method (which will be provided in the concreate agent implementation), see https://docs.oracle.com/javaee/6/tutorial/doc/bnafi.html. When extending the `DerivationAgent` class, the developer **MUST** provide both constructor in the same format as the two provided here and call the constructor of super class. For an example implementation, please refer to the links provided in [`Example`](#example).
 
 `DerivationAgent` uses two data container classes `uk.ac.cam.cares.jps.base.derivation.DerivationInputs` and `uk.ac.cam.cares.jps.base.derivation.DerivationOutputs` as a more standardised way compared to JSONObject. The serialisation and deserialisation between JSONObject and DerivationInputs/DerivationOutputs are taken care of by the DerivationAgent. Under the hood, both DerivationInputs and DerivationOutputs use `Map<String, List<String>>` that takes the rdf:type as the key and the list of instance IRIs as the values:
 ```
@@ -116,19 +139,20 @@ To achieve one derivation agent that is able to handle both synchronous and asyn
   rdf_type2=[iri2, iri3, iri4,...]
 }
 ```
-These key-value pairs should follow the I/O signature defined in the OntoAgent instance of the specific agent. For more details on how to instantiate OntoAgent OWL, please refer to [An agent composition framework for the J-Park Simulator - A knowledge graph for the process industry](https://doi.org/10.1016/j.compchemeng.2019.106577). **Also, remember to put the instantiated OntoAgent OWL into the same triple store where the derivation instances are created.**
+These key-value pairs should follow the I/O signature defined in the OntoAgent instance of the specific agent. For more details on what OntoAgent OWL contains, please refer to [An agent composition framework for the J-Park Simulator - A knowledge graph for the process industry](https://doi.org/10.1016/j.compchemeng.2019.106577). **NOTE: (1) that the derivation agent needs the instantiated OntoAgent OWL to be placed in the same triple store where the derivation instances are created - an utility method is provided as `uk.ac.cam.cares.jps.base.derivation.DerivationClient.createOntoAgentInstance(String, String, List<String>, List<String>)` for this purpose, developer may call this method as part of agent's initialisation method to register the agent in triple store (the method doesn't add duplicated triples when re-starting agent's container); (2) all instances to be marked as inputs of derivation MUST have rdf:type, otherwise it will not be picked up by the agent for update.**
 
 When developing a new derivation agent, developer only need to implement the agent logic that converts instances of DerivationInputs to DerivationOutputs by overriding `uk.ac.cam.cares.jps.base.agent.DerivationAgent.processRequestParameters(DerivationInputs, DerivationOutputs)`.
 
 Upon receiving the inputs, developer may check the complete agent inputs by using `DerivationInputs.getInputs()`, or retrieve list of IRIs of specific rdf:type by using `DerivationInputs.getIris(String)`. Once the calculation is done, the new created instances are expected to be put in the instance of DerivationOutputs and provided as an argument to the method `uk.ac.cam.cares.jps.base.agent.DerivationAgent.processRequestParameters(DerivationInputs, DerivationOutputs)`. Developer can add the new created instances and new created triples to outputs by calling below methods:
  - `derivationOutputs.createNewEntity(String, String)`
  - `derivationOutputs.createNewEntityWithBaseUrl(String, String)`
- - `derivationOutputs.addTriple(TriplePattern)`
+ - `derivationOutputs.addTriple(TriplePattern)` _(note that this method can be used to add both IRI triple and literal triple as the s-p-o statement is now provided in TriplePattern format, the parsing will be handled behind-the-scenes)_
  - `derivationOutputs.addTriple(List<TriplePattern>)`
- - `derivationOutputs.addTriple(String, String, String)`
- - `derivationOutputs.addTriple(String, String, Number)`
- - `derivationOutputs.addTriple(String, String, Boolean)`
- - `derivationOutputs.addTriple(String, String, String, String)` _(Can be used to add triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
+ - `derivationOutputs.addTriple(String, String, String)` _(different from `addTriple(TriplePattern)` and `addTriple(List<TriplePattern>)`, this method should be used when the object in the s-p-o statement is denoted by an IRI, so called referent, see https://www.w3.org/TR/rdf11-concepts/#dfn-referent)_
+ - `derivationOutputs.addLiteral(String, String, String)` _(all `addLiteral` should be used when the object in the s-p-o statement is denoted by a literal, so called literal value, see https://www.w3.org/TR/rdf11-concepts/#dfn-literal-value)_
+ - `derivationOutputs.addLiteral(String, String, Number)`
+ - `derivationOutputs.addLiteral(String, String, Boolean)`
+ - `derivationOutputs.addLiteral(String, String, String, String)` _(Can be used to add literal triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
 
 For example, if your agent creates below information after calculation:
 
@@ -160,7 +184,7 @@ For adding triples, you can directly use below functions:
 ```java
 derivationOutputs.addTriple("<newDerivedQuantity>", "<hasValue>", "<valueIRI>");
 derivationOutputs.addTriple("<valueIRI>", "<hasUnit>", "<unit>");
-derivationOutputs.addTriple("<valueIRI>", "<hasNumericalValue>", 5);
+derivationOutputs.addLiteral("<valueIRI>", "<hasNumericalValue>", 5);
 ```
 
 or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern` and `org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri`, below lines have the same effect when adding triples:
@@ -168,6 +192,7 @@ or if you prefer to use `org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePatt
 ```java
 derivationOutputs.addTriple(Rdf.iri("<newDerivedQuantity>").has(Rdf.iri("<hasValue>"), Rdf.iri("<valueIRI>")));
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasUnit>"), Rdf.iri("<unit>")));
+// NOTE below the literal is added using addTriple as the whole s-p-o statement is now provided in TriplePattern format
 derivationOutputs.addTriple(Rdf.iri("<valueIRI>").has(Rdf.iri("<hasNumericalValue>"), 5));
 ```
 
@@ -258,4 +283,4 @@ Once the derivation instances are initialised using `createDerivation` and `crea
 # Example
 An example demonstrating the functionality of the derivation framework is provided in `TheWorldAvatar/Agents/DerivationExample`.
 
-The asynchronous operation functionality and mixed type DAG support of the derivation framework are demonstrated in `TheWorldAvatar/Agents/DerivationAsynExample`, please refer to its `README.md` for more details.
+The asynchronous operation functionality and mixed type DAG support of the derivation framework are demonstrated in `TheWorldAvatar/Agents/DerivationAsynExample` for both new information creation (`createAsyncDerivationForNewInfo`/`createSyncDerivationForNewInfo`) and existing information update (`unifiedUpdateDerivation`) modes, please refer to its `README.md` for more details.

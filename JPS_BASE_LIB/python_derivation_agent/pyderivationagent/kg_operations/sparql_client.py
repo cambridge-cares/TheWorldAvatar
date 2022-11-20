@@ -2,7 +2,12 @@ import json
 import requests
 from requests import status_codes
 from datetime import datetime
-from typing import Tuple
+from typing import List, Tuple
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
+from rdflib import RDF
+from rdflib import XSD
 
 from pyderivationagent.kg_operations.gateway import jpsBaseLibGW
 
@@ -19,6 +24,10 @@ class PySparqlClient:
             self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
         else:
             self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+
+        # Expose query and update endpoint
+        self.query_endpoint = query_endpoint
+        self.update_endpoint = update_endpoint
 
         # Also initialise the fileserver URL and auth info
         # TODO in the future development, make use of pyuploader
@@ -65,7 +74,7 @@ class PySparqlClient:
             Arguments:
                 query - SPARQL Query string
         """
-        response = self.kg_client.execute(query)
+        response = str(self.kg_client.executeQuery(query))
         return json.loads(response)
 
     def performUpdate(self, update):
@@ -85,15 +94,18 @@ class PySparqlClient:
         javaFile = self.jpsBaseLib_view.java.io.File(filePath)
         self.kg_client.uploadFile(javaFile)
 
-    def uploadFile(self, local_file_path) -> Tuple[str, float]:
+    def uploadFile(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
         """This function uploads the file at the given local file path to file server."""
         if self.fs_url is None or self.fs_auth is None:
             raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
         with open(local_file_path, 'rb') as file_obj:
             files = {'file': file_obj}
-            timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
+            timestamp_upload, response = datetime.now().timestamp(), requests.post(
+                self.fs_url+filename_with_subdir if filename_with_subdir is not None else self.fs_url,
+                auth=self.fs_auth, files=files
+            )
 
-            # If the upload succeeded, write the remote file path to KG
+            # If the upload succeeded, return the remote file path and the timestamp when the file was uploaded
             if (response.status_code == status_codes.codes.OK):
                 remote_file_path = response.headers['file']
 
@@ -112,3 +124,15 @@ class PySparqlClient:
         else:
             raise Exception("ERROR: File <%s> download failed with code %d and response body: %s" % (
                 remote_file_path, response.status_code, str(response.content)))
+
+    def uploadGraph(self, g: Graph):
+        update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
+        self.performUpdate(update)
+
+    def check_if_triple_exist(self, s, p, o, data_type: str = None) -> bool:
+        s = "?s" if s is None else f"<{trimIRI(s)}>"
+        p = "?p" if p is None else f"<{trimIRI(p)}>"
+        o = "?o" if o is None else f"<{trimIRI(o)}>" if data_type is None else Literal(o, datatype=trimIRI(data_type))._literal_n3()
+        query = f"""ASK {{{s} {p} {o}.}}"""
+        response = self.performQuery(query)
+        return response[0]['ASK']
