@@ -54,7 +54,7 @@ ENV FLASK_DEBUG=1
 
 # Launch application in container
 WORKDIR /app/$AGENTDIR
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+ENTRYPOINT python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------
@@ -83,15 +83,18 @@ RUN apt install libpq-dev python3-dev gcc -y
 RUN python -m pip install -e .[dev]
 RUN pip install debugpy
 
-# Copy docker-compose-file to spin up testcontainers
-COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=app/${AGENTDIR}:create_app()
+ENV FLASK_DEBUG=1
 
-# Ensure SPARQL endpoints contain'docker.host.internal' for dockerised agent tests
+# Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
 # Launch pytest in container (-s flag to enable more output/logging)
 WORKDIR /app
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest -s
-
+# Start dockerised agent app as well as pytest
+# (combining commands using & ensures they are started in parallel in background)
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest
 
 #------------------------------------------------------
 # Testing image reusing the base
@@ -116,6 +119,12 @@ COPY ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 COPY ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
+
+# Ensure SPARQL endpoints contain 'docker.host.internal' instead of 'localhost' for dockerised agent tests
+RUN sed -i "s|localhost|host.docker.internal|g" ./$AGENTDIR/utils/env_configs.py
+RUN sed -i "s|localhost|host.docker.internal|g" ./$AGENTDIR/utils/stack_configs.py
+# Ensure flag for Dockerised tests is set to True
+RUN sed -i "s|False|True|g" ./$AGENTDIR/utils/env_configs.py
 
 # Set the entrypoint
 ENTRYPOINT pytest

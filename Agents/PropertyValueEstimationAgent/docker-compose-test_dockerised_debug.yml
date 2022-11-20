@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   propertyvalue_agent:
-    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_test_debug:1.0.0-SNAPSHOT
     build:
       context: .
       target: debug_test
@@ -20,9 +20,9 @@ services:
       - NAMESPACE=buildings
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_PropertyValueEstimation/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5011/PropertyValueEstimation
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
-      - DERIVATION_PERIODIC_TIMESCALE=200
+      - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false
       # Required inputs, although values retrieved from mocked `stack_configs.py`
       - SPARQL_QUERY_ENDPOINT=''

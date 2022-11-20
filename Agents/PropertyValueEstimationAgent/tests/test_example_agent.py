@@ -34,9 +34,6 @@ def test_example_data_instantiation(initialise_clients):
     """
     # Get SPARQL client from fixture
     sparql_client, _, rdb_url = initialise_clients
-    print(sparql_client.query_endpoint)
-    print(sparql_client.update_endpoint)
-    print(rdb_url)
 
     ### TRIPPLE STORE ###
     # Verify that KG is empty
@@ -81,14 +78,13 @@ def test_example_data_instantiation(initialise_clients):
 #         (cf.DERIVATION_INPUTS_4, True, cf.EXCEPTION_STATUS_1, True),
 
 @pytest.mark.parametrize(
-    "derivation_input_set, expect_exception, expected_estimate, local_agent_test",
+    "derivation_input_set, expect_exception, expected_estimate",
     [
-        (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1, True)
+        (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1)
     ],
 )
 def test_monitor_derivations(
-    initialise_clients, create_example_agent, derivation_input_set, expect_exception,
-    expected_estimate, local_agent_test    
+    initialise_clients, create_example_agent, derivation_input_set, expect_exception, expected_estimate    
 ):
     """
         Test if derivation agent performs derivation update as expected, the `local_agent_test` 
@@ -150,7 +146,7 @@ def test_monitor_derivations(
     # Verify correct number of triples (incl. timestamp & agent triples)
     assert sparql_client.getAmountOfTriples() == triples    
 
-    if local_agent_test:
+    if not DOCKERISED_TEST:
         # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 
@@ -208,5 +204,5 @@ def test_monitor_derivations(
     print("All check passed.")
 
     # Shutdown the scheduler to clean up if it's local agent test
-    if local_agent_test:
+    if not DOCKERISED_TEST:
         agent.scheduler.shutdown()

@@ -124,6 +124,7 @@ def get_blazegraph_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route, hostname=HOSTNAME):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://{hostname}:{service.host_port}/{url_route}"
+        print(f'KG endpoint: {service_url}')
 
         # This will run only once per entire test session
         # It ensures that the requested Blazegraph Docker service is ready to accept SPARQL query/update
@@ -136,6 +137,7 @@ def get_blazegraph_service_url(session_scoped_container_getter):
             except requests.exceptions.ConnectionError:
                 time.sleep(3)
 
+        print('Connected to KG.')
         return service_url
     return _get_service_url
 
@@ -145,6 +147,7 @@ def get_postgres_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route, hostname=HOSTNAME):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"jdbc:postgresql://{hostname}:{service.host_port}/{url_route}"
+        print(f'PostgreSQL endpoint: {service_url}')
 
         # This will run only once per entire test session
         # It ensures that the requested PostgreSQL Docker service is ready to accept queries
@@ -159,6 +162,7 @@ def get_postgres_service_url(session_scoped_container_getter):
             except Exception:
                 time.sleep(3)
 
+        print('Connected to PostgreSQL.')
         return service_url
     return _get_service_url
 
