@@ -158,6 +158,6 @@ class Trainer:
 
 
 if __name__ == "__main__":
-    my_transe_trainer = Trainer(dataset_path="ontokin", dataset_name="ontokin",
+    my_transe_trainer = Trainer(dataset_path="CrossGraph/ontokin", dataset_name="ontokin",
                                 load_pretrained_embeddings=True, dim=40, batch_size=32)
     my_transe_trainer.train()
