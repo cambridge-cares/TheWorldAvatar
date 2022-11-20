@@ -72,15 +72,13 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-#         (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1, True),   # local agent instance test
-#         (cf.DERIVATION_INPUTS_2, False, cf.MARKET_VALUE_1, True),
-#         (cf.DERIVATION_INPUTS_3, False, cf.MARKET_VALUE_2, True),
-#         (cf.DERIVATION_INPUTS_4, True, cf.EXCEPTION_STATUS_1, True),
-
 @pytest.mark.parametrize(
     "derivation_input_set, expect_exception, expected_estimate",
     [
-        (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1)
+        (cf.DERIVATION_INPUTS_1, False, cf.MARKET_VALUE_1),
+        (cf.DERIVATION_INPUTS_2, False, cf.MARKET_VALUE_1),
+        (cf.DERIVATION_INPUTS_3, False, cf.MARKET_VALUE_2),
+        (cf.DERIVATION_INPUTS_4, True, cf.EXCEPTION_STATUS_1),
     ],
 )
 def test_monitor_derivations(

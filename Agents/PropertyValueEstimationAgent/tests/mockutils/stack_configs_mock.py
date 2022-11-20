@@ -7,11 +7,11 @@ from .env_configs_mock import DATABASE, NAMESPACE
 
 DB_USER='postgres'
 DB_PASSWORD='postgres'
-# DB_URL='jdbc:postgresql://localhost:7432/postgres'
-# QUERY_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
-# UPDATE_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
+DB_URL='jdbc:postgresql://localhost:7432/postgres'
+QUERY_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
+UPDATE_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
 
-# Required settings for debugging tests within Docker
-DB_URL='jdbc:postgresql://host.docker.internal:7432/postgres'
-QUERY_ENDPOINT='http://host.docker.internal:27149/blazegraph/namespace/kb/sparql'
-UPDATE_ENDPOINT='http://host.docker.internal:27149/blazegraph/namespace/kb/sparql'
+# # Required settings for debugging tests within Docker
+# DB_URL='jdbc:postgresql://host.docker.internal:7432/postgres'
+# QUERY_ENDPOINT='http://host.docker.internal:27149/blazegraph/namespace/kb/sparql'
+# UPDATE_ENDPOINT='http://host.docker.internal:27149/blazegraph/namespace/kb/sparql'

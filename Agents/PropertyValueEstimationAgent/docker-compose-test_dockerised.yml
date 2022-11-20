@@ -22,7 +22,7 @@ services:
       - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_PropertyValueEstimation/Service
       - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
-      - DERIVATION_PERIODIC_TIMESCALE=200
+      - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false
       # Required inputs, although values retrieved from mocked `stack_configs.py`
       - SPARQL_QUERY_ENDPOINT=''

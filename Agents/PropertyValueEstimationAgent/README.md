@@ -241,10 +241,11 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
 Required files:
 Derivation agent settings:
     - agent_test.env or environemtn variables in docker-compose
-    - what entries need to match?
+    - what entries/names need to match?
 
 - manually copy files:
     host.docker.internal in mock uitls for tests + copied over for agent to pick up
+- how to run tests?
 
 &nbsp;
 # Authors #
