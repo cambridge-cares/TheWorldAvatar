@@ -1,7 +1,7 @@
 
 import os
 import pickle
-from Marie.Util.location import DEPLOYMENT_DIR
+from Marie.Util.location import DATA_DIR
 from Marie.Util.Logging import MarieLogger
 
 
@@ -10,8 +10,9 @@ from Marie.Util.Logging import MarieLogger
 class SubgraphExtractor:
     def __init__(self, dataset_name='pubchem500'):
         self.marie_logger = MarieLogger()
-        self.PUBCHEM_PATH = os.path.join(DEPLOYMENT_DIR, f'{dataset_name}-train.txt')
-        e2i_file = open(os.path.join(DEPLOYMENT_DIR, 'entity2idx.pkl'), 'rb')
+        self.dataset_dir = "CrossGraph/pubchem"
+        self.PUBCHEM_PATH = os.path.join(DATA_DIR, self.dataset_dir,f'{dataset_name}-train.txt')
+        e2i_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_file)
         self.entity_dictionary = {}
         self.pubchem_triples = []
@@ -19,7 +20,7 @@ class SubgraphExtractor:
         self.marie_logger.info("3. Done loading pubchem")
         self.make_dictionary()
         self.marie_logger.info("4. Done making dictionary")
-        pubchem_value_dict_path = open(os.path.join(DEPLOYMENT_DIR, 'pubchem_value_dict.pkl'), 'rb')
+        pubchem_value_dict_path = open(os.path.join(DATA_DIR, self.dataset_dir, 'pubchem_value_dict.pkl'), 'rb')
         self.pubchem_value_dict = pickle.load(pubchem_value_dict_path)
 
     def load_pubchem(self):

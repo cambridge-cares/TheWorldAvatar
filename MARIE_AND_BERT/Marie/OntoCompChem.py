@@ -8,7 +8,7 @@ import torch
 from KGToolbox.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.location import DATA_DIR
-from Marie.Util.Models.OntoScoreModel import OntoScoreModel
+from Marie.Util.Models.ComplexScoreModel import ComplexScoreModel
 from Marie.Util.Logging import MarieLogger
 from transformers import BertTokenizer
 
@@ -22,8 +22,8 @@ class OntoCompChemEngine:
         self.marie_logger = MarieLogger()
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.max_length = 12
-        self.dataset_dir = os.path.join(DATA_DIR, 'ontocompchem_latent_40')
-        self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name='ontocompchem_calculation')
+        self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph/ontocompchem')
+        self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name='ontocompchem')
         i2e_file = open(os.path.join(self.dataset_dir, 'idx2entity.pkl'), 'rb')
         self.idx2entity = pickle.load(i2e_file)
         e2i_file = open(os.path.join(self.dataset_dir, 'entity2idx.pkl'), 'rb')
@@ -31,15 +31,15 @@ class OntoCompChemEngine:
         self.device = torch.device("cpu")
         self.ent_embedding = pd.read_csv(os.path.join(self.dataset_dir, 'ent_embedding.tsv'), sep='\t', header=None)
         self.rel_embedding = pd.read_csv(os.path.join(self.dataset_dir, 'rel_embedding.tsv'), sep='\t', header=None)
-        self.score_model = OntoScoreModel(device=self.device, ent_embedding=self.ent_embedding,
-                                          rel_embedding=self.rel_embedding, for_training=True,
-                                          idx2entity=self.subgraph_extractor.entity_labels, load_model=False,
-                                          dataset_dir=self.dataset_dir,
-                                          model_name='score_model_general')
+        self.score_model = ComplexScoreModel(device=self.device, ent_embedding=self.ent_embedding,
+                                             rel_embedding=self.rel_embedding, for_training=True,
+                                             idx2entity=self.subgraph_extractor.entity_labels, load_model=False,
+                                             dataset_dir=self.dataset_dir,
+                                             model_name='score_model_general')
 
         model_path = os.path.join(self.dataset_dir, 'score_model_general')
         print("model path", model_path)
-        self.chemical_nel = ChemicalNEL()
+        self.chemical_nel = ChemicalNEL(dataset_dir="ontocompchem")
 
         # self.score_model.load_pretrained_model(model_path)
 
@@ -67,6 +67,9 @@ class OntoCompChemEngine:
                 good_counter += 1
             else:
                 bad_counter += 1
+
+            print("good counter", good_counter)
+            print("bad counter", bad_counter)
 
     def find_answers(self, head_entity, question):
         head = self.entity2idx[head_entity]

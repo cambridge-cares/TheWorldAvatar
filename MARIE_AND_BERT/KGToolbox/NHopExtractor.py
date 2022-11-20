@@ -24,15 +24,15 @@ class HopExtractor:
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
         self.n = n
-        self.triples_full_path = os.path.join(self.dataset_dir, f'{self.dataset_name}-train.txt')
+        self.triples_full_path = os.path.join(DATA_DIR, self.dataset_dir, f'{self.dataset_name}-train.txt')
         self.triples = pd.read_csv(self.triples_full_path, sep='\t', header=None)
-        self.entity2idx_path = os.path.join(self.dataset_dir, f'entity2idx.pkl')
+        self.entity2idx_path = os.path.join(DATA_DIR, self.dataset_dir, f'entity2idx.pkl')
         self.entity2idx = pickle.load(open(self.entity2idx_path, "rb"))
-        self.relation2idx_path = os.path.join(self.dataset_dir, f'relation2idx.pkl')
+        self.relation2idx_path = os.path.join(DATA_DIR, self.dataset_dir, f'relation2idx.pkl')
         self.relation2idx = pickle.load(open(self.relation2idx_path, "rb"))
         self.ent_labels = list(self.entity2idx.keys())
-        self.three_hop_dict_label_path = os.path.join(self.dataset_dir, 'three_hop_dict_label')
-        self.three_hop_dict_index_path = os.path.join(self.dataset_dir, 'three_hop_dict_index')
+        self.three_hop_dict_label_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_label')
+        self.three_hop_dict_index_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_index')
         self.three_hop_dict_label = {}
         self.three_hop_dict_index = {}
         self.parse_knowledge_graph()
@@ -88,7 +88,6 @@ class HopExtractor:
                 one_hop_idx_dict[entity_idx] = neighbours_idx
                 counter += 1
                 print(f"{counter} out of {len(self.ent_labels)}")
-
 
             for entity in self.ent_labels:
                 entity_idx = self.entity2idx[entity]

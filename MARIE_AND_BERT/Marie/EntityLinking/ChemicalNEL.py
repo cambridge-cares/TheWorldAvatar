@@ -27,11 +27,12 @@ class ChemicalNEL:
 
     """
 
-    def __init__(self, dataset_dir=None):
+    def __init__(self, dataset_name=None):
         self.marie_logger = MarieLogger()
         try:
-            self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_dir, 'name_list.json')).read())
-            self.name_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_dir, 'name_dict.json')).read())
+            print(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json'))
+            self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json')).read())
+            self.name_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_dict.json')).read())
             self.marie_logger.info("5. Done loading the dictionaries for entity linking")
         except:
             self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {__name__}.__init__")
@@ -62,7 +63,7 @@ class ChemicalNEL:
 
 
 if __name__ == '__main__':
-    cn = ChemicalNEL(dataset_dir="ontocompchem")
+    cn = ChemicalNEL(dataset_name="ontocompchem")
     START_TIME = time.time()
     rst = cn.find_cid('what is the molar mass of CH2H2')
     print(rst)
