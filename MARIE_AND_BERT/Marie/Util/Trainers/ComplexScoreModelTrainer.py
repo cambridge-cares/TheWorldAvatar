@@ -13,7 +13,7 @@ sys.path.append("../../..")
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 from KGToolbox.NHopExtractor import HopExtractor
 from Marie.Util.Dataset.OntoScore_Dataset import Dataset
-from Marie.Util.Models.OntoScoreModel import OntoScoreModel
+from Marie.Util.Models.ComplexScoreModel import ComplexScoreModel
 
 
 class Trainer():
@@ -42,11 +42,11 @@ class Trainer():
         self.ent_embedding_num = self.ent_embedding.shape[0]
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.dataset_dir),
                                           dataset_name=self.dataset_name)
-        self.model = OntoScoreModel(device=self.device, ent_embedding=self.ent_embedding,
-                                    rel_embedding=self.rel_embedding, for_training=True,
-                                    idx2entity=self.hop_extractor.entity_labels, load_model=False,
-                                    dataset_dir=self.dataset_dir,
-                                    model_name='score_model_general').cuda()
+        self.model = ComplexScoreModel(device=self.device, ent_embedding=self.ent_embedding,
+                                       rel_embedding=self.rel_embedding, for_training=True,
+                                       idx2entity=self.hop_extractor.entity_labels, load_model=False,
+                                       dataset_dir=self.dataset_dir,
+                                       model_name='score_model_general').cuda()
         self.model_name = "score_model_general"
         self.model_path = os.path.join(DATA_DIR, self.dataset_dir, self.model_name)
         # self.model.load_pretrained_model(self.model_path)

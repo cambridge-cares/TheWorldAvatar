@@ -10,7 +10,7 @@ sys.path.append("../../..")
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 
 
-class OntoScoreModel(nn.Module):
+class ComplexScoreModel(nn.Module):
     """
     The upgraded version of the prediction mapping model, which able to derive the implicit relation on the fly.
     Input: question, head, tail
@@ -20,7 +20,7 @@ class OntoScoreModel(nn.Module):
 
     def __init__(self, ent_embedding=None, rel_embedding=None, for_training=False, device=torch.device("cpu"),
                  tail_rel_embedding=None, idx2entity=None, load_model=True, dataset_dir=None, model_name=None):
-        super(OntoScoreModel, self).__init__()
+        super(ComplexScoreModel, self).__init__()
 
         self.max_len = 12
         self.device = device
