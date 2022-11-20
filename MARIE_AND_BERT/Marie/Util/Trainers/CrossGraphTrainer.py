@@ -16,7 +16,7 @@ from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 
 
 class CrossGraphTrainer:
-    def __init__(self, df, test_step=10, epoch_num=400, batch_size=1, learning_rate=1e-5, gamma=1,
+    def __init__(self, df, test_step=10, epoch_num=100, batch_size=4, learning_rate=1e-5, gamma=1,
                  dataset_path="CrossGraph", save_model=False,
                  load_model=False):
         self.df = df
@@ -35,7 +35,9 @@ class CrossGraphTrainer:
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
-        df_train, df_test = np.split(df.sample(frac=1, random_state=11), [int(.8 * len(df))])
+        # df_train, df_test = np.split(df.sample(frac=1, random_state=11), [int(.8 * len(df))])
+        df_train = df
+        df_test = df.sample(frac=0.2)
         dataset_train = CrossGraphDataset(df_train)
         self.dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=False)
         dataset_test = CrossGraphDataset(df_test)
@@ -44,35 +46,36 @@ class CrossGraphTrainer:
 
     def run(self):
         previous_rate = 0
+        stop = False
         for epoch in tqdm(range(self.epoch_num)):
-            outrank_rate = self.train()
-            if previous_rate > outrank_rate:
-                self.scheduler.step()
-            previous_rate = outrank_rate
+            stop = self.train()
             if epoch % self.test_step == 0:
-                pass
-                #  self.evaluate()
-                #  self.save_model()
+                self.evaluate()
+                self.save_model()
+            if stop:
+                self.evaluate()
+                self.save_model()
+                break
+
 
     def train(self):
         total_loss_train = 0
         total_outrank_rate = 0
-        total_difference = 0
         for true_answer, fake_answer, true_domain, fake_domain, question in tqdm(self.dataloader_train):
             pos_triple = (question, true_answer, true_domain)  # question, score, domain
-            neg_triple = (question, fake_answer, fake_domain)
-            loss, outrank, delta = self.model(true_answer=pos_triple, fake_answer=neg_triple)
+            loss, pred_domain = self.model(true_answer=pos_triple)
+            pred_domain = pred_domain > 0.5
+            total_outrank_rate += torch.sum(pred_domain == true_domain) / len(pred_domain)
             loss.mean().backward()
             total_loss_train += loss.mean().cpu()
-            total_outrank_rate += outrank
-            total_difference += delta
-        self.optimizer.step()
 
+        self.optimizer.step()
+        if total_loss_train < 1 and total_outrank_rate / len(self.dataloader_train) >= 1.0:
+            return True
         print(f'current learning rate {self.scheduler.get_last_lr()}')
         print(f"total train loss {total_loss_train}")
         print(f"total out rank rate {total_outrank_rate / len(self.dataloader_train)}")
-        print(f"total_difference {total_difference / len(self.dataloader_train)}")
-        return total_outrank_rate / len(self.dataloader_train)
+        return False
 
     def evaluate(self):
         """
@@ -103,15 +106,5 @@ class CrossGraphTrainer:
 if __name__ == '__main__':
     dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
     df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_pairs.tsv'), sep='\t', index_col=0)
-    # filter df, remove all rows where fake_score is smaller than 1.0
-    df = df.loc[df['fake_score'] >= 1.0]
-    df = df.loc[df['true_score'] >= 1.0]
-    df = df.drop(columns=['head'])
-    df = df.reset_index(drop=True)
-    df = df.drop_duplicates()
-    df = df.reset_index(drop=True)
-
-    df_1 = pd.concat([df.loc[df['fake_domain'] == 0]] * 4, ignore_index=True)
-    df = pd.concat([df_1, df], ignore_index=True)
     my_cross_graph_trainer = CrossGraphTrainer(df, dataset_path=dataset_path)
     my_cross_graph_trainer.run()

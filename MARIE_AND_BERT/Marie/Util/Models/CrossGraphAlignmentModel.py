@@ -11,11 +11,11 @@ class CrossGraphAlignmentModel(nn.Module):
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         # self.bert_reduction_layer = nn.Linear(768, 512)
-        self.bert_reduction_layer = nn.Linear(768, 4)
+        self.bert_reduction_layer = nn.Linear(768, 512)
         self.bert_reduction_layer_2 = nn.Linear(512, 256)
-        self.bert_reduction_layer_3 = nn.Linear(256, 2)
-        self.domain_factor_layer = nn.Linear(2, 1)
-        self.domain_question_factor_layer = nn.Linear(8, 1)
+        self.bert_reduction_layer_3 = nn.Linear(256, 4)
+        self.domain_factor_layer = nn.Linear(4, 1)
+        self.domain_question_factor_layer = nn.Linear(4, 1)
         self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(self.device)
         self.sigmoid = nn.Sigmoid()
         self.relu = nn.ReLU()
@@ -28,17 +28,14 @@ class CrossGraphAlignmentModel(nn.Module):
         :return:
         """
         question = triple[0]
-        score = triple[1].to(self.device)
         domain = triple[2].to(self.device)
         domain = one_hot(domain, num_classes=4).type(torch.FloatTensor).to(self.device)
         question_vector = self.process_question(question)
 
         # =============== get domain - question factor ==================
-        domain_question_vector = torch.cat([question_vector, domain], dim=1).to(self.device)
-        domain_question_factor = self.domain_question_factor_layer(domain_question_vector).squeeze(-1)
+        # domain_question_vector = torch.cat([question_vector, domain], dim=1).to(self.device)
+        domain_question_factor = self.sigmoid(self.domain_question_factor_layer(question_vector).squeeze(-1))
 
-        # adjusted_score = score + domain_question_factor
-        # return adjusted_score
         return domain_question_factor
 
     def process_question(self, question):
@@ -50,6 +47,10 @@ class CrossGraphAlignmentModel(nn.Module):
                                   return_dict=False)[1].to(self.device)
 
         question_vector = self.bert_reduction_layer(pooled_output).to(self.device)
+        question_vector = self.relu(question_vector).to(self.device)
+        question_vector = self.bert_reduction_layer_2(question_vector).to(self.device)
+        question_vector = self.relu(question_vector).to(self.device)
+        question_vector = self.bert_reduction_layer_3(question_vector).to(self.device)
 
         return question_vector
 
@@ -57,24 +58,24 @@ class CrossGraphAlignmentModel(nn.Module):
         target = torch.tensor([1], dtype=torch.long, device=self.device)
         return self.criterion(positive_distances, negative_distances, target).to(self.device)
 
-    def forward(self, true_answer, fake_answer):
+    def forward(self, true_answer):
         """
         The purpose is to make sure the true answer out ranks fake answers after the score adjustment
         The loss function is MarginRank
         :param true_answer: (question, score, domain)
-        :param fake_answer: (question, score, domain)
         :return:
         """
-
-        true_answer_score = self.adjust_score(true_answer).to(self.device)
-        fake_answer_score = self.adjust_score(fake_answer).to(self.device)
-        outrank = torch.sum(true_answer_score > fake_answer_score) / len(true_answer_score)
-        mean_diff = (true_answer_score - fake_answer_score).mean().item()
-        return self.loss(true_answer_score, fake_answer_score).to(self.device), outrank, mean_diff
+        true_domain = true_answer[2].type(torch.FloatTensor).to(self.device)
+        pred_domain = self.adjust_score(true_answer).to(self.device)
+        return nn.BCELoss()(pred_domain, true_domain), pred_domain
 
     def predict(self, triple):
         """
         :param triple: (question, score, domain)
         :return:
         """
-        return self.adjust_score(triple).to(self.device)
+        pred_domain = self.adjust_score(triple).to(self.device)
+        score = triple[1]
+        domain = triple[2]
+        diff = torch.abs(pred_domain - domain)
+        return score + (1 - diff)
