@@ -34,6 +34,25 @@ public class IntegrationTestHelper {
 					"}\n"+
 				"]";
 	}
+
+	public static String uploadRDBRoutingData(String label, String url, String uploadUrl) {
+
+		String routingData = getRDBRoutingData(label, url);
+
+		HttpPost request = Http.post(uploadUrl, routingData, MediaType.APPLICATION_JSON.type, null);
+		String result = Http.execute(request);
+
+		return new JSONObject(result).getString("result");
+	}
+
+	public static String getRDBRoutingData(String label, String url) {
+		return "[\n"+
+				"{\n"+
+				"	\"label\": \""+label+"\",\n"+
+				"	\"url\": \""+url+"\",\n"+
+				"}\n"+
+				"]";
+	}
 	
 	/**
 	* Remove all white spaces and non-visible characters

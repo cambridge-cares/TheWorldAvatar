@@ -31,7 +31,7 @@
   <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
     <rdfs:label xml:lang="en">Mass concentration is defined as the mass of a constituent divided by the volume of the mixture</rdfs:label>
     <om:alternativeLabel xml:lang="en">mass concentration</om:alternativeLabel>
-    <rdfs:subClassOf rdf:resource="&om;Quantity"/>
+    <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     <om:symbol>C</om:symbol> 
   </owl:Class>
 

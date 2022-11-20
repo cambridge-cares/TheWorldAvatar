@@ -752,7 +752,7 @@ public class DerivationSparql {
 			bld.append(ste.toString() + "\n");
 		}
 
-		String excComment = bld.toString().replace("\n", "\\n");
+		String excComment = escapeSequences(bld.toString());
 		modify.insert(status.has(iri(RDFS.COMMENT.toString()), excComment));
 
 		storeClient.executeUpdate(modify.getQueryString());
@@ -3188,5 +3188,23 @@ public class DerivationSparql {
 	 */
 	private RdfPredicate inversePath(RdfPredicate aElement) {
 		return () -> "^" + aElement.getQueryString();
+	}
+
+	/**
+	 * Escape sequence characters as defined in SPARQL 1.1.
+	 * See https://www.w3.org/TR/2013/REC-sparql11-query-20130321/#grammarEscapes
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String escapeSequences(String str) {
+		return str.replace("\\", "\\\\")
+				.replace("\t", "\\t")
+				.replace("\n", "\\n")
+				.replace("\r", "\\r")
+				.replace("\b", "\\b")
+				.replace("\f", "\\f")
+				.replace("\"", "\\\"")
+				.replace("'", "\\'");
 	}
 }
