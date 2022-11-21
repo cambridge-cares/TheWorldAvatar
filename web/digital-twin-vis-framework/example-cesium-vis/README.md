@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.1.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.2 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
 
@@ -36,8 +36,6 @@ Additional formats, provided they are supported by Cesium JS, can be added but w
 
 At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
-Custom terrain elevation has also yet to be implemented at the time of writing. In theory this can be handled by loading elevation data into Geoserver, then using a [Third Party Plugin](https://github.com/kaktus40/Cesium-GeoserverTerrainProvider) to provide that data as terrain elevation to Cesium. Note that this has not yey been tried.
-
 ## Configuration
 
 Configuration for the visualisation is provided via a number of local JSON files. Each of these is detailed below.
@@ -70,9 +68,12 @@ Each group can also (optionally) contain an `expanded` boolean field. If set to 
 
 Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|tiles`), and a `uri` field pointing towards the data file to be loaded. Some types of sources also require additional parameters:
 
-- For `gltf` sources, an additional `position` field is required (array of [lng, lat, height] values).
+- For `gltf` sources, an additional `position` field is required.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
 - For `wms` sources, additional `wmsLayer`, `transparency`, and `format` fields are required.
-- For `tiles` sources, an optional `position` field can also be set.
+- For `tiles` sources, optional `position` and `rotation` fields can also be set.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
+  - The `rotation` field requires the `position` field to be present, and is a three value array of the form `[roll, pitch, heading]`. Cesium defines Roll as the rotation about the positive X axis, Pitch as the rotation about the negative Y axis, and Heading as the rotation about the negative Z axis
 
 #### Layers
 
@@ -86,7 +87,40 @@ For developers creating their first visualisation, it is recommended to take a c
 
 ### Global Settings & Advanced Features
 
-Configuration settings for features not directly relating to the data, such as the map's starting position, and more advanced features are detailed on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings). 
+Configuration settings for features not specifically tied to an individual mapping library can be read on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings), features specific to CesiumJS are detailed in the sections below.
+
+These features currently include:
+
+- [Changing the available (and default) map imagery](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#map-imagery)
+- [Overriding expected feature property names](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#feature-fields)
+- [Defining custom attribution text](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#attribution)
+
+#### Map Position
+
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the opacity of the globe itself can also be set here.
+
+```json
+"start": {
+    "center": [7.621435, 49.180285, 50],
+    "heading": 90,
+    "pitch": -45,
+    "roll": 0.0,
+    "opacity": 0.5
+}
+```
+
+#### Terrain Elevation
+
+Terrain elevation data can also be provided via use of a `terrain` variable in the `settings.json` file. The value this variable is passed directly to a new [CesiumTerrainProvider](https://cesium.com/learn/cesiumjs/ref-doc/CesiumTerrainProvider.html) instance, as such users need to ensure that their settings conform with the CesiumJS API.
+
+An example specification of terrain elevation is shown below. Note that in this case, the data is pulled from quantized mesh tiles provided by [MapTiler](https://cloud.maptiler.com/), a service that is **not permitted for commercial use** without a paid-for licence.
+
+```json
+"terrain": {
+    "url": "https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=API_KEY",
+    "requestVertexNormals": true
+}
+```
 
 ## Sample Data
 

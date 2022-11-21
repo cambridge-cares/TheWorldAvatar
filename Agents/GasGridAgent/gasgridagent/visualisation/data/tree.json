@@ -1,0 +1,22 @@
+[
+    {
+        "groupName": "UK Gas Grid",
+        "layers": [               
+            {
+                "layerName": "Terminals",
+                "defaultState": "visible",
+                "layerIDs": ["terminals"]
+            },
+            {
+                "layerName": "Offtakes",
+                "defaultState": "visible",
+                "layerIDs": ["offtakes"]
+            },
+            {
+                "layerName": "Pipes",
+                "defaultState": "visible",
+                "layerIDs": ["pipes"]
+            }
+        ]
+    }
+]

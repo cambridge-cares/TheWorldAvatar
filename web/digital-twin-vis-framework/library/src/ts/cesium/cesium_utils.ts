@@ -293,7 +293,6 @@ class CesiumUtils {
         // TODO: Add full camera controls here. This will be tricky as Cesium offers
         // no programmatic way to pan the camera around 2D plane (mimicking the mouse
         // movement logic).
-
         window.addEventListener("keydown", function (event) {
             if (event.defaultPrevented) return;
           
@@ -344,14 +343,19 @@ class CesiumUtils {
             return;
         }
 
+        if(!feature.hasOwnProperty("Longitude")) {
+            // Cesium has not stored position of this feature, cannot fly to
+            return;
+        }
+
         // 3D feature
         const positionCartographic = new Cesium.Cartographic(
             // @ts-ignore
-            Cesium.Math.toRadians(target.getProperty("Longitude")),
+            Cesium.Math.toRadians(feature.getProperty("Longitude")),
             // @ts-ignore
-            Cesium.Math.toRadians(target.getProperty("Latitude")),
+            Cesium.Math.toRadians(feature.getProperty("Latitude")),
             // @ts-ignore
-            target.getProperty("Height") * 0.5
+            feature.getProperty("Height") * 0.5
         );
         const position = MapHandler.MAP.scene.globe.ellipsoid.cartographicToCartesian(
             positionCartographic
@@ -361,7 +365,7 @@ class CesiumUtils {
             MapHandler.MAP.camera.heading,
             MapHandler.MAP.camera.pitch,
             // @ts-ignore
-            target.getProperty("Height") * 2.0
+            feature.getProperty("Height") * 2.0
         );
 
         const transform = Cesium.Transforms.eastNorthUpToFixedFrame(position);

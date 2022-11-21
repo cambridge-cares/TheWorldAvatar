@@ -1,0 +1,13 @@
+# Java:
+*.jar
+*.war
+*.class
+*/target
+
+# IntelliJ specific files
+*.iml
+*/idea
+
+# Data
+*.ifc
+*.ttl

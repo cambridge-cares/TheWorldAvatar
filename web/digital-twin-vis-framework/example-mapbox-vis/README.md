@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.1.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.2 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
@@ -47,9 +47,59 @@ Layers can also optionally include an integer `order` field (which defaults to 0
 
 For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format.
 
+
 ### Global Settings & Advanced Features
 
-Configuration settings for features not directly relating to the data, such as the map's starting position, and more advanced features are detailed on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings). 
+Configuration settings for features not specifically tied to an individual mapping library can be read on the [GitHub wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings), features specific to Mapbox are detailed in the sections below.
+
+These features currently include:
+
+- [Changing the available (and default) map imagery](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#map-imagery)
+- [Overriding expected feature property names](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#feature-fields)
+- [Defining custom attribution text](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Settings#attribution)
+
+#### Map Position
+
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the Mapbox version can be seen below.
+
+```json
+"start": {
+    "center": [60, 37],
+    "zoom": 2,
+    "bearing": 0,
+    "pitch": 45
+}
+```
+
+#### Feature Filtering
+
+When using the Mapbox implementation, a rudimentary ability to filter/search for individual locations has been added. Accessed via the CTRL+F keyboard shortcut, this feature allows users to hide all locations that do not match some input search term. Properties from the geospatial data (i.e. not any dynamically loaded metadata) can be used as targets for the search; the example Mapbox visualisation contains an example of this (primarily focussed on the Cambridge Colleges data set).
+
+It is worth noting that, at the time of writing, the filter will apply to all locations across all layers currently available on the map. Additionally, any clustering of locations (normally enabled by configuring the source object within the data configuration file) will be temporarily disabled whilst the search controls are active; this is to avoid the situation in which matching locations are hidden because they were clustered (and clustered locations will almost always fail the filter match as they contain very little information on what individual features they contain).
+
+To enable this functionality within your visualisation, a special `search` node needs to be added to your `settings.json` file. This node should be a JSON array of objects, each object defining: `description`, the user facing name of the parameter that can be filtered on/searched for; `property`, the name of the actual property within the geospatial data; and `type`, which must be `string|number|boolean` and represents the type of property.
+
+An example snippet of the `settings.json` file defining search parameters is shown below.
+
+```json
+"search": [
+    {
+        "description": "Name",
+        "property": "name",
+        "type": "string"
+    },
+    {
+        "description": "Year Founded",
+        "property": "founded",
+        "type": "number"
+    },
+    {
+        "description": "Undergraduates Admitted?",
+        "property": "undergraduates",
+        "type": "boolean"
+    }  
+]
+```
 
 ## Sample Data
 
