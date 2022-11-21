@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   propertyvalue_agent:
     image: ghcr.io/cambridge-cares/propertyvalue_agent_debug:1.0.0-SNAPSHOT

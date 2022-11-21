@@ -204,11 +204,13 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 def create_example_agent():
     def _create_example_agent(
         register_agent:bool=False,
+        alter_agent_iri:bool=False,
     ):
         agent_config = config_derivation_agent(AGENT_ENV)
         agent = PropertyValueEstimationAgent(
             register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not alter_agent_iri else \
+                      agent_config.ONTOAGENT_SERVICE_IRI + '_altered',
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
             # NOTE Ensure SPARQL endpoints contain'docker.host.internal' for dockerised agent tests
