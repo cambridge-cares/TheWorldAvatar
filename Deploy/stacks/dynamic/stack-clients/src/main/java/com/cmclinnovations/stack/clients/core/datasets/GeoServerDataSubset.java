@@ -4,7 +4,7 @@ public abstract class GeoServerDataSubset extends PostgresDataSubset {
 
     @Override
     public boolean usesGeoServer() {
-        return true;
+        return !isSkip();
     }
 
     @Override

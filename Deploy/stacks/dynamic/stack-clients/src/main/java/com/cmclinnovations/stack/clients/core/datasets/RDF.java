@@ -6,7 +6,7 @@ public class RDF extends DataSubset {
 
     @Override
     public boolean usesBlazegraph() {
-        return true;
+        return !isSkip();
     }
 
     @Override

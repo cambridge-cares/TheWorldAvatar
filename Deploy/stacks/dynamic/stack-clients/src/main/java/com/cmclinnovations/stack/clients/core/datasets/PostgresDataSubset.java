@@ -31,7 +31,7 @@ public abstract class PostgresDataSubset extends DataSubset {
 
     @Override
     public boolean usesPostGIS() {
-        return true;
+        return !isSkip();
     }
 
     @Override

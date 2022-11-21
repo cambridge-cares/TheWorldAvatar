@@ -30,6 +30,10 @@ public abstract class DataSubset {
         return null != subdirectory ? parentDirectory.resolve(subdirectory) : parentDirectory;
     }
 
+    public boolean isSkip() {
+        return skip;
+    }
+
     public boolean usesPostGIS() {
         return false;
     }
