@@ -19,7 +19,7 @@ WORKDIR /root/code
 COPY pom.xml ./pom.xml
 
 # Retrieve all of the dependencies 
-RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve --update-snapshots
 
 # Copy in the code
 COPY src ./src/
