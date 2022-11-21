@@ -4,9 +4,29 @@ from derivationagentpythonexample.agent import default
 from derivationagentpythonexample.conf import config_example_agent
 
 def create_app():
-    # Get configurations from environment variables or env_file
+    # Depending on the deployment environment, different ways to retrieve/set the
+    # environment variables for the Derivation Agent are required:
+    # 1) For deployment as Flask App within Docker container as part of the Stack
+    #       a) Define environment variables in `environment` node of the `docker-compose.yml` file
+    #       b) Retrieve environment variables using
+    #               agent_config = config_derivation_agent()
+    #
+    # 2) For deployment as Flask App within Docker container, but outside the Stack
+    #    (i.e. using 'docker compose up' with docker-compose.yml and agent.env file)
+    #       a) Create `agent.env` file (based on `agent.env.example`)
+    #       b) Include `env_file` node in `docker-compose.yml` with path to the `agent.env` file
+    #       c) Retrieve environment variables using:
+    #               agent_config = config_derivation_agent()
+    #
+    # 3) For deployment as Flask App outside Docker container
+    #       a) Create `agent.env` file (based on `agent.env.example`)
+    #       b) Retrieve environment variables using local path to .env file:
+    #               agent_config = config_derivation_agent('./agent.env')
+
+    # Get configurations from environment variables
     # Here we use the config_example_agent specific to this example
     # One may use the config_derivation_agent from pyderivationagent if no specific configurations are needed
+    # Here we follow the option 1) or 2) above as the entry_point.py is called by the Dockerfile
     agent_config = config_example_agent()
 
     # Create an agent instance

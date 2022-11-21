@@ -10,6 +10,8 @@ import derivationagentpythonexample.data_model as dm
 # Other third party libraries you need
 from rdflib import Graph
 
+# The purpose of this module is to provide the agent class based on the pyderivationagent.DerivationAgent class
+# Please read in-line comments for more information
 
 class ExampleAgent(DerivationAgent):
     def __init__(
@@ -36,6 +38,8 @@ class ExampleAgent(DerivationAgent):
         Returns:
             list: A list of input concepts
         """
+        # NOTE Declared inputs/outputs need proper instantiation incl.
+        # rdf:type declarations in the KG for the derivation to work
         return [dm.DERIVATION_AGENT_PYTHON_EXAMPLE_MAXVALUE, dm.DERIVATION_AGENT_PYTHON_EXAMPLE_MINVALUE]
 
     def agent_output_concepts(self) -> list:
@@ -44,9 +48,12 @@ class ExampleAgent(DerivationAgent):
         Returns:
             list: A list of output concepts
         """
+        # Output concept (i.e. result) of the Derivation
         return [dm.DERIVATION_AGENT_PYTHON_EXAMPLE_DIFFERENCE]
 
     def validate_inputs(self, http_request) -> bool:
+        # Validate completeness of received HTTP request (i.e. non-empty HTTP request,
+        # contains derivationIRI, etc.) -> only relevant for synchronous derivation
         return super().validate_inputs(http_request)
 
     def process_request_parameters(

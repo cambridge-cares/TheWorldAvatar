@@ -12,6 +12,8 @@ from rdflib import Graph
 from rdflib import RDF
 import uuid
 
+# The purpose of this module is to provide functionality to execute KG queries
+# and updates using the PySparqlClient module from pyderivationagent
 
 class ExampleSparqlClient(PySparqlClient):
     # NOTE __init__ is already defined in the base class, so you don't need to define it again
