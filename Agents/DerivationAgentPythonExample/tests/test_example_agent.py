@@ -23,11 +23,13 @@ def test_example_triples():
             raise e
 
 
+# NOTE Depends on where this test is running, the blazegraph URL is different
+# if DOCKERISED_TEST: then the blazegraph URL is the one within the docker stack, i.e. "host.docker.internal"
+# if not DOCKERISED_TEST: then the blazegraph URL is the one outside the docker stack, i.e. "localhost"
 @pytest.mark.parametrize(
     "local_agent_test",
     [
-        (True), # local agent instance test
-        (False), # deployed docker agent test
+        (not cf.DOCKERISED_TEST),
     ],
 )
 def test_monitor_derivations(
@@ -42,11 +44,15 @@ def test_monitor_derivations(
 
     # Create agent instance, register agent in KG
     # NOTE Here we always set register_agent=True even for dockerised agent test
-    # Reason for this design is that agent and blazegraph are in the same docker-compose.yml
-    # However, there is no guarantee that the blazegraph will be ready when the agent is initialised within the docker container
-    # Therefore, we register the agent in the KG from the host machine to ensure that the agent in docker is initialised successfully
+    # Reason for this design is that successful agent registration within the KG is required to pick up markup up derivations
+    # However, agent and blazegraph are in the same docker-compose.yml, meaning there is
+    #   no guarantee that the blazegraph will be ready when the agent is initialised within the docker container
+    # Hence, the Dockerised agent is started without initial registration and
+    #   registration is done within the test (from the host machine) to guarantee that test Blazegraph will be ready
+    # The "belated" registration of the Dockerised agent can be achieved by registering "another"
+    #   agent instance with the same ONTOAGENT_SERVICE_IRI
     # In a real deployment, the agent MUST be registered in the KG when spinning up the agent container, i.e. REGISTER_AGENT=true in env file
-    agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
+    agent = create_example_agent(register_agent=True, alter_agent_iri=local_agent_test)
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:

@@ -14,6 +14,9 @@ import derivationagentpythonexample.data_model as dm
 
 from pyderivationagent import PyDerivationClient
 
+# This module provides all pytest fixtures and other utility functions for the
+# actual integration tests
+
 # ----------------------------------------------------------------------------------
 # Constant and configuration
 # ----------------------------------------------------------------------------------
@@ -24,6 +27,8 @@ TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+FS_SERVICE = "fileserver"
+FS_ROUTE = "FileServer/"
 
 # Configuration env file
 # NOTE the triple store URL provided in the agent.env.test files are the URL to access blazegraph container WITHIN the docker stack
@@ -40,6 +45,9 @@ MAXVALUE_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'maxValue'
 MINVALUE_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'minValue'
 DERIVATION_INPUTS = [MAXVALUE_INSTANCE_IRI, MINVALUE_INSTANCE_IRI]
 
+# NOTE global variable to determine whether the test is running in docker or not
+DOCKERISED_TEST = os.environ.get('DOCKERISED_TEST', False)
+HOSTNAME = 'localhost' if not DOCKERISED_TEST else 'host.docker.internal'
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -47,9 +55,10 @@ DERIVATION_INPUTS = [MAXVALUE_INSTANCE_IRI, MINVALUE_INSTANCE_IRI]
 
 @pytest.fixture(scope="session")
 def get_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route):
+    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
         service = session_scoped_container_getter.get(service_name).network_info[0]
-        service_url = f"http://localhost:{service.host_port}/{url_route}"
+        service_url = f"http://{HOSTNAME}:{service.host_port}/{url_route}"
+        print(f'KG endpoint: {service_url}')
 
         # this will run only once per entire test session
         # it ensures that the services requested in docker containers are ready
@@ -63,6 +72,7 @@ def get_service_url(session_scoped_container_getter):
             except requests.exceptions.ConnectionError:
                 time.sleep(3)
 
+        print('Connected to KG.')
         return service_url
     return _get_service_url
 
@@ -90,6 +100,10 @@ def get_service_auth():
 
 @pytest.fixture(scope="session")
 def initialise_clients(get_service_url, get_service_auth):
+    # Retrieve "user-facing" endpoints for all clients/services relevant for testing
+    # (i.e. invoked during testing from outside the Docker stack)
+    # --> those shall be `localhost:...` even when agent is running as Docker container
+
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
@@ -118,25 +132,40 @@ def initialise_clients(get_service_url, get_service_auth):
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def create_example_agent():
+def create_example_agent(get_service_url):
     def _create_example_agent(
         register_agent:bool=False,
-        random_agent_iri:bool=False,
+        alter_agent_iri:bool=False,
     ):
+        """This fixture creates an instance of the ExampleAgent class in memory.
+        If the global variable DOCKERISED_TEST is False, the agent will register itself with a random IRI to the triple store
+        and start monitoring the derivations in the triple store. If DOCKERISED_TEST is True, the agent will register with the IRI
+        provided in the `agent.env.test` file and will not monitor the derivations in the triple store. Instead, the agent wrapped in the
+        docker container will monitor the derivations in the triple store. This design is made to avoid the situation where the agent
+        container is spun up but the blazegraph container is not ready to accept SPARQL query/update.
+
+        Args:
+            register_agent (bool, optional): boolean flag for whether to register agent. Defaults to False.
+            alter_agent_iri (bool, optional): boolean flag for whether to use an alternative agent IRI. Defaults to False. Set to True if DOCKERISED_TEST is True.
+
+        Returns:
+            _type_: _description_
+        """
         agent_config = config_example_agent(EXAMPLEAGENT_ENV)
         agent = ExampleAgent(
             example_conf_param=agent_config.EXAMPLE_CONF_PARAM,
             register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not alter_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=host_docker_internal_to_localhost(agent_config.SPARQL_QUERY_ENDPOINT),
-            kg_update_url=host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
+            kg_url=get_service_url(KG_SERVICE, url_route=KG_ROUTE),
+            kg_update_url=get_service_url(KG_SERVICE, url_route=KG_ROUTE),
             kg_user=agent_config.KG_USERNAME,
             kg_password=agent_config.KG_PASSWORD,
-            fs_url=host_docker_internal_to_localhost(agent_config.FILE_SERVER_ENDPOINT),
-            fs_user=agent_config.FILE_SERVER_USERNAME,
-            fs_password=agent_config.FILE_SERVER_PASSWORD,
+            # NTOE the part below for fileserver is commented out as the fileserver is not used in the test
+            # fs_url=get_service_url(FS_SERVICE, url_route=FS_ROUTE),
+            # fs_user=agent_config.FILE_SERVER_USERNAME,
+            # fs_password=agent_config.FILE_SERVER_PASSWORD,
             # NOTE For agent endpoint, we keep this as it is for now (i.e. start with http://host.docker.internal)
             # As the agent endpoint is not accessed from outside the docker network
             # However, one may need to change this in the agent registration process if synchronous derivations are used
