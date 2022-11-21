@@ -4,24 +4,19 @@ var Cesium = require("cesium/Cesium");
  * @param cesiumviewer    Cesium viewer object
  * @param cesiumtileset   filepath to tileset.json
 * @param coordinate_array    Array of size 3 containing the x, y, and z-coordinates. These are the latitude, longitude, and elevation respectively.
- * @param x_rotation      rotation around the x-axis by a given angle in radians
- * @param z_rotation      rotation around the z-axis by a given angle in radians
+ * @param rotation_array      Optional. Array of size 3 containing [roll, pitch, heading]. Defines as the rotation around the positive x, negative y, and negative z-axis by a given angle in radians.
  * @return                Cesium viewer primitive object
  */
-export function addTileset(cesiumviewer, cesiumtileset, coordinate_array, x_rotation = 0, z_rotation = 0) {
+export function addTileset(cesiumviewer, cesiumtileset, coordinate_array, rotation_array = [0, 0, 0]) {
   // Base model matrix
   let position = Cesium.Cartesian3.fromDegrees(coordinate_array[0], coordinate_array[1], coordinate_array[2]);
   let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
-  // Construct the quaternions to encode the rotation along each axis by a given angle
-  var rotateQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_Z, z_rotation);
-  var turnQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_X, x_rotation);
-  // Combine the quaternions in sequence
-  var finalQuat = Cesium.Quaternion.multiply(turnQuat, rotateQuat, new Cesium.Quaternion());
-  // Construct a rotation matrix out of the quaternion
-  var rM = new Cesium.Matrix3();
-  Cesium.Matrix3.fromQuaternion(finalQuat, rM);
-  // And multiply the model matrix by this rotation matrix
-  Cesium.Matrix4.multiplyByMatrix3(modelMatrix, rM, modelMatrix);
+  // Create a heading-pitch-roll object
+  let hpr = new Cesium.HeadingPitchRoll(rotation_array[2], rotation_array[1], rotation_array[0]);
+  // Create a rotation matrix
+  let rotationMatrix = Cesium.Matrix3.fromHeadingPitchRoll(hpr, new Cesium.Matrix3());
+  // And multiply the model matrix (position) by this rotation matrix
+  Cesium.Matrix4.multiplyByMatrix3(modelMatrix, rotationMatrix, modelMatrix);
 
   return cesiumviewer.scene.primitives.add(
     new Cesium.Cesium3DTileset({

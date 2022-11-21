@@ -2,19 +2,19 @@ import "../css/assetInfoBox.css"
 import "../css/viewerElements.css"
 var Cesium = require("cesium/Cesium");
 import "cesium/Widgets/widgets.css";
-import {addTileset, addModel, addKml, addWMSLayer, addWMTSLayer} from './functions/cesium_data_handler.js';
-import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
+import { addTileset, addModel, addKml, addWMSLayer, addWMTSLayer } from './functions/cesium_data_handler.js';
+import { addDiv, addCloseButton, createMetadataHtml } from './functions/html-elements.js';
 
 // Create a new viewer object
-const viewer = new Cesium.Viewer("cesiumContainer",{
+const viewer = new Cesium.Viewer("cesiumContainer", {
   timeline: false,
   animation: false,
   imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-    url : 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-}),
-  baseLayerPicker: false, 
-  homeButton: false, 
-  infoBox: false, 
+    url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+  }),
+  baseLayerPicker: false,
+  homeButton: false,
+  infoBox: false,
   navigationHelpButton: false,
   projectionPicker: false,
   fullscreenButton: false,
@@ -22,8 +22,10 @@ const viewer = new Cesium.Viewer("cesiumContainer",{
   selectionIndicator: false
 });
 
-// Set up coordinates
-let coordinates = [103.77398, 1.30411,0];
+// Set up coordinates and rotation
+let coordinates = [103.77398, 1.30411, 0];
+let axialRotation = [0, 0, 0]; // Add rotation to addTileset function when it is required
+
 // Add tilesets to the viewer
 const bimTileset = './data/tileset_bim.json';
 const ceilingTileset = './data/tileset_ceiling.json';
@@ -73,11 +75,11 @@ const closeElement = addCloseButton("close");
 
 // Hides the ceiling and roof when checked
 const checkBox = document.getElementById("toggleFeature");
-checkBox.onclick = () =>{
+checkBox.onclick = () => {
   if (checkBox.checked == true) {
-      tileset_ceiling.show = false;
+    tileset_ceiling.show = false;
   } else {
-      tileset_ceiling.show = true;
+    tileset_ceiling.show = true;
   }
 };
 
