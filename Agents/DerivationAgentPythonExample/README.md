@@ -1,14 +1,14 @@
 # Derivation Agent Python Example
 
-
 ## Purpose
 This agent folder is intended as a template that one can copy and adapt to turn their own Python code into a derivation agent. The example requires [`pyderivationagent`](https://pypi.org/project/pyderivationagent/)>=1.4.1.
 
-This document covers four stages: development, test, publish and deployment. For each stage, a step-by-step instruction is provided. Before continuing with this tutorial, it is recommended to read the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of `pyderivationagent` and all the relevant links.
+This document covers four stages: development, test, package & publish, and deployment. For each stage, a step-by-step instruction is provided. Before continuing with this tutorial, it is recommended to read the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of `pyderivationagent` and all the relevant links.
 
 If you identified anything that can be improved to make it easier for newcomers, please feel free to open a [pull request](https://github.com/cambridge-cares/TheWorldAvatar/pulls) or get in touch with the maintainer of the package.
 
 
+&nbsp;
 ## Environment setup
 
 For development and testing reasons, follow below instructions to get started.
@@ -56,6 +56,7 @@ $ sudo apt install openjdk-11-jdk-headless
 ```
 
 
+&nbsp;
 ## Development
 
 The development of a derivation agent is strongly related to the design of ontologies for your application. It is thus advised to first consolidate the concepts/relationships of the data flow in your application before advancing to agent development. Below are the changes needed to adapt this template for your application. You may find more information in the in-line documentation of the code.
@@ -84,25 +85,48 @@ The development of a derivation agent is strongly related to the design of ontol
    - You can keep all the rest the same as the example.
 
 
+&nbsp;
 ## Test
 
-The derivation agent modifies the knowledge graph automatically, it is therefore recommended to run integration test before deploying it for production. The recommended setup is to have both the triple store and the agent spun up in the same docker stack. Such an example is `docker-compose.test.yml` file. Other relevant files are provided in the `tests` folder.
+The derivation agent modifies the knowledge graph automatically, it is therefore recommended to run integration test before deploying it for production. The recommended setup is to have both the local agent integration test and dockerised agent integration test. The former spins up a triple store and creates an agent instance in memory. Whereas the latter spins up a docker container of agent, which itself further spins up a triple store and run pytest within the agent docker container.
 
-1. `dummy_services_secrets` folder: credential for blazegraph container used in test
-2. `test_triples` folder: test triples for derivation inputs
+### Local agent integration test
+This example is provided in `docker-compose-testcontainers.yml` file. Other relevant files are provided in the `tests` folder.
+
+1. `dummy_services_secrets` folder: credential for blazegraph container used in test, and potentially auth json file for email services (for more information on this, please refer to the official documentation of [`pyderivationagent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent))
+2. `test_triples` folder: test triples for derivation inputs (example ABox), and example TBox where relevant concepts and relationships are defined
 3. `agent.env.test` file: agent configuration parameters
 4. `conftest.py` for pytest: all pytest fixtures and other utility functions
 5. `test_example_agent.py`
    - `test_example_agent.py::test_example_triples`: test if all prepared triples are valid
-   - `test_example_agent.py::test_monitor_derivations`: test if derivation agent performs derivation update as expected, the `local_agent_test` parameter controls if the agent performing the update is instantiating in memory (for quick debugging) or deployed in docker container (to mimic the production environment), the detailed documentation are provided along with the codes
+   - `test_example_agent.py::test_monitor_derivations`: test if derivation agent performs derivation update as expected, the `local_agent_test` parameter controls if the agent performing the update is instantiating in memory (local agent integration test, for quick debugging) or deployed in docker container (dockerised agent integration test, to mimic the production environment), the detailed documentation are provided along with the codes
 
 To run the test, one can execute below commands. To see live logs, one may want to add `-s` flag when calling pytest.
 
 `(Linux)`
 ```sh
 cd TheWorldAvatar/Agents/DerivationAgentPythonExample/
-python -m pytest --docker-compose=./docker-compose.test.yml
+python -m pytest --docker-compose=./docker-compose-testcontainers.yml
 ```
+
+### Dockerised agent integration test
+
+The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph instances:
+
+```bash
+# Build and run Dockerised agent test
+docker compose -f "docker-compose-test-dockerised.yml" up -d --build
+```
+
+To run the dockerised tests in Debug mode, `docker-compose-test-dockerised-debug.yml` is provided. One may run:
+```bash
+# Build and run Dockerised agent test
+docker compose -f "docker-compose-test-dockerised-debug.yml" up -d --build
+```
+
+Once the test is finished, the docker container will be composed down automatically.
+
+### Develop tests for new agents
 
 To develop new agents, it is recommended to follow the same test structure provided in this example.
 
@@ -130,7 +154,8 @@ RUN jpsrm install JpsBaseLib ./jpstemp/
 At the moment, above lines are commented out in the Dockerfile. One may bring them back if a specific version of `jps-base-lib` is required and provided.
 
 
-## Package and Publish
+&nbsp;
+## Package & Publish
 
 Once you have a working version of agent, it is recommended to wrap the agent as a python package and publish it for production use. For this purpose, `setup.py` is provided as an example. You may refer to its in line documentation for more information. The recommended way of publishing the agent is to upload a tested docker image to GitHub.
 
@@ -180,6 +205,7 @@ Please follow the instructions presented in the console once the process has beg
 To release your agent, you may want to update information in `Dockerfile` and `docker-compose.github.yml` (see in-line documentation in those files), also update the `AUTHOR` and `AGENT_NAME` variables in the the `upload_docker_image_to_github.sh` script accordingly.
 
 
+&nbsp;
 ## Deployment
 
 Example of configurations for the agent are provided in `agent.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT`, with the credentials specified using `KG_USERNAME` and `KG_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The `OntoAgent:Service` IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations. To help monitoring the agent running status, an email notification feature is also provided and can be set up via `EMAIL_RECIPIENT`, `EMAIL_SUBJECT_PREFIX`, `EMAIL_USERNAME`, `EMAIL_AUTH_JSON_PATH` and `EMAIL_START_END_ASYNC_DERIVATIONS`. More details are provided in the [documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent) of the `pyderivationagent` package. Developers needs to ensure that this file is correctly updated before deploying the Docker Image.
@@ -192,10 +218,14 @@ docker run --env-file <env_file_path> --name derivation_agent_python_example ghc
 ```
 
 
+&nbsp;
 ## Adapt agent to work with stack
+> **NOTE** This agent example will be updated to incorporate Stack in the next iteration.
+
 This agent example has been adapted to work with the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 
+&nbsp;
 # Author
 
 Jiaru Bai (jb2197@cam.ac.uk)
