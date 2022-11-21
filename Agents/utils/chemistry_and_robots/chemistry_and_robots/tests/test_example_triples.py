@@ -3,8 +3,8 @@ from pathlib import Path
 
 import chemistry_and_robots.tests.conftest as conftest
 
-import logging
-logger = logging.getLogger(__file__)
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 def test_parse_ttl():
     """Test that all the example triples can be parsed, hence can be uploaded to the triple store.

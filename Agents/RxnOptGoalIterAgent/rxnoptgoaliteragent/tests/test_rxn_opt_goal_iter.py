@@ -6,8 +6,6 @@ import time
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 import rxnoptgoaliteragent.tests.conftest as cf
 
-import logging
-logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
 # ----------------------------------------------------------------------------------
 # Test cases for RxnOptGoalIterAgent
 # ----------------------------------------------------------------------------------

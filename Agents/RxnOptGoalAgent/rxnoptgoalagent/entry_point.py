@@ -1,11 +1,6 @@
 from rxnoptgoalagent.conf import config_rxn_opt_goal_agent
 from rxnoptgoalagent.agent import *
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 from flask import Flask
 import os
 

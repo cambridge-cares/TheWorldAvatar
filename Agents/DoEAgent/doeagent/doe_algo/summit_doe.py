@@ -10,8 +10,8 @@ import pandas as pd
 import doeagent.data_model as dm
 import doeagent.kg_operations as kg
 
-import logging
-logger = logging.getLogger('summit_doe')
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 TWO_POWER_31_MINUS_ONE = 2**31-1
 SYS_RES_LOWER_BOUND = -TWO_POWER_31_MINUS_ONE

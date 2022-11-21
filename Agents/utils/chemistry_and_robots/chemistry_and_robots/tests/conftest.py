@@ -3,15 +3,14 @@ from testcontainers.compose import DockerCompose
 from pathlib import Path
 from rdflib import Graph
 from enum import Enum
-import logging
 import pytest
 import shutil
 import time
 import uuid
 import os
 
-logging.getLogger("py4j").setLevel(logging.INFO)
-logger = logging.getLogger('chemistry_and_robots_tests')
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 import chemistry_and_robots.data_model as onto

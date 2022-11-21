@@ -20,9 +20,9 @@ from chemistry_and_robots.hardware import hplc
 
 from chemistry_and_robots.kg_operations import dict_and_list as dal
 
-import logging
-logger = logging.getLogger('chemistry_and_robots_sparql_client')
-logging.getLogger('py4j').setLevel(logging.INFO)
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
+
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
 

@@ -4,8 +4,8 @@ from rxnoptgoaliteragent.data_model import *
 from chemistry_and_robots.kg_operations import *
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 
-import logging
-logger = logging.getLogger(__name__)
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
     def get_goal_set_instance(self, goal_set_iri) -> GoalSet:
@@ -130,7 +130,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             # process result
             _goal_result_info = dal.remove_unwanted_keys_from_list_of_dict(_goal_info, ['plan', 'step', 'stepType', 'agent', 'nextStep'])
             _goal_result_info = dal.remove_duplicate_dict_from_list_of_dict(_goal_result_info)
-            logger.info(f"_goal_result_info: {_goal_result_info}")
+            logger.debug(f"_goal_result_info: {_goal_result_info}")
             _list_result_iri = dal.get_unique_values_in_list_of_dict(_goal_result_info, "resultQuantity")
             if len(_list_result_iri) > 0:
                 _list_result_quantity = []

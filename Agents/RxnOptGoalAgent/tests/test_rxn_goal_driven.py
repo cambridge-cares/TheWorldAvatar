@@ -21,9 +21,8 @@ import time
 
 import tests.conftest as cf
 
-import logging
-logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
-logger = logging.getLogger('test_rxn_with_goal')
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 
 # ----------------------------------------------------------------------------------

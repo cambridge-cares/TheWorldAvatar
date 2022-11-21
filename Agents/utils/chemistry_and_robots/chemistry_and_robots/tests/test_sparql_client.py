@@ -9,12 +9,9 @@ import chemistry_and_robots.tests.conftest as conftest
 from rdflib import Literal
 from rdflib import URIRef
 from rdflib import Graph
-import logging
 import filecmp
 import pytest
 import os
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 import chemistry_and_robots.data_model as onto
 import chemistry_and_robots.kg_operations.dict_and_list as dal

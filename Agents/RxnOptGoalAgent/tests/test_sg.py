@@ -45,7 +45,6 @@ except ImportError:
 
 from rxnoptgoaliteragent.agent import RxnOptGoalIterAgent
 
-logging.getLogger("py4j").setLevel(logging.INFO)
 logging.getLogger("numba").setLevel(logging.WARNING)
 
 

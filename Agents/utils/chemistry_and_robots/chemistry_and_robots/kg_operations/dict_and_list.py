@@ -4,9 +4,9 @@
 from typing import Any, Dict, List
 from collections.abc import Mapping
 
-import logging
-logger = logging.getLogger('chemistry_and_robots_dict_and_list')
-logging.getLogger('py4j').setLevel(logging.INFO)
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
+
 
 def get_sublist_in_list_of_dict_matching_key_value(list_of_dict: List[Dict], key: str, value: Any) -> list:
     if len(list_of_dict) > 0:

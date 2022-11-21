@@ -1,13 +1,12 @@
 import hplcpostproagent.tests.conftest as conftest
 from rdflib import Graph
-import logging
 import pkgutil
 import pytest
 import time
 import os
 
-
-logger = logging.getLogger("test_hplc_postpro")
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 pytest_plugins = ["docker_compose"]
 

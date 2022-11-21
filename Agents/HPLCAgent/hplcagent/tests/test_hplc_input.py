@@ -1,10 +1,10 @@
-import logging
 import pytest
 import filecmp
 import time
 import os
 
-logger = logging.getLogger("test_hplc_input")
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 import hplcagent.tests.utils as utils
 

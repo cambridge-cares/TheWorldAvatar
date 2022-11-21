@@ -1,3 +1,8 @@
+# Disable excessive debug logging from numba module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+
 from typing import List
 import json
 
@@ -8,11 +13,6 @@ from pyderivationagent import DerivationOutputs
 from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
-
-# Disable excessive debug logging from numba module
-import logging
-logging.getLogger("numba").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 class DoEAgent(DerivationAgent):

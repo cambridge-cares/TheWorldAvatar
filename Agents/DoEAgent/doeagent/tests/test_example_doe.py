@@ -3,8 +3,6 @@ import time
 
 import doeagent.tests.utils as utils
 
-import logging
-logging.getLogger('chemistry_and_robots_sparql_client').setLevel(logging.ERROR)
 
 @pytest.mark.parametrize(
     "doe_iri,derivation_inputs,local_agent_test",

@@ -3,10 +3,6 @@ from pyderivationagent.conf import config_derivation_agent
 from doeagent.agent import DoEAgent
 from doeagent.agent import default
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     agent_config = config_derivation_agent()
