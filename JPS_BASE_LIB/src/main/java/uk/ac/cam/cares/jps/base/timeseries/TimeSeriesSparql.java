@@ -111,7 +111,10 @@ public class TimeSeriesSparql {
 	 */
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesSparql.class);
 
-	//Custom Class to store numeric duration and the corresponding temporal unit pair to be able to map the pair to the averaging period iri
+	/**
+	 * Custom Class to store numeric duration and the corresponding temporal unit pair.
+	 * Used to map the pair to the corresponding averaging period iri
+	 */
 	protected class CustomDuration {
 
 		private final Double value;
