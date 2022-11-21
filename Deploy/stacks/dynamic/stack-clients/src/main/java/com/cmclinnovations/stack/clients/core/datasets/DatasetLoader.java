@@ -1,16 +1,79 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.utils.FileUtils;
 
 public class DatasetLoader {
 
     private DatasetLoader() {
+    }
+
+    public static void uploadInputDatasets() {
+        DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
+                DefaultEdge.class);
+        try (Stream<Path> files = Files.list(Path.of("/inputs/config"))) {
+            // Add Datasets to a DAG as vertices
+            files.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .map(DatasetLoader::readInputDataset)
+                    .forEach(graph::addVertex);
+
+            // Check to see if there is a Dataset with the same name as the Stack.
+            Optional<Dataset> stackSpecificDataset = graph.vertexSet().stream()
+                    .filter(dataset -> dataset.getName().equals(StackClient.getStackName()))
+                    .findAny();
+
+            if (stackSpecificDataset.isPresent()) {
+                // if so only load that one and its children.
+
+                // Add an edge when one Dataset references another in its "externalDatasets"
+                // node. Throw an exception if the referenced Dataset doesn't exist.
+                graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasets()
+                        .forEach(referencedDatasetName -> graph.vertexSet().stream()
+                                .filter(dataset -> dataset.getName().equals(referencedDatasetName))
+                                .findFirst().ifPresentOrElse(
+                                        childDataset -> graph.addEdge(parentDataset, childDataset),
+                                        () -> {
+                                            throw new RuntimeException("Failed to find external dataset '"
+                                                    + referencedDatasetName + "' referenced in dataset '"
+                                                    + parentDataset.getName() + "'.");
+                                        })));
+
+                loadData(stackSpecificDataset.get());
+                graph.getDescendants(stackSpecificDataset.get()).forEach(DatasetLoader::loadData);
+            } else {
+                // Otherwise load all of the Datasets.
+                graph.vertexSet().forEach(DatasetLoader::loadData);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read in dataset config file(s).", ex);
+        }
+    }
+
+    public static Dataset readInputDataset(Path configFile) {
+        try {
+            Dataset dataset = StackClient.objectMapper.readValue(configFile.toFile(), Dataset.class);
+            if (null == dataset.getName()) {
+                dataset.setName(FileUtils.getFileNameWithoutExtension(configFile));
+            }
+            return dataset;
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
+        }
     }
 
     public static void loadData(Dataset dataset) {
@@ -45,4 +108,5 @@ public class DatasetLoader {
             dataset.getOntopMappings().forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
         }
     }
+
 }
