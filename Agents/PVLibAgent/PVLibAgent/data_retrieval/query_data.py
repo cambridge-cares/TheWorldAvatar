@@ -30,6 +30,7 @@ class QueryData:
                             "Average") | val.__contains__("average"):
                         print(val)
                         return val
+
             else:
                 for d in response:
                     val = d["airTemp"]
@@ -112,6 +113,42 @@ class QueryData:
                 print(response)
                 return val
 
+    def query_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+        kg_client = KGClient(query_endpoint, update_endpoint)
+        if iri == '':
+            query = create_sparql_prefix('rdf') + \
+                create_sparql_prefix('ontoems') + \
+                create_sparql_prefix('om') + \
+                create_sparql_prefix('saref') + \
+                create_sparql_prefix('s3n') + \
+                '''SELECT ?ghi WHERE { ?device rdf:type saref:Device .
+                                              ?device rdf:type s3n:SmartSensor .
+                                              ?device saref:measuresProperty ?property .
+                                              ?property rdf:type om:Irradiance .
+                                              ?property om:hasValue ?ghi }'''
+            response = kg_client.performQuery(query)
+
+            for d in response:
+                val = d["ghi"]
+                print(val)
+                return val
+
+        else:
+            query = create_sparql_prefix('rdf') + \
+                            create_sparql_prefix('ontoems') + \
+                            create_sparql_prefix('om') + \
+                            create_sparql_prefix('saref') + \
+                            create_sparql_prefix('s3n') + \
+                            'SELECT ?ghi WHERE {' + iri + '''saref:measuresProperty ?property .
+                                                      ?property rdf:type om:Irradiance .
+                                                      ?property om:hasValue ?ghi }'''
+            response = kg_client.performQuery(query)
+
+            for d in response:
+                val = d["ghi"]
+                print(val)
+                return val
+
     def query_global_horizontal_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
 
         kg_client = KGClient(query_endpoint, update_endpoint)
@@ -143,6 +180,7 @@ class QueryData:
                                                       ?parameter om:hasValue ?ghi }'''
 
             response = kg_client.performQuery(query)
+
             for d in response:
                 val = d["ghi"]
                 print(val)
@@ -160,9 +198,7 @@ class QueryData:
                     create_sparql_prefix('om') + \
                     create_sparql_prefix('saref') + \
                     create_sparql_prefix('geo') + \
-                    '''SELECT ?value WHERE { ?weatherStation rdf:type ontoems:ReportingStation .
-                                                      ?weatherStation rdf:type saref:Device .
-                                                      ?weatherStation geo:location ?location .
+                    '''SELECT ?value WHERE {?entity geo:location ?location .
                                                       ?location geo:lat ?latValue .
                                                       ?latValue om:hasValue ?Measure .
                                                       ?Measure om:hasNumericalValue ?value }'''
@@ -203,9 +239,7 @@ class QueryData:
                     create_sparql_prefix('om') + \
                     create_sparql_prefix('saref') + \
                     create_sparql_prefix('geo') + \
-                    '''SELECT ?value WHERE { ?weatherStation rdf:type ontoems:ReportingStation .
-                                                      ?weatherStation rdf:type saref:Device .
-                                                      ?weatherStation geo:location ?location .
+                    '''SELECT ?value WHERE { ?entity geo:location ?location .
                                                       ?location geo:long ?longValue .
                                                       ?longValue om:hasValue ?Measure .
                                                       ?Measure om:hasNumericalValue ?value }'''

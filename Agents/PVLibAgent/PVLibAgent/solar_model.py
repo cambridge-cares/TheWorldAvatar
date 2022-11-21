@@ -191,7 +191,6 @@ class SolarModel:
                                index=[pd.Timestamp('2017-04-01 12:00:00+08')])
         # index=[pd.Timestamp('20170401 1200', tz='US/Arizona')])
         self.mc.run_model(weather)
-        json_object = jsonify({"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0],
-                               "DC Power(W)": self.mc.results.dc[0]})
+        values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
 
-        return json_object
+        return values_string
