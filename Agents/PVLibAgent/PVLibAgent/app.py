@@ -129,7 +129,8 @@ def api():
             iri_list = check_data_iris.check_data_iris_and_create_if_not_exist(PROPERTIES_FILE)
             results = model.calculate(latitude_value, longitude_value)
             timestamp = results["timestamp"]
-            timestamp_list = [timestamp]
+            # timestamp must have the format 2017-04-01T04:00:00Z
+            timestamp_list = ['2017-04-01T04:00:00Z']
             ac_power_value = results["AC Power(W)"]
             dc_power_value = results["DC Power(W)"]
             ac_power_list = [ac_power_value]
@@ -146,8 +147,8 @@ def api():
             except Exception as ex:
                 logger.error("Unable to initialise timeseries")
                 raise TSException("Unable to initialise timeseries") from ex
-            # timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
-            # add_timeseries.add_timeseries_data(timeseries_object)
+            timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
+            timeseries_data.add_timeseries_data(timeseries_object)
             return results
         except ValueError as ex:
             return str(ex)
