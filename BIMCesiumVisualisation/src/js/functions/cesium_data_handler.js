@@ -3,16 +3,14 @@ var Cesium = require("cesium/Cesium");
  * Add the tileset to the viewer and set its model matrix for geolocation
  * @param cesiumviewer    Cesium viewer object
  * @param cesiumtileset   filepath to tileset.json
- * @param x_coordinate    latitude or x coordinate of a geolocation
- * @param y_coordinate    longitude or y coordinate of a geolocation
- * @param z_coordinate    elevation or z coordinate of a geolocation
+* @param coordinate_array    Array of size 3 containing the x, y, and z-coordinates. These are the latitude, longitude, and elevation respectively.
  * @param x_rotation      rotation around the x-axis by a given angle in radians
  * @param z_rotation      rotation around the z-axis by a given angle in radians
  * @return                Cesium viewer primitive object
  */
-export function addTileset(cesiumviewer, cesiumtileset, x_coordinate, y_coordinate, z_coordinate = 0, x_rotation = 0, z_rotation = 0) {
+export function addTileset(cesiumviewer, cesiumtileset, coordinate_array, x_rotation = 0, z_rotation = 0) {
   // Base model matrix
-  let position = Cesium.Cartesian3.fromDegrees(x_coordinate, y_coordinate, z_coordinate);
+  let position = Cesium.Cartesian3.fromDegrees(coordinate_array[0], coordinate_array[1], coordinate_array[2]);
   let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
   // Construct the quaternions to encode the rotation along each axis by a given angle
   var rotateQuat = Cesium.Quaternion.fromAxisAngle(Cesium.Cartesian3.UNIT_Z, z_rotation);
@@ -37,13 +35,11 @@ export function addTileset(cesiumviewer, cesiumtileset, x_coordinate, y_coordina
  * Add a glTF/glb model to the viewer and set its model matrix for geolocation
  * @param cesiumviewer    Cesium viewer object
  * @param modelfilepath   filepath to model
- * @param x               latitude or x coordinate of a geolocation
- * @param y               longitude or y coordinate of a geolocation
- * @param z               elevation or z coordinate of a geolocation
+ * @param coordinate_array    Array of size 3 containing the x, y, and z-coordinates. These are the latitude, longitude, and elevation respectively.
  * @return                Cesium viewer primitive object
  */
-export function addModel(cesiumviewer, modelfilepath, x, y, z = 0) {
-  let position = Cesium.Cartesian3.fromDegrees(x, y, z);
+export function addModel(cesiumviewer, modelfilepath, coordinate_array) {
+  let position = Cesium.Cartesian3.fromDegrees(coordinate_array[0], coordinate_array[1], coordinate_array[2]);
 
   return cesiumviewer.entities.add({
     position: position,

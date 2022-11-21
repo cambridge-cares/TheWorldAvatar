@@ -22,16 +22,18 @@ const viewer = new Cesium.Viewer("cesiumContainer",{
   selectionIndicator: false
 });
 
+// Set up coordinates
+let coordinates = [103.77398, 1.30411,0];
 // Add tilesets to the viewer
 const bimTileset = './data/tileset_bim.json';
 const ceilingTileset = './data/tileset_ceiling.json';
-const tileset_bim = addTileset(viewer, bimTileset, 103.77398, 1.30411);
-const tileset_ceiling = addTileset(viewer, ceilingTileset, 103.77398, 1.30411);
+const tileset_bim = addTileset(viewer, bimTileset, coordinates);
+const tileset_ceiling = addTileset(viewer, ceilingTileset, coordinates);
 
 /* 
 // Adding gltf/glb models to the viewer
 const gltfpath = './data/model.gltf';
-const gltfmodel = addModel(viewer, gltfpath, 103.77398, 1.30411);
+const gltfmodel = addModel(viewer, gltfpath, coordinates);
 */
 
 // Zoom to the tileset or gltf/glb model, with a small offset so that it is fully visible
