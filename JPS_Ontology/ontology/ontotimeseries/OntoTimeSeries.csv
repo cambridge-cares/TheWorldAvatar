@@ -4,7 +4,7 @@ OntoTimeSeries,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoTimeSeries,TBox,"The Time series ontology (OntoTimeSeries) is an ontology developed for representing data associated with time series, incl. forecasting.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoTimeSeries,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,Time series
-hasTimeSeries,Object Property,,,Forecast UNION http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,https://www.theworldavatar.com/kg/ontotimeseries/,has time series
+hasTimeSeries,Object Property,,,http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,https://www.theworldavatar.com/kg/ontotimeseries/,has time series
 hasRDB,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has RDB URL
 hasTimeUnit,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,https://www.theworldavatar.com/kg/ontotimeseries/,has time unit
 InstantaneousTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the measurement value at each time step,https://www.theworldavatar.com/kg/ontotimeseries/,Instantaneous time series
