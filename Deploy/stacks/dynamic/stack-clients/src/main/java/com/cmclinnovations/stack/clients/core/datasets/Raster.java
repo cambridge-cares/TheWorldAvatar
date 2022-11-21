@@ -25,7 +25,7 @@ public class Raster extends GeoServerDataSubset {
     @Override
     public void createLayer(String workspaceName, String database) {
         GeoServerClient.getInstance()
-                .createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indicies", "public", geoServerSettings);
+                .createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indices", "public", geoServerSettings);
     }
 
 }
