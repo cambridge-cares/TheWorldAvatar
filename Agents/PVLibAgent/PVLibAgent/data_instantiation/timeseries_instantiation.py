@@ -10,7 +10,7 @@ import agentlogging
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-class timeseries_data:
+class timeseries_instantiation:
     def add_timeseries_data(timeseries):
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         ts_client = TSClientForQuery(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER, rdb_password=DB_UPDATE_PASSWORD)
