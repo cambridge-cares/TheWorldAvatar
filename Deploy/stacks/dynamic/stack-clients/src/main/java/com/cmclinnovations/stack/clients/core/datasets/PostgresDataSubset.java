@@ -30,6 +30,11 @@ public abstract class PostgresDataSubset extends DataSubset {
     }
 
     @Override
+    public boolean usesPostGIS() {
+        return true;
+    }
+
+    @Override
     void loadInternal(Dataset parent) {
         String database = parent.getDatabase();
         Path dataSubsetDirectory = parent.getDirectory().resolve(getDirectory(parent.getDirectory()));

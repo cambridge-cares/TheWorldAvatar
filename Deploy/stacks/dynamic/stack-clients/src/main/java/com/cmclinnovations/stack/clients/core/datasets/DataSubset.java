@@ -30,6 +30,18 @@ public abstract class DataSubset {
         return null != subdirectory ? parentDirectory.resolve(subdirectory) : parentDirectory;
     }
 
+    public boolean usesPostGIS() {
+        return false;
+    }
+
+    public boolean usesBlazegraph() {
+        return false;
+    }
+
+    public boolean usesGeoServer() {
+        return false;
+    }
+
     public void load(Dataset dataset) {
         if (!skip) {
             loadInternal(dataset);

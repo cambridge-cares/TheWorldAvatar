@@ -11,6 +11,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import com.cmclinnovations.stack.clients.core.datasets.Dataset;
+import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -90,11 +91,11 @@ public final class StackClient {
                                                     + parentDataset.getName() + "'.");
                                         })));
 
-                stackSpecificDataset.get().loadData();
-                graph.getDescendants(stackSpecificDataset.get()).forEach(Dataset::loadData);
+                DatasetLoader.loadData(stackSpecificDataset.get());
+                graph.getDescendants(stackSpecificDataset.get()).forEach(DatasetLoader::loadData);
             } else {
                 // Otherwise load all of the Datasets.
-                graph.vertexSet().forEach(Dataset::loadData);
+                graph.vertexSet().forEach(DatasetLoader::loadData);
             }
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file(s).", ex);
