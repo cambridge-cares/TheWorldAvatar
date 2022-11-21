@@ -125,7 +125,14 @@ RUN jpsrm install JpsBaseLib ./jpstemp/
 At the moment, above lines are commented out in the Dockerfile. One may bring them back if a specific version of `jps-base-lib` is required and provided.
 
 
-## Publish
+## Package and Publish
+
+Once you have a working version of agent, it is recommended to wrap the agent as a python package and publish it for production use. For this purpose, `setup.py` is provided as an example. You may refer to its in line documentation for more information. The recommended way of publishing the agent is to upload a tested docker image to GitHub.
+
+> **NOTE** The design of separating `setup.py` and `requirements.txt` in this example is an effort to avoid dependency conflict. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
+
+> **NOTE** By design, requirements files and setup script are for different purposes. The former tends to be as specific as possible for reproducibility and production, whereas the latter normally gives a wide range to not limit the choice of packages in development. If you let the `pip` decide the version of packages, there's a chance it pulls a version of a package that potentially breaks the other packages. For more information, see https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+
 
 The recommended way of publishing the agent is to upload a tested docker image to GitHub. In this example, the docker image is pushed to [Cambridge CARES GitHub package](https://github.com/orgs/cambridge-cares/packages) under the name of `ghcr.io/cambridge-cares/`. Currently the release procedure is semi-automated and requires a few items:
 
