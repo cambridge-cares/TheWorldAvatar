@@ -36,10 +36,15 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ### Package installation
 
-The following command can be used to install the `pyderivationagent` package.
+The following command can be used to install all required packages.
 
-```sh
-(<venv_name>) $ pip install pyderivationagent
+`(Linux)`
+```bash
+(<venv_name>) $ python -m pip install --upgrade pip
+# Install all required packages from setup.py, incl. pyderivationagent, pytest etc.
+(<venv_name>) $ python -m pip install -r requirements.txt
+# Install the agent package itself for development purpose
+(<venv_name>) $ python -m pip install -e .[dev]
 ```
 
 As `pyderivationagent` library relies on the `py4jps` package, Java 11 is required. For Windows, it is recommended to obtain OpenJDK 11 from [here](https://developers.redhat.com/products/openjdk/download) and follow the [instructions](https://access.redhat.com/documentation/en-us/openjdk/11/html-single/installing_and_using_openjdk_11_for_windows/index). For linux environment, one can install via:
@@ -96,7 +101,7 @@ To run the test, one can execute below commands. To see live logs, one may want 
 `(Linux)`
 ```sh
 cd TheWorldAvatar/Agents/DerivationAgentPythonExample/
-pytest --docker-compose=./docker-compose.test.yml
+python -m pytest --docker-compose=./docker-compose.test.yml
 ```
 
 To develop new agents, it is recommended to follow the same test structure provided in this example.
