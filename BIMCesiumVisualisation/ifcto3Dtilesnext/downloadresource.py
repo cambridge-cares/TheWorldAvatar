@@ -84,7 +84,7 @@ def downloadtask():
     Downloads the required resources according to python version in the Windows operating system
     """
     # Download and extract zip files
-    dl_zip("https://s3.amazonaws.com/ifcopenshell-builds/IfcConvert-v0.7.0-e508fb4-win64.zip")
+    dl_zip("https://s3.amazonaws.com/ifcopenshell-builds/IfcConvert-v0.7.0-cdde536-win64.zip")
     dl_zip("https://github.com/KhronosGroup/COLLADA2GLTF/releases/download/v2.1.5/COLLADA2GLTF-v2.1.5-windows-Release-x64.zip",2)
 
     # Download jar files
@@ -93,13 +93,12 @@ def downloadtask():
 
     #Download and extract python packages according to python version
     if sys.version_info >= (3, 7, 0) and sys.version_info < (3, 9, 0):
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-220609/blenderbim-220609-py37-win.zip",3,False)
-    if sys.version_info >= (3, 9, 0) and sys.version_info < (3, 10, 0):
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-220609/blenderbim-220609-py39-win.zip",3,False)
-    if sys.version_info >= (3, 10, 0):        
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-220609/blenderbim-220609-py310-win.zip",3,False)
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py37-win.zip",3,False)
+    elif sys.version_info >= (3, 9, 0) and sys.version_info < (3, 10, 0):
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py39-win.zip",3,False)
+    elif sys.version_info >= (3, 10, 0):        
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py310-win.zip",3,False)
     else:
         print("Python version is outdated. Please update python version to at least 3.7.0 or above")
-
 
 downloadtask()  

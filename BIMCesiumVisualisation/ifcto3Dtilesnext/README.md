@@ -50,7 +50,7 @@ A brief description of its workflow can be found below:
     - `<root>\resources`
         1. IfcConvert.exe
             - Required to convert IFC to DAE format
-            - If not, download the IfcConvert.exe from: http://ifcopenshell.org/ifcconvert
+            - If not, download the IfcConvert.exe from: https://blenderbim.org/docs-python/ifcconvert/installation.html
         2. COLLADA2GLTF folder
             - Required to convert DAE to glTF format
             - If not, download and unzip the zip folder for your OS under the release section from: https://github.com/KhronosGroup/COLLADA2GLTF
