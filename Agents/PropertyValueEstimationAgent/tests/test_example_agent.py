@@ -85,9 +85,9 @@ def test_monitor_derivations(
     initialise_clients, create_example_agent, derivation_input_set, expect_exception, expected_estimate    
 ):
     """
-        Test if derivation agent performs derivation update as expected, the `local_agent_test` 
-        parameter controls if the agent performing the update is instantiating in memory (for quick
-        debugging) or deployed in docker container (to mimic the production environment)
+        Test if derivation agent performs derivation update as expected
+        The global variable DOCKERISED_TEST controls if the test (incl. agent) is running locally
+        within memory or deployed in docker container (to mimic the production environment)
     """
 
     # Get required clients from fixtures
@@ -109,19 +109,11 @@ def test_monitor_derivations(
     assert sparql_client.getAmountOfTriples() == triples
 
     # Create agent instance and register agent in KG
-    # EXPLANATION: 
-    # 1) Test Docker stack spins up Blazegraph, Postgres and Agent container, where agent
-    #    endpoints (loaded from mocked `stack_configs_mock.py`) contain `docker.host.internal`
-    #    to ensure intra-container communication
-    # 2) However, successful agent registration within the KG cannot be guaranteed as both are within 
-    #    the same Stack and sequence of startup (i.e. agent registration only after KG is available)
-    #    cannot be guaranteed; however, this is required to properly pick up derivations
-    # 3) Hence, the Dockerised agent is started without initial registration within the Stack and
-    #    registration is done within the test to guarantee that Blazegraph will be ready
-    # 4) The "belated" registration of the Dockerised agent can be achieved by registering "another local"
-    #    agent instance with the same ONTOAGENT_SERVICE_IRI, while registering a "new" agent with a 
-    #    different ONTOAGENT_SERVICE_IRI will actually register a local agent instance in the KG
-    # TODO: (Potentially) to be reworked for testing when building docker image
+    # - Successful agent registration within the KG is required to pick up markup up derivations
+    # - Hence, the Dockerised agent is started without initial registration within the Stack and
+    #   registration is done within the test to guarantee that test Blazegraph will be ready
+    # - The "belated" registration of the Dockerised agent can be achieved by registering "another"
+    #   agent instance with the same ONTOAGENT_SERVICE_IRI
     agent = create_example_agent()
 
     # Assert that there's currently no instance having rdf:type of the output signature in the KG
@@ -156,9 +148,13 @@ def test_monitor_derivations(
         assert expected_estimate in exception
 
     else:
+        t1 = time.time()
         # Query timestamp of the derivation for every 10 seconds until it's updated
         currentTimestamp_derivation = 0
         while currentTimestamp_derivation == 0:
+            # Fail test if after 60s no derivation has been identified/updated ()
+            if time.time() - t1 > 60:
+                pytest.fail()
             time.sleep(10)
             currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
