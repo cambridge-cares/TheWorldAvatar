@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoHeatNetwork,TBox,http://theworldavatar.com/ontology/ontoheatnetwork/OntoHeatNetwork.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoHeatNetwork,TBox,https://www.theworldavatar.com/kg/ontoheatnetwork/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoHeatNetwork,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoHeatNetwork,TBox,An ontology defined for representing the district heating network ,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoHeatNetwork,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
