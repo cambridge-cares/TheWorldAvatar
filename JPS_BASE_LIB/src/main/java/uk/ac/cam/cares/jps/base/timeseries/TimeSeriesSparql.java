@@ -53,14 +53,6 @@ public class TimeSeriesSparql {
 	private static final Prefix prefix_kb = SparqlBuilder.prefix("kb", iri(ns_kb));
 	private static final Prefix prefix_time = SparqlBuilder.prefix("time", iri(ns_time));
 
-	// RDF type
-	public static final Iri TimeSeries = prefix_ontology.iri("TimeSeries");
-	public static final Iri StepwiseCumulativeTimeSeries = prefix_ontology.iri("StepwiseCumulativeTimeSeries");
-	public static final Iri CumulativeTotalTimeSeries = prefix_ontology.iri("CumulativeTotalTimeSeries");
-	public static final Iri AverageTimeSeries = prefix_ontology.iri("AverageTimeSeries");
-	public static final Iri InstantaneousTimeSeries = prefix_ontology.iri("InstantaneousTimeSeries");
-	private static final Iri Duration = prefix_time.iri("Duration");
-
 	// Relationships
 	private static final Iri hasTimeSeries = prefix_ontology.iri("hasTimeSeries");
 	private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
@@ -78,6 +70,14 @@ public class TimeSeriesSparql {
 	public static final String CumulativeTotalTypeString = ns_ontology+"CumulativeTotalTimeSeries";
 	public static final String InstantaneousTypeString = ns_ontology+"InstantaneousTimeSeries";
 	public static final String TimeSeriesTypeString = ns_ontology+"TimeSeries";
+
+	// RDF type
+	public static final Iri TimeSeries = iri(TimeSeriesTypeString);
+	public static final Iri StepwiseCumulativeTimeSeries = iri(StepwiseCumulativeTypeString);
+	public static final Iri CumulativeTotalTimeSeries = iri(CumulativeTotalTypeString);
+	public static final Iri AverageTimeSeries = iri(AverageTypeString);
+	public static final Iri InstantaneousTimeSeries = iri(InstantaneousTypeString);
+	private static final Iri Duration = prefix_time.iri("Duration");
 
 	//Timeseries IRI prefix
 	public static final String AverageIRIString = ns_ontology + "AverageTimeseries";
@@ -408,7 +408,7 @@ public class TimeSeriesSparql {
 			}
 
 			//numeric Duration
-			if(duration.getSeconds() <=0.0){
+			if(duration.isNegative() || duration.isZero()){
 				throw new JPSRuntimeException(exceptionPrefix + "Numeric Duration must be a positive value");
 			}
 
@@ -704,12 +704,11 @@ public class TimeSeriesSparql {
 		TriplePattern deleteTp3 = timeseries.has(hasAveragingPeriod, dur);
 		TriplePattern deleteTp4 = dur.has(predicate3, object2);
 
-		GraphPatternNotTriples optional1 = GraphPatterns.optional(deleteTp3);
-		GraphPatternNotTriples optional2 = GraphPatterns.optional(deleteTp4);
+		GraphPatternNotTriples optional = GraphPatterns.optional(deleteTp3, deleteTp4);
 
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(timeseries.isA(tsType), optional1, optional2, vp).prefix(prefix_ontology);
+		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(timeseries.isA(tsType), deleteTp1, deleteTp2, optional, vp).prefix(prefix_ontology);
 
 		kbClient.executeUpdate(modify.getQueryString());
 	}
