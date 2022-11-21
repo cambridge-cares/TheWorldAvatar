@@ -30,6 +30,8 @@ COPY ./resources/model_parameters.properties /app/PVLibAgent/resources/model_par
 # Copy in properties files
 COPY ./resources/ts_client.properties /app/PVLibAgent/kg_utils/resources/ts_client.properties
 
+# Copy in properties files
+COPY ./resources/dataIRIs.properties /app/PVLibAgent/resources/dataIRIs.properties
 
 # Switch to a non-root user before running the server, for security reasons
 # (See https://code.visualstudio.com/docs/containers/python-user-rights)
