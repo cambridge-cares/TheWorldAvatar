@@ -248,6 +248,7 @@ public class TimeSeriesClient<T> {
 		}
    		
    	    // Step2: Try to initialise time series in relational database
+		List<String> failedTSIris = new ArrayList<>(dataIRIs.size());
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
 				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
@@ -262,9 +263,11 @@ public class TimeSeriesClient<T> {
    	    			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
    							" , as database related instantiation failed but KG triples were created.");
    	    		}
-   	    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdbCreate);
+				failedTSIris.add(tsIRIs.get(i));
    	    	}
-   		}	
+   		}
+		if (!failedTSIris.isEmpty())
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!");
     }
     
     /**
