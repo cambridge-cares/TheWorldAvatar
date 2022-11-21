@@ -220,14 +220,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time series</rdfs:label>
