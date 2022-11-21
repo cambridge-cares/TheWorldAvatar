@@ -7,7 +7,7 @@ import os.path
 import pvlib
 from configobj import ConfigObj
 from pathlib import Path
-from flask import jsonify
+import agentlogging
 from pvlib.pvsystem import PVSystem
 import datetime
 
@@ -17,12 +17,17 @@ from pvlib.modelchain import ModelChain
 
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 
+from PVLibAgent.data_retrieval.query_data import QueryData
+from PVLibAgent.error_handling.exceptions import KGException
+
 global latitude, longitude
+
+logger = agentlogging.get_logger("dev")
 
 
 class SolarModel:
 
-    def __init__(self, model_type, latitude_value, longitude_value):
+    def __init__(self, model_type, iri):
         global latitude, longitude
 
         # Define location of properties file
@@ -54,7 +59,11 @@ class SolarModel:
         except KeyError:
             raise KeyError('Key "latitude" is missing in properties file: ' + filepath)
         if latitude == '':
-            latitude = latitude_value
+            try:
+                latitude = QueryData.query_latitude(iri)
+            except Exception as ex:
+                logger.error("SPARQL query for latitude not successful")
+                raise KGException("SPARQL query for latitude not successful.") from ex
 
         # Extract longitude
         try:
@@ -62,7 +71,11 @@ class SolarModel:
         except KeyError:
             raise KeyError('Key "longitude" is missing in properties file: ' + filepath)
         if longitude == '':
-            longitude = longitude_value
+            try:
+                longitude = QueryData.query_longitude(iri)
+            except Exception as ex:
+                logger.error("SPARQL query for longitude not successful")
+                raise KGException("SPARQL query for longitude not successful.") from ex
 
         # Extract altitude
         try:
@@ -146,14 +159,9 @@ class SolarModel:
 
             self.mc = mc
 
-    def calculate(self, latitude_value, longitude_value):
+    def calculate(self):
 
         global latitude, longitude
-
-        if latitude == '':
-            latitude = latitude_value
-        if longitude == '':
-            longitude = longitude_value
 
         # derive day-of-year from date
         date = datetime.date.fromisoformat('2017-04-01')

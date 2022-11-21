@@ -49,12 +49,12 @@ class TSClientForQuery:
             logger.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
 
-        #3) Initialise TimeSeries
-        #try:
-         #   self.ts = TSClient.jpsBaseLibView.TimeSeries()
-        #except Exception as ex:
-           # logger.error("Unable to initialise TimeSeries.")
-            #raise TSException("Unable to initialise TimeSeries.") from ex
+        # 3) Initialise TimeSeries
+        # try:
+          #  self.ts = TSClientForQuery.jpsBaseLibView.TimeSeries()
+        # except Exception as ex:
+          #  logger.error("Unable to initialise TimeSeries.")
+           # raise TSException("Unable to initialise TimeSeries.") from ex
 
 
     @contextmanager
