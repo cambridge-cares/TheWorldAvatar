@@ -12,4 +12,7 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
       context: .
-      dockerfile: ./Dockerfile
+      target: prod
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: derivationagentpythonexample
