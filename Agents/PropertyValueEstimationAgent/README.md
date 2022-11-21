@@ -1,15 +1,9 @@
 # Property Value Estimation Agent (as Derivation Agent)
 
-```diff
-- This is mainly a placeholder so far and needs to be refined!
-```
 
+The `Property Value Estimation` agent uses the Derived Information Framework to calculate the latest market value estimate of properties (i.e. buildings and flats) instantiated in [The World Avatar] KG according to the [OntoBuiltEnv] ontology. The required building data comprises `total floor area` (from the [EPC Agent]) as well as previous `sales transaction records` and the `property price index` (from the [HM Land Registry Agent]) and needs to be instantiated beforehand. Both the **EPC Instantiation Agent** and the **HM Land Registry Instantiation Agent** are designed to continuously update the information in the KG. New [Energy Performance Certificate data] is released every 4-6 months while the [HM Land Registry Open Data] is updated monthly. Furthermore, the `average square metre price per postcode` is used for properties without any previous sales transactions. The [Average Square Metre Price Agent] (also implemented as Derivation Agent) updates this property automatically in the KG whenever new information gets instantiated.
 
-The `Property Value Estimation` agent uses the Derived Information Framework to calculate the latest market value estimation of properties (i.e. buildings and flats) instantiated in [The World Avatar] KG according to the [OntoBuiltEnv] ontology. The required building data comprises `total floor area` (from the [EPC Agent]) as well as previous `sales transaction records` and the `property price index` (from the [HM Property Sales Agent]) and needs to be instantiated beforehand. Both the **EPC Instantiation Agent** and the **Property Sales Instantiation Agent** are designed to continuously update the information in the KG, i.e. new [Energy Performance Certificate data] is released every 4-6 months while the [HM Land Registry Open Data] is updated every month. Furthermore, the `average square metre price per postcode` is used for properties without any previous sales transactions. The [Average Square Metre Price Agent] (also implemented as Derivation Agent) updates this property automatically in the KG whenever new information gets instantiated.
-
-The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. 
-
-Please note: It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
+The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
 &nbsp;
 # 1. Setup
@@ -26,7 +20,7 @@ Before building and deploying the Docker image, several key properties need to b
 # Stack & Stack Clients configuration
 STACK_NAME                    # Name of stack to which agent shall be deployed
 DATABASE                      # PostGIS/PostgreSQL database name (default: `postgres`)
-NAMESPACE                     # Blazegraph namespace (within Stack) to observe
+NAMESPACE                     # Blazegraph namespace (within Stack) to monitor
 # Derivation Agent configuration
 ONTOAGENT_SERVICE_IRI         # IRI of OntoAgent service
 ONTOAGENT_OPERATION_HTTP_URL  # Port needs to match port specified in `docker-compose.yml`
@@ -40,8 +34,8 @@ REGISTER_AGENT                # Boolean flag whether to register agent in KG (`t
 
 While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
 ```
-  $ docker login ghcr.io -u <github_username>
-  $ <github_personal_access_token>
+  docker login ghcr.io -u <github_username>
+  <github_personal_access_token>
 ```
 
 ### **3) VS Code specifics**
@@ -71,20 +65,22 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires the [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11].
+This agent requires the [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps>=1.0.29`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the command below below shall suffice to compile the latest `StackClients` resource locally to be available for installation into the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11].
+```bash
+# Compiling latest Stack_Clients resource for py4jps
+bash ./build_py4jps_stackclients_resource.sh
+```
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a `bash` terminal). The stack `<STACK NAME>` is the name of an already running stack.
 
 ```bash
-# Compiling latest Stack_Clients resource for py4jps
-bash ./build_py4jps_stackclients_resource.sh
 # Building the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK NAME>
 ```
 
-The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations. **Please note** that minor adjustments might need to be made to the `launch.json` file depending on the operating system, i.e. comment out non applicable lines indicated by `TODO` keyword.
+The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations. **Please note** that minor adjustments might need to be made to the `launch.json` file depending on the operating system, i.e. comment in/out non applicable lines indicated by `TODO` keyword.
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
 
 > **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
@@ -103,10 +99,10 @@ To spin up the stack remotely via SSH, VS Code's in-built SSH support can be use
 Once logged in, a remote copy of The World Avatar repository can be cloned using the following commands:
 
 ```bash
-$ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
-$ cd <REPO NAME>
-$ git checkout dev-PropertySalesInstantiationAgent
-$ git pull
+git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
+cd <REPO NAME>
+git checkout dev-PropertyValueEstimationAgent
+git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://165.232.172.16:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
@@ -140,12 +136,12 @@ git config core.fileMode false
 &nbsp;
 # 2. Using the Agent
 
-The Average Square Metre Price Estimation Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoBuiltEnv] properties (i.e. `total floor area`, `transaction records`, and `property price index`) and automatically update associated `average price per square metre` instances in the KG. As the agent adopts `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
+The Property Value Estimation Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoBuiltEnv] properties (i.e. `total floor area`, `transaction records`, `property price index`, and `average price per square metre`) and automatically updates associated `market value` (i.e. `om:AmountOfMoney`) instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5011/`.
 
 ## Asynchronous derivation operation
-Once the Agent is deployed, it periodically (every week, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved to the [docker compose file] instead.
+Once the Agent is deployed, it periodically (every month, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
 
 ## Prior derivation markup
 
@@ -153,6 +149,8 @@ For the Agent to detect outdated information, a proper mark up of the relevant d
 ```bash
 # Retrieve derivation client from derivation agent
 deriv_client = agent.derivation_client
+# Alternatively create new derivation client using:
+# deriv_client = pyderivationagent.PyDerivationClient(...)
 
 # Using pyderivationagent>=1.3.0, the timestamp for pure inputs will be added automatically when marking up the derivations
 # Hence, no need to add them separately (just for reference here)
@@ -247,6 +245,8 @@ Derivation agent settings:
     host.docker.internal in mock uitls for tests + copied over for agent to pick up
 - how to run tests?
 
+debugging currently not working, unable to attach debugger
+
 &nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
@@ -272,10 +272,10 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
-[HM Property Sales Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/
+[HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/HMLandRegistryAgent
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent
 
