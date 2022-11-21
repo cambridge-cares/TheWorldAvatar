@@ -1,8 +1,3 @@
-################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
-# Date: 08 Apr 2022                            #
-################################################
-
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
@@ -14,21 +9,21 @@ import agentlogging
 from .jpsSingletons import jpsBaseLibGW
 from .utils import TIME_FORMAT
 from .utils import TIMECLASS
-from .utils import DB_URL, DB_USER, DB_PASSWORD
+from .utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD
 from PVLibAgent.error_handling.exceptions import TSException
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
 
-class TSClient:
+class TSClientForQuery:
     # Create ONE JVM module view on class level and import all required java classes
     jpsBaseLibView = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL,
-                 rdb_user=DB_USER, rdb_password=DB_PASSWORD):
+    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_QUERY_URL,
+                 rdb_user=DB_QUERY_USER, rdb_password=DB_QUERY_PASSWORD):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
         Arguments:
@@ -42,17 +37,25 @@ class TSClient:
 
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
+            self.connection = TSClientForQuery.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
             logger.error("Unable to initialise TS Remote Store client.")
             raise TSException("Unable to initialise TS Remote Store client.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
-            self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
+            self.tsclient = TSClientForQuery.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
             logger.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
+
+        #3) Initialise TimeSeries
+        #try:
+         #   self.ts = TSClient.jpsBaseLibView.TimeSeries()
+        #except Exception as ex:
+           # logger.error("Unable to initialise TimeSeries.")
+            #raise TSException("Unable to initialise TimeSeries.") from ex
+
 
     @contextmanager
     def connect(self):
@@ -79,12 +82,14 @@ class TSClient:
             values (list): List of list of values per dataIRI
         """
         try:
-            timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+            timeseries = TSClientForQuery.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:
             logger.error("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
 
         return timeseries
+
+
 
 
 
