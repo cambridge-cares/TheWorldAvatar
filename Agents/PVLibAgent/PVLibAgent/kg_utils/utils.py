@@ -11,7 +11,7 @@ from PVLibAgent.kg_utils.jpsSingletons import jpsBaseLibGW
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT
 global DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
-global IRI
+global IRI, AIR_TEMP_IRI, WIND_SPEED_IRI, IRRADIANCE_IRI
 
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
@@ -55,7 +55,8 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD, IRI
+    global QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER,\
+        DB_UPDATE_PASSWORD, IRI, AIR_TEMP_IRI, WIND_SPEED_IRI, IRRADIANCE_IRI
 
     # Read properties file
     props = ConfigObj(filepath)
@@ -129,7 +130,23 @@ def read_properties_file(filepath):
     except KeyError:
         raise KeyError('Key "iri" is missing in properties file: ' + filepath)
 
+    # Extract air temperature IRI
+    try:
+        AIR_TEMP_IRI = props['air.temperature.iri']
+    except KeyError:
+        raise KeyError('Key "air.temperature.iri" is missing in properties file: ' + filepath)
 
+    # Extract wind speed IRI
+    try:
+        WIND_SPEED_IRI = props['wind.speed.iri']
+    except KeyError:
+        raise KeyError('Key "wind.speed.iri" is missing in properties file: ' + filepath)
+
+    # Extract Irradiance IRI
+    try:
+        IRRADIANCE_IRI = props['irradiance.iri']
+    except KeyError:
+        raise KeyError('Key "irradiance.iri" is missing in properties file: ' + filepath)
 
 
 def create_sparql_prefix(abbreviation):
