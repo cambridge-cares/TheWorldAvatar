@@ -1,7 +1,7 @@
 #######################################
 ## The World Avatar related packages ##
 #######################################
-pyderivationagent==1.4.0
+pyderivationagent==1.4.1
 
 ##########################
 ## Third-party packages ##
