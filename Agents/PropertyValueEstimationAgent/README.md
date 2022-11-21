@@ -170,21 +170,29 @@ deriv_iri = deriv_client.createAsyncDerivationForNewInfo(agent.agentIRI, deriv_i
 &nbsp;
 # 3. Agent Integration Test
 
-As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration test before deploying it for production. Two integration tests are provided in the `tests` repository. Although the agent is designed to work within the stack, those tests *only* test for correct functionality of the locally deployed agent together with Blazegraph and PostgreSQL spun up as Docker containers. This adjustment was necessary to "mock" interactions with the stack, i.e. retrieval of settings and endpoints. 
+As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can both be run as local and as dockerised agent. In both cases Blazegraph and PostgreSQL are spun up as Docker containers using the `testcontainers` library.
 
-To run the integration tests locally, access to the `docker.cmclinnovations.com` registry is required on the local machine (for more information regarding the registry, see the [CMCL Docker registry wiki page]). Furthermore, a few relevant files are provided in the `tests` folder.
+All tests are located in the `test_example_agent.py` file while all fixtures and utility functions are provided in the `conftest.py` file:
 
-1. `mockutils` folder: Python modules to mock stack settings
-2. `test_triples` folder: test triples for derivation inputs
-3. `agent_test.env` file: agent configuration parameters
-4. `conftest.py` file for pytest: all pytest fixtures and other utility functions
-5. `test_example_agent.py`
-   - `test_example_agent.py::test_example_triples`: test if all prepared triples are valid
+1. `test_example_agent.py`
+   - `test_example_agent.py::test_example_triples`: test if all provided test triples are valid
    - `test_example_agent.py::test_example_data_instantiation`: test proper instantiation of all triples incl. attached time series (for property price index)
    - `test_example_agent.py::test_monitor_derivations`: test if derivation agent performs derivation update as expected
+   - `test_example_agent.py::test_wrongly_marked_up_derivations`: test that derivation agent does not perform any derivation update in case of a mismatch between the agent IRI used for agent registration and derivation markup (only works as dockerised test)
+2. `conftest.py` file for pytest: all pytest fixtures and other utility functions
 
 &nbsp;
-### To perform the local agent integration tests, please follow these steps:
+## Pre-requisites:
+
+To run the integration tests, access to the `docker.cmclinnovations.com` registry is required from the machine running the tests (for more information regarding the registry, see the [CMCL Docker registry wiki page]). Furthermore, a few relevant files are provided in the `tests` folder.
+
+1. `test_triples` folder: test triples for derivation inputs
+2. `agent_test.env` file: agent configuration parameters used for the **example agent** created during testing
+3. `docker-compose-test_dockerised...` files (only relevant for dockerised tests): docker compose file with agent configuration parameters used for agent initialisation when spinning up agent container for tests. **Please note** that provided `environment` variables should match the ones provided in the `agent_test.env` file (**except** for `REGISTER_AGENT` which should be `false`). Otherwise, the example agent registered for testing later will be disconnected from dockerised agent running inside the container.
+4. `mockutils` folder: Python modules to mock Docker stack settings (i.e. settings normally retrieved from Stack Clients). When creating the dockerised test agent, those files will be used to overwrite the corresponding modules in `propertyvalueestimation\utils\` repository to ensure successful agent startup. Furthermore, they contain several settings required to run the tests.
+
+&nbsp;
+## To perform the agent integration tests locally, please follow these steps:
 
 1. It is highly recommended to use a virtual environment for testing. The virtual environment can be created and activated as follows:
 
@@ -213,6 +221,7 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     ```
 
     Please note: If developing/testing in Linux/WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package:
+
     `(Linux)`
     ```bash
     (prop_venv) $ python3 -m pip install --upgrade pip
@@ -234,18 +243,20 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     # Add `-s` flag to see live logs
     pytest -s --docker-compose=docker-compose-testcontainers.yml
    ```
-   It has been observed that running the above command might fail due to Docker communication issues. Rerunning it should solve those issues. Failing tests likely creates left over Docker volumes, which might need to be removed manually thereafter.
+   It has been observed that running the above command might fail due to Docker communication issues. Rerunning it should solve those issues. Tests likely create left over Docker volumes, which might need to be removed manually thereafter.
 
-Required files:
-Derivation agent settings:
-    - agent_test.env or environemtn variables in docker-compose
-    - what entries/names need to match?
+&nbsp;
+## To perform the dockerised agent integration tests, please follow these steps:
 
-- manually copy files:
-    host.docker.internal in mock uitls for tests + copied over for agent to pick up
-- how to run tests?
+The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgres testcontainer instances:
 
-debugging currently not working, unable to attach debugger
+```bash
+# Build and run Dockerised agent test
+docker compose -f "docker-compose-test_dockerised.yml" up -d --build
+```
+
+To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. However, some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. Running the debug tests, furthermore, requires all occurrences of `localhost` to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files as well as placing the updated content into the respective files in the `propertyvalueestimation\utils\` repository. This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container.
+
 
 &nbsp;
 # Authors #
@@ -282,7 +293,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 <!-- data sources -->
 [Energy Performance Certificate data]: https://epc.opendatacommunities.org/docs/api
 [HM Land Registry Open Data]: https://landregistry.data.gov.uk/app/root/doc/ppd
-[ONS Geography Linked Data]: https://statistics.data.gov.uk/home
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
