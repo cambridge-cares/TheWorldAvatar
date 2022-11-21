@@ -51,20 +51,6 @@ ENV AGENTDIR=${agentdir}
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -e .
 
-# # Switch to a non-root user before running the server, for security reasons
-# # (See https://code.visualstudio.com/docs/containers/python-user-rights)
-# RUN useradd appuser && chown -R appuser /app
-
-# # Creating the user doesn't create their home directory for some reason, so create it now
-# RUN mkdir /home/appuser
-# RUN chown -R appuser:appuser /home/appuser
-# RUN chmod -R 755 /home/appuser
-
-# # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'derivationagentpythonexample' module
-# # Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
-# # NOTE change the name of the module to the name of your project
-# USER appuser
-# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "derivationagentpythonexample:create_app()"]
 
 #------------------------------------------------------
 # Production image reusing the base
@@ -91,29 +77,29 @@ USER appuser
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "${AGENTDIR}:create_app()"]
 
 
-# #------------------------------------------------------
-# # Debug testing image reusing the base
-# #------------------------------------------------------
-# FROM base as debug_test
-# # Install additional dependencies
-# RUN apt-get update
-# RUN apt install libpq-dev python3-dev gcc -y
-# RUN python -m pip install -e .[dev]
-# RUN pip install debugpy
+#------------------------------------------------------
+# Debug testing image reusing the base
+#------------------------------------------------------
+FROM base as test_dockerised_debug
+# Install additional dependencies
+RUN python -m pip install -e .[dev]
+RUN pip install debugpy
 
-# # Set flask app and development environment to allow for hot-reloading
-# ENV FLASK_APP=app/${AGENTDIR}:create_app()
-# ENV FLASK_DEBUG=1
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=app/${AGENTDIR}:create_app()
+ENV FLASK_DEBUG=1
+# Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
+ENV DOCKERISED_TEST=true
 
-# # Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
-# COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+# Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
-# # Launch pytest in container (-s flag to enable more output/logging)
-# WORKDIR /app
-# # Start dockerised agent app as well as pytest
-# # (combining commands using & ensures they are started in parallel in background)
-# #CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
-# CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000 & pytest -s
+# Launch pytest in container (-s flag to enable more output/logging)
+WORKDIR /app
+# Start dockerised agent app as well as pytest
+# (combining commands using & ensures they are started in parallel in background)
+CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000 & pytest -s
+
 
 #------------------------------------------------------
 # Testing image reusing the base
@@ -133,18 +119,6 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
 # Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
 ENV DOCKERISED_TEST=true
-
-# # Ensure SPARQL endpoints contain 'host.docker.internal' instead of 'localhost' for dockerised agent tests
-# RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/env_configs_mock.py
-# RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/stack_configs_mock.py
-# # Ensure flag for Dockerised tests is set to True
-# RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
-
-# # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
-# RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
-# RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
-# # Adjust relative import statement
-# RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
