@@ -51,7 +51,6 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
     # get the model configuration dictionary from the a specific use_model_configuration or use default
     if use_model_configuration is not None:
-        print(f'Using model configuration: {use_model_configuration}')
         model_configuration_name = use_model_configuration
     else:
         model_configuration_name = "DEFAULT"
@@ -62,7 +61,6 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     cfg['horizon'] = horizon
     if data_length is not None:
         cfg['data_length'] = data_length
-    print('Using model configuration: ', cfg)
 
     if forecast_start_date is not None:
         cfg['forecast_start_date'] = pd.Timestamp(
@@ -75,7 +73,6 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
         cfg, kgClient, tsClient)
 
     # split series at forecast_start_date
-
     # check if forecast_start_date is in series
     if cfg['forecast_start_date'] in series.time_index:
         series, backtest_series = series.split_before(
@@ -111,14 +108,9 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     
     # create metadata
     # input series range
-    print(f"Input data range: {series.start_time()} - {series.end_time()}")
     start_date = series.end_time() - series.freq * \
         (cfg['fc_model']['input_length'] - 1)
     end_date = series.end_time()
-    print(f"Model input range: {start_date} - {end_date}")
-    print(
-        f"Model output range: {forecast.start_time()} - {forecast.end_time()}")
-    print(f'Done with forecast using  ')
 
     cfg['model_input_interval'] = [start_date, end_date]
     cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
