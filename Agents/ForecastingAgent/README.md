@@ -1,8 +1,5 @@
 # Forecasting Agent
 
-The "Forecasting Agent" forecasts an existing time series in an RDB using its dataIRI. The agent re-instantiates the forecasted time series under the same dataIRI. Different pre-trained models can be used, and if none matches the dataIRI, a new Prophet model is fitted to predict the new data.
-
-
 <span style="color:red">Tests are currently still excluded.</span>
 
 # 1. Setup
@@ -38,7 +35,7 @@ If you use later a model pretrained with 'darts', conflicts can occur while load
 
 ### **3) Instantiated knowledge graph with time series**
 
-In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the ontology provided by [the time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
+In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the ontology provided by [this Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
 
 ### **4) Endpoints**
 
@@ -47,27 +44,39 @@ Set your postgres database and blazegraph endpoints in your properties [file](./
 
 &nbsp;
 # 2. Using the Agent
+## General workflow
+- [Agent uml](https://lucid.app/lucidchart/def34dba-537c-48c7-9fa4-89bda55b4dc5/edit?viewport_loc=-3263%2C-197%2C3677%2C1765%2C0_0&invitationId=inv_1ed2a56a-16f0-4884-a5cb-a5aa69daba1e)
 
+The `Forecasting Agent` forecasts an existing time series in an RDB using its `iri` in the KG.
+
+After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one or else must be specified with the `force_configuration` parameter in the HTTP request.
+
+Next the agent loads the time series (+ covariates if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
+
+Then, it loads the model. This is either a pretrained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
+Finally the forecasted time series is re-instantiated under the same `iri`. 
+
+## Starting the agent
 Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.  
 
 
 &nbsp;
 ## Send http requests
-[HTTPRequest_forecast](./resources/HTTP_request_forecast.http) shows a sample request to forecast a dataIRI. 
+[HTTPRequest_forecast](./resources/HTTP_request_forecast.http) shows a sample request to forecast an `iri`. 
 
 ### Input parameters
-- **dataIRI** is the IRI of the existing TS, which should receive the hasForecastedValue instantiation.
+- **iri** is the `iri` of the existing TS, which should receive the hasForecastedValue instantiation.
 - **horizon** the time steps the agent forecasts autorecursively into the future.
 - **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
 If not set the default value from the [mapping file] is used.
-- **force_mapping** if specified this configuration from the [mapping file] is used. Otherwise the agent identifies the `dataIRI`.   
+- **force_configuration** if specified this configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
 
 
 ## Custom configurations and new models
 Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` configuration in the [mapping file]. 
 
-To identify a specific `dataIRI` and map it to your configuration, edit the `get_config` function in the [mapping file]. First retrieve properties like the rdf type or label of your `dataIRI` to identify it uniquely. Next compare the properties with your required properties following the example in `get_config`. Finally return if match the dictionary key of our configuration of the MAPPING dictionary from the [mapping file].  
+To identify a specific `iri` and map it to your configuration, edit the `get_config` function in the [mapping file]. First retrieve properties like the rdf type or label of your `iri` to identify it uniquely. Next compare the properties with your required properties following the example in `get_config`. Finally return if match the dictionary key of our configuration of the MAPPING dictionary from the [mapping file].  
 
 
 
@@ -75,6 +84,7 @@ To identify a specific `dataIRI` and map it to your configuration, edit the `get
 &nbsp;
 # Authors #
 Magnus Mueller (mm2692@cam.ac.uk), November 2022
+
 Markus Hofmeister (mh807@cam.ac.uk), October 2022
 
 
