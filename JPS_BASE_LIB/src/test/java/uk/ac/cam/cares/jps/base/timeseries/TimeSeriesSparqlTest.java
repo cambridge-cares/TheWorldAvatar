@@ -38,8 +38,7 @@ public class TimeSeriesSparqlTest {
     private TimeSeriesSparql sparqlClient;
     
 	// Initialise correct namespaces to use for ontology and knowledge base
-	private final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
-	private final String ns_kb = "https://www.theworldavatar.com/kg/ontotimeseries/";
+	private final String TIMESERIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontotimeseries/";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
     private final String tsIRI1 = "http://tsIRI1";
@@ -225,8 +224,8 @@ public class TimeSeriesSparqlTest {
     @Test
     public void testNamespaces() {
         // Test the value of the public namespaces for the ontology and the knowledge base
-        Assert.assertEquals(ns_ontology, TimeSeriesSparql.ns_ontology);
-        Assert.assertEquals(ns_kb, TimeSeriesSparql.ns_kb);        
+        Assert.assertEquals(TIMESERIES_NAMESPACE, TimeSeriesSparql.TIMESERIES_NAMESPACE);
+        Assert.assertEquals(TIMESERIES_NAMESPACE, TimeSeriesSparql.TIMESERIES_NAMESPACE);
     }
     
     @Test
@@ -235,13 +234,13 @@ public class TimeSeriesSparqlTest {
         Field p_onto = TimeSeriesSparql.class.getDeclaredField("prefix_ontology");
         p_onto.setAccessible(true);
         Prefix onto = (Prefix) p_onto.get(null);
-        Assert.assertEquals("PREFIX ts: <" + ns_ontology + ">", 
+        Assert.assertEquals("PREFIX ts: <" + TIMESERIES_NAMESPACE + ">",
         					onto.getQueryString());
     	// Retrieve the value of the private static field 'prefix_kb' of the client
         Field p_kb = TimeSeriesSparql.class.getDeclaredField("prefix_kb");
         p_kb.setAccessible(true);
         Prefix kb = (Prefix) p_kb.get(null);
-        Assert.assertEquals("PREFIX kb: <" + ns_kb + ">", 
+        Assert.assertEquals("PREFIX kb: <" + TIMESERIES_NAMESPACE + ">",
         					kb.getQueryString());      
     }
     
@@ -251,7 +250,7 @@ public class TimeSeriesSparqlTest {
         Field timeseries = TimeSeriesSparql.class.getDeclaredField("TimeSeries");
         timeseries.setAccessible(true);
         Iri ts = (Iri) timeseries.get(null);
-        Assert.assertEquals("ts:TimeSeries", ts.getQueryString());
+        Assert.assertEquals("<" + TIMESERIES_NAMESPACE + "TimeSeries" + ">", ts.getQueryString());
     	// Retrieve the value of the private static field 'hasTimeSeries' of the client
         Field hasTimeSeries = TimeSeriesSparql.class.getDeclaredField("hasTimeSeries");
         hasTimeSeries.setAccessible(true);
@@ -283,15 +282,15 @@ public class TimeSeriesSparqlTest {
             Assert.assertNotNull(testKnowledgeBase.getIndividual(iri));
         }
         // Test timeseries instance
-        Assert.assertEquals(TimeSeriesSparql.ns_ontology + "TimeSeries",
+        Assert.assertEquals(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries",
                 testKnowledgeBase.getIndividual(tsIRI1).getRDFType().getURI());
         RDFNode object = testKnowledgeBase.getIndividual(tsIRI1)
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasRDB"))
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasRDB"))
                 .getObject();
         Assert.assertTrue(object.isLiteral());
         Assert.assertEquals(dbURL, object.asLiteral().getString());
         object = testKnowledgeBase.getIndividual(tsIRI1)
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeUnit"))
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeUnit"))
                 .getObject();
         Assert.assertTrue(object.isLiteral());
         Assert.assertEquals(timeUnit, object.asLiteral().getString());
@@ -299,7 +298,7 @@ public class TimeSeriesSparqlTest {
         // Test that data IRIs are attached to time series instance
         for (String iri: dataIRI1) {
             object = testKnowledgeBase.getIndividual(iri)
-                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                     .getObject();
             Assert.assertTrue(object.isResource());
             Assert.assertEquals(tsIRI1, object.asResource().getURI());
@@ -449,7 +448,7 @@ public class TimeSeriesSparqlTest {
         // Test that data IRIs are attached to time series instance
         for (String iri: dataIRI1) {
             RDFNode object = testKnowledgeBase.getIndividual(iri)
-                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                     .getObject();
             Assert.assertTrue(object.isResource());
             Assert.assertEquals(tsIRI1, object.asResource().getURI());
@@ -457,7 +456,7 @@ public class TimeSeriesSparqlTest {
         sparqlClient.insertTimeSeriesAssociation(dataIRIThatGetsAdded, tsIRI1);
         // Test that new attached data IRI is really attached to time series instance
         RDFNode object = testKnowledgeBase.getIndividual(dataIRIThatGetsAdded)
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                 .getObject();
         Assert.assertTrue(object.isResource());
         Assert.assertEquals(tsIRI1, object.asResource().getURI());
@@ -478,7 +477,7 @@ public class TimeSeriesSparqlTest {
         	Assert.assertTrue(e.getMessage().contains("does not exists in the Knowledge Graph"));
             // Test that new attached data IRI is still attached to time series instance
             object = testKnowledgeBase.getIndividual(dataIRIThatGetsAdded)
-                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                     .getObject();
             Assert.assertTrue(object.isResource());
             Assert.assertEquals(tsIRI1, object.asResource().getURI());
@@ -510,7 +509,7 @@ public class TimeSeriesSparqlTest {
         for (String iri: dataIRI1) {
             if (!iri.equals(dataIRIThatGetsRemoved)) {
                 RDFNode object = testKnowledgeBase.getIndividual(iri)
-                        .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                        .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                         .getObject();
                 Assert.assertTrue(object.isResource());
                 Assert.assertEquals(tsIRI1, object.asResource().getURI());
@@ -519,7 +518,7 @@ public class TimeSeriesSparqlTest {
         // Check that the data for which the connection was removed does exist but the connection was removed
         Assert.assertNotNull(testKnowledgeBase.getIndividual(dataIRIThatGetsRemoved));
         Assert.assertNull(testKnowledgeBase.getIndividual(dataIRIThatGetsRemoved)
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries")));
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries")));
 
         // Initialise other time series with only one data IRI in kb
         sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.TimeSeries, null, null);
@@ -550,12 +549,12 @@ public class TimeSeriesSparqlTest {
         // Check that the one data IRI still exists and is not attached to the time series
         Assert.assertNotNull(testKnowledgeBase.getIndividual(dataIRI1.get(0)));
         Assert.assertNull(testKnowledgeBase.getIndividual(dataIRI1.get(0))
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries")));
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries")));
         // Check that other series does still exist and the data is still attached
         Assert.assertNotNull(testKnowledgeBase.getIndividual(tsIRI2));
         for (String iri: dataIRI2) {
             RDFNode object = testKnowledgeBase.getIndividual(iri)
-                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
                     .getObject();
             Assert.assertTrue(object.isResource());
             Assert.assertEquals(tsIRI2, object.asResource().getURI());
@@ -585,7 +584,7 @@ public class TimeSeriesSparqlTest {
         // Check that the one data IRI still exists and is not attached to the time series
         Assert.assertNotNull(testKnowledgeBase.getIndividual(dataIRI1.get(0)));
         Assert.assertNull(testKnowledgeBase.getIndividual(dataIRI1.get(0))
-                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries")));
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries")));
     }
     
     @Test
@@ -662,10 +661,10 @@ public class TimeSeriesSparqlTest {
 		
 		OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 		
-		Property hasRDB = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasRDB");
-		Property hasTimeUnit = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeUnit");
-		Property hasTimeSeries = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries");
-		Resource TimeSeries = ResourceFactory.createResource(TimeSeriesSparql.ns_ontology + "TimeSeries");
+		Property hasRDB = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasRDB");
+		Property hasTimeUnit = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeUnit");
+		Property hasTimeSeries = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries");
+		Resource TimeSeries = ResourceFactory.createResource(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries");
 		
 		for (String dataIRI : dataIRI1) {
 			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI1)));

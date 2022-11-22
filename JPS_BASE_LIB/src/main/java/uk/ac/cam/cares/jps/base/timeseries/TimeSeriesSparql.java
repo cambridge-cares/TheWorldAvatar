@@ -44,13 +44,12 @@ public class TimeSeriesSparql {
 	private TripleStoreClientInterface kbClient;
 
 	// Namespaces for ontology and knowledge base
-	public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
-	public static final String ns_kb = "https://www.theworldavatar.com/kg/ontotimeseries/";
+	public static final String TIMESERIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontotimeseries/";
 	public static final String ns_time = "http://www.w3.org/2006/time#";
 
 	// Prefixes
-	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(ns_ontology));
-	private static final Prefix prefix_kb = SparqlBuilder.prefix("kb", iri(ns_kb));
+	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(TIMESERIES_NAMESPACE));
+	private static final Prefix prefix_kb = SparqlBuilder.prefix("kb", iri(TIMESERIES_NAMESPACE));
 	private static final Prefix prefix_time = SparqlBuilder.prefix("time", iri(ns_time));
 
 	// Relationships
@@ -65,11 +64,11 @@ public class TimeSeriesSparql {
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 
 	//Time Series Type
-	public static final String AverageTypeString = ns_ontology+"AverageTimeSeries";
-	public static final String StepwiseCumulativeTypeString = ns_ontology+"StepwiseCumulativeTimeSeries";
-	public static final String CumulativeTotalTypeString = ns_ontology+"CumulativeTotalTimeSeries";
-	public static final String InstantaneousTypeString = ns_ontology+"InstantaneousTimeSeries";
-	public static final String TimeSeriesTypeString = ns_ontology+"TimeSeries";
+	public static final String AverageTypeString = TIMESERIES_NAMESPACE+"AverageTimeSeries";
+	public static final String StepwiseCumulativeTypeString = TIMESERIES_NAMESPACE+"StepwiseCumulativeTimeSeries";
+	public static final String CumulativeTotalTypeString = TIMESERIES_NAMESPACE+"CumulativeTotalTimeSeries";
+	public static final String InstantaneousTypeString = TIMESERIES_NAMESPACE+"InstantaneousTimeSeries";
+	public static final String TimeSeriesTypeString = TIMESERIES_NAMESPACE+"TimeSeries";
 
 	// RDF type
 	public static final Iri TimeSeries = iri(TimeSeriesTypeString);
@@ -78,14 +77,6 @@ public class TimeSeriesSparql {
 	public static final Iri AverageTimeSeries = iri(AverageTypeString);
 	public static final Iri InstantaneousTimeSeries = iri(InstantaneousTypeString);
 	private static final Iri Duration = prefix_time.iri("Duration");
-
-	//Timeseries IRI prefix
-	public static final String AverageIRIString = ns_ontology + "AverageTimeseries";
-	public static final String StepwiseCumulativeIRIString = ns_ontology + "StepwiseCumulativeTimeseries";
-	public static final String CumulativeTotalIRIString = ns_ontology + "CumulativeTotalTimeseries";
-	public static final String InstantaneousIRIString = ns_ontology + "InstantaneousTimeseries";
-	public static final String TimeSeriesIRIString = ns_ontology+"Timeseries";
-
 
 	//Values Pattern for TimeSeries types
 	private static final List<RdfObject> types = Arrays.asList(TimeSeries, CumulativeTotalTimeSeries, StepwiseCumulativeTimeSeries, AverageTimeSeries, InstantaneousTimeSeries);
@@ -354,7 +345,7 @@ public class TimeSeriesSparql {
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
     public boolean checkDataHasTimeSeries(String dataIRI) {
-    	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
+    	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (TIMESERIES_NAMESPACE + "hasTimeSeries"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
@@ -365,7 +356,7 @@ public class TimeSeriesSparql {
 	 * @return True if the timeseries instance exists and has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
-    	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
+    	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (TIMESERIES_NAMESPACE + "hasTimeUnit"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
@@ -433,7 +424,7 @@ public class TimeSeriesSparql {
 			}
 			else {
 				//Duration IRI
-				durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
+				durationIRI = TIMESERIES_NAMESPACE + "AveragingPeriod_" + UUID.randomUUID();
 				modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
 				modify.insert(iri(durationIRI).isA(Duration));
 				modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
@@ -517,7 +508,7 @@ public class TimeSeriesSparql {
 				}
 				else {
 					//Duration IRI
-					durationIRI = ns_kb + "AveragingPeriod_" + UUID.randomUUID();
+					durationIRI = TIMESERIES_NAMESPACE + "AveragingPeriod_" + UUID.randomUUID();
 					modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
 					modify.insert(iri(durationIRI).isA(Duration));
 					modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));

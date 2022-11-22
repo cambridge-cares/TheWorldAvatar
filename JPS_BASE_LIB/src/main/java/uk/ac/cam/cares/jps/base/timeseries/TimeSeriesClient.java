@@ -107,28 +107,23 @@ public class TimeSeriesClient<T> {
 		// Step1: Initialise time series in knowledge base
 		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
 		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-		String tsIRI = null;
+		String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
 		Iri timeseriesType = null;
 
 		if(type.equals(Type.AVERAGE)){
 			timeseriesType = TimeSeriesSparql.AverageTimeSeries;
-			tsIRI = TimeSeriesSparql.AverageIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.STEPWISECUMULATIVE)){
 			timeseriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
-			tsIRI = TimeSeriesSparql.StepwiseCumulativeIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.CUMULATIVETOTAL)){
 			timeseriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
-			tsIRI = TimeSeriesSparql.CumulativeTotalIRIString+  "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.INSTANTANEOUS)){
 			timeseriesType = TimeSeriesSparql.InstantaneousTimeSeries;
-			tsIRI = TimeSeriesSparql.InstantaneousIRIString + "_" + UUID.randomUUID();
 		}
 		else if(type.equals(Type.GENERAL)){
 			timeseriesType = TimeSeriesSparql.TimeSeries;
-			tsIRI = TimeSeriesSparql.TimeSeriesIRIString + "_" + UUID.randomUUID();
 		}
 
 		// Obtain RDB URL from connection object, exception thrown when connection is down
@@ -198,28 +193,23 @@ public class TimeSeriesClient<T> {
 		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
 		List<Iri> timeSeriesTypes = new ArrayList<>(dataIRIs.size());
 
-		String tsIRI = null;
 		Iri timeSeriesType = null;
 
 		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
 			if (type.get(i).equals(Type.AVERAGE)){
-				tsIRI = TimeSeriesSparql.AverageIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
 			}
 			else if(type.get(i).equals(Type.STEPWISECUMULATIVE)){
-				tsIRI = TimeSeriesSparql.StepwiseCumulativeIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
 			}
 			else if(type.get(i).equals(Type.CUMULATIVETOTAL)){
-				tsIRI = TimeSeriesSparql.CumulativeTotalIRIString+  "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
 			}
 			else if(type.get(i).equals(Type.INSTANTANEOUS)){
-				tsIRI = TimeSeriesSparql.InstantaneousIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
 			}
 			else if(type.get(i).equals(Type.GENERAL)){
-				tsIRI = TimeSeriesSparql.TimeSeriesIRIString + "_" + UUID.randomUUID();
 				timeSeriesType = TimeSeriesSparql.TimeSeries;
 			}
 			tsIRIs.add(i, tsIRI);

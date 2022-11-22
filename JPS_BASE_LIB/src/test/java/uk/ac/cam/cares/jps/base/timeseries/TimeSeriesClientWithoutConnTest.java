@@ -242,7 +242,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
-        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE+"TimeSeries");
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).removeTimeSeries(tsIRI);
         setRDFMock();
         setRDBMock();
@@ -268,7 +268,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
-        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE+"TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         setRDFMock();
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0), conn);
@@ -291,7 +291,7 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
         Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
         Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
-        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.ns_ontology+"TimeSeries");
+        Mockito.when(mockSparqlClient.getTimeSeriesType(tsIRI)).thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE+"TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
                 .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
