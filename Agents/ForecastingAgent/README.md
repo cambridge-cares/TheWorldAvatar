@@ -35,7 +35,7 @@ If you use later a model pretrained with 'darts', conflicts can occur while load
 
 ### **3) Instantiated knowledge graph with time series**
 
-In order to forecast a time series, this series has to be instantiated in a RDB. It is necessary that the ontology of the time series instantiation equals the ontology provided by [this Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries).    
+In order to forecast a time series, this series has to be instantiated using  [this Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) beforehand.    
 
 ### **4) Endpoints**
 
