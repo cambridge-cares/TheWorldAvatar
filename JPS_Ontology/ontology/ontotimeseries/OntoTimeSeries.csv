@@ -1,17 +1,39 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-OntoTimeSeries,TBox,https://www.theworldavatar.com/kg/ontotimeseries/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
-OntoTimeSeries,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
-TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/
-hasTimeSeries,Object Property,,,http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,https://www.theworldavatar.com/kg/ontotimeseries/
-hasRDB,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,https://www.theworldavatar.com/kg/ontotimeseries/
-hasTimeUnit,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,https://www.theworldavatar.com/kg/ontotimeseries/
-InstantaneousTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the measurement value at each time step,https://www.theworldavatar.com/kg/ontotimeseries/
-AverageTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the calculated average,https://www.theworldavatar.com/kg/ontotimeseries/
-CumulativeTimeSeries,Class,TimeSeries,IS-A,,,,Time series of cumulative data,https://www.theworldavatar.com/kg/ontotimeseries/
-CumulativeTotalTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series of running sum,https://www.theworldavatar.com/kg/ontotimeseries/
-StepwiseCumulativeTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series where data is cumulative between time steps,https://www.theworldavatar.com/kg/ontotimeseries/
-http://www.w3.org/2006/time#Duration,Class,,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#TemporalUnit,Class,,,,,,,http://www.w3.org/2006/time#
-hasAveragingPeriod,Object Property,,,AverageTimeSeries,http://www.w3.org/2006/time#Duration,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/
-http://www.w3.org/2006/time#unitType ,Object Property,,,http://www.w3.org/2006/time#Duration,http://www.w3.org/2006/time#TemporalUnit,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#numericDuration,Data Property,,,http://www.w3.org/2006/time#Duration,Decimal,,,http://www.w3.org/2006/time#
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoTimeSeries,TBox,https://www.theworldavatar.com/kg/ontotimeseries/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoTimeSeries,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoTimeSeries,TBox,"The Time series ontology (OntoTimeSeries) is an ontology developed for representing data associated with time series, incl. forecasting.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoTimeSeries,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,Time series
+hasTimeSeries,Object Property,,,http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,https://www.theworldavatar.com/kg/ontotimeseries/,has time series
+hasRDB,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has RDB URL
+hasTimeUnit,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,https://www.theworldavatar.com/kg/ontotimeseries/,has time unit
+InstantaneousTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the measurement value at each time step,https://www.theworldavatar.com/kg/ontotimeseries/,Instantaneous time series
+AverageTimeSeries,Class,TimeSeries,IS-A,,,,Time series where the data is the calculated average,https://www.theworldavatar.com/kg/ontotimeseries/,Average time series
+CumulativeTimeSeries,Class,TimeSeries,IS-A,,,,Time series of cumulative data,https://www.theworldavatar.com/kg/ontotimeseries/,Cumulative time series
+CumulativeTotalTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series of running sum,https://www.theworldavatar.com/kg/ontotimeseries/,Cumulative total time series
+StepwiseCumulativeTimeSeries,Class,CumulativeTimeSeries,IS-A,,,,Time series where data is cumulative between time steps,https://www.theworldavatar.com/kg/ontotimeseries/,Stepwise cumulative time series
+http://www.w3.org/2006/time#Duration,Class,,,,,,,http://www.w3.org/2006/time#,Duration
+http://www.w3.org/2006/time#TemporalUnit,Class,,,,,,,http://www.w3.org/2006/time#,Temporal unit
+hasAveragingPeriod,Object Property,,,AverageTimeSeries,http://www.w3.org/2006/time#Duration,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/,has averaging period
+http://www.w3.org/2006/time#unitType ,Object Property,,,http://www.w3.org/2006/time#Duration,http://www.w3.org/2006/time#TemporalUnit,,,http://www.w3.org/2006/time#,Unit type
+http://www.w3.org/2006/time#numericDuration,Data Property,,,http://www.w3.org/2006/time#Duration,Decimal,,,http://www.w3.org/2006/time#,Numeric duration
+Forecast,Class,,,,,,A prediction or estimate about how something will develop,https://www.theworldavatar.com/kg/ontotimeseries/,Forecast
+hasForecast,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Forecast,,A relationship between anything and its forecast,https://www.theworldavatar.com/kg/ontotimeseries/,has forecast
+createdAt,Data Property,,,Forecast,https://www.w3.org/2001/XMLSchema#dateTimeStamp,,A relationship between a forecast and its creation time,https://www.theworldavatar.com/kg/ontotimeseries/,created at
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,Forecast,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,A relationship between a forecast and its unit,https://www.theworldavatar.com/kg/ontotimeseries/,has unit
+hasInputTimeInterval,Object Property,,,Forecast,http://www.w3.org/2006/time#Interval,,"A relationship between a forecast and its input time interval, i.e. the time interval used to create the forecast",https://www.theworldavatar.com/kg/ontotimeseries/,has input time interval
+hasOutputTimeInterval,Object Property,,,Forecast,http://www.w3.org/2006/time#Interval,,"A relationship between a forecast and its output time interval, i.e. the time interval for which to create the forecast",https://www.theworldavatar.com/kg/ontotimeseries/,has output time interval
+ForecastingModel,Class,,,,,,A model used to derive a prediction or estimate about how something will develop,https://www.theworldavatar.com/kg/ontotimeseries/,Forecasting model
+hasForecastingModel,Object Property,,,Forecast,ForecastingModel,,A relationship between a forecast and its prediction model,https://www.theworldavatar.com/kg/ontotimeseries/,has forecasting model
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,ForecastingModel,String,,Name or tag of a forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,
+hasURL,Data Property,,,ForecastingModel,String,,URL of storage location of a forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,has URL
+hasCovariate,Object Property,,,ForecastingModel,http://www.w3.org/2002/07/owl#Thing,,A relationship between a forecasting model for a particular quantity and associated covariates ,https://www.theworldavatar.com/kg/ontotimeseries/,has covariate
+hasTrainingTimeSeries,Object Property,,,ForecastingModel,TimeSeries,,A relationship between a forecasting model for a particular quantity and the time series used in deriving/training this model,https://www.theworldavatar.com/kg/ontotimeseries/,has training time series
+http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,End of a temporal entity,http://www.w3.org/2006/time#,has end
+http://www.w3.org/2006/time#hasBeginning,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,Beginning of a temporal entity,http://www.w3.org/2006/time#,has beginning
+http://www.w3.org/2006/time#inTimePosition,Object Property,,,http://www.w3.org/2006/time#Instant,http://www.w3.org/2006/time#TimePosition,,"Position of an instant, expressed as a temporal coordinate or nominal value",http://www.w3.org/2006/time#,in time position
+http://www.w3.org/2006/time#TimePosition,Class,http://www.w3.org/2006/time#TemporalPosition,IS-A,,,,"A temporal position described using either a (nominal) value from an ordinal reference system, or a (numeric) value in a temporal coordinate system",http://www.w3.org/2006/time#,Time position
+http://www.w3.org/2006/time#TRS,Class,,,,,,"A temporal reference system, such as a temporal coordinate system (with an origin, direction, and scale), a calendar-clock combination, or a (possibly hierarchical) ordinal system",http://www.w3.org/2006/time#,Temporal coordinate system
+http://www.w3.org/2006/time#numericPosition,Data Property,,,http://www.w3.org/2006/time#TimePosition,Integer,,The (numeric) value indicating position within a temporal coordinate system,http://www.w3.org/2006/time#,Numeric position
+http://www.w3.org/2006/time#hasTRS,Object Property,,,http://www.w3.org/2006/time#TemporalPosition,http://www.w3.org/2006/time#TRS,,The temporal reference system used by a temporal position or extent description,http://www.w3.org/2006/time#,has temporal coordinate system
+http://www.w3.org/2006/time#hasTime,Object Property,,,ForecastingModel,http://www.w3.org/2006/time#Instant,,A relationship between a forecasting model and its creation time,https://www.theworldavatar.com/kg/ontotimeseries/,has creation time
