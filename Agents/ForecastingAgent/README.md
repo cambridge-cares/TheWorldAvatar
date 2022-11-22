@@ -49,7 +49,7 @@ Set your postgres database and blazegraph endpoints in your properties [file](./
 
 The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`.
 
-After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one or else must be specified with the `force_configuration` parameter in the HTTP request.
+After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one or else must be specified with the `use_model_configuration` parameter in the HTTP request.
 
 Next the agent loads the time series (+ covariates if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
 
@@ -70,7 +70,7 @@ Buy running [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with
 - **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
 If not set the default value from the [mapping file] is used.
-- **force_configuration** if specified this model configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
+- **use_model_configuration** if specified this model configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
 
 
 ## Custom configurations and new models

@@ -68,10 +68,10 @@ def api_forecast():
     
     # Retrieve if specific mapping should be foreced
     try:
-        force_configuration = query['force_configuration']
-        print('force_configuration: ' + force_configuration)
+        use_model_configuration = query['use_model_configuration']
+        print('use_model_configuration: ' + use_model_configuration)
     except KeyError as ex:
-        force_configuration = None
+        use_model_configuration = None
     
     # Retrieve data_length 
     try:
@@ -82,7 +82,7 @@ def api_forecast():
         
     try:
         # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, force_configuration, data_length = data_length)
+        res = forecast(dataIRI, horizon, forecast_start_date, use_model_configuration, data_length = data_length)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:

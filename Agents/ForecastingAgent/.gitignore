@@ -4,7 +4,7 @@ __pycache__/
 build/
 dist/
 *~*
-.vscode/
+#.vscode/
 .idea/
 *venv/
 coverage.xml
@@ -13,8 +13,7 @@ coverage.xml
 *.png
 assets
 
-## User defined
 *.egg-info
-Model/
+Models/
 lightning_logs/
 checkpoints/

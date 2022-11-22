@@ -33,7 +33,7 @@ from forecasting.utils.useful_queries import *
 #logger = agentlogging.get_logger("prod")
 
 
-def forecast(dataIRI, horizon, forecast_start_date=None, force_configuration=None, data_length=None):
+def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -41,7 +41,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_configuration=Non
     :param dataIRI: The IRI of the time series you want to forecast
     :param horizon: The number of time steps to forecast
     :param forecast_start_date: The date from which you want to start forecasting
-    :param force_configuration: If you want to force a specific mapping, you can do so here
+    :param use_model_configuration: If you want to force a specific mapping, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
     :return: The forecast is being returned.
     """
@@ -51,11 +51,11 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_configuration=Non
 
     covariates = None
 
-    # get the mapping dictionary either from the a specific force_configuration
+    # get the mapping dictionary either from the a specific use_model_configuration
     # or from identifying the dataIRI
-    if force_configuration is not None:
-        print(f'Using forced  mapping {force_configuration}')
-        mapping_name = force_configuration
+    if use_model_configuration is not None:
+        print(f'Using forced  mapping {use_model_configuration}')
+        mapping_name = use_model_configuration
     else:
         mapping_name = get_config(dataIRI, kgClient)
 
