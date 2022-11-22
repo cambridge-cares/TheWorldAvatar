@@ -65,7 +65,7 @@ Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.
 [HTTPRequest_forecast](./resources/HTTP_request_forecast.http) shows a sample request to forecast an `iri`. 
 
 ### Input parameters
-- **iri** is the `iri` of the existing TS, which should receive the hasForecastedValue instantiation.
+- **iri** is the `iri` of the object which has a time series attached to it. This iri will receive the hasForecastedValue instantiation.
 - **horizon** the time steps the agent forecasts autorecursively into the future.
 - **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
