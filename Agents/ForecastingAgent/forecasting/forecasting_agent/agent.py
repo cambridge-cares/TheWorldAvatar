@@ -1,6 +1,6 @@
 ################################################
-# Authors: Magnus Mueller (mm2692@cam.ac.uk) #
-# Date: 31 Oct 2022                            #
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 22 Nov 2022                            #
 ################################################
 
 # The purpose of this module is to forecast a time series using a trained model or Prophet
@@ -18,17 +18,15 @@ from darts.dataprocessing.transformers import Scaler
 from darts.models import Prophet, TFTModel
 
 from forecasting.datamodel.data_mapping import *
-#import agentlogging
 from forecasting.datamodel.iris import *
 from forecasting.errorhandling.exceptions import KGException
 from forecasting.kgutils.kgclient import KGClient
-#from forecasting.utils.api_endpoints import HM_SPARQL_ENDPOINT
-#from forecasting.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from forecasting.kgutils.tsclient import TSClient
 from forecasting.utils.properties import *
 from forecasting.utils.tools import *
 from forecasting.utils.useful_queries import *
 
+#import agentlogging
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
 
@@ -51,15 +49,14 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
     covariates = None
 
-    # get the mapping dictionary either from the a specific use_model_configuration
-    # or from identifying the dataIRI
+    # get the mapping dictionary from the a specific use_model_configuration or use default
     if use_model_configuration is not None:
-        print(f'Using forced  mapping {use_model_configuration}')
+        print(f'Using model configuration: {use_model_configuration}')
         mapping_name = use_model_configuration
     else:
-        mapping_name = get_config(dataIRI, kgClient)
+        mapping_name = "DEFAULT"
 
-    cfg = MAPPING[mapping_name].copy()
+    cfg = MODEL_MAPPING[mapping_name].copy()
     cfg['mapping_name'] = mapping_name
     cfg['dataIRI'] = dataIRI
     cfg['horizon'] = horizon
@@ -423,35 +420,3 @@ def instantiate_forecast(cfg, forecast, tsClient, kgClient):
     kgClient.performUpdate(add_insert_data(update))
     cfg['forecast_iri'] = forecast_iri
 
-
-def get_config(dataIRI, kgClient):
-    """
-    It takes a dataIRI and a kgClient as input and returns the name of the mapping function to be used by identifying the dataIRI in the KG.
-    
-    :param dataIRI: the IRI of the data to be mapped
-    :param kgClient: the client for the knowledge graph
-    :return: The name of the config to be used.
-    """
-    # identify the dataIRI for right mapping function
-
-    # get properties of dataIRI and its neighbors
-    predecessor_dict = get_predecessor_type_and_predicate(dataIRI, kgClient)
-
-    # use properties to identify the right mapping function
-    # TODO: specify identification in mapping functions
-    # case 1 - heat supply data identified
-    if OHN_HASHEATDEMAND in predecessor_dict and predecessor_dict[OHN_HASHEATDEMAND] == OHN_CONSUMER:
-        # get the data
-        mappping_name = 'TFT_HEAT_SUPPLY'
-
-    # add more cases here ordered by priority
-    # elif case 2 ...
-
-    # case n - default case
-    else:
-        # no match use default mapping
-        mappping_name = 'DEFAULT'
-        print(f'Using mapping DEFAULT')
-
-    print(f'Using mapping {mappping_name}')
-    return mappping_name
