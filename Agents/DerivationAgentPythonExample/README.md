@@ -15,7 +15,7 @@ For development and testing reasons, follow below instructions to get started.
 
 ### Virtual environment setup
 
-It is highly recommended to install `pyderivationagent` packages in a [virtual environment](https://docs.python.org/3/tutorial/venv.html). The following steps can be taken to build a virtual environment:
+It is highly recommended to install `pyderivationagent` packages in a [virtual environment (python>=3.8)](https://docs.python.org/3/tutorial/venv.html). The following steps can be taken to build a virtual environment:
 
 `(Windows)`
 
@@ -41,9 +41,16 @@ The following command can be used to install all required packages.
 `(Linux)`
 ```bash
 (<venv_name>) $ python -m pip install --upgrade pip
-# Install all required packages from setup.py, incl. pyderivationagent, pytest etc.
+# Install all required packages, incl. pyderivationagent, pytest etc.
+# NOTE instead of the loosely constrained versions defined in the setup.py
+#   here packages in the requirements.txt with the pinned version are installed
+# This ensures the user getting a tested version of the agent
+# However, one can skip this line and execute the next command directly
+#   where pip will pick up the versions automatically
 (<venv_name>) $ python -m pip install -r requirements.txt
 # Install the agent package itself for development purpose
+# If the previous command executed, pip will skip all the "install_requires"
+#   as "Requirement already satisfied"
 (<venv_name>) $ python -m pip install -e .[dev]
 ```
 
