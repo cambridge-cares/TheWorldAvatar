@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  propertyvalue_agent:
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
+    ports:
+      - ${DEBUG_PORT}:5678
+    volumes:
+      # repository name needs to match "agentdir" build arg in docker-compose-build.yml
+      - ./propertyvalueestimation:/app/propertyvalueestimation
