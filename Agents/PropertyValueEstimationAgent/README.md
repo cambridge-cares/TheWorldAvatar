@@ -71,7 +71,7 @@ This agent requires the [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4
 bash ./build_py4jps_stackclients_resource.sh
 ```
 
-Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a `bash` terminal). The stack `<STACK NAME>` is the name of an already running stack.
+Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a `bash` terminal). The stack `<STACK NAME>` is the name of an already running stack. **Please note** that when you first publish a package, the default visibility is private and only you can see the package. To ensure others can see and pull the image, please set the [visibility of the pushed docker image to public]. This needs to be done once per package, and then applies to all instances of that package.
 
 ```bash
 # Building the agent Docker image and pushing it
@@ -274,6 +274,7 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [VS Code via SSH]: https://code.visualstudio.com/docs/remote/ssh
+[visibility of the pushed docker image to public]: https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#configuring-visibility-of-container-images-for-an-organization
 
 <!-- TWA github -->
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
