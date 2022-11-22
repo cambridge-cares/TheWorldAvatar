@@ -75,23 +75,19 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
         cfg, kgClient, tsClient)
 
     # split series at forecast_start_date
-    # if more time steps are available after forecast_start_date
-    # backtest can be performed later
     try:
         series, backtest_series = series.split_before(
             cfg['forecast_start_date'])
     except ValueError as e:
         # Timestamp out of series range
-        print(
-            f'Cannot split series at {cfg["forecast_start_date"]} - out of range')
-        backtest_series = None
+        raise ValueError(
+            f'Cannot split series at {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
 
     # load the model
-    # TODO: If you have multiple models and you need different loading functions,
-    # you can add them here. Maybe even add a function to the model configuration dictionary
+    # NOTE: If you have multiple different models, you need to edit here the loading function,
     if 'model_path_ckpt_link' in cfg['fc_model']:
         model = load_pretrained_model(
-            cfg)
+            cfg, TFTModel)
         # other models than TFT can have different key then 'input_chunk_length'
         cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
 
@@ -302,11 +298,12 @@ def get_ts_lower_upper_bound(cfg):
     return lowerbound.strftime(TIME_FORMAT), upperbound.strftime(TIME_FORMAT)
 
 
-def load_pretrained_model(cfg, forece_download=False):
+def load_pretrained_model(cfg, ModelClass, forece_download=False):
     """
     It downloads a model from a link, and then loads it into a Darts model
     
     :param cfg: a dictionary containing the configuration of the model
+    :param ModelClass: the class of the model
     :param forece_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
     (optional)
     :return: The model is being returned.
@@ -344,10 +341,7 @@ def load_pretrained_model(cfg, forece_download=False):
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             print(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
-    # try to load model from downloaded checkpoint
-    # model = TFTModel.load(
-    #    path_pth.__str__())
-    model = TFTModel.load_from_checkpoint(
+    model = ModelClass.load_from_checkpoint(
         path_ckpt.parent.parent.__str__())
     cfg['fc_model']['name'] = model_path_ckpt_link.__str__()
     print(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
