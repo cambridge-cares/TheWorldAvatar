@@ -230,7 +230,7 @@ public class TimeSeriesSparql {
 	 * @param numericValue numerical duration of the averaging period
 	 * @return Averaging period IRI attached to the given temporalUnit and numericDuration in the knowledge graph
 	 */
-	public String getDurationIRI(String temporalUnit, Double numericValue) {
+	private String getDurationIRI(String temporalUnit, Double numericValue) {
 
 		String durationIRI = null;
 		String queryString = "periodIRI";
@@ -254,7 +254,7 @@ public class TimeSeriesSparql {
 	 * for all the averaging period Iris in the kb
 	 * @return hashMap containing (numericDuration, temporalUnit) mapping to averaging period IRI
 	 */
-	public Map<CustomDuration, String> createDurationIRIMapping(){
+	private Map<CustomDuration, String> createDurationIRIMapping(){
 
 		HashMap<CustomDuration, String> durationMap = new HashMap<>();
 
@@ -279,7 +279,7 @@ public class TimeSeriesSparql {
 	 * * Removes average time series and all associated connections from kb (i.e. remove all triples with tsIRI as subject or object)
 	 * @param tsIRI
 	 */
-	protected void removeAverageTimeSeries(String tsIRI){
+	private void removeAverageTimeSeries(String tsIRI){
 		// sub query to search for all triples with tsIRI as the subject/object
 		SubSelect sub = GraphPatterns.select();
 		Variable predicate1 = SparqlBuilder.var("a");
