@@ -111,19 +111,19 @@ public class TimeSeriesClient<T> {
 		Iri timeseriesType = null;
 
 		if(type.equals(Type.AVERAGE)){
-			timeseriesType = TimeSeriesSparql.AverageTimeSeries;
+			timeseriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
 		}
 		else if(type.equals(Type.STEPWISECUMULATIVE)){
-			timeseriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
+			timeseriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
 		}
 		else if(type.equals(Type.CUMULATIVETOTAL)){
-			timeseriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
+			timeseriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
 		}
 		else if(type.equals(Type.INSTANTANEOUS)){
-			timeseriesType = TimeSeriesSparql.InstantaneousTimeSeries;
+			timeseriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
 		}
 		else if(type.equals(Type.GENERAL)){
-			timeseriesType = TimeSeriesSparql.TimeSeries;
+			timeseriesType = TimeSeriesSparql.TIMESERIES;
 		}
 
 		// Obtain RDB URL from connection object, exception thrown when connection is down
@@ -198,19 +198,19 @@ public class TimeSeriesClient<T> {
 		for (int i = 0; i < dataIRIs.size(); i++) {
 			String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
 			if (type.get(i).equals(Type.AVERAGE)){
-				timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
+				timeSeriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
 			}
 			else if(type.get(i).equals(Type.STEPWISECUMULATIVE)){
-				timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
+				timeSeriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
 			}
 			else if(type.get(i).equals(Type.CUMULATIVETOTAL)){
-				timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
+				timeSeriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
 			}
 			else if(type.get(i).equals(Type.INSTANTANEOUS)){
-				timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
+				timeSeriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
 			}
 			else if(type.get(i).equals(Type.GENERAL)){
-				timeSeriesType = TimeSeriesSparql.TimeSeries;
+				timeSeriesType = TimeSeriesSparql.TIMESERIES;
 			}
 			tsIRIs.add(i, tsIRI);
 			timeSeriesTypes.add(i, timeSeriesType);
@@ -363,20 +363,20 @@ public class TimeSeriesClient<T> {
 		//Get time series type
 		String type = rdfClient.getTimeSeriesType(tsIRI);
 		Iri timeSeriesType = null;
-		if(type.equals(TimeSeriesSparql.AverageTypeString)){
-			timeSeriesType = TimeSeriesSparql.AverageTimeSeries;
+		if(type.equals(TimeSeriesSparql.AVERAGE_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
 		}
-		else if(type.equals(TimeSeriesSparql.InstantaneousTypeString)){
-			timeSeriesType = TimeSeriesSparql.InstantaneousTimeSeries;
+		else if(type.equals(TimeSeriesSparql.INSTANTANEOUS_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
 		}
-		else if(type.equals(TimeSeriesSparql.StepwiseCumulativeTypeString)){
-			timeSeriesType = TimeSeriesSparql.StepwiseCumulativeTimeSeries;
+		else if(type.equals(TimeSeriesSparql.STEPWISE_CUMULATIVE_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
 		}
-		else if(type.equals(TimeSeriesSparql.CumulativeTotalTypeString)){
-			timeSeriesType = TimeSeriesSparql.CumulativeTotalTimeSeries;
+		else if(type.equals(TimeSeriesSparql.CUMULATIVE_TOTAL_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
 		}
-		else if(type.equals(TimeSeriesSparql.TimeSeriesTypeString)){
-			timeSeriesType = TimeSeriesSparql.TimeSeries;
+		else if(type.equals(TimeSeriesSparql.TIMESERIES_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.TIMESERIES;
 		}
 		else {
 			throw new JPSRuntimeException(exceptionPrefix + "Invalid TimeSeries Type: "+type);
@@ -386,7 +386,7 @@ public class TimeSeriesClient<T> {
 		Double numericDuration = null;
 		String durIRI = null;
 
-		if(timeSeriesType.equals(TimeSeriesSparql.AverageTimeSeries)){
+		if(timeSeriesType.equals(TimeSeriesSparql.AVERAGE_TIMESERIES)){
 			TimeSeriesSparql.CustomDuration customDuration = rdfClient.getCustomDuration(tsIRI);
 			temporalUnit = customDuration.getUnit();
 			numericDuration = customDuration.getValue();

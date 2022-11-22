@@ -65,7 +65,7 @@ public class TimeSeriesSparqlIntegrationTest {
 		String timeUnit = "s";
 
 		// Initialise time series in kb
-		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TimeSeries, null, null);
+		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
 
 		// Test number of initialised time series in kb
 		Assert.assertEquals(1,  sparqlClient.countTS());
@@ -84,7 +84,7 @@ public class TimeSeriesSparqlIntegrationTest {
 		Assert.assertEquals(timeUnit,  sparqlClient.getTimeUnit(tsIRI1));
 
 		// Initialise another time series without time unit
-		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, null, TimeSeriesSparql.TimeSeries, null, null);
+		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, null, TimeSeriesSparql.TIMESERIES, null, null);
 		Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
 
 		// Remove the attachment of one data IRI to a time series

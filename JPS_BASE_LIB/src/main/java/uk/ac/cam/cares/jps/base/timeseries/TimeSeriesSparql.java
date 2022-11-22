@@ -45,56 +45,56 @@ public class TimeSeriesSparql {
 
 	// Namespaces for ontology and knowledge base
 	public static final String TIMESERIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontotimeseries/";
-	public static final String ns_time = "http://www.w3.org/2006/time#";
+	public static final String NS_TIME = "http://www.w3.org/2006/time#";
 
 	// Prefixes
-	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(TIMESERIES_NAMESPACE));
-	private static final Prefix prefix_kb = SparqlBuilder.prefix("kb", iri(TIMESERIES_NAMESPACE));
-	private static final Prefix prefix_time = SparqlBuilder.prefix("time", iri(ns_time));
+	private static final Prefix PREFIX_ONTOLOGY = SparqlBuilder.prefix("ts", iri(TIMESERIES_NAMESPACE));
+	private static final Prefix PREFIX_KB = SparqlBuilder.prefix("kb", iri(TIMESERIES_NAMESPACE));
+	private static final Prefix PREFIX_TIME = SparqlBuilder.prefix("time", iri(NS_TIME));
 
 	// Relationships
-	private static final Iri hasTimeSeries = prefix_ontology.iri("hasTimeSeries");
-	private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
-	private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
-	private static final Iri hasAveragingPeriod = prefix_ontology.iri("hasAveragingPeriod");
-	private static final Iri numericDuration = prefix_time.iri("numericDuration");
-	private static final Iri unitType = prefix_time.iri("unitType");
+	private static final Iri hasTimeSeries = PREFIX_ONTOLOGY.iri("hasTimeSeries");
+	private static final Iri hasRDB = PREFIX_ONTOLOGY.iri("hasRDB");
+	private static final Iri hasTimeUnit = PREFIX_ONTOLOGY.iri("hasTimeUnit");
+	private static final Iri hasAveragingPeriod = PREFIX_ONTOLOGY.iri("hasAveragingPeriod");
+	private static final Iri numericDuration = PREFIX_TIME.iri("numericDuration");
+	private static final Iri unitType = PREFIX_TIME.iri("unitType");
 
 	// Fields for class specific exceptions
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 
 	//Time Series Type
-	public static final String AverageTypeString = TIMESERIES_NAMESPACE+"AverageTimeSeries";
-	public static final String StepwiseCumulativeTypeString = TIMESERIES_NAMESPACE+"StepwiseCumulativeTimeSeries";
-	public static final String CumulativeTotalTypeString = TIMESERIES_NAMESPACE+"CumulativeTotalTimeSeries";
-	public static final String InstantaneousTypeString = TIMESERIES_NAMESPACE+"InstantaneousTimeSeries";
-	public static final String TimeSeriesTypeString = TIMESERIES_NAMESPACE+"TimeSeries";
+	public static final String AVERAGE_TYPE_STRING = TIMESERIES_NAMESPACE+"AverageTimeSeries";
+	public static final String STEPWISE_CUMULATIVE_TYPE_STRING = TIMESERIES_NAMESPACE+"StepwiseCumulativeTimeSeries";
+	public static final String CUMULATIVE_TOTAL_TYPE_STRING = TIMESERIES_NAMESPACE+"CumulativeTotalTimeSeries";
+	public static final String INSTANTANEOUS_TYPE_STRING = TIMESERIES_NAMESPACE+"InstantaneousTimeSeries";
+	public static final String TIMESERIES_TYPE_STRING = TIMESERIES_NAMESPACE+"TimeSeries";
 
 	// RDF type
-	public static final Iri TimeSeries = iri(TimeSeriesTypeString);
-	public static final Iri StepwiseCumulativeTimeSeries = iri(StepwiseCumulativeTypeString);
-	public static final Iri CumulativeTotalTimeSeries = iri(CumulativeTotalTypeString);
-	public static final Iri AverageTimeSeries = iri(AverageTypeString);
-	public static final Iri InstantaneousTimeSeries = iri(InstantaneousTypeString);
-	private static final Iri Duration = prefix_time.iri("Duration");
+	public static final Iri TIMESERIES = iri(TIMESERIES_TYPE_STRING);
+	public static final Iri STEPWISE_CUMULATIVE_TIMESERIES = iri(STEPWISE_CUMULATIVE_TYPE_STRING);
+	public static final Iri CUMULATIVE_TOTAL_TIMESERIES = iri(CUMULATIVE_TOTAL_TYPE_STRING);
+	public static final Iri AVERAGE_TIMESERIES = iri(AVERAGE_TYPE_STRING);
+	public static final Iri INSTANTANEOUS_TIMESERIES = iri(INSTANTANEOUS_TYPE_STRING);
+	private static final Iri Duration = PREFIX_TIME.iri("Duration");
 
 	//Values Pattern for TimeSeries types
-	private static final List<RdfObject> types = Arrays.asList(TimeSeries, CumulativeTotalTimeSeries, StepwiseCumulativeTimeSeries, AverageTimeSeries, InstantaneousTimeSeries);
+	private static final List<RdfObject> types = Arrays.asList(TIMESERIES, CUMULATIVE_TOTAL_TIMESERIES, STEPWISE_CUMULATIVE_TIMESERIES, AVERAGE_TIMESERIES, INSTANTANEOUS_TIMESERIES);
 	private static final Variable tsType = Queries.SELECT().var();
 	private static final ValuesPattern vp = new ValuesPattern(tsType, types);
 
-	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList(ns_time+"unitSecond", ns_time+"unitMinute", ns_time+"unitHour", ns_time+"unitDay", ns_time+"unitWeek", ns_time+"unitMonth", ns_time+"unitYear"));
+	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList(NS_TIME+"unitSecond", NS_TIME+"unitMinute", NS_TIME+"unitHour", NS_TIME+"unitDay", NS_TIME+"unitWeek", NS_TIME+"unitMonth", NS_TIME+"unitYear"));
 
 	//EnumMap of allowed temporalUnit types
 	private static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
 	static {
-		temporalUnitMap.put(ChronoUnit.SECONDS, ns_time+"unitSecond");
-		temporalUnitMap.put(ChronoUnit.MINUTES, ns_time+"unitMinute");
-		temporalUnitMap.put(ChronoUnit.HOURS, ns_time+"unitHour");
-		temporalUnitMap.put(ChronoUnit.DAYS, ns_time+"unitDay");
-		temporalUnitMap.put(ChronoUnit.WEEKS, ns_time+"unitWeek");
-		temporalUnitMap.put(ChronoUnit.MONTHS, ns_time+"unitMonth");
-		temporalUnitMap.put(ChronoUnit.YEARS, ns_time+"unitYear");
+		temporalUnitMap.put(ChronoUnit.SECONDS, NS_TIME+"unitSecond");
+		temporalUnitMap.put(ChronoUnit.MINUTES, NS_TIME+"unitMinute");
+		temporalUnitMap.put(ChronoUnit.HOURS, NS_TIME+"unitHour");
+		temporalUnitMap.put(ChronoUnit.DAYS, NS_TIME+"unitDay");
+		temporalUnitMap.put(ChronoUnit.WEEKS, NS_TIME+"unitWeek");
+		temporalUnitMap.put(ChronoUnit.MONTHS, NS_TIME+"unitMonth");
+		temporalUnitMap.put(ChronoUnit.YEARS, NS_TIME+"unitYear");
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class TimeSeriesSparql {
 		TriplePattern queryPattern1 = iri(tsIRI).has(hasAveragingPeriod, dur);
 		TriplePattern queryPattern2 = dur.has(numericDuration, value).andHas(unitType, unit);
 
-		query.select(value, unit).where(queryPattern1, queryPattern2).prefix(prefix_time).prefix(prefix_ontology);
+		query.select(value, unit).where(queryPattern1, queryPattern2).prefix(PREFIX_TIME).prefix(PREFIX_ONTOLOGY);
 
 		JSONArray result = kbClient.executeQuery(query.getQueryString());
 		if(!result.isEmpty()){
@@ -239,7 +239,7 @@ public class TimeSeriesSparql {
 		Variable periodIRI = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = periodIRI.has(numericDuration, numericValue).andHas(unitType, iri(temporalUnit));
 
-		query.select(periodIRI).where(queryPattern).prefix(prefix_time);
+		query.select(periodIRI).where(queryPattern).prefix(PREFIX_TIME);
 
 		JSONArray result = kbClient.executeQuery(query.getQueryString());
 		if(!result.isEmpty()){
@@ -264,7 +264,7 @@ public class TimeSeriesSparql {
 		Variable unit = SparqlBuilder.var("unit");
 
 		TriplePattern queryPattern = durIRI.has(numericDuration, value).andHas(unitType, unit);
-		query.select(durIRI, value, unit).where(queryPattern).prefix(prefix_time);
+		query.select(durIRI, value, unit).where(queryPattern).prefix(PREFIX_TIME);
 		JSONArray result = kbClient.executeQuery(query.getQueryString());
 
 		for (int i=0; i < result.length(); i++){
@@ -298,7 +298,7 @@ public class TimeSeriesSparql {
 
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(sub).prefix(prefix_ontology);
+		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(sub).prefix(PREFIX_ONTOLOGY);
 
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
@@ -313,7 +313,7 @@ public class TimeSeriesSparql {
 		Variable durIRI = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = iri(tsIRI).has(hasAveragingPeriod, durIRI);
 
-		query.select(durIRI).where(queryPattern).prefix(prefix_ontology);
+		query.select(durIRI).where(queryPattern).prefix(PREFIX_ONTOLOGY);
 		kbClient.setQuery(query.getQueryString());
 		JSONArray result = kbClient.executeQuery();
 		if(!result.isEmpty()){
@@ -333,7 +333,7 @@ public class TimeSeriesSparql {
 		SelectQuery query = Queries.SELECT();
 		TriplePattern queryPattern = iri(timeSeriesIRI).isA(tsType);
 
-		query.select(tsType).where(queryPattern, vp).prefix(prefix_ontology);
+		query.select(tsType).where(queryPattern, vp).prefix(PREFIX_ONTOLOGY);
 		kbClient.setQuery(query.getQueryString());
 
 		return (!kbClient.executeQuery(query.getQueryString()).isEmpty());
@@ -390,12 +390,12 @@ public class TimeSeriesSparql {
 
 		ModifyQuery modify = Queries.MODIFY();
 		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+		modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
 		// define type
 		modify.insert(tsIRI.isA(type));
 
-		if(type.equals(AverageTimeSeries)){
+		if(type.equals(AVERAGE_TIMESERIES)){
 
 			if(duration.getNano()!=0){
 				LOGGER.warn("Nano is ignored");
@@ -461,7 +461,7 @@ public class TimeSeriesSparql {
 	protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit, List<Iri> types, List<Duration> durations, List<ChronoUnit> units) {
 		ModifyQuery modify = Queries.MODIFY();
 		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+		modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
 		Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
@@ -475,7 +475,7 @@ public class TimeSeriesSparql {
 
 			modify.insert(tsIRI.isA(types.get(i)));
 
-			if(types.get(i).equals(AverageTimeSeries)){
+			if(types.get(i).equals(AVERAGE_TIMESERIES)){
 
 				if(durations.get(i).getNano()!=0){
 					LOGGER.warn("Nano is ignored");
@@ -557,7 +557,7 @@ public class TimeSeriesSparql {
     	GraphPattern querypattern = ts.isA(tsType);
     	Assignment count = Expressions.count(ts).as(numtimeseries);
 
-    	query.select(count).where(querypattern, vp).prefix(prefix_ontology);
+    	query.select(count).where(querypattern, vp).prefix(PREFIX_ONTOLOGY);
     	kbClient.setQuery(query.getQueryString());
 
     	return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
@@ -583,7 +583,7 @@ public class TimeSeriesSparql {
 
 		// Add triple with "hasTimeSeries" relationship between dataIRI and tsIRI
 		InsertDataQuery insert = Queries.INSERT_DATA(iri(dataIRI).has(hasTimeSeries, iri(tsIRI)));
-		insert.prefix(prefix_ontology);
+		insert.prefix(PREFIX_ONTOLOGY);
 		kbClient.executeUpdate(insert.getQueryString());
 
 	}
@@ -606,7 +606,7 @@ public class TimeSeriesSparql {
 			} else {
 				// Remove only relationship between dataIRI and tsIRI
 				DeleteDataQuery delete = Queries.DELETE_DATA(iri(dataIRI).has(hasTimeSeries, iri(tsIRI)));
-				delete.prefix(prefix_ontology);
+				delete.prefix(PREFIX_ONTOLOGY);
 				kbClient.executeUpdate(delete.getQueryString());
 			}
 
@@ -633,7 +633,7 @@ public class TimeSeriesSparql {
 
 			Assignment count = Expressions.count(ts).as(numTs);
 
-			query.select(count).where(queryPattern1, queryPattern2).prefix(prefix_ontology);
+			query.select(count).where(queryPattern1, queryPattern2).prefix(PREFIX_ONTOLOGY);
 			kbClient.setQuery(query.getQueryString());
 
 			Integer avgTsIris = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
@@ -673,7 +673,7 @@ public class TimeSeriesSparql {
 		SelectQuery query = Queries.SELECT();
 		TriplePattern queryPattern = iri(tsIRI).isA(tsType);
 
-		query.select(tsType).where(queryPattern, vp).prefix(prefix_ontology);
+		query.select(tsType).where(queryPattern, vp).prefix(PREFIX_ONTOLOGY);
 		kbClient.setQuery(query.getQueryString());
 
 		return kbClient.executeQuery().getJSONObject(0).getString(tsType.getQueryString().substring(1));
@@ -702,7 +702,7 @@ public class TimeSeriesSparql {
 
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(timeseries.isA(tsType), deleteTp1, deleteTp2, optional, vp).prefix(prefix_ontology);
+		modify.delete(deleteTp1, deleteTp2, deleteTp3, deleteTp4).where(timeseries.isA(tsType), deleteTp1, deleteTp2, optional, vp).prefix(PREFIX_ONTOLOGY);
 
 		kbClient.executeUpdate(modify.getQueryString());
 	}
@@ -722,7 +722,7 @@ public class TimeSeriesSparql {
 		Variable tsIRI = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
 
-		query.select(tsIRI).where(queryPattern).prefix(prefix_ontology);
+		query.select(tsIRI).where(queryPattern).prefix(PREFIX_ONTOLOGY);
 
 		kbClient.setQuery(query.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
@@ -747,7 +747,7 @@ public class TimeSeriesSparql {
 		Variable dbURL = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = iri(tsIRI).has(hasRDB, dbURL);
 
-		query.select(dbURL).where(queryPattern).prefix(prefix_ontology);
+		query.select(dbURL).where(queryPattern).prefix(PREFIX_ONTOLOGY);
 
 		kbClient.setQuery(query.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
@@ -772,7 +772,7 @@ public class TimeSeriesSparql {
 		Variable timeUnit = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = iri(tsIRI).has(hasTimeUnit, timeUnit);
 
-		query.select(timeUnit).where(queryPattern).prefix(prefix_ontology);
+		query.select(timeUnit).where(queryPattern).prefix(PREFIX_ONTOLOGY);
 
 		kbClient.setQuery(query.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
@@ -795,7 +795,7 @@ public class TimeSeriesSparql {
 		Variable data = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = data.has(hasTimeSeries, iri(tsIRI));
 
-		query.select(data).where(queryPattern).prefix(prefix_ontology);
+		query.select(data).where(queryPattern).prefix(PREFIX_ONTOLOGY);
 
 		return getInstances(query, queryString);
 	}
@@ -812,7 +812,7 @@ public class TimeSeriesSparql {
 		Variable ts = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = ts.isA(tsType);
 
-		query.select(ts).where(queryPattern, vp).prefix(prefix_ontology);
+		query.select(ts).where(queryPattern, vp).prefix(PREFIX_ONTOLOGY);
 
 		return getInstances(query, queryString);
 	}
@@ -850,12 +850,12 @@ public class TimeSeriesSparql {
 
 		ModifyQuery modify = Queries.MODIFY();
 		// set prefix declarations
-		modify.prefix(prefix_ontology, prefix_kb, prefix_time);
+		modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
 		// define type
 		modify.insert(tsIRI.isA(type));
 
-		if(type.equals(AverageTimeSeries)){
+		if(type.equals(AVERAGE_TIMESERIES)){
 
 			//numeric Duration
 			if(duration <=0.0){
