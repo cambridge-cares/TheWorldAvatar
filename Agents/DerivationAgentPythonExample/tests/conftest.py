@@ -162,7 +162,7 @@ def create_example_agent(get_service_url):
             kg_update_url=get_service_url(KG_SERVICE, url_route=KG_ROUTE),
             kg_user=agent_config.KG_USERNAME,
             kg_password=agent_config.KG_PASSWORD,
-            # NTOE the part below for fileserver is commented out as the fileserver is not used in the test
+            # NOTE the part below for fileserver is commented out as the fileserver is not used in the test
             # fs_url=get_service_url(FS_SERVICE, url_route=FS_ROUTE),
             # fs_user=agent_config.FILE_SERVER_USERNAME,
             # fs_password=agent_config.FILE_SERVER_PASSWORD,
