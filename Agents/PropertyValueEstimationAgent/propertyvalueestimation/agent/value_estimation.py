@@ -208,5 +208,5 @@ def default():
     # TODO: Update path to main upon merging
     msg  = "This is an asynchronous agent to estimate the market value of a particular property (i.e. building, flat).<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertyValueEstimationAgent/Agents/PropertyValueEstimationAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent<BR>"
     return msg

@@ -1,5 +1,5 @@
 # NOTE the endpoints provided here are suitable for running the agent tests both locally and as dockerised tests 
-# In the latter case `localhost` gets replaced with `docker.host.internal` while building the Docker image to ensure
+# In the latter case `localhost` gets replaced with `host.docker.internal` while building the Docker image to ensure
 # communication between dockerised agent and required test containers
 # For external Blazegraph deployed on a server, e.g. http://www.theworldavatar.com/blazegraph, the exact URL should be provided
 

@@ -213,7 +213,7 @@ def create_example_agent():
                       agent_config.ONTOAGENT_SERVICE_IRI + '_altered',
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-            # NOTE Ensure SPARQL endpoints contain'docker.host.internal' for dockerised agent tests
+            # NOTE Ensure SPARQL endpoints contain'host.docker.internal' for dockerised agent tests
             # Set automatically for normal local as well as dockerised tests; however, requires
             # manual adjustment in `stack_configs_mock.py` file for debugging within Docker
             kg_url=QUERY_ENDPOINT,

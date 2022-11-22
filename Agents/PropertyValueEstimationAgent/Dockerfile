@@ -114,7 +114,7 @@ COPY ./tests ./tests
 # Copy docker-compose-file to spin up testcontainers
 COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
-# Ensure SPARQL endpoints contain 'docker.host.internal' instead of 'localhost' for dockerised agent tests
+# Ensure SPARQL endpoints contain 'host.docker.internal' instead of 'localhost' for dockerised agent tests
 RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/env_configs_mock.py
 RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/stack_configs_mock.py
 # Ensure flag for Dockerised tests is set to True
