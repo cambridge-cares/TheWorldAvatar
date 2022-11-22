@@ -75,28 +75,41 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
         cfg, kgClient, tsClient)
 
     # split series at forecast_start_date
-    try:
+
+    # check if forecast_start_date is in series
+    if cfg['forecast_start_date'] in series.time_index:
         series, backtest_series = series.split_before(
             cfg['forecast_start_date'])
-    except ValueError as e:
-        # Timestamp out of series range
+    
+    # or the next date 
+    elif cfg['forecast_start_date'] == series.time_index[-1] + series.freq:
+        series = series
+        
+    # Timestamp out of series range
+    else:
         raise ValueError(
             f'Cannot split series at {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
 
     # load the model
     # NOTE: If you have multiple different models, you need to edit here the loading function,
-    if 'model_path_ckpt_link' in cfg['fc_model']:
+    # you can use the model_configuration_name to load the correct model or 
+    # add a function to the model config like for loading the covariates
+    if 'TFT_HEAT_SUPPLY' == cfg['model_configuration_name']:
         model = load_pretrained_model(
             cfg, TFTModel)
         # other models than TFT can have different key then 'input_chunk_length'
         cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
 
-    else:
+    elif 'DEFAULT' == cfg['model_configuration_name']:
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
-
+    else:
+        raise ValueError(
+            f'No model found for model_configuration_name {cfg["model_configuration_name"]}, use one of {MODEL_MAPPING.keys()}')
+    
     forecast = get_forecast(series, covariates, model, cfg)
-    # metadata
+    
+    # create metadata
     # input series range
     print(f"Input data range: {series.start_time()} - {series.end_time()}")
     start_date = series.end_time() - series.freq * \
@@ -109,23 +122,17 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
     cfg['model_input_interval'] = [start_date, end_date]
     cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
-    cfg['created_at'] = pd.to_datetime('now')
+    cfg['created_at'] = pd.to_datetime('now', utc=True)
 
-    # delete not json serializable objects from cfg
+    # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',
                       'time_delta', 'ts_data_type', 'frequency']
     for key in keys_to_delete:
         if key in cfg:
             del cfg[key]
 
-    #cfg = {}
-
     #instantiate_forecast(cfg = cfg, forecast=forecast, tsClient=tsClient, kgClient=kgClient)
 
-    if backtest_series is not None:
-        # calculate error if future target is available
-        cfg['error'] = calculate_error(backtest_series, forecast)
-        print(cfg['error'])
     return cfg
 
 
