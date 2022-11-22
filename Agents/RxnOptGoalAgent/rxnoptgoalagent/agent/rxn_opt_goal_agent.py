@@ -27,12 +27,8 @@ import io
 from py4jps import agentlogging
 from pyderivationagent import PyDerivationClient
 
-from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
+from rxnoptgoalagent.kg_operations import RxnOptGoalSparqlClient
 from rxnoptgoalagent.data_model import *
-
-
-# TODO find a better place to put this
-AVAILABLE_RXN_OPT_PLAN_LIST = ['http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan']
 
 
 class FlaskConfig(object):
@@ -117,8 +113,8 @@ class RxnOptGoalAgent(ABC):
         self.fs_user = fs_user
         self.fs_password = fs_password
 
-        # initialise the RxnOptGoalIterSparqlClient
-        self.sparql_client = RxnOptGoalIterSparqlClient(
+        # initialise the RxnOptGoalSparqlClient
+        self.sparql_client = RxnOptGoalSparqlClient(
             query_endpoint=self.kg_url, update_endpoint=self.kg_update_url,
             kg_user=self.kg_user, kg_password=self.kg_password,
             fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
@@ -194,7 +190,7 @@ class RxnOptGoalAgent(ABC):
             'rxn_opt_goal.html',
             # TODO [nice-to-have] show more information about the chemical reaction once selected in dropdown
             # TODO once decided on the triple store to deploy, change the IRI to the correct one
-            chem_rxn_iri=[{'iri': 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1', 'display': 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1'}],
+            chem_rxn_iri=[{'iri': cr, 'display': cr} for cr in self.sparql_client.get_all_chemical_reaction_iri()],
             # TODO [nice-to-have] specify the limits of the goal, e.g. yield within 0-100%
             # TODO [nice-to-have] put the unit as symbol in the dropdown list, e.g. %, g/mol, kg, etc.
             goal_spec_from_flask={
@@ -207,9 +203,7 @@ class RxnOptGoalAgent(ABC):
                 } for perf_iri in AVAILABLE_PERFORMANCE_INDICATOR_LIST
             },
             desires_type=[{'iri': des, 'display': getShortName(des)} for des in [ONTOGOAL_DESIRESGREATERTHAN, ONTOGOAL_DESIRESLESSTHAN]],
-            # TODO [next iteration] where do we encode a list of available rxnoptplan?
-            # TODO [next iteration] how to specify resource limitations (digital twin of hardware)?
-            rxn_opt_goal_plan=[{'iri': plan, 'display': plan} for plan in AVAILABLE_RXN_OPT_PLAN_LIST],
+            rxn_opt_goal_plan=[{'iri': plan, 'display': plan} for plan in self.sparql_client.get_all_rxn_opt_plans()],
             available_labs=[{'iri': lab, 'display': lab} for lab in self.get_available_labs()],
         )
 

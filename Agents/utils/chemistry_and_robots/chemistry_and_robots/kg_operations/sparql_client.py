@@ -25,6 +25,10 @@ logger = agentlogging.get_logger('dev')
 
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
+    def get_all_chemical_reaction_iri(self):
+        query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOCAPE_CHEMICALREACTION}>. }}"""
+        response = self.performQuery(query)
+        return [list(res.values())[0] for res in response]
 
     def get_all_rxn_exp_given_chem_rxn(self, chem_rxn_iri: str):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
