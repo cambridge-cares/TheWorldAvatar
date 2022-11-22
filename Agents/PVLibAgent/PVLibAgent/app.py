@@ -84,33 +84,42 @@ def api():
                 air_temperature_iri = AIR_TEMP_IRI
                 ghi_iri = IRRADIANCE_IRI
 
-            print(wind_speed_iri)
-            print(air_temperature_iri)
-            print(ghi_iri)
-            # test = TSClientForQuery.create_timeseries(['2017-04-01T04:00:00Z'],['http://www.theworldavatar.com/kb/ontotimeseries/caresWeatherStation_windspeedAvg_aa2b656a-75d3-4885-a1e2-f37ce419a6b4'], [[float(10)]])
             wind_speed = query_latest_timeseries(wind_speed_iri)
-
             air_temperature = query_latest_timeseries(air_temperature_iri)
             ghi = query_latest_timeseries(ghi_iri)
+            try:
+                wind_dates = [d.toString() for d in wind_speed.getTimes()]
+                air_temperature_dates = [d.toString() for d in air_temperature.getTimes()]
+                ghi_dates = [d.toString() for d in ghi.getTimes()]
+            except Exception as ex:
+                logger.error("Unable to get timestamps from timeseries object.")
+                raise TSException("Unable to get timestamps from timeseries object") from ex
+            if wind_dates != air_temperature_dates != ghi_dates:
+                raise Exception('The timestamps for air temperature, wind speed and ghi are not the same!')
 
-            print(str(wind_speed))
-            print(str(air_temperature))
-            print(str(ghi))
+            try:
+                wind_speed_values = [v for v in wind_speed.getValues(wind_speed_iri)]
+                air_temperature_values = [v for v in air_temperature.getValues(air_temperature_iri)]
+                ghi_values = [v for v in ghi.getValues(ghi_iri)]
+            except Exception as ex:
+                logger.error("Unable to get values from timeseries object.")
+                raise TSException("Unable to get values from timeseries object.") from ex
 
-            # value = TimeSeries.get_value_as_double(test, 'http://www.theworldavatar.com/kb/ontotimeseries/caresWeatherStation_windspeedAvg_aa2b656a-75d3-4885-a1e2-f37ce419a6b4')
-            # print(str(value))
+            print(str(wind_speed_values[0]) + ' m/s at this timing: ' + wind_dates[0])
+            print(str(air_temperature_values[0]) + ' degree celsius at this timing: ' + air_temperature_dates[0])
+            print(str(ghi_values[0]) + ' W/m^2 at this timing: ' + ghi_dates[0])
 
             iri_list = check_data_iris.check_data_iris_and_create_if_not_exist(PROPERTIES_FILE)
-            results = model.calculate()
+            results = model.calculate(wind_dates[0], wind_speed_values[0], air_temperature_values[0], ghi_values[0])
+            print(str(results))
             timestamp = results["timestamp"]
             # timestamp must have the format 2017-04-01T04:00:00Z
-            timestamp_list = ['2017-04-01T04:00:00Z']
+            timestamp_list = [wind_dates[0]]
             ac_power_value = results["AC Power(W)"]
             dc_power_value = results["DC Power(W)"]
             ac_power_list = [ac_power_value]
             dc_power_list = [dc_power_value]
             value_list = [ac_power_list, dc_power_list]
-            print(str(timestamp))
             print(ac_power_value)
             print(dc_power_value)
 
@@ -146,13 +155,26 @@ def api():
                 model = SolarModel('ModelChain', iri)
                 ghi_iri = IRRADIANCE_IRI
 
-            print(ghi_iri)
+            ghi = query_latest_timeseries(ghi_iri)
+            try:
+                ghi_dates = [d.toString() for d in ghi.getTimes()]
+            except Exception as ex:
+                logger.error("Unable to get timestamps from timeseries object.")
+                raise TSException("Unable to get timestamps from timeseries object") from ex
+
+            try:
+                ghi_values = [v for v in ghi.getValues(ghi_iri)]
+            except Exception as ex:
+                logger.error("Unable to get values from timeseries object.")
+                raise TSException("Unable to get values from timeseries object.") from ex
+
+            print(str(ghi_values[0]) + ' W/m^2 at this timing: ' + ghi_dates[0])
 
             iri_list = check_data_iris.check_data_iris_and_create_if_not_exist(PROPERTIES_FILE)
-            results = model.calculate()
+            results = model.calculate(ghi_dates[0], '', '', ghi_values[0])
             timestamp = results["timestamp"]
             # timestamp must have the format 2017-04-01T04:00:00Z
-            timestamp_list = ['2017-04-01T04:00:00Z']
+            timestamp_list = [ghi_dates[0]]
             ac_power_value = results["AC Power(W)"]
             dc_power_value = results["DC Power(W)"]
             ac_power_list = [ac_power_value]

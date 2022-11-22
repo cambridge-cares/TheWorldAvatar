@@ -20,6 +20,7 @@ from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 from PVLibAgent.data_retrieval.query_data import QueryData
 from PVLibAgent.error_handling.exceptions import KGException
 
+
 global latitude, longitude
 
 logger = agentlogging.get_logger("dev")
@@ -159,12 +160,12 @@ class SolarModel:
 
             self.mc = mc
 
-    def calculate(self):
+    def calculate(self, timestamp, wind_speed, air_temperature, irradiance):
 
         global latitude, longitude
 
-        # derive day-of-year from date
-        date = datetime.date.fromisoformat('2017-04-01')
+        # derive day-of-year from date e.g. '2017-04-01'
+        date = datetime.date.fromisoformat(timestamp[:10])
 
         # derive declination in radian
         declination_angle_radian = pvlib.solarposition.declination_cooper69(int(date.strftime("%j")))
@@ -172,17 +173,16 @@ class SolarModel:
         # derive equation of time in minutes
         equation_of_time = pvlib.solarposition.equation_of_time_pvcdrom(int(date.strftime("%j")))
 
-        # derive hour angle in degrees
-
         # create empty df
         df = pd.DataFrame(columns=['Timestamp'])
 
-        # append time series to data frame
-        df = df.append({'Timestamp': pd.Timestamp('2017-04-01 12:00:00+08')}, ignore_index=True)
+        # append time series to data frame '2017-04-01 12:00:00+08'
+        df = df.append({'Timestamp': pd.Timestamp(timestamp)}, ignore_index=True)
 
         # create time index
         time_index = pd.DatetimeIndex(df.Timestamp)
 
+        # derive hour angle in degrees
         hour_angle = pvlib.solarposition.hour_angle(time_index, float(longitude), equation_of_time)
 
         # derive solar zenith angle (require latitude, hour angle, declination angle)
@@ -190,14 +190,14 @@ class SolarModel:
                                                                           declination_angle_radian)
 
         # derive direct normal irradiance and diffuse horizontal irradiance
-        results = pvlib.irradiance.erbs(896, math.degrees(solar_zenith_radian), int(date.strftime("%j")))
+        results = pvlib.irradiance.erbs(float(irradiance), math.degrees(solar_zenith_radian), int(date.strftime("%j")))
         dni = results.get('dni')
         dhi = results.get('dhi')
 
-        weather = pd.DataFrame([[896, float(dhi), float(dni), 50, 5]],
+        weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
                                columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
-                               index=[pd.Timestamp('2017-04-01 12:00:00+08')])
-        # index=[pd.Timestamp('20170401 1200', tz='US/Arizona')])
+                               index=[pd.Timestamp(timestamp)])
+
         self.mc.run_model(weather)
         values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
 

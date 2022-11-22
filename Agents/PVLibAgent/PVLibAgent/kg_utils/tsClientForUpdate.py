@@ -83,6 +83,7 @@ class TSClientForUpdate:
         """
         try:
             timeseries = TSClientForUpdate.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+
         except Exception as ex:
             logger.error("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
