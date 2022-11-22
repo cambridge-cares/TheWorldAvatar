@@ -68,10 +68,10 @@ def api_forecast():
     
     # Retrieve if specific mapping should be foreced
     try:
-        force_mapping = query['force_mapping']
-        print('force_mapping: ' + force_mapping)
+        force_configuration = query['force_configuration']
+        print('force_configuration: ' + force_configuration)
     except KeyError as ex:
-        force_mapping = None
+        force_configuration = None
     
     # Retrieve data_length 
     try:
@@ -82,7 +82,7 @@ def api_forecast():
         
     try:
         # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, force_mapping, data_length = data_length)
+        res = forecast(dataIRI, horizon, forecast_start_date, force_configuration, data_length = data_length)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:
@@ -90,15 +90,3 @@ def api_forecast():
         print(traceback.format_exc())
         return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)})
 
-@inputtasks_bp.route("/api/forecastingAgent/help", methods=["GET"])
-def forecastingAgent_help():
-    msg = 'This is the help page of the forecasting agent. \n'
-    msg += 'The forecasting agent can be used to forecast a time series. \n'
-    msg += 'The following parameters are required: \n'
-    msg += 'dataIRI: the IRI of the time series to be forecasted \n'
-    msg += 'horizon: the number of steps to forecast \n'
-    msg += 'Checkout the README.md for more information.'
-
-
-    res = {'status': '200', 'msg': msg}
-    return jsonify(res)
