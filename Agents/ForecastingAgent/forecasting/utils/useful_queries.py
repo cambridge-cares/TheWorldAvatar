@@ -43,26 +43,6 @@ def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict =
 
     return output
 
-def num_instances_with_type():
-
-    return f"""
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-     SELECT ?Search (COUNT(?Search) AS ?Count)
-     WHERE {{
-          ?o rdf:type ?Search .
-     }}
-     GROUP BY ?Search
-     """
-def get_predecessor_type_by_predicate(dataIRI, predicate, kgClient):
-    # get predecessor type of dataIRI
-    query = f"""
-    SELECT ?predecessorType 
-    WHERE {{
-        ?o <{predicate}> <{dataIRI}> . 
-        ?o <{RDF_TYPE}> ?predecessorType . 
-        }}"""
-    predecessor_type = kgClient.performQuery(query)[0]["predecessorType"]
-    return predecessor_type
 
 def get_predecessor_type_and_predicate(dataIRI, kgClient):
     # get predecessor type of dataIRI
@@ -139,14 +119,6 @@ def get_df_of_ts(tsIRI,tsClient ,lowerbound, upperbound, column_name = "cov", da
     df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
     return df
 
-def merge_ts(*dfs):
-    # merge columns
-    df = dfs[0]
-    for c in dfs[1:]:
-        df = df.merge(df, c, on="Date", how="outer")
-    return df
-
-
 
 def get_unit(dataIRI, kgClient):
     # get unit of dataIRI
@@ -173,24 +145,6 @@ def get_time_format(dataIRI, kgClient):
 
 
 
-def get_ts_of_predicate_by_label(label, predicate):
-    """
-    Returns a SPARQL query that counts the total number of predicates, grouped by predicates.
-
-    :return: the SPARQL query
-    """
-    return f"""
-     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>      prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>     
-     SELECT  ?genIRI ?dataIRI ?tsIRI 
-     WHERE {{        
-  		            
-          ?genIRI rdfs:label '{label}' . 
-          ?genIRI <{predicate}> ?dataIRI . 
-          ?dataIRI <{OM_HASVALUE}> ?tsIRI
-     }}      
-     """
-
 
 def get_ts_data(dataIRI, ts_client, lowerbound= None, upperbound= None):
     """
@@ -213,118 +167,3 @@ def get_ts_data(dataIRI, ts_client, lowerbound= None, upperbound= None):
     return dates, values
 
 
-def num_instance(p=False, o=False, s=False):
-     """
-     It takes three boolean arguments, and returns a SPARQL query that counts the number of instances of
-     the first argument that is True
-
-     :param p: True if you want to count the number of instances of each predicate, defaults to False
-     (optional)
-     :param o: If True, count the number of instances of each object, defaults to False (optional)
-     :param s: subject, defaults to False (optional)
-     :return: The number of instances of each object, predicate, or subject.
-     """
-
-     assert p or o or s, "At least one of p, o, s must be True"
-     to_count = "p" if p else "o" if o else "s"
-
-     return f"""SELECT (?{to_count} as ?Search) (COUNT(?{to_count}) as ?Count)
-          WHERE
-               {{
-                    ?s ?p ?o .
-               }}
-          GROUP BY ?{to_count}
-     """
-
-
-def num_total_instances_with_type():
-    """
-    Returns a SPARQL query that counts the total number of instances.
-
-    :return: the SPARQL query
-    """
-    return f"""
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-     SELECT (COUNT(distinct  ?object) AS ?num_object) 
-     WHERE {{
-          ?object rdf:type ?type .
-     }}
-     """
-
-
-def get_time_series_with_measure():
-    """     
-    :return: the SPARQL query
-    """
-    return f"""
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-     SELECT  ?parent2 ?parent ?hasTS
-     WHERE {{
-          ?parent2 ?v2 ?parent . 
-          ?parent ?v ?hasTS . 
-          ?hasTS <{TS_HASTIMESERIES}> ?ts .
-          FILTER EXISTS {{ ?hasTS rdf:type <{OM_MEASURE}>}}
-     }}
-     order by ?parent2 ?parent ?hasTS
-     """
-
-
-def get_all_ts():
-    """     
-    :return: the SPARQL query
-    """
-    return f"""
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-     SELECT  ?parent ?hasTS
-     WHERE {{
-          ?parent ?v ?hasTS . 
-          ?hasTS <{TS_HASTIMESERIES}> ?ts .
-          
-     }}
-     order by  ?parent ?hasTS
-     """
-
-
-def get_time_series_without_measure():
-     """
-     It returns a list of all the time series that are not measures.
-     :return: The query returns the parent and the hasTimeSeries of the parent.
-     """
-
-     return f"""
-     prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-     SELECT  ?parent ?hasTS
-     WHERE {{
-
-          ?parent ?v ?hasTS . 
-          ?hasTS <{TS_HASTIMESERIES}> ?ts .
-          FILTER NOT EXISTS  {{ ?hasTS rdf:type <{OM_MEASURE}>}}
-     }}
-     order by ?parent ?hasTS
-     """
-
-
-def get_ts_by_type():
-     """
-     It returns a SPARQL query that will return all the dataIRIs and tsIRIs in the graph, along with the
-     type of the dataIRI.
-     
-     It distinguishes between measures and non-measures. 
-     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
-     """
-
-     return f"""
-     prefix rdf: <{RDF}>
-     prefix om: <{OM}>
-
-     prefix ts: <{TS}>
-
-     SELECT  distinct ?dataIRI ?tsIRI ?type_with_measure ?type_without_measure
-     WHERE {{
-      
-       ?tsIRI ts:hasTimeSeries ?ts . 
-       ?tsIRI rdf:type ?type_without_measure .
-       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type_with_measure }} . 
-       
-     }}
-     """
