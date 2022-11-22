@@ -23,19 +23,20 @@ def test_example_triples():
             raise e
 
 
-# NOTE Depends on where this test is running, the blazegraph URL is different
-# if DOCKERISED_TEST: then the blazegraph URL is the one within the docker stack, i.e. "host.docker.internal"
-# if not DOCKERISED_TEST: then the blazegraph URL is the one outside the docker stack, i.e. "localhost"
-@pytest.mark.parametrize(
-    "local_agent_test",
-    [
-        (not cf.DOCKERISED_TEST),
-    ],
-)
+# NOTE It's possible to test multiple sets of derivation inputs with the same test function
+#   by using pytest.mark.parametrize, see https://docs.pytest.org/en/latest/how-to/parametrize.html
+# Or for a concrete example, see:
+# https://github.com/cambridge-cares/TheWorldAvatar/blob/c9d822e76459cd7597e7e70e2f959afdf81580ca/Agents/PropertyValueEstimationAgent/tests/test_example_agent.py#L84
 def test_monitor_derivations(
-    initialise_clients, create_example_agent, local_agent_test
+    initialise_clients, create_example_agent
 ):
     sparql_client, derivation_client = initialise_clients
+
+    # Determine whether this is a local test or not
+    # NOTE Depends on where this test is running, the blazegraph URL will be different
+    # if DOCKERISED_TEST: then the blazegraph URL is the one within the docker stack, i.e. "host.docker.internal"
+    # if not DOCKERISED_TEST: then the blazegraph URL is the one outside the docker stack, i.e. "localhost"
+    local_agent_test = not cf.DOCKERISED_TEST
 
     # Initialise all triples in test_triples
     # It first DELETES ALL TRIPLES in the specified SPARQL endpoint
