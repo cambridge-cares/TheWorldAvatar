@@ -54,7 +54,7 @@ After verifying the received HTTP request, the agent loads a model configuration
 Next the agent loads the time series (+ covariates if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
 
 Then, it loads the model. This is either a pretrained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
-Finally the forecasted time series is re-instantiated under the same `iri`. 
+Finally the forecasted time series is re-instantiated under the same given `iri`. 
 
 ## Starting the agent
 Buy running [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with the agent starts.  
@@ -70,13 +70,14 @@ Buy running [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with
 - **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
 If not set the default value from the [mapping file] is used.
-- **use_model_configuration** if specified this model configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
+- **use_model_configuration** if specified this model configuration from the [mapping file] is used.  
 
 
-## Custom configurations and new models
-Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` configuration in the [mapping file]. 
+## Custom model configurations and new models
+Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
 
-To identify a specific `iri` and map it to your configuration, edit the `get_config` function in the [mapping file]. First retrieve properties like the rdf type or label of your `iri` to identify it uniquely. Next compare the properties with your required properties following the example in `get_config`. Finally return if match the dictionary key of our configuration of the MAPPING dictionary from the [mapping file].  
+If you need covariates define es well the a function like `get_covs_heat_supply` for the `load_covariates_func` parameter in your configuration. To use your own pretrained model with darts, extend the [agent file] where `load_pretrained_model` is called. You can use as well `load_pretrained_model`, simply specify your model class and set the `input_length` like for `TFT_HEAT_SUPPLY`. 
+
 
 
 
