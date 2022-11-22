@@ -8,8 +8,11 @@ import pvlib
 from configobj import ConfigObj
 from pathlib import Path
 import agentlogging
+from dateutil.tz import gettz
 from pvlib.pvsystem import PVSystem
 import datetime
+
+from timezonefinder import TimezoneFinder
 
 from pvlib.location import Location
 
@@ -164,20 +167,31 @@ class SolarModel:
 
         global latitude, longitude
 
+        # object creation
+        obj = TimezoneFinder()
+        timezone = obj.timezone_at(lng=float(longitude), lat=float(latitude))
+        print(str(timezone))
+
+        dtUTC = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+
+        dtZone = dtUTC.astimezone(gettz(timezone))
+
+        print(dtZone.isoformat(timespec='seconds'))
+
         # derive day-of-year from date e.g. '2017-04-01'
-        date = datetime.date.fromisoformat(timestamp[:10])
+        date = datetime.date.fromisoformat(str(dtZone)[:10])
 
         # derive declination in radian
-        declination_angle_radian = pvlib.solarposition.declination_cooper69(int(date.strftime("%j")))
+        declination_angle_radian = pvlib.solarposition.declination_cooper69(int(date.strftime("%-j")))
 
         # derive equation of time in minutes
-        equation_of_time = pvlib.solarposition.equation_of_time_pvcdrom(int(date.strftime("%j")))
+        equation_of_time = pvlib.solarposition.equation_of_time_pvcdrom(int(date.strftime("%-j")))
 
         # create empty df
         df = pd.DataFrame(columns=['Timestamp'])
 
         # append time series to data frame '2017-04-01 12:00:00+08'
-        df = df.append({'Timestamp': pd.Timestamp(timestamp)}, ignore_index=True)
+        df = df.append({'Timestamp': pd.Timestamp(str(dtZone))}, ignore_index=True)
 
         # create time index
         time_index = pd.DatetimeIndex(df.Timestamp)
@@ -190,13 +204,16 @@ class SolarModel:
                                                                           declination_angle_radian)
 
         # derive direct normal irradiance and diffuse horizontal irradiance
-        results = pvlib.irradiance.erbs(float(irradiance), math.degrees(solar_zenith_radian), int(date.strftime("%j")))
+        results = pvlib.irradiance.erbs(float(irradiance), math.degrees(solar_zenith_radian), int(date.strftime("%-j")))
         dni = results.get('dni')
         dhi = results.get('dhi')
 
+        print(str(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19]))
+
         weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
                                columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
-                               index=[pd.Timestamp(timestamp)])
+                               #yyyy-mm-ddThh-mm-ssZ
+                               index=[pd.Timestamp(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19], tz=str(timezone))])
 
         self.mc.run_model(weather)
         values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
