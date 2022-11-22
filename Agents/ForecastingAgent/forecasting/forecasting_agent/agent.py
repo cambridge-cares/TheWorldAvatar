@@ -256,10 +256,10 @@ def load_ts_data(cfg, kgClient, tsClient):
         # check if covariates are given for complete future horizon from forecast_start_date
         if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
             # use default model
-            print(
-                f'\n\nNot enough covariates for complete future horizon. Default model is used instead.')
-            cfg['fc_model'] = MAPPING['DEFAULT']['fc_model'].copy()
-            covariates = None
+            print(f'\n\nNot enough covariates for complete future horizon.')
+            
+            raise ValueError(
+                f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
     else:
         covariates = None
 
