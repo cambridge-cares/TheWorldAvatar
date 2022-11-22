@@ -1,11 +1,11 @@
 /**
  * Concrete implementation of the MapHandler class that handles
- * a single MapBox map instance.
+ * a single Mapbox map instance.
  */
-class MapHandler_MapBox extends MapHandler {
+class MapHandler_Mapbox extends MapHandler {
 
     /**
-     * MapBox popup element.
+     * Mapbox popup element.
      */
     public static POPUP;
 
@@ -29,7 +29,9 @@ class MapHandler_MapBox extends MapHandler {
         if(!newOptions["container"]) newOptions["container"] = "map"
         if(!newOptions["center"]) newOptions["center"] = [-0.1280432939529419, 51.50805967151767];
         if(!newOptions["zoom"]) newOptions["zoom"] = 16;
-        if(!newOptions["style"]) newOptions["style"] = "mapbox://styles/mapbox/light-v10";
+
+        // Set the default style imagery
+        newOptions["style"] = getDefaultImagery();
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
             // Create new map (note the settings used here may be overriden when the map is loaded with data).
@@ -43,7 +45,7 @@ class MapHandler_MapBox extends MapHandler {
 
             // Create popup
              // @ts-ignore
-            MapHandler_MapBox.POPUP = new mapboxgl.Popup({
+            MapHandler_Mapbox.POPUP = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false,
                 maxWidth: "400px"
@@ -51,17 +53,13 @@ class MapHandler_MapBox extends MapHandler {
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
-            delete newOptions["style"];
             delete newOptions["container"];
 
             MapHandler.MAP.jumpTo(newOptions);
         }
 
-        // Store terrain URL
-        if(mapOptions["style"].includes("light")) window.terrain = "light";
-        if(mapOptions["style"].includes("dark")) window.terrain = "dark";
-        if(mapOptions["style"].includes("outdoors")) window.terrain = "outdoors";
-        if(mapOptions["style"].includes("satellite")) window.terrain = "satellite";
+        // Load custom search terms
+        //MapboxUtils.loadSearchTerms();
     }
 
     /**
@@ -82,11 +80,11 @@ class MapHandler_MapBox extends MapHandler {
 
         // Filter out non-CMCL layers
         features = features.filter(feature => {
-            return MapBoxUtils.isCMCLLayer(feature);
+            return MapboxUtils.isCMCLLayer(feature);
         });
 
-        // Filter out duplicates (MapBox can return these if a feature is split across a tile boundary)
-        features = MapBoxUtils.deduplicate(features);
+        // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
+        features = MapboxUtils.deduplicate(features);
 
         if(features.length > 1) {
             // Click on overlapping, individual features/clusters
@@ -102,13 +100,12 @@ class MapHandler_MapBox extends MapHandler {
                 return;
             }
 
-            if(MapBoxUtils.isCluster(feature)) {
+            if(MapboxUtils.isCluster(feature)) {
                 // Clicked on a clustered feature, handle as if multiple
                 this.clickMultiple(features);
 
             } else {
                 // Click on single feature
-                console.log(feature);
                 this.manager.showFeature(feature);
             }
         }
@@ -122,7 +119,7 @@ class MapHandler_MapBox extends MapHandler {
      */
     private async clickMultiple(features: Array<Object>) {
         let leafs = [];
-        await MapBoxUtils.recurseFeatures(leafs, features);
+        await MapboxUtils.recurseFeatures(leafs, features);
 
         // Cache features offered by the select box
         window.selectFeatures = {};
@@ -206,13 +203,13 @@ class MapHandler_MapBox extends MapHandler {
         // Get a list of features under the mouse
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
         features = features.filter(feature => {
-            return MapBoxUtils.isCMCLLayer(feature);
+            return MapboxUtils.isCMCLLayer(feature);
         });
 
         if(features.length === 0) {
             // Mouse no longer over any features
             MapHandler.MAP.getCanvas().style.cursor = '';
-            if(MapHandler_MapBox.POPUP !== null) MapHandler_MapBox.POPUP.remove();
+            if(MapHandler_Mapbox.POPUP !== null) MapHandler_Mapbox.POPUP.remove();
 
         } else if(features.length > 0) {
             // Mouse over single feature
@@ -228,8 +225,8 @@ class MapHandler_MapBox extends MapHandler {
             // Change cursor
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
-            if(layer != null && layer instanceof MapBoxLayer) {
-                if(feature !== null) MapBoxUtils.showPopup(event, feature);
+            if(layer != null && layer instanceof MapboxLayer) {
+                if(feature !== null) MapboxUtils.showPopup(event, feature);
             } 
         } 
     }
@@ -238,13 +235,22 @@ class MapHandler_MapBox extends MapHandler {
      * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
+        // Get all layers from all groups
+        let allLayers = [];
         dataStore.dataGroups.forEach(rootGroup => {
-            let allLayers = rootGroup.flattenDown();
-            
-            allLayers.forEach(layer => {
-                this.plotLayer(rootGroup, layer);
-            });
+            let groupLayers = rootGroup.flattenDown();
+            allLayers = allLayers.concat(groupLayers);
         });
+
+        // Order them
+        allLayers = allLayers.sort((a, b) => {
+            if(a.order > b.order) return 1;
+            if(a.order < b.order) return -1;
+            return 0;
+        });
+
+        // Plot them
+        allLayers.forEach(layer => this.plotLayer(null, layer));
     }
 
     /**
@@ -278,7 +284,7 @@ class MapHandler_MapBox extends MapHandler {
             // Clone the original source definition
             let options = {...source.definition};
 
-            // Remove properties not expected by MapBox
+            // Remove properties not expected by Mapbox
             if(options["id"]) delete options["id"];
             if(options["metaFiles"]) delete options["metaFiles"];
             if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
@@ -292,7 +298,7 @@ class MapHandler_MapBox extends MapHandler {
 
             // Add to the map
             MapHandler.MAP.addSource(source.id, options);
-            console.info("Added source to MapBox map: " + source.id);
+            console.info("Added source to Mapbox map: " + source.id);
         }
     }
 
@@ -335,12 +341,13 @@ class MapHandler_MapBox extends MapHandler {
             // Update to unique ID
             options["id"] = layer.id;
 
-            // Remove fields not required by MapBox
+            // Remove fields not required by Mapbox
             delete options["name"];
+            delete options["order"];
 
             // Add to the map
             MapHandler.MAP.addLayer(options);
-            console.info("Added layer to MapBox map '" + layer.id + "'.");
+            console.info("Added layer to Mapbox map '" + layer.id + "'.");
         }
     }
 

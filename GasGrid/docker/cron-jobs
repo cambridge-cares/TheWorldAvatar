@@ -1,2 +1,0 @@
-0 0 * * * /app/output/run-outputs.sh >> /var/log/gas-grid/run-outputs.log
-0 1 * * * /app/env-test.sh > /var/log/gas-grid/env-test.log

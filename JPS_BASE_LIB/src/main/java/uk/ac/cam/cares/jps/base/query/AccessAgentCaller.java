@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
  * <br>
  * The access agent host:port should be set using the environment variable ACCESSAGENT_HOST.
  * Otherwise, the default host from the jps.properties file is used. Note that if a url is 
- * supplied as the targetResourceID them the host in the url is used. 
+ * supplied as the targetResourceID then the host in the url is used.
  *  
  * @author csl37
  *
@@ -123,7 +123,7 @@ public class AccessAgentCaller{
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
 		//Unpack results into JSONArray
-		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
+		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString(JPSConstants.RESULT_KEY));
 	}
 	
 	/**

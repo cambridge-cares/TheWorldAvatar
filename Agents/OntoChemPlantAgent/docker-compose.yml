@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   OntoChemPlant-agent:
-    image: ontochemplant-agent:1.0.0
+    image: ontochemplant-agent:1.2.0
     build: .
     container_name: OntoChemPlant-agent
     ports:

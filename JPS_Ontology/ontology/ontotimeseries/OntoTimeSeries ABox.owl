@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitMinute">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N135bd997a78141d890f50094c8e3cf97">
+    <ns1:imports rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitWeek">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitYear">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitHour">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitSecond">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitDay">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2006/time#unitMonth">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Unix_time">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TRS"/>
+  </rdf:Description>
+</rdf:RDF>

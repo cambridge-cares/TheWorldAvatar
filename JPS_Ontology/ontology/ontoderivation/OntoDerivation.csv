@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
 OntoDerivation,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
-OntoDerivation,TBox,1.8,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoDerivation,TBox,1.9,http://www.w3.org/2002/07/owl#versionInfo,,,,,
 OntoDerivation,TBox,OntoDerivation is an ontology used to connect entities in the world avatar.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
 OntoDerivation,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 Derivation,Class,,,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
@@ -10,6 +10,7 @@ Status,Class,,,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAva
 Requested,Class,Status,IS-A,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 InProgress,Class,Status,IS-A,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 Finished,Class,Status,IS-A,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+Error,Class,Status,IS-A,,,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 isDerivedFrom,Object Property,,,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,http://www.w3.org/2002/07/owl#Thing,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 isDerivedUsing,Object Property,,,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
