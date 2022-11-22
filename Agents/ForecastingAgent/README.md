@@ -47,7 +47,7 @@ Set your postgres database and blazegraph endpoints in your properties [file](./
 ## General workflow
 - [Agent uml](https://lucid.app/lucidchart/def34dba-537c-48c7-9fa4-89bda55b4dc5/edit?viewport_loc=-3263%2C-197%2C3677%2C1765%2C0_0&invitationId=inv_1ed2a56a-16f0-4884-a5cb-a5aa69daba1e)
 
-The `Forecasting Agent` forecasts an existing time series in an RDB using its `iri` in the KG.
+The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`.
 
 After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one or else must be specified with the `force_configuration` parameter in the HTTP request.
 
@@ -57,7 +57,7 @@ Then, it loads the model. This is either a pretrained model specified in the mod
 Finally the forecasted time series is re-instantiated under the same `iri`. 
 
 ## Starting the agent
-Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.  
+Buy running [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with the agent starts.  
 
 
 &nbsp;
@@ -70,7 +70,7 @@ Buy running [main](./forecasting/flaskapp/wsgi.py) the flask app starts.
 - **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
 If not set the default value from the [mapping file] is used.
-- **force_configuration** if specified this configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
+- **force_configuration** if specified this model configuration from the [mapping file] is used. Otherwise the agent identifies the `iri`.   
 
 
 ## Custom configurations and new models

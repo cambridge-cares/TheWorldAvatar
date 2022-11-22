@@ -24,7 +24,6 @@ from forecasting.errorhandling.exceptions import KGException
 from forecasting.kgutils.kgclient import KGClient
 #from forecasting.utils.api_endpoints import HM_SPARQL_ENDPOINT
 #from forecasting.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from forecasting.kgutils.querytemplates import *
 from forecasting.kgutils.tsclient import TSClient
 from forecasting.utils.properties import *
 from forecasting.utils.tools import *
@@ -34,7 +33,7 @@ from forecasting.utils.useful_queries import *
 #logger = agentlogging.get_logger("prod")
 
 
-def forecast(dataIRI, horizon, forecast_start_date=None, force_mapping=None, data_length=None):
+def forecast(dataIRI, horizon, forecast_start_date=None, force_configuration=None, data_length=None):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -42,7 +41,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_mapping=None, dat
     :param dataIRI: The IRI of the time series you want to forecast
     :param horizon: The number of time steps to forecast
     :param forecast_start_date: The date from which you want to start forecasting
-    :param force_mapping: If you want to force a specific mapping, you can do so here
+    :param force_configuration: If you want to force a specific mapping, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
     :return: The forecast is being returned.
     """
@@ -52,11 +51,11 @@ def forecast(dataIRI, horizon, forecast_start_date=None, force_mapping=None, dat
 
     covariates = None
 
-    # get the mapping dictionary either from the a specific force_mapping
+    # get the mapping dictionary either from the a specific force_configuration
     # or from identifying the dataIRI
-    if force_mapping is not None:
-        print(f'Using forced  mapping {force_mapping}')
-        mapping_name = force_mapping
+    if force_configuration is not None:
+        print(f'Using forced  mapping {force_configuration}')
+        mapping_name = force_configuration
     else:
         mapping_name = get_config(dataIRI, kgClient)
 

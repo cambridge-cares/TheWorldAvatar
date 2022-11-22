@@ -3,8 +3,6 @@ from forecasting.utils.tools import *
 import pandas as pd
 from darts import concatenate
 
-
-
 def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict = {}):
     """
          Constructs proper SPARQL update string from given name, verb-object and verb-literal dictionary.
@@ -167,3 +165,26 @@ def get_ts_data(dataIRI, ts_client, lowerbound= None, upperbound= None):
     return dates, values
 
 
+
+def get_ts_by_type():
+     """
+     It returns a SPARQL query that will return all the dataIRIs and tsIRIs in the graph, along with the
+     type of the dataIRI.
+     
+     It distinguishes between measures and non-measures. 
+     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
+     """
+
+     return f"""
+     prefix rdf: <{RDF}>
+     prefix om: <{OM}>
+     prefix ts: <{TS}>
+     SELECT  distinct ?dataIRI ?tsIRI ?type_with_measure ?type_without_measure
+     WHERE {{
+      
+       ?tsIRI ts:hasTimeSeries ?ts . 
+       ?tsIRI rdf:type ?type_without_measure .
+       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type_with_measure }} . 
+       
+     }}
+     """

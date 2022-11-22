@@ -26,8 +26,8 @@ BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-MAPPING = {}
-""" KEYS in the MAPPING dict:
+MODEL_MAPPING = {}
+""" KEYS in the MODEL_MAPPING dict:
 Required:
 'ts_data_type': Data type from jpsBaseLibView.java.lang
 'frequency': The frequency of the time series data
@@ -67,7 +67,7 @@ Optinal:
     
 """
 # Default mapping which uses Prophet and loads just dataIRI without covariates
-MAPPING['DEFAULT'] = {
+MODEL_MAPPING['DEFAULT'] = {
     'fc_model': {
         'train_again': True,
         'name': 'prophet',
@@ -79,7 +79,7 @@ MAPPING['DEFAULT'] = {
 
 }
 
-MAPPING['TFT_HEAT_SUPPLY'] = {
+MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
     'load_covariates_func': get_covs_heat_supply,
     'fc_model': {
         "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
@@ -88,7 +88,8 @@ MAPPING['TFT_HEAT_SUPPLY'] = {
         'name': 'tft',
         'scale_data': True,
     },
-    'frequency': MAPPING['DEFAULT']['frequency'],
-    'data_length': MAPPING['DEFAULT']['data_length'],
-    'ts_data_type': MAPPING['DEFAULT']['ts_data_type'],
+    'frequency': MODEL_MAPPING['DEFAULT']['frequency'],
+    'data_length': MODEL_MAPPING['DEFAULT']['data_length'],
+    'ts_data_type': MODEL_MAPPING['DEFAULT']['ts_data_type'],
+
 }
