@@ -191,7 +191,7 @@ class SolarModel:
         df = pd.DataFrame(columns=['Timestamp'])
 
         # append time series to data frame '2017-04-01 12:00:00+08'
-        df = df.append({'Timestamp': pd.Timestamp(str(dtZone))}, ignore_index=True)
+        df = df.append({'Timestamp': pd.Timestamp(str(dtZone), tz=str(timezone))}, ignore_index=True)
 
         # create time index
         time_index = pd.DatetimeIndex(df.Timestamp)
@@ -208,12 +208,18 @@ class SolarModel:
         dni = results.get('dni')
         dhi = results.get('dhi')
 
-        print(str(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19]))
-
-        weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
-                               columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
-                               #yyyy-mm-ddThh-mm-ssZ
-                               index=[pd.Timestamp(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19], tz=str(timezone))])
+        if air_temperature == '' and wind_speed == '':
+            weather = pd.DataFrame(
+                [[float(irradiance), float(dhi), float(dni)]],
+                columns=['ghi', 'dhi', 'dni'],
+                index=[pd.Timestamp(
+                    str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[
+                                                                                                        14:16] + str(
+                        dtZone)[17:19], tz=str(timezone))])
+        else:
+            weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
+                                   columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
+                                   index=[pd.Timestamp(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19], tz=str(timezone))])
 
         self.mc.run_model(weather)
         values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
