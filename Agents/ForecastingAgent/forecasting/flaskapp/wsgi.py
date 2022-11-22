@@ -1,15 +1,9 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 18 Oct 2022                            #
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
 ################################################
 
-# Start Web Server Gateway Interface (WSGI) as simple web server to forward
-# requests to actual application and initialise recurring tasks
-
 from forecasting.flaskapp import create_app
-#from apscheduler.schedulers.background import BackgroundScheduler
-
-
 
 app = create_app()
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True

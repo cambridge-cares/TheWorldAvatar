@@ -39,7 +39,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     :param dataIRI: The IRI of the time series you want to forecast
     :param horizon: The number of time steps to forecast
     :param forecast_start_date: The date from which you want to start forecasting
-    :param use_model_configuration: If you want to force a specific mapping, you can do so here
+    :param use_model_configuration: If you want to force a specific model configuration, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
     :return: The forecast is being returned.
     """
@@ -49,20 +49,20 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
     covariates = None
 
-    # get the mapping dictionary from the a specific use_model_configuration or use default
+    # get the model configuration dictionary from the a specific use_model_configuration or use default
     if use_model_configuration is not None:
         print(f'Using model configuration: {use_model_configuration}')
-        mapping_name = use_model_configuration
+        model_configuration_name = use_model_configuration
     else:
-        mapping_name = "DEFAULT"
+        model_configuration_name = "DEFAULT"
 
-    cfg = MODEL_MAPPING[mapping_name].copy()
-    cfg['mapping_name'] = mapping_name
+    cfg = MODEL_MAPPING[model_configuration_name].copy()
+    cfg['model_configuration_name'] = model_configuration_name
     cfg['dataIRI'] = dataIRI
     cfg['horizon'] = horizon
     if data_length is not None:
         cfg['data_length'] = data_length
-    print('Using mapping: ', cfg)
+    print('Using model configuration: ', cfg)
 
     if forecast_start_date is not None:
         cfg['forecast_start_date'] = pd.Timestamp(
@@ -70,7 +70,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     else:
         cfg['forecast_start_date'] = None
 
-    # use mapping function to get the correct dataIRI timeseries and its covariates
+    # use model configuration function to get the correct dataIRI timeseries and its covariates
     series, covariates = load_ts_data(
         cfg, kgClient, tsClient)
 
@@ -88,7 +88,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
     # load the model
     # TODO: If you have multiple models and you need different loading functions,
-    # you can add them here. Maybe even add a function to the mapping dictionary
+    # you can add them here. Maybe even add a function to the model configuration dictionary
     if 'model_path_ckpt_link' in cfg['fc_model']:
         model = load_pretrained_model(
             cfg)
@@ -135,7 +135,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
 
 def get_forecast(series, covariates, model, cfg):
     """
-    It takes a series, covariates, model, and a mapping as inputs, and returns a forecast.
+    It takes a series, covariates, model, and a model configuration as inputs, and returns a forecast.
     
     :param series: the time series data
     :param covariates: darts series  of covariates
@@ -218,7 +218,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     Calculates the upper and lower bounds of the time series, based on the given data_length, forecast_start_date and horizon. 
     
     
-    :param cfg: a dictionary with the mapping with the following keys:
+    :param cfg: a dictionary with the model configuration with the following keys:
         'ts_data_type': the type of the time series data
         'frequency': the frequency of the time series data
         'data_length': the length of the time series data to retrieve before the forecast_start_date
@@ -318,7 +318,7 @@ def load_pretrained_model(cfg, forece_download=False):
     path_ckpt = ""
     path_pth = ""
     path_to_store = Path(__file__).parent.absolute() / \
-        'Models' / cfg['mapping_name'] / 'checkpoints'
+        'Models' / cfg['model_configuration_name'] / 'checkpoints'
 
     # TODO: until now we need to download both, checkpoint and model file
     # maybe you find a better way to just have one link
@@ -372,7 +372,7 @@ def instantiate_forecast(cfg, forecast, tsClient, kgClient):
         'data_length': the length of the time series data to retrieve before the forecast_start_date
         'ts_iri': the iri of the timeseries which is forecasted
         'fc_model': the configuration of the model
-        'mapping_name': the name of the mapping
+        'model_configuration_name': the name of the model configuration
         'loaded_data_bounds': the lower and upper bounds of the time series
         'forecast_name': the name of the forecast
     :param forecast: the forecast darts series object

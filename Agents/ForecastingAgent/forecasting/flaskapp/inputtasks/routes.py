@@ -1,7 +1,8 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 12 Oct 2022                            #
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
 ################################################
+
 
 from flask import Blueprint, request, jsonify
 import traceback
@@ -20,8 +21,7 @@ inputtasks_bp = Blueprint(
 )
 
 
-# Define route for API request to update transaction record for single property
-# or list of provided properties
+# Define route for API to forecast
 @inputtasks_bp.route("/api/forecastingAgent/forecast", methods=["POST"])
 def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
@@ -66,7 +66,7 @@ def api_forecast():
         # use last available date as forecast_start_date
         forecast_start_date = None
     
-    # Retrieve if specific mapping should be foreced
+    # Retrieve if specific model configuration should be foreced
     try:
         use_model_configuration = query['use_model_configuration']
         print('use_model_configuration: ' + use_model_configuration)
