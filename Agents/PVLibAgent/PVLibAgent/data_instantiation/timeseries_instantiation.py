@@ -39,7 +39,9 @@ class timeseries_instantiation:
                 for iri in dataIRIs:
                     response = (ts_client.tsclient.checkDataHasTimeSeries(iri, conn))
             except Exception as ex:
-                logger.error("Unable to check whether " + iri + " has timeseries.")
-                raise TSException("Unable to check whether " + iri + " has timeseries.") from ex
+                if str(ex).__contains__("ERROR: relation \"dbTable\" does not exist"):
+                    response = False
+                else:
+                    raise Exception("Unable to check whether " + iri + " has timeseries")
 
             return response
