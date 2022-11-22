@@ -92,7 +92,7 @@ public class TimeSeriesSparql {
 	private static final Variable tsType = Queries.SELECT().var();
 	private static final ValuesPattern vp = new ValuesPattern(tsType, types);
 
-	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList("unitSecond", "unitMinute", "unitHour", "unitDay", "unitWeek", "unitMonth", "unitYear"));
+	private final ArrayList<String> temporalUnitType = new ArrayList<>(Arrays.asList(ns_time+"unitSecond", ns_time+"unitMinute", ns_time+"unitHour", ns_time+"unitDay", ns_time+"unitWeek", ns_time+"unitMonth", ns_time+"unitYear"));
 
 	//EnumMap of allowed temporalUnit types
 	private static EnumMap<ChronoUnit, String> temporalUnitMap = new EnumMap<>(ChronoUnit.class);
