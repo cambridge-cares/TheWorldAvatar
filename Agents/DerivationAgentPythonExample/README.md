@@ -222,7 +222,7 @@ docker run --env-file <env_file_path> --name derivation_agent_python_example ghc
 ## Adapt agent to work with stack
 > **NOTE** This agent example will be updated to incorporate Stack in the next iteration.
 
-This agent example has been adapted to work with the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
+This agent example has been adapted to work with a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for a real use-case. For more information, please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 
 &nbsp;
