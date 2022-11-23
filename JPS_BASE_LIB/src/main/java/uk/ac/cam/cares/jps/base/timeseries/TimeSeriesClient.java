@@ -637,6 +637,17 @@ public class TimeSeriesClient<T> {
 	public List<String> getAllTimeSeries() {
 		return rdfClient.getAllTimeSeries();
 	}
+
+	/**
+	 * Returns the custom duration object containing the numerical duration value and temporal unit
+	 * associated with the avergae time series iri.
+	 * Returns null if the average time series does not exist or if the given time series is not of average time series type.
+	 * @param tsIRI Average time series
+	 * @return custom duration with numerical duration and temporal unit
+	 */
+	public TimeSeriesSparql.CustomDuration getCustomDuration(String tsIRI) {
+		return rdfClient.getCustomDuration(tsIRI);
+	}
 	
 	/**
 	 * converts list of time series into required format for visualisation
