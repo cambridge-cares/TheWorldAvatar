@@ -15,11 +15,11 @@ Content-Type: application/json
       //Availability HeatBoiler
       //"iri": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
 
-      "use_model_configuration" : "DEFAULT",
-      //"use_model_configuration" : "TFT_HEAT_SUPPLY",
-      "forecast_start_date": "2019-10-17T01:00:00Z",
+      //"use_model_configuration" : "DEFAULT",
+      "use_model_configuration" : "TFT_HEAT_SUPPLY",
+      "forecast_start_date": "2020-10-17T01:00:00Z",
       //"forecast_start_date": "2020-10-17T01:00:00Z",
       "horizon": 168, 
-      "data_length": 6000
+      "data_length": 1000
     }
 }

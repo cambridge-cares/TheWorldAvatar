@@ -12,6 +12,9 @@ import pandas as pd
 from forecasting.forecasting_agent.agent import *
 
 def test_convert_date_to_timestamp():
+     """
+     Test to convert a date to a timestamp
+     """
      # Test if date is converted to timestamp correctly
      assert convert_date_to_timestamp('2019-09-05T09:00:00Z') == 1567674000
      assert convert_date_to_timestamp(1546300800) == 1546300800
@@ -21,6 +24,10 @@ def test_convert_date_to_timestamp():
          
          
 def test_get_ts_lower_upper_bound():
+     """
+     > Test the function to return the lower and upper bound of the time series data to be retrieved from the
+     database
+     """
      # Test if lower and upper bound are calculated correctly
      start = pd.Timestamp(
             isoparse('2019-09-05T09:00:00Z')).tz_convert('UTC').tz_localize(None)
@@ -36,7 +43,7 @@ def test_get_ts_lower_upper_bound():
 
 def test_load_pretrained_model():
      """
-     > The function `load_pretrained_model` loads a pretrained model from a checkpoint file or a PyTorch
+     > Test the function `load_pretrained_model` to load a pretrained model from a checkpoint file or a PyTorch
      model file
      """
      # Test if pretrained model is loaded correctly
