@@ -6,6 +6,7 @@ logging.getLogger("matplotlib").setLevel(logging.WARNING)
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from abc import ABC
+from multiprocessing import Process
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
@@ -165,7 +166,6 @@ class RxnOptGoalAgent(ABC):
         #         stack_info=True, exc_info=True)
         #     raise e
 
-        # TODO set up to send email after the goal enters next iteration, or is achieved
         # initialise the email object and email_start_end_async_derivations flag
         if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
             self.yag = yagmail.SMTP(email_username, oauth2_file=email_auth_json_path)
@@ -175,6 +175,18 @@ class RxnOptGoalAgent(ABC):
             self.yag = None
 
         self.logger.info(f"RxnOptGoalAgent initialised with IRI: {self.goal_agent_iri}")
+
+
+    def send_email(self, subject, contents, attachments=None):
+        timeout = 2
+        process_email = Process(target=self.yag.send, args=(self.email_recipient, subject, contents, attachments))
+        process_email.start()
+        process_email.join(timeout=timeout)
+        if process_email.is_alive():
+            process_email.kill()
+            process_email.join()
+        if process_email.exitcode != 0:
+            self.logger.error(f"Timed out sending email notification after {timeout} seconds.\n Recipient: {self.email_recipient}\n Subject: {subject}\n Contents: {contents}\n Attachments: {attachments}")
 
 
     def default(self):
@@ -329,6 +341,20 @@ class RxnOptGoalAgent(ABC):
         if not self.scheduler.running:
             self.scheduler.start()
         self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
+
+        # send email about the start of goal iterations
+        if self.yag is not None:
+            self.send_email(
+                subject=f"[{self.email_subject_prefix}] Goal Iteration Scheduled",
+                contents=[
+                    format_current_time(),
+                    f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} is scheduled.",
+                    f"Goal Iteration will be monitored every {self.goal_monitor_time_interval} seconds.",
+                    f"The reaction to be optimised is {chem_rxn_iri}."
+                    f"The laboratories taking part of this optimisation campaign are {available_labs}."
+                ]
+            )
+
         return jsonify({self.GOAL_SPECS_RESPONSE_KEY: lst_rogi_derivation, self.GOAL_SET_IRI_KEY: goal_set_instance.instance_iri})
 
     def monitor_goal_iterations(self):
@@ -357,9 +383,22 @@ class RxnOptGoalAgent(ABC):
             # check if any of the goals are met
             unmet_goals = goal_set_instance.get_unmet_goals()
             if len(unmet_goals) == 0:
-                self.logger.info(f"All goals are met. Stop monitoring the iterations of goal set {self.current_active_goal_set}.")
                 self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
                 self.current_active_goal_set = None
+                self.logger.info(f"All goals are met. Stop monitoring the iterations of goal set {self.current_active_goal_set}.")
+                # send email about the completion of goal iterations
+                if self.yag is not None:
+                    self.send_email(
+                        subject=f"[{self.email_subject_prefix}] Goal Iteration Completed",
+                        contents=[
+                            format_current_time(),
+                            f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} are completed.",
+                            f"All goals are met and the best results are:",
+                        ] + [
+                            f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
+                        ]
+                    )
+
             else:
                 # check if the restriction is still okay
                 if goal_set_instance.if_restrictions_are_okay():
@@ -416,10 +455,36 @@ class RxnOptGoalAgent(ABC):
                     # finally request another round of update
                     for rogi_derivation in rogi_derivation_lst_up_to_date:
                         self.derivation_client.unifiedUpdateDerivation(rogi_derivation)
+                    # send email about the goal iteration entering the next round
+                    if self.yag is not None:
+                        self.send_email(
+                            subject=f"[{self.email_subject_prefix}] Goal Iteration Next Round",
+                            contents=[
+                                format_current_time(),
+                                f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} entered the next round.",
+                                f"Restriction (cycleAllowance) is updated to {goal_set_instance.hasRestriction.cycleAllowance - 1}.",
+                                f"Restriction (deadline) is {datetime.fromtimestamp(goal_set_instance.hasRestriction.deadline)}.",
+                                f"Current best results are:",
+                            ] + [
+                                f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
+                            ]
+                        )
                 else:
                     self.logger.info(f"Restrictions are not okay. Stop monitoring the goal iterations. Current best results: { goal_set_instance.get_best_results() }")
                     self.scheduler.remove_job(f'monitor_goal_set__{getShortName(self.current_active_goal_set)}')
                     self.current_active_goal_set = None
+                    # send email about the goal iteration stopped
+                    if self.yag is not None:
+                        self.send_email(
+                            subject=f"[{self.email_subject_prefix}] Goal Iteration Stopped",
+                            contents=[
+                                format_current_time(),
+                                f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} has stopped due to restrictions not satisfied.",
+                                f"Current best results are:",
+                            ] + [
+                                f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
+                            ]
+                        )
         else:
             self.logger.info(f"The ROGI derivations {rogi_derivation_lst} of GoalSet <{self.current_active_goal_set}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
 
@@ -500,10 +565,12 @@ class RxnOptGoalAgent(ABC):
         # Assign the current active goal set
         self.current_active_goal_set = goal_set_iri
         # Update the restriction with the new information from the form
+        new_cycle_allowance = request.form['cycleAllowance'] if 'cycleAllowance' in request.form and bool(request.form['cycleAllowance']) else None
+        new_deadline = datetime.timestamp(datetime.fromisoformat(request.form['deadline'])) if 'deadline' in request.form and bool(request.form['deadline']) else None
         self.sparql_client.update_goal_set_restrictions(
             goal_set_iri,
-            cycle_allowance=request.form['cycleAllowance'] if 'cycleAllowance' in request.form and bool(request.form['cycleAllowance']) else None,
-            deadline=datetime.timestamp(datetime.fromisoformat(request.form['deadline'])) if 'deadline' in request.form and bool(request.form['deadline']) else None,
+            cycle_allowance=new_cycle_allowance,
+            deadline=new_deadline,
         )
         self.derivation_client.updateTimestamp(goal_set_iri)
         self.scheduler.add_job(
@@ -515,9 +582,26 @@ class RxnOptGoalAgent(ABC):
             self.scheduler.start()
         self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
 
+        # Send email about goal set re-activation
+        if self.yag is not None:
+            self.send_email(
+                subject=f"[{self.email_subject_prefix}] Goal Iteration Reactivated",
+                contents=[
+                    format_current_time(),
+                    f"Iterations to pursue GoalSet {goal_set_iri} is reactivated.",
+                    f"Goal Iteration will be monitored every {self.goal_monitor_time_interval} seconds.",
+                    f"The new cycleAllowance: {new_cycle_allowance}."
+                    f"The new deadline: {new_deadline}."
+                    f"If the above restrictions are 'None', it means the restrictions remain the same as their previous values."
+                ]
+            )
         return jsonify({'status': 'success', 'message': f"GoalSet <{goal_set_iri}> is reactivated."})
 
     def get_available_labs(self):
         # TODO [future work] display the available labs to webpage dynamically after specified the chemical reaction to optimise
         # query the laboratory that has vapourtec reactors
         return self.sparql_client.get_all_laboratories()
+
+
+def format_current_time() -> str:
+    return str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + f" {str(time.localtime().tm_zone)}"
