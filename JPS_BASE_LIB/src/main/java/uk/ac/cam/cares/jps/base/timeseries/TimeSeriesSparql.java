@@ -80,6 +80,7 @@ public class TimeSeriesSparql {
 
 	//Values Pattern for TimeSeries types
 	private static final List<RdfObject> types = Arrays.asList(TIMESERIES, CUMULATIVE_TOTAL_TIMESERIES, STEPWISE_CUMULATIVE_TIMESERIES, AVERAGE_TIMESERIES, INSTANTANEOUS_TIMESERIES);
+	//NOTE: variable tsType will be created as ?x0.
 	private static final Variable tsType = Queries.SELECT().var();
 	private static final ValuesPattern vp = new ValuesPattern(tsType, types);
 
