@@ -453,7 +453,6 @@ public class TimeSeriesSparql {
 		// optional: define time unit
 		if (timeUnit != null) {
 			modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
-			//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
 		}
 
 		kbClient.executeUpdate(modify.getQueryString());
@@ -537,7 +536,6 @@ public class TimeSeriesSparql {
 			// optional: define time unit
 			if (timeUnit.get(i) != null) {
 				modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit.get(i))));
-				//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
 			}
 
 		}
