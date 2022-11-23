@@ -287,10 +287,15 @@ class RxnOptGoalAgent(ABC):
             desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
         )
 
+        # Get the list of available labs
+        # NOTE The remaining cycleAllowance will be deducted by the number of labs
+        # as the number of ROGI derivation instances will be equal to the number of labs
+        available_labs = parameters.getlist('labs')
+
         restriction = Restriction(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
-            cycleAllowance=parameters['cycleAllowance'],
+            cycleAllowance=parameters['cycleAllowance'] - len(available_labs),
             deadline=datetime.timestamp(datetime.fromisoformat(parameters['deadline']))
         )
 
@@ -315,9 +320,6 @@ class RxnOptGoalAgent(ABC):
             chem_rxn_iri,
             [goal.desires().clz for goal in goal_list]
         )
-
-        # Get the list of available labs
-        available_labs = parameters.getlist('labs')
 
         # Construct the list for derivation inputs
         derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp + [chem_rxn_iri]
