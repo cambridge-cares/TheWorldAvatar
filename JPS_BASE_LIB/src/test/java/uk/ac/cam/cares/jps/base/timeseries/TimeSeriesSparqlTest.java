@@ -23,6 +23,7 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 /**
  * This class provides unit tests for the TimeSeriesSparql class
@@ -887,6 +888,17 @@ public class TimeSeriesSparqlTest {
         sparqlClient.removeTimeSeries(tsIRI2);
         sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         Assert.assertTrue(sparqlClient.getAveragingPeriod(tsIRI1).equals(sparqlClient.getAveragingPeriod(tsIRI2)));
+    }
+
+    @Test
+    public void testGetTimeSeriesType(){
+        Iri invalidType = iri("invalidType");
+        // Initialise time series in kb
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, invalidType, null, null);
+
+        Assert.assertEquals(TimeSeriesSparql.AVERAGE_TYPE_STRING, sparqlClient.getTimeSeriesType(tsIRI1));
+        Assert.assertNull(sparqlClient.getTimeSeriesType(tsIRI2));
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
