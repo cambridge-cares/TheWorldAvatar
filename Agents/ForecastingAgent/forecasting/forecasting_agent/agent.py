@@ -62,11 +62,7 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     if data_length is not None:
         cfg['data_length'] = data_length
 
-    if forecast_start_date is not None:
-        cfg['forecast_start_date'] = pd.Timestamp(
-            isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
-    else:
-        cfg['forecast_start_date'] = None
+    cfg['forecast_start_date'] = get_forecast_start_date(forecast_start_date, tsClient, cfg)
 
     # use model configuration function to get the correct dataIRI timeseries and its covariates
     series, covariates = load_ts_data(
@@ -126,6 +122,16 @@ def forecast(dataIRI, horizon, forecast_start_date=None, use_model_configuration
     #instantiate_forecast(cfg = cfg, forecast=forecast, tsClient=tsClient, kgClient=kgClient)
 
     return cfg
+
+def get_forecast_start_date(forecast_start_date, tsClient, cfg):
+    if forecast_start_date is not None:
+        return pd.Timestamp(
+            isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
+    else:
+        # get the last value of ts and set next date as forecast start date
+        latest = tsClient.tsclient.getLatestData(cfg['ts_iri'], tsClient.conn)
+        return pd.Timestamp(isoparse(latest.getTimes(
+        )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 
 
 def get_forecast(series, covariates, model, cfg):
@@ -232,12 +238,6 @@ def load_ts_data(cfg, kgClient, tsClient):
         cfg['ts_iri'] = get_ts_value_iri(cfg['dataIRI'], kgClient)
     except IndexError as e:
         cfg['ts_iri'] = cfg['dataIRI']
-
-    if cfg['forecast_start_date'] is None:
-        # get the last value of ts and set next date as forecast start date
-        latest = tsClient.tsclient.getLatestData(cfg['ts_iri'], tsClient.conn)
-        cfg['forecast_start_date'] = pd.Timestamp(isoparse(latest.getTimes(
-        )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 
     # calculate lower and upper bound for timeseries to speed up query
     lowerbound, upperbound = get_ts_lower_upper_bound(cfg)
