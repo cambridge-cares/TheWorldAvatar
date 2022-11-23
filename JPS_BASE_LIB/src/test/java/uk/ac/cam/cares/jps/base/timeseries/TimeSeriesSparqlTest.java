@@ -861,7 +861,20 @@ public class TimeSeriesSparqlTest {
         Assert.assertTrue(testKnowledgeBase.contains(avgPeriod, unitType, ResourceFactory.createResource(TimeSeriesSparql.NS_TIME+"unitYear")));
         Assert.assertTrue(testKnowledgeBase.contains(avgPeriod, numericDuration, ResourceFactory.createTypedLiteral("5.0", XSDDatatype.XSDdecimal)));
 	}
-    
+
+    @Test
+    public void testGetCustomDuration(){
+        // Initialise time series in kb
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES, null, null);
+
+        TimeSeriesSparql.CustomDuration customDuration = sparqlClient.getCustomDuration(tsIRI1);
+        Assert.assertEquals(customDuration.getValue(), numericDuration1, epsilon);
+        Assert.assertEquals(customDuration.getUnit(), temporalUnit1);
+        Assert.assertNull(sparqlClient.getCustomDuration(tsIRI2));
+
+    }
+
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file
     	FileWriter writer = new FileWriter(filepath, false);
