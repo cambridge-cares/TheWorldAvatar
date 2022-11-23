@@ -347,6 +347,9 @@ public class TimeSeriesSparqlTest {
         for (String iri: dataIRI1) {
             Assert.assertNotNull(testKnowledgeBase.getIndividual(iri));
         }
+        String avgPeriodIRI = sparqlClient.getAveragingPeriod(tsIRI1);
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriodIRI));
+
         // Test timeseries instance
         Assert.assertEquals(TimeSeriesSparql.TIMESERIES_NAMESPACE + "AverageTimeSeries",
                 testKnowledgeBase.getIndividual(tsIRI1).getRDFType().getURI());
@@ -373,17 +376,16 @@ public class TimeSeriesSparqlTest {
         //Averaging Period IRI
         object = testKnowledgeBase.getIndividual(tsIRI1).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE+"hasAveragingPeriod")).getObject();
         Assert.assertTrue(object.isResource());
-        Assert.assertNotNull(object.asResource().getURI());
-        String averagingPeriodIri = object.asResource().getURI();
+        Assert.assertEquals(avgPeriodIRI, object.asResource().getURI());
 
         //Temporal unit linked to averaging period IRI
-        object = testKnowledgeBase.getIndividual(averagingPeriodIri)
+        object = testKnowledgeBase.getIndividual(avgPeriodIRI)
                 .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME+"unitType")).getObject();
         Assert.assertTrue(object.isResource());
         Assert.assertEquals(temporalUnit1, object.asResource().getURI());
 
         //Numerical duration linked to averaging period
-        object = testKnowledgeBase.getIndividual(averagingPeriodIri)
+        object = testKnowledgeBase.getIndividual(avgPeriodIRI)
                 .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME+"numericDuration")).getObject();
         Assert.assertTrue(object.isLiteral());
         Assert.assertEquals(numericDuration1, object.asLiteral().getDouble(), epsilon);
@@ -395,6 +397,20 @@ public class TimeSeriesSparqlTest {
         Assert.assertTrue(errorMessage.contains(tsIRI1));
         Assert.assertTrue(errorMessage.contains(dataIRI1.get(0)));
         Assert.assertTrue(errorMessage.contains("is already attached to time series"));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
+
+        // Trying to init average time series with a negative duration value should result in an exception
+        exception = Assert.assertThrows(JPSRuntimeException.class, () ->
+                sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, Duration.ofDays(-12), ChronoUnit.SECONDS));
+        errorMessage = exception.getMessage();
+        Assert.assertTrue(errorMessage.contains("Numeric Duration must be a positive value"));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
+
+        // Trying to init average time series with an invalid temporal unit should result in an exception
+        exception = Assert.assertThrows(JPSRuntimeException.class, () ->
+                sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, Duration.ofDays(12), ChronoUnit.MICROS));
+        errorMessage = exception.getMessage();
+        Assert.assertTrue(errorMessage.contains("Temporal Unit: Micros of invalid type"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
 	}
 
