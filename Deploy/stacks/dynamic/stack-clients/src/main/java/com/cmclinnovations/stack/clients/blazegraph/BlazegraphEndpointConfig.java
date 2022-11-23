@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.clients.blazegraph;
 import java.util.Objects;
 
 import com.cmclinnovations.stack.clients.core.PasswordEndpointConfig;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -40,11 +41,16 @@ public class BlazegraphEndpointConfig extends PasswordEndpointConfig {
         return username;
     }
 
+    @JsonIgnore
+    public String getServiceUrl() {
+        return "http://" + hostName + ":" + port + "/blazegraph";
+    }
+
     public String getUrl(String namespace) {
         if (null == url) {
             Objects.requireNonNull(namespace,
                     "If the 'url' is not explicitly specified then a namespace must be specified in the code.");
-            return "http://" + hostName + ":" + port + "/blazegraph/namespace/" + namespace + "/sparql/";
+            return getServiceUrl() + "/namespace/" + namespace + "/sparql/";
         } else {
             return url;
         }

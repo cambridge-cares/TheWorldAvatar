@@ -370,13 +370,38 @@ public class DerivedQuantitySparqlTest {
 		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
 				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
 				 .asLiteral().getString();
-		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
+		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
 
 		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
 		Assert.assertTrue(errMsg.contains(exc.getMessage()));
 		for (StackTraceElement st : exc.getStackTrace()) {
 			Assert.assertTrue(errMsg.contains(st.toString()));
 		}
+	}
+
+	@Test
+	public void testMarkAsErrorEscape() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+
+		// create an error message full of sequence characters
+		// System.getProperty("user.dir") should give a file path which normally appears in exception message when running in python
+		String sequences = System.getProperty("user.dir") + "\\\t\n\r\b\f\"'";
+		JPSRuntimeException sequencesExc = new JPSRuntimeException(sequences);
+
+		String excComment = devClient.markAsError(derivation, sequencesExc);
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				 .asLiteral().getString();
+		// the returned value from devClient.markAsError should match the added to triple store
+		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
 	}
 
 	@Test
