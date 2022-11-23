@@ -17,6 +17,8 @@ setup(
         'py4jps>=1.0.26', 
         'requests>=2.28',
         'darts~=0.21.0',
-        'configobj>=5.0.6'
+        'configobj>=5.0.6',
+        'pytest~=7.2',
+
     ]
 )
