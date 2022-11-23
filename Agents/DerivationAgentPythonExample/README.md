@@ -97,6 +97,8 @@ The development of a derivation agent is strongly related to the design of ontol
 
 The derivation agent modifies the knowledge graph automatically, it is therefore recommended to run integration test before deploying it for production. The recommended setup is to have both the local agent integration test and dockerised agent integration test. The former spins up a triple store and creates an agent instance in memory. Whereas the latter spins up a docker container of agent, which itself further spins up a triple store and run pytest within the agent docker container.
 
+> **WARNING** Everything in the example test was developed and tested working fine in WSL2. However, the test will ran into issue `ERROR: for blazegraph  Cannot create container for service blazegraph: invalid mount config for type "bind": bind source path does not exist: /tests/dummy_services_secrets/blazegraph_passwd.txt` when spinning up dockerised test in Windows host directly. It seems when running in Windows, the credential files were added executable permission when copying `.tests` folder into the docker container. However, at the time of writing, removing the executable permission doesn't seem to resolve the issue. Given that the recommended way of developing docker containers on Windows, according to [The World Avatar wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment#windows), is through WSL2, this test example will remain as it is for the moment. For those prefer to develop in Windows host directly, please refer to [PropertyValueEstimationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/606def74ec3b921e3c451767b78458db3a2fa3d5/Agents/PropertyValueEstimationAgent) as a concrete working example.
+
 ### Local agent integration test
 This example is provided in `docker-compose-testcontainers.yml` file. Other relevant files are provided in the `tests` folder.
 
@@ -120,13 +122,16 @@ python -m pytest --docker-compose=./docker-compose-testcontainers.yml
 
 The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph instances:
 
-```bash
+`(Linux)`
+```sh
 # Build and run Dockerised agent test
 docker compose -f "docker-compose-test-dockerised.yml" up -d --build
 ```
 
 To run the dockerised tests in Debug mode, `docker-compose-test-dockerised-debug.yml` is provided. One may run:
-```bash
+
+`(Linux)`
+```sh
 # Build and run Dockerised agent test
 docker compose -f "docker-compose-test-dockerised-debug.yml" up -d --build
 ```
