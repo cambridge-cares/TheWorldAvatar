@@ -78,10 +78,23 @@ kb:TimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
 
 The created `UUID` denotes a UUID version 4. The data properties `Postgres URL` and `timeUnit` are Literals describing the link to the RDB and the time format in which the data is stored, respectively.
 
+The RDF type for each time series can be specified using the `Type` enum located in `TimeSeriesClient`. The enum can assume one of the following values:
+<br />
+`Type.GENERAL` corresponds to `ts:TimeSeries`<br />`Type.INSTANTANEOUS` corresponds to `ts:InstantaneousTimeSeries`<br /> 
+`Type.STEPWISECUMULATIVE` corresponds to `ts:StepwiseCumulativeTimeSeries`<br /> `Type.AVERAGE` corresponds to `ts:AverageTimeSeries`<br />
+`Type.CUMULATIVETOTAL` corresponds to `ts:CumulativeTotalTimeSeries`
+
 The averaging period for average time series is linked to the `unit type` and the `numericDuration`.
 
-`unitType` describes the temporal unit of the averaging period and can assume one of the following values: `unitSecond`, `unitMinute`, `unitHour`, 
-`unitDay`, `unitWeek`, `unitMonth`, `unitYear`. `numericDuration` describes the numerical value of the averaging period and must be a positive decimal.
+The `unitType` describes the temporal unit of the averaging period and can assume one of the following values: `ChronoUnit.SECONDS`, `ChronoUnit.MINUTES`, `ChronoUnit.HOURS`,
+`ChronoUnit.DAYS`, `ChronoUnit.WEEKS`, `ChronoUnit.MONTHS`, `ChronoUnit.YEARS`, which correspond to `unitSecond`, `unitMinute`, `unitHour`, 
+`unitDay`, `unitWeek`, `unitMonth`, `unitYear` respectively. 
+
+ The `numericDuration` describes the numerical value of the averaging period and must be a positive decimal. It is specified using Duration.ofDays(*number of Days*)
+where *number of Days* will be converted to the `numericDuration` according to the specified `unitType`. 
+
+Use the following conversions when creating the Duration object:
+`1 month = 33 days` `1 year = 366 days`.
 
 ### Instantiation in RDB ###
 In PostgreSQL, the table and column names are restricted to 63 characters. Hence, a central **lookup table** is required to map any `dataIRI` to its corresponding location, i.e. `tableName` and `columnName`.
