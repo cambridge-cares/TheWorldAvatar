@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +42,11 @@ public class TimeSeriesClientIntegrationTest {
 	private static List<String> dataIRI_1, dataIRI_2;
 	private static List<Class<?>> dataClass_1, dataClass_2;
 	private static String timeUnit;
+	private static Duration duration;
+	private static ChronoUnit chronoUnit;
+	private static Double numericalDuration;
+	private static String temporalUnit;
+	private final double epsilon = 0.000001d;
 
 	// Will create two Docker containers for Blazegraph and postgreSQL
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
@@ -75,6 +82,11 @@ public class TimeSeriesClientIntegrationTest {
 		// Specify type of data for each column (most data will be in doubles, but one can specify different data types)
 		dataClass_2 = new ArrayList<>();
 		dataClass_2.add(Double.class);
+
+		duration = Duration.ofDays(33*9);
+		chronoUnit = ChronoUnit.MONTHS;
+		numericalDuration = 9.0;
+		temporalUnit = TimeSeriesSparql.NS_TIME+"unitMonth";
 	}
 
 	// Create clean slate (new Docker containers) for each test
@@ -127,11 +139,14 @@ public class TimeSeriesClientIntegrationTest {
 			Assert.assertEquals(0, tsClient.countTimeSeries());
 
 			// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(1, tsClient.countTimeSeries());
 			Assert.assertEquals(3, tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+			TimeSeriesSparql.CustomDuration customDuration = tsClient.getCustomDuration(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
+			Assert.assertEquals(customDuration.getUnit(), temporalUnit);
+			Assert.assertEquals(customDuration.getValue(), numericalDuration, epsilon);
 			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
 			Assert.assertEquals(3, ts.getDataIRIs().size());
 			for (String iri : dataIRI_1) {
@@ -153,7 +168,7 @@ public class TimeSeriesClientIntegrationTest {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null));
 			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
 		}
 	}
@@ -165,7 +180,7 @@ public class TimeSeriesClientIntegrationTest {
 			postgres.stop();
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null));
 			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
 		}
 	}
@@ -191,7 +206,7 @@ public class TimeSeriesClientIntegrationTest {
 			postgres.stop();
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null));
 			Assert.assertTrue(e.getMessage().contains("Inconsistent state created when initialising time series"));
 		}
 
@@ -202,7 +217,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(1, tsClient.countTimeSeries());
@@ -260,7 +275,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Interrupt triple store connection
@@ -279,7 +294,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -314,7 +329,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
 
 			// Retrieve latest database state and interrupt connection
 			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
@@ -343,7 +358,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -375,8 +390,8 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
-			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null);
+			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(2, tsClient.countTimeSeries());
@@ -414,7 +429,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
 			// Retrieve tsIRI to be deleted
 			String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
 
@@ -434,7 +449,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
 			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
@@ -470,7 +485,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
 
 			// Retrieve tsIRI to be deleted
 			String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
@@ -498,7 +513,7 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
 			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
@@ -511,7 +526,7 @@ public class TimeSeriesClientIntegrationTest {
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
 			doThrow(new JPSRuntimeException("")).when(rdfClient_spy).initTS(Mockito.any(), Mockito.any(), Mockito.any(),
-					Mockito.any());
+					Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
 			// Interrupt postgreSQL connection
 			postgres.stop();
@@ -529,8 +544,8 @@ public class TimeSeriesClientIntegrationTest {
 	public void testDeleteAllWithoutExceptions() throws SQLException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
-			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
+			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(2, tsClient.countTimeSeries());
@@ -557,8 +572,8 @@ public class TimeSeriesClientIntegrationTest {
 	public void testDeleteAllWithExceptions() throws SQLException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn);
-			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
+			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
 
 			// Interrupt database connection
 			postgres.stop();
