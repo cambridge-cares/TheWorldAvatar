@@ -232,13 +232,6 @@ public class TimeSeriesSparqlTest {
     }
     
     @Test
-    public void testNamespaces() {
-        // Test the value of the public namespaces for the ontology and the knowledge base
-        Assert.assertEquals(TIMESERIES_NAMESPACE, TimeSeriesSparql.TIMESERIES_NAMESPACE);
-        Assert.assertEquals(NS_TIME, TimeSeriesSparql.NS_TIME);
-    }
-    
-    @Test
     public void testPrefixes() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
     	// Retrieve the value of the private static field 'PREFIX_ONTOLOGY' of the client
         Field p_onto = TimeSeriesSparql.class.getDeclaredField("PREFIX_ONTOLOGY");
