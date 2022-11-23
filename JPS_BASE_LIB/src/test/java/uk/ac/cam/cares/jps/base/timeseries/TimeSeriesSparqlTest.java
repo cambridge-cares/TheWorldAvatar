@@ -390,6 +390,20 @@ public class TimeSeriesSparqlTest {
         Assert.assertTrue(object.isLiteral());
         Assert.assertEquals(numericDuration1, object.asLiteral().getDouble(), epsilon);
 
+        //clear existing time series
+        sparqlClient.removeTimeSeries(tsIRI1);
+        sparqlClient.removeTimeSeries(tsIRI2);
+        //Initialise two average time series with same duration and temporal unit
+        //Both time series should be attached to the same averaging period
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        //check both time series is attched to the same averaging period
+        Assert.assertEquals(testKnowledgeBase.getIndividual(tsIRI1).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE+"hasAveragingPeriod")).getObject().asResource().getURI(),
+                testKnowledgeBase.getIndividual(tsIRI2).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE+"hasAveragingPeriod")).getObject().asResource().getURI());
+
+        //clear existing time series
+        sparqlClient.removeTimeSeries(tsIRI2);
+
         // Trying to init different time series but same data IRI should result in an exception
         Exception exception = Assert.assertThrows(JPSRuntimeException.class, () ->
                 sparqlClient.initTS(tsIRI2, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null));
@@ -419,7 +433,7 @@ public class TimeSeriesSparqlTest {
         Assert.assertFalse(sparqlClient.checkTimeSeriesExists(tsIRI1));
 
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.INSTANTANEOUS_TIMESERIES, null, null);
 
         Assert.assertTrue(sparqlClient.checkTimeSeriesExists(tsIRI1));
         Assert.assertFalse(sparqlClient.checkTimeSeriesExists(tsIRI2));
@@ -430,7 +444,7 @@ public class TimeSeriesSparqlTest {
         Assert.assertFalse(sparqlClient.checkDataHasTimeSeries("http://data1"));
 
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES, null, null);
 
         Assert.assertTrue(sparqlClient.checkDataHasTimeSeries("http://data1"));
         Assert.assertFalse(sparqlClient.checkDataHasTimeSeries("http://data5"));
@@ -448,10 +462,10 @@ public class TimeSeriesSparqlTest {
         Assert.assertEquals(0, sparqlClient.countTS());
 
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         Assert.assertEquals(1, sparqlClient.countTS());
         // Initialise different time series in kb
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES, null, null);
         Assert.assertEquals(2, sparqlClient.countTS());
     }
 
@@ -459,7 +473,7 @@ public class TimeSeriesSparqlTest {
     public void testGetTimeSeries() {
         Assert.assertNull(sparqlClient.getTimeSeries(dataIRI1.get(0)));
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         Assert.assertNull(sparqlClient.getTimeSeries(dataIRI2.get(0)));
         for(String iri: dataIRI1) {
             Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(iri));
@@ -480,7 +494,7 @@ public class TimeSeriesSparqlTest {
         Assert.assertNull(sparqlClient.getDbUrl(tsIRI2));
         Assert.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
         // Initialise different time series in kb
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL + "_2", null, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL + "_2", null, TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES, null, null);
         Assert.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
         Assert.assertEquals(dbURL + "_2", sparqlClient.getDbUrl(tsIRI2));
     }
@@ -489,7 +503,7 @@ public class TimeSeriesSparqlTest {
     public void testGetTimeUnit() {
         Assert.assertNull(sparqlClient.getTimeUnit(tsIRI1));
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
         Assert.assertEquals(timeUnit, sparqlClient.getTimeUnit(tsIRI1));
         // Initialise different time series in kb without time series
@@ -502,7 +516,7 @@ public class TimeSeriesSparqlTest {
     public void testGetAssociatedData() {
         Assert.assertEquals(0, sparqlClient.getAssociatedData(tsIRI1).size());
 	    // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
 
         Assert.assertEquals(0, sparqlClient.getAssociatedData(tsIRI2).size());
         List<String> retrievedDataIRI = sparqlClient.getAssociatedData(tsIRI1);
@@ -517,10 +531,10 @@ public class TimeSeriesSparqlTest {
     public void testGetAllTimeSeries() {
         Assert.assertEquals(0, sparqlClient.getAllTimeSeries().size());
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         Assert.assertEquals(1, sparqlClient.getAllTimeSeries().size());
         // Initialise different time series in kb
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.INSTANTANEOUS_TIMESERIES, null, null);
         List<String> retrievedTimeSeries = sparqlClient.getAllTimeSeries();
         Assert.assertEquals(2, retrievedTimeSeries.size());
         for (String iri: Arrays.asList(tsIRI1, tsIRI2)) {
@@ -534,7 +548,7 @@ public class TimeSeriesSparqlTest {
 	    String dataIRIThatGetsAdded = "http://data4";
 
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -583,7 +597,7 @@ public class TimeSeriesSparqlTest {
 	    String dataIRIThatGetsRemoved = "http://data1";
 
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -625,7 +639,7 @@ public class TimeSeriesSparqlTest {
         // Initialise time series in kb
         sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
         // Initialise other time series with only one data IRI in kb
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
 
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
@@ -652,14 +666,68 @@ public class TimeSeriesSparqlTest {
             Assert.assertTrue(object.isResource());
             Assert.assertEquals(tsIRI2, object.asResource().getURI());
         }
+
+        //Initialise time series 1 back in kb
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        String avgPeriod = sparqlClient.getAveragingPeriod(tsIRI2);
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriod));
+
+        //Remove average time series with averaging period connected to only one time series
+        sparqlClient.removeTimeSeries(tsIRI2);
+        Assert.assertNull(testKnowledgeBase.getIndividual(tsIRI2));
+        Assert.assertNull(testKnowledgeBase.getIndividual(avgPeriod));
+
+        // Check that other series does still exist and the data is still attached
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(tsIRI1));
+        for (String iri: dataIRI1) {
+            RDFNode object = testKnowledgeBase.getIndividual(iri)
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
+                    .getObject();
+            Assert.assertTrue(object.isResource());
+            Assert.assertEquals(tsIRI1, object.asResource().getURI());
+        }
+        sparqlClient.removeTimeSeries(tsIRI1);
+
+        //Initialise two average time series with same numeric duration and temporal unit
+        //Deleting one time series should still preserve the common averaging period
+
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        avgPeriod = sparqlClient.getAveragingPeriod(tsIRI1);
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriod));
+
+        //check both time series is attached to the same averaging period
+        Assert.assertEquals(avgPeriod, testKnowledgeBase.getIndividual(tsIRI2).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE+"hasAveragingPeriod")).getObject().asResource().getURI());
+
+        //Remove average time series 1
+        sparqlClient.removeTimeSeries(tsIRI1);
+
+        // Check that time series does not exist anymore
+        Assert.assertNull(testKnowledgeBase.getIndividual(tsIRI1));
+
+        // Check that the averaging period IRI still exists and is attached to the 2nd average time series
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriod));
+        Assert.assertEquals(avgPeriod, testKnowledgeBase.getIndividual(tsIRI2).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE+"hasAveragingPeriod")).getObject().asResource().getURI());
+        Assert.assertEquals(temporalUnit1, testKnowledgeBase.getIndividual(avgPeriod).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME+"unitType")).getObject().asResource().getURI());
+        Assert.assertEquals(numericDuration1, testKnowledgeBase.getIndividual(avgPeriod).getProperty(ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME+"numericDuration")).getObject().asLiteral().getDouble(), epsilon);
+
+        // Check that other series does still exist and the data is still attached
+        Assert.assertNotNull(testKnowledgeBase.getIndividual(tsIRI2));
+        for (String iri: dataIRI2) {
+            RDFNode object = testKnowledgeBase.getIndividual(iri)
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries"))
+                    .getObject();
+            Assert.assertTrue(object.isResource());
+            Assert.assertEquals(tsIRI2, object.asResource().getURI());
+        }
     }
 
     @Test
     public void testRemoveAllTimeSeries() {
         // Initialise time series in kb
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
         // Initialise other time series with only one data IRI in kb
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.TIMESERIES, null, null);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES, null, null);
 
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
