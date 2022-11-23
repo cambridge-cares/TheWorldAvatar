@@ -669,14 +669,17 @@ public class TimeSeriesSparql {
 	 * @return
 	 */
 	protected String getTimeSeriesType(String tsIRI){
-
+		String result = null;
 		SelectQuery query = Queries.SELECT();
 		TriplePattern queryPattern = iri(tsIRI).isA(tsType);
 
 		query.select(tsType).where(queryPattern, vp).prefix(PREFIX_ONTOLOGY);
 		kbClient.setQuery(query.getQueryString());
 
-		return kbClient.executeQuery().getJSONObject(0).getString(tsType.getQueryString().substring(1));
+		JSONArray queryResult = kbClient.executeQuery();
+		if(!queryResult.isEmpty())
+			result = queryResult.getJSONObject(0).getString(tsType.getQueryString().substring(1));
+		return result;
 	}
 
 	/**
