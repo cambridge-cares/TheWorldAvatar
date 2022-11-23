@@ -3,20 +3,16 @@
 
 from contextlib import contextmanager
 
-import agentlogging
-
 
 from .jpsSingletons import jpsBaseLibGW
 from .utils import TIME_FORMAT
 from .utils import TIMECLASS
 from .utils import DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
 from PVLibAgent.error_handling.exceptions import TSException
-
-# Initialise logger
-logger = agentlogging.get_logger("prod")
-
+import logging
 
 class TSClientForUpdate:
+    logging.basicConfig(level=logging.DEBUG)
     # Create ONE JVM module view on class level and import all required java classes
     jpsBaseLibView = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
@@ -39,22 +35,15 @@ class TSClientForUpdate:
         try:
             self.connection = TSClientForUpdate.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
-            logger.error("Unable to initialise TS Remote Store client.")
+            logging.error("Unable to initialise TS Remote Store client.")
             raise TSException("Unable to initialise TS Remote Store client.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
             self.tsclient = TSClientForUpdate.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
-            logger.error("Unable to initialise TS client.")
+            logging.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
-
-        #3) Initialise TimeSeries
-        #try:
-         #   self.ts = TSClient.jpsBaseLibView.TimeSeries()
-        #except Exception as ex:
-           # logger.error("Unable to initialise TimeSeries.")
-            #raise TSException("Unable to initialise TimeSeries.") from ex
 
 
     @contextmanager
@@ -85,7 +74,7 @@ class TSClientForUpdate:
             timeseries = TSClientForUpdate.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
 
         except Exception as ex:
-            logger.error("Unable to create timeseries.")
+            logging.error("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
 
         return timeseries

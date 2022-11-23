@@ -10,15 +10,12 @@ from PVLibAgent.data_retrieval.query_timeseries import query_latest_timeseries
 from PVLibAgent.data_instantiation.create_data_iris import check_data_iris
 from PVLibAgent.data_instantiation.timeseries_instantiation import timeseries_instantiation
 
-import agentlogging
 from pathlib import Path
 import os
+import logging
 
 # Create the Flask app object
 app = Flask(__name__)
-
-# Initialise logger
-logger = agentlogging.get_logger("dev")
 
 # Define location of properties file (with Triple Store and RDB settings)
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "dataIRIs.properties"))
@@ -35,15 +32,15 @@ def default():
 # Define a route for API requests
 @app.route('/api/v1/evaluate', methods=['GET'])
 def api():
-    
+    logging.basicConfig(level=logging.DEBUG)
     # Check arguments (query parameters)
-    logger.info("Checking arguments...")
+    logging.info('Checking arguments...')
 
     if 'device' in request.args:
         try:
             device = str(request.args['device'])
         except ValueError:
-            logger.error("Unable to parse device type.")
+            logging.error("Unable to parse device type.")
             return "Unable to interpret device type ('%s') as a string." % request.args['device']
     else:
         return "Error: No 'device' parameter provided."
@@ -59,19 +56,19 @@ def api():
                 try:
                     air_temperature_iri = QueryData.query_air_temperature(iri)
                 except Exception as ex:
-                    logger.error("SPARQL query for air temperature IRI not successful")
+                    logging.error("SPARQL query for air temperature IRI not successful")
                     raise KGException("SPARQL query for air temperature IRI not successful.") from ex
 
                 try:
                     wind_speed_iri = QueryData.query_wind_speed(iri)
                 except Exception as ex:
-                    logger.error("SPARQL query for wind speed IRI not successful")
+                    logging.error("SPARQL query for wind speed IRI not successful")
                     raise KGException("SPARQL query for wind speed IRI not successful.") from ex
 
                 try:
                     ghi_iri = QueryData.query_global_horizontal_irradiance(iri)
                 except Exception as ex:
-                    logger.error("SPARQL query for global horizontal irradiance IRI not successful")
+                    logging.error("SPARQL query for global horizontal irradiance IRI not successful")
                     raise KGException("SPARQL query for global horizontal irradiance IRI not successful.") from ex
 
             else:
@@ -92,7 +89,7 @@ def api():
                 air_temperature_dates = [d.toString() for d in air_temperature.getTimes()]
                 ghi_dates = [d.toString() for d in ghi.getTimes()]
             except Exception as ex:
-                logger.error("Unable to get timestamps from timeseries object.")
+                logging.error("Unable to get timestamps from timeseries object.")
                 raise TSException("Unable to get timestamps from timeseries object") from ex
             if wind_dates != air_temperature_dates != ghi_dates:
                 raise Exception('The timestamps for air temperature, wind speed and ghi are not the same!')
@@ -102,7 +99,7 @@ def api():
                 air_temperature_values = [v for v in air_temperature.getValues(air_temperature_iri)]
                 ghi_values = [v for v in ghi.getValues(ghi_iri)]
             except Exception as ex:
-                logger.error("Unable to get values from timeseries object.")
+                logging.error("Unable to get values from timeseries object.")
                 raise TSException("Unable to get values from timeseries object.") from ex
 
             print(str(wind_speed_values[0]) + ' m/s at this timing: ' + wind_dates[0])
@@ -128,7 +125,7 @@ def api():
                 if not boolean_value:
                     timeseries_instantiation.init_timeseries(iri_list, [DATACLASS, DATACLASS], TIME_FORMAT)
             except Exception as ex:
-                logger.error("Unable to initialise timeseries")
+                logging.error("Unable to initialise timeseries")
                 raise TSException("Unable to initialise timeseries") from ex
             timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
             timeseries_instantiation.add_timeseries_data(timeseries_object)
@@ -145,7 +142,7 @@ def api():
                 try:
                     ghi_iri = QueryData.query_irradiance(iri)
                 except Exception as ex:
-                    logger.error("SPARQL query for irradiance IRI not successful")
+                    logging.error("SPARQL query for irradiance IRI not successful")
                     raise KGException("SPARQL query for irradiance IRI not successful.") from ex
 
             else:
@@ -159,13 +156,13 @@ def api():
             try:
                 ghi_dates = [d.toString() for d in ghi.getTimes()]
             except Exception as ex:
-                logger.error("Unable to get timestamps from timeseries object.")
+                logging.error("Unable to get timestamps from timeseries object.")
                 raise TSException("Unable to get timestamps from timeseries object") from ex
 
             try:
                 ghi_values = [v for v in ghi.getValues(ghi_iri)]
             except Exception as ex:
-                logger.error("Unable to get values from timeseries object.")
+                logging.error("Unable to get values from timeseries object.")
                 raise TSException("Unable to get values from timeseries object.") from ex
 
             print(str(ghi_values[0]) + ' W/m^2 at this timing: ' + ghi_dates[0])
@@ -189,7 +186,7 @@ def api():
                 if not boolean_value:
                     timeseries_instantiation.init_timeseries(iri_list, [DATACLASS, DATACLASS], TIME_FORMAT)
             except Exception as ex:
-                logger.error("Unable to initialise timeseries")
+                logging.error("Unable to initialise timeseries")
                 raise TSException("Unable to initialise timeseries") from ex
             timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
             timeseries_instantiation.add_timeseries_data(timeseries_object)

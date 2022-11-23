@@ -7,7 +7,6 @@ import os.path
 import pvlib
 from configobj import ConfigObj
 from pathlib import Path
-import agentlogging
 from dateutil.tz import gettz
 from pvlib.pvsystem import PVSystem
 import datetime
@@ -23,10 +22,8 @@ from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 from PVLibAgent.data_retrieval.query_data import QueryData
 from PVLibAgent.error_handling.exceptions import KGException
 
-
+import logging
 global latitude, longitude
-
-logger = agentlogging.get_logger("dev")
 
 
 class SolarModel:
@@ -34,9 +31,10 @@ class SolarModel:
     def __init__(self, model_type, iri):
         global latitude, longitude
 
+        logging.basicConfig(level=logging.DEBUG)
+
         # Define location of properties file
         filepath = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "model_parameters.properties"))
-        print('The filepath is ' + filepath)
 
         # Read properties file
         props = ConfigObj(filepath)
@@ -66,7 +64,7 @@ class SolarModel:
             try:
                 latitude = QueryData.query_latitude(iri)
             except Exception as ex:
-                logger.error("SPARQL query for latitude not successful")
+                logging.error("SPARQL query for latitude not successful.")
                 raise KGException("SPARQL query for latitude not successful.") from ex
 
         # Extract longitude
@@ -78,7 +76,7 @@ class SolarModel:
             try:
                 longitude = QueryData.query_longitude(iri)
             except Exception as ex:
-                logger.error("SPARQL query for longitude not successful")
+                logging.error("SPARQL query for longitude not successful.")
                 raise KGException("SPARQL query for longitude not successful.") from ex
 
         # Extract altitude
