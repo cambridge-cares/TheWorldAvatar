@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
@@ -817,16 +818,24 @@ public class TimeSeriesSparqlTest {
 		List<String> tsList = Arrays.asList(tsIRI1, tsIRI2);
 		List<List<String>> dataIRIs = new ArrayList<>();
 		dataIRIs.add(dataIRI1); dataIRIs.add(dataIRI2);
-		
-		sparqlClient.bulkInitTS(tsList, dataIRIs, dbURL, timeUnits, Arrays.asList(TimeSeriesSparql.TIMESERIES, TimeSeriesSparql.TIMESERIES), null, null);
+
+        List<ChronoUnit> temporalUnit = Arrays.asList(null, ChronoUnit.YEARS);
+        List<Duration> values = Arrays.asList(null, Duration.ofDays(366*5));
+
+		sparqlClient.bulkInitTS(tsList, dataIRIs, dbURL, timeUnits, Arrays.asList(TimeSeriesSparql.INSTANTANEOUS_TIMESERIES, TimeSeriesSparql.AVERAGE_TIMESERIES), values, temporalUnit);
 		
 		OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 		
 		Property hasRDB = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasRDB");
 		Property hasTimeUnit = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeUnit");
 		Property hasTimeSeries = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasTimeSeries");
-		Resource TimeSeries = ResourceFactory.createResource(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries");
-		
+        Property hasAveragingPeriod = ResourceFactory.createProperty(TimeSeriesSparql.TIMESERIES_NAMESPACE + "hasAveragingPeriod");
+        Property unitType = ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME + "unitType");
+        Property numericDuration = ResourceFactory.createProperty(TimeSeriesSparql.NS_TIME + "numericDuration");
+		Resource averageTimeSeries = ResourceFactory.createResource(TimeSeriesSparql.TIMESERIES_NAMESPACE + "AverageTimeSeries");
+        Resource instantaneousTimeSeries = ResourceFactory.createResource(TimeSeriesSparql.TIMESERIES_NAMESPACE + "InstantaneousTimeSeries");
+        Resource avgPeriod = ResourceFactory.createResource(sparqlClient.getAveragingPeriod(tsList.get(1)));
+
 		for (String dataIRI : dataIRI1) {
 			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI1)));
 		}
@@ -834,13 +843,23 @@ public class TimeSeriesSparqlTest {
 		for (String dataIRI : dataIRI2) {
 			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI2)));
 		}
-		
-		for (String tsIRI : tsList) {
-			Resource ts = ResourceFactory.createResource(tsIRI);
-			Assert.assertEquals(testKnowledgeBase.getIndividual(tsIRI).getRDFType(),TimeSeries);
-			Assert.assertTrue(testKnowledgeBase.contains(ts, hasRDB, ResourceFactory.createStringLiteral(dbURL)));
-			Assert.assertTrue(testKnowledgeBase.contains(ts, hasTimeUnit, ResourceFactory.createStringLiteral("s")));
-		}
+
+        Resource ts;
+        for(String tsIRI:tsList){
+            ts = ResourceFactory.createResource(tsIRI);
+            Assert.assertTrue(testKnowledgeBase.contains(ts, hasRDB, ResourceFactory.createStringLiteral(dbURL)));
+            Assert.assertTrue(testKnowledgeBase.contains(ts, hasTimeUnit, ResourceFactory.createStringLiteral("s")));
+        }
+
+        //for tsIRI1 of InstantaneousTimeSeries type
+        Assert.assertEquals(testKnowledgeBase.getIndividual(tsList.get(0)).getRDFType(),instantaneousTimeSeries);
+
+        //for tsIRI2 of AverageTimeSeries type
+        ts = ResourceFactory.createResource(tsList.get(1));
+        Assert.assertEquals(testKnowledgeBase.getIndividual(tsList.get(1)).getRDFType(),averageTimeSeries);
+		Assert.assertTrue(testKnowledgeBase.contains(ts, hasAveragingPeriod, avgPeriod));
+        Assert.assertTrue(testKnowledgeBase.contains(avgPeriod, unitType, ResourceFactory.createResource(TimeSeriesSparql.NS_TIME+"unitYear")));
+        Assert.assertTrue(testKnowledgeBase.contains(avgPeriod, numericDuration, ResourceFactory.createTypedLiteral("5.0", XSDDatatype.XSDdecimal)));
 	}
     
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
