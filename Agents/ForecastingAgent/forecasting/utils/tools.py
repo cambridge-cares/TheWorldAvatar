@@ -189,12 +189,3 @@ def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict =
 
     return output
 
-def get_static_from_df(df, variable_name):
-    """
-    It takes a dataframe and a variable name as input, and returns the value of the variable
-    
-    :param df: the dataframe containing the parameters
-    :param variable_name: The name of the variable you want to get the value of
-    :return: The value of the variable.
-    """
-    return float(df.loc[df['Name'] == variable_name, 'Value'])

@@ -117,7 +117,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         # no measurement -> no unit
         pass
     cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
-
+    
     update = get_forecast_update(cfg=cfg)
     kgClient.performUpdate(add_insert_data(update))
     
@@ -134,7 +134,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     return cfg
 
 def instantiate_forecast_timeseries(tsClient, cfg, forecast):
-    tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['data_type']], cfg['time_format'],
+    tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['ts_data_type']], cfg['time_format'],
                                      tsClient.conn)
     ts = TSClient.create_timeseries([str(x) for x in forecast.time_index], [
                                     cfg['forecast_iri']], [forecast.values().squeeze().tolist()])
@@ -267,12 +267,7 @@ def load_ts_data(cfg, kgClient, tsClient):
         cfg['fc_model']['covariates_iris'] = covariates_iris
 
         # check if covariates are given for complete future horizon from forecast_start_date
-        if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
-            # use default model
-            print(f'\n\nNot enough covariates for complete future horizon.')
-
-            raise ValueError(
-                f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
+        check_if_enough_covs_exist(cfg, covariates)
     else:
         covariates = None
 
@@ -292,6 +287,11 @@ def load_ts_data(cfg, kgClient, tsClient):
     print('Done with loading timeseries from KG and TSDB')
     return series, covariates
 
+def check_if_enough_covs_exist(cfg, covariates):
+    if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
+        raise ValueError(
+                f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
+    return True
 
 def get_ts_lower_upper_bound(cfg):
     """
@@ -342,25 +342,26 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
         path_ckpt = path_to_store / "best-model.ckpt"
         path_pth = ""
     else:
+        
         # create folder
-        os.makedirs(path_to_store)
+        if not os.path.exists(path_to_store):
+            os.makedirs(path_to_store)
 
         if model_path_ckpt_link.startswith("https://"):
             # download checkpoint model
-            path_ckpt, cfg = urllib.request.urlretrieve(
+            path_ckpt, _ = urllib.request.urlretrieve(
                 model_path_ckpt_link, path_to_store / "best-model.ckpt")
             print(
                 f'Downloaded checkpoint model from {model_path_ckpt_link} to {path_ckpt}')
 
         if model_path_pth_link.startswith("https://"):
             # download model
-            path_pth, cfg = urllib.request.urlretrieve(
+            path_pth, _ = urllib.request.urlretrieve(
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             print(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
     model = ModelClass.load_from_checkpoint(
         path_ckpt.parent.parent.__str__())
-    cfg['fc_model']['name'] = model_path_ckpt_link.__str__()
     print(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
@@ -397,7 +398,7 @@ def get_forecast_update(cfg):
 
     unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}
     covariate_update = {
-        TS_HASCOVARIATE: cfg['covariates_iris']} if cfg['covariates_iris'] else {}
+        TS_HASCOVARIATE: cfg['covariates_iris']} if 'covariates_iris' in cfg else {}
 
     # model
     forecastingModel_iri = KB + 'ForecastingModel_' + str(uuid.uuid4())
@@ -408,14 +409,17 @@ def get_forecast_update(cfg):
     }, verb_literal={
         RDFS_LABEL: cfg['fc_model']['name'],
     })
-    # url chkpt
-    update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
-        TS_HASURL: [cfg['fc_model']['model_path_ckpt_link'], XSD_STRING],
-    })
-    # url pth
-    update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
-        TS_HASURL: [cfg['fc_model']['model_path_pth_link'], XSD_STRING],
-    })
+    
+    if 'model_path_ckpt_link' in cfg['fc_model']:
+        # url chkpt
+        update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
+            TS_HASURL: [cfg['fc_model']['model_path_ckpt_link'], XSD_STRING],
+        })
+    if 'model_path_pth_link' in cfg['fc_model']: 
+        # url pth
+        update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
+            TS_HASURL: [cfg['fc_model']['model_path_pth_link'], XSD_STRING],
+        })
 
     # intervals
     outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
@@ -453,7 +457,6 @@ def get_forecast_update(cfg):
     update += get_properties_for_subj(subj=cfg['iri'], verb_obj={
         TS_HASFORECAST: cfg['forecast_iri']})
 
-    cfg['cfg['forecast_iri']'] = cfg['forecast_iri']
     return update
     
 
@@ -470,13 +473,13 @@ def convert_date_to_timestamp(date):
         time_stamp = date
     elif isinstance(date, str):
         time_stamp = pd.Timestamp(
-            isoparse(date)).tz_convert('UTC').tz_localize(None)
+            isoparse(date)).tz_convert('UTC').tz_localize(None).timestamp()
     elif isinstance(date, pd.Timestamp):
         time_stamp = date.timestamp()
     else:
         raise ValueError(
             f'Unknown date format: {date}. Please use int, str or pd.Timestamp')
-    return time_stamp
+    return int(time_stamp)
     
 
 def get_timeInstant(date):
