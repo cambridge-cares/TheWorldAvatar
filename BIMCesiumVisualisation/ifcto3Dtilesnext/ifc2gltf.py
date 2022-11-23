@@ -1,98 +1,149 @@
+"""
+# Author: qhouyee #
+
+This module generates glTF models from the IFC file.
+"""
+
 # Standard library imports
-import subprocess 
+import subprocess
 
 # Third party imports
-import ifcopenshell.util
 from ifcopenshell.util.selector import Selector
-import ifcpatch
 
-def add_feature_to_dict(filename, feature, dict, ifc):
+# Self imports
+from utils import find_word
+
+
+def verify_feature_exists(featurelist, ifc):
     """
-    Extract the IFC classes in the required dictionary format {filename : query_syntax} if their features exist
+    Verifies if the IFC feature in a list exist in the IFC file
 
     Arguments:
-        filename - A string containing the file name of the output 
-        feature - A string of the IfcClass to add into the dictionary
-        dict - A dictionary
+        featurelist - A list of IfcClasses to verify in string. Accepted format: '.IfcFeatureType'
         ifc - The required IFC model loaded in ifcopenshell
+    Returns:
+    A list containing features that exist in the format 'IfcFeatureType'
     """
     # selector is a utility tool from  ifcopenshell
     selector = Selector()
+    result_list = []
+    for feature in featurelist:
+        if len(selector.parse(ifc, feature)) > 0:
+            result_list += [feature[1:]]
+    return result_list
 
-    if len(selector.parse(ifc, feature)) > 0:        
-        # If dictionary is empty, add a key with no values
-        if filename not in dict:
-            dict[filename] = ""
-        
-        # If the feature is the first value added, the format would be different than the second and subsequent values
-        # Sample query syntax = '.IfcWall| .IfcDoor |.IfcWindow'
-        if len(dict[filename])==0: 
-            dict[filename]= feature
-        else:
-            dict[filename]+= ' | ' + feature
 
 def gendict4split(ifc):
     """
-    Creates a dictionary {filename : query_syntax} to split the IFC model into smaller IFC files
+    Creates a dictionary {filename : ifc_classes or ifc_id} to split
+    the IFC model into smaller IFC files
 
     Arguments:
         ifc - The required IFC model loaded in ifcopenshell
-
     Returns:
         The required dictionary for splitting the IFC model
         A hashtable to match assets to their IFC ID
     """
-    dict_elements = {}
-    # Adding the available features of the building model's broader categories
-    # Non-exhaustive. If required, add more classes in the format '.IfcFeatureType'
-    for feature in ['.IfcWall', '.IfcWallStandardCase', '.IfcSlab[PredefinedType!="ROOF"]', '.IfcColumn', '.IfcDoor', '.IfcWindow', '.IfcCurtainWall', '.IfcPlate', '.IfcMember', '.IfcStair', '.IfcStairFlight', '.IfcRailing']:
-        add_feature_to_dict("ifcbuilding", feature, dict_elements, ifc)
-    for feature in ['.IfcSlab[PredefinedType="ROOF"]', '.IfcCovering','.IfcRoof']:
-        add_feature_to_dict("ifcceiling", feature, dict_elements, ifc)
-    for feature in ['.IfcBuildingElementProxy', '.IfcFlowTerminal']:
-        add_feature_to_dict("ifcfurniture", feature, dict_elements, ifc)
+    # Initialise a dictionary with the IFC classes to exclude from the building output model
+    # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
+    dict_elements = {"building":
+                     ["IfcBuildingElementProxy", "IfcFurnishingElement",
+                      "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement"]}
 
-    hashtable={}
-    i=1
-    # Adding the key : value pair for each asset into the dictionary
-    for element in ifc.by_type("IfcFurnishingElement"):
-        # Keep the name of asset files simple, as Cesium cannot load too complicated and long file names
-        dict_elements["asset"+str(i)] = '.IfcFurnishingElement' + '[GlobalId ="' + element.GlobalId + '"]'
-        # Create a hashtable dict to store the lookup values
-        hashtable[element.GlobalId] = "asset"+str(i)
-        i= i+1
-    return dict_elements, hashtable
+    hashmapping = {}
+    counter = 1
+    # Store the IDs that should be generated as part of the interior furniture or solar panel model
+    furniture_elements = []
+    solar_panel_elements = []
+    for feature in ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal"]:
+        for element in ifc.by_type(feature):
+            # If the name contains these key words,generate individual models for them
+            wordlist = ["Sensor", "Weather Station", "Fridge", "Meter"]
+            if find_word(wordlist, element.Name):
+                # Simplify the name of asset files, as
+                # Cesium cannot load complicated or long file names
+                dict_elements["asset"+str(counter)] = element.GlobalId
+                # Create a hashtable dict to store the mapping values
+                hashmapping[element.GlobalId] = {
+                    "file": "asset"+str(counter), "name": element.Name}
+                counter = counter+1
+            # If the name contain a solar panel, generate a separate solar panel model
+            elif find_word(["Solar Panel"], element.Name):
+                solar_panel_elements.append(element.GlobalId)
+            else:
+                furniture_elements.append(element.GlobalId)
+
+    # Add to dictionary if list is not empty
+    if furniture_elements:
+        dict_elements["furniture"] = furniture_elements
+    if solar_panel_elements:
+        dict_elements["solarpanel"] = solar_panel_elements
+    return dict_elements, hashmapping
+
+
+def append_ifcconvert_command(key, value, ifcconvert_command):
+    """
+    Appends the dictionary values to the commands depending on
+    their key and if they are either a list or single instance
+
+    Arguments:
+        key - The dictionary key indicating the model output name
+        value - The dictionary values indicating either the IFC classes
+                or ID for inclusion or exclusion
+        ifcconvert_command - The initialised command in List format
+    Returns:
+    The command with the appended values
+    """
+    # Add the entities arg for only building key
+    if key == "building":
+        ifcconvert_command += ["--exclude", "entities"]
+        id_attributes = []
+        while len(value) > 0:
+            item = value.pop(0)
+            if isinstance(item, dict):
+                id_attributes = item["id"]
+            else:
+                ifcconvert_command += [item]
+        # If there are IDs available, append them to the command
+        if id_attributes:
+            ifcconvert_command += ["attribute", "GlobalId"]
+            ifcconvert_command += id_attributes
+    # Other keys will only require an attribute arg
+    else:
+        ifcconvert_command += ["--include", "attribute", "GlobalId"]
+        # Value may be either a list or a single object
+        if isinstance(value, list):
+            ifcconvert_command += value
+        else:
+            ifcconvert_command += [value]
+    return ifcconvert_command
+
 
 def conv2gltf(ifc, input_ifc):
     """
-    Invokes the related external tools to split a IFC file and convert to the glTF format in the gltf subfolder
-    
+    Invokes the related external tools to split an IFC file and
+    convert to the glTF format in the gltf subfolder
+
     Arguments:
         ifc - The required IFC model loaded in ifcopenshell
         input_ifc - Local file path of ifc model
-
     Returns:
         A hashtable linking each IFC id with their glTF file name
     """
-    dict, hashtable = gendict4split(ifc) 
-    for key, value in dict.items(): 
-        splitpath = "./data/splitifc/" + key +".ifc"
-        logfile = "./data/log/ifcpatch_" + key + ".log"
-        daepath = "./data/dae/" + key +".dae"
-        gltfpath = "./data/gltf/" + key +".gltf"
-        
-        #IfcSplitting
-        ifcpatch.execute({
-            "input": input_ifc,
-            "output": splitpath,
-            "recipe": "ExtractElements",
-            "log": logfile,
-            "arguments": [value],
-        })
+    dict_for_split, hashmapping = gendict4split(ifc)
 
+    for key, value_list in dict_for_split.items():
+        daepath = "./data/dae/" + key + ".dae"
+        gltfpath = "./data/gltf/" + key + ".gltf"
+        # Initialise the command and append accordingly
+        ifcconvert_command = ["./resources/IfcConvert", input_ifc, daepath]
+        ifcconvert_command = append_ifcconvert_command(
+            key, value_list, ifcconvert_command)
         # Convert from IFC to DAE to glTF
-        ifc2dae = subprocess.run([".\\resources\IfcConvert", splitpath, daepath])
-        dae2gltf = subprocess.run([".\\resources\COLLADA2GLTF\COLLADA2GLTF-bin", "-i", daepath, "-o", gltfpath])
-
+        subprocess.run(ifcconvert_command, check=True)
+        subprocess.run(
+            ["./resources/COLLADA2GLTF/COLLADA2GLTF-bin",
+                "-i", daepath, "-o", gltfpath],
+            check=True)
     print("Conversion to gltf completed...")
-    return hashtable
+    return hashmapping
