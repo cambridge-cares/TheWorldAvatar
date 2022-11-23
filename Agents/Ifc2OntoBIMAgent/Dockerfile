@@ -15,7 +15,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build the war
 WORKDIR /root/Ifc2OntoBIM
-RUN mvn clean package
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean package
 
 #==================================================================================================
 

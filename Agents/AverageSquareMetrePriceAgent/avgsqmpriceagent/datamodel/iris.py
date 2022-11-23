@@ -13,7 +13,7 @@ LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
-UOM = 'https://theworldavatar.com/resource/ontouom/'
+UOM = 'https://www.theworldavatar.com/kg/ontouom/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
