@@ -38,21 +38,24 @@ public class TimeSeriesSparqlTest {
     
 	// Initialise correct namespaces to use for ontology and knowledge base
 	private final String TIMESERIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontotimeseries/";
+    private final String NS_TIME = "http://www.w3.org/2006/time#";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
+
     private final String tsIRI1 = "http://tsIRI1";
     private final List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
-    private final String tsIRI2 = "http://tsIRI2";
-    private final List<String> dataIRI2 = Collections.singletonList("http://data4");
-    private final String dbURL = "jdbc:postgresql:timeseries";
-    private final String timeUnit = "http://s";
-
     private final Duration duration1 = Duration.ofDays(31*8);
     private final ChronoUnit chronoUnit1 = ChronoUnit.MONTHS;
     private final String temporalUnit1 = TimeSeriesSparql.NS_TIME+"unitMonth";
     private final Double numericDuration1 = 8.0;
 
+    private final String tsIRI2 = "http://tsIRI2";
+    private final List<String> dataIRI2 = Collections.singletonList("http://data4");
+    private final String dbURL = "jdbc:postgresql:timeseries";
+    private final String timeUnit = "http://s";
+
     private final double epsilon = 0.000001d;
+
 	// Class that is used as the knowledge base client in the tests.
     // It will use a jena model to execute queries on.
 	private static class MockKnowledgeBaseClient extends RemoteStoreClient {
@@ -230,23 +233,29 @@ public class TimeSeriesSparqlTest {
     public void testNamespaces() {
         // Test the value of the public namespaces for the ontology and the knowledge base
         Assert.assertEquals(TIMESERIES_NAMESPACE, TimeSeriesSparql.TIMESERIES_NAMESPACE);
-        Assert.assertEquals(TIMESERIES_NAMESPACE, TimeSeriesSparql.TIMESERIES_NAMESPACE);
+        Assert.assertEquals(NS_TIME, TimeSeriesSparql.NS_TIME);
     }
     
     @Test
     public void testPrefixes() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-    	// Retrieve the value of the private static field 'prefix_ontology' of the client
+    	// Retrieve the value of the private static field 'PREFIX_ONTOLOGY' of the client
         Field p_onto = TimeSeriesSparql.class.getDeclaredField("PREFIX_ONTOLOGY");
         p_onto.setAccessible(true);
         Prefix onto = (Prefix) p_onto.get(null);
         Assert.assertEquals("PREFIX ts: <" + TIMESERIES_NAMESPACE + ">",
         					onto.getQueryString());
-    	// Retrieve the value of the private static field 'prefix_kb' of the client
+    	// Retrieve the value of the private static field 'PREFIX_KB' of the client
         Field p_kb = TimeSeriesSparql.class.getDeclaredField("PREFIX_KB");
         p_kb.setAccessible(true);
         Prefix kb = (Prefix) p_kb.get(null);
         Assert.assertEquals("PREFIX kb: <" + TIMESERIES_NAMESPACE + ">",
-        					kb.getQueryString());      
+        					kb.getQueryString());
+        // Retrieve the value of the private static field 'PREFIX_TIME' of the client
+        Field p_time = TimeSeriesSparql.class.getDeclaredField("PREFIX_TIME");
+        p_time.setAccessible(true);
+        Prefix time = (Prefix) p_time.get(null);
+        Assert.assertEquals("PREFIX time: <" + NS_TIME + ">",
+                time.getQueryString());
     }
     
     @Test
