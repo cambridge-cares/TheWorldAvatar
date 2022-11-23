@@ -379,7 +379,10 @@ class RxnOptGoalAgent(ABC):
             rogi_agent_iri=self.goal_iter_agent_iri
         )
         rogi_derivation_lst_up_to_date = [rogi for rogi in rogi_derivation_lst if self.sparql_client.check_if_rogi_complete_one_iter(rogi)]
-        if bool(rogi_derivation_lst_up_to_date):
+        if not bool(rogi_derivation_lst_up_to_date):
+            self.logger.info(f"The ROGI derivations {rogi_derivation_lst} of GoalSet <{self.current_active_goal_set}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
+
+        else:
             # get the latest goal set instance
             goal_set_instance = self.sparql_client.get_goal_set_instance(self.current_active_goal_set)
             # check if any of the goals are met
@@ -407,7 +410,9 @@ class RxnOptGoalAgent(ABC):
                     # update the rogi derivation with new restriction and rxn exp, request for an update
                     self.logger.info(f"Restrictions are still okay. Updating the ROGI derivations {rogi_derivation_lst} with new restriction and rxn exp, also requesting for an update of {rogi_derivation_lst_up_to_date}.")
 
-                    # update ReactionExperiment/Restriction accordingly, example SPARQL update with sub query:
+                    # update ReactionExperiment/Restriction accordingly
+                    # the cycleAllowance will be updated depending on how many ROGI derivation is to be updated
+                    # example SPARQL update with sub query:
                     # DELETE {
                     # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
                     # }
@@ -425,7 +430,7 @@ class RxnOptGoalAgent(ABC):
                     #             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#refersTo> ?pi.
                     #     ?pi ^<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator> ?rxn_exp.
                     #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
-                    #     BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
+                    #     BIND (?cycle_allowance -2 AS ?cycle_allowance_update)
                     # }
                     # }
 
@@ -447,7 +452,7 @@ class RxnOptGoalAgent(ABC):
                                 ?result <{ONTODERIVATION_BELONGSTO}> ?rogi_derivation; <{ONTOGOAL_REFERSTO}> ?pi.
                                 ?pi ^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn_exp.
                                 <{goal_set_instance.hasRestriction.instance_iri}> <{ONTOGOAL_CYCLEALLOWANCE}> ?cycle_allowance .
-                                BIND (?cycle_allowance -1 AS ?cycle_allowance_update)
+                                BIND (?cycle_allowance -{len(rogi_derivation_lst_up_to_date)} AS ?cycle_allowance_update)
                             }}
                     }}"""
                     self.logger.debug(f"SPARQL update: {update}")
@@ -464,7 +469,7 @@ class RxnOptGoalAgent(ABC):
                             contents=[
                                 format_current_time(),
                                 f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} entered the next round.",
-                                f"Restriction (cycleAllowance) is updated to {goal_set_instance.hasRestriction.cycleAllowance - 1}.",
+                                f"Restriction (cycleAllowance) is updated to {goal_set_instance.hasRestriction.cycleAllowance - len(rogi_derivation_lst_up_to_date)}.",
                                 f"Restriction (deadline) is {datetime.fromtimestamp(goal_set_instance.hasRestriction.deadline)}.",
                                 f"Current best results are:",
                             ] + [
@@ -487,8 +492,7 @@ class RxnOptGoalAgent(ABC):
                                 f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
                             ]
                         )
-        else:
-            self.logger.info(f"The ROGI derivations {rogi_derivation_lst} of GoalSet <{self.current_active_goal_set}> is still running. Will check again in {self.goal_monitor_time_interval} seconds.")
+
 
     def goal_result_page(self):
         """
