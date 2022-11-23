@@ -872,7 +872,21 @@ public class TimeSeriesSparqlTest {
         Assert.assertEquals(customDuration.getValue(), numericDuration1, epsilon);
         Assert.assertEquals(customDuration.getUnit(), temporalUnit1);
         Assert.assertNull(sparqlClient.getCustomDuration(tsIRI2));
+    }
 
+    @Test
+    public void testGetAveragingPeriod(){
+        // Initialise time series in kb
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES, null, null);
+
+        String avgPeriodIRI = sparqlClient.getAveragingPeriod(tsIRI1);
+        Assert.assertTrue(avgPeriodIRI.contains(TIMESERIES_NAMESPACE + "AveragingPeriod_"));
+        Assert.assertNull(sparqlClient.getAveragingPeriod(tsIRI2));
+
+        sparqlClient.removeTimeSeries(tsIRI2);
+        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration1, chronoUnit1);
+        Assert.assertTrue(sparqlClient.getAveragingPeriod(tsIRI1).equals(sparqlClient.getAveragingPeriod(tsIRI2)));
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
