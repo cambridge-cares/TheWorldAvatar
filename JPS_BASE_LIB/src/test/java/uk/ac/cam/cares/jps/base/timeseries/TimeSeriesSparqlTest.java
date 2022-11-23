@@ -751,7 +751,7 @@ public class TimeSeriesSparqlTest {
     }
     
     @Test
-    public void loadSparqlConfigs () throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void testLoadSparqlConfigs () throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     	// Initialise TimeSeriesClient
     	RemoteStoreClient kbClient = new RemoteStoreClient();    
     	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
