@@ -105,7 +105,7 @@ def read_properties_file(filepath):
         DB_UPDATE_URL = props['db.update.url']
     except KeyError:
         raise KeyError('Key "db.update.url" is missing in properties file: ' + filepath)
-    if DB_QUERY_URL == '':
+    if DB_UPDATE_URL == '':
         raise KeyError('No "db.update.url" value has been provided in properties file: ' + filepath)
 
     # Extract PostgreSQL database username for update
@@ -113,7 +113,7 @@ def read_properties_file(filepath):
         DB_UPDATE_USER = props['db.update.user']
     except KeyError:
         raise KeyError('Key "db.update.user" is missing in properties file: ' + filepath)
-    if DB_QUERY_USER == '':
+    if DB_UPDATE_USER == '':
         raise KeyError('No "db.update.user" value has been provided in properties file: ' + filepath)
 
     # Extract PostgreSQL database password for update
@@ -121,7 +121,7 @@ def read_properties_file(filepath):
         DB_UPDATE_PASSWORD = props['db.update.password']
     except KeyError:
         raise KeyError('Key "db.update.password" is missing in properties file: ' + filepath)
-    if DB_QUERY_PASSWORD == '':
+    if DB_UPDATE_PASSWORD == '':
         raise KeyError('No "db.update.password" value has been provided in properties file: ' + filepath)
 
     # Extract IRI

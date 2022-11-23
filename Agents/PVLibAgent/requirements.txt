@@ -8,4 +8,5 @@ configobj~=5.0
 psycopg2-binary~=2.9
 timezonefinder~=6.0.1
 python-dateutil~=2.8.2
+pytest==7.2.0
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
