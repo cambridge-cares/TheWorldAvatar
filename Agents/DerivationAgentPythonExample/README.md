@@ -128,15 +128,15 @@ The dockerised tests use one Docker container to initialise the Derivation agent
 docker compose -f "docker-compose-test-dockerised.yml" up -d --build
 ```
 
-To run the dockerised tests in Debug mode, `docker-compose-test-dockerised-debug.yml` is provided. One may run:
+To run the dockerised tests in Debug mode, `docker-compose-test-dockerised-debug.yml` and a suitable `.vscode/launch.json` configuration `Python: Test Dockerised Debug (WSL2)` have been provided. It should be noted that once the configuration is selected, one need to **press `F5` TWICE** to start debugging - pressing it for the first time only compose up the agent docker, it is the second time that the debugger will be attached to the container and the breakpoints start to take effect. Once the test is finished, the docker container will be composed down automatically.
 
-`(Linux)`
-```sh
-# Build and run Dockerised agent test
-docker compose -f "docker-compose-test-dockerised-debug.yml" up -d --build
-```
+For developers new to `Run and Debug` configurations, please refer to these official documentations:
+- [Debug Python within a container](https://code.visualstudio.com/docs/containers/debug-python)
+- [Customize the Docker extension](https://code.visualstudio.com/docs/containers/reference)
+- [Use Docker Compose: Debug](https://code.visualstudio.com/docs/containers/docker-compose#_debug)
+- [Debugpy](https://github.com/microsoft/debugpy)
 
-Once the test is finished, the docker container will be composed down automatically.
+For developers interested to see more example of possible configurations, including those relevant to the usage of [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), please refer to [`PropertyValueEstimationAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent).
 
 ### Develop tests for new agents
 

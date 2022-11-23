@@ -15,6 +15,7 @@ services:
         agentdir: derivationagentpythonexample
     ports:
       - 7000:5000
+      - 5678:5678
     extra_hosts:
       - host.docker.internal:host-gateway
     env_file:
