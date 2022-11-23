@@ -34,16 +34,16 @@ def api_forecast():
     
     # Retrieve data IRI to be updated
     try:
-        dataIRI = str(query['dataIRI'])
-        # remove < and > from dataIRI
-        if dataIRI.startswith('<'):
-            dataIRI = dataIRI[1:]
-        if dataIRI.endswith('>'):
-            dataIRI = dataIRI[:-1]
-        print('dataIRI: ' + dataIRI)
+        iri = str(query['iri'])
+        # remove < and > from iri
+        if iri.startswith('<'):
+            iri = iri[1:]
+        if iri.endswith('>'):
+            iri = iri[:-1]
+        print('iri: ' + iri)
     except Exception as ex:
-        #logger.('Invalid "dataIRI" provided.')
-        raise InvalidInput('"dataIRI" must be provided.') from ex
+        #logger.('Invalid "iri" provided.')
+        raise InvalidInput('"iri" must be provided.') from ex
     
     # Retrieve horizon 
     try:
@@ -81,8 +81,8 @@ def api_forecast():
         data_length = None
         
     try:
-        # Forecast dataIRI
-        res = forecast(dataIRI, horizon, forecast_start_date, use_model_configuration, data_length = data_length)
+        # Forecast iri
+        res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length = data_length)
         res['status'] = '200'
         return jsonify(res)
     except Exception as ex:

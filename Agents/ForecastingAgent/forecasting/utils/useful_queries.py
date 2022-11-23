@@ -43,24 +43,24 @@ def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict =
     return output
 
 
-def get_predecessor_type_and_predicate(dataIRI, kgClient):
-    # get predecessor type of dataIRI
+def get_predecessor_type_and_predicate(iri, kgClient):
+    # get predecessor type of iri
     query = f"""
     SELECT ?predecessorType ?predicate
     WHERE {{
-        ?o ?predicate <{dataIRI}> . 
+        ?o ?predicate <{iri}> . 
         ?o <{RDF_TYPE}> ?predecessorType . 
         }}"""
     cfg = kgClient.performQuery(query)
     return {r["predicate"]: r["predecessorType"] for r in cfg}
 
 
-def get_ts_value_iri(dataIRI, kgClient):
-    # get ts value iri of dataIRI
+def get_ts_value_iri(iri, kgClient):
+    # get ts value iri of iri
     query = f"""
     SELECT ?tsValueIRI
     WHERE {{
-        <{dataIRI}> <{OM_HASVALUE}> ?tsValueIRI . 
+        <{iri}> <{OM_HASVALUE}> ?tsValueIRI . 
         }}"""
     ts_value_iri = kgClient.performQuery(query)[0]["tsValueIRI"]
     return ts_value_iri
@@ -129,24 +129,24 @@ def get_df_of_ts(tsIRI, tsClient, lowerbound, upperbound, column_name="cov", dat
     return df
 
 
-def get_unit(dataIRI, kgClient):
-    # get unit of dataIRI
+def get_unit(iri, kgClient):
+    # get unit of iri
     query = f"""
     SELECT ?unit
     WHERE {{
-        <{dataIRI}> <{OM_HASVALUE}> ?measure . 
+        <{iri}> <{OM_HASVALUE}> ?measure . 
         ?measure <{OM_HASUNIT}> ?unit . 
         }}"""
     unit = kgClient.performQuery(query)[0]["unit"]
     return unit
 
 
-def get_time_format(dataIRI, kgClient):
-    # get unit of dataIRI
+def get_time_format(iri, kgClient):
+    # get unit of iri
     query = f"""
     SELECT ?format
     WHERE {{
-        <{dataIRI}> <{OM_HASVALUE}> ?measure . 
+        <{iri}> <{OM_HASVALUE}> ?measure . 
         ?measure <{TS_HASTIMESERIES}> ?ts . 
         ?ts <{TS_HASTIMEUNIT}> ?format . 
         }}"""
@@ -154,32 +154,32 @@ def get_time_format(dataIRI, kgClient):
     return time_format
 
 
-def get_ts_data(dataIRI, ts_client, lowerbound=None, upperbound=None):
+def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
     """
     It takes a data IRI and a client object, and returns the dates and values of the time series
 
-    :param dataIRI: The IRI of the data you want to get
+    :param iri: The IRI of the data you want to get
     :param ts_client: a TimeSeriesClient object
     :return: A tuple of two lists. The first list is a list of dates, the second list is a list of
     values.
     """
     if lowerbound is not None and upperbound is not None:
         ts = ts_client.tsclient.getTimeSeriesWithinBounds(
-            [dataIRI], lowerbound, upperbound, ts_client.conn)
+            [iri], lowerbound, upperbound, ts_client.conn)
     else:
-        ts = ts_client.tsclient.getTimeSeries([dataIRI], ts_client.conn)
+        ts = ts_client.tsclient.getTimeSeries([iri], ts_client.conn)
 
     dates = ts.getTimes()
     # Unwrap Java time objects
     dates = [d.toString() for d in dates]
-    values = ts.getValues(dataIRI)
+    values = ts.getValues(iri)
     return dates, values
 
 
 def get_ts_by_type():
     """
-    It returns a SPARQL query that will return all the dataIRIs and tsIRIs in the graph, along with the
-    type of the dataIRI.
+    It returns a SPARQL query that will return all the iris and tsIRIs in the graph, along with the
+    type of the iri.
 
     It distinguishes between measures and non-measures. 
     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
@@ -189,12 +189,12 @@ def get_ts_by_type():
      prefix rdf: <{RDF}>
      prefix om: <{OM}>
      prefix ts: <{TS}>
-     SELECT  distinct ?dataIRI ?tsIRI ?type_with_measure ?type_without_measure
+     SELECT  distinct ?iri ?tsIRI ?type_with_measure ?type_without_measure
      WHERE {{
       
        ?tsIRI ts:hasTimeSeries ?ts . 
        ?tsIRI rdf:type ?type_without_measure .
-       OPTIONAL {{ ?dataIRI om:hasValue ?tsIRI . ?dataIRI rdf:type ?type_with_measure }} . 
+       OPTIONAL {{ ?iri om:hasValue ?tsIRI . ?iri rdf:type ?type_with_measure }} . 
        
      }}
      """

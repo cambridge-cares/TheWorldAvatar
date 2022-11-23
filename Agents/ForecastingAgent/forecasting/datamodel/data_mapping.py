@@ -66,7 +66,7 @@ Optinal:
 
     
 """
-# Default mapping which uses Prophet and loads just dataIRI without covariates
+# Default mapping which uses Prophet and loads just iri without covariates
 MODEL_MAPPING['DEFAULT'] = {
     'fc_model': {
         'train_again': True,

@@ -56,7 +56,7 @@ class TSClient:
 
 
     @staticmethod
-    def create_timeseries(times: list, dataIRIs: list, values: list):
+    def create_timeseries(times: list, iris: list, values: list):
         # Create Java TimeSeries object (i.e. to attach via TSClient)
 
         # Create a JVM module view and use it to import the required java classes
@@ -64,7 +64,7 @@ class TSClient:
         jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
         try:
-            timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+            timeseries = jpsBaseLibView.TimeSeries(times, iris, values)
         except Exception as ex:
             #logger.("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex

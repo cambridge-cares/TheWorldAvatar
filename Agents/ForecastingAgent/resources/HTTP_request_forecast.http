@@ -4,16 +4,16 @@ Content-Type: application/json
 
 { "query": {
       // Heat supply
-      "dataIRI": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_172bfe76-0c1c-4463-b03e-bae2c1f50f4d",
+      "iri": "https://www.theworldavatar.com/kg/pms_dh/HasHeatDemand_172bfe76-0c1c-4463-b03e-bae2c1f50f4d",
       
       // GeneratedHeatAmount Gas Turbine
-      //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
+      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
 
       //Grid connection Temperature
-      //"dataIRI": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
+      //"iri": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
       
       //Availability HeatBoiler
-      //"dataIRI": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
+      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
 
       "use_model_configuration" : "DEFAULT",
       //"use_model_configuration" : "TFT_HEAT_SUPPLY",

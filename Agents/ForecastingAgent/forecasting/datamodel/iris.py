@@ -20,7 +20,7 @@ M3L = "http://purl.org/iot/vocab/m3-lite#"
 SIO = "http://semanticscience.org/resource/"
 UOM = "http://theworldavatar.com/resource/ontouom/"
 KB = "https://www.theworldavatar.com/kg/pms_dh/"
-
+TIME = "http://www.w3.org/2006/time#"
 
 ### OHN ###
 OHN_HASCO2FACTOR = OHN + "hasCO2Factor"
@@ -162,9 +162,19 @@ ONTOCHEMPLANT_FUELTYPE = ONTOCHEMPLANT + "FuelType"
 
 ### TS ###
 TS_HASTIMESERIES = TS + "hasTimeSeries"
+TS_HASINPUTTIMEINTERVAL = TS + "hasInputTimeInterval"
+TS_HASOUTPUTTIMEINTERVAL = TS + "hasOutputTimeInterval"
+TS_HASFORECAST = TS + "hasForecast"
 TS_HASRDB = TS + "hasRDB"
 TS_HASTIMEUNIT = TS + "hasTimeUnit"
 TS_TIMESERIES = TS + "TimeSeries"
+TS_CREATEDAT = TS + "createdAt"
+
+TS_HASURL = TS + "hasURL"
+TS_FORECASTINGMODEL = TS + "ForecastingModel"
+TS_HASCOVARIATE = TS + "hasCovariate"
+TS_HASFORECASTINGMODEL = TS + "hasForecastingModel"
+TS_HASTRAININGTIMESERIES = TS + "hasTrainingTimeSeries"
 
 # Data types
 RDF_TYPE = RDF + 'type'
@@ -178,3 +188,23 @@ XSD_INTEGER = XSD + 'integer'
 XSD_DOUBLE = XSD + 'double'
 XSD_BOOLEAN = XSD + 'boolean'
 XSD_DATE = XSD + "date"
+XSD_DATETIMESTAMP = XSD + "dateTimeStamp"
+
+### time interval ###
+TIME_HASBEGINNING = TIME + 'hasBeginning'
+TIME_INTERVAL = TIME + 'Interval'
+TIME_INSTANT = TIME + 'Instant'
+TIME_HASEND = TIME + 'hasEnd'
+TIME_HASTIME = TIME + 'hasTime'
+TIME_HASTRS = TIME + 'hasTRS'
+TIME_INTIMEPOSITION = TIME + 'inTimePosition'
+TIME_NUMERICPOSITION = TIME + 'numericPosition'
+TIME_TIMEPOSITION = TIME + 'TimePosition'
+UNIX_TIME = "http://dbpedia.org/resource/Unix_time"
+
+TIME_TRS = TIME + 'TRS'
+TIME_TEMPORALPOSITION = TIME + 'TemporalPosition'
+TIME_TEMPORALUNIT = TIME + 'TemporalUnit'
+TIME_NUMERICDURATION = TIME + 'numericDuration'
+TIME_HASAVERAGINGPERIOD = TIME + 'hasAveragingPeriod'
+TIME_UNITTYPE = TIME + 'unitType'

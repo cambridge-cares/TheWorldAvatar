@@ -14,7 +14,7 @@ def default():
     msg = 'Forecasting agent: \n'
     msg += 'The forecasting agent can be used to forecast a time series. \n'
     msg += 'The following parameters are required: \n'
-    msg += 'dataIRI: the IRI of the time series to be forecasted \n'
+    msg += 'iri: the IRI of the time series to be forecasted \n'
     msg += 'horizon: the number of steps to forecast \n'
     msg += 'Checkout the README.md for more information.'
 
