@@ -51,7 +51,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
     private static final String KEY_CITYGML_BUILDING_INST = "cityGmlBuildingIri";
 
     // Edit these fields per your requirements
-    public static final String iriPrefix = TimeSeriesSparql.ns_kb + "45utility/"; // The prefix to use for generating IRI
+    public static final String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE  + "45utility/"; // The prefix to use for generating IRI
     public static final int rowStart = 3;
     protected static Map<String, String> clientConfig;
     private static String dateKey;
@@ -205,7 +205,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
         }
 
-        OntoBimAdapter.addSupplementaryTriples(
+            OntoBimAdapter.addSupplementaryTriples(
                 clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
                 clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY), singleton);
         LOGGER.info("Data updated with new readings from Excel Workbook.");
