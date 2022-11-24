@@ -139,6 +139,11 @@ class IRIs(Enum):
 
     DERIVATION_INPUTS_NO_PRIOR_DATA = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
+    LAB1_IRI = 'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy'
+    LAB2_IRI = 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+    VAPOURTEC_ENV_FILE_DICT = {LAB1_IRI: LAB1_VAPOURTEC_AGENT_ENV, LAB2_IRI: LAB2_VAPOURTEC_AGENT_ENV}
+    HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
+
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -567,6 +572,7 @@ def create_vapourtec_agent():
         env_file:str,
         vapourtec_digital_twin:str=None,
         vapourtec_state_periodic_timescale:int=None,
+        vapourtec_ip_address:str=None,
         fcexp_file_container_folder:str=None,
         register_agent:bool=False,
         random_agent_iri:bool=False,
@@ -578,7 +584,7 @@ def create_vapourtec_agent():
             dry_run=dry_run,
             vapourtec_digital_twin=vapourtec_agent_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
             vapourtec_state_periodic_timescale=vapourtec_agent_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
-            vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
+            vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS if vapourtec_ip_address is None else vapourtec_ip_address,
             fcexp_file_container_folder=vapourtec_agent_config.FCEXP_FILE_CONTAINER_FOLDER if fcexp_file_container_folder is None else fcexp_file_container_folder,
             register_agent=vapourtec_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=vapourtec_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -987,14 +993,18 @@ def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient
 sample_goal_request = {
     "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
-    "deadline": "2022-09-12T17:05",
-    "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion",
+    "deadline": str(datetime.fromtimestamp(int(time.time())).isoformat()),
+    "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
     "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
-    "first_goal_num_val": 20,
+    "first_goal_num_val": 99,
     "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
     "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
-    "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
+    "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
     "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
-    "second_goal_num_val": 30,
-    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent"
+    "second_goal_num_val": 0.001,
+    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
+    "labs": [
+        'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy',
+        'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+    ]
 }
