@@ -16,6 +16,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DatasetLoader {
@@ -67,13 +68,20 @@ public class DatasetLoader {
         }
     }
 
+    private static void updateInjectableValues(Path configFile) {
+
+        InjectableValues.Std iv = new InjectableValues.Std();
+
+        iv.addValue(Dataset.NAME_KEY, FileUtils.getFileNameWithoutExtension(configFile));
+
+        objectMapper.setInjectableValues(iv);
+    }
+
     public static Dataset readInputDataset(Path configFile) {
         try {
-            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
-            if (null == dataset.getName()) {
-                dataset.setName(FileUtils.getFileNameWithoutExtension(configFile));
-            }
-            return dataset;
+            updateInjectableValues(configFile);
+
+            return objectMapper.readValue(configFile.toFile(), Dataset.class);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
         }

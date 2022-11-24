@@ -7,10 +7,13 @@ import java.util.Properties;
 
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
+
+    public static final String NAME_KEY = "name";
 
     private String name;
 
@@ -28,7 +31,7 @@ public class Dataset {
     private final boolean skip;
 
     @JsonCreator
-    public Dataset(@JsonProperty(value = "name") String name,
+    public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
             @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
             @JsonProperty(value = "database") String database,
             @JsonProperty(value = "namespace") Namespace namespace,
