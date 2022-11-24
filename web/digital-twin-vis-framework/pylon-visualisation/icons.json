@@ -1,13 +1,13 @@
 {
-	"pylon_400kv": "data/ukpn/icons/pylon-132kv-icon.png",
-	"pylon_132kv": "data/ukpn/icons/pylon-132kv-icon.png",
-	"pylon_33kv": "data/ukpn/icons/pylon-33kv-icon.png",
-	"cable": "data/ukpn/icons/cable-ng.png",
-	"line_ng_33kv": "data/ukpn/icons/line-ng-33kv.png",
-	"line_ng_132kv": "data/ukpn/icons/line-ng-132kv.png",
-	"line_ng_400kv": "data/ukpn/icons/line-ng-400kv.png",
-	"line_ukpn_33kv": "data/ukpn/icons/line-ukpn-33kv.png",
-	"line-ukpn-132kv": "data/ukpn/icons/line-ukpn-132kv.png",
+	"pylon_400kv": "data/ukpn/icons/pylon_superhigh_icon.png",
+	"pylon_132kv": "data/ukpn/icons/pylon_high_icon.png",
+	"pylon_33kv": "data/ukpn/icons/pylon_medium_icon.png",
+	"cable": "data/ukpn/icons/cable_ng.png",
+	"line_ng_33kv": "data/ukpn/icons/line_ng_medium_icon.png",
+	"line_ng_132kv": "data/ukpn/icons/line_ng_high_icon.png",
+	"line_ng_400kv": "data/ukpn/icons/line_ng_superhigh_icon.png",
+	"line_ukpn_33kv": "data/ukpn/icons/line_ukpn_medium_icon.png",
+	"line-ukpn-132kv": "data/ukpn/icons/line_ukpn_high_icon.png",
 	"NG_logo": "data/ukpn/icons/NG_logo.png",
 	"UKPN_logo": "data/ukpn/icons/NG_logo.png"
 }

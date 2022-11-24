@@ -1,12 +1,6 @@
 #########################
 #
-# This docker file builds an image for the Example Digital Twin visualistion.
-# It can also be used as starting point for any custom DT visualisations that
-# are created in future.
-#
-# NOTE: The "docker build" command used to build this file into an Image should
-# be run from the "example-dt-vis" folder, not from within this "docker" directory.
-# See the README for more details.
+# This docker file builds an image for the Pylon Visualisation.
 # 
 # Stages:
 #	- dev:	vis will use development versions of remote JS and CSS
@@ -22,7 +16,7 @@ FROM  alpine:3.14.0 as dev
 # Meta data
 LABEL authors = "support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Example Digital Twin"
+LABEL description = "Pylon Visualisation"
 
 # Install utilities
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix
