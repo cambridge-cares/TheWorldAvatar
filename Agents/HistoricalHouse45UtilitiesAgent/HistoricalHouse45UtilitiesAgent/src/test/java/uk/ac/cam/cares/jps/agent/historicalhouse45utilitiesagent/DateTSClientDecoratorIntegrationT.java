@@ -98,7 +98,7 @@ public class DateTSClientDecoratorIntegrationT {
     void testInitializeTimeSeries() throws SQLException {
         testDecorator.initializeTimeSeries(testReadings, testMappings);
         // Check that there is only one time series added
-        assertEquals(1, countTimeSeries());
+        assertEquals(1, tsClient.countTimeSeries());
         // Check that all IRIs have a time series and are attached to the same time series
         String testTSIRI;
         for (String iri : testIRIs) {
@@ -116,7 +116,7 @@ public class DateTSClientDecoratorIntegrationT {
         // Run code twice but should only be initialized once
         testDecorator.initializeTimeSeries(testReadings, testMappings);
         testDecorator.initializeTimeSeries(testReadings, testMappings);
-        assertEquals(1, countTimeSeries());
+        assertEquals(1, tsClient.countTimeSeries());
         Mockito.verify(tsClientSpy, Mockito.times(1)).
                 initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -162,26 +162,5 @@ public class DateTSClientDecoratorIntegrationT {
                 () -> assertNotEquals(measureValues, postgresTSData.getValues(testIRIs.get(0))),
                 () -> assertEquals(updatedMeasureValues, postgresTSData.getValues(testIRIs.get(0)))
         );
-    }
-
-    private static int countTimeSeries() {
-        // Create the select query
-        SelectBuilder builder = new SelectBuilder();
-        builder.addPrefix(RDF_PREFIX, RDF_URI);
-        builder.addVar(TIMESERIES_VAR)
-                .addWhere(TIMESERIES_VAR, RDF_TYPE, TIMESERIES_CLASS);
-        // Set and execute query
-        kbClient.setQuery(builder.buildString());
-        JSONObject timeseriesResult = kbClient.executeQuery().getJSONObject(0);
-
-        // Retrieve object class, and if true, return the count of timeseries accordingly
-        Class<?> objClass = timeseriesResult.get(TIMESERIES_KEY).getClass();
-        if (objClass.equals(JSONArray.class)) {
-            return timeseriesResult.getJSONArray(TIMESERIES_KEY).length();
-        } else if (objClass.equals(String.class) && timeseriesResult.getString(TIMESERIES_KEY).isEmpty()) {
-            return 0;
-        } else {
-            return 1;
-        }
     }
 }
