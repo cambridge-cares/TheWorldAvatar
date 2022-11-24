@@ -1,13 +1,36 @@
 """
 # Author: qhouyee #
 
-This module provides utility functions for reading files,
-and performing list and regex searching operations.
+This module provides utility functions for running shell command
+and file operations, or performing list and regex searching operations.
 """
 
 # Standard library imports
 import os
 import re
+import subprocess
+
+
+def run_shellcommand(command, require_shell=False):
+    """
+    Runs commands in the shell
+    All non-error messages are suppressed
+
+    Argument:
+    command - Command arguments in the form ["command","command2"] or "command command2"
+    require_shell - Boolean indicating if shell is required. Must be True for npm operations
+    """
+    subprocess.check_call(command, shell=require_shell,
+                          stdout=subprocess.DEVNULL)
+
+
+def install_glbconverter():
+    """
+    Installs the glb converter tool "gltf-pipeline" from npm through package.json
+    """
+    print("Checking for gltf-pipeline package from npm...")
+    run_shellcommand("npm install", True)
+    print("gltf-pipeline package is available!")
 
 
 def read_ifc_file():
@@ -26,7 +49,8 @@ def read_ifc_file():
         ifc_input = os.path.join(ifcpath, filelist[0])
     else:
         raise RuntimeError(
-            'More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file')
+            'More than one IFC file is located at the ./data/ifc folder. ' +
+            'Please place only ONE IFC file')
     return ifc_input
 
 
@@ -70,3 +94,4 @@ def find_word(wordlist, string):
 
 # Run when module is imported
 cleandir()
+install_glbconverter()

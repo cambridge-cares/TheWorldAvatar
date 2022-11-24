@@ -4,14 +4,11 @@
 This module generates glTF models from the IFC file.
 """
 
-# Standard library imports
-import subprocess
-
 # Third party imports
 from ifcopenshell.util.selector import Selector
 
 # Self imports
-from utils import find_word
+from utils import find_word, run_shellcommand
 
 
 def verify_feature_exists(featurelist, ifc):
@@ -121,8 +118,8 @@ def append_ifcconvert_command(key, value, ifcconvert_command):
 
 def conv2gltf(ifc, input_ifc):
     """
-    Invokes the related external tools to split an IFC file and
-    convert to the glTF format in the gltf subfolder
+    Invokes the related external tools to convert an IFC file
+    to the glTF format in the gltf subfolder
 
     Arguments:
         ifc - The required IFC model loaded in ifcopenshell
@@ -133,17 +130,18 @@ def conv2gltf(ifc, input_ifc):
     dict_for_split, hashmapping = gendict4split(ifc)
 
     for key, value_list in dict_for_split.items():
-        daepath = "./data/dae/" + key + ".dae"
+        glbpath = "./data/glb/" + key + ".glb"
         gltfpath = "./data/gltf/" + key + ".gltf"
-        # Initialise the command and append accordingly
-        ifcconvert_command = ["./resources/IfcConvert", input_ifc, daepath]
+
+        # Initialise the commands and append accordingly
+        ifcconvert_command = ["./resources/IfcConvert", input_ifc, glbpath]
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
-        # Convert from IFC to DAE to glTF
-        subprocess.run(ifcconvert_command, check=True)
-        subprocess.run(
-            ["./resources/COLLADA2GLTF/COLLADA2GLTF-bin",
-                "-i", daepath, "-o", gltfpath],
-            check=True)
+        glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
+
+        # Convert from IFC -> glb -> glTF
+        print("Converting " + key + " to glTF...")
+        run_shellcommand(ifcconvert_command)
+        run_shellcommand(glb2gltf_command, True)
     print("Conversion to gltf completed...")
     return hashmapping

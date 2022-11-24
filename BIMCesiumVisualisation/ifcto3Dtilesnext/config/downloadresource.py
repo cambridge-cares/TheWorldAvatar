@@ -46,16 +46,14 @@ def dl_zip(url, outpath_enum=1, extractall=True):
     if outpath_enum == 1:
         output_path = "./resources/"
     elif outpath_enum == 2:
-        output_path = "./resources/COLLADA2GLTF"
-    elif outpath_enum == 3:
         # Edit the environment name
         output_path = "<venv>/Lib/site-packages/"
         if "<venv>" in output_path:
             print(
                 "Please change <venv> in line 58 to your python virtual environment name")
             exit()
-    elif outpath_enum < 1 or outpath_enum > 3:
-        print("valid input for outpath_enum: 1, 2, and 3")
+    elif outpath_enum < 1 or outpath_enum > 2:
+        print("valid input for outpath_enum: 1 and 2")
 
     # If we want to extract all content from the zip file
     if extractall:
@@ -78,15 +76,14 @@ def downloadtask():
     """
     # Download and extract zip files
     dl_zip("https://s3.amazonaws.com/ifcopenshell-builds/IfcConvert-v0.7.0-cdde536-win64.zip")
-    dl_zip("https://github.com/KhronosGroup/COLLADA2GLTF/releases/download/v2.1.5/COLLADA2GLTF-v2.1.5-windows-Release-x64.zip", 2)
 
     # Download and extract python packages according to python version
     if sys.version_info >= (3, 7, 0) and sys.version_info < (3, 9, 0):
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py37-win.zip", 3, False)
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py37-win.zip", 2, False)
     elif sys.version_info >= (3, 9, 0) and sys.version_info < (3, 10, 0):
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py39-win.zip", 3, False)
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py39-win.zip", 2, False)
     elif sys.version_info >= (3, 10, 0):
-        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py310-win.zip", 3, False)
+        dl_zip("https://github.com/IfcOpenShell/IfcOpenShell/releases/download/blenderbim-221121/blenderbim-221121-py310-win.zip", 2, False)
     else:
         print("Python version is outdated. Please update python version to at least 3.7.0 or above")
 
