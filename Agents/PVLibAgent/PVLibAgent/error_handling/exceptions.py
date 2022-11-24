@@ -14,5 +14,5 @@ class StackException(Exception):
     """Raise in case of exception when interacting with the Docker Stack."""
 
 
-class APIException(Exception):
-    """Raise in case of exception when interacting with Met Office DataPoint API."""
+class SolarModelException(Exception):
+    """Raise in case of exception when interacting with the PVLib Library."""
