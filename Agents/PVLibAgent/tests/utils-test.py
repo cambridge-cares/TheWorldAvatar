@@ -1,5 +1,4 @@
-# The purpose of this module is to provide settings and functions relevant to
-# both 1) instantiating and also 2) retrieving time series objects to/from KG
+# The purpose of this module is to test utils.py
 # ===============================================================================
 
 import pytest
@@ -233,8 +232,4 @@ class TestUtils(unittest.TestCase):
         
         string = create_sparql_prefix('ontoems')
         assert 'ontoems: <https://www.theworldavatar.com/kg/ontoems/>' in string
-
-    def write_to_file(self, file_path, string):
-        with open(file_path, 'w') as ifile:
-            ifile.write(string)
 
