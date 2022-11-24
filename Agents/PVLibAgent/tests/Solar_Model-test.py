@@ -370,8 +370,6 @@ class TestSolarModel(unittest.TestCase):
                                                       + "\n" + "strings_per_inverter=1")
             SolarModelInstance = SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
 
-            now = datetime.now(tz=timezone.utc)
-            time = self.utcformat(now, 'seconds')
             SolarModel.calculate(SolarModelInstance, "2022-11-23T05:00:01Z", '', '100', '100')
         assert 'Unable to create dataframe for weather parameters!' in str(excinfo.value)
 
