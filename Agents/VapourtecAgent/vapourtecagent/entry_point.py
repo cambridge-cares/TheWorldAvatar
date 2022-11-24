@@ -26,7 +26,7 @@ def create_app():
         fs_user=vapourtec_agent_config.FILE_SERVER_USERNAME,
         fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        # logger_name='prod'
+        logger_name='prod',
         max_thread_monitor_async_derivations=vapourtec_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
         email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
         email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX,

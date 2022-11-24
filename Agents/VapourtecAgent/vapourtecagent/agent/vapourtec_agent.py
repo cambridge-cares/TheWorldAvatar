@@ -93,8 +93,6 @@ class VapourtecAgent(DerivationAgent):
             )
 
         rxn_exp_instance = list_rxn_exp_instance[0]
-        self.logger.debug("Collected inputs from the knowledge graph: ")
-        self.logger.debug(json.dumps(rxn_exp_instance.dict()))
 
         if not self.dry_run:
             # Make sure the hardware is idle

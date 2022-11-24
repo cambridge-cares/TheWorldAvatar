@@ -39,8 +39,6 @@ class DoEAgent(DerivationAgent):
             doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
         except Exception as e:
             self.logger.error(e)
-        self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(doe_instance.dict()))
 
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
         new_rxn_exp = suggest(doe_instance, sparql_client=self.sparql_client)

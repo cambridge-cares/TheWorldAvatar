@@ -359,7 +359,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response = self.performQuery(query)
-        # logger.debug(response)
 
         try:
             unique_chem_rxn = dal.get_the_unique_value_in_list_of_dict(response, 'chem_rxn')
@@ -402,7 +401,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                 }}"""
         response = self.performQuery(query)
-        logger.debug(response)
 
         chem_rxn = OntoCAPE_ChemicalReaction(
             instance_iri=chem_rxn_iri,
@@ -537,7 +535,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # NOTE here we make that if nothing found, return None
         if len(response) == 0:
-            logger.warning("Nothing found when quering: %s" % (query))
+            logger.warning(f"Nothing found when quering: {subject_iri} {predicate_iri} ?{ocm_query_key}")
             return None
         else:
             lst_ontocape_material = []
@@ -720,9 +718,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 logger.error(f"OM:Measure num val of OntoVapourtec:sampleLoopVolume is not correctly defined for {specific_autosampler}", exc_info=True)
                 raise e
 
-            logger.debug("The sublist of all information related to the specific instance of OntoVapourtec:AutoSampler <%s> in the knowledge graph (%s): %s" %
-                (specific_autosampler, self.kg_client.getQueryEndpoint(), str(info_of_specific_autosampler)))
-
             unique_site_list = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'site')
             list_autosampler_site = []
             for specific_site in unique_site_list:
@@ -878,7 +873,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
 
         if len(response) == 0:
-            logger.info("ReactionExperiment/ReactionVariation <%s> has no PerformanceIndicator computed yet" % (rxnexp_iri))
+            logger.info(f"ReactionExperiment/ReactionVariation {rxnexp_iri} has no PerformanceIndicator computed yet")
             return None
         else:
             # Populate the list of PerformanceIndicator based on query results
@@ -1226,9 +1221,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
         unique_r4_reactor_list = dal.get_unique_values_in_list_of_dict(response, 'r4_reactor')
-        logger.debug("The list of all OntoVapourtec:VapourtecR4Reactor associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
-            vapourtec_rs400_iri, str(unique_r4_reactor_list)
-        ))
+        logger.debug(f"The list of all OntoVapourtec:VapourtecR4Reactor associated with the given instance of OntoVapourtec:VapourtecRS400 {vapourtec_rs400_iri}: {str(unique_r4_reactor_list)}")
         list_r4_reactor = []
         for specific_r4_reactor in unique_r4_reactor_list:
             info_of_specific_r4_reactor = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'r4_reactor', specific_r4_reactor)
@@ -1286,9 +1279,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
         unique_r2_pump_list = dal.get_unique_values_in_list_of_dict(response, 'r2_pump')
-        logger.debug("The list of all OntoVapourtec:VapourtecR2Pump associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
-            vapourtec_rs400_iri, str(unique_r2_pump_list)
-        ))
+        logger.debug(f"The list of all OntoVapourtec:VapourtecR2Pump associated with the given instance of OntoVapourtec:VapourtecRS400 {vapourtec_rs400_iri}: {str(unique_r2_pump_list)}")
         list_r2_pump = []
         for specific_r2_pump in unique_r2_pump_list:
             info_of_specific_r2_pump = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'r2_pump', specific_r2_pump)
@@ -1382,14 +1373,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         r4_reactor_iri = trimIRI(r4_reactor_iri)
         update = """INSERT DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri)
         self.performUpdate(update)
-        logger.info("ReactionExperiment <%s> is now assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
+        logger.info(f"ReactionExperiment {rxn_exp_iri} is now assigned to VapourtecR4Reactor {r4_reactor_iri}.")
 
     def remove_rxn_exp_from_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
         rxn_exp_iri = trimIRI(rxn_exp_iri)
         r4_reactor_iri = trimIRI(r4_reactor_iri)
         update = """DELETE DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri)
         self.performUpdate(update)
-        logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
+        logger.info(f"ReactionExperiment {rxn_exp_iri} is no longer assigned to VapourtecR4Reactor {r4_reactor_iri}.")
 
     def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str, vapourtec_execution_agent_iri: str):
         """This method queries the instances of ReactionExperiment that are prior in the queue for execution.
@@ -1414,7 +1405,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, ONTODERIVATION_BELONGSTO,
                 ONTODERIVATION_ISDERIVEDUSING, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
                 ONTODERIVATION_ISDERIVEDFROM, ONTOREACTION_ISASSIGNEDTO, ONTODERIVATION_ISDERIVEDUSING, vapourtec_execution_agent_iri, ONTODERIVATION_HASSTATUS)
-        logger.debug(query)
+
         response = self.performQuery(query)
         rxn_exp_queue = {
             res['rxn']:{
@@ -1443,10 +1434,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g: Graph
     ):
         hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
-        logger.info("The initialised HPLCJob IRI is: <%s>" % (hplc_job_iri))
+        logger.info(f"The initialised HPLCJob IRI is: {hplc_job_iri}")
 
         hplc_method_iri = trimIRI(hplc_method_iri)
-        logger.info("The HPLCReport <%s> was generated using HPLCMethod <%s>" % (hplc_report_iri, hplc_method_iri))
+        logger.info(f"The HPLCReport {hplc_report_iri} was generated using HPLCMethod {hplc_method_iri}")
 
         g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_HASJOB), URIRef(hplc_job_iri)))
         g.add((URIRef(hplc_job_iri), RDF.type, URIRef(ONTOHPLC_HPLCJOB)))
@@ -1460,8 +1451,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         _remote_file_subdir = remote_report_subdir.replace(':', '').replace('\\', '/').replace(' ', '_') if remote_report_subdir is not None else None
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
-            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
-                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
+            logger.info(f"HPLC raw report ({local_file_path}) was uploaded to fileserver {self.fs_url} at {timestamp_upload} with remote file path at: {remote_file_path}")
         except Exception as e:
             logger.error(e)
             # TODO need to think a way to inform the post proc agent about the failure of uploading the file
@@ -1469,7 +1459,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception(f"HPLC raw report ({local_file_path}) upload failed with error: {e}")
 
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
-        logger.info("The initialised HPLCReport IRI is: <%s>" % (hplc_report_iri))
+        logger.info(f"The initialised HPLCReport IRI is: {hplc_report_iri}")
 
         update = f"""{PREFIX_XSD} INSERT DATA {{
             <{hplc_report_iri}> a <{ONTOHPLC_HPLCREPORT}>; <{ONTOHPLC_REMOTEFILEPATH}> "{remote_file_path}"^^xsd:anyURI;
@@ -1534,7 +1524,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if rt_diff.get(key_min_rt_diff) < hplc_method.retentionTimeMatchThreshold:
             return key_min_rt_diff
         else:
-            logger.warning(f"No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance ({retention_time}) given RETENTION_TIME_MATCH_THRESHOLD of {hplc_method.retentionTimeMatchThreshold} and OntoHPLC:HPLCMethod ({hplc_method.instance_iri})")
+            logger.warning(f"No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance ({retention_time.instance_iri}) given RETENTION_TIME_MATCH_THRESHOLD of {hplc_method.retentionTimeMatchThreshold} and OntoHPLC:HPLCMethod ({hplc_method.instance_iri})")
             return None
 
     def get_internal_standard(self, hplc_method_iri: str) -> InternalStandard:
@@ -1829,7 +1819,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     rdfs_comment = f"Species identified as {pt}, but the response factor is not provided in HPLCMethod {hplc_method.instance_iri}. Therefore, annotated as unidentified for simplicity.",
                 )
                 list_chrom_pts.append(_unidentified_chrom_pt)
-                logger.warning("ResponseFactor of Species <%s> is not presented in the HPLCMethod <%s>: %s" % (pt, hplc_method.instance_iri, str(hplc_method)))
+                logger.warning(f"ResponseFactor of Species {pt} is not presented in the HPLCMethod {hplc_method.instance_iri}")
 
             else:
                 # means the response factor information is available for this species
@@ -2079,14 +2069,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def download_remote_raw_hplc_report(self, remote_file_path, downloaded_file_path):
         self.downloadFile(remote_file_path, downloaded_file_path)
-        logger.info("Remote raw HPLC report <%s> was successfully downloaded to: %s" % (remote_file_path, downloaded_file_path))
+        logger.info(f"Remote raw HPLC report {remote_file_path} was successfully downloaded to: {downloaded_file_path}")
 
     def connect_hplc_report_with_chemical_solution(self, hplc_report_iri: str, chemical_solution_iri: str):
         hplc_report_iri = trimIRI(hplc_report_iri)
         chemical_solution_iri = trimIRI(chemical_solution_iri)
         update = """INSERT DATA {<%s> <%s> <%s>.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, chemical_solution_iri)
         self.performUpdate(update)
-        logger.info("HPLCReport <%s> is connected to ChemicalSolution <%s>" % (hplc_report_iri, chemical_solution_iri))
+        logger.info(f"HPLCReport {hplc_report_iri} is connected to ChemicalSolution {chemical_solution_iri}")
 
     def get_remote_hplc_report_path_given_local_file(self, hplc_digital_twin: str, hplc_local_file: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
@@ -2212,14 +2202,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         _remote_file_subdir = remote_file_subdir.replace(':', '').replace('\\', '/') if remote_file_subdir is not None else None
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
-            logger.info("Vapourtec input file (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
-                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
+            logger.info(f"Vapourtec input file ({local_file_path}) was uploaded to fileserver {self.fs_url} at {timestamp_upload} with remote file path at: {remote_file_path}")
         except Exception as e:
             logger.error(e)
             raise Exception("Vapourtec input file (%s) upload failed with exception %s" % (local_file_path, str(e)))
 
         vapourtec_input_file_iri = initialiseInstanceIRI(getNameSpace(vapourtec_digital_twin), ONTOVAPOURTEC_VAPOURTECINPUTFILE)
-        logger.info("The initialised VapourtecInputFile IRI is: <%s>" % (vapourtec_input_file_iri))
+        logger.info(f"The initialised VapourtecInputFile IRI is: {vapourtec_input_file_iri}")
 
         update = f"""{PREFIX_XSD} INSERT DATA {{
             <{vapourtec_input_file_iri}> <{ONTOVAPOURTEC_REMOTEFILEPATH}> "{remote_file_path}"^^xsd:anyURI;
@@ -2287,7 +2276,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             # NOTE this might not hold universally, but we will simplify for the moment
             raise NotImplementedError("Not yet supported - HPLC Derivation <%s> is associated with multiple HPLCJob/HPLCReport: %s" % (hplc_derivation_iri, str(response)))
         elif (len(response) < 1):
-            logger.info("No HPLCJob/HPLCReport identified yet for HPLC Derivation <%s>." % (hplc_derivation_iri))
+            logger.info(f"No HPLCJob/HPLCReport identified yet for HPLC Derivation {hplc_derivation_iri}.")
             return None
         else:
             return response[0]['hplc_report']

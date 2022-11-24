@@ -40,7 +40,6 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             }}
         }}"""
         response = self.performQuery(query)
-        logger.debug(f"Obtained response: {response} with query: {query}")
 
         # return None if no goal set is found with the given goal_set_iri
         if not bool(response) or not bool(response[0]):
@@ -307,7 +306,6 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             OPTIONAL {{?step <{ONTOGOAL_HASNEXTSTEP}> ?nextStep.}}
         }}"""
         response = self.performQuery(query)
-        logger.debug(f"Obtained response: {response} with query: {query}")
 
         # create placeholder dict for steps
         dict_step = {} # format: {'step_iri': Step}

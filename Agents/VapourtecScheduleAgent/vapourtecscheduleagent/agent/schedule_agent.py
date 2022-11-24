@@ -38,8 +38,6 @@ class VapourtecScheduleAgent(DerivationAgent):
             )
 
         rxn_exp_instance = list_rxn_exp_instance[0]
-        self.logger.debug("Collected ReactionExperiment from the knowledge graph: ")
-        self.logger.debug(json.dumps(rxn_exp_instance.dict()))
 
         # Get the laboratory
         list_lab_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else None
