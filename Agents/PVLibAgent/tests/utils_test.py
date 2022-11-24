@@ -5,11 +5,9 @@ import pytest
 from PVLibAgent.kg_utils.utils import read_properties_file, create_sparql_prefix, PREFIXES
 import pathlib
 import tempfile
-import unittest
 
 
-class TestUtils(unittest.TestCase):
-
+class TestUtils:
     def setUp(self):
         """ Called before every test. """
         self._temp_dir = tempfile.TemporaryDirectory()
@@ -27,6 +25,7 @@ class TestUtils(unittest.TestCase):
             ifile.write(content)
 
     def test_missing_sparql_query_endpoint(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
@@ -38,8 +37,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'No "sparql.query.endpoint" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_sparql_update_endpoint(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123")
@@ -53,8 +54,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
             # Check correct exception message
         assert 'No "sparql.update.endpoint" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_query_url(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123")
@@ -69,8 +72,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
             # Check correct exception message
         assert 'No "db.query.url" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_query_user(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -87,8 +92,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
             # Check correct exception message
         assert 'No "db.query.user" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_query_password(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -106,8 +113,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
             # Check correct exception message
         assert 'No "db.query.password" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_update_url(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -127,8 +136,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'No "db.update.url" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_update_user(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -149,8 +160,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'No "db.update.user" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_db_update_password(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -171,8 +184,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'No "db.update.password" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_iri(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -183,8 +198,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'Key "iri" is missing' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_air_temperature_iri(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -196,8 +213,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'Key "air.temperature.iri" is missing' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_wind_speed_iri(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -209,8 +228,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'Key "wind.speed.iri" is missing' in str(excinfo.value)
+        self.tearDown()
 
     def test_missing_irradiance_iri(self):
+        self.setUp()
         with pytest.raises(KeyError) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_ts_client.properties',
                                                   "sparql.query.endpoint=123" + "\n" + "sparql.update.endpoint=123" +
@@ -223,8 +244,10 @@ class TestUtils(unittest.TestCase):
             read_properties_file(str(self.temp_path / 'test_ts_client.properties'))
         # Check correct exception message
         assert 'Key "irradiance.iri" is missing' in str(excinfo.value)
+        self.tearDown()
 
     def test_create_sparql_prefixes(self):
+        self.setUp()
         # test non-existing prefix "random" in PREFIXES
         with pytest.raises(KeyError) as excinfo:
             create_sparql_prefix('random')
@@ -232,4 +255,4 @@ class TestUtils(unittest.TestCase):
         
         string = create_sparql_prefix('ontoems')
         assert 'ontoems: <https://www.theworldavatar.com/kg/ontoems/>' in string
-
+        self.tearDown()

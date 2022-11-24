@@ -7,10 +7,9 @@ from configobj import ConfigObj
 from PVLibAgent.data_instantiation.create_data_iris import check_data_iris
 import pathlib
 import tempfile
-import unittest
 
 
-class TestCreateDataIris(unittest.TestCase):
+class TestCreateDataIris:
 
     def setUp(self):
         """ Called before every test. """
@@ -29,6 +28,7 @@ class TestCreateDataIris(unittest.TestCase):
             ifile.write(content)
 
     def test_missing_keys(self):
+        self.setUp()
         # test missing AC_Power key
         with pytest.raises(KeyError) as excinfo:
             check_data_iris.check_data_iris_and_create_if_not_exist(str(self.temp_path / 'test_dataIRIs.properties'))
@@ -42,8 +42,10 @@ class TestCreateDataIris(unittest.TestCase):
             check_data_iris.check_data_iris_and_create_if_not_exist(str(self.temp_path / 'test_dataIRIs.properties'))
         # Check correct exception message
         assert 'Key "DC_Power" is missing in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_no_values_provided(self):
+        self.setUp()
         # test no AC_Power value
         self._create_temporary_file_with_data(self.temp_path / 'test_dataIRIs.properties',
                                                   "AC_Power=" + "\n" + "DC_Power=test")
@@ -72,5 +74,6 @@ class TestCreateDataIris(unittest.TestCase):
         assert ac_power.__contains__('https://www.theworldavatar.com/kg/ontotimeseries/pvlib_ac_power')
         assert dc_power != ''
         assert dc_power.__contains__('https://www.theworldavatar.com/kg/ontotimeseries/pvlib_dc_power')
+        self.tearDown()
 
 

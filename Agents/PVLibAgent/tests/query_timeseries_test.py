@@ -11,14 +11,12 @@ from PVLibAgent.kg_utils.utils import DATACLASS, TIME_FORMAT, QUERY_ENDPOINT, UP
     DB_UPDATE_USER, DB_UPDATE_PASSWORD, DB_QUERY_PASSWORD, DB_QUERY_URL, DB_QUERY_USER
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
 from PVLibAgent.data_retrieval.query_timeseries import query_latest_timeseries
-import unittest
 
 
 @pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+                      Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
 
-class QueryTimeseries(unittest.TestCase):
-
+class TestQueryTimeseries:
     def tearDown(self):
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         ts_client = TSClientForQuery(kg_client=kg_client, rdb_url=DB_QUERY_URL, rdb_user=DB_QUERY_USER,
@@ -38,6 +36,7 @@ class QueryTimeseries(unittest.TestCase):
         with pytest.raises(TSException) as excinfo:
             query_latest_timeseries('http://test')
         assert 'Unable to get latest data from knowledge graph!' in str(excinfo.value)
+        self.tearDown()
 
     def test_query_latest_timeseries_successful(self):
         timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
@@ -50,6 +49,7 @@ class QueryTimeseries(unittest.TestCase):
         assert str(timestamp).__contains__(time)
         data = [v for v in timeseries.getValues('http://test')]
         assert str(data).__contains__('10')
+        self.tearDown()
 
 
 

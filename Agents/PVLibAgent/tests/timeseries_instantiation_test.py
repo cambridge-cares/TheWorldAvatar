@@ -10,14 +10,11 @@ from PVLibAgent.kg_utils.tsClientForUpdate import TSClientForUpdate
 from PVLibAgent.kg_utils.utils import DATACLASS, TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, \
     DB_UPDATE_USER, DB_UPDATE_PASSWORD, DB_QUERY_PASSWORD, DB_QUERY_URL, DB_QUERY_USER
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
-import unittest
 
 
 @pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
-
-class TestDataInstantiation(unittest.TestCase):
-
+                    Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+class TestDataInstantiation:
     def tearDown(self):
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER,
@@ -42,6 +39,7 @@ class TestDataInstantiation(unittest.TestCase):
             timeseries_instantiation.add_timeseries_data(test_timeseries)
         # Check correct exception message
         assert 'Adding of timeseries data to knowledge graph was not successful.' in str(excinfo.value)
+        self.tearDown()
 
     def test_init_timeseries_data_successful(self):
         # init_timeseries_data will only fail if there are connection errors
@@ -56,6 +54,7 @@ class TestDataInstantiation(unittest.TestCase):
         for d in response:
             val = d["b"]
         assert str(val).__contains__('https://www.theworldavatar.com/kg/ontotimeseries/Timeseries')
+        self.tearDown()
 
     def test_add_timeseries_data_successful(self):
         timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
@@ -76,13 +75,16 @@ class TestDataInstantiation(unittest.TestCase):
         assert str(timestamp).__contains__(time)
         data = [v for v in value.getValues('http://test')]
         assert str(data).__contains__('10')
+        self.tearDown()
 
     def test_check_data_has_timeseries_true(self):
         timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
         boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'])
         assert boolean == True
+        self.tearDown()
 
     def test_check_data_has_timeseries_false(self):
         boolean = timeseries_instantiation.check_data_has_timeseries(['http://test'])
         assert boolean == False
+        self.tearDown()
 

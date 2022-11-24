@@ -7,20 +7,11 @@ from PVLibAgent.kg_utils.kgClient import KGClient
 from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
 from PVLibAgent.data_retrieval.query_data import QueryData
-import unittest
 
 
 @pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                         Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
-
-class TestQueryData(unittest.TestCase):
-
-    def setUp(self):
-        """ Called before every test. """
-
-    def tearDown(self):
-        """ Called after every test. """
-
+                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+class TestQueryData:
     def test_query_air_temperature_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:

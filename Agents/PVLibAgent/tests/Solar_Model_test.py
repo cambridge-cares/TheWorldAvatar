@@ -6,10 +6,9 @@ from PVLibAgent.error_handling.exceptions import KGException, SolarModelExceptio
 from PVLibAgent.solar_model import SolarModel
 import pathlib
 import tempfile
-import unittest
 from datetime import datetime, timezone
 
-class TestSolarModel(unittest.TestCase):
+class TestSolarModel:
 
     def setUp(self):
         """ Called before every test. """
@@ -31,6 +30,7 @@ class TestSolarModel(unittest.TestCase):
             return iso_str.replace('+00:00', 'Z')
 
     def test_init_read_solar_model_properties(self):
+        self.setUp()
         # test missing temp_model key
         with pytest.raises(KeyError) as excinfo:
             SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
@@ -267,8 +267,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
         # Check correct exception message
         assert 'No "strings_per_inverter" value has been provided in properties file: ' in str(excinfo.value)
+        self.tearDown()
 
     def test_init_incorrect_temp_model_parameters(self):
+        self.setUp()
         with pytest.raises(SolarModelException) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                   "temp_model=test" + "\n" + "temp_model_config=test" + "\n" +
@@ -280,8 +282,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
         # Check correct exception message
         assert 'Input parameters for constructing the temperature_model_parameters are incorrect' in str(excinfo.value)
+        self.tearDown()
 
     def test_init_incorrect_PVSystem_parameters(self):
+        self.setUp()
         with pytest.raises(SolarModelException) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                   "temp_model=sapm" + "\n" + "temp_model_config=open_rack_glass_glass" +
@@ -294,8 +298,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
         # Check correct exception message
         assert 'Input parameters for PVSystem seems to be incorrect.' in str(excinfo.value)
+        self.tearDown()
 
     def test_init_incorrect_location_parameters(self):
+        self.setUp()
         with pytest.raises(SolarModelException) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                   "temp_model=sapm" + "\n" + "temp_model_config=open_rack_glass_glass" +
@@ -308,8 +314,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel('ModelChain', '', str(self.temp_path / 'test_solar_model.properties'))
         # Check correct exception message
         assert 'Input parameters for location seems to be incorrect.' in str(excinfo.value)
+        self.tearDown()
 
     def test_calculate_wrong_timestamp_format(self):
+        self.setUp()
         with pytest.raises(Exception) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                   "temp_model=sapm" + "\n" + "temp_model_config=open_rack_glass_glass" +
@@ -323,8 +331,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel.calculate(SolarModelInstance, "2022-11-23T05:00:0", '', '', '')
         # Check correct exception message
         assert 'timestamp value seems to be in the wrong format, it needs to be in "yyyy-mm-ddThh:mm:ssZ" format' in str(excinfo.value)
+        self.tearDown()
 
     def test_calculate_missing_or_wrong_irradiance(self):
+        self.setUp()
         with pytest.raises(Exception) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                       "temp_model=sapm" + "\n" + "temp_model_config=open_rack_glass_glass" +
@@ -357,8 +367,10 @@ class TestSolarModel(unittest.TestCase):
             SolarModel.calculate(SolarModelInstance, "2022-11-23T05:00:01Z", float(10), float(10), '')
             # Check correct exception message
         assert 'Unable to calculate dni and dhi!' in str(excinfo.value)
+        self.tearDown()
 
     def test_calculate_wrong_or_missing_air_temperature_and_wind_speed(self):
+        self.setUp()
         with pytest.raises(Exception) as excinfo:
             self._create_temporary_file_with_data(self.temp_path / 'test_solar_model.properties',
                                                       "temp_model=sapm" + "\n" + "temp_model_config=open_rack_glass_glass" +
@@ -420,5 +432,6 @@ class TestSolarModel(unittest.TestCase):
             time = self.utcformat(now, 'seconds')
             SolarModel.calculate(SolarModelInstance, "2022-11-23T05:00:01Z", 'some_string', '100', '100')
         assert 'Unable to create dataframe for weather parameters!' in str(excinfo.value)
+        self.tearDown()
 
 
