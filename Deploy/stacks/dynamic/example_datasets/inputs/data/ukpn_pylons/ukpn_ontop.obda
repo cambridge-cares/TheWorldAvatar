@@ -18,7 +18,7 @@ target		ukpn:Route/{route_id} a ukpn:Route ;
                 credo:hasName {route_name}^^xsd:string ;
                 credo:hasId {route_id}^^xsd:string ;
                 ukpn:hasVoltage ukpn:Route/{route_id}/Voltage .
-            ukpn:Route/{route_id}/voltage om:hasValue ukpn:Route/{route_id}/Voltage/Measure .
+            ukpn:Route/{route_id}/Voltage om:hasValue ukpn:Route/{route_id}/Voltage/Measure .
             ukpn:Route/{route_id}/Voltage/Measure om:hasUnit om:kilovolt ;
                 om:hasNumericValue {voltage}^^xsd:float .
 source      SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, 
@@ -36,7 +36,7 @@ target		ukpn:Line/{line_id} a ukpn:Line ;
                 geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
                 credo:hasId {line_id}^^xsd:string ;
                 ukpn:hasVoltage ukpn:Line/{line_id}/Voltage .
-            ukpn:Line/{line_id}/voltage om:hasValue ukpn:Line/{line_id}/PotentialDifference/Measure .
+            ukpn:Line/{line_id}/Voltage om:hasValue ukpn:Line/{line_id}/PotentialDifference/Measure .
             ukpn:Line/{line_id}/Voltage/Measure om:hasUnit om:kilovolt;
                 om:hasNumericValue {voltage}^^xsd:float .
 source      SELECT dno AS owner, cmr AS line_id, ST_ASTEXT(wkb_geometry) AS wkt, 33 AS voltage
@@ -78,7 +78,7 @@ target		ukpn:Tower/{tower_id} a ukpn:Tower ;
                 geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
                 credo:isPartOf ukpn:Line/{line_id} ;
                 ukpn:hasVoltage ukpn:Tower/{tower_id}/Voltage .
-            ukpn:Tower/{tower_id}/voltage a om:PotentialDifference;
+            ukpn:Tower/{tower_id}/Voltage a om:PotentialDifference;
                 om:hasValue ukpn:Tower/{tower_id}/PotentialDifference/Measure .
             ukpn:Tower/{tower_id}/Voltage/Measure om:hasUnit om:kilovolt;
                 om:hasNumericValue {voltage}^^xsd:float .
