@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,10 +17,8 @@ public class Dataset {
     private final Path datasetDirectory;
 
     private final String database;
-    private final String namespace;
+    private final Namespace namespace;
     private final String workspaceName;
-
-    private final Properties namespaceProperties;
 
     private final List<String> externalDatasets;
     private final List<DataSubset> dataSubsets;
@@ -32,8 +31,7 @@ public class Dataset {
     public Dataset(@JsonProperty(value = "name") String name,
             @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
             @JsonProperty(value = "database") String database,
-            @JsonProperty(value = "namespace") String namespace,
-            @JsonProperty(value = "namespaceProperties") Properties namespaceProperties,
+            @JsonProperty(value = "namespace") Namespace namespace,
             @JsonProperty(value = "workspace") String workspaceName,
             @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
@@ -44,7 +42,6 @@ public class Dataset {
         this.datasetDirectory = datasetDirectory;
         this.database = database;
         this.namespace = namespace;
-        this.namespaceProperties = namespaceProperties;
         this.workspaceName = workspaceName;
         this.externalDatasets = externalDatasets;
         this.dataSubsets = dataSubsets;
@@ -70,11 +67,19 @@ public class Dataset {
     }
 
     public String getNamespace() {
-        return (null != namespace) ? namespace : name;
+        if (null != namespace && null != namespace.getName()) {
+            return namespace.getName();
+        } else {
+            return name;
+        }
     }
 
     public Properties getNamespaceProperties() {
-        return (null != namespaceProperties) ? namespaceProperties : new Properties();
+        if (null != namespace && null != namespace.getProperties()) {
+            return namespace.getProperties();
+        } else {
+            return new Properties();
+        }
     }
 
     public String getWorkspaceName() {
