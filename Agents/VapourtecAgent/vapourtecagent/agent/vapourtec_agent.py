@@ -242,6 +242,7 @@ class VapourtecAgent(DerivationAgent):
                 self.update_flowcommander_state()
             except Exception as e1:
                 self.logger.error(e1, stack_info=True, exc_info=True)
+                raise Exception(f"Failed to reconnect to FlowCommander instance opened at the given IP address: {self.vapourtec_ip_address}") from e1
         print("=======================")
 
     def update_flowcommander_state(self):
@@ -268,6 +269,7 @@ class VapourtecAgent(DerivationAgent):
                 else:
                     self.logger.info("Pausing monitor_vapourtec_rs400_state job for dry run.")
                     self.scheduler.get_job('monitor_vapourtec_rs400_state').pause()
+                    timestamp = datetime.now().timestamp()
                     self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_DRYRUNSTATE, timestamp)
                     self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} is in DryRunState at timestamp {timestamp}, updated records in knowledge graph.")
                     time.sleep(dry_run_duration)
@@ -275,6 +277,7 @@ class VapourtecAgent(DerivationAgent):
                     self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
             except Exception as e:
                 self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Failed to update VapourtecRS400 state for dry run.") from e
 
     def vapourtec_is_idle(self) -> bool:
         return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False
