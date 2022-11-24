@@ -295,7 +295,7 @@ class RxnOptGoalAgent(ABC):
         restriction = Restriction(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
-            cycleAllowance=parameters['cycleAllowance'] - len(available_labs),
+            cycleAllowance=int(parameters['cycleAllowance']) - len(available_labs),
             deadline=datetime.timestamp(datetime.fromisoformat(parameters['deadline']))
         )
 
