@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +44,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.EndpointType;
 import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
+import net.bytebuddy.asm.Advice.Argument;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -295,6 +297,7 @@ public class FeatureInfoAgentTest {
     @Test
     public void testQuery() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
+        FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
         // Mock clients
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, null);
@@ -344,10 +347,8 @@ public class FeatureInfoAgentTest {
      */
     @Test
     public void testQueryNoTime() throws Exception {
-
-        System.out.println(FeatureInfoAgent.CONFIG.getMetaQuery("flarb"));
-
         FeatureInfoAgent agent = new FeatureInfoAgent();
+        FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
         // Mock the RemoteStoreClient 
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, null);
@@ -558,7 +559,8 @@ public class FeatureInfoAgentTest {
             ).thenCallRealMethod();
 
         when(tsClient.getTimeSeries(
-            ArgumentMatchers.anyList()))
+            ArgumentMatchers.anyList(),
+            ArgumentMatchers.any()))
             .thenReturn(
                 new TimeSeries<Instant>(
                     Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),

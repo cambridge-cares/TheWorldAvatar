@@ -75,6 +75,11 @@ public class FeatureInfoAgent extends JPSAgent {
     protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
 
     /**
+     * Common RDB connection
+     */
+    protected static Connection RDB_CONN;
+
+    /**
      * If the request enforces an endpoint, cache it here.
      */
     private ConfigEndpoint enforcedEndpoint;
@@ -365,7 +370,7 @@ public class FeatureInfoAgent extends JPSAgent {
         );
       
         // Create timeseries client with cached RDB connection
-        Connection rdbConnection = rdbClient.getConnection();
+        if(RDB_CONN == null) RDB_CONN = rdbClient.getConnection();
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
             rsClient, 
             Instant.class
@@ -375,7 +380,7 @@ public class FeatureInfoAgent extends JPSAgent {
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build timeseries handler
-        TimeHandler handler = new TimeHandler(iri, classMatch, rdbConnection, endpoints);
+        TimeHandler handler = new TimeHandler(iri, classMatch, RDB_CONN, endpoints);
         handler.setClients(
             (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
             (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
