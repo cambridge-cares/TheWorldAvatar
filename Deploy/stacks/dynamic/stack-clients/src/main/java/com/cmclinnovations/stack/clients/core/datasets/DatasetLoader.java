@@ -16,8 +16,11 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DatasetLoader {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private DatasetLoader() {
     }
@@ -66,7 +69,7 @@ public class DatasetLoader {
 
     public static Dataset readInputDataset(Path configFile) {
         try {
-            Dataset dataset = StackClient.objectMapper.readValue(configFile.toFile(), Dataset.class);
+            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
             if (null == dataset.getName()) {
                 dataset.setName(FileUtils.getFileNameWithoutExtension(configFile));
             }
