@@ -5,7 +5,7 @@
       <sld:FeatureTypeStyle>
         <sld:Name>name</sld:Name>
         <sld:Rule>
-          <sld:PointSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+          <sld:PointSymbolizer>
             <sld:Graphic>
               <ExternalGraphic xmlns="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <OnlineResource xlink:type="simple" xlink:href="${pylon_icon}.png" />
