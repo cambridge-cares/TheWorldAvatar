@@ -6,4 +6,4 @@ services:
     build: .
     container_name: pv_lib_agent
     ports:
-      - 55002:5000
+      - 1020:5000
