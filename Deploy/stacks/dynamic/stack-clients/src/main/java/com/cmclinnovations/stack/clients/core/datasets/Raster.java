@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Raster extends DataSubset {
 
     @JsonProperty
-    private GDALTranslateOptions options = new GDALTranslateOptions();
+    private GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
 
     @JsonProperty
     private GeoServerRasterSettings geoServerSettings = new GeoServerRasterSettings();
@@ -19,7 +19,7 @@ public class Raster extends DataSubset {
     @Override
     public void loadData(GDALClient gdalClient, String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
-        gdalClient.uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), options, false);
+        gdalClient.uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), gdalTranslateOptions, false);
     }
 
     @Override

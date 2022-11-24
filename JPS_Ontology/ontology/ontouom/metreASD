@@ -30,7 +30,7 @@
 
   <!-- Metre Above Local Stage Ontology -->
 
-  <om:Unit rdf:about="http://theworldavatar.com/resource/ontouom/metreASD">
+  <om:Unit rdf:about="https://www.theworldavatar.com/kg/ontouom/metreASD">
     <rdfs:label xml:lang="en">metre ASD</rdfs:label>
     <rdfs:comment xml:lang="en">Meters relative to the local stage datum</rdfs:comment>
     <om:symbol>mASD</om:symbol>

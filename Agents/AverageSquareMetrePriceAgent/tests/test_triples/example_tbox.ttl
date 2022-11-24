@@ -1,0 +1,41 @@
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix lrppi:      <http://landregistry.data.gov.uk/def/ppi/> .
+@prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> .
+@prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> .
+@prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
+@prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/> .
+
+###########################################
+## Average Square Metre Price TESTS TBox ##
+###########################################
+
+obe:Flat rdfs:subClassOf obe:Property .
+dabgeo:Building rdfs:subClassOf obe:Property .
+obe:Property obe:hasLatestTransactionRecord lrppi:TransactionRecord ;
+             obe:hasTotalFloorArea om:Area ;
+             obe:hasAddress icontact:Address ;
+             obe:locatedIn obe:AdministrativeDistrict .
+
+icontact:Address obe:hasPostalCode obe:PostalCode ;
+                 obe:hasAdministrativeDistrict obe:AdministrativeDistrict .
+obe:PostalCode rdfs:label xsd:string . 
+
+lrppi:TransactionRecord lrppi:transactionDate xsd:date ;
+                        lrppi:pricePaid xsd:integer .
+
+obe:AveragePricePerSqm obe:representativeFor obe:PostalCode ;
+                       om:hasValue om:Measure .
+
+ om:Area om:hasValue om:Measure . 
+ om:Measure om:hasUnit om:Unit ;
+            om:hasNumericalValue xsd:float .
+om:Unit om:symbol xsd:string .
+
+obe:PropertyPriceIndex obe:representativeFor obe:AdministrativeDistrict ;
+                       ts:hasTimeSeries ts:TimeSeries . 
+
+ts:TimeSeries ts:hasTimeUnit xsd:string ;
+              ts:hasRDB xsd:string .    
