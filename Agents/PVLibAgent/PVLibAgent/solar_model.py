@@ -20,7 +20,7 @@ from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 
 from PVLibAgent.data_retrieval.query_data import QueryData
-from PVLibAgent.error_handling.exceptions import KGException
+from PVLibAgent.error_handling.exceptions import KGException, SolarModelException
 
 import logging
 global latitude, longitude
@@ -28,17 +28,14 @@ global latitude, longitude
 
 class SolarModel:
 
-    def __init__(self, model_type, iri):
+    def __init__(self, model_type, iri, filepath):
         global latitude, longitude
 
         logging.basicConfig(level=logging.DEBUG)
 
-        # Define location of properties file
-        filepath = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "model_parameters.properties"))
-
         # Read properties file
         props = ConfigObj(filepath)
-
+        print(str(filepath))
         # Extract temperature model
         try:
             temp_model = props['temp_model']
@@ -144,19 +141,29 @@ class SolarModel:
             raise KeyError('No "strings_per_inverter" value has been provided in properties file: ' + filepath)
 
         if model_type == 'ModelChain':
-            temperature_model_parameters = TEMPERATURE_MODEL_PARAMETERS[temp_model][temp_model_config]
-            system = PVSystem(surface_tilt=float(surface_tilt), surface_azimuth=float(surface_azimuth),
-                              module_parameters={'pdc0': float(module_rated_dc_power),
+            try:
+                temperature_model_parameters = TEMPERATURE_MODEL_PARAMETERS[temp_model][temp_model_config]
+            except Exception as ex:
+                raise SolarModelException("Input parameters for constructing the temperature_model_parameters are incorrect") from ex
+            try:
+                system = PVSystem(surface_tilt=float(surface_tilt), surface_azimuth=float(surface_azimuth),
+                                  module_parameters={'pdc0': float(module_rated_dc_power),
                                                  'gamma_pdc': float(module_temp_coefficient)},
-                              inverter_parameters={'pdc0': float(inverter_rated_dc_power)},
-                              modules_per_string=int(modules_per_string),
-                              strings_per_inverter=int(strings_per_inverter),
-                              temperature_model_parameters=temperature_model_parameters)
+                                  inverter_parameters={'pdc0': float(inverter_rated_dc_power)},
+                                  modules_per_string=int(modules_per_string),
+                                  strings_per_inverter=int(strings_per_inverter),
+                                  temperature_model_parameters=temperature_model_parameters)
+            except Exception as ex:
+                raise SolarModelException("Input parameters for PVSystem seems to be incorrect.") from ex
+
 
             # load some module and inverter specifications
+            try:
+                location = Location(latitude=float(latitude), longitude=float(longitude), altitude=float(altitude))
+            except Exception as ex:
+                raise SolarModelException("Input parameters for location seems to be incorrect.") from ex
 
-            location = Location(latitude=float(latitude), longitude=float(longitude), altitude=float(altitude))
-
+            # create model chain
             mc = ModelChain(system, location, aoi_model='physical', spectral_model='no_loss')
 
             self.mc = mc
@@ -170,20 +177,27 @@ class SolarModel:
         timezone = obj.timezone_at(lng=float(longitude), lat=float(latitude))
         print(str(timezone))
 
-        dtUTC = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        try:
+        # timestamp needs to be in this format yyyy-dd-hh'T'hh:mm:ss'Z' e.g. 2017-04-11T10:10:10Z
+            dtUTC = datetime.datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
 
-        dtZone = dtUTC.astimezone(gettz(timezone))
+            dtZone = dtUTC.astimezone(gettz(timezone))
 
-        print(dtZone.isoformat(timespec='seconds'))
+            print(dtZone.isoformat(timespec='seconds'))
 
-        # derive day-of-year from date e.g. '2017-04-01'
-        date = datetime.date.fromisoformat(str(dtZone)[:10])
+            # derive day-of-year from date e.g. '2017-04-01'
+            date = datetime.date.fromisoformat(str(dtZone)[:10])
+        except Exception as ex:
+            raise Exception('timestamp value seems to be in the wrong format, it needs to be in "yyyy-mm-ddThh:mm:ssZ" format') from ex
 
-        # derive declination in radian
-        declination_angle_radian = pvlib.solarposition.declination_cooper69(int(date.strftime("%-j")))
+        try:
+            # derive declination in radian
+            declination_angle_radian = pvlib.solarposition.declination_cooper69(int(date.strftime("%j")))
 
-        # derive equation of time in minutes
-        equation_of_time = pvlib.solarposition.equation_of_time_pvcdrom(int(date.strftime("%-j")))
+            # derive equation of time in minutes
+            equation_of_time = pvlib.solarposition.equation_of_time_pvcdrom(int(date.strftime("%j")))
+        except Exception as ex:
+            raise SolarModelException("Unable to calculate declinantion angle and equation of time") from ex
 
         # create empty df
         df = pd.DataFrame(columns=['Timestamp'])
@@ -200,26 +214,33 @@ class SolarModel:
         # derive solar zenith angle (require latitude, hour angle, declination angle)
         solar_zenith_radian = pvlib.solarposition.solar_zenith_analytical(float(latitude), math.radians(hour_angle),
                                                                           declination_angle_radian)
+        try:
+            # derive direct normal irradiance and diffuse horizontal irradiance
+            results = pvlib.irradiance.erbs(float(irradiance), math.degrees(solar_zenith_radian), int(date.strftime("%j")))
+            dni = results.get('dni')
+            dhi = results.get('dhi')
+        except Exception as ex:
+            raise SolarModelException("Unable to calculate dni and dhi!") from ex
 
-        # derive direct normal irradiance and diffuse horizontal irradiance
-        results = pvlib.irradiance.erbs(float(irradiance), math.degrees(solar_zenith_radian), int(date.strftime("%-j")))
-        dni = results.get('dni')
-        dhi = results.get('dhi')
-
-        if air_temperature == '' and wind_speed == '':
-            weather = pd.DataFrame(
-                [[float(irradiance), float(dhi), float(dni)]],
-                columns=['ghi', 'dhi', 'dni'],
-                index=[pd.Timestamp(
-                    str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[
+        try:
+            if air_temperature == '' and wind_speed == '':
+                weather = pd.DataFrame(
+                    [[float(irradiance), float(dhi), float(dni)]],
+                    columns=['ghi', 'dhi', 'dni'],
+                    index=[pd.Timestamp(
+                        str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[
                                                                                                         14:16] + str(
-                        dtZone)[17:19], tz=str(timezone))])
-        else:
-            weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
-                                   columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
-                                   index=[pd.Timestamp(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19], tz=str(timezone))])
+                            dtZone)[17:19], tz=str(timezone))])
+            else:
+                weather = pd.DataFrame([[float(irradiance), float(dhi), float(dni), float(air_temperature), float(wind_speed)]],
+                                       columns=['ghi', 'dhi', 'dni', 'temp_air', 'wind_speed'],
+                                       index=[pd.Timestamp(str(dtZone)[:4] + str(dtZone)[5:7] + str(dtZone)[8:10] + ' ' + str(dtZone)[11:13] + str(dtZone)[14:16] + str(dtZone)[17:19], tz=str(timezone))])
+        except Exception as ex:
+            raise SolarModelException("Unable to create dataframe for weather parameters!") from ex
 
-        self.mc.run_model(weather)
-        values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
-
+        try:
+            self.mc.run_model(weather)
+            values_string = {"timestamp": self.mc.results.ac.index[0], "AC Power(W)": self.mc.results.ac[0], "DC Power(W)": self.mc.results.dc[0]}
+        except Exception as ex:
+            raise SolarModelException("Unable to run Model for calculations!") from ex
         return values_string

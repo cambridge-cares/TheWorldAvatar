@@ -45,13 +45,16 @@ def api():
     else:
         return "Error: No 'device' parameter provided."
 
+    # Define location of properties file
+    filepath = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "model_parameters.properties"))
+
     if device.__contains__('weatherStation'):
         try:
             if AIR_TEMP_IRI == '' and WIND_SPEED_IRI == '' and IRRADIANCE_IRI == '':
                 iri = IRI
 
                 # Construct and evaluate the model
-                model = SolarModel('ModelChain', iri)
+                model = SolarModel('ModelChain', iri, filepath)
 
                 try:
                     air_temperature_iri = QueryData.query_air_temperature(iri)
@@ -75,7 +78,7 @@ def api():
                 iri = IRI
 
                 # Construct and evaluate the model
-                model = SolarModel('ModelChain', iri)
+                model = SolarModel('ModelChain', iri, filepath)
 
                 wind_speed_iri = WIND_SPEED_IRI
                 air_temperature_iri = AIR_TEMP_IRI
@@ -105,7 +108,6 @@ def api():
             print(str(wind_speed_values[0]) + ' m/s at this timing: ' + wind_dates[0])
             print(str(air_temperature_values[0]) + ' degree celsius at this timing: ' + air_temperature_dates[0])
             print(str(ghi_values[0]) + ' W/m^2 at this timing: ' + ghi_dates[0])
-
             iri_list = check_data_iris.check_data_iris_and_create_if_not_exist(PROPERTIES_FILE)
             results = model.calculate(wind_dates[0], wind_speed_values[0], air_temperature_values[0], ghi_values[0])
             print(str(results))
@@ -138,7 +140,7 @@ def api():
             if IRRADIANCE_IRI == '':
                 iri = IRI
                 # Construct and evaluate the model
-                model = SolarModel('ModelChain', iri)
+                model = SolarModel('ModelChain', iri, filepath)
                 try:
                     ghi_iri = QueryData.query_irradiance(iri)
                 except Exception as ex:
@@ -149,7 +151,7 @@ def api():
                 iri = IRI
 
                 # Construct and evaluate the model
-                model = SolarModel('ModelChain', iri)
+                model = SolarModel('ModelChain', iri, filepath)
                 ghi_iri = IRRADIANCE_IRI
 
             ghi = query_latest_timeseries(ghi_iri)
