@@ -394,6 +394,18 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             return response[0]['rxn']
 
     # TODO add unit test
+    def get_all_rxn_exp_of_goal_set(self, goal_set_iri: str):
+        goal_set_iri = trimIRI(goal_set_iri)
+        query = f"""
+            SELECT DISTINCT ?rxn
+            WHERE {{
+                <{goal_set_iri}> <{ONTOGOAL_HASGOAL}> ?goal.
+                ?goal <{ONTOGOAL_HASRESULT}>/^<{ONTOREACTION_HASPERFORMANCEINDICATOR}> ?rxn.
+            }}"""
+        response = self.performQuery(query)
+        return dal.get_unique_values_in_list_of_dict(response, 'rxn')
+
+    # TODO add unit test
     def get_all_existing_goal_set(self):
         query = f"""SELECT DISTINCT ?goal_set WHERE {{ ?goal_set a <{ONTOGOAL_GOALSET}>. }}"""
         response = self.performQuery(query)

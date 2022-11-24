@@ -341,13 +341,6 @@ def initialise_test_triples(initialise_triple_store):
         # Clear triple store before any usage
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
-        # TODO delete below
-        # # Create DerivationClient for creating derivation instances
-        # derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        #     sparql_client.kg_client,
-        #     DERIVATION_INSTANCE_BASE_URL
-        # )
-
         initialise_triples(sparql_client)
 
         yield endpoint
@@ -701,7 +694,7 @@ def initialise_triples(sparql_client):
         sparql_client.uploadGraph(g)
 
 
-def assert_one_rxn_iteration(
+def assert_rxn_iterations(
     sparql_client: RxnOptGoalIterSparqlClient,
     doe_agent: DoEAgent,
     vapourtec_schedule_agent: VapourtecScheduleAgent,
@@ -726,147 +719,150 @@ def assert_one_rxn_iteration(
     #################################
     # First get the goal set
     goal_set = sparql_client.get_goal_set_instance(goal_set_iri)
-    # Then get the reaction experiment of this iteration
+    # Then get all reaction experiment associated with the goal set
     rogi_derivation_lst = sparql_client.get_rogi_derivations_of_goal_set(
         goal_set_iri=goal_set_iri,
         rogi_agent_iri=rogi_agent.agentIRI,
     )
     assert len(rogi_derivation_lst) == 1
     rogi_derivation = rogi_derivation_lst[0]
-    rxn_exp_iri = sparql_client.get_latest_rxn_exp_of_rogi_derivation(rogi_derivation)
-    assert rxn_exp_iri is not None
-    doe_query_response = sparql_client.performQuery(f"SELECT ?doe WHERE {{?doe <{ONTODOE_PROPOSESNEWEXPERIMENT}> <{rxn_exp_iri}>.}}")
-    assert len(doe_query_response) == 1
-    doe_iri = doe_query_response[0]['doe']
+    rxn_exp_iri_lst = sparql_client.get_all_rxn_exp_of_goal_set(goal_set_iri)
+    assert rxn_exp_iri_lst is not None
 
-    ##########################
-    ## Check DoE Derivation ##
-    ##########################
-    # Check if the DoE derivation is processed and generated the desired triples
-    # Query the iri of the new proposed NewExperiment
-    new_doe_instance = sparql_client.get_doe_instance(doe_iri)
-    assert new_doe_instance.proposesNewExperiment is not None
-    new_exp_instance = new_doe_instance.proposesNewExperiment
-    new_exp_iri = new_exp_instance.instance_iri
-    print(f"New experiment suggested successfully, suggested experiment instance: {new_exp_iri}")
+    # Iterate through all reaction experiments and check for each one of them
+    for rxn_exp_iri in rxn_exp_iri_lst:
+        doe_query_response = sparql_client.performQuery(f"SELECT ?doe WHERE {{?doe <{ONTODOE_PROPOSESNEWEXPERIMENT}> <{rxn_exp_iri}>.}}")
+        assert len(doe_query_response) == 1
+        doe_iri = doe_query_response[0]['doe']
 
-    # Check if all the suggested conditions are within the DoE range
-    for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
-        if isinstance(design_variable, ContinuousVariable):
-            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
-            assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
-            assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
-        else:
-            # TODO add checks for CategoricalVariable
-            pass
-    # Check if all the fixed parameters are the same as the DoE instance
-    if new_doe_instance.hasDomain.hasFixedParameter is not None:
-        for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
-            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
-            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
+        ##########################
+        ## Check DoE Derivation ##
+        ##########################
+        # Check if the DoE derivation is processed and generated the desired triples
+        # Query the iri of the new proposed NewExperiment
+        new_doe_instance = sparql_client.get_doe_instance(doe_iri)
+        assert new_doe_instance.proposesNewExperiment is not None
+        new_exp_instance = new_doe_instance.proposesNewExperiment
+        new_exp_iri = new_exp_instance.instance_iri
+        print(f"New experiment suggested successfully, suggested experiment instance: {new_exp_iri}")
 
-    print("DoE Derivation checked successfully")
+        # Check if all the suggested conditions are within the DoE range
+        for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
+            if isinstance(design_variable, ContinuousVariable):
+                rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
+                assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
+                assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
+            else:
+                # TODO add checks for CategoricalVariable
+                pass
+        # Check if all the fixed parameters are the same as the DoE instance
+        if new_doe_instance.hasDomain.hasFixedParameter is not None:
+            for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
+                rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
+                assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
 
-    ################################
-    ## Check Vapourtec Derivation ##
-    ################################
-    ## Check if the derivation is processed and generated the desired triples
-    # First, check if the file is generated and uploaded correctly
-    vapourtec_derivation = get_vapourtec_derivation(new_exp_iri, vapourtec_agent.agentIRI, sparql_client)
-    vapourtec_input_file_iri = get_vapourtec_input_file_iri(vapourtec_derivation, sparql_client)
-    vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
-    # this is localised agent test, so localFilePath is already host machine path, not docker path
-    local_file_path = vapourtec_input_file.localFilePath
-    print(f"Uploaded Vapourtec input file localFilePath: {local_file_path}")
-    remote_file_path = vapourtec_input_file.remoteFilePath
-    print(f"Uploaded Vapourtec input file remoteFilePath: {remote_file_path}")
-    # Genereate random download path
-    full_downloaded_path = os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+'csv')
-    print(f"Downloading file to {full_downloaded_path}")
-    # Download the file and make sure all the content are the same
-    sparql_client.downloadFile(host_docker_internal_to_localhost(remote_file_path), full_downloaded_path)
-    assert filecmp.cmp(local_file_path,full_downloaded_path)
+        print(f"DoE Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
-    # Second, check if settings were generated for all reaction conditions
-    rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
-    assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != ONTOREACTION_REACTIONPRESSURE])
+        ################################
+        ## Check Vapourtec Derivation ##
+        ################################
+        ## Check if the derivation is processed and generated the desired triples
+        # First, check if the file is generated and uploaded correctly
+        vapourtec_derivation = get_vapourtec_derivation(new_exp_iri, vapourtec_agent.agentIRI, sparql_client)
+        vapourtec_input_file_iri = get_vapourtec_input_file_iri(vapourtec_derivation, sparql_client)
+        vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
+        # this is localised agent test, so localFilePath is already host machine path, not docker path
+        local_file_path = vapourtec_input_file.localFilePath
+        print(f"Uploaded Vapourtec input file localFilePath: {local_file_path}")
+        remote_file_path = vapourtec_input_file.remoteFilePath
+        print(f"Uploaded Vapourtec input file remoteFilePath: {remote_file_path}")
+        # Genereate random download path
+        full_downloaded_path = os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+'csv')
+        print(f"Downloading file to {full_downloaded_path}")
+        # Download the file and make sure all the content are the same
+        sparql_client.downloadFile(host_docker_internal_to_localhost(remote_file_path), full_downloaded_path)
+        assert filecmp.cmp(local_file_path,full_downloaded_path)
 
-    # Third, check there is chemical solution instance
-    chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
-    assert chemical_solution_iri is not None
-    new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin])
-    assert len(new_rs400_list) == 1
-    new_rs400 = new_rs400_list[0]
-    new_autosampler = new_rs400.get_autosampler()
-    new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
-    # NOTE below is commented out as the reactor outlet is now send to the waste tank
-    # assert chemical_solution_iri in new_autosampler_liquid_level
-    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+        # Second, check if settings were generated for all reaction conditions
+        rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
+        assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != ONTOREACTION_REACTIONPRESSURE])
 
-    print("Vapourtec Derivation checked successfully")
+        # Third, check there is chemical solution instance
+        chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
+        assert chemical_solution_iri is not None
+        new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin])
+        assert len(new_rs400_list) == 1
+        new_rs400 = new_rs400_list[0]
+        new_autosampler = new_rs400.get_autosampler()
+        new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
+        # NOTE below is commented out as the reactor outlet is now send to the waste tank
+        # assert chemical_solution_iri in new_autosampler_liquid_level
+        # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
 
-    ###########################
-    ## Check HPLC Derivation ##
-    ###########################
-    ## Check if the derivation is processed and generated the desired triples
-    lst_hplc_job_iri = get_hplc_job(hplc_agent.hplc_digital_twin, new_exp_iri, chemical_solution_iri, sparql_client)
-    hplc_derivation = get_hplc_derivation(new_exp_iri, hplc_agent.agentIRI, sparql_client)
-    hplc_derivation_outputs = get_derivation_outputs(hplc_derivation, sparql_client)
-    assert len(lst_hplc_job_iri) == 1
-    assert len(hplc_derivation_outputs) == 1
-    assert lst_hplc_job_iri == hplc_derivation_outputs[ONTOHPLC_HPLCJOB]
+        print(f"Vapourtec Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
-    print("HPLC Derivation checked successfully")
+        ###########################
+        ## Check HPLC Derivation ##
+        ###########################
+        ## Check if the derivation is processed and generated the desired triples
+        lst_hplc_job_iri = get_hplc_job(hplc_agent.hplc_digital_twin, new_exp_iri, chemical_solution_iri, sparql_client)
+        hplc_derivation = get_hplc_derivation(new_exp_iri, hplc_agent.agentIRI, sparql_client)
+        hplc_derivation_outputs = get_derivation_outputs(hplc_derivation, sparql_client)
+        assert len(lst_hplc_job_iri) == 1
+        assert len(hplc_derivation_outputs) == 1
+        assert lst_hplc_job_iri == hplc_derivation_outputs[ONTOHPLC_HPLCJOB]
 
-    #########################################
-    ## Check Vapourtec Schedule Derivation ##
-    #########################################
-    # Check Vapourtec Schedule Derivation
-    # (1) reaction experiment should be assigned to a reactor
-    lst_done_rxn_exp_instance = sparql_client.getReactionExperiment(new_exp_iri)
-    assert len(lst_done_rxn_exp_instance) == 1
-    assert lst_done_rxn_exp_instance[0].isAssignedTo is not None
-    # (2) HPLCReport instance should added to the derivation outputs
-    lst_hplc_report_iri = get_hplc_report_of_hplc_job(lst_hplc_job_iri[0], sparql_client)
-    vapourtec_schedule_derivation = get_vapourtec_schedule_derivation(new_exp_iri, vapourtec_schedule_agent.agentIRI, sparql_client)
-    vapourtec_schedule_derivation_outputs = get_derivation_outputs(vapourtec_schedule_derivation, sparql_client)
-    assert len(lst_hplc_report_iri) == 1
-    assert len(vapourtec_schedule_derivation_outputs) == 1
-    assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
+        print(f"HPLC Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
-    print("Vapourtec Schedule Derivation checked successfully")
+        #########################################
+        ## Check Vapourtec Schedule Derivation ##
+        #########################################
+        # Check Vapourtec Schedule Derivation
+        # (1) reaction experiment should be assigned to a reactor
+        lst_done_rxn_exp_instance = sparql_client.getReactionExperiment(new_exp_iri)
+        assert len(lst_done_rxn_exp_instance) == 1
+        assert lst_done_rxn_exp_instance[0].isAssignedTo is not None
+        # (2) HPLCReport instance should added to the derivation outputs
+        lst_hplc_report_iri = get_hplc_report_of_hplc_job(lst_hplc_job_iri[0], sparql_client)
+        vapourtec_schedule_derivation = get_vapourtec_schedule_derivation(new_exp_iri, vapourtec_schedule_agent.agentIRI, sparql_client)
+        vapourtec_schedule_derivation_outputs = get_derivation_outputs(vapourtec_schedule_derivation, sparql_client)
+        assert len(lst_hplc_report_iri) == 1
+        assert len(vapourtec_schedule_derivation_outputs) == 1
+        assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
 
-    ##################################
-    ## Check HPLCPostPro Derivation ##
-    ##################################
-    # Query the new derived IRI
-    hplc_postpro_derivation = get_hplc_postpro_derivation(lst_hplc_report_iri[0], hplc_postpro_agent.agentIRI, sparql_client)
-    hplc_postpro_derivation_outputs = get_derivation_outputs(hplc_postpro_derivation, sparql_client)
+        print(f"Vapourtec Schedule Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
-    # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
-    reload_rxn_rxp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
-    reload_pi_dct = {pi.instance_iri:pi.clz for pi in reload_rxn_rxp_instance.hasPerformanceIndicator}
-    assert all([iri in hplc_postpro_derivation_outputs[reload_pi_dct[iri]] for iri in reload_pi_dct])
-    for pi in reload_rxn_rxp_instance.hasPerformanceIndicator:
-        if pi.hasValue is None:
-            assert False, f"PerformanceIndicator {pi.instance_iri} has no value, complete rxn_exp: {str(reload_rxn_rxp_instance.dict())}"
-        assert pi.hasValue.hasUnit is not None
-        assert pi.hasValue.hasNumericalValue is not None
-    reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
-    for oc in reload_output_chemical_lst:
-        assert oc.clz == ONTOREACTION_OUTPUTCHEMICAL
-        assert oc.instance_iri is not None
-        reload_phase_comp_lst = oc.thermodynamicBehaviour.isComposedOfSubsystem
-        for phase_comp in reload_phase_comp_lst:
-            assert phase_comp.representsOccurenceOf is not None
-            assert phase_comp.hasProperty.hasValue.hasUnitOfMeasure is not None
-            assert phase_comp.hasProperty.hasValue.numericalValue is not None
-        reload_phase_comp_conc_lst = [pc.hasProperty for pc in oc.thermodynamicBehaviour.isComposedOfSubsystem]
-        reload_conc_lst = oc.thermodynamicBehaviour.has_composition.comprisesDirectly
-        assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
-        assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
+        ##################################
+        ## Check HPLCPostPro Derivation ##
+        ##################################
+        # Query the new derived IRI
+        hplc_postpro_derivation = get_hplc_postpro_derivation(lst_hplc_report_iri[0], hplc_postpro_agent.agentIRI, sparql_client)
+        hplc_postpro_derivation_outputs = get_derivation_outputs(hplc_postpro_derivation, sparql_client)
 
-    print("HPLCPostPro Derivation checked successfully")
+        # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
+        reload_rxn_rxp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
+        reload_pi_dct = {pi.instance_iri:pi.clz for pi in reload_rxn_rxp_instance.hasPerformanceIndicator}
+        assert all([iri in hplc_postpro_derivation_outputs[reload_pi_dct[iri]] for iri in reload_pi_dct])
+        for pi in reload_rxn_rxp_instance.hasPerformanceIndicator:
+            if pi.hasValue is None:
+                assert False, f"PerformanceIndicator {pi.instance_iri} has no value, complete rxn_exp: {str(reload_rxn_rxp_instance.dict())}"
+            assert pi.hasValue.hasUnit is not None
+            assert pi.hasValue.hasNumericalValue is not None
+        reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
+        for oc in reload_output_chemical_lst:
+            assert oc.clz == ONTOREACTION_OUTPUTCHEMICAL
+            assert oc.instance_iri is not None
+            reload_phase_comp_lst = oc.thermodynamicBehaviour.isComposedOfSubsystem
+            for phase_comp in reload_phase_comp_lst:
+                assert phase_comp.representsOccurenceOf is not None
+                assert phase_comp.hasProperty.hasValue.hasUnitOfMeasure is not None
+                assert phase_comp.hasProperty.hasValue.numericalValue is not None
+            reload_phase_comp_conc_lst = [pc.hasProperty for pc in oc.thermodynamicBehaviour.isComposedOfSubsystem]
+            reload_conc_lst = oc.thermodynamicBehaviour.has_composition.comprisesDirectly
+            assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
+            assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
+
+        print(f"HPLCPostPro Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
 
 def get_hplc_derivation(rxn_exp_iri: str, hplc_agent_iri: str, sparql_client: PySparqlClient):
@@ -993,7 +989,7 @@ def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient
 sample_goal_request = {
     "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
-    "deadline": str(datetime.fromtimestamp(int(time.time())).isoformat()),
+    "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
     "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
     "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
     "first_goal_num_val": 99,

@@ -135,7 +135,7 @@ def test_rxn_rog_physical(
 
     try:
         # Test all triples are correctly generated
-        cf.assert_one_rxn_iteration(
+        cf.assert_rxn_iterations(
             sparql_client,
             doe_agent,
             vapourtec_schedule_agent,
