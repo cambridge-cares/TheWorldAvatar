@@ -13,8 +13,8 @@ from PVLibAgent.kg_utils.utils import create_sparql_prefix
 import unittest
 
 
-# @pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-  #                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
+                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
 
 class TestDataInstantiation(unittest.TestCase):
 
