@@ -2,14 +2,15 @@ package com.cmclinnovations.featureinfo;
 
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,17 +34,14 @@ import com.cmclinnovations.featureinfo.kg.TimeHandler;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * This agent expects a HTTP request containing a JSON string with the "iri" and "endpoint" for an individual
- * feature. This information is then used (in conjunction with hardcoded SPARQL queries) to gather data on
- * that feature and return it as a JSON object.
- * 
- * Note: this version of the agent is a VERY rough implementation and should not be used outside of very specific
- * use cases. It currently relies on hardcoded SPARQL queries, and will not work out-of-the box for any old data sets.
- * Future improvements will make this more generic, at which point the agent could be used more widely.
+ * This agent expects a HTTP request containing a JSON string with the "iri" and for an individual
+ * feature. This information is then used (in conjunction with file-based SPARQL queries) to gather KG
+ * data and (if available) timeseries data on that feature and return it as a JSON object.
  *
  * @author Michael Hillman {@literal <mdhillman@cmclinnovations.com>}
  */
@@ -360,19 +358,24 @@ public class FeatureInfoAgent extends JPSAgent {
         
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
-        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
-            rsClient, 
-            Instant.class,
+        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
             postEndpoint.get().url(),
             postEndpoint.get().username(),
             postEndpoint.get().password()
+        );
+      
+        // Create timeseries client with cached RDB connection
+        Connection rdbConnection = rdbClient.getConnection();
+        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
+            rsClient, 
+            Instant.class
         );
 
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build timeseries handler
-        TimeHandler handler = new TimeHandler(iri, classMatch, endpoints);
+        TimeHandler handler = new TimeHandler(iri, classMatch, rdbConnection, endpoints);
         handler.setClients(
             (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
             (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
@@ -382,7 +385,6 @@ public class FeatureInfoAgent extends JPSAgent {
         if(CONFIG.getSetting("hours") != null) {
             handler.setHours(Integer.parseInt(CONFIG.getSetting("hours").toString()));
         }
-
         
         // Run queries and return timeseries JSON
         LOGGER.info("Running query to gather timeseries...");

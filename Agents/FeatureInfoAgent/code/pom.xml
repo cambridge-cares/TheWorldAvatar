@@ -13,7 +13,7 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.29.0</jps.base.version>
+        <jps.base.version>1.30.0</jps.base.version>
     </properties>
 
     <!-- Parent POM -->
@@ -51,7 +51,7 @@
     <build>
         <plugins>
 
-            <!-- Compile and build with Java 11 -->
+            <!-- Compile and build with Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

@@ -66,7 +66,7 @@ An example configuration file is provided within the `queries` directory.
 
 To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfill a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
-- `[IRI]`: The IRI of the location in the request will be injected
+- `[IRI]`: The IRI of the feature in the request will be injected
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
 
 Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. Any other colums will be ignored.
@@ -89,6 +89,17 @@ All incoming requests should use the `/get` route, containing a `query` paramete
 
 ## Deployment
 
-To deploy the agent, follow the generic steps for deploying a stack-enabled agent. You _may_ need to ensure that your stack contains a valid route so that outside requests can read the agent's container.
+The Docker image for this agent should be automatically built and pushed by GitHub whenever a pull request to the main branch is approved and merged. However, it is worth noting that the user that triggers this will require an active GitHub token that has permissions to push packages to the GitHub registry.
+
+Local building can be carried out using the provided docker-compose files as creating `repo_username.txt` and `repo_password.txt` files within the `credentials` directory.
+
+To build the Agent image and deploy it to the spun up stack, please run the following commands from the FeatureInfoAgent directory wherever the stack is running (i.e. potentially on the remote VM):
+
+# Build the agent image
+bash ./stack.sh build
+# Deploy the agent
+bash ./stack.sh start <STACK_NAME>
+
+After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
 
 It is worth noting that the docker compose setup for this agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former before running the container should automatically make them available to the agent.

@@ -121,6 +121,7 @@ public class TimeHandlerTest {
         TimeHandler handler = new TimeHandler(
             "http://fake-sample-iri.com", 
             "SAMPLE-CLASS",
+            null,
             CONFIG.getBlazegraphEndpoints()
         );
 
@@ -145,7 +146,8 @@ public class TimeHandlerTest {
                 ).thenCallRealMethod();
 
             when(tsClient.getTimeSeries(
-                ArgumentMatchers.anyList()))
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.isNull()))
                 .thenReturn(
                     new TimeSeries<Instant>(
                         Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),

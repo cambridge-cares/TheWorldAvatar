@@ -1,6 +1,7 @@
 package com.cmclinnovations.featureinfo.kg;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -77,14 +78,20 @@ public class TimeHandler {
     private HttpServletResponse response;
 
     /**
+     * Persistent connection to the underlying RDB.
+     */
+    private Connection rdbConnection;
+
+    /**
      * Initialise a new TimeHandler.
      * 
      * @param iri IRI of the asset.
      * @param classMatch name of class for asset.
+     * @param rdbConnection Persistent connection to the underlying RDB.
      * @param endpoint Blazegraph endpoint for the KG.
      */
-    public TimeHandler(String iri, String classMatch, ConfigEndpoint endpoint) {
-        this(iri, classMatch, Arrays.asList(endpoint));
+    public TimeHandler(String iri, String classMatch, Connection rdbConnection, ConfigEndpoint endpoint) {
+        this(iri, classMatch, rdbConnection, Arrays.asList(endpoint));
     }
 
     /**
@@ -92,15 +99,17 @@ public class TimeHandler {
      * 
      * @param iri IRI of the asset.
      * @param classMatch name of class for asset
+     * @param rdbConection Persistent connection to the underlying RDB.
      * @param endpoints Blazegraph endpoints for the KG.
      */
-    public TimeHandler(String iri, String classMatch, List<ConfigEndpoint> endpoints) {
+    public TimeHandler(String iri, String classMatch, Connection rdbConnection, List<ConfigEndpoint> endpoints) {
         String fixedIRI = iri;
         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
         if(!fixedIRI.endsWith(">")) fixedIRI = fixedIRI + ">";
 
         this.iri = fixedIRI;
         this.classMatch = classMatch;
+        this.rdbConnection = rdbConnection;
         this.endpoints.addAll(endpoints);
     }
 
@@ -344,7 +353,7 @@ public class TimeHandler {
         TimeSeries<Instant> result = null;
         if(this.hours < 0) {
             // Get all data
-            result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)));
+            result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)), this.rdbConnection);
         } else {
             // Determine bounds
             Instant lowerBound = LocalDateTime.now().minusHours(this.hours).toInstant(ZoneOffset.UTC);
@@ -352,7 +361,8 @@ public class TimeHandler {
             result = this.tsClient.getTimeSeriesWithinBounds(
                     new ArrayList<>(Arrays.asList(fixedIRI)),
                     lowerBound,
-                    upperBound
+                    upperBound,
+                    this.rdbConnection
             );
         }
         return result;
