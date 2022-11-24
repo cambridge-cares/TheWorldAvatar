@@ -21,13 +21,16 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 FROM python:3.6.15-buster
 
 ARG MODS_BIN_DIR="/usr/local/mods-simple-agent/bin"
+ARG MODS_SAVE_DIR="/usr/local/mods-simple-agent/savedsurrogates"
 
 ARG USER="user"
 RUN useradd -s /bin/bash ${USER}
 
 RUN apt update && apt install openjdk-11-jre mpich rsync -y && \
     mkdir -p "${MODS_BIN_DIR}" && \
+    mkdir -p "${MODS_SAVE_DIR}" && \
     chown user:user "${MODS_BIN_DIR}" && \
+    chown user:user "${MODS_SAVE_DIR}" && \
     ln -s /usr/lib/x86_64-linux-gnu/libmpi.so "${MODS_BIN_DIR}/libmpi.so.12" && \
     ln -s /usr/lib/x86_64-linux-gnu/libmpifort.so "${MODS_BIN_DIR}/libmpifort.so.12"&& \
     ln -s /usr/local/lib/libpython3.6m.so.1.0 "${MODS_BIN_DIR}/libpython3.6m.so.1.0"
@@ -55,5 +58,8 @@ ENV PATH="${MODS_BIN_DIR}:${PATH}"
 
 ARG CMCL_LICENSE_PATH=6200@host.docker.internal
 ENV CMCL_LICENSE_PATH="${CMCL_LICENSE_PATH}"
+ENV JAVA_OPTS=${JAVA_OPTS}
 
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY ./entrypoint.sh ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

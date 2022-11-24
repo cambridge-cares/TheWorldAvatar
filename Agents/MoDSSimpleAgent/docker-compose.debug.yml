@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  modssimpleagent:
+    environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y
+    ports:
+      - 6005:5005
