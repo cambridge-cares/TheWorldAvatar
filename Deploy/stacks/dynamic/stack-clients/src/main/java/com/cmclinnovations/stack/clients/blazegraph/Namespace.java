@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Namespace {
 
+    public static final String PROPERTIES_FILE_DIRECTORY_KEY = "propertiesFileDirectory";
+
     private final String name;
     private final Properties properties = new Properties();
 
@@ -29,9 +31,13 @@ public class Namespace {
     @JsonCreator
     public Namespace(@JsonProperty(value = "name") String name,
             @JsonProperty(value = "properties") Properties properties,
-            @JsonProperty(value = "propertiesFile") Path propertiesFile) {
+            @JsonProperty(value = "propertiesFile") Path propertiesFile,
+            @JsonProperty(value = PROPERTIES_FILE_DIRECTORY_KEY) @JacksonInject(PROPERTIES_FILE_DIRECTORY_KEY) Path propertyFileDirectory) {
         this.name = name;
         if (null != propertiesFile) {
+            if (null != propertyFileDirectory) {
+                propertiesFile = propertyFileDirectory.resolve(propertiesFile);
+            }
             try (Reader reader = Files.newBufferedReader(propertiesFile)) {
                 // Read in properties from named properties file
                 this.properties.load(reader);

@@ -11,6 +11,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
+import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DatasetLoader {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Path configPath = Path.of("/inputs/config");
 
     private DatasetLoader() {
     }
@@ -29,7 +31,8 @@ public class DatasetLoader {
     public static void uploadInputDatasets() {
         DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
                 DefaultEdge.class);
-        try (Stream<Path> files = Files.list(Path.of("/inputs/config"))) {
+
+        try (Stream<Path> files = Files.list(configPath)) {
             // Add Datasets to a DAG as vertices
             files.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".json"))
@@ -71,6 +74,8 @@ public class DatasetLoader {
     private static void updateInjectableValues(Path configFile) {
 
         InjectableValues.Std iv = new InjectableValues.Std();
+
+        iv.addValue(Namespace.PROPERTIES_FILE_DIRECTORY_KEY, configPath);
 
         iv.addValue(Dataset.NAME_KEY, FileUtils.getFileNameWithoutExtension(configFile));
 
