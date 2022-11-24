@@ -75,20 +75,33 @@ public class SolarkatasterAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)){
+            JSONArray maxOIDArray = rdbStoreClient.executeQuery(getMaxOidString(requestParams.getString(KEY_TABLE)));
+
+            Integer max = maxOIDArray.getJSONObject(0).getInt("max");
+
+            Integer step = Math.round(max / 50);
+
+            Integer start = 0;
+
             ArrayList<List> dataArrayList;
+            JSONArray dataArray;
 
-            JSONArray dataArray = getData(requestParams.getString(KEY_TABLE));
+            while(start <= max) {
+                dataArray = rdbStoreClient.executeQuery(getQueryString(requestParams.getString(KEY_TABLE), start, start + step));
 
-            dataArrayList = parseDataToLists(dataArray);
+                dataArrayList = parseDataToLists(dataArray);
 
-            createTimeSeries(dataArrayList.get(0));
+                createTimeSeries(dataArrayList.get(0));
 
-            try (Connection conn = tsRDBStoreClient.getConnection()){
-                tsClient.bulkaddTimeSeriesData(dataArrayList.get(1), conn);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-                throw new JPSRuntimeException(e);
+                try (Connection conn = tsRDBStoreClient.getConnection()){
+                    tsClient.bulkaddTimeSeriesData(dataArrayList.get(1), conn);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
+
+                start = start + step + 1;
             }
         }
         return requestParams;
@@ -134,20 +147,13 @@ public class SolarkatasterAgent extends JPSAgent {
     }
 
     /**
-     * Executes query for Solarkataster time series parameters
-     * @param tableName name of table for which to query from
-     * @return SQL query response as a JSONArray
-     */
-    private JSONArray getData(String tableName){
-        return rdbStoreClient.executeQuery(getQueryString(tableName));
-    }
-
-    /**
      * Construct query as a string for Solarkataster time series parameters
      * @param tableName name of table for which to query Solarkataster data from
+     * @param start starting oid
+     * @param end ending oid
      * @return SQL query as a string
      */
-    private String getQueryString(String tableName) {
+    private String getQueryString(String tableName, Integer start, Integer end) {
         String query;
 
         query = "SELECT " + KEY_OID + ", " + KEY_GEB;
@@ -156,7 +162,9 @@ public class SolarkatasterAgent extends JPSAgent {
             query = query + ", " + TIME_SERIES.get(i);
         }
 
-        return query + " FROM \"" + tableName + "\"";
+        query = query + " FROM \"" + tableName + "\" ";
+
+        return query + "WHERE " + KEY_OID + " BETWEEN " + start + " AND " + end;
     }
 
     /**
@@ -226,6 +234,15 @@ public class SolarkatasterAgent extends JPSAgent {
         output.add(tsList);
 
         return output;
+    }
+
+    /**
+     * Construct query for largest OID as a string
+     * @param tableName name of table for which to query Solarkataster data from
+     * @return SQL query as a string
+     */
+    private String getMaxOidString(String tableName) {
+        return "SELECT MAX(" + KEY_OID + ") FROM \"" + tableName + "\"";
     }
 }
 
