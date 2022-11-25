@@ -6,17 +6,23 @@ import requests
 import pandas as pd
 from pathlib import Path
 
+from iris import *
 from configs import *
 
 from pyderivationagent.kg_operations import PySparqlClient
 
-# Define name of n-triples file with consolidated property data (to be further amended)
-triples_file = 'consolidated_properties.nt'
+# REQUIRED FILES
+# Specify name of n-triples file with consolidated property data (to be further amended)
+#triples_file = 'consolidated_properties.nt'
+triples_file = 'consolidated_and_labeled_properties.nt'
 
-# (Interim) output files
-# Define name for building location csv
+# Specify name of building location csv to be extracted from KG
 bldg_loc = 'building_locations.csv'
+# Specify name of csv with affected properties (determined using QGIS)
+affected = 'affected_property_iris.csv'
 
+# Specify label to be attached to all properties within flood polygon
+label = 'affected'
 
 
 def create_blazegraph_namespace(endpoint):
@@ -75,12 +81,27 @@ def extract_property_locations(kg_client, output_file):
     df.drop(columns=['location']).to_csv(output_file, index=False)
 
 
+def attach_labels(kg_client, label, input_csv):
+    """
+    Extracts all property locations from the KG and writes them to a csv file
+    """
+    # Extract IRIs from csv file
+    with open(input_csv, 'r') as f:
+        iris = f.read()
+    iris = iris.split('\n')
+    iris = iris[1:-1]
+    
+    # Construct INSERT query
+    query = [f'<{iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}>' for iri in iris]
+    query = 'INSERT DATA {{ {} }}'.format(' . '.join(query))
+
+    # Execute query and retrieve results
+    kg_client.performUpdate(query)
+
 
 if __name__ == '__main__':
 
-    # Create filepath
-    triples = os.path.join(Path(__file__).parent, 'data', triples_file)
-
+    # 1) Instantiate consolidated triples file
     # Ensure Blazegraph namespace exists
     create_blazegraph_namespace(SPARQL_UPDATE_ENDPOINT)
 
@@ -90,8 +111,13 @@ if __name__ == '__main__':
 
     # Upload n-triples file (use `uploadOntolgy` method of pyderivation sparql_client 
     # directly which ensures file is converted to Java filetype)
-    #kg_client.uploadOntology(triples)
+    triples = os.path.join(Path(__file__).parent, 'data', triples_file)
+    kg_client.uploadOntology(triples)
 
-    # Extract building (point) locations
+    # 2) Extract building (point) locations from KG
     bldg_locations = os.path.join(Path(__file__).parent, 'data', bldg_loc)
-    extract_property_locations(kg_client, bldg_locations)
+    #extract_property_locations(kg_client, bldg_locations)
+
+    # 3) Attach rdfs:label to affected properties
+    affected_bldg = os.path.join(Path(__file__).parent, 'data', affected)
+    #attach_labels(kg_client, label=label, input_csv=affected_bldg)
