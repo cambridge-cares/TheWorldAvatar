@@ -88,8 +88,6 @@ DOCKER_COMPOSE_TEST_KG = 'docker-compose.test.kg.yml'
 DOE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
 VAPOURTEC_SCHEDULE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.schedule.env.test')
 HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
-# VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
-# HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
 ROG_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.env.test')
 ROGI_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.iter.env.test')
 
