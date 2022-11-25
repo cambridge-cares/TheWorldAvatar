@@ -698,21 +698,28 @@ def assert_rxn_iterations(
     sparql_client: RxnOptGoalIterSparqlClient,
     doe_agent: DoEAgent,
     vapourtec_schedule_agent: VapourtecScheduleAgent,
-    vapourtec_agent: VapourtecAgent,
-    hplc_agent: HPLCAgent,
+    vapourtec_agent_lst: Union[VapourtecAgent, List[VapourtecAgent]],
+    hplc_agent_lst: Union[HPLCAgent, List[HPLCAgent]],
     hplc_postpro_agent: HPLCPostProAgent,
     rogi_agent: RxnOptGoalIterAgent,
     goal_set_iri: str,
 ):
-    # Check if the vapourtec agent is registered with the vapourtec hardware
-    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
-        vapourtec_agent.vapourtec_digital_twin, ONTOLAB_ISMANAGEDBY, vapourtec_agent.agentIRI
-    ))[0]['ASK']
+    if not isinstance(vapourtec_agent_lst, list):
+        vapourtec_agent_lst = [vapourtec_agent_lst]
+    if not isinstance(hplc_agent_lst, list):
+        hplc_agent_lst = [hplc_agent_lst]
 
-    # Check if the hplc agent is registered with the hplc hardware
-    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
-        hplc_agent.hplc_digital_twin, ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
-    ))[0]['ASK']
+    # Check if the vapourtec agent is registered with the vapourtec hardware
+    for vapourtec_agent in vapourtec_agent_lst:
+        assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+            vapourtec_agent.vapourtec_digital_twin, ONTOLAB_ISMANAGEDBY, vapourtec_agent.agentIRI
+        ))[0]['ASK']
+
+    for hplc_agent in hplc_agent_lst:
+        # Check if the hplc agent is registered with the hplc hardware
+        assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+            hplc_agent.hplc_digital_twin, ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+        ))[0]['ASK']
 
     #################################
     ## Obtain relevant information ##
@@ -724,7 +731,7 @@ def assert_rxn_iterations(
         goal_set_iri=goal_set_iri,
         rogi_agent_iri=rogi_agent.agentIRI,
     )
-    assert len(rogi_derivation_lst) == 1
+    assert len(rogi_derivation_lst) == len(vapourtec_agent_lst)
     rogi_derivation = rogi_derivation_lst[0]
     rxn_exp_iri_lst = sparql_client.get_all_rxn_exp_of_goal_set(goal_set_iri)
     assert rxn_exp_iri_lst is not None
@@ -768,7 +775,11 @@ def assert_rxn_iterations(
         ################################
         ## Check if the derivation is processed and generated the desired triples
         # First, check if the file is generated and uploaded correctly
-        vapourtec_derivation = get_vapourtec_derivation(new_exp_iri, vapourtec_agent.agentIRI, sparql_client)
+        vapourtec_derivation = get_vapourtec_derivation(
+            new_exp_iri,
+            [vapourtec_agent.agentIRI for vapourtec_agent in vapourtec_agent_lst],
+            sparql_client
+        )
         vapourtec_input_file_iri = get_vapourtec_input_file_iri(vapourtec_derivation, sparql_client)
         vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
         # this is localised agent test, so localFilePath is already host machine path, not docker path
@@ -790,8 +801,10 @@ def assert_rxn_iterations(
         # Third, check there is chemical solution instance
         chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
         assert chemical_solution_iri is not None
-        new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin])
-        assert len(new_rs400_list) == 1
+        new_rs400_list = sparql_client.get_vapourtec_rs400(
+            list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin for vapourtec_agent in vapourtec_agent_lst],
+        )
+        assert len(new_rs400_list) == 2
         new_rs400 = new_rs400_list[0]
         new_autosampler = new_rs400.get_autosampler()
         new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
@@ -805,10 +818,20 @@ def assert_rxn_iterations(
         ## Check HPLC Derivation ##
         ###########################
         ## Check if the derivation is processed and generated the desired triples
-        lst_hplc_job_iri = get_hplc_job(hplc_agent.hplc_digital_twin, new_exp_iri, chemical_solution_iri, sparql_client)
-        hplc_derivation = get_hplc_derivation(new_exp_iri, hplc_agent.agentIRI, sparql_client)
+        lst_response = get_hplc_job(
+            [hplc_agent.hplc_digital_twin for hplc_agent in hplc_agent_lst],
+            new_exp_iri,
+            chemical_solution_iri,
+            sparql_client
+        )
+        assert len(lst_response) == 1
+        lst_hplc_job_iri = dal.get_unique_values_in_list_of_dict(lst_response, 'hplc_job')
+        hplc_derivation = get_hplc_derivation(
+            new_exp_iri,
+            [hplc_agent.agentIRI for hplc_agent in hplc_agent_lst],
+            sparql_client
+        )
         hplc_derivation_outputs = get_derivation_outputs(hplc_derivation, sparql_client)
-        assert len(lst_hplc_job_iri) == 1
         assert len(hplc_derivation_outputs) == 1
         assert lst_hplc_job_iri == hplc_derivation_outputs[ONTOHPLC_HPLCJOB]
 
@@ -865,23 +888,25 @@ def assert_rxn_iterations(
         print(f"HPLCPostPro Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
 
-def get_hplc_derivation(rxn_exp_iri: str, hplc_agent_iri: str, sparql_client: PySparqlClient):
+def get_hplc_derivation(rxn_exp_iri: str, hplc_agent_iri_lst: list, sparql_client: PySparqlClient):
     query = f"""
         SELECT ?hplc_derivation
         WHERE {{
+            VALUES ?hplc_agent {{ {' '.join([f'<{iri}>' for iri in hplc_agent_iri_lst])} }}
             ?hplc_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{rxn_exp_iri}>;
-                             <{ONTODERIVATION_ISDERIVEDUSING}> <{hplc_agent_iri}>.
+                             <{ONTODERIVATION_ISDERIVEDUSING}> ?hplc_agent.
         }}"""
     response = sparql_client.performQuery(query)
     return response[0]['hplc_derivation'] if len(response) > 0 else None
 
 
-def get_vapourtec_derivation(rxn_exp_iri: str, vapourtec_agent_iri: str, sparql_client: PySparqlClient):
+def get_vapourtec_derivation(rxn_exp_iri: str, vapourtec_agent_iri_lst: list, sparql_client: PySparqlClient):
     query = f"""
         SELECT ?vapourtec_derivation
         WHERE {{
+            VALUES ?vapourtec_agent {{ {' '.join([f'<{iri}>' for iri in vapourtec_agent_iri_lst])} }}
             ?vapourtec_derivation <{ONTODERIVATION_ISDERIVEDFROM}> <{rxn_exp_iri}>;
-                                  <{ONTODERIVATION_ISDERIVEDUSING}> <{vapourtec_agent_iri}>.
+                                  <{ONTODERIVATION_ISDERIVEDUSING}> ?vapourtec_agent.
         }}"""
     response = sparql_client.performQuery(query)
     return response[0]['vapourtec_derivation'] if len(response) > 0 else None
@@ -958,21 +983,21 @@ def get_chemical_solution_iri(derivation_iri: str, sparql_client: PySparqlClient
 
 
 def get_hplc_job(
-    hplc_digital_twin,
+    hplc_digital_twin_lst,
     rxn_exp_iri,
     chemical_solution_iri,
     sparql_client: PySparqlClient
 ):
     query = f"""
-        SELECT ?hplc_job
+        SELECT ?hplc_job ?hplc_digital_twin
         WHERE {{
-            ?hplc_job ^<{ONTOHPLC_HASJOB}> <{hplc_digital_twin}>;
+            VALUES ?hplc_digital_twin {{ <{'> <'.join(hplc_digital_twin_lst)}> }}
+            ?hplc_job ^<{ONTOHPLC_HASJOB}> ?hplc_digital_twin;
                       a <{ONTOHPLC_HPLCJOB}>;
                       <{ONTOHPLC_CHARACTERISES}> <{rxn_exp_iri}>;
                       <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_solution_iri}>.
         }}"""
-    response = sparql_client.performQuery(query)
-    return [response[i]['hplc_job'] for i in range(len(response))]
+    return sparql_client.performQuery(query)
 
 
 def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient):
