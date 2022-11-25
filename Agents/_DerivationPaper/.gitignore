@@ -16,5 +16,3 @@ assets
 
 input_data/*
 !.gitkeep
-resources/*
-!.gitkeep

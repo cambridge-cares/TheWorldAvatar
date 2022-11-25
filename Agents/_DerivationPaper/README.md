@@ -27,7 +27,7 @@ To install required packages, run the following command:
 
 ```bash
 # build and install
-(deriv_venv) $ python -m pip install -r dev_requirements.txt
+(deriv_venv) $ python -m pip install -r requirements.txt
 ```
 
 ## Spinning up Docker Stack
@@ -38,27 +38,18 @@ A [docker-compose_stack.yml] file is provided to spin up a stack with a Blazegra
 docker-compose -f "docker-compose_stack.yml" up -d
 ```
 
-<!--
-## Prerequisites
+# Workflow
 
-Before starting the Flask web app or building the Docker image, several key properties need to be set in the [properties file]. Credentials and endpoints are needed for the TimeSeries client to access the knowledge graph and the Postgres database:
-- `db.user` the username to access the Postgres database
-- `db.password` the password to access the Postgres database
-- `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
-- `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+## 1. Consolidate previously exported triples
 
+This minimum demonstration example is based on two previously exported sets of triples: One instantiation of properties (i.e. buildings and flats) includes their geospatial location (as points) and the other contains previous sales transactions (if available). Both files can be found on [Dropbox]. The data in both files have been consolidated by matching properties based on their identifiers, which matches for buildings with available EPC, and hence address and sales transaction data. The [consolidated triples] can also be found on Dropbox and the SPARQL `matching_query` is provided in the [resources] folder (for reference).
 
-A database connection issue has been observed when using the dockerised agent with locally running Postgres RDB. Therefore, a `docker-compose_stack.yml` file is provided to spin up a stack with a Blazegraph and a PostgreSQL within the same network as the agent container. For the agent to access the Blazegraph, the hostname is `blazegraph` (specified in the compose file), port number = 9999. The `sparql.query.endpoint` and `sparql.query.endpoint` to enter in the `airquality.properties` will be in the form of `http://blazegraph:9999/blazegraph/namespace/[NAME OF NAMESPACE]/sparql`. The Blazegraph namespace must have geospatial enabled. The hostname for the PostgreSQL container is `postgres`, accessible via the default port 5432. The field to enter for `db.url` will be in the form `jdbc:postgresql://postgres/[NAME OF DATABASE]`. 
+## 2. Instantiate consolidated triples
 
-**Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker stack, but before sending the first update request to the dockerised agent.** For Blazegraph, simply open the Blazegraph workbench `http://localhost:<port number from docker-compose_stack>/blazegraph` in any browser and create the needed namespace. For postgreSQL, pgAdmin can be used to connect to the database within Docker by adding a new server with `localhost` and `port number` as defined in the `docker-compose_stack` file. The new database can be created afterwards.
+Before starting the instantiation, ensure that the properties in [configs.py] match the settings in the `docker-compose_stack.yml` file. Then download the [consolidated triples] file and place it into the [input_data] folder (filename to be specified in [data_preparation.py]).
 
-Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows).
+Then simply run [data_preparation.py] as main script.
 
-```bash
-# Build production image and spin up container stack
-docker-compose -f "docker-compose_stack.yml" up -d --build
-```
--->
 
 
 # Authors #
@@ -70,3 +61,11 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [Docker environment]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+
+<!-- Data -->
+[Dropbox]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/data
+[consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/data?preview=consolidated_properties.nt
+[resources]: resources
+[configs.py]: configs.py
+[input_data]: input_data
+[data_preparation.py]: data_preparation.py

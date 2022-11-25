@@ -1,0 +1,28 @@
+PREFIX obe:  <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ppi:	 <http://landregistry.data.gov.uk/def/ppi/>
+
+INSERT {
+  ?property1 obe:hasLatestTransactionRecord ?tx . 
+  ?tx rdf:type ppi:TransactionRecord ;
+      ppi:pricePaid ?price ;
+      ppi:transactionDate ?date .  
+  }
+WHERE
+{
+  SERVICE <http://localhost:9999/blazegraph/namespace/derivation/sparql> 
+    { 
+    ?property1  rdf:type/rdfs:subClassOf* obe:Property ; 
+                obe:hasIdentifier ?id ;
+    }
+  SERVICE <http://localhost:9999/blazegraph/namespace/derivation2/sparql> 
+    { 
+    ?property2  rdf:type/rdfs:subClassOf* obe:Property ; 
+                obe:hasIdentifier ?id ;
+                # Transaction records
+                obe:hasLatestTransactionRecord ?tx . 
+    ?tx ppi:pricePaid ?price ;
+        ppi:transactionDate ?date .
+    }
+}
