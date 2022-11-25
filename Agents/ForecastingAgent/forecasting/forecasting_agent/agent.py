@@ -47,7 +47,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     tsClient = TSClient(kg_client=kgClient)
 
-    covariates = None
+    covariates, backtest_series = None, None
 
     # get the model configuration dictionary from the a specific use_model_configuration or use default
     if use_model_configuration is not None:
@@ -61,9 +61,15 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     cfg['horizon'] = horizon
     if data_length is not None:
         cfg['data_length'] = data_length
-
+        
+    cfg['ts_iri'] = get_ts_iri(cfg, kgClient)
     cfg['forecast_start_date'] = get_forecast_start_date(
         forecast_start_date, tsClient, cfg)
+    
+    # calculate lower and upper bound for timeseries to speed up query
+    lowerbound, upperbound = get_ts_lower_upper_bound(cfg)
+    cfg['loaded_data_bounds'] = {
+        'lowerbound': lowerbound, 'upperbound': upperbound}
 
     # use model configuration function to get the correct iri timeseries and its covariates
     series, covariates = load_ts_data(
@@ -112,18 +118,20 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     cfg['created_at'] = pd.to_datetime('now', utc=True)
     try:
         # get unit from iri and add to forecast
-        cfg['unit'] = get_unit(cfg['iri'], kgClient) 
+        cfg['unit'] = get_unit(cfg['iri'], kgClient)
     except KGException as e:
         # no measurement -> no unit
         pass
     cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
-    
+
     update = get_forecast_update(cfg=cfg)
     kgClient.performUpdate(add_insert_data(update))
-    
+
     # call client
     instantiate_forecast_timeseries(tsClient, cfg, forecast)
-    
+
+    #if backtest_series is not None:
+    #    cfg['error'] = calculate_error(backtest_series, forecast)
     
     # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',
@@ -132,6 +140,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         if key in cfg:
             del cfg[key]
     return cfg
+
 
 def instantiate_forecast_timeseries(tsClient, cfg, forecast):
     tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['ts_data_type']], cfg['time_format'],
@@ -228,6 +237,7 @@ def calculate_error(target, forecast):
     error['smape'] = smape(target, forecast)
     error['mse'] = mse(target, forecast)
     error['rmse'] = rmse(target, forecast)
+    error['max_error'] = max_error(target, forecast)
     return error
 
 
@@ -250,20 +260,11 @@ def load_ts_data(cfg, kgClient, tsClient):
     """
 
     #logger.info('Loading timeseries from KG')
-    # get the data
-    try:
-        # try if ts hasValue where the actual ts is stored
-        cfg['ts_iri'] = get_ts_value_iri(cfg['iri'], kgClient)
-    except IndexError as e:
-        cfg['ts_iri'] = cfg['iri']
-
-    # calculate lower and upper bound for timeseries to speed up query
-    lowerbound, upperbound = get_ts_lower_upper_bound(cfg)
 
     if 'load_covariates_func' in cfg:
         # load covariates
         covariates_iris, covariates = cfg['load_covariates_func'](
-            kgClient, tsClient, lowerbound, upperbound)
+            kgClient, tsClient, cfg['loaded_data_bounds']['lowerbound'], cfg['loaded_data_bounds']['upperbound'])
         cfg['fc_model']['covariates_iris'] = covariates_iris
 
         # check if covariates are given for complete future horizon from forecast_start_date
@@ -272,8 +273,8 @@ def load_ts_data(cfg, kgClient, tsClient):
         covariates = None
 
     # load timeseries which should be forecasted
-    df = get_df_of_ts(cfg['ts_iri'], tsClient, lowerbound,
-                      upperbound, column_name="Series", date_name="Date")
+    df = get_df_of_ts(cfg['ts_iri'], tsClient, cfg['loaded_data_bounds']['lowerbound'],
+                      cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
 
     # df to darts timeseries
     series = TimeSeries.from_dataframe(
@@ -281,17 +282,38 @@ def load_ts_data(cfg, kgClient, tsClient):
     # remove nan values at beginning and end
     series = series.strip()
 
-    cfg['loaded_data_bounds'] = {
-        'lowerbound': lowerbound, 'upperbound': upperbound}
-
     print('Done with loading timeseries from KG and TSDB')
     return series, covariates
+
+
+def get_ts_iri(cfg, kgClient):
+    """
+    Retrieves the time series IRI from the KG.
+    Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
+    or the iri has a 'hasTimeSeries' with no 'Measure' in between, 
+    in both cases the iri of the object after 'hasTimeSeries' is returned.
+
+    1. iri -> hasValue -> Measure -> hasTimeSeries -> ts_iri
+    2. iri -> hasTimeSeries -> ts_iri
+
+    :param cfg: a dictionary containing the model configuration
+    :param kgClient: the client object for the knowledge graph
+    """
+    try:
+        # try if ts hasValue where the actual ts is stored
+        ts_iri = get_ts_value_iri(cfg['iri'], kgClient)
+    except IndexError as e:
+        ts_iri = cfg['iri']
+
+    return ts_iri
+
 
 def check_if_enough_covs_exist(cfg, covariates):
     if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
         raise ValueError(
-                f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
+            f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
     return True
+
 
 def get_ts_lower_upper_bound(cfg):
     """
@@ -342,7 +364,7 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
         path_ckpt = path_to_store / "best-model.ckpt"
         path_pth = ""
     else:
-        
+
         # create folder
         if not os.path.exists(path_to_store):
             os.makedirs(path_to_store)
@@ -409,13 +431,13 @@ def get_forecast_update(cfg):
     }, verb_literal={
         RDFS_LABEL: cfg['fc_model']['name'],
     })
-    
+
     if 'model_path_ckpt_link' in cfg['fc_model']:
         # url chkpt
         update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
             TS_HASURL: [cfg['fc_model']['model_path_ckpt_link'], XSD_STRING],
         })
-    if 'model_path_pth_link' in cfg['fc_model']: 
+    if 'model_path_pth_link' in cfg['fc_model']:
         # url pth
         update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
             TS_HASURL: [cfg['fc_model']['model_path_pth_link'], XSD_STRING],
@@ -451,14 +473,13 @@ def get_forecast_update(cfg):
         TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
         TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri,
     }, verb_literal={
-        TS_CREATEDAT: [cfg['created_at'], XSD_DATETIMESTAMP],}
+        TS_CREATEDAT: [cfg['created_at'], XSD_DATETIMESTAMP], }
     )
 
     update += get_properties_for_subj(subj=cfg['iri'], verb_obj={
         TS_HASFORECAST: cfg['forecast_iri']})
 
     return update
-    
 
 
 def convert_date_to_timestamp(date):
@@ -468,7 +489,7 @@ def convert_date_to_timestamp(date):
     :param date: a date
     :return: the timestamp
     """
-     # convert date to timestamp
+    # convert date to timestamp
     if isinstance(date, int):
         time_stamp = date
     elif isinstance(date, str):
@@ -480,12 +501,12 @@ def convert_date_to_timestamp(date):
         raise ValueError(
             f'Unknown date format: {date}. Please use int, str or pd.Timestamp')
     return int(time_stamp)
-    
+
 
 def get_timeInstant(date):
-    
+
     time_stamp = convert_date_to_timestamp(date)
-    
+
     instant_iri = KB + 'Instant_' + str(uuid.uuid4())
     update = ''
 

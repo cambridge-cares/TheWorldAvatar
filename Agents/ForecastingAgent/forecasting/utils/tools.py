@@ -105,6 +105,20 @@ def add_enclosing(s):
     return s
 
 
+def max_error(s1, s2):
+    """
+    It takes two time series, slices them to the intersection of their time ranges, and then returns the
+    maximum absolute difference between the two time series
+    
+    :param s1: the first time series
+    :param s2: the original data
+    :return: The maximum error between the two time series.
+    """
+    s2 = s2.slice_intersect(s1)
+    s1 = s1.slice_intersect(s2)
+    return np.max(np.abs(s1.values() - s2.values())) 
+
+
 def create_triple(subject, predicate, obj):
     """
          Constructs object properties from given subject, predicate and object.
