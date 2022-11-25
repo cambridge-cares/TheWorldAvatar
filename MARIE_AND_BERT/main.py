@@ -44,31 +44,31 @@ def search():
     return json.dumps(answer)
 
 
-@app.route("/dashboard", methods=['GET'])
-def dashboard():
-    return render_template('dashboard.html')
-
-
-@app.route('/error_log')
-def stream_error():
-    def generate_error_log():
-        with open('error.log') as f:
-            while True:
-                yield f.read()
-                time.sleep(1)
-
-    return app.response_class(generate_error_log(), mimetype='text/plain')
-
-
-@app.route('/debug_log')
-def stream_debug():
-    def generate_debug_log():
-        with open('debug.log') as f:
-            while True:
-                yield f.read()
-                time.sleep(1)
-
-    return app.response_class(generate_debug_log(), mimetype='text/plain')
+# @app.route("/dashboard", methods=['GET'])
+# def dashboard():
+#     return render_template('dashboard.html')
+#
+#
+# @app.route('/error_log')
+# def stream_error():
+#     def generate_error_log():
+#         with open('error.log') as f:
+#             while True:
+#                 yield f.read()
+#                 time.sleep(1)
+#
+#     return app.response_class(generate_error_log(), mimetype='text/plain')
+#
+#
+# @app.route('/debug_log')
+# def stream_debug():
+#     def generate_debug_log():
+#         with open('debug.log') as f:
+#             while True:
+#                 yield f.read()
+#                 time.sleep(1)
+#
+#     return app.response_class(generate_debug_log(), mimetype='text/plain')
 
 
 # @app.route('/full_test')
@@ -91,20 +91,20 @@ def stream_debug():
 #     return my_pubchem_engine.test_value_lookup()
 
 
-@app.route('/hand_shake_pubchem')
-def test_hand_shake_pubchem():
-    if Handshake.handshake_pubchem():
-        return "Success: Pubchem endpoint is running properly"
-    else:
-        return "Error: Pubchem endpoint is NOT running properly"
-
-
-@app.route('/hand_shake_ontocompchem')
-def test_hand_shake_ontocompchem():
-    if Handshake.handshake_ontocompochem():
-        return "Success: OntoCompchem endpoint is running properly"
-    else:
-        return "Error: OntoCompchem endpoint is NOT running properly"
+# @app.route('/hand_shake_pubchem')
+# def test_hand_shake_pubchem():
+#     if Handshake.handshake_pubchem():
+#         return "Success: Pubchem endpoint is running properly"
+#     else:
+#         return "Error: Pubchem endpoint is NOT running properly"
+#
+#
+# @app.route('/hand_shake_ontocompchem')
+# def test_hand_shake_ontocompchem():
+#     if Handshake.handshake_ontocompochem():
+#         return "Success: OntoCompchem endpoint is running properly"
+#     else:
+#         return "Error: OntoCompchem endpoint is NOT running properly"
 
 
 if __name__ == "__main__":

@@ -41,9 +41,12 @@ class OntoCompChemReader:
 
     def construct_value_dict(self):
         value_dict = {}
+        counter = 0
         all_calculation = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem' ,'ontocompchem_all_calculation.json')).read())
         col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
         for row in all_calculation['results']['bindings']:
+            counter += 1
+            print(f"{counter} out of {len(all_calculation['results']['bindings'])}")
             species = row['species']['value'].split('/')[-1]
             ocIRI = row['ocIRI']['value'].split('/')[-1]
             if "Species_" in species:
@@ -53,7 +56,8 @@ class OntoCompChemReader:
                         if node in value_dict:
                             print('This is big problem')
                         else:
-                            value_dict[node] = row[col_n + 'Value']['value']
+                            if not node.endswith("Value"):
+                                value_dict[node + "Value"] = row[col_n + 'Value']['value']
 
         with open(os.path.join(DATA_DIR,'CrossGraph/ontocompchem' , 'ontocompchem_value_dict.json'), 'w') as f:
             f.write(json.dumps(value_dict))
@@ -97,14 +101,14 @@ class OntoCompChemReader:
 
 if __name__ == '__main__':
     occr = OntoCompChemReader()
-    rst = occr.query_blazegraph(query=ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY)
-    occr.process_query_result(rst)
-    occr.find_all_unique_species_calculation_pairs()
-    rst = occr.query_blazegraph(query=ONTOCOMPCHEM_ALL_CALCULATION_QUERY)
-    with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json'), 'w') as f:
-        f.write(json.dumps(rst))
-        f.close()
-    occr.construct_triples()
+    # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY)
+    # occr.process_query_result(rst)
+    # occr.find_all_unique_species_calculation_pairs()
+    # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_ALL_CALCULATION_QUERY)
+    # with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json'), 'w') as f:
+    #     f.write(json.dumps(rst))
+    #     f.close()
+    # occr.construct_triples()
     occr.construct_value_dict()
 
 # sample training unit: what is the geometry type of CH4, head CH4, tail: geometry, RotationalSymetry ...

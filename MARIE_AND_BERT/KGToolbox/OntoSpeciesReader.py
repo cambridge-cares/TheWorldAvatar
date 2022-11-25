@@ -120,11 +120,31 @@ class OntoSpeciesReader:
         df_all_species.to_csv(os.path.join(self.dataset_path, 'all_species.tsv'), sep='\t')
         self.all_species_iri = list(set(self.all_species_iri))
 
+    def numerical_value_query(self, node_name):
+        QUERY = """
+            SELECT ?value ?unit 
+            WHERE {
+                <%s> <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value> ?value .
+            OPTIONAL {
+                <%s> <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units> ?unit .
+                }
+            } 
+        """ % (node_name, node_name)
+        rst = self.query_blazegraph(query=QUERY)
+        return rst['results']['bindings']
+
     def create_triples(self):
         triples = []
         value_dict = {}
         all_species = json.loads(open(os.path.join(self.dataset_path, 'ontospecies.json')).read())
+        counter = 0
         for species in all_species:
+            counter += 1
+            print(f"{counter} out of {len(all_species.keys())}")
+            if counter % 1000 == 0:
+                with open(os.path.join(self.dataset_path, 'ontospecies_value_dict.json'), 'w') as f:
+                    f.write(json.dumps(value_dict))
+                    f.close()
             data = all_species[species]
             if '#' in species:
                 short_species = species.split('#')[-1]
@@ -141,6 +161,13 @@ class OntoSpeciesReader:
                         data_type = d['type']
                         if data_type == "uri":
                             new_node = value.split('/')[-1]
+                            bindings = self.numerical_value_query(value)
+                            for b in bindings:
+                                if 'value' in b and 'unit' in b:
+                                    value = b['value']['value']
+                                    unit = b['unit']['value']
+                                    value_dict[new_node] = f"{value} {unit}"
+
                         elif data_type == "literal":
                             new_node = f"{short_species}_{var}"
                             value_dict[new_node] = value
@@ -149,18 +176,19 @@ class OntoSpeciesReader:
 
                         if "MolecularFormula_" not in new_node:
                             triples.append((short_species, var, new_node))
+
+
+        with open(os.path.join(self.dataset_path, 'ontospecies_value_dict.json'), 'w') as f:
+            f.write(json.dumps(value_dict))
+            f.close()
         df = pd.DataFrame(triples)
         df = df.drop_duplicates()
         df = df.reset_index(drop=True)
-        df.to_csv(os.path.join(self.dataset_path, 'ontospecies-train.txt'), sep='\t', header=False, index=False)
-
+        # df.to_csv(os.path.join(self.dataset_path, 'ontospecies-train.txt'), sep='\t', header=False, index=False)
 
         df_test = df.sample(frac=0.2)
-        df_test.to_csv(os.path.join(self.dataset_path, 'ontospecies-test.txt'), sep='\t', header=False, index=False)
+        # df_test.to_csv(os.path.join(self.dataset_path, 'ontospecies-test.txt'), sep='\t', header=False, index=False)
 
-        with open(os.path.join(self.dataset_path, 'ontospecies_value_dict.json'),'w') as f:
-            f.write(json.dumps(value_dict))
-            f.close()
 
 
 

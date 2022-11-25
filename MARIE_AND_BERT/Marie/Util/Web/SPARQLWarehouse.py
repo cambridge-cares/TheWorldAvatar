@@ -6,6 +6,17 @@ WHERE {
 } LIMIT 10 
 """
 
+FIND_SAMPLE_REACTIONS = """
+SELECT DISTINCT ?reaction ?equation 
+WHERE {?reaction <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasEquation> ?equation .}
+LIMIT 100000
+"""
+
+FIND_ALL_REACTIONS = """
+SELECT DISTINCT ?reaction ?equation 
+WHERE {?reaction <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasEquation> ?equation .}
+"""
+
 PUBCHEM_HANDSHAKE = """
 SELECT ?x 
 WHERE {

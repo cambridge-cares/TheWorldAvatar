@@ -39,12 +39,8 @@ class HopExtractor:
         self.idx_triples = self.make_idx_triples()
         self.entity_labels = list(self.entity2idx.keys())
         self.relation_labels = list(self.relation2idx.keys())
-        print("finished n-hop extractor")
-        # self.head_tail_relation_map_full_path = os.path.join(self.dataset_dir, f'head_tail_relation_map.json')
-        # self.head_tail_realtion_map = json.loads(open(head_tail_relation_map_full_path).read()
 
     def make_idx_triples(self):
-        print("making index triples")
         idx_triples = []
         for idx, row in self.triples.iterrows():
             s, p, o = row.values.tolist()
@@ -77,31 +73,34 @@ class HopExtractor:
             three_hop_idx_dict = {}  # idx to idx dict
             counter = 0
             for entity in self.ent_labels:
-                entity_idx = self.entity2idx[entity]
-                neighbour_rows = self.triples[self.triples.isin([entity]).any(axis=1)]
-                # extract first neighbours
-                neighbours = list(
-                    set(neighbour_rows.iloc[:, 0].values.tolist() + neighbour_rows.iloc[:, 2].values.tolist()))
-                neighbours.remove(entity)
-                neighbours_idx = [self.entity2idx[n] for n in neighbours]
-                one_hop_dict[entity] = neighbours
-                one_hop_idx_dict[entity_idx] = neighbours_idx
-                counter += 1
-                print(f"{counter} out of {len(self.ent_labels)}")
+                if "Reaction" not in entity:
+                    entity_idx = self.entity2idx[entity]
+                    neighbour_rows = self.triples[self.triples.isin([entity]).any(axis=1)]
+                    # extract first neighbours
+                    neighbours = neighbour_rows.iloc[:, 0].values.tolist() + neighbour_rows.iloc[:, 2].values.tolist()
+                    if entity in neighbours:
+                        neighbours.remove(entity)
+                    # neighbours_idx = [self.entity2idx[n] for n in neighbours]
+                    # one_hop_dict[entity] = neighbours
+                    # one_hop_idx_dict[entity_idx] = neighbours_idx
+                    counter += 1
+                    print(f"{counter} out of {len(self.ent_labels)}")
 
-            for entity in self.ent_labels:
-                entity_idx = self.entity2idx[entity]
-                first_neighbours = one_hop_dict[entity]
-                second_neighbours = []
-                third_neighbours = []
-                for first_neighbour in first_neighbours:
-                    second_neighbours += one_hop_dict[first_neighbour]
-                    for second_neighbour in second_neighbours:
-                        third_neighbours += one_hop_dict[second_neighbour]
+                # for entity in self.ent_labels:
+                #     entity_idx = self.entity2idx[entity]
+                #     first_neighbours = one_hop_dict[entity]
+                #     second_neighbours = []
+                #     third_neighbours = []
+                #     for first_neighbour in first_neighbours:
+                #         second_neighbours += one_hop_dict[first_neighbour]
+                #         for second_neighbour in second_neighbours:
+                #             third_neighbours += one_hop_dict[second_neighbour]
 
-                three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
-                three_hop_dict[entity].remove(entity)
-                three_hop_idx_dict[entity_idx] = [self.entity2idx[e_idx] for e_idx in three_hop_dict[entity]]
+                    # three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
+                    three_hop_dict[entity] = list(set(neighbours))
+                    if entity in three_hop_dict[entity]:
+                        three_hop_dict[entity].remove(entity)
+                    three_hop_idx_dict[entity_idx] = [self.entity2idx[e_idx] for e_idx in three_hop_dict[entity]]
 
             self.three_hop_dict_label = three_hop_dict
             self.three_hop_dict_index = three_hop_idx_dict
@@ -125,7 +124,7 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    ontology = "ontospecies"
+    ontology = "ontokin_reactions"
     # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/{ontology}'),
                                 dataset_name=ontology)

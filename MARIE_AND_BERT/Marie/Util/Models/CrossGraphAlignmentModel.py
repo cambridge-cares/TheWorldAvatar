@@ -18,6 +18,7 @@ class CrossGraphAlignmentModel(nn.Module):
         self.domain_question_factor_layer = nn.Linear(4, 1)
         self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(self.device)
         self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax()
         self.relu = nn.ReLU()
 
     def adjust_score(self, triple):
@@ -28,14 +29,12 @@ class CrossGraphAlignmentModel(nn.Module):
         :return:
         """
         question = triple[0]
-        domain = triple[2].to(self.device)
-        domain = one_hot(domain, num_classes=4).type(torch.FloatTensor).to(self.device)
         question_vector = self.process_question(question)
 
         # =============== get domain - question factor ==================
         # domain_question_vector = torch.cat([question_vector, domain], dim=1).to(self.device)
-        domain_question_factor = self.sigmoid(self.domain_question_factor_layer(question_vector).squeeze(-1))
-
+        # domain_question_factor = self.sigmoid(self.domain_question_factor_layer(question_vector).squeeze(-1))
+        domain_question_factor = self.sigmoid(question_vector.squeeze(-1))
         return domain_question_factor
 
     def process_question(self, question):
@@ -65,7 +64,7 @@ class CrossGraphAlignmentModel(nn.Module):
         :param true_answer: (question, score, domain)
         :return:
         """
-        true_domain = true_answer[2].type(torch.FloatTensor).to(self.device)
+        true_domain = torch.Tensor(true_answer[2]).to(self.device)
         pred_domain = self.adjust_score(true_answer).to(self.device)
         return nn.BCELoss()(pred_domain, true_domain), pred_domain
 
@@ -74,8 +73,14 @@ class CrossGraphAlignmentModel(nn.Module):
         :param triple: (question, score, domain)
         :return:
         """
-        pred_domain = self.adjust_score(triple).to(self.device)
         score = triple[1]
-        domain = triple[2]
-        diff = torch.abs(pred_domain - domain)
-        return score + (1 - diff)
+        pred_domain = self.adjust_score(triple).to(self.device)
+        pred_domain = pred_domain > 0.5
+        pred_domain = pred_domain.type(torch.LongTensor)
+        pred_domain = 2 - pred_domain
+        domain = triple[2].to(self.device)
+        factor = torch.eq(pred_domain, domain).type(torch.LongTensor)
+        factor = torch.sum(factor, dim=1)
+        factor = factor.reshape(-1, 5)
+
+        return factor
