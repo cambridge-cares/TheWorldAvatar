@@ -117,6 +117,7 @@ public class ConfigStore extends ContainerClient {
         }
 
         // All loaded
+        LOGGER.info("Configuration loading has now finished.");
         isReady = true;
     }
 

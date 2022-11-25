@@ -108,6 +108,7 @@ public class NamespaceGetter {
         this.password = blazeConfig.getPassword();
         this.url = blazeConfig.getServiceUrl();
 
+        LOGGER.info("Determined base URL of Blazegraph as: {}", this.url);
         if(this.url == null || this.url.isEmpty()) {
             throw new IllegalStateException("Cannot determine root URL of Blazegraph.");
         }
@@ -154,7 +155,7 @@ public class NamespaceGetter {
         );
 
         // Parse the response
-        if(response.statusCode() != 200) {
+        if(response.statusCode() != 200 || response.body() == null) {
             throw new IOException("Invalid response from Blazegraph service.");
         }
 
@@ -188,7 +189,6 @@ public class NamespaceGetter {
              }
      
             namespaces.put(namespace, endpoint);
-            LOGGER.info("Discovered Blazegraph endpoint at: {}", "");
          }
          return namespaces;
     }

@@ -89,6 +89,7 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     private static void loadConfig() {
         try {
+            LOGGER.info("Attempting to load configuration settings...");
             CONFIG.load();
         } catch(Exception exception) {
             FeatureInfoAgent.VALID = false;
@@ -104,7 +105,6 @@ public class FeatureInfoAgent extends JPSAgent {
     public synchronized void init() throws ServletException {
         try {
             super.init();
-            if(CONFIG == null) FeatureInfoAgent.loadConfig();
 
             // Test the logging
             LOGGER.debug("This is a test DEBUG message");
@@ -113,6 +113,10 @@ public class FeatureInfoAgent extends JPSAgent {
             LOGGER.error("This is a test ERROR message");
             LOGGER.fatal("This is a test FATAL message");
             System.out.println("This is a test SYSTEM.OUT message");
+
+            // Load configuration
+            if(CONFIG == null) CONFIG = new ConfigStore();
+            if(!CONFIG.isReady()) FeatureInfoAgent.loadConfig();
 
         } catch(Exception exception) {
             FeatureInfoAgent.VALID = false;
