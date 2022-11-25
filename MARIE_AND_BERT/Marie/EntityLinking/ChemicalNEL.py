@@ -40,7 +40,8 @@ class ChemicalNEL:
         self.fuzzyset = fuzzyset.FuzzySet(self.name_list)
 
     def find_cid(self, question):
-        doc = Document(question)
+        q_cap = question.upper()
+        doc = Document(q_cap)
         mentions = doc.cems
         self.marie_logger.info(f"mentions: {mentions} in question {question}")
         try:

@@ -12,5 +12,5 @@ class OntoKinQAEngine(QAEngine):
 
 if __name__ == "__main__":
     my_engine = OntoKinQAEngine(dataset_dir="CrossGraph/ontokin", dataset_name="ontokin")
-    rst = my_engine.run("what is the jone well depth of CO2")
+    rst = my_engine.run("what is the chemical formula of CO2")
     print(rst)

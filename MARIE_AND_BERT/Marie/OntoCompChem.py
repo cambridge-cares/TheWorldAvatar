@@ -1,4 +1,5 @@
 # Version 1 comes with only answer, score = (question, head)
+import json
 import os
 import pickle
 
@@ -36,10 +37,11 @@ class OntoCompChemEngine:
                                              idx2entity=self.subgraph_extractor.entity_labels, load_model=False,
                                              dataset_dir=self.dataset_dir,
                                              model_name='score_model_general')
-
+        self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir, "ontocompchem_value_dict.json")
+        self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
         model_path = os.path.join(self.dataset_dir, 'score_model_general')
         print("model path", model_path)
-        self.chemical_nel = ChemicalNEL(dataset_dir="ontocompchem")
+        self.chemical_nel = ChemicalNEL(dataset_name="ontocompchem")
 
         # self.score_model.load_pretrained_model(model_path)
 
@@ -47,9 +49,9 @@ class OntoCompChemEngine:
         return _question.replace(_head_entity, '').strip()
 
     def run(self, question):
-        head = self.chemical_nel.find_cid(question)
-        question = self.remove_head_entity(_question=question, _head_entity=head)
-        return self.find_answers(head_entity=head, question=question)
+        nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(question)
+        question = self.remove_head_entity(_question=question, _head_entity=mention_string)
+        return self.find_answers(head_entity=cid, question=question)
 
     def test(self):
         good_counter = 0
@@ -70,6 +72,12 @@ class OntoCompChemEngine:
 
             print("good counter", good_counter)
             print("bad counter", bad_counter)
+
+    def value_lookup(self, node):
+        if node in self.value_dictionary:
+            return self.value_dictionary[node]
+        else:
+            return "NODE HAS NO VALUE"
 
     def find_answers(self, head_entity, question):
         head = self.entity2idx[head_entity]
@@ -122,4 +130,5 @@ class OntoCompChemEngine:
 # 3.
 if __name__ == '__main__':
     my_ontochemistry_engine = OntoCompChemEngine()
-    my_ontochemistry_engine.test()
+    rst = my_ontochemistry_engine.run(question="what is the geometry of CO2")
+    print(rst)

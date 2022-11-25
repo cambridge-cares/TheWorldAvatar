@@ -1,12 +1,17 @@
 import os
 import random
+import time
 
 import pandas as pd
 import torch
+from torch.nn.functional import one_hot
 from transformers import BertTokenizer
 
 from Marie.PubChem import PubChemEngine
 from Marie.OntoCompChem import OntoCompChemEngine
+from Marie.OntoSpecies import OntoSpeciesQAEngine
+from Marie.Ontokin import OntoKinQAEngine
+
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
@@ -14,6 +19,7 @@ from Marie.iri_dictionary import IRIDictionary
 
 
 def normalize_scores(scores_list):
+    print(scores_list)
     normalized_scores = []
     for scores in scores_list:
         max_score = max(scores)
@@ -35,37 +41,64 @@ class CrossGraphQAEngine:
         self.marie_logger = MarieLogger()
         self.pubchem_engine = PubChemEngine()
         self.ontochemistry_engine = OntoCompChemEngine()
-        self.domain_list = ["pubchem", "ontochemistry"]
+        self.ontospecies_engine = OntoSpeciesQAEngine()
+        self.ontokin_engine = OntoKinQAEngine()
+
+        self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2, "ontokin": 3}
+        self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
+        self.domain_list = self.domain_encoding.keys()
+        print(self.domain_list)
+        self.engine_list = [self.pubchem_engine, self.ontochemistry_engine, self.ontospecies_engine,
+                            self.ontokin_engine]
         self.device = torch.device("cpu")
         self.max_length = 12
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
         self.score_adjust_model = CrossGraphAlignmentModel(device=self.device)
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
-                                                                        'cross_graph_model')))
+                                                                        'cross_graph_model_new')))
         self.iri_dict = IRIDictionary()
 
     def create_triple_for_prediction(self, question, score_list, domain_list):
-        try:
-            score_list = torch.FloatTensor(score_list).reshape(1, -1).squeeze(0)
-            domain_list = torch.LongTensor(domain_list)
-            tokenized_question = self.tokenizer(question,
-                                                padding='max_length', max_length=self.max_length, truncation=True,
-                                                return_tensors="pt")
-            question_list = {}
-            for key in tokenized_question:
-                data = tokenized_question[key].repeat([1, len(score_list)])
-                question_list[key] = data
+        # try:
+        score_list = torch.FloatTensor(score_list).reshape(1, -1).squeeze(0)
+        domain_list = torch.LongTensor(domain_list)
+        tokenized_question = self.tokenizer(question,
+                                            padding='max_length', max_length=self.max_length, truncation=True,
+                                            return_tensors="pt")
+        question_list = {}
+        for key in tokenized_question:
+            data = tokenized_question[key].repeat([1, len(score_list)])
+            question_list[key] = data
 
-            return question_list, score_list, domain_list
-        except:
-            print(score_list)
-
+        return question_list, score_list, domain_list
 
     def adjust_scores(self, triple):
         return self.score_adjust_model.predict(triple=triple)
 
-    def run(self, question, head_entity_list):
+    def re_rank_answers(self, domain_list, score_list, answer_list):
+        values, indices = torch.topk(torch.FloatTensor(score_list), k=10, largest=True)
+        re_ranked_labels = [answer_list[i] for i in indices]
+        re_ranked_domain_list = [domain_list[i] for i in indices]
+        re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
+        re_ranked_score_list = [float(v.item() / 1.5) for v in values]
+        re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
+        re_ranked_node_value_list = [engine.value_lookup(node) for engine, node in
+                                     zip(re_ranked_engine_list, re_ranked_labels)]
+
+        result = []
+
+        for label, domain, score, value in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list, re_ranked_node_value_list):
+            row = {"node": label, "domain": domain, "score": score, "value": value}
+            result.append(row)
+
+        return result
+        # print("re-ranked labels", re_ranked_labels)
+        # print("re-ranked domain", re_ranked_domain_list)
+        # print("re-ranked scores", re_ranked_score_list)
+        # print("re-ranked values", re_ranked_node_value_list)
+
+    def run(self, question):
         """
         The main interface for the integrated QA engine
         :param head_entity_list:
@@ -73,98 +106,50 @@ class CrossGraphQAEngine:
         :param head_entity: IRI of the head entity before cross-ontology translation, always in the form of CID (pubchem ID)
         :return: the re-ranked list of answer labels according to the adjusted scores
         """
+        # question = question.replace(" of ", " ")
         score_list = []
         label_list = []
         domain_list = []
-        for domain, head_entity in zip(self.domain_list, head_entity_list):
-            print("current domain", domain)
-            print("head entity", head_entity)
-            print("=================")
-            # head_entity = self.link_entity(entity=head_entity, domain=domain)
-            if domain == "pubchem":
-                labels, scores = self.pubchem_engine.run(question=question)
-                for i in range(max(len(scores), 5)):
-                    domain_list.append(0)
-                scores = [10 - score for score in scores]
-            elif domain == "ontochemistry":
-                labels, scores = self.ontochemistry_engine.run(question=question)
-                for i in range(max(len(scores), 5)):
-                    domain_list.append(1)
-            else:
-                labels, scores = [], []
+        print("=========================")
+        for domain, engine in zip(self.domain_list, self.engine_list):
+            labels, scores = engine.run(question=question)
             score_list.append(scores)
-            label_list.append(labels)
-
+            label_list += labels
+            for i in range(len(labels)):
+                domain_list.append(int(self.domain_encoding[domain]))
+        print("score length", len(score_list))
+        print("label length", len(label_list))
+        print("domain length", len(domain_list))
         score_list = normalize_scores(score_list)
-        triples = self.create_triple_for_prediction(question=question, score_list=score_list, domain_list=domain_list)
-        adjusted_scores = self.adjust_scores(triples)
-        print(adjusted_scores)
+        encoded_domain_list = torch.LongTensor(domain_list)
+        encoded_domain_list = one_hot(encoded_domain_list, num_classes=4)
 
-    def link_entity(self, entity, domain):
-        """
-        Link to the IRI of the entity (using CID as the universal identifier)
-        :param entity: the entity IRI in the form of CID
-        :param domain: the label of the domain in string e.g. pubchem, ontochemistry
-        :return: the entity IRI in the given domain e.g. bf11a071-8f0e-3f88-9e7e-986b9983d278, CID22
-        for pubchem, the entity remains unchanged, for ontochemistry, it needs to be converted to ontospecies IRI
-        """
-        if domain == "pubchem":
-            return entity
-        elif domain == "ontochemistry":
-            return entity
-            # return self.entity_dict[domain][entity]
-        else:
-            return entity
-
-    def test(self):
-        """
-        Use cross_graph_pairs.tsv to test the integrated system
-        :return:
-        """
-        cid2ontocompchem = self.iri_dict.cid2comp
-        cid2ontocompchem = {'CID' + k: v.split('/')[-1] for k, v in cid2ontocompchem.items()}
-        ontocompchem2cid = {v: k for k, v in cid2ontocompchem.items()}
-        ontocompchem_list = list(ontocompchem2cid.keys())
-        pubchem_list = [p for p in list(cid2ontocompchem.keys()) if int(p.replace("CID", "")) < 10000]
-        # question	head	domain	answer
-        test_set = pd.read_csv(os.path.join(self.dataset_path, 'all_cross_score.tsv'), sep='\t', index_col=0)
-        for idx, row in test_set.iterrows():
-            question, head, domain, answer = row
-
-            if "Species_" in head:
-                ontocompchem_head = head
-                if head in ontocompchem2cid:
-                    pubchem_head = ontocompchem2cid[head]
-                # comp2cid
-                else:
-                    pubchem_head = random.choice(pubchem_list)
-                    print('empty comp')
+        triples = self.create_triple_for_prediction(question=question, score_list=score_list,
+                                                    domain_list=encoded_domain_list)
+        print("triples length", len(triples))
 
 
-            elif "CID" in head:
-                pubchem_head = head
-                if head in cid2ontocompchem:
-                    ontocompchem_head = cid2ontocompchem[head]
-                else:
-                    print('empty cid')
-                    ontocompchem_head = random.choice(ontocompchem_list)
-                # cid2comp
-            else:
-                pubchem_head = None
-                ontocompchem_head = None
+        score_factors = self.adjust_scores(triples)
 
-            if pubchem_head is not None and ontocompchem_head is not None:
+        adjusted_score_list = []
+        for score, score_factor, domain in zip(score_list, score_factors, self.domain_list):
+            score = torch.FloatTensor(score)
+            adjusted_score = score + score_factor
+            adjusted_score = adjusted_score.tolist()
+            adjusted_score_list = adjusted_score_list + adjusted_score
+            print("------------------------")
+            print("domain:", domain)
 
-                if int(pubchem_head.replace("CID", "")) > 10000:
-                    pubchem_head = random.choice(pubchem_list)
 
-                print("ontocompchem head", ontocompchem_head)
-                print("pubchem head", pubchem_head)
-
-                head_list = [pubchem_head, ontocompchem_head]
-                self.run(question=question, head_entity_list=head_list)
+        return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list, answer_list=label_list)
 
 
 if __name__ == '__main__':
     my_qa_engine = CrossGraphQAEngine()
-    my_qa_engine.test()
+    my_qa_engine.run(question="what is the geometry of C6H6")
+    # x = ""
+    # while x != "exit":
+    #     x = input("question:")
+    #     START_TIME = time.time()
+    #     my_qa_engine.run(question=x)
+    #     print(time.time() - START_TIME)

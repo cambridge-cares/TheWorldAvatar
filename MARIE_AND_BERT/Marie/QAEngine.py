@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 import traceback
@@ -12,7 +13,7 @@ from Marie.Util.location import DATA_DIR
 
 
 class QAEngine:
-    def __init__(self, dataset_dir, dataset_name):
+    def __init__(self, dataset_dir, dataset_name, embedding="transe"):
         self.marie_logger = MarieLogger()
         self.model_name = f"bert_{dataset_name}"
         self.dataset_dir = dataset_dir
@@ -25,12 +26,17 @@ class QAEngine:
         self.idx2entity = pickle.load(i2e_file)
         e2i_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_file)
-        self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
-                                            dataset_dir=self.dataset_dir, dim=80)
-        self.score_model = self.score_model.to(self.device)
+
+        if embedding == "transe":
+            self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
+                                                dataset_dir=self.dataset_dir, dim=80)
+            self.score_model = self.score_model.to(self.device)
+
         '''Initialize tokenizer'''
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
         self.max_length = 12
+        self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir, f"{self.dataset_name}_value_dict.json")
+        self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
 
     def prepare_prediction_batch(self, question, head_entity, candidate_entities):
         """
@@ -67,6 +73,7 @@ class QAEngine:
 
     def find_answers(self, question: str, head_entity: str, k=5):
         """
+        :param k: number of results to return
         :param question: question in string format
         :param head_entity: the CID string for the head entity
         :return: score of all candidate answers
@@ -90,6 +97,12 @@ class QAEngine:
     def extract_head_ent(self, _question):
         self.marie_logger.info("extracting head entity")
         return self.chemical_nel.find_cid(question=_question)
+
+    def value_lookup(self, node):
+        if node in self.value_dictionary:
+            return self.value_dictionary[node]
+        else:
+            return "NODE HAS NO VALUE"
 
     def process_answer(self, answer_list, nel_confidence, mention_string, name, score_list):
         result_list = []
@@ -123,7 +136,10 @@ class QAEngine:
 
         question = self.remove_head_entity(question, mention_string)
         answer_list, score_list = self.find_answers(question=question, head_entity=cid)
-        return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
+        max_score = max(score_list)
+        score_list = [(max_score + 1 - s) for s in score_list]
+        return answer_list, score_list
+        # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
 
     def remove_head_entity(self, _question, _head_entity):
         return _question.replace(_head_entity, '').strip()

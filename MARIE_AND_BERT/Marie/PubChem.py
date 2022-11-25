@@ -21,7 +21,7 @@ class PubChemEngine:
     def __init__(self):
         self.dataset_dir = "CrossGraph/pubchem"
         self.subgraph_extractor = SubgraphExtractor(dataset_name='pubchem10000')
-        self.chemical_nel = ChemicalNEL(dataset_dir="pubchem")
+        self.chemical_nel = ChemicalNEL(dataset_name="pubchem")
         self.marie_logger = MarieLogger()
         self.marie_logger.info("6. Basic NEL test is running")
         if self.chemical_nel.find_cid("CO2")[1] == "CID280":
@@ -169,7 +169,10 @@ class PubChemEngine:
 
         question = self.remove_head_entity(question, mention_string)
         answer_list, score_list = self.find_answers(question=question, head_entity=cid)
-        return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
+        max_score = max(score_list)
+        score_list = [(max_score + 1 - s) for s in score_list]
+        return answer_list, score_list
+        # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
 
     def remove_head_entity(self, _question, _head_entity):
         return _question.replace(_head_entity, '').strip()
