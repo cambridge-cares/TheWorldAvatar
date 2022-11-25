@@ -1,0 +1,12 @@
+PREFIX obe:  <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ppi:	 <http://landregistry.data.gov.uk/def/ppi/>
+
+SELECt ?property ?location
+WHERE
+{
+	?property  rdf:type/rdfs:subClassOf* obe:Property ; 
+               obe:hasLatestTransactionRecord ?tx ; 
+               obe:hasWGS84LatitudeLongitude ?location
+}

@@ -50,6 +50,9 @@ Before starting the instantiation, ensure that the properties in [configs.py] ma
 
 Then simply run [data_preparation.py] as main script.
 
+## 3. Identify buildings within polygon
+
+
 
 
 # Authors #
