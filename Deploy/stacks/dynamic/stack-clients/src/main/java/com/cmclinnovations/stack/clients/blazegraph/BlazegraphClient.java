@@ -23,6 +23,14 @@ public class BlazegraphClient extends ContainerClient {
     private BlazegraphClient() {
     }
 
+    /**
+     * Method for replacing placeholders with real values
+     * This is currently restricted to replacing endpoint names with their URL in
+     * SPARQL SERVICE patterns, and specifically just for Ontop endpoints.
+     * 
+     * @param query query to be filtered
+     * @return the query after the appropriate substitutions have been made
+     */
     public String filterQuery(String query) {
         Matcher matcher = SERVICE_IRI_PATTERN.matcher(query);
         if (matcher.find()) {
