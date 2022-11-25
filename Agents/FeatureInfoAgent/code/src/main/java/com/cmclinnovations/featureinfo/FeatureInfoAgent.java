@@ -263,6 +263,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
         } catch(Exception exception) {
             LOGGER.error("An unexpected exception has occured, please see the log file!", exception);
+            
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
         }
@@ -306,7 +307,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
         } catch(Exception exception) {
             LOGGER.error("Exception occurred when determining class match!", exception);
-            
+
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             response.getWriter().write("{\"description\":\"Could not contact endpoints to determine class names.\"}");
         }

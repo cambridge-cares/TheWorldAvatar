@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,6 +31,11 @@ import com.cmclinnovations.stack.clients.docker.ContainerClient;
  * within the ConfigStore instance.
  */
 public class NamespaceGetter {
+
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(NamespaceGetter.class);
 
     /**
      * Blazegraph root URL.
@@ -180,7 +187,8 @@ public class NamespaceGetter {
                 endpoint = this.url + "/namespace/" + namespace + "/sparql";
              }
      
-             namespaces.put(namespace, endpoint);
+            namespaces.put(namespace, endpoint);
+            LOGGER.info("Discovered Blazegraph endpoint at: {}", "");
          }
          return namespaces;
     }
