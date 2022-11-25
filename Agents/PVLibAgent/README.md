@@ -33,7 +33,7 @@ The time-series client property file needs to contain all credentials and endpoi
 - `air.temperature.iri` the timeseries data IRI for air temperature, see [Prerequisites](#prerequisites) for more details
 - `wind.speed.iri` the timeseries data IRI for wind speed, see [Prerequisites](#prerequisites) for more details
 - `irradiance.iri` the timeseries data IRI for irradiance, see [Prerequisites](#prerequisites) for more details
-- `iri` the IRI of the sensor or weather station entity that has rdf:type sensor or rdf:type ontoems:ReportingStation, see [Prerequisites](#prerequisites) for more details
+- `iri` the IRI of the sensor or weather station entity that has rdf:type s3n:SmartSensor or rdf:type ontoems:ReportingStation, see [Prerequisites](#prerequisites) for more details
 
 More information can be found in the example property file `ts_client.properties` in the `resources` folder.
 
