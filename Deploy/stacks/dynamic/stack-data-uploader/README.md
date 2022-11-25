@@ -80,31 +80,32 @@ There are several example configuration files in the [`example_datasets`](../exa
 You can follow the instructions in the [README.md](../example_datasets/README.md) to load in one of the example datasets.
 The following table provides a description of each example:
 
-| Example | Description |
-| ------- | ----------- |
-| [cropmap-simple](../example_datasets/inputs/config/cropmap-simple.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. |
-| [cropmap](../example_datasets/inputs/config/cropmap.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../example_datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../example_datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. |
-| [elevation](../example_datasets/inputs/config/elevation.json) | Uploads a set of [GeoTiff files](../example_datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../example_datasets/inputs/config/elevation.sld)) is also provided for reference. |
-| [forestry](../example_datasets/inputs/config/forestry.json) | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer. |
-| [population](../example_datasets/inputs/config/population.json) | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer. |
-| [treesAndHills](../example_datasets/inputs/config/treesAndHills.json) | An example of how to use the `"externalDatasets"` node to load multiple datasets by name. |
+| Example                                                                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [cropmap-simple](../example_datasets/inputs/config/cropmap-simple.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [cropmap](../example_datasets/inputs/config/cropmap.json)               | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../example_datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../example_datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. |
+| [elevation](../example_datasets/inputs/config/elevation.json)           | Uploads a set of [GeoTiff files](../example_datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../example_datasets/inputs/config/elevation.sld)) is also provided for reference.                                                                                                                                                                                                                                                                                                                                                                  |
+| [forestry](../example_datasets/inputs/config/forestry.json)             | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer.                                                                                                                                                                                                                                                                   |
+| [population](../example_datasets/inputs/config/population.json)         | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| [treesAndHills](../example_datasets/inputs/config/treesAndHills.json)   | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## The Dataset Configuration File
 
 Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
 The following table shows the top level nodes allowed in a configuration file.
 
-| Key                                       | Required?                                                        | Default value                            | Description                                                                                                |
-| ----------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [`"name"`](#name)                         | No                                                               | The filename without the .json extension | The name of the dataset                                                                                    |
-| [`"datasetDirectory"`](#datasetDirectory) | No                                                               | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset              |
-| [`"skip"`](#skip)                         | No                                                               | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                         |
-| [`"database"`](#database)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                        |
-| [`"workspace"`](#workspace)               | No[*](#*-at-least-one-of-these-needs-to-be-populated) | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added         |
-| [`"externalDatasets"`](#externaldatasets) | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name |
-| [`"dataSubsets"`](#dataSubsets)           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                            |
-| [`"styles"`](#styles)                     | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                          |
-| [`"mappings"`](#mappings)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                            |
+| Key                                       | Required?                                             | Default value                            Description |
+| ----------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`"name"`](#name)                         | No                                                    | The filename without the .json extension             | The name of the dataset                                                                                                                            |
+| [`"datasetDirectory"`](#datasetDirectory) | No                                                    | The dataset's name                                   | The directory within `inputs/data/` that contains the data files associated with this dataset                                                      |
+| [`"skip"`](#skip)                         | No                                                    | `false`                                              | If set to `true` this dataset will be ignored by the data uploader                                                                                 |
+| [`"database"`](#database)                 | No                                                    | `"postgres"`                                         | The name of the database within Postgres to which appropriate data will be uploaded                                                                |
+| [`"workspace"`](#workspace)               | No                                                    | The dataset's name                                   | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added                                                 |
+| [`"namespace"`](#namespace)               | No                                                    | The dataset's name                                   | The Blazegraph namespace into which RDF data will be added. The long syntax can be used to specify properties if the namespace needs to be created |
+| [`"externalDatasets"`](#externaldatasets) | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                                 | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name                                         |
+| [`"dataSubsets"`](#dataSubsets)           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                                 | A list of *data subset* objects                                                                                                                    |
+| [`"styles"`](#styles)                     | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                                 | A list of GeoServer style file definition objects                                                                                                  |
+| [`"mappings"`](#mappings)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                                 | A list of Ontop mapping file definition objects                                                                                                    |
 
 ##### * At least one of these needs to be populated.
 
@@ -129,6 +130,45 @@ The name of the database within Postgres to which appropriate data will be uploa
 #### `"workspace"`
 The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added.
 > :memo: **Note:** The workspace will be created if it doesn't already exist.
+
+#### `"namespace"`
+The Blazegraph namespace into which RDF data will be added.
+
+> :memo: **Note:** The namespace will be created if it doesn't already exist.
+##### short syntax
+Just the name of the namespace.
+This is the recommend form when refering to an exiting namespace.
+For example:
+```json
+"namespace": "kb"
+```
+##### long syntax
+This syntax should be used when creating a new namespace.
+It allows the specification of properties that will be used when creating the Blazegraph namespace.
+The properties can be specified in a .properties file and/or directly in the .json config file, the values in the config file take precedence.
+For example, to load the properties from a file called `myquads.properties` that is stored in the `/inputs/config` directory:
+```json
+"namespace": {
+  "name": "quads",
+  "propertiesFile": "myquads.properties"
+}
+```
+To specify properties directly under a ```"properties"``` key, for example:
+```json
+"namespace": {
+  "name": "quads",
+  "properties": {
+    "com.bigdata.journal.AbstractJournal.bufferMode": "DiskRW",
+    "com.bigdata/rdf/store/AbstractTripleStore.quadsMode": true
+  }
+}
+```
+
+Information about the different properties is quite distributed and hard to find but some basics are mentioned in the [Blazegraph documentation](https://github.com/blazegraph/database/wiki/Configuring_Blazegraph) and also in the comments in the code for the [AbstractTripleStore](https://github.com/blazegraph/database/blob/BLAZEGRAPH_2_1_6_RC/bigdata-core/bigdata-rdf/src/java/com/bigdata/rdf/store/AbstractTripleStore.java) class.
+It is also possible to create namespaces, with a small selction of options, through the Blazegraph web interface and then inspect the properties.
+Be aware that some of the property keys contain the namespace's name so can't just be copied for a different namespace.
+
+> :warning: **Warning:** The properties will be ignored if the namespace already exists.
 
 #### `"externalDatasets"`
 Any datasets that are named under this node will be included if this dataset is loaded by name, either because the stack has the same name or because it appears in the `"externalDatasets"` list of another dataset that is loaded by name.
@@ -161,10 +201,10 @@ A list of GeoServer style file definition objects.
 The styles defined here wll be loaded into the GeoServer workspace associated with the dataset.
 Each entry requires the following values to be specified:
 
-| Key      | Description                                               |
-| -------- | --------------------------------------------------------- |
+| Key      | Description                                                                                                |
+| -------- | ---------------------------------------------------------------------------------------------------------- |
 | `"name"` | The name of the style, it will need to be prefixed by the dataset's workspace when referenced in GeoServer |
-| `"file"` | The style file's path, relative to the dataset directory  |
+| `"file"` | The style file's path, relative to the dataset directory                                                   |
 
 Currently only `.sld` style files are supported.
 Worked examples of different SLD styles can be found in the [GeoServer manual][sld-cookbook].
@@ -388,11 +428,11 @@ and is closed by the following line:
 ```]]```
 
 Each mapping has three parts:
-| Label | Description |
-| ----- | ----------- |
-| mappingId | The unique name of the mapping |
-| target    | Template of the [Turtle format][turtle] triple patterns that will exist in Ontop's virtual knowledge graph. Placeholders for values extracted from the PostGIS database are specified as `{value}`.
-| source    | SQL query used to determine the values to replace the placeholders in the *target* block.
+| Label     | Description                                                                                                                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| mappingId | The unique name of the mapping                                                                                                                                                                      |
+| target    | Template of the [Turtle format][turtle] triple patterns that will exist in Ontop's virtual knowledge graph. Placeholders for values extracted from the PostGIS database are specified as `{value}`. |
+| source    | SQL query used to determine the values to replace the placeholders in the *target* block.                                                                                                           |
 
 Ontop effectively takes the result of the SQL `SELECT` query written in the *source* block and for each row creates a set of virtual triples by substituting the SQL variables into the Turtle formatted template in the *target* block. In practice Ontop performs direct mappings, query rewriting, and other optimisations to improve the efficiency of running SPARQL queries over these virtual triples.
 
@@ -409,10 +449,10 @@ For each row in that table two virtual triples will be created `ex:building{id} 
 
 For example if the `buildings` table was as follows then the subsequent virtual triples would be created.
 
-| id | name | .... |
-| --- | --- | --- |
-| 1234 | "building 1" | ... |
-| 1235 | "building 2" | ... |
+| id   | name         | .... |
+| ---- | ------------ | ---- |
+| 1234 | "building 1" | ...  |
+| 1235 | "building 2" | ...  |
 
 `ex:building1234 ex:hasName "building 1"^^xsd:string`<br>
 `ex:building1234 ex:hasId 1234^^xsd:integer`<br>
