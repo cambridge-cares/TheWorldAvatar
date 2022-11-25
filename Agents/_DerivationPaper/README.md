@@ -9,9 +9,10 @@ The details provided here are mainly for documentation of the overall workflow t
 
 - The following scripts have been tested with Python >3.9
 - To use `py4jps` one also needs [Java 11] installed
+- As this instantiation uses Blazegraph and PostgreSQL running in Docker containers, you need to have Docker installed on your machine. Details on how to set up a [Docker environment] can be found in the TWA wiki. Furthermore, access to the [CMCL Docker image registry] is required.
 
 
-## Installation
+## Installation of required packages
 
 It is highly recommended to use a [virtual environment], which can be created as follows:
 
@@ -27,6 +28,14 @@ To install required packages, run the following command:
 ```bash
 # build and install
 (deriv_venv) $ python -m pip install -r dev_requirements.txt
+```
+
+## Spinning up Docker Stack
+
+A [docker-compose_stack.yml] file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. Both PostgreSQL and Blazegraph use volumes to ensure data persistence. To spin up the stack, run the following command from the same directory where this README is located:
+```bash
+# Spin up container stack
+docker-compose -f "docker-compose_stack.yml" up -d
 ```
 
 <!--
@@ -59,3 +68,5 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 <!-- Links -->
 [Java 11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
+[Docker environment]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment
+[CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry

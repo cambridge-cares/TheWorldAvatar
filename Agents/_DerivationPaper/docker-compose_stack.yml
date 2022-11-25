@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+
+  blazegraph_derivation:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    restart: unless-stopped
+    ports:
+      - "9998:8080"
+    volumes:
+      - blazegraph_derivation_data:/blazegraph
+
+  postgres_derivation:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    image: postgres:13.3
+    restart: unless-stopped
+    ports:
+      - "9997:5432"
+    volumes:
+      - postgres_derivation_data:/var/lib/postgresql/data
+
+# you have to first instantiate the data to then use here the existing external volumes 
+volumes:
+  blazegraph_derivation_data:
+    name: "blazegraph_derivation_data"
+  postgres_derivation_data:
+    name: "postgres_derivation_data"
