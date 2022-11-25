@@ -152,13 +152,12 @@ to spin up these services at the specified endpoints before uncommenting them. T
 
 1. Create a virtual environment with the following commands:
 ```
-$ python -m venv pvlib_venv
-$ pvlib_venv\Scripts\activate.bat
-(pvlib_venv) $
+python -m venv pvlib_venv
+pvlib_venv\Scripts\activate.bat
 ```
 2. Install all required packages in virtual environment:
 ```
-$ python -m pip install --upgrade pip
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 3. Deploy Blazegraph and Postgresql as docker containers, uncomment and run the tests:
