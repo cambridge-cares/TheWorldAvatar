@@ -20,18 +20,21 @@ def get_all_triples(endpoint, filepath):
     sparql.setQuery(queryString)
     results = sparql.queryAndConvert()
     
-    results.serialize(filepath, format='nt')
+    # For available format see: https://rdflib.readthedocs.io/en/stable/intro_to_parsing.html
+    # turtle: format='ttl'
+    # n-triples: format='ntriples'
+    results.serialize(filepath, format='ntriples')
 
 
 if __name__ == '__main__':
 
     # Specify SPARQL query endpoint
-    #endpoint = "http://128.199.197.40:3838/blazegraph/namespace/buildings_new/sparql"
-    endpoint = "http://165.232.172.16:3838/blazegraph/namespace/buildings_test/sparql"
+    endpoint = "http://localhost:9999/blazegraph/namespace/derivation/sparql"
+    #endpoint = "http://165.232.172.16:3838/blazegraph/namespace/buildings_test/sparql"
     # Output file for triples (relative path)
     #fp = r'..\data\outputs\hmtest_without_sales.nt'
     #fp = r'..\data\outputs\hmtest_with_sales.nt'
-    fp = r'..\data\outputs\data_uploader_export.nt'
+    fp = r'..\data\outputs\derivation_triples.nt'
 
     # Get all Triples and serialise as turtle
     file_name = os.path.join(Path(__file__).parent, fp)
