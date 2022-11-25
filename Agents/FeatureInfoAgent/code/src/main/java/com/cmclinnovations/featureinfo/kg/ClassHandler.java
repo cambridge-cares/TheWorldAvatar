@@ -167,8 +167,14 @@ public class ClassHandler {
             query = query.replaceAll(Pattern.quote("[ONTOP]"), "<" + ontopEndpoint + ">");
         }
 
+        LOGGER.debug("Running class determination query...");
+        LOGGER.debug(query);
+
         // Run the federated query
         JSONArray jsonResult = rsClient.executeFederatedQuery(this.getEndpointURLs(), query);
+
+        LOGGER.debug("...result of query was:");
+        LOGGER.debug((jsonResult != null) ? jsonResult.toString(2) : "null");
 
         if(jsonResult != null) {
             String[] classes = new String[jsonResult.length()];

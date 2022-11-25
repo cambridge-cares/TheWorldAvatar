@@ -202,7 +202,7 @@ class PanelHandler {
         let stack = Manager.findStack(feature, properties);
         console.log("Attempting to contact agent with stack at '" + stack + "'...");
         console.log("   ...will submit IRI for query '" + iri + "'");
-        console.log("   ...will submit endpoint for query '" + endpoint + "'");
+        //console.log("   ...will submit endpoint for query '" + endpoint + "'");
 
         if(iri == null || stack == null) {
             console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
@@ -235,9 +235,18 @@ class PanelHandler {
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
-            if(json === null || json === undefined) Promise.reject();
-            if(Array.isArray(json) && json.length == 0) Promise.reject();
-            if(Object.keys(json).length == 0) Promise.reject();
+            if(json === null || json === undefined) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Array.isArray(json) && json.length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Object.keys(json).length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
 
             // Get results
             let meta = json["meta"];
@@ -269,23 +278,27 @@ class PanelHandler {
             }
         })
         .fail(function() {
-            console.warn("Could not contact the intended agent, will show any in-model content instead...");
-            self.prepareMetaContainers(true, false);
-            document.getElementById("metaTreeContainer").innerHTML = "";
-
-            if(Object.keys(properties).length > 0) {
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
-            } else {
-                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
-            }
+            self.showBuiltInData(properties);
             return;
         });
         return promise;
+    }
+
+    public showBuiltInData(properties) {
+        console.warn("Could not get valid response from the agent, will show any in-model content instead...");
+        this.prepareMetaContainers(true, false);
+        document.getElementById("metaTreeContainer").innerHTML = "";
+
+        if(Object.keys(properties).length > 0) {
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree);
+        } else {
+            document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+        }
     }
 
     public updateTimeseries(setName) {

@@ -289,6 +289,8 @@ public class FeatureInfoAgent extends JPSAgent {
     private String getClass(String iri, HttpServletResponse response) throws IOException {
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
+        LOGGER.debug("Running class queries against following endpoints via federation...");
+        endpoints.forEach(point -> LOGGER.debug(point));
 
         // Build class handler
         ClassHandler handler = new ClassHandler(iri, endpoints);
@@ -300,18 +302,22 @@ public class FeatureInfoAgent extends JPSAgent {
         // Determine the class match
         try {
             String classMatch = handler.getClassMatch();
+            LOGGER.info("Discovered class match is: {}", classMatch);
 
             if(classMatch == null) {
+                LOGGER.info("Null class match!");
+
                 response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
                 response.getWriter().write("{\"description\":\"Internal error occurred, could not query to determine classes.\"}");
                 return null;
             } else if(classMatch.isEmpty()) {
+                LOGGER.info("Empty class match!");
+
                 response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
                 response.getWriter().write("{\"description\":\"Queries sent, but no classes could be determined.\"}");
                 return null;
             }
-
-            LOGGER.info("Discovered class match is: {}", classMatch);
+           
             return classMatch;
 
         } catch(Exception exception) {
