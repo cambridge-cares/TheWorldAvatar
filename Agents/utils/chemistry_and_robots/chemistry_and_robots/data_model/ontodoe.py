@@ -135,6 +135,10 @@ class Domain(BaseOntology):
         return g
 
     def filter_reaction_experiment_as_beliefs(self, rxn_exp_list: List[ReactionExperiment]) -> List[ReactionExperiment]:
+        # return empty list if no reaction experiment is provided
+        if not bool(rxn_exp_list):
+            return []
+
         filtered_rxn_exp_list = []
         for rxn_exp in rxn_exp_list:
             _skip = False
@@ -206,7 +210,7 @@ class HistoricalData(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
         # only add connection if previous data is available
-        if self.refersTo is not None:
+        if bool(self.refersTo): # if not None and not empty list
             # add connection to each ReactionExperiment
             # NOTE here we don't collect triples for each ReactionExperiment, we only make the connection
             for reaction_experiment in self.refersTo:

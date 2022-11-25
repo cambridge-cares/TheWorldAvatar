@@ -241,6 +241,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             hasFixedParameter=list_fixed_parameters,
         )
 
+        # filter out the experiments that are not in the domain
         filtered_rxn_exp_as_beliefs = constructed_domain.filter_reaction_experiment_as_beliefs(rxn_exp_as_beliefs)
         logger.info(f"Reaction experiments chosen as beliefs:{[rxn.instance_iri for rxn in filtered_rxn_exp_as_beliefs]}")
 

@@ -283,6 +283,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 rxnexp_iris - iri of OntoReaction:ReactionExperiment instance, can be either str of one instance, or a list of instances
         """
 
+        if not bool(rxnexp_iris):
+            return []
+
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
 

@@ -12,6 +12,8 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_NEW_RXN_EXP.value, TargetIRIs.LIST_NEW_RXN_EXP.value),
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value, []),
+        (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, None, []),
+        (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, [], []),
     ],
 )
 def test_filter_reaction_experiment_as_beliefs(initialise_triples, doe_domain_iri, rxn_exp_list, expected_rxn_after_filter):
