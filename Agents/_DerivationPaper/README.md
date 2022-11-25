@@ -46,12 +46,18 @@ This minimum demonstration example is based on two previously exported sets of t
 
 ## 2. Instantiate consolidated triples
 
-Before starting the instantiation, ensure that the properties in [configs.py] match the settings in the `docker-compose_stack.yml` file. Then download the [consolidated triples] file and place it into the [input_data] folder (filename to be specified in [data_preparation.py]).
+Before starting the instantiation, ensure that the properties in [configs.py] match the settings in the `docker-compose_stack.yml` file. Then download the [consolidated triples] file and place it into the [data] folder (filename to be specified in [data_preparation.py]).
 
 Then simply run [data_preparation.py] as main script.
 
 ## 3. Identify buildings within polygon
 
+QGIS is isued to identify buildings within the polygon of interest. The polygon is provided as a GeoJSON file in the [data] folder. The buildings are identified by running the [identify_buildings_within_polygon.py] script. The buildings are then exported as a GeoJSON file in the [data] folder.
+
+1. Add Vector layers
+2. Processing Toolbox > Create points layer from table > 'EPSG:4326'), 'XFIELD' : 'longitude', 'YFIELD' : 'latitude', 'ZFIELD' : '' 
+
+Extract by location
 
 
 
@@ -66,9 +72,9 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- Data -->
-[Dropbox]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/data
-[consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/data?preview=consolidated_properties.nt
+[Dropbox]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
+[consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=consolidated_properties.nt
 [resources]: resources
 [configs.py]: configs.py
-[input_data]: input_data
+[data]: data
 [data_preparation.py]: data_preparation.py

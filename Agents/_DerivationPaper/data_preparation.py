@@ -79,7 +79,7 @@ def extract_property_locations(kg_client, output_file):
 if __name__ == '__main__':
 
     # Create filepath
-    triples = os.path.join(Path(__file__).parent, 'input_data', triples_file)
+    triples = os.path.join(Path(__file__).parent, 'data', triples_file)
 
     # Ensure Blazegraph namespace exists
     create_blazegraph_namespace(SPARQL_UPDATE_ENDPOINT)
@@ -93,5 +93,5 @@ if __name__ == '__main__':
     #kg_client.uploadOntology(triples)
 
     # Extract building (point) locations
-    bldg_locations = os.path.join(Path(__file__).parent, 'output_data', bldg_loc)
+    bldg_locations = os.path.join(Path(__file__).parent, 'data', bldg_loc)
     extract_property_locations(kg_client, bldg_locations)
