@@ -13,10 +13,10 @@ from PVLibAgent.kg_utils.utils import create_sparql_prefix
 
 
 @pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                    Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
+                   Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
 class TestDataInstantiation:
     def tearDown(self):
-        kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+        kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER,
                                       rdb_password=DB_UPDATE_PASSWORD)
         with ts_client.connect() as conn:
