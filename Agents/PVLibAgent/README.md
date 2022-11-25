@@ -33,7 +33,7 @@ The time-series client property file needs to contain all credentials and endpoi
 - `air.temperature.iri` the timeseries data IRI for air temperature, see [Prerequisites](#prerequisites) for more details
 - `wind.speed.iri` the timeseries data IRI for wind speed, see [Prerequisites](#prerequisites) for more details
 - `irradiance.iri` the timeseries data IRI for irradiance, see [Prerequisites](#prerequisites) for more details
-- `iri` the IRI of the sensor or weather station entity that has rdf:type sensor or rdf:type ontoems:ReportingStation see [Requirements](#requirements) for more details
+- `iri` the IRI of the sensor or weather station entity that has rdf:type sensor or rdf:type ontoems:ReportingStation, see [Prerequisites](#prerequisites) for more details
 
 More information can be found in the example property file `ts_client.properties` in the `resources` folder.
 
@@ -96,9 +96,22 @@ and [om ontology](http://www.ontology-of-units-of-measure.org/page/om-2) for mor
 In the events that the instantiation of the sensor and its related timeseries data does not follow the structure above,
 the timeseries data IRI for irradiance have to be indicated in the `ts_client.properties` file. See [property file for the time-series client](#time-series-client-properties).
 
+3. For latitude and longitude, these values can be queried from the knowledge graph if they have been instantiated with the following structure:
+```
+<http://device_entity> geo:location <http://test_location> .
+<http://test_location> geo:lat <http://test_latValue> .
+<http://test_location> geo:long <http://test_longValue> .
+<http://test_latValue> om:hasValue <http://test_Measure1> .
+<http://test_Measure1> om:hasNumericalValue '1.3' .
+<http://test_longValue> om:hasValue <http://test_Measure2> .
+<http://test_Measure2> om:hasNumericalValue '130' .
+```
+In the events that latitude and longitude are not instantiated in the knowledge graph with the structure above, they have to
+be included in the `model_parameters.properties` file. See [property file for the Solar Model](#model_parameters-properties).
+
 ### Building the Agent
 
-Modify `dataIRIs.properties`, `model_parameters.properties` and `ts_client.properties` in the `config` folder accordingly. 
+Modify `dataIRIs.properties`, `model_parameters.properties` and `ts_client.properties` in the `resources` folder accordingly. 
 Refer to [dataIRIs.properties description]((#dataIRIs-properties)), [model_parameters.properties description](#model_parameters-properties), [ts_client.properties description](#time-series-client-properties)
 and [Prerequisites](#prerequisites) for more information.
 
@@ -127,4 +140,28 @@ curl -X GET http://localhost:1020/api/v1/evaluate?device=sensor
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"AC Power(W)":7.922936051747742,"DC Power(W)":9.510628810971978,"timestamp":"Thu, 24 Nov 2022 09:54:51 GMT"}
+```
+
+### Agent tests
+Several unit tests are provided in the `tests` folder. Some tests are currently commented out as they required both 
+Blazegraph and PostgreSQL to be running. To run those tests, the provided docker-compose.test.yml file can be used 
+to spin up these services at the specified endpoints before uncommenting them. To run the tests, please follow the steps below:
+
+1. Create a virtual environment with the following commands:
+```
+$ python -m venv pvlib_venv
+$ pvlib_venv\Scripts\activate.bat
+(pvlib_venv) $
+```
+2. Install all required packages in virtual environment:
+```
+$ python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+3. Deploy Blazegraph and Postgresql as docker containers, uncomment and run the tests:
+```
+# Uncomment integration tests and start Docker services (if wanted)
+docker compose -f "tests\docker-compose.test.yml" up -d --build 
+# Run tests
+pytest
 ```
