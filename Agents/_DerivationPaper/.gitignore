@@ -14,3 +14,7 @@ coverage.xml
 assets
 *.egg-info
 
+input_data/*
+!.gitkeep
+resources/*
+!.gitkeep
