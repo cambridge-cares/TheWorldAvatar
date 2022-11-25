@@ -134,7 +134,7 @@ curl -X GET http://localhost:1020/api/v1/evaluate?device=weatherStation
 ```
 The second is for sensors:
 ```
-GET http://localhost:1020/api/v1/evaluate?device=weatherStation
+GET http://localhost:1020/api/v1/evaluate?device=sensor
 ```
 In curl syntax
 ```
