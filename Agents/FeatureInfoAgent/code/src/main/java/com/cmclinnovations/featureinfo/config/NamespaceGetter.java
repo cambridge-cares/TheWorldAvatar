@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 
@@ -90,7 +91,7 @@ public class NamespaceGetter {
      * @throws IllegalStateException if root URL cannot be determined.
      */
     private void getRoot() throws Exception {
-        ContainerClient client = new ContainerClient();
+        ContainerClient client = FeatureInfoAgent.CONFIG;
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig(
             "blazegraph", 
             BlazegraphEndpointConfig.class

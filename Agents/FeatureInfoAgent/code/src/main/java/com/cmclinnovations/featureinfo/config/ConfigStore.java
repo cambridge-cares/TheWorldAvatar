@@ -22,7 +22,7 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 /**
  * Handles reading and storing the configuration settings.
  */
-public class ConfigStore {
+public class ConfigStore extends ContainerClient {
  
     /**
      * Logger for reporting info/errors.
@@ -238,8 +238,7 @@ public class ConfigStore {
      * determine, and store, the location of the ONTOP container.
      */
     private void determineOntop() {
-        ContainerClient client = new ContainerClient();
-        OntopEndpointConfig ontopConfig = client.readEndpointConfig("ontop", OntopEndpointConfig.class);
+        OntopEndpointConfig ontopConfig = readEndpointConfig("ontop", OntopEndpointConfig.class);
         
         ConfigEndpoint endpoint = new ConfigEndpoint(
             "ONTOP",
@@ -259,8 +258,7 @@ public class ConfigStore {
      * determine, and store, the location of the POSTGRES container.
      */
     private void determinePostgres() {
-        ContainerClient client = new ContainerClient();
-        PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        PostGISEndpointConfig postConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
         
         ConfigEndpoint endpoint = new ConfigEndpoint(
             "POSTGRES",

@@ -305,6 +305,8 @@ public class FeatureInfoAgent extends JPSAgent {
             return classMatch;
 
         } catch(Exception exception) {
+            LOGGER.error("Exception occurred when determining class match!", exception);
+            
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             response.getWriter().write("{\"description\":\"Could not contact endpoints to determine class names.\"}");
         }
