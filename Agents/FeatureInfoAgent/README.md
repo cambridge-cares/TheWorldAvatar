@@ -54,7 +54,7 @@ Follow the below configuration steps within the local `queries` directory.
   - This configuration file should be a JSON object containing the following parameters:
     - `database_name`: This is a **required** string parameter. It should match the PostGreSQL database name that contains your timeseries data.
     - `queries`: This is a **required** array of objects defining a mapping between class names and the names of files containing pre-written SPARQL queries. Each object needs to contain the following string parameters:
-      -  `class`: Full name of the class.
+      -  `class`: Full IRI of the class.
       -  `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
       -  `timeFile`: Name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
     - `hours`: This is an optional integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).

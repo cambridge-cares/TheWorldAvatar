@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,6 +23,11 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * This class handles querying a Blazegraph endpoint to run a predetermined SPARQL query.
  */
 public class MetaHandler {
+
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(MetaHandler.class);
 
     /**
      * IRI of the asset.
@@ -103,6 +110,7 @@ public class MetaHandler {
             response.getWriter().write("{\"description\": \"Could not find any metadata queries for any of the discovered classes.\"}");
             throw new IllegalStateException("Could not find any metadata queries for any of the discovered classes.");
         }
+        LOGGER.info("Found and read the matching SPARQL query file.");
 
         // Inject parameters into query
         String query = queryTemplate.replaceAll(Pattern.quote("[IRI]"), this.iri);
@@ -119,9 +127,12 @@ public class MetaHandler {
         }
 
         // Run matching query
+        LOGGER.info("Running federated meta query...");
         JSONArray rawResult = this.rsClient.executeFederatedQuery(getEndpointURLs(), query);
+        LOGGER.info("...receieved response from RemoteStoreClient.");
 
         // Format and return
+        if(rawResult != null) LOGGER.debug(rawResult.toString(2));
         return formatJSON(rawResult);
     }
 
@@ -145,6 +156,8 @@ public class MetaHandler {
         }
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(jsonObject);
+
+        LOGGER.info("Meta data content has been formatted for visualisation.");
         return jsonArray;
     }
 

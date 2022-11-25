@@ -235,6 +235,10 @@ class PanelHandler {
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
+            if(json === null || json === undefined) Promise.reject();
+            if(Array.isArray(json) && json.length == 0) Promise.reject();
+            if(Object.keys(json).length == 0) Promise.reject();
+
             // Get results
             let meta = json["meta"];
             let time = json["time"];

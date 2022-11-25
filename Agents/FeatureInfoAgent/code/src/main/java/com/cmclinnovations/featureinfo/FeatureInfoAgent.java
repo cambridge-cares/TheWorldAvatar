@@ -135,6 +135,8 @@ public class FeatureInfoAgent extends JPSAgent {
     @Override
     @SuppressWarnings("java:S1989")
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/json");
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: {}", datetime);
@@ -187,6 +189,7 @@ public class FeatureInfoAgent extends JPSAgent {
         } 
 
         response.getWriter().flush();
+        LOGGER.info("Call finished, response object's writer has been flushed.");
     }
 
     /**
@@ -262,7 +265,9 @@ public class FeatureInfoAgent extends JPSAgent {
                 // Return result
                 response.setStatus(Response.Status.OK.getStatusCode());
                 response.getWriter().write(result.toString());
-                LOGGER.info("Response has been sent, request is done.");
+
+                LOGGER.info("JSON data has been written to the response object.");
+                LOGGER.debug(result.toString(2));
             }
 
         } catch(Exception exception) {
