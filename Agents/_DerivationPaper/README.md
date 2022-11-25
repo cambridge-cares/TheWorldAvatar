@@ -42,7 +42,7 @@ docker-compose -f "docker-compose_stack.yml" up -d
 
 ## 1. Consolidate previously exported triples
 
-This minimum demonstration example is based on two previously exported sets of triples: One instantiation of properties (i.e. buildings and flats) includes their geospatial location (as points) and the other contains previous sales transactions (if available). Both files can be found on [Dropbox]. The data in both files have been consolidated by matching properties based on their identifiers, which matches for buildings with available EPC, and hence address and sales transaction data. The [consolidated triples] can also be found on Dropbox and the SPARQL `matching_query` is provided in the [resources] folder (for reference).
+This minimum demonstration example is based on two previously exported sets of triples: One instantiation of properties (i.e. buildings and flats) includes their geospatial location (as points) and the other contains previous sales transactions (if available). Both files can be found in the [kg_data folder] on Dropbox. The data in both files have been consolidated by matching properties based on their identifiers, which matches for buildings with available EPC, and hence address and sales transaction data. The [consolidated triples] can also be found on Dropbox and the SPARQL `matching_query` is provided in the [resources] folder (for reference).
 
 ## 2. Instantiate consolidated triples
 
@@ -50,14 +50,21 @@ Before starting the instantiation, ensure that the properties in [configs.py] ma
 
 Then simply run [data_preparation.py] as main script.
 
-## 3. Identify buildings within polygon
+## 3. Identify buildings within flood polygon
 
-QGIS is isued to identify buildings within the polygon of interest. The polygon is provided as a GeoJSON file in the [data] folder. The buildings are identified by running the [identify_buildings_within_polygon.py] script. The buildings are then exported as a GeoJSON file in the [data] folder.
+QGIS is used to identify buildings within the flood warning polygon of interest. The QGIS project file as well as the required (geospatial) input files can be found in the [geospatial_analysis folder] on Dropbox:
+- `flood-areas.geojson`: one flood warning polygon as GeoJSON file (same as version-controlled version in [data] folder here) 
+- `building_locations.csv`: point locations of instantiated properties as created by `extract_property_locations` method in [data_preparation.py]
+- `affected_property_iris.csv`: one-column csv file of all buildings within the flood warning polygon (same as version-controlled version in [data] folder here) 
 
-1. Add Vector layers
-2. Processing Toolbox > Create points layer from table > 'EPSG:4326'), 'XFIELD' : 'longitude', 'YFIELD' : 'latitude', 'ZFIELD' : '' 
+Rough QGIS workflow to identify buildings within flood polygon and create `affected_property_iris.csv`:
 
-Extract by location
+1. Add `flood-areas.geojson` and `building_locations.csv` as vector layers
+2. Create points from csv by (settings to use: 'EPSG:4326', 'XFIELD' : 'longitude', 'YFIELD' : 'latitude', 'ZFIELD' : ''):
+    > Processing Toolbox > Create points layer from table >
+3. Identify properties within flood polygon by:
+    > Processing Toolbox > Extract by location
+4. Export affected properties as csv
 
 
 
@@ -72,7 +79,8 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- Data -->
-[Dropbox]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
+[kg_data folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
+[geospatial_analysis folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/geospatial_analysis
 [consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=consolidated_properties.nt
 [resources]: resources
 [configs.py]: configs.py

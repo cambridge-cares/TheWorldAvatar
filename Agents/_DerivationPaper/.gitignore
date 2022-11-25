@@ -15,4 +15,5 @@ assets
 *.egg-info
 
 data/*
-!.gitkeep
+!flood-areas.geojson
+!affected_property_iris.csv
