@@ -3,7 +3,7 @@
 This agent is designed to calculate estimated AC and DC Power based on values provided in the properties files and values
 queried from the knowledge graph. It will then initialise the AC and DC Power as timeseries in the knowledge graph. The 
 agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
-from the JPS_BASE_LIB to interact with both the KG and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/)
+from the JPS_BASE_LIB to interact with both the knowledge graph and database and uses [PvLib](https://pvlib-python.readthedocs.io/en/stable/)
 for it's AC and DC Power calculations.
 
 ## Usage 
@@ -13,7 +13,7 @@ This part of the README describes the usage of the agent.
 For running the agent, three property files are required:
 - One [property file for DC and AC Power instantiation](#dataIRIs-properties) defining the IRIs for each of the keys.
 - One [property file for the time-series client](#time-series-client-properties) defining timeseries client related parameters.
-- One [property file for the Solar Model](#model_parameters-properties) defining the parameters of the Solar PV Model.
+- One [property file for the Solar Model](#model-parameters-properties) defining the parameters of the Solar PV Model.
 
 #### dataIRIs properties
 This property file is used to determine whether there are IRIs already created for the instantiation of DC and AC Power
@@ -35,12 +35,12 @@ The time-series client property file needs to contain all credentials and endpoi
 - `irradiance.iri` the timeseries data IRI for irradiance, see [Prerequisites](#prerequisites) for more details
 - `iri` the IRI of the sensor or weather station entity that has rdf:type s3n:SmartSensor or rdf:type ontoems:ReportingStation, see [Prerequisites](#prerequisites) for more details
 
-More information can be found in the example property file `ts_client.properties` in the `resources` folder.
+More information can be found in the property file `ts_client.properties` in the `resources` folder.
 
 #### Model parameters properties
 The model_parameters properties contains the parameters needed to create a solar PV Model for calculations. It should contain the following keys:
 - `temp_model` the temperature model (sapm or pvsyst)
-- `temp_model_config` the temperature model configuration (temperature model configurations (for sapm: open_rack_glass_glass or close_mount_glass_glass or open_rack_glass_polymer or insulated_back_glass_polymer, for pvsyst: freestanding or insulated))
+- `temp_model_config` the temperature model configuration (for sapm: open_rack_glass_glass or close_mount_glass_glass or open_rack_glass_polymer or insulated_back_glass_polymer, for pvsyst: freestanding or insulated)
 - `latitude` the latitude of the Solar PV Model location, can be left empty in which it will be queried from the knowledge graph
 - `longitude` the longitude of the Solar PV Model location, can be left empty in which it will be queried from the knowledge graph
 - `altitude` the altitude of the Solar PV Model location
@@ -52,7 +52,7 @@ The model_parameters properties contains the parameters needed to create a solar
 - `modules_per_string` the number of modules per string
 - `strings_per_inverter` the number of strings per inverter
 
-More information can be found in the example property file `model_parameters.properties` in the `resources` folder.
+More information can be found in the property file `model_parameters.properties` in the `resources` folder.
 
 The [next section](#prerequisites) will explain the requirements to run the agent.
 
@@ -99,20 +99,23 @@ the timeseries data IRI for irradiance have to be indicated in the `ts_client.pr
 3. For latitude and longitude, these values can be queried from the knowledge graph if they have been instantiated with the following structure:
 ```
 <http://device_entity> geo:location <http://test_location> .
+<http://test_location> rdf:type	<https://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
 <http://test_location> geo:lat <http://test_latValue> .
 <http://test_location> geo:long <http://test_longValue> .
+<http://test_latValue> rdf:type	<http://www.ontology-of-units-of-measure.org/resource/om-2/EclipticLatitude> .
 <http://test_latValue> om:hasValue <http://test_Measure1> .
 <http://test_Measure1> om:hasNumericalValue '1.3' .
+<http://test_longValue> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/EclipticLongitude> .
 <http://test_longValue> om:hasValue <http://test_Measure2> .
 <http://test_Measure2> om:hasNumericalValue '130' .
 ```
 In the events that latitude and longitude are not instantiated in the knowledge graph with the structure above, they have to
-be included in the `model_parameters.properties` file. See [property file for the Solar Model](#model_parameters-properties).
+be included in the `model_parameters.properties` file. See [property file for the Solar Model](#model-parameters-properties).
 
 ### Building the Agent
 
 Modify `dataIRIs.properties`, `model_parameters.properties` and `ts_client.properties` in the `resources` folder accordingly. 
-Refer to [dataIRIs.properties description]((#dataIRIs-properties)), [model_parameters.properties description](#model_parameters-properties), [ts_client.properties description](#time-series-client-properties)
+Refer to [dataIRIs.properties description](#dataIRIs-properties), [model_parameters.properties description](#model-parameters-properties), [ts_client.properties description](#time-series-client-properties)
 and [Prerequisites](#prerequisites) for more information.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
@@ -137,7 +140,7 @@ In curl syntax
 ```
 curl -X GET http://localhost:1020/api/v1/evaluate?device=sensor
 ```
-If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
+If the agent runs successfully, you should see a returned Object that is similar to the one shown below.
 ```
 {"AC Power(W)":7.922936051747742,"DC Power(W)":9.510628810971978,"timestamp":"Thu, 24 Nov 2022 09:54:51 GMT"}
 ```
