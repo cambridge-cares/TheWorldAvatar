@@ -1,11 +1,11 @@
 from rxnoptgoalagent.conf import config_rxn_opt_goal_agent
-from rxnoptgoalagent.agent import *
+from rxnoptgoalagent.agent import RxnOptGoalAgent
 
 from flask import Flask
 import os
 
 def create_app():
-    rxn_opt_goal_agent_config = config_rxn_opt_goal_agent('./tests/env_files/agent.goal.env.test')
+    rxn_opt_goal_agent_config = config_rxn_opt_goal_agent()
 
     agent = RxnOptGoalAgent(
         goal_agent_iri=rxn_opt_goal_agent_config.GOAL_ONTOAGENT_SERVICE_IRI,
