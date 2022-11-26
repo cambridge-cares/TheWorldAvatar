@@ -27,7 +27,7 @@ def create_app():
         email_subject_prefix=rxn_opt_goal_agent_config.EMAIL_SUBJECT_PREFIX,
         email_username=rxn_opt_goal_agent_config.EMAIL_USERNAME,
         email_auth_json_path=rxn_opt_goal_agent_config.EMAIL_AUTH_JSON_PATH,
-        email_start_end_async_derivations=rxn_opt_goal_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
+        email_goal_iteration_progress=rxn_opt_goal_agent_config.EMAIL_GOAL_ITERATION_PROGRESS,
     )
 
     return agent.app

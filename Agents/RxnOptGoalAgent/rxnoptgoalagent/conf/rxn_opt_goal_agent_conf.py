@@ -19,6 +19,11 @@ class RxnOptGoalAgentConfig(Config):
       - FILE_SERVER_PASSWORD: The password to access the file server.
       - ONTOAGENT_OPERATION_HTTP_URL: The URL of the OntoAgent:Operation HTTP endpoint.
       - REGISTER_AGENT: Whether to register the OntoAgent instance of the configured agent to knowledge graph.
+      - EMAIL_RECIPIENT: The email address to send emails to.
+      - EMAIL_SUBJECT_PREFIX: The prefix of the subject of the emails.
+      - EMAIL_USERNAME: The username to access the email server.
+      - EMAIL_AUTH_JSON_PATH: The path to the JSON file containing the authentication information for the email server.
+      - EMAIL_GOAL_ITERATION_PROGRESS: Whether to send emails to the recipient when a goal iteration enters the next iteration.
     """
     GOAL_ONTOAGENT_SERVICE_IRI: str
     GOAL_ONTOAGENT_OPERATION_HTTP_URL: str
@@ -37,7 +42,7 @@ class RxnOptGoalAgentConfig(Config):
     EMAIL_SUBJECT_PREFIX: str = ''
     EMAIL_USERNAME: str = ''
     EMAIL_AUTH_JSON_PATH: str = ''
-    EMAIL_START_END_ASYNC_DERIVATIONS: bool = False
+    EMAIL_GOAL_ITERATION_PROGRESS: bool = False
 
 def config_rxn_opt_goal_agent(env_file: str = None) -> RxnOptGoalAgentConfig:
     """Return configurations from either environment variables or env_file."""

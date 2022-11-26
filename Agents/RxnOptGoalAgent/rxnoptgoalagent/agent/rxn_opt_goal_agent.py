@@ -65,7 +65,7 @@ class RxnOptGoalAgent(ABC):
         email_subject_prefix: str = '',
         email_username: str = '',
         email_auth_json_path: str = '',
-        email_start_end_async_derivations: bool = False,
+        email_goal_iteration_progress: bool = False,
     ):
         """
             This method initialises the instance of RxnOptGoalAgent.
@@ -166,13 +166,14 @@ class RxnOptGoalAgent(ABC):
         #         stack_info=True, exc_info=True)
         #     raise e
 
-        # initialise the email object and email_start_end_async_derivations flag
+        # initialise the email object and email_goal_iteration_progress flag
         if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
             self.yag = yagmail.SMTP(email_username, oauth2_file=email_auth_json_path)
             self.email_recipient = email_recipient.split(';')
             self.email_subject_prefix = email_subject_prefix if bool(email_subject_prefix) else str(self.__class__.__name__)
         else:
             self.yag = None
+        self.email_goal_iteration_progress = email_goal_iteration_progress
 
         self.logger.info(f"RxnOptGoalAgent initialised with IRI: {self.goal_agent_iri}")
 
@@ -463,7 +464,7 @@ class RxnOptGoalAgent(ABC):
                     for rogi_derivation in rogi_derivation_lst_up_to_date:
                         self.derivation_client.unifiedUpdateDerivation(rogi_derivation)
                     # send email about the goal iteration entering the next round
-                    if self.yag is not None:
+                    if self.yag is not None and self.email_goal_iteration_progress:
                         self.send_email(
                             subject=f"[{self.email_subject_prefix}] Goal Iteration Next Round",
                             contents=[
