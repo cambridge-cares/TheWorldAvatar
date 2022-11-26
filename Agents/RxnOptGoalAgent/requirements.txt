@@ -3,6 +3,7 @@
 #######################################
 pyderivationagent==1.4.1
 chemistry_and_robots==1.2.1
+rxnoptgoaliteragent==0.0.1
 
 ##########################
 ## Third-party packages ##
