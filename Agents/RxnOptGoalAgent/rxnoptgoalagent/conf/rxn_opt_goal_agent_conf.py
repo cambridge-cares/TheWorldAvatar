@@ -7,8 +7,10 @@ class RxnOptGoalAgentConfig(Config):
     This is a config class for the RxnOptGoalAgent.
     It is a subclass of Config and can be extended to provide custom configurations for developed agents.
     It has the following fields:
-      - ONTOAGENT_SERVICE_IRI: The IRI of the OntoAgent:Service for the configured agent.
-      - DERIVATION_PERIODIC_TIMESCALE: The time scale of the periodic job that monitors asynchronous derivations.
+      - GOAL_ONTOAGENT_SERVICE_IRI: OntoAgent:Service IRI of the goal agent.
+      - GOAL_ONTOAGENT_OPERATION_HTTP_URL: HTTP URL of the goal agent which takes goal request via HTTP POST.
+      - GOAL_MONITOR_PERIODIC_TIMESCALE: Periodic timescale for monitoring active goal set.
+      - GOAL_ITER_AGENT_IRI: OntoAgent:Service IRI of the RxnOptGoalIter agent which the goal agent delegates the work to.
       - DERIVATION_INSTANCE_BASE_URL: The base URL of the derivation instances that to be created by this agent.
       - SPARQL_QUERY_ENDPOINT: The SPARQL endpoint to be used for querying the knowledge graph.
       - SPARQL_UPDATE_ENDPOINT: The SPARQL endpoint to be used for updating the knowledge graph.
@@ -17,8 +19,6 @@ class RxnOptGoalAgentConfig(Config):
       - FILE_SERVER_ENDPOINT: The endpoint of the file server.
       - FILE_SERVER_USERNAME: The username to access the file server.
       - FILE_SERVER_PASSWORD: The password to access the file server.
-      - ONTOAGENT_OPERATION_HTTP_URL: The URL of the OntoAgent:Operation HTTP endpoint.
-      - REGISTER_AGENT: Whether to register the OntoAgent instance of the configured agent to knowledge graph.
       - EMAIL_RECIPIENT: The email address to send emails to.
       - EMAIL_SUBJECT_PREFIX: The prefix of the subject of the emails.
       - EMAIL_USERNAME: The username to access the email server.
@@ -37,7 +37,6 @@ class RxnOptGoalAgentConfig(Config):
     FILE_SERVER_ENDPOINT: str
     FILE_SERVER_USERNAME: str
     FILE_SERVER_PASSWORD: str
-    # REGISTER_AGENT: bool
     EMAIL_RECIPIENT: str = ''
     EMAIL_SUBJECT_PREFIX: str = ''
     EMAIL_USERNAME: str = ''

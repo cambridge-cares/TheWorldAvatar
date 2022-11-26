@@ -20,7 +20,6 @@ def create_app():
         fs_url=rxn_opt_goal_agent_config.FILE_SERVER_ENDPOINT,
         fs_user=rxn_opt_goal_agent_config.FILE_SERVER_USERNAME,
         fs_password=rxn_opt_goal_agent_config.FILE_SERVER_PASSWORD,
-        # register_agent=rxn_opt_goal_agent_config.REGISTER_AGENT,
         logger_name="prod",
         app=Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates")),
         email_recipient=rxn_opt_goal_agent_config.EMAIL_RECIPIENT,

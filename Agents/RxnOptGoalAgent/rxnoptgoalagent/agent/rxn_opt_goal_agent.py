@@ -59,7 +59,6 @@ class RxnOptGoalAgent(ABC):
         fs_password: str = None,
         app: Flask = Flask(__name__, template_folder="/app/templates"),
         flask_config: FlaskConfig = FlaskConfig(),
-        # register_agent: bool = True,
         logger_name: str = "dev",
         email_recipient: str = '',
         email_subject_prefix: str = '',
@@ -71,10 +70,10 @@ class RxnOptGoalAgent(ABC):
             This method initialises the instance of RxnOptGoalAgent.
 
             Arguments:
-                app - flask app object, an example: app = Flask(__name__)
                 goal_agent_iri - OntoAgent:Service IRI of the goal agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
-                goal_agent_endpoint - data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
+                goal_agent_endpoint - HTTP URL of the goal agent which takes goal request via HTTP POST, an example: "http://localhost:5000/goal_specification"
                 goal_monitor_time_interval - time interval between two runs of goal monitoring job (in SECONDS)
+                goal_iter_agent_iri - OntoAgent:Service IRI of the RxnOptGoalIter Agent, NOTE this is different from goal_agent_iri
                 derivation_instance_base_url - namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
                 kg_url - SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
                 kg_update_url - SPARQL update endpoint, will be set to the same value as kg_url if not provided, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
@@ -83,9 +82,14 @@ class RxnOptGoalAgent(ABC):
                 fs_url - file server endpoint, an example: "http://localhost:8080/FileServer/"
                 fs_user - username used to access the file server endpoint specified by fs_url
                 fs_password - password that set for the fs_user used to access the file server endpoint specified by fs_url
+                app - flask app object, an example: app = Flask(__name__)
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
-                #TODO register_agent - boolean value, whether to register the agent to the knowledge graph
                 logger_name - logger names for getting correct loggers from py4jps.agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/py4jps/agentlogging/logging.py
+                email_recipient - email address to send email notification to
+                email_subject_prefix - prefix to be added to the subject of email notification
+                email_username - username used to access the email server
+                email_auth_json_path - path to the json file that contains the authentication information for the email server
+                email_goal_iteration_progress - boolean value to indicate whether to send emails to the recipient when a goal iteration enters the next iteration
         """
 
         # initialise flask app with its configuration
@@ -154,17 +158,6 @@ class RxnOptGoalAgent(ABC):
 
         # initialise the current_active_goal_set as None
         self.current_active_goal_set = None
-
-        # TODO think about if we need the registeration of the goal agent
-        # # register the agent to the KG if required
-        # self.register_agent = register_agent
-        # try:
-        #     self.register_agent_in_kg()
-        # except Exception as e:
-        #     self.logger.error(
-        #         "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.agentIRI, self.kg_url, e),
-        #         stack_info=True, exc_info=True)
-        #     raise e
 
         # initialise the email object and email_goal_iteration_progress flag
         if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
