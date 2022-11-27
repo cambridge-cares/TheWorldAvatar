@@ -87,7 +87,11 @@ services:
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "host.docker.internal"
       - host.docker.internal:host-gateway
     env_file:
+      # NOTE the default setting here is to test lab2
       - ./tests/env_files/agent.lab2.vapourtec.env.test
+      # uncomment the following line to test lab1 (also remember to comment out the above line)
+      # - ./tests/env_files/agent.lab1.vapourtec.env.test
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
     secrets:
       - email_auth
     volumes:
@@ -108,7 +112,11 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     env_file:
+      # NOTE the default setting here is to test lab2
       - ./tests/env_files/agent.lab2.hplc.env.test
+      # uncomment the following line to test lab1 (also remember to comment out the above line)
+      # - ./tests/env_files/agent.lab1.hplc.env.test
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
     secrets:
       - email_auth
     volumes:

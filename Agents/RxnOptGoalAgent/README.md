@@ -212,8 +212,17 @@ pytest -k "LOCAL"
 ```
 
 #### 4.2.2 Dockerised test
-`test_rxn_opt_dockerised.py`
-need to dockerise all agents, and provide an integration test
+Dockerised test is provided in `test_rxn_opt_dockerised.py`, where all seven agents and knowledge graph (triple store and file server) are deployed in the same docker stack. Before running the test, developer should follow the below steps to get things ready:
+- Depends on which lab you would like to test, change `env_file` of `vapourtec_agent` and `hplc_agent` in `docker-compose-test-dockerised.yml`, please refer to `docker-compose-test-dockerised.yml` for more details **(NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same)**
+- Open `FlowCommander` instance on the Windows host machine
+
+To run dockerised tests, one can perform below command (add `-s` to see live logs):
+
+`(Linux)`
+```sh
+cd /your_absolute_path_to/TheWorldAvatar/Agents/RxnOptGoalAgent/
+pytest tests/test_rxn_opt_dockerised.py --docker-compose=./docker-compose-test-dockerised.yml
+```
 
 ### 4.3 Physical test
 #### 4.3.1 Local test
