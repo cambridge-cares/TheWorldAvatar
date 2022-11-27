@@ -8,6 +8,7 @@ from pathlib import Path
 
 from iris import *
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
+from property_price_index import initialise_ukhpi
 
 from pyderivationagent.kg_operations import PySparqlClient
 
@@ -121,3 +122,8 @@ if __name__ == '__main__':
     # 3) Attach rdfs:label to affected properties
     affected_bldg = os.path.join(Path(__file__).parent, 'data', affected)
     #attach_labels(kg_client, label=label, input_csv=affected_bldg)
+
+    # 4) Initialise Property Price Index
+    #NOTE: This initialises the property price index; however, no pure input time
+    #      stamp is attached. This will only be done with derivation markup 
+    initialise_ukhpi(kg_client)

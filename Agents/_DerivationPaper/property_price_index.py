@@ -87,7 +87,7 @@ def load_ukhpi_timeseries_from_csv(input_file, ppi_iri=ppi_iri, skip_first_entri
 
 
 def initialise_ukhpi(kg_client, district_iri=district_iri, ppi_iri=ppi_iri,
-                     timeseries_file=ukhpi_fp,):
+                     timeseries_file=ukhpi_fp):
     """
     Instantiate Property Price Index in KG and RDB and upload "outdated" PPI data
     (i.e. time series data excluding the latest entry)
