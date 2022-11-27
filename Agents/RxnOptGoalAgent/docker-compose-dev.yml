@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  rogi_agent_dev:
-    image: ghcr.io/cambridge-cares/rogi_agent_dev:1.0.0-SNAPSHOT
-    container_name: rogi_agent_dev
+  rog_agent_dev:
+    image: ghcr.io/cambridge-cares/rog_agent_dev:1.0.0-SNAPSHOT
+    container_name: rog_agent_dev
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
