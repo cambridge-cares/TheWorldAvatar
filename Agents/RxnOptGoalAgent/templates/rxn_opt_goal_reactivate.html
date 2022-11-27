@@ -8,7 +8,8 @@
         <h1>RxnOptGoalAgent</h1>
         <form action="/goal_reactivate" method="post">
             <!-- goal set -->
-            <div class="goal-set">
+            <fieldset class="goal-set">
+                <legend>Goal Set</legend>
                 <span class="chem-rxn">Please specify the goal set you would like to reactivate:</span><br><br>
 
                 <select name="goal_set" id="goal_set" class="Input">
@@ -17,12 +18,13 @@
                     <option value="{{ g.iri }}">{{ g.display }}</option>
                     {% endfor %}
                 </select>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- restrictions -->
-            <div class="restrictions">
+            <fieldset class="restrictions">
+                <legend>Restrictions</legend>
                 <span class="restrictions">Please input the new restrictions (restrictions remain unchanged for any one left empty):</span><br><br>
                 <!-- cycleAllowance -->
                 <label for="cycleAllowance">CycleAllowance (between 1 and 150):</label>
@@ -31,7 +33,7 @@
                 <!-- deadline -->
                 <label for="deadline">Deadline (time at your current time zone)</label>
                 <input type="datetime-local" id="deadline" name="deadline"><br><br>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 

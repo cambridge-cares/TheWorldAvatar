@@ -49,7 +49,8 @@
         <h1>RxnOptGoalAgent</h1>
         <form action="/goal_specification" method="post">
             <!-- chemical reaction -->
-            <div class="chem-rxn">
+            <fieldset class="chem-rxn">
+                <legend>Chemical Reaction</legend>
                 <span class="chem-rxn">Please specify the chemical reaction:</span><br><br>
 
                 <!-- chemical reaction iri -->
@@ -59,12 +60,13 @@
                     <option value="{{ o.iri }}">{{ o.display }}</option>
                     {% endfor %}
                 </select>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- first goal -->
-            <div class="first-goal">
+            <fieldset class="first-goal">
+                <legend>First Goal</legend>
                 <span class="first-goal">Please specify the first Goal:</span><br><br>
 
                 <!-- rdf:type of the goal target quantity -->
@@ -87,12 +89,13 @@
                 <select name="first_goal_unit" id="first_goal_unit" class="Input">
                     <option value="" disabled selected>Please select first goal rdf:type first</option>
                 </select>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- second goal -->
-            <div class="second-goal">
+            <fieldset class="second-goal">
+                <legend>Second Goal</legend>
                 <span class="second-goal">Please specify the second Goal:</span><br><br>
 
                 <!-- rdf:type of the goal target quantity -->
@@ -115,12 +118,13 @@
                 <select name="second_goal_unit" id="second_goal_unit" class="Input">
                     <option value="" disabled selected>Please select second goal rdf:type first</option>
                 </select>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- rxn opt goal plan -->
-            <div class="rxn-opt-goal-plan">
+            <fieldset class="rxn-opt-goal-plan">
+                <legend>Reaction Optimisation Goal Plan</legend>
                 <span class="rxn-opt-goal-plan">Please select the rxn opt plan:</span><br><br>
 
                 <!-- rxn opt plan -->
@@ -130,12 +134,13 @@
                     <option value="{{ p.iri }}">{{ p.display }}</option>
                     {% endfor %}
                 </select>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- restrictions -->
-            <div class="restrictions">
+            <fieldset class="restrictions">
+                <legend>Restrictions</legend>
                 <span class="restrictions">Please input the restrictions:</span><br><br>
                 <!-- cycleAllowance -->
                 <label for="cycleAllowance">CycleAllowance (between 1 and 150):</label>
@@ -144,18 +149,19 @@
                 <!-- deadline -->
                 <label for="deadline">Deadline (time at your current time zone)</label>
                 <input type="datetime-local" id="deadline" name="deadline"><br><br>
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
             <!-- laboratories involved -->
-            <div class="laboratories">
+            <fieldset class="laboratories">
+                <legend>Laboratories</legend>
                 <span class="laboratories">Please tick the laboratories to be involved in the campaign:</span><br><br>
                 <!-- laboratories -->
                 {% for lab in available_labs %}
                     <input type="checkbox" name="labs" value="{{ lab.iri }}">{{lab.display}}<br>
                 {% endfor %}
-            </div><br><br>
+            </fieldset><br><br>
 
             <br><br>
 
