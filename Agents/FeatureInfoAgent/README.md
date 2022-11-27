@@ -56,7 +56,7 @@ Follow the below configuration steps within the local `queries` directory.
     - `queries`: This is a **required** array of objects defining a mapping between class names and the names of files containing pre-written SPARQL queries. Each object needs to contain the following string parameters:
       -  `class`: Full IRI of the class.
       -  `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
-      -  `timeFile`: Name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
+      -  `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
     - `hours`: This is an optional integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
   - Add the aforementioned metadata and timeseries query files.
 
@@ -69,7 +69,7 @@ To properly parse the metadata and timeseries queries, the agent requires the re
 - `[IRI]`: The IRI of the feature in the request will be injected
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
 
-Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. Any other colums will be ignored.
+Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. These are case sensitive and any other columns will be ignored.
 
 
 <p align="center">

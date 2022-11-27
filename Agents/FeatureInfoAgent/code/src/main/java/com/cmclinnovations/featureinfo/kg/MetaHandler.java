@@ -30,6 +30,21 @@ public class MetaHandler {
     private static final Logger LOGGER = LogManager.getLogger(MetaHandler.class);
 
     /**
+     * Allowable names for colun one of query results.
+     */
+    private static final String[] COLUMN_ONE = new String[]{"property", "Property", "label", "Label"};
+
+     /**
+     * Allowable names for colun two of query results.
+     */
+    private static final String[] COLUMN_TWO = new String[]{"value", "Value"};
+
+     /**
+     * Allowable names for colun three of query results.
+     */
+    private static final String[] COLUMN_THREE = new String[]{"unit", "Unit"};
+
+    /**
      * IRI of the asset.
      */
     private final String iri;
@@ -148,9 +163,13 @@ public class MetaHandler {
         for(int i = 0; i < rawResult.length(); i++) {
             JSONObject entry = rawResult.getJSONObject(i);
 
-            String key = entry.getString("Property");
-            String value = entry.getString("Value");
-            if(entry.has("Unit")) value += " [" + entry.getString("Unit") + "]";
+            String key = findFirstKey(entry, COLUMN_ONE);
+            String value =  findFirstKey(entry, COLUMN_TWO);
+
+            String unit = findFirstKey(entry, COLUMN_THREE);
+            if(unit != null && !unit.isBlank()) {
+                value += " [" + unit + "]";
+            }
             
             jsonObject.put(key, value);
         }
@@ -159,6 +178,18 @@ public class MetaHandler {
 
         LOGGER.info("Meta data content has been formatted for visualisation.");
         return jsonArray;
+    }
+
+    /**
+     * 
+     * @param entry
+     * @return
+     */
+    private String findFirstKey(JSONObject entry, String[] colNames) {
+        for(int i = 0; i < colNames.length; i++){
+            if(entry.has(colNames[i])) return entry.getString(colNames[i]);
+        }
+        return null;
     }
 
     /**

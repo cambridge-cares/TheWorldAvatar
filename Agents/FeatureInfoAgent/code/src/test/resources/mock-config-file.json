@@ -14,8 +14,12 @@
         },
         {
             "class": "com.cmclinnovations.kg.ClassThree",
-            "metaFile": "classOneThree.sparql",
-            "timeFile": "classOneThree.sparql"
+            "metaFile": "classThreeMeta.sparql",
+            "timeFile": ""
+        },
+        {
+            "class": "com.cmclinnovations.kg.ClassFour",
+            "metaFile": "classFourMeta.sparql"
         }
     ]
 }

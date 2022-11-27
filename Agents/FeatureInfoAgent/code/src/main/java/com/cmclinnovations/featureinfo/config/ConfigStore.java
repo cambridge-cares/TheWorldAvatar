@@ -355,10 +355,12 @@ public class ConfigStore extends ContainerClient {
             // Load in class to file mapping
             String className = entry.getString("class");
             String metaFile = entry.getString("metaFile");
-            String timeFile = entry.getString("timeFile");
+            if(!metaFile.isBlank()) metaQueries.put(className, metaFile);
 
-            metaQueries.put(className, metaFile);
-            timeQueries.put(className, timeFile);
+            if(entry.has("timeFile")){
+                String timeFile = entry.getString("timeFile");
+                if(!timeFile.isBlank()) timeQueries.put(className, timeFile);
+            } 
         }
 
         // Store other settings
