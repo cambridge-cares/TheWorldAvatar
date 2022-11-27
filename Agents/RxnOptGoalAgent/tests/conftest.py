@@ -25,27 +25,14 @@ from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec_agent
 from hplcagent.agent import HPLCAgent
 from hplcagent.conf import config_hplc_agent
+from rxnoptgoaliteragent.agent import RxnOptGoalIterAgent
 
 # RxnOptGoal Agent related imports
 from rxnoptgoalagent.conf.rxn_opt_goal_agent_conf import config_rxn_opt_goal_agent
 from rxnoptgoalagent.agent import RxnOptGoalAgent
 from rxnoptgoalagent.data_model import *
+from rxnoptgoalagent.kg_operations import RxnOptGoalSparqlClient
 
-from rxnoptgoaliteragent.kg_operations import RxnOptGoalIterSparqlClient
-
-try:
-    import rxnoptgoaliteragent.tests.conftest as rogi_cf
-except ImportError:
-    raise ImportError("""If rxnoptgoaliteragent is not installed, then please install it first.
-                      Otherwise, it's possible due to tests and tests.* are not packaged in the rxnoptgoaliteragent package.
-                      One way to fix this is to change the following line in RxnOptGoalIterAgent/setup.py:
-                      ``packages=find_packages(exclude=['tests','tests.*']),``
-                      to: ``packages=find_packages(),``.
-                      Then reinstall the dev version of rxnoptgoaliteragent via:
-                      ``cd <path_to_twa_agents>/Agents/RxnOptGoalIterAgent && python -m pip install -e .``
-                      A better way of designing tests across multiple agents will be provided in the future.""")
-
-from rxnoptgoaliteragent.agent import RxnOptGoalIterAgent
 
 logging.getLogger("numba").setLevel(logging.WARNING)
 
@@ -374,7 +361,7 @@ def initialise_blazegraph_fileserver_with_test_triples(
     fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
     # Create SparqlClient for testing
-    sparql_client = RxnOptGoalIterSparqlClient(
+    sparql_client = RxnOptGoalSparqlClient(
         query_endpoint=bg_url,
         update_endpoint=bg_url,
         kg_user=sparql_user,
@@ -698,7 +685,7 @@ def initialise_triples(sparql_client):
 
 
 def assert_rxn_iterations(
-    sparql_client: RxnOptGoalIterSparqlClient,
+    sparql_client: RxnOptGoalSparqlClient,
     doe_agent: DoEAgent,
     vapourtec_schedule_agent: VapourtecScheduleAgent,
     vapourtec_agent_lst: Union[VapourtecAgent, List[VapourtecAgent]],

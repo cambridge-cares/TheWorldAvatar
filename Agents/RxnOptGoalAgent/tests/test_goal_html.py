@@ -60,7 +60,7 @@ def test_handle_rxn_opt_goal_request(
 
             # restriction
             assert goal_set_instance.hasRestriction.instance_iri is not None
-            assert goal_set_instance.hasRestriction.cycleAllowance == sample_goal_request["cycleAllowance"]
+            assert goal_set_instance.hasRestriction.cycleAllowance == sample_goal_request["cycleAllowance"] - len(rogi_derivation_lst)
             assert goal_set_instance.hasRestriction.deadline == datetime.timestamp(datetime.fromisoformat(sample_goal_request["deadline"]))
 
             # goal
@@ -89,9 +89,9 @@ def test_handle_rxn_opt_goal_request(
 
             # plan
             assert len(goal_1.hasPlan) == 1
-            assert goal_1.hasPlan[0].instance_iri == cf.rogi_cf.IRIs.RXN_OPT_PLAN.value
+            assert goal_1.hasPlan[0].instance_iri == cf.IRIs.RXN_OPT_PLAN.value
             assert len(goal_2.hasPlan) == 1
-            assert goal_2.hasPlan[0].instance_iri == cf.rogi_cf.IRIs.RXN_OPT_PLAN.value
+            assert goal_2.hasPlan[0].instance_iri == cf.IRIs.RXN_OPT_PLAN.value
 
             # step
             for goal in [goal_1, goal_2]:
@@ -99,35 +99,35 @@ def test_handle_rxn_opt_goal_request(
 
                 # step 1 - doe
                 doe_step = goal.hasPlan[0].get_step(cf.ONTOGOAL_DESIGNOFEXPERIMENT)
-                assert doe_step.instance_iri == cf.rogi_cf.IRIs.STEP_DOE.value
+                assert doe_step.instance_iri == cf.IRIs.STEP_DOE.value
                 assert len(doe_step.canBePerformedBy) == 1
-                assert doe_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_DOE_AGENT.value
+                assert doe_step.canBePerformedBy[0] == cf.IRIs.STEP_DOE_AGENT.value
                 assert len(doe_step.hasNextStep) == 1
-                assert doe_step.hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_SCHEDULEEXE.value
+                assert doe_step.hasNextStep[0].instance_iri == cf.IRIs.STEP_SCHEDULEEXE.value
                 assert len(doe_step.hasNextStep[0].canBePerformedBy) == 1
-                assert doe_step.hasNextStep[0].canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_SCHEDULE_AGENT.value
+                assert doe_step.hasNextStep[0].canBePerformedBy[0] == cf.IRIs.STEP_SCHEDULE_AGENT.value
                 assert len(doe_step.hasNextStep[0].hasNextStep) == 1
-                assert doe_step.hasNextStep[0].hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_POSTPRO.value
+                assert doe_step.hasNextStep[0].hasNextStep[0].instance_iri == cf.IRIs.STEP_POSTPRO.value
                 assert len(doe_step.hasNextStep[0].hasNextStep[0].canBePerformedBy) == 1
-                assert doe_step.hasNextStep[0].hasNextStep[0].canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_POSTPRO_AGENT.value
+                assert doe_step.hasNextStep[0].hasNextStep[0].canBePerformedBy[0] == cf.IRIs.STEP_POSTPRO_AGENT.value
                 assert doe_step.hasNextStep[0].hasNextStep[0].hasNextStep is None
 
                 # step 2 - exe
                 exe_step = goal.hasPlan[0].get_step(cf.ONTOGOAL_RXNEXPEXECUTION)
-                assert exe_step.instance_iri == cf.rogi_cf.IRIs.STEP_SCHEDULEEXE.value
+                assert exe_step.instance_iri == cf.IRIs.STEP_SCHEDULEEXE.value
                 assert len(exe_step.canBePerformedBy) == 1
-                assert exe_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_SCHEDULE_AGENT.value
+                assert exe_step.canBePerformedBy[0] == cf.IRIs.STEP_SCHEDULE_AGENT.value
                 assert len(exe_step.hasNextStep) == 1
-                assert exe_step.hasNextStep[0].instance_iri == cf.rogi_cf.IRIs.STEP_POSTPRO.value
+                assert exe_step.hasNextStep[0].instance_iri == cf.IRIs.STEP_POSTPRO.value
                 assert len(exe_step.hasNextStep[0].canBePerformedBy) == 1
-                assert exe_step.hasNextStep[0].canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_POSTPRO_AGENT.value
+                assert exe_step.hasNextStep[0].canBePerformedBy[0] == cf.IRIs.STEP_POSTPRO_AGENT.value
                 assert exe_step.hasNextStep[0].hasNextStep is None
 
                 # step 3 - postpro
                 postpro_step = goal.hasPlan[0].get_step(cf.ONTOGOAL_POSTPROCESSING)
-                assert postpro_step.instance_iri == cf.rogi_cf.IRIs.STEP_POSTPRO.value
+                assert postpro_step.instance_iri == cf.IRIs.STEP_POSTPRO.value
                 assert len(postpro_step.canBePerformedBy) == 1
-                assert postpro_step.canBePerformedBy[0] == cf.rogi_cf.IRIs.STEP_POSTPRO_AGENT.value
+                assert postpro_step.canBePerformedBy[0] == cf.IRIs.STEP_POSTPRO_AGENT.value
                 assert postpro_step.hasNextStep is None
 
         # 2. start the goal iteration monitoring job
