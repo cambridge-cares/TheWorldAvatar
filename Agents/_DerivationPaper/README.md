@@ -74,6 +74,10 @@ Rough QGIS workflow to identify buildings within flood polygon and create `affec
 
 There are 222 buildings being affected by the (hypothetical) flood event. Running the `attach_labels` function in [data_preparation.py] will attach an `affected` label (specified in `data_preparation.py`) to all property IRIs listed in the [affected_property_iris] csv file. This will be used to mock the geospatial queries to obtain buildings within a flood polygon.
 
+## 2. Initialise Property Price Index
+
+Running the [data_preparation.py] module as main script also initialises the Property Price Index (PPI) in both KG and RDB. The initially uploaded PPI data only includes values until August 2022 (i.e. excluding the most recent month at time of writing, September 2022). To update the instantiated Property Price Index and hence trigger a second cascade of derivations, run [property_price_index.py] as main script.
+
 
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
@@ -95,4 +99,5 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [configs.py]: configs.py
 [data]: data
 [data_preparation.py]: data_preparation.py
+[property_price_index.py]: property_price_index.py
 [affected_property_iris]: data/affected_property_iris.csv

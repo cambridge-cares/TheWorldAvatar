@@ -22,4 +22,4 @@ OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 district_iri = 'https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict_b240d043-4d79-4660-8005-3074ecb84176'
 # Specify IRI for property price index to be instantiated (there will be only one for
 # entire district; hence, hardcoding avoids necessity to query for IRI later on)
-ppi_iri = KB + 'PropertyPriceIndex_KingsLynn'
+ppi_iri = KB + 'PropertyPriceIndex_KingsLynn4'

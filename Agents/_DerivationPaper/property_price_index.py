@@ -1,5 +1,6 @@
-# This script provides functionality to prepare and instantiate all data required
-# for the minimum viable product of the King's Lynn use case for the derivation paper
+# This script provides functionality to update initially instantiated Property
+# Price Index data both in the KG and RDB, i.e. adding new entry to RDB and
+# updating time stamp of pure input in KG to trigger 2nd cascade of updates
 
 import os
 import pandas as pd
@@ -9,6 +10,7 @@ from iris import *
 from tsclient import TSClient, TIME_FORMAT_KG, TIME_FORMAT_RDB
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
+from pyderivationagent import PyDerivationClient
 from pyderivationagent.kg_operations import PySparqlClient
 
 # REQUIRED FILES
@@ -108,11 +110,22 @@ def initialise_ukhpi(kg_client, district_iri=district_iri, ppi_iri=ppi_iri,
         ts_client.tsclient.addTimeSeriesData(ts, conn)
 
 
-def update_ukhpi():
+def update_ukhpi(kg_client, derivation_client, ppi_iri=ppi_iri, timeseries_file=ukhpi_fp):
     """
     Update Property Price Index with latest data and update pure input timestamp
     """
-    pass
+    
+    # Initialise TimeSeriesClient with default settings and load ENTIRE time series from csv
+    ts_client = TSClient(kg_client=kg_client)
+    ts = load_ukhpi_timeseries_from_csv(timeseries_file, ppi_iri, skip_first_entries=0)
+    
+    with ts_client.connect() as conn:
+        # Update time series data (overwrite existing timestamps and add new one)
+        ts_client.tsclient.addTimeSeriesData(ts, conn)
+    
+    # Update time stamp attached to PropertyPriceIndex IRI 
+    derivation_client.updateTimestamp(ppi_iri)
+
 
 
 def instantiate_property_price_index(district_iri, ppi_iri):
@@ -141,5 +154,16 @@ if __name__ == '__main__':
     # Initialise KG client
     kg_client = PySparqlClient(query_endpoint=SPARQL_QUERY_ENDPOINT,
                                update_endpoint=SPARQL_UPDATE_ENDPOINT)
+    # Create "dummy" derivation client to access time stamp manipulation methods
+    deriv_client = PyDerivationClient(derivation_instance_base_url=None,
+                                      query_endpoint=SPARQL_QUERY_ENDPOINT,
+                                      update_endpoint=SPARQL_QUERY_ENDPOINT)
+
     # Initialise PropertyPriceIndex in KG and RDB and upload "outdated" data
-    initialise_ukhpi(kg_client)
+    #initialise_ukhpi(kg_client)
+    # NOTE: Time stamp for pure input is added when marking up derivation; only here
+    #       for reference/testing purposes
+    #deriv_client.addTimeInstanceCurrentTimestamp(ppi_iri)
+
+    # Update time stamp attached to PropertyPriceIndex IRI
+    update_ukhpi(kg_client=kg_client, derivation_client=deriv_client)
