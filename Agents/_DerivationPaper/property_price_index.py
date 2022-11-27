@@ -2,11 +2,11 @@
 # for the minimum viable product of the King's Lynn use case for the derivation paper
 
 import os
-import requests
 import pandas as pd
 from pathlib import Path
 
 from iris import *
+from tsclient import TSClient, TIME_FORMAT_KG, TIME_FORMAT_RDB
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 from pyderivationagent.kg_operations import PySparqlClient
@@ -14,6 +14,7 @@ from pyderivationagent.kg_operations import PySparqlClient
 # REQUIRED FILES
 # Specify name of csv file with all UK house price index data
 ukhpi_file = 'ukhpi.csv'
+ukhpi_fp = os.path.join(Path(__file__).parent, 'data', ukhpi_file)
 
 # HM Land Registry SPARQL endpoint
 UKHPI_ENDPOINT = 'http://landregistry.data.gov.uk/landregistry/query'
@@ -21,7 +22,7 @@ UKHPI_ENDPOINT = 'http://landregistry.data.gov.uk/landregistry/query'
 
 def retrieve_ukhpi_monthly_data() -> str:
     """
-    Retrieve UKHPI data for King's Lynn and West Norfolk
+    Retrieve UKHPI data for King's Lynn and West Norfolk from HM Land Registry
     (returned date format is xsd:gYearMonth (YYYY-MM))
     """
 
@@ -43,7 +44,7 @@ def retrieve_ukhpi_monthly_data() -> str:
 
 def create_ukhpi_csv(kg_client, output_file):
     """
-    Download UKHPI data for King's Lynn and West Norfolk and save to CSV
+    Download UKHPI data for King's Lynn and West Norfolk and save to .csv
     """
     
     # Query UKHPI endpoint
@@ -55,37 +56,27 @@ def create_ukhpi_csv(kg_client, output_file):
     df.to_csv(output_file, index=False)
 
 
-def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
-                            api_endpoint=UKHPI_ENDPOINT, kgclient_hm=None):
+def load_ukhpi_timeseries_from_csv(input_file, ppi_iri=ppi_iri, skip_first_entries=0):
     """
-    Retrieve UKHPI data for a given local authority ONS IRI 
+    Create Java time series object from .csv file
 
     Arguments:
-        local_authority_iri {str} - IRI of the local authority as used by
-                                    Office for National statistics
-        ppi_iri {str} - IRI of the property price index (i.e. dataIRI of timeseries)
-        months {int} - Number of months for which to retrieve date
-                       (default: 240 (i.e. 20 years))
-    
+        ppi_iri - property price index IRI
+        skip_first_entries - Number of entries to skip at the beginning of the file    
     """
 
-    # Initialise KG client
-    if not kgclient_hm:
-        kgclient_hm = KGClient(api_endpoint, api_endpoint)
-
-    query = get_ukhpi_monthly_data_for_district(ons_local_authority_iri=local_authority_iri, 
-                                                months=months)
-    res = kgclient_hm.performQuery(query)
-
-    # Condition data
-    cols = ['month', 'ukhpi_value']
-    df = pd.DataFrame(columns=cols, data=res)
-    df.dropna(inplace=True)
+    # Load data from csv
+    df = pd.read_csv(input_file)
 
     # Assign correct data types
     df['month'] = pd.to_datetime(df['month'])
-    df['month'] = df['month'].dt.strftime('%Y-%m-%d')
+    df['month'] = df['month'].dt.strftime(TIME_FORMAT_RDB)
     df['ukhpi_value'] = df['ukhpi_value'].astype(float)
+
+    # Skip first entries as specified
+    # NOTE: This is used to mock the updating of instantiated data by input agents
+    #       to trigger the derivation updating cascade
+    df = df.iloc[skip_first_entries:]
 
     # Create time series
     time_list = df['month'].tolist()
@@ -95,14 +86,60 @@ def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
     return ts
 
 
+def initialise_ukhpi(kg_client, district_iri=district_iri, ppi_iri=ppi_iri,
+                     timeseries_file=ukhpi_fp,):
+    """
+    Instantiate Property Price Index in KG and RDB and upload "outdated" PPI data
+    (i.e. time series data excluding the latest entry)
+    """
+
+    # Instantiate static triples in KG
+    query = instantiate_property_price_index(district_iri, ppi_iri)
+    kg_client.performUpdate(query)
+
+    # Initialise TimeSeriesClient with default settings and load time series from csv
+    ts_client = TSClient(kg_client=kg_client)
+    ts = load_ukhpi_timeseries_from_csv(timeseries_file, ppi_iri, skip_first_entries=1)
+    
+    with ts_client.connect() as conn:
+        # Initialise TimeSeries
+        ts_client.tsclient.initTimeSeries([ppi_iri], [ts_client.DATACLASS], TIME_FORMAT_KG, conn)
+        # Add time series data
+        ts_client.tsclient.addTimeSeriesData(ts, conn)
+
+
+def update_ukhpi():
+    """
+    Update Property Price Index with latest data and update pure input timestamp
+    """
+    pass
+
+
+def instantiate_property_price_index(district_iri, ppi_iri):
+    # Instantiate property price index for a given administrative district
+    query = f"""
+        INSERT DATA {{
+            <{ppi_iri}> <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . 
+            <{ppi_iri}> <{OBE_REPRESENTATIVE_FOR}> <{district_iri}> . 
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
+
 if __name__ == '__main__':
 
     # Create UKHPI csv file if not exists
-    ukhpi_fp = os.path.join(Path(__file__).parent, 'data', ukhpi_file)
     if not Path(ukhpi_fp).exists():
         # Initialise KG client
         kg_client = PySparqlClient(query_endpoint=UKHPI_ENDPOINT,
                                    update_endpoint=UKHPI_ENDPOINT)
         create_ukhpi_csv(kg_client, ukhpi_fp)
 
-    pass
+    # Initialise KG client
+    kg_client = PySparqlClient(query_endpoint=SPARQL_QUERY_ENDPOINT,
+                               update_endpoint=SPARQL_UPDATE_ENDPOINT)
+    # Initialise PropertyPriceIndex in KG and RDB and upload "outdated" data
+    initialise_ukhpi(kg_client)
