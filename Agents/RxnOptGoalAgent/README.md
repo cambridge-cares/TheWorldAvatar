@@ -123,7 +123,7 @@ If the GoalSet is reactivated successfully, you will see something like below:
 
 &nbsp;
 ## 4. Agent integration test
-As this agent activates a bunch of derivation agents that interacting with the knowledge graph and the real world automatically, extra care should be taken before any deployment. A few integration tests are provided in the `tests` repository to make sure everything is working as expected: in silico local test, in silico dockerised test, and physical dockerised. While all fixtures and utility functions are provided in the `conftest.py` file. Furthermore, a few relevant folders are provided in the tests folder.
+As this agent activates a bunch of derivation agents that interacting with the knowledge graph and the real world automatically, extra care should be taken before any deployment. A few integration tests are provided in the `tests` repository to make sure everything is working as expected: in silico local test, in silico dockerised test, physical local test, and physical dockerised test. While all fixtures and utility functions are provided in the `conftest.py` file. Furthermore, a few relevant folders are provided in the tests folder.
 - `dummy_services_secrets` folder: credential files for basic auth of the knowledge graph
 - `env_files` folder: env files for all agents involved in the integration tests
 - `test_triples` folder: test triples for dummy data
@@ -216,17 +216,25 @@ pytest -k "LOCAL"
 need to dockerise all agents, and provide an integration test
 
 ### 4.3 Physical test
-`test_rxn_lab_physical.py`
-To run physical test in the lab, please follow below steps:
-1. Open this project folder in **Windows** envrionment
-2. (**ONLY IF** you would like to receive email notifications about the agents operations) set up email configuration in relevant `tests/env_files/*.env.test`, for details, see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent#set-up-email-notification-for-exceptions)
-3. Manually spin up docker containers in `tests/docker-compose.test.kg.yml` (this design prevents the test triples being deleted by the teardown function)
-4. Open FlowCommander in Windows host machine, load the correct experiment file (`.fcexp`) - you may contact the maintainer of this repo to get it
-5. Open HPLC software in Windows host machine, load the correct HPLC method, turn on the hardware, queue the analysis sequence, obtain the report folder path
-6. Update the variable `hplc_report_container_dir` in `test_sg_physical.py` with the HPLC report folder path obtained from the HPLC software, e.g. `"C:\\Chem32\\1\\Data\\Optimization\\Optimization 2022-09-19 22-41-02"`
-7. Run test via executing: `pytest -s tests\test_sg_physical.py`
+#### 4.3.1 Local test
+The local integration test using physical equipment is provided in `test_rxn_lab_physical.py`. To run physical test in the lab, please follow below steps:
+1. (**ONLY IF** you would like to receive email notifications about the agents operations) Set up email configuration in relevant `tests/env_files/*.env.test`, for details, see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent#set-up-email-notification-for-exceptions)
+2. Manually spin up docker containers in `tests/docker-compose.test.kg.yml` (this design prevents the test triples being deleted by the teardown function)
+3. Open FlowCommander in Windows host machine, load the correct experiment file (`.fcexp`) - you may contact the maintainer of this repo to get it
+4. Open HPLC software in Windows host machine, load the correct HPLC method, turn on the hardware, queue the analysis sequence, obtain the report folder path
+5. Update the variable `lab_to_test` in `test_rxn_lab_physical.py` based on the lab involved in the physical test
+6. Update the variable `hplc_report_target_folder` in `test_rxn_lab_physical.py` with the HPLC report folder path obtained from the HPLC software, e.g. `"C:\\Chem32\\1\\Data\\Optimization\\Optimization 2022-09-19 22-41-02"`, you may need to use the WSL2 specific path if the test is running in WSL2 environment, see more details in `test_rxn_lab_physical.py`
+7. Retrieve the IP address for the Windows host machine, if running in Windows directly, you can use `localhost`, however, for those running in WSL2, the IP address can be obtained by executing below command (see [this post](for more details, see https://pscheit.medium.com/get-the-ip-address-of-the-desktop-windows-host-in-wsl2-7dc61653ad51) for more details):
+    ```sh
+    echo $(ipconfig.exe | grep 'vEthernet (WSL)' -A4 | cut -d":" -f 2 | tail -n1 | sed -e 's/\s*//g')
+    ```
+    Replace the `vapourtec_ip_address` variable in `test_rxn_lab_physical.py` with the obtained IP address
+8. Run test via executing: `pytest -s tests/test_rxn_lab_physical.py`
 
 > **NOTE** The whole physical test process can take ~45 minutes.
+
+#### 4.3.2 Dockerised test
+Coming soon...
 
 
 &nbsp;

@@ -51,7 +51,7 @@ local_agent_test = True # local agent test
         ),
     ],
 )
-def test_rxn_rog_physical(
+def test_rxn_rog_PHYSICAL(
     initialise_blazegraph_fileserver_with_test_triples,
     create_rog_agent, create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     vapourtec_agent_env_file, vapourtec_ip_address, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
