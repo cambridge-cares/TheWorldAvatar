@@ -17,3 +17,4 @@ assets
 data/*
 !flood-areas.geojson
 !affected_property_iris.csv
+!ukhpi.csv

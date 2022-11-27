@@ -7,7 +7,7 @@ import pandas as pd
 from pathlib import Path
 
 from iris import *
-from configs import *
+from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 from pyderivationagent.kg_operations import PySparqlClient
 
