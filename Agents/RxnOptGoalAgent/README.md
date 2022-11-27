@@ -123,7 +123,10 @@ If the GoalSet is reactivated successfully, you will see something like below:
 
 &nbsp;
 ## 4. Agent integration test
-As this agent activates a bunch of derivation agents that interacting with the knowledge graph and the real world automatically, extra care should be taken before any deployment. A few integration tests are provided in the `tests` repository to make sure everything is working as expected: in silico local test, in silico dockerised test, physical local test, physical dockerised.
+As this agent activates a bunch of derivation agents that interacting with the knowledge graph and the real world automatically, extra care should be taken before any deployment. A few integration tests are provided in the `tests` repository to make sure everything is working as expected: in silico local test, in silico dockerised test, and physical dockerised. While all fixtures and utility functions are provided in the `conftest.py` file. Furthermore, a few relevant folders are provided in the tests folder.
+- `dummy_services_secrets` folder: credential files for basic auth of the knowledge graph
+- `env_files` folder: env files for all agents involved in the integration tests
+- `test_triples` folder: test triples for dummy data
 
 To perform the integration test with agent instances created locally in memory, one first need to set up the virtual envrionment following the below section.
 
@@ -183,15 +186,30 @@ As the operation of ROG Agent is supported by all other agents that actually orc
     ```
 
 ### 4.2 In silico test
-
-how to run each test, pytest -s ...
+Depends on if the agent instances are created in memory or deployed in docker containers, the tests are attached with an identifier `LOCAL` and `DOCKERISED` at the end of their function names.
 
 #### 4.2.1 Local test
-
+Local tests are separated in below files and focus on different aspect of the operation:
 - `test_example_triples.py`: test if all prepared test triples are valid
-- `test_goal_html.py`
-- `test_rxn_goal_driven.py`
-- `test_two_setup_in_silico.py`
+- `test_goal_html.py`: test if the ROG Agent creates the ROGI derivation and adds periodical job upon receiving a goal request
+- `test_rxn_goal_driven.py`:
+  - `test_rxn_rogi_LOCAL` - ROGI agent orchestrates agents to perform experiment given derivation markup (leaving ROG agent out)
+  - `test_rxn_goal_request_LOCAL` - all agents run one iteration upon a goal request
+  - `test_rxn_goal_iterations_LOCAL` - all agents run multiple iterations upon a goal request
+- `test_two_setup_in_silico.py`: test if two-setup can work in silico
+
+To run local tests, one can perform below command (add `-s` to see live logs):
+
+`(Linux)`
+```sh
+cd /your_absolute_path_to/TheWorldAvatar/Agents/RxnOptGoalAgent/
+# Run a specific test
+pytest tests/test_rxn_goal_driven.py::test_rxn_rogi_LOCAL
+# Run a test module
+pytest tests/test_goal_html.py
+# Run all local tests in one-go, note that this can take a while
+pytest -k "LOCAL"
+```
 
 #### 4.2.2 Dockerised test
 `test_rxn_opt_dockerised.py`
