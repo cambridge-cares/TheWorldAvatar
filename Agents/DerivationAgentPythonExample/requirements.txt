@@ -1,0 +1,16 @@
+# The purpose of this file is to pin a list of packages to a specific version that is tested to work
+# This file is used by the Dockerfile to ensure consistent builds across different machines
+
+#######################################
+## The World Avatar related packages ##
+#######################################
+pyderivationagent==1.4.1
+
+##########################
+## Third-party packages ##
+##########################
+pydantic==1.9.0
+testcontainers==3.4.2
+pytest==6.2.5
+pytest-docker-compose==3.2.1
+pytest-rerunfailures==10.2
