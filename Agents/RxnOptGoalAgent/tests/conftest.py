@@ -12,8 +12,9 @@ import time
 import uuid
 import os
 
-from pyderivationagent.conf import config_derivation_agent
-from pyderivationagent.kg_operations import PySparqlClient
+from pyderivationagent import config_derivation_agent
+from pyderivationagent import PySparqlClient
+from pyderivationagent import PyDerivationClient
 from chemistry_and_robots.kg_operations import ChemistryAndRobotsSparqlClient
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 from chemistry_and_robots.data_model import *
@@ -389,6 +390,42 @@ def initialise_blazegraph_fileserver_with_test_triples(
 
 
 @pytest.fixture(scope="module")
+def initialise_all_dockerised_agent_and_triples(get_service_url, get_service_auth):
+    bg_url = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+
+    fs_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
+    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+
+    # Create SparqlClient for testing
+    sparql_client = RxnOptGoalSparqlClient(
+        query_endpoint=bg_url,
+        update_endpoint=bg_url,
+        kg_user=sparql_user,
+        kg_password=sparql_pwd,
+        fs_url=fs_url,
+        fs_user=fs_user,
+        fs_pwd=fs_pwd,
+    )
+
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
+    initialise_triples(sparql_client)
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=bg_url,
+        update_endpoint=bg_url,
+        kg_user=sparql_user,
+        kg_password=sparql_pwd,
+    )
+
+    yield sparql_client, derivation_client
+
+
+@pytest.fixture(scope="module")
 def create_rog_agent():
     def _create_rog_agent(
         goal_iter_agent_iri:str=None,
@@ -693,6 +730,7 @@ def assert_rxn_iterations(
     hplc_postpro_agent: HPLCPostProAgent,
     rogi_agent: RxnOptGoalIterAgent,
     goal_set_iri: str,
+    dockerised_test: bool = False,
 ):
     if not isinstance(vapourtec_agent_lst, list):
         vapourtec_agent_lst = [vapourtec_agent_lst]
@@ -782,7 +820,8 @@ def assert_rxn_iterations(
         print(f"Downloading file to {full_downloaded_path}")
         # Download the file and make sure all the content are the same
         sparql_client.downloadFile(host_docker_internal_to_localhost(remote_file_path), full_downloaded_path)
-        assert filecmp.cmp(local_file_path,full_downloaded_path)
+        if not dockerised_test:
+            assert filecmp.cmp(local_file_path,full_downloaded_path)
 
         # Second, check if settings were generated for all reaction conditions
         rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]

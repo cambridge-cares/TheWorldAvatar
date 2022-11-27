@@ -18,3 +18,8 @@ dist/
 
 # email_auth
 email_auth.json
+
+# FlowCommander related files
+FCRemote.dll
+FCRemoteCSV.dll
+*.fcexp
