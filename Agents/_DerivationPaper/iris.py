@@ -2,8 +2,12 @@
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
+# UK API namespaces
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
+RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
+# CoMo/CARES namespaces
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
+OF = 'https://www.theworldavatar.com/kg/ontoflood/'
 KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
 RDF_TYPE = RDF + 'type'
@@ -13,13 +17,18 @@ XSD_STRING = XSD + 'string'
 UKHPI_REFREGION = UKHPI + 'refRegion'
 UKHPI_INDEX = UKHPI + 'housePriceIndex'
 UKHPI_REF_MONTH = UKHPI + 'refMonth'
+RT_FLOOD_ALERT_WARNING = RT + 'FloodAlertOrWarning'
 
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
+OF_HAS_SEVERITY = OF + 'hasSeverity'
+# From OntoFlood ABox
+OF_FLOOD_WARNING = OF + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
 
 # HARDCODED INSTANCE IRIS
 # (i.e. IRIs of previously instantiated instances to avoid unnecessary querying)
 district_iri = 'https://www.theworldavatar.com/kg/ontobuiltenv/AdministrativeDistrict_b240d043-4d79-4660-8005-3074ecb84176'
-# Specify IRI for property price index to be instantiated (there will be only one for
-# entire district; hence, hardcoding avoids necessity to query for IRI later on)
-ppi_iri = KB + 'PropertyPriceIndex_KingsLynn4'
+# Specify IRIs to be instantiated (there will only be one for each concept; 
+# hence, hardcoding avoids necessity to query for IRI later on)
+ppi_iri = KB + 'PropertyPriceIndex_KingsLynn'
+flood_warning_iri = KB + 'FloodWarning_KingsLynn'

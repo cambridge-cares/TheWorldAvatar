@@ -78,7 +78,12 @@ There are 222 buildings being affected by the (hypothetical) flood event. Runnin
 
 Running the [data_preparation.py] module as main script also initialises the Property Price Index (PPI) in both KG and RDB. The initially uploaded PPI data only includes values until August 2022 (i.e. excluding the most recent month at time of writing, September 2022). To update the instantiated Property Price Index and hence trigger a second cascade of derivations, run [property_price_index.py] as main script.
 
+## 3. Instantiate Flood Warning
 
+Run the [flood_warning.py] module as main script to instantiate the flood warning (which affects the previously labeled buildings). Please note that only the absolute minimum relationships are instantiated, which are required for the Flood Assessment Agent to pick up the flood warning.
+
+
+&nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
 
@@ -100,4 +105,5 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [data]: data
 [data_preparation.py]: data_preparation.py
 [property_price_index.py]: property_price_index.py
+[flood_warning.py]: flood_warning.py
 [affected_property_iris]: data/affected_property_iris.csv
