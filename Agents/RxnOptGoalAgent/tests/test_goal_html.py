@@ -12,7 +12,7 @@ import tests.conftest as cf
 # 2. add and start the goal iteration monitoring job
 # ----------------------------------------------------------------------------------
 
-def test_handle_rxn_opt_goal_request(
+def test_handle_rxn_opt_goal_request_LOCAL(
     initialise_test_triples,
     create_rog_agent
 ):

@@ -6,7 +6,7 @@ import tests.conftest as conftest
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
-def test_parse_ttl():
+def test_parse_ttl_LOCAL():
     """Test that all the example triples can be parsed, hence can be uploaded to the triple store.
 
     Raises:

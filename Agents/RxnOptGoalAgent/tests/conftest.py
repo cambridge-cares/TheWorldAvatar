@@ -794,7 +794,7 @@ def assert_rxn_iterations(
         new_rs400_list = sparql_client.get_vapourtec_rs400(
             list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin for vapourtec_agent in vapourtec_agent_lst],
         )
-        assert len(new_rs400_list) == 2
+        assert len(new_rs400_list) == len(vapourtec_agent_lst)
         new_rs400 = new_rs400_list[0]
         new_autosampler = new_rs400.get_autosampler()
         new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}

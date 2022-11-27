@@ -38,7 +38,7 @@ local_agent_test = True
         ),
     ],
 )
-def test_two_setup_rog(
+def test_two_setup_rog_LOCAL(
     initialise_blazegraph_fileserver_with_test_triples, create_rog_agent,
     create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     lab1_vapourtec_env_file, lab1_hplc_env_file, lab1_dir, lab2_vapourtec_env_file, lab2_hplc_env_file, lab2_dir, goal_request,

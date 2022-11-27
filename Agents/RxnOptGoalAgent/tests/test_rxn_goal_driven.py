@@ -24,13 +24,18 @@ logger = agentlogging.get_logger('dev')
 # 1. rogi agent and all rxn agents given pre-defined goal triples (leave the ROG agent out) #
 #############################################################################################
 @pytest.mark.parametrize(
-    "goal_set_iri,derivation_inputs,hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
+    "goal_set_iri, derivation_inputs, hplc_report_target_folder, fcexp_file_container_folder, local_agent_test",
     [
-        (cf.IRIs.GOALSET_1.value, cf.IRIs.DERIVATION_INPUTS.value, cf.HPLC_REPORT_LOCAL_TEST_DIR, cf.FCEXP_FILE_DIR, True),
-        # (cf.rogi_cf.IRIs.GOALSET_1.value, cf.rogi_cf.IRIs.DERIVATION_INPUTS.value, cf.DOCKER_INTEGRATION_DIR, None, False),
+        (
+            cf.IRIs.GOALSET_1.value,
+            cf.IRIs.DERIVATION_INPUTS.value,
+            cf.HPLC_REPORT_LOCAL_TEST_DIR,
+            cf.FCEXP_FILE_DIR,
+            True
+        ),
     ],
 )
-def _test_rxn_rogi(
+def test_rxn_rogi_LOCAL(
     initialise_blazegraph_fileserver_with_test_triples,
     create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     goal_set_iri, derivation_inputs, hplc_report_target_folder, fcexp_file_container_folder, local_agent_test
@@ -153,7 +158,7 @@ local_agent_test = True
         ),
     ],
 )
-def _test_rxn_goal_request(
+def test_rxn_goal_request_LOCAL(
     initialise_blazegraph_fileserver_with_test_triples,
     create_rog_agent, create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     vapourtec_agent_env_file, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
@@ -287,7 +292,7 @@ local_agent_test = True
         ),
     ],
 )
-def test_rxn_goal_iterations(
+def test_rxn_goal_iterations_LOCAL(
     initialise_blazegraph_fileserver_with_test_triples,
     create_rog_agent, create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     vapourtec_agent_env_file, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
@@ -370,6 +375,8 @@ def test_rxn_goal_iterations(
             rogi_completed_one_iter = sparql_client.check_if_rogi_complete_one_iter(rogi_derivation_iri)
             print(f"ROGI derivation {rogi_derivation_iri} is completed: {rogi_completed_one_iter}, current time: {time.time()}")
 
+        # Remove the periodic job monitoring the goal set
+        rog_agent.scheduler.remove_job(f'monitor_goal_set__{cf.getShortName(goal_set_iri)}')
         # Shutdown the scheduler to clean up if it's local agent test (as the agent scheduler must have started)
         if local_agent_test:
             rogi_agent.scheduler.shutdown()
