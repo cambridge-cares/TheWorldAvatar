@@ -8,3 +8,9 @@ KG_NAMESPACE = 'mvp'
 DB_URL = 'jdbc:postgresql://localhost:9997/postgres'
 SPARQL_QUERY_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{KG_NAMESPACE}/sparql'
 SPARQL_UPDATE_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{KG_NAMESPACE}/sparql'
+
+# Derivation instance base URL
+DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
+
+# Agent IRI
+AVG_SQM_PRICE_AGENT_IRI = 'http://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service'
