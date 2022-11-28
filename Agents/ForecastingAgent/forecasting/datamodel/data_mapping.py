@@ -11,6 +11,7 @@ from forecasting.datamodel.data_mapping import *
 import datetime as dt
 
 
+#NOTE: @mh807: Streamline py4jps gateway usages to avoid clashes
 # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 Instant = jpsBaseLibView.java.time.Instant
@@ -49,20 +50,19 @@ Required:
     'model_path_ckpt_link': The link to the darts checkpoint file of the model
     'model_path_pth_link': The link to the darts pth file of the model
     
-Optinal:
+Optional:
 'load_covariates_func': The function which is used to load the covariates. If not provided, no covariates are loaded.
-    Be aware, that the returend covariates must have be given for the whole 'horizon'. 
-    If the covariates are not long enough, Prophet is used, which does not require covariates
-    .
+    Be aware, that the returned covariates must be available for the whole 'horizon'. 
+    If the covariates are not long enough, Prophet is used, which does not require covariates.
     The function must return parameters:
     'covariates_iris': A list if iris, which are used.
     'covariates': A darts series object, which can be passed into model.predict()
     
-    The function will recieve the following parameters:
+    The function will receive the following parameters:
     'kgClient': The kgClient
     'tsClient': The tsClient
-    'lowerbound': The lowerbound of the time series data (can be None)
-    'upperbound': The upperbound of the time series data (can be None)
+    'lowerbound': The lower bound of the time series data (can be None)
+    'upperbound': The upper bound of the time series data (can be None)
 
     
 """

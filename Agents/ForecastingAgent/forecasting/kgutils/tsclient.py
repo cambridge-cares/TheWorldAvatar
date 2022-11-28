@@ -17,7 +17,7 @@ from forecasting.utils.properties import *
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
 
-
+#NOTE: @mh807: Update to latest time series client using try with resource connection
 class TSClient:
 
     def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 

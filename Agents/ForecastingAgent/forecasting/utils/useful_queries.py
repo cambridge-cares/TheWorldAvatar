@@ -164,9 +164,11 @@ def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
     values.
     """
     if lowerbound is not None and upperbound is not None:
+        #NOTE: @mh807: Update to latest time series client using try with resource connection
         ts = ts_client.tsclient.getTimeSeriesWithinBounds(
             [iri], lowerbound, upperbound, ts_client.conn)
     else:
+        #NOTE: @mh807: Update to latest time series client using try with resource connection
         ts = ts_client.tsclient.getTimeSeries([iri], ts_client.conn)
 
     dates = ts.getTimes()

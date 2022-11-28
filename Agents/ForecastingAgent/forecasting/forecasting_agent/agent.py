@@ -143,10 +143,12 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
 
 
 def instantiate_forecast_timeseries(tsClient, cfg, forecast):
+    #NOTE: @mh807: Update to latest time series client using try with resource connection
     tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['ts_data_type']], cfg['time_format'],
                                      tsClient.conn)
     ts = TSClient.create_timeseries([str(x) for x in forecast.time_index], [
                                     cfg['forecast_iri']], [forecast.values().squeeze().tolist()])
+    #NOTE: @mh807: Update to latest time series client using try with resource connection                                    
     tsClient.tsclient.addTimeSeriesData(ts, tsClient.conn)
 
 
@@ -156,6 +158,7 @@ def get_forecast_start_date(forecast_start_date, tsClient, cfg):
             isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
     else:
         # get the last value of ts and set next date as forecast start date
+        #NOTE: @mh807: Update to latest time series client using try with resource connection
         latest = tsClient.tsclient.getLatestData(cfg['ts_iri'], tsClient.conn)
         return pd.Timestamp(isoparse(latest.getTimes(
         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
