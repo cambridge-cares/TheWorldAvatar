@@ -28,7 +28,7 @@
 
   <!-- Micrograms Per Cubic Metre Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/microgramPerCubicMetre">
+  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/microgramPerCubicMetre">
     <rdfs:label xml:lang="en">microgram per cubic metre</rdfs:label>
     <rdfs:comment xml:lang="en">Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre.</rdfs:comment>
     <om:longcomment>Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre. It is a derived unit in the International System of Units.</om:longcomment>

@@ -67,6 +67,11 @@ public class GDALClient extends ContainerClient {
             for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
                 for (String filePath : filesOfType) {
                     uploadVectorToPostGIS(database, layername, filePath, options, append);
+                    // If inserting multiple sources into a single layer then ensure subsequent
+                    // files are appended.
+                    if (null != layername) {
+                        append = true;
+                    }
                 }
             }
         }

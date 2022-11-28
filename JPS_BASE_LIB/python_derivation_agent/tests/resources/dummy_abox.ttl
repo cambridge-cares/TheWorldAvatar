@@ -21,7 +21,5 @@
     example:hasValue "1"^^xsd:integer;
 .
 
-# # :listofpoints is a placeholder instance that to be updated by RandomAgent
-# :listofpoints
-#     rdf:type example:ListOfPoints;
-# .
+# timestamps for these pure inputs are not needed as they will be added by the
+# derivation framework at the creation of derivation markup
