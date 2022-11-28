@@ -46,6 +46,7 @@ import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
 import net.bytebuddy.asm.Advice.Argument;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -302,6 +303,7 @@ public class FeatureInfoAgentTest {
         // Mock clients
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
+        FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
         FeatureInfoAgent.TS_CLIENT_OVER = tsClient;
 
@@ -338,6 +340,8 @@ public class FeatureInfoAgentTest {
                 \"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
             """);
 
+            System.out.println(jsonResult.toString());
+
             Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
         } 
     }
@@ -353,6 +357,7 @@ public class FeatureInfoAgentTest {
         // Mock the RemoteStoreClient 
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
+        FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
 
         // Mock request
         HttpServletRequest request = spy(HttpServletRequest.class);
@@ -444,6 +449,7 @@ public class FeatureInfoAgentTest {
         // Mock clients
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, "http://fake-website.com/blazegraph/namespace/test/sparql");
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
+        FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
         FeatureInfoAgent.TS_CLIENT_OVER = tsClient;
 
@@ -480,6 +486,18 @@ public class FeatureInfoAgentTest {
     }
 
     
+    /**
+     * 
+     * @return
+     */
+    private RemoteRDBStoreClient mockRDBClient() throws Exception {
+        RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
+        when(rdbClient.getConnection())
+        .thenReturn(null);
+
+        return rdbClient;
+    }
+
     /**
      * Produces a mock RemoteStoreClient instance that returns the expected results.
      * 

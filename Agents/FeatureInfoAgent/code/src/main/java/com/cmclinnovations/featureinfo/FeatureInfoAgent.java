@@ -70,9 +70,15 @@ public class FeatureInfoAgent extends JPSAgent {
     protected static RemoteStoreClient RS_CLIENT_OVER;
 
     /**
+     * Override for RDB client to allow mocking during tests
+     */
+    protected static RemoteRDBStoreClient RDB_CLIENT_OVER;
+
+    /**
      * Override for Timeseries client to allow mocking during tests
      */
     protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
+
 
     /**
      * Common RDB connection
@@ -381,14 +387,7 @@ public class FeatureInfoAgent extends JPSAgent {
         
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
-        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
-            postEndpoint.get().url(),
-            postEndpoint.get().username(),
-            postEndpoint.get().password()
-        );
       
-        // Create timeseries client with cached RDB connection
-        if(RDB_CONN == null) RDB_CONN = rdbClient.getConnection();
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
             rsClient, 
             Instant.class
@@ -397,10 +396,18 @@ public class FeatureInfoAgent extends JPSAgent {
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
+        // Build RBD client
+        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
+            postEndpoint.get().url(),
+            postEndpoint.get().username(),
+            postEndpoint.get().password()
+        );
+
         // Build timeseries handler
-        TimeHandler handler = new TimeHandler(iri, classMatch, RDB_CONN, endpoints);
+        TimeHandler handler = new TimeHandler(iri, classMatch, endpoints);
         handler.setClients(
             (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
+            (RDB_CLIENT_OVER != null) ? RDB_CLIENT_OVER : rdbClient,
             (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
         );
 

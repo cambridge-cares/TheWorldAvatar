@@ -32,6 +32,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.EndpointType;
 import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -121,7 +122,6 @@ public class TimeHandlerTest {
         TimeHandler handler = new TimeHandler(
             "http://fake-sample-iri.com", 
             "SAMPLE-CLASS",
-            null,
             CONFIG.getBlazegraphEndpoints()
         );
 
@@ -134,6 +134,11 @@ public class TimeHandlerTest {
                 .thenReturn(
                     new org.json.JSONArray("[{\"Measurement\":\"http://fake-measurement-iri.com\",\"Name\":\"MeasurementOne\",\"Unit\":\"m/s\",\"PropertyOne\":\"ValueOne\",\"PropertyTwo\":\"ValueTwo\"}]")
                 );
+
+            // Mock RDB client
+            RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
+            when(rdbClient.getConnection())
+            .thenReturn(null);
 
             // Create mock Timeseries client
             TimeSeriesClient<Instant> tsClient = mock(TimeSeriesClient.class);
@@ -163,7 +168,7 @@ public class TimeHandlerTest {
             when(httpResponse.getWriter()).thenReturn(printWriter);
 
             // Handler setup
-            handler.setClients(rsClient, tsClient);
+            handler.setClients(rsClient, rdbClient, tsClient);
             handler.setHours(-1);
 
             // Get the resulting JSON object

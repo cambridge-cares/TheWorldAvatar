@@ -27,6 +27,7 @@ import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
 
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -63,6 +64,11 @@ public class TimeHandler {
     private RemoteStoreClient rsClient;
 
     /**
+     * Connection to RDB. 
+     */
+    private RemoteRDBStoreClient rdbClient;
+
+    /**
      * Connection to timeseries RDB
      */
     private TimeSeriesClient<Instant> tsClient;
@@ -78,20 +84,14 @@ public class TimeHandler {
     private HttpServletResponse response;
 
     /**
-     * Persistent connection to the underlying RDB.
-     */
-    private Connection rdbConnection;
-
-    /**
      * Initialise a new TimeHandler.
      * 
      * @param iri IRI of the asset.
      * @param classMatch name of class for asset.
-     * @param rdbConnection Persistent connection to the underlying RDB.
      * @param endpoint Blazegraph endpoint for the KG.
      */
-    public TimeHandler(String iri, String classMatch, Connection rdbConnection, ConfigEndpoint endpoint) {
-        this(iri, classMatch, rdbConnection, Arrays.asList(endpoint));
+    public TimeHandler(String iri, String classMatch, ConfigEndpoint endpoint) {
+        this(iri, classMatch, Arrays.asList(endpoint));
     }
 
     /**
@@ -99,17 +99,15 @@ public class TimeHandler {
      * 
      * @param iri IRI of the asset.
      * @param classMatch name of class for asset
-     * @param rdbConection Persistent connection to the underlying RDB.
      * @param endpoints Blazegraph endpoints for the KG.
      */
-    public TimeHandler(String iri, String classMatch, Connection rdbConnection, List<ConfigEndpoint> endpoints) {
+    public TimeHandler(String iri, String classMatch, List<ConfigEndpoint> endpoints) {
         String fixedIRI = iri;
         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
         if(!fixedIRI.endsWith(">")) fixedIRI = fixedIRI + ">";
 
         this.iri = fixedIRI;
         this.classMatch = classMatch;
-        this.rdbConnection = rdbConnection;
         this.endpoints.addAll(endpoints);
     }
 
@@ -119,8 +117,9 @@ public class TimeHandler {
      * @param rsClient KG connection client.
      * @param tsClient Timeseries client.
      */
-    public void setClients(RemoteStoreClient rsClient, TimeSeriesClient<Instant> tsClient) {
+    public void setClients(RemoteStoreClient rsClient, RemoteRDBStoreClient rdbClient, TimeSeriesClient<Instant> tsClient) {
         this.rsClient = rsClient;
+        this.rdbClient = rdbClient;
         this.tsClient = tsClient;
     }
 
@@ -247,20 +246,25 @@ public class TimeHandler {
     private JSONArray populateTimeseries(JSONArray measurements) {
         Map<String, TimeSeries<Instant>> tsObjectList = new LinkedHashMap<>();
 
-        // Build timeseries objects for all measurements
-        for(int i = 0; i < measurements.length(); i++) {
-            JSONObject entry = measurements.getJSONObject(i);
+        try (Connection rdbConnection = rdbClient.getConnection()) {
+            // Build timeseries objects for all measurements
+            for(int i = 0; i < measurements.length(); i++) {
+                JSONObject entry = measurements.getJSONObject(i);
 
-            String measureIRI = entry.getString("Measurement");
-            if(measureIRI == null) measureIRI = entry.getString("Forecast");
+                String measureIRI = entry.getString("Measurement");
+                if(measureIRI == null) measureIRI = entry.getString("Forecast");
 
-            // Get timeseries object
-            TimeSeries<Instant> tsObject = this.buildTimeseriesObject(measureIRI);
+                // Get timeseries object
+                TimeSeries<Instant> tsObject = this.buildTimeseriesObject(measureIRI, rdbConnection);
 
-            // Skip empty objects
-            if(tsObject == null || !tsObject.getTimes().isEmpty()) tsObjectList.put(measureIRI, tsObject);
+                // Skip empty objects
+                if(tsObject == null || !tsObject.getTimes().isEmpty()) tsObjectList.put(measureIRI, tsObject);
+            }
+        } catch(Exception exception) {
+            LOGGER.error("Exception when using Connection in try block!", exception);
+            return null;
         }
-
+       
         // Skip if all empty
         if(tsObjectList.isEmpty()) return null;
 
@@ -338,10 +342,11 @@ public class TimeHandler {
      * Builds a timeseries object for the input measurement IRI.
      * 
      * @param measureIRI IRI of measurement
+     * @param rdbConnection connection to RDB
      * 
      * @return timeseries object
      */
-    protected TimeSeries<Instant> buildTimeseriesObject(String measureIRI) {
+    protected TimeSeries<Instant> buildTimeseriesObject(String measureIRI, Connection rdbConnection) {
 
         // Remove the brackets from the IRI as the timeseries client is shit and can't handle them
         String fixedIRI = measureIRI;
@@ -353,7 +358,7 @@ public class TimeHandler {
         TimeSeries<Instant> result = null;
         if(this.hours < 0) {
             // Get all data
-            result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)), this.rdbConnection);
+            result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)), rdbConnection);
         } else {
             // Determine bounds
             Instant lowerBound = LocalDateTime.now().minusHours(this.hours).toInstant(ZoneOffset.UTC);
@@ -362,7 +367,7 @@ public class TimeHandler {
                     new ArrayList<>(Arrays.asList(fixedIRI)),
                     lowerBound,
                     upperBound,
-                    this.rdbConnection
+                    rdbConnection
             );
         }
         return result;
