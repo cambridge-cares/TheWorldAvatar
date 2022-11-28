@@ -30,7 +30,7 @@
 
   <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/ElectricalPower">
     <rdfs:label xml:lang="en">The rate at which electrical energy is transferred by an electric circuit.</rdfs:label>
-    <om:alternativeLabel xml:lang="en">Electrical Power</om:alternativeLabel>
+    <om:alternativeLabel xml:lang="en">electrical power</om:alternativeLabel>
     <rdfs:subClassOf rdf:resource="&om;Power"/> 
   </owl:Class>
 
