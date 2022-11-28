@@ -19,6 +19,18 @@ UKHPI_INDEX = UKHPI + 'housePriceIndex'
 UKHPI_REF_MONTH = UKHPI + 'refMonth'
 RT_FLOOD_ALERT_WARNING = RT + 'FloodAlertOrWarning'
 
+# TransactionRecord
+PPI = 'http://landregistry.data.gov.uk/def/ppi/'
+PPI_TRANSACTIONRECORD = PPI + 'TransactionRecord'
+
+# From OntoBuiltEnv TBox
+OBE_POSTALCODE = OBE + 'PostalCode'
+OBE_PROPERTY = OBE + 'Property'
+OBE_HASPOSTALCODE = OBE + 'hasPostalCode'
+OBE_HASADMINISTRATIVEDISTRICT = OBE + 'hasAdministrativeDistrict'
+OBE_HASADDRESS = OBE + 'hasAddress'
+OBE_HASLATESTTRANSACTIONRECORD = OBE + 'hasLatestTransactionRecord'
+OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OF_HAS_SEVERITY = OF + 'hasSeverity'
