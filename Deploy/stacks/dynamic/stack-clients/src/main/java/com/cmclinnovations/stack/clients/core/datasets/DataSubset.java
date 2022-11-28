@@ -17,7 +17,7 @@ public abstract class DataSubset {
 
     private String name;
     @JsonProperty
-    private String subdirectory;
+    private Path subdirectory;
 
     @JsonProperty
     private boolean skip;
@@ -26,8 +26,8 @@ public abstract class DataSubset {
         return name;
     }
 
-    public Path getDirectory(Path parentDirectory) {
-        return null != subdirectory ? parentDirectory.resolve(subdirectory) : parentDirectory;
+    public Path getSubdirectory() {
+        return (null != subdirectory) ? subdirectory : Path.of("");
     }
 
     public boolean isSkip() {

@@ -11,7 +11,8 @@ public class RDF extends DataSubset {
 
     @Override
     void loadInternal(Dataset parent) {
-        BlazegraphClient.getInstance().uploadRDFFiles(parent.getDirectory(), parent.getNamespace());
+        BlazegraphClient.getInstance().uploadRDFFiles(
+                parent.getDirectory().resolve(this.getSubdirectory()), parent.getNamespace());
     }
 
 }

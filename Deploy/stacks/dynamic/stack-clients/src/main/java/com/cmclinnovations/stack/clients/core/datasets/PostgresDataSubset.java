@@ -37,7 +37,7 @@ public abstract class PostgresDataSubset extends DataSubset {
     @Override
     void loadInternal(Dataset parent) {
         String database = parent.getDatabase();
-        Path dataSubsetDirectory = parent.getDirectory().resolve(getDirectory(parent.getDirectory()));
+        Path dataSubsetDirectory = parent.getDirectory().resolve(this.getSubdirectory());
         loadData(dataSubsetDirectory, database);
         runSQLPostProcess(database);
     }
