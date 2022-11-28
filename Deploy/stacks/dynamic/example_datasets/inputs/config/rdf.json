@@ -1,0 +1,7 @@
+{
+    "externalDatasets": [
+        "triples",
+        "triples_no_inference",
+        "quads"
+    ]
+}
