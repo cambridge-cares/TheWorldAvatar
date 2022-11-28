@@ -1,0 +1,2027 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontosewage/"
+     xml:base="https://www.theworldavatar.com/kg/ontosewage/"
+     xmlns:OntoSewage="https://www.theworldavatar.com/kg/ontosewage/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosewage/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 November 2022</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSewage is an ontology developed for representing sewerage system.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#wktLiteral -->
+
+
+    <rdfs:Datatype rdf:about="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://semanticscience.org/resource/SIO_000061 -->
+
+
+    <owl:ObjectProperty rdf:about="http://semanticscience.org/resource/SIO_000061">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://rdfs.co/juso/District"/>
+                    <rdf:Description rdf:about="http://rdfs.co/juso/Street"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://semanticscience.org/ontology/sio.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a measure and the respective unit of measure</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Inclination"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4watr/Manhole"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://schema.org/location"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontologydesignpatterns.org/ont/dul/DUL.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl#hasPart -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl#hasPart">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageNetwork"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasBranchPipe -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasBranchPipe">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a branch connection and a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has branch pipe</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasChannelType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasChannelType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ChannelType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between construction properties of a sewerage component and its channel type</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has channel type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasClass -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasClass">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Cover"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CoverClass"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a cover and cover class</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has class</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasConnectionProperties -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasConnectionProperties">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and connection properties</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has connection properties</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasConnectionType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasConnectionType">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Manhole"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a manhole and connection type</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has connection type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasConstructionProperties -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasConstructionProperties">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sewerage component and its construction properties</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has construction properties</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasCoordinates -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasCoordinates">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="https://schema.org/GeoCoordinates"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a location and Geo coordinates</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has coordinates</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasCover -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasCover">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Manhole"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Cover"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a manhole and cover</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has cover</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasCrossSection -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasCrossSection">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CrossSection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and its cross section</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has cross section</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasDepth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasDepth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shaft"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a shaft and depth</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has depth</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasDistanceFromMainPipe -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasDistanceFromMainPipe">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship of distance between a branch connection and main pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has distance from main pipe</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasElevation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasElevation">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="https://schema.org/Elevation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a location and elevation</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elevation</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasElevationAboveSeaLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasElevationAboveSeaLevel">
+        <rdfs:domain rdf:resource="https://schema.org/Elevation"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which shows the elevation above see level of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elevation above sea level</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasEndpointType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasEndpointType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/EndpointType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between connection properties of a pipe and endpoint of the connection</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has endpoint type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasFlume -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasFlume">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Manhole"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Flume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a manhole and flume</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flume</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasFunctionalState -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasFunctionalState">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageRecords"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between sewerage records and its functional state</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has functional state</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CrossSection"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a cross section of a pipe and height</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has height</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasInclination -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasInclination">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Inclination"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and inclination</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has inclination</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasInletLocation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasInletLocation">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://schema.org/location"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and location (inlet)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has inlet location</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasLength -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasLength">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Flume"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Shaft"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4watr/Pipe"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe or a flume or a shaft and length</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has length</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasMainPipe -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasMainPipe">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a branch connection and a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has main pipe</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasNodeType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasNodeType">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Manhole"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a manhole and its type</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has node type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasOutletLocation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasOutletLocation">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://schema.org/location"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and location (outlet)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has outlet location</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasOwnershipType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasOwnershipType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageRecords"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/OwnershipType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between sewerage records and its ownership type</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ownership type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasPipeType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasPipeType">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/PipeType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe type and pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has pipe type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasSewerageRecords -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasSewerageRecords">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageRecords"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sewerage component and its records</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has sewerage records</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasShaft -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasShaft">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Manhole"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shaft"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a manhole and shaft</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has shaft</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasShape -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasShape">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Cover"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/CrossSection"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Flume"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Shaft"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a cross section of a pipe and shape</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has shape</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasUsage -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasUsage">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sewerage component and sewerage usage</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has usage</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasWallThickness -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasWallThickness">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and its wall thickness</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has wall thickness</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasWidth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasWidth">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/CrossSection"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Flume"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Shaft"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a cross section of a pipe and width</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has width</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/isAssociatedWith -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/isAssociatedWith">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a location and associated infrastructure</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is associated with</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/usedFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/usedFor">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageFluid"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pipe and sewerage fluid</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">used for</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/digitalconstruction/0.3/BuildingMaterials#hasMaterial -->
+
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#hasMaterial">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosewage/Cover"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/digitalconstruction/0.3/BuildingMaterials</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/symbol -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/symbol">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
+        <rdfs:domain rdf:resource="https://schema.org/GeoCoordinates"/>
+        <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/geosparql</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/clockPositionOfBranchPipe -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/clockPositionOfBranchPipe">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">position of branch pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">clock position of branch pipe</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/componentID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/componentID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sewerage component ID</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">component ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/constructionYear -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/constructionYear">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">construction year for a sewerage component</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">construction year</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasCatchmentAreaKey -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasCatchmentAreaKey">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">catchment area key of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has catchment area key</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasConnectionID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasConnectionID">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">connection ID of a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has connection ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasCoordinateReference -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasCoordinateReference">
+        <rdfs:domain rdf:resource="https://schema.org/GeoCoordinates"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">coordinate reference of a geo coordinate</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has coordinate reference</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasDistrictName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasDistrictName">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/District"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">district name of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has district name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasDistrictReference -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasDistrictReference">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/District"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">district reference of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has district reference</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasDownstreamConnector -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasDownstreamConnector">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is where the sewage exits a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has downstream connector</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasElevationAccuracy -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasElevationAccuracy">
+        <rdfs:domain rdf:resource="https://schema.org/Elevation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which shows the elevation accuracy</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elevation accuracy</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasElevationReference -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasElevationReference">
+        <rdfs:domain rdf:resource="https://schema.org/Elevation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which shows the elevation reference</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elevation reference</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasEndpointObject -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasEndpointObject">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">endpoint object of a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has endpoint object</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasPointDesignation -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasPointDesignation">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">point designation of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has point designation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasPositionAccuracy -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasPositionAccuracy">
+        <rdfs:domain rdf:resource="https://schema.org/GeoCoordinates"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">position accuracy of a geo coordinate</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has position accuracy</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasSewagePlantID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasSewagePlantID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageRecords"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sewerage plant ID</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has sewage plant ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasSourceID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasSourceID">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4watr/Pipe"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">source ID of a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has source ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasStreetName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasStreetName">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/Street"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">street name of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has street name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasStreetReference -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasStreetReference">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/Street"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">street reference of a location</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has street reference</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/hasUpstreamConnector -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/hasUpstreamConnector">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is where the sewage enters a pipe</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has upstream connector</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/isInFloodplane -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/isInFloodplane">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">tell whether the location is in flood plane</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is in flood plane</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/isInFlowDirection -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/isInFlowDirection">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosewage/BranchConnection"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">defines whether relative distance on main pipe is measured in or against flow direction</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is in flow direction</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/isInWaterProtectionZone -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosewage/isInWaterProtectionZone">
+        <rdfs:domain rdf:resource="https://schema.org/location"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">tells whether the location is in water protection zone</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is in water protection zone</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://rdfs.co/juso/District -->
+
+
+    <owl:Class rdf:about="http://rdfs.co/juso/District">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://rdfs.co/juso/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://rdfs.co/juso/Street -->
+
+
+    <owl:Class rdf:about="http://rdfs.co/juso/Street">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://rdfs.co/juso/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Depth -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Distance -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Length -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Angular -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Angular">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angular</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the associated infrastructure of a location.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Associated infrastructure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/BranchConnection -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/BranchConnection">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">means taking a tapping connection from a run pipe directly by making a hole in the run pipe or using an outlet fitting, which provides a connection of pipe for fluid to flow from a higher diameter to a lower diameter of the pipe.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Branch connection</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/BuildingConnection -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/BuildingConnection">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building connection</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ChannelType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ChannelType">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Channel type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Circle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Circle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Circle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/CircleProfile -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/CircleProfile">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Circle profile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Circular -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Circular">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Circular</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/City -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/City">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/OwnershipType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">City</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Concrete -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Concrete">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Concrete</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ConnectingDuct -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConnectingDuct">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/PipeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connecting duct</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ConnectionLine -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConnectionLine">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/PipeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connection line</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConnectionProperties">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">are the connection properties of a pipe.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connection properties</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ConnectionType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConnectionType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the type of the node connected to a manhole.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connection type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ConstructionProperties">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">are the construction properties of a sewerage component such as construction year and materials used.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction properties</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Cover -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Cover">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is a removable plate forming the lid over the opening of a manhole, an opening large enough for a person to pass through that is used as an access point for an underground vault or pipe.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cover</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/CoverClass -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/CoverClass">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the type of manhole&apos;s cover.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cover class</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/CrossSection -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/CrossSection">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a surface or shape exposed by making a straight cut through pipe, especially at right angles to an axis</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cross section</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/DomesticWasteWater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/DomesticWasteWater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageFluid"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Domestic waste water</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/EggShaped -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/EggShaped">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Egg shaped</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/EndpointType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/EndpointType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is defined as the type of endpoint which is connected to a pipe.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Endpoint type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Expanded -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Expanded">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Expanded</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/FictionalShaft -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/FictionalShaft">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CoverClass"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fictional shaft</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/FictitiousManholeConnectionType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/FictitiousManholeConnectionType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fictitious manhole connection type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/FictitiousManholeNodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/FictitiousManholeNodeType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fictitious manhole node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Flume -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Flume">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is a human-made channel for water, in the form of an open declined gravity chute whose walls are raised above the surrounding terrain.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flume</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/FunctionalState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/FunctionalState">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the operational state for sewerage component, i.e., under construction</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Functional state</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/GrayCastIron -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/GrayCastIron">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gray cast iron</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Inclination -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Inclination">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the degree of sloping in a pipe.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inclination</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/InspectionOpening -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/InspectionOpening">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inspection opening</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Insulated -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Insulated">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Insulated</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/MainNetwork -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/MainNetwork">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageNetwork"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">contains main pipes</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Main network</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/MainRoad -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/MainRoad">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Main road</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ManholeEndPoint -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ManholeEndPoint">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/EndpointType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Manhole end point</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ManholeNodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ManholeNodeType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Manhole node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/MixedProcess -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/MixedProcess">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed process</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/NodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/NodeType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the type of a manhole.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/OpenTrench -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/OpenTrench">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Open trench</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/OutOfService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/OutOfService">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Out of service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/OutletNodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/OutletNodeType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Outlet node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/OwnershipType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/OwnershipType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">defines the type of ownership for sewerage component</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ownership type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/PipeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/PipeType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the type of pipe such as venting.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pipe type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Planning -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Planning">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/PolyvinylChlorideHard -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/PolyvinylChlorideHard">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyvinyl chloride hard</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Position -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Position">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/PipeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Position</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/PressureDrainage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/PressureDrainage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure drainage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Private -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Private">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/OwnershipType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Private</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/PrivateProperty -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/PrivateProperty">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Private property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/PropertyConnection -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/PropertyConnection">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/EndpointType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property connection</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Public -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Public">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/OwnershipType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Public</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/RainWater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/RainWater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageFluid"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rain water</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ReceivingWater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ReceivingWater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Receiving water</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Rectangle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Rectangle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rectangle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/RectangularShaft -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/RectangularShaft">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rectangular shaft</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ReinforcedConcrete -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ReinforcedConcrete">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reinforced concrete</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/ReliefLine -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/ReliefLine">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/PipeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relief line</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Round -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Round">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Round</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SemiCircle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SemiCircle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semi circle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SewerageComponent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the infrastructure that conveys sewage or surface runoff (stormwater, meltwater, rainwater) using sewers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewerage component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SewerageFluid -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SewerageFluid">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is a type of wastewater that is produced by a community of people.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewerage fluid</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SewerageNetwork -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SewerageNetwork">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is a conglomeration of pipes and sewers that work together to collect and drain wastewater from the population or industrial centers to off-site treatment facilities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewerage network</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SewerageRecords -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SewerageRecords">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the records such as functional state, ID, and owner of a sewerage component</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewerage records</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SewerageUsage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">representing for what the sewerage is used</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewerage usage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Shaft -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Shaft">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">it is below the taper and leads down to the base of the manhole.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shaft</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Shape -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Shape">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is the external form of a Manhole&apos;s cover, flume, shaft, or cross section.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shape</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SideRoad -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SideRoad">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side road</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SideWalk -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SideWalk">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side walk</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Square -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Square">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/Shape"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Square</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StandardShaftCircularProfile -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StandardShaftCircularProfile">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">standard shaft circular profile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Stock -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Stock">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/FunctionalState"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stock</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Stoneware -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Stoneware">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stoneware</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StormWater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StormWater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storm water</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StreetDrainage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StreetDrainage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street drainage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StreetInlet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StreetInlet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/EndpointType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street inlet</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StreetInletConnectionType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StreetInletConnectionType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/ConnectionType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street inlet connection type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StreetInletNodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StreetInletNodeType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street inlet node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/StructureNodeType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/StructureNodeType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/NodeType"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Structure node type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/SubNetwork -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/SubNetwork">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageNetwork"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">contains branch pipes</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sub network</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/Terrain -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/Terrain">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/AssociatedInfrastructure"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Terrain</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/WasteWater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/WasteWater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Waste water</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/WaterPipe -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/WaterPipe">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageUsage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water pipe</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/12.5T -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/12.5T">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CoverClass"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12.5T</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosewage/40T -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosewage/40T">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/CoverClass"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosewage/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">40T</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/saref4watr/Manhole -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4watr/Manhole">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/saref4watr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/saref4watr/Pipe -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4watr/Pipe">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosewage/SewerageComponent"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/saref4watr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/Elevation -->
+
+
+    <owl:Class rdf:about="https://schema.org/Elevation"/>
+    
+
+
+    <!-- https://schema.org/GeoCoordinates -->
+
+
+    <owl:Class rdf:about="https://schema.org/GeoCoordinates">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://schema.org/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://schema.org/location -->
+
+
+    <owl:Class rdf:about="https://schema.org/location">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://schema.org/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material -->
+
+
+    <owl:Class rdf:about="https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/digitalconstruction/0.3/BuildingMaterials</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
