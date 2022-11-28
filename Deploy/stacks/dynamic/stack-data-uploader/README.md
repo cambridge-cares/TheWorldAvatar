@@ -230,7 +230,7 @@ The Ontop OBDA file format is also described in detail in the [OBDA mapping file
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data) and [`tabular`](#tabular-data).
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data) and [`rdf`](#rdf-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -395,6 +395,14 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 - [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
 - [PostGIS][vector-postgis] (mainly as the output)
 
+### RDF Data
+
+The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
+The full list of file formats that are supported is given [here][RSC-uploader].
+The data loader does the following when uploading RDF data: 
+1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
+
+There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
 
 ## OBDA Mapping File
 
@@ -550,6 +558,8 @@ This way you can look at look at the user interfaces of the various services (se
     ```
 
 [Turtle]: https://www.w3.org/TR/2014/REC-turtle-20140225/
+
+[RSC-uploader]:   https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java#L875
 
 [gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
 [ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
