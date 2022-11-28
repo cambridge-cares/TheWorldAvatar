@@ -2,7 +2,7 @@ from forecasting.datamodel.iris import *
 from forecasting.utils.tools import *
 import pandas as pd
 from darts import concatenate
-
+from forecasting.errorhandling.exceptions import KGException
 
 def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict = {}):
     """
@@ -163,13 +163,21 @@ def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
     :return: A tuple of two lists. The first list is a list of dates, the second list is a list of
     values.
     """
+    
     if lowerbound is not None and upperbound is not None:
-        #NOTE: @mh807: Update to latest time series client using try with resource connection
-        ts = ts_client.tsclient.getTimeSeriesWithinBounds(
-            [iri], lowerbound, upperbound, ts_client.conn)
+        try:
+            with ts_client.connect() as conn:
+                ts = ts_client.tsclient.getTimeSeriesWithinBounds(
+                    [iri], lowerbound, upperbound, conn)    
+        except:
+            raise KGException(f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
     else:
-        #NOTE: @mh807: Update to latest time series client using try with resource connection
-        ts = ts_client.tsclient.getTimeSeries([iri], ts_client.conn)
+        try:
+            with ts_client.connect() as conn:
+                ts = ts_client.tsclient.getTimeSeries([iri], conn)
+        except:
+            raise KGException(f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
+        
 
     dates = ts.getTimes()
     # Unwrap Java time objects

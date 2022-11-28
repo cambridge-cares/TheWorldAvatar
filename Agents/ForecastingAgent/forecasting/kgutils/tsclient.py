@@ -12,19 +12,26 @@ from forecasting.kgutils.javagateway import jpsBaseLibGW
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.datamodel.data_mapping import TIMECLASS
 from forecasting.utils.properties import *
+from contextlib import contextmanager
 
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
+# The purpose of this module is to provide functionality to use
+# the TimeSeriesClient from the JPS_BASE_LIB
 
-#NOTE: @mh807: Update to latest time series client using try with resource connection
+
 class TSClient:
+
+    # Create ONE JVM module view on class level and import all required java classes
+    jpsBaseLibView = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
-
         Arguments:
             kg_client (KGClient): KGClient object (as per `kgclient.py`)
             timeclass: Java time class objects supported by PostgreSQL
@@ -34,39 +41,75 @@ class TSClient:
             rdb_password (str): Password for relational database
         """
 
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
-
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            connection = jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
-            self.conn = connection.getConnection()
+            self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
-            #logger.("Unable to initialise TS client RDB connection.")
-            raise TSException("Unable to initialise TS client RDB connection.") from ex
+            raise TSException("Unable to initialise TS Remote Store client.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
-            self.tsclient = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
+            self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
-            #logger.("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
 
 
+    @contextmanager
+    def connect(self):
+        """
+        Create context manager for RDB connection using getConnection method of Java
+        TimeSeries client (i.e. to ensure connection is closed after use)
+        """
+        conn = None
+        try:            
+            conn = self.connection.getConnection()
+            yield conn
+        finally:
+            if conn is not None:
+                conn.close()
+
+
     @staticmethod
-    def create_timeseries(times: list, iris: list, values: list):
-        # Create Java TimeSeries object (i.e. to attach via TSClient)
-
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
-
+    def create_timeseries(times: list, dataIRIs: list, values: list):
+        """
+        Create Java TimeSeries object (i.e. to attach via TSClient)
+        
+        Arguments:
+            times (list): List of time stamps
+            dataIRIs (list): List of dataIRIs
+            values (list): List of list of values per dataIRI     
+        """
         try:
-            timeseries = jpsBaseLibView.TimeSeries(times, iris, values)
+            timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:
-            #logger.("Unable to create timeseries.")
             raise TSException("Unable to create timeseries.") from ex
         
         return timeseries
+
+"""
+HOW TO USE:
+
+Instantiate time series client:
+    1) Create KGClient object (as per `kgclient.py`)
+       kgclient_1 = KGClient(query_endpoint, update_endpoint)
+
+    2) Create TSClient object with default settings
+       ts_client = TSClient(kg_client=kgclient_1)
+
+
+Instantiate a time series (i.e. add triples in KG and create RDB tables):
+    with ts_client.connect() as conn:
+        ts_client.tsclient.initTimeSeries([data_IRI], [DATACLASS], TIME_FORMAT, conn)
+
+    DATACLASSES: DOUBLE, INTEGER, (further to be added as needed)
+
+
+Add time series data (i.e. upload actual data to RDB table):
+    1) Create timeseries Java object
+       ts = TSClient.create_timeseries(time_list, [data_IRI], [value_list])
+
+    2) Add timeseries data via TimeSeries client
+       with ts_client.connect() as conn:
+            ts_client.tsclient.addTimeSeriesData(ts, conn)
+
+"""
