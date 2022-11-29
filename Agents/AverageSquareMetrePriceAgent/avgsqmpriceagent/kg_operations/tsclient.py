@@ -8,7 +8,7 @@
 
 from contextlib import contextmanager
 
-import agentlogging
+from py4jps import agentlogging
 from avgsqmpriceagent.errorhandling.exceptions import TSException
 from avgsqmpriceagent.kg_operations.javagateway import jpsBaseLibGW
 from avgsqmpriceagent.datamodel.data import TIMECLASS
