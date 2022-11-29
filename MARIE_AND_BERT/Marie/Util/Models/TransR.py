@@ -6,7 +6,7 @@ from torch.nn.functional import normalize
 from torch.nn.init import xavier_uniform
 from torch import matmul
 from Marie.Util.Embedding.EmbeddingTrainer import Trainer
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import  DATA_DIR
 
 

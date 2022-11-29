@@ -120,3 +120,4 @@ JPS_MARIE_AND_BERT/Dataset
 MARIE_AND_BERT/Data
 MARIE_AND_BERT/archived
 MARIE_AND_BERT/**/*.log
+MARIE_AND_BERT/Training/ScoringFunction/playground/entity_list

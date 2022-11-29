@@ -1,48 +1,48 @@
 import os
-from random import random
-from random import uniform
 
-import numpy as np
 import pandas
 import torch
 from torch import nn
 
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
-from Training.Embedding.TransE_Trainer import Trainer as TransETrainer
 
 
 class TransE(nn.Module):
 
-    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cpu'):
+    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cuda', dataset_path="ontospecies"):
         super(TransE, self).__init__()
         self.dim = dim
         self.ent_num = ent_num
         self.rel_num = rel_num
+        self.dataset_path = dataset_path
 
-        self.ent_embedding = self._init_ent_embedding()
-        self.rel_embedding = self._init_rel_embedding()
         if resume_training:
             print('Loading pretrained embeddings')
             self.ent_embedding = self.load_ent_embedding()
             self.rel_embedding = self.load_rel_embedding()
+        else:
+            self.ent_embedding = self._init_ent_embedding()
+            self.rel_embedding = self._init_rel_embedding()
 
         self.device = device
         self.criterion = nn.MarginRankingLoss(margin=5, reduction='none').to(device)
         self.norm = 1
 
     def load_ent_embedding(self):
-        tsv_file_ent = pandas.read_csv(os.path.join(DATA_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
+        print(f"loading embedding from {os.path.join(DATA_DIR, self.dataset_path, 'ent_embedding.tsv')}")
+        tsv_file_ent = pandas.read_csv(os.path.join(DATA_DIR, self.dataset_path, 'ent_embedding.tsv'), sep='\t',
+                                       header=None)
         pretrained_ent_embedding = torch.FloatTensor(tsv_file_ent.values)
         self.ent_embedding = nn.Embedding.from_pretrained(pretrained_ent_embedding).requires_grad_(True)
         return self.ent_embedding
 
     def load_rel_embedding(self):
-        tsv_file_rel = pandas.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        tsv_file_rel = pandas.read_csv(os.path.join(DATA_DIR, self.dataset_path, 'rel_embedding.tsv'), sep='\t',
+                                       header=None)
         pretrained_rel_embedding = torch.FloatTensor(tsv_file_rel.values)
         self.rel_embedding = nn.Embedding.from_pretrained(pretrained_rel_embedding).requires_grad_(True)
         # self.rel_embedding.weight.data[:-1, :].div_(self.rel_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
-
         return self.rel_embedding
 
     def _init_ent_embedding(self):
@@ -98,7 +98,7 @@ class TransE(nn.Module):
         where the loss is 0. if x2 < x1, then the value will be the drift ...
         therefore, the distance must be normalized into a [0,1] space
         '''
-
+        # CID1    charge    CID3_charge
         return (head + rel - tail).norm(p=self.norm, dim=1).to(self.device)
 
     def predict(self, triplets: torch.LongTensor):
@@ -108,21 +108,3 @@ class TransE(nn.Module):
         """
 
         return self.distance(triplets).to(self.device)
-
-
-if __name__ == '__main__':
-    train_triplets = [line.split('\t') for line in
-                      open(os.path.join('pubchemini-train.txt')).read().splitlines()]
-
-    test_triplets = [line.split('\t') for line in
-                     open(os.path.join('pubchemini-test.txt')).read().splitlines()]
-
-    train_set = Dataset(train_triplets)
-    test_set = Dataset(test_triplets)
-
-    e_num = train_set.ent_num
-    r_num = train_set.rel_num
-    model = TransE(dim=50, ent_num=e_num, rel_num=r_num)
-    my_transe_trainer = TransETrainer(dataset_name="pubchemini", load_pretrained_embeddings=False, dim=20,
-                                      batch_size=64)
-    my_transe_trainer.train()

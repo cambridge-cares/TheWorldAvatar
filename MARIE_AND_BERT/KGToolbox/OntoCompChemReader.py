@@ -1,20 +1,11 @@
 import json
 import os
-import urllib.request
-import urllib.response
-import logging
-from http.client import InvalidURL
-from pprint import pprint
-from urllib.error import HTTPError, URLError
-import urllib.parse
-import urllib.request
 
 import pandas
-import urllib3
 from SPARQLWrapper import SPARQLWrapper, JSON
-from KGToolbox.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, ONTOCOMPCHEM_ALL_SPEICES, \
+from Marie.Util.Web.SPARQLWarehouse import ONTOCOMPCHEM_ALL_SPEICES, ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, \
     ONTOCOMPCHEM_ALL_CALCULATION_QUERY
-from Marie.Util.location import ARCHIVE_DIR
+from Marie.Util.location import DATA_DIR
 
 
 class OntoCompChemReader:
@@ -50,20 +41,25 @@ class OntoCompChemReader:
 
     def construct_value_dict(self):
         value_dict = {}
-        all_calculation = json.loads(open(os.path.join(ARCHIVE_DIR, 'ontocompchem_all_calculation.json')).read())
+        counter = 0
+        all_calculation = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem' ,'ontocompchem_all_calculation.json')).read())
         col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
         for row in all_calculation['results']['bindings']:
+            counter += 1
+            print(f"{counter} out of {len(all_calculation['results']['bindings'])}")
             species = row['species']['value'].split('/')[-1]
             ocIRI = row['ocIRI']['value'].split('/')[-1]
-            for col_n in col_names:
-                if col_n in row:
-                    node = row[col_n]['value'].split('/')[-1]
-                    if node in value_dict:
-                        print('This is big problem')
-                    else:
-                        value_dict[node] = row[col_n + 'Value']['value']
+            if "Species_" in species:
+                for col_n in col_names:
+                    if col_n in row:
+                        node = row[col_n]['value'].split('/')[-1]
+                        if node in value_dict:
+                            print('This is big problem')
+                        else:
+                            if not node.endswith("Value"):
+                                value_dict[node + "Value"] = row[col_n + 'Value']['value']
 
-        with open(os.path.join(ARCHIVE_DIR, 'ontocompchem_value_dict.json'), 'w') as f:
+        with open(os.path.join(DATA_DIR,'CrossGraph/ontocompchem' , 'ontocompchem_value_dict.json'), 'w') as f:
             f.write(json.dumps(value_dict))
             f.close()
 
@@ -75,44 +71,44 @@ class OntoCompChemReader:
         # ocIRI - gc:isCalculationOn  -> rotSym - hasRotationalSymmetryNumber -> value
 
         triples = []
-        all_calculation = json.loads(open(os.path.join(ARCHIVE_DIR, 'ontocompchem_all_calculation.json')).read())
+        all_calculation = json.loads(
+            open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json')).read())
         col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
-        rel_dict = {'geomType': 'hasGeometryType', 'vibAnal':'oc:hasFrequencies',
+        rel_dict = {'geomType': 'hasGeometryType', 'vibAnal': 'oc:hasFrequencies',
                     'rotConsts': 'oc:hasRotationalConstants', 'rotSym': 'oc:hasRotationalSymmetryNumber'}
         for row in all_calculation['results']['bindings']:
             species = row['species']['value'].split('/')[-1]
-            ocIRI = row['ocIRI']['value'].split('/')[-1]
-            triples.append((ocIRI, 'oc:hasUniqueSpecies', species))
+            if "Species_" in species:
+                ocIRI = row['ocIRI']['value'].split('/')[-1]
+                triples.append((ocIRI, 'oc:hasUniqueSpecies', species))
+                triples.append((species, 'type', "os:Species"))
+                for col_n in col_names:
+                    if col_n in row:
+                        node = row[col_n]['value'].split('/')[-1]
+                        triples.append((ocIRI, 'gc:isCalculationOn', node))
+                        triples.append((node, rel_dict[col_n], node + 'Value'))
+                        # add the implicit relations
+                        triples.append((species, rel_dict[col_n] + '_latent', node + 'Value'))
 
-
-            for col_n in col_names:
-                if col_n in row:
-                    node = row[col_n]['value'].split('/')[-1]
-                    triples.append((ocIRI, 'gc:isCalculationOn', node))
-                    triples.append((node, rel_dict[col_n], node + 'Value'))
-
-        df_triples = pandas.DataFrame(triples, columns = ["head", "rel", "tail"])
-        df_triples.to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation/ontocompchem_calculation-train.txt'),
+        df_triples = pandas.DataFrame(triples, columns=["head", "rel", "tail"])
+        df_triples.to_csv(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem-train.txt'),
                           sep='\t', index=False, header=False)
-        df_triples.sample(frac=0.2).to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation'
-                                                                     '/ontocompchem_calculation-test.txt'),
-                          sep='\t', index=False, header=False)
-        df_triples.sample(frac=0.2).to_csv(os.path.join(ARCHIVE_DIR, 'ontocompchem_calculation'
-                                                                     '/ontocompchem_calculation-valid.txt'),
-                          sep='\t', index=False, header=False)
+        df_triples.sample(frac=0.2).to_csv(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem-test.txt'),
+                                           sep='\t', index=False, header=False)
+        df_triples.sample(frac=0.2).to_csv(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem-valid.txt'),
+                                           sep='\t', index=False, header=False)
 
 
 if __name__ == '__main__':
     occr = OntoCompChemReader()
     # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY)
     # occr.process_query_result(rst)
-    # pprint(rst)
     # occr.find_all_unique_species_calculation_pairs()
     # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_ALL_CALCULATION_QUERY)
-    # with open(os.path.join(ARCHIVE_DIR, 'ontocompchem_all_calculation.json'),'w') as f:
+    # with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json'), 'w') as f:
     #     f.write(json.dumps(rst))
     #     f.close()
-    occr.construct_triples()
+    # occr.construct_triples()
     occr.construct_value_dict()
 
 # sample training unit: what is the geometry type of CH4, head CH4, tail: geometry, RotationalSymetry ...

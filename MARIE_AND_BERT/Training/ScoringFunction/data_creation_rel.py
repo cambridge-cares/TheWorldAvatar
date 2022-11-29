@@ -2,7 +2,7 @@
 # e.g. What is the molecular weight of benzene,
 # We currently assume that the head entity is known ...
 
-
+import pandas as pd
 import csv
 import os
 import pickle
@@ -25,7 +25,7 @@ rel2idx = pickle.load(r2i_path)
 file_path = os.path.join(DATA_DIR, 'pubchem.csv')
 # how much does benenze weigh?
 
-input_file = csv.DictReader(open(file_path).readlines()[0:5])
+input_file = csv.DictReader(open(file_path).readlines()[0:50])
 
 species_name_mapping = {}
 entity_list = []
@@ -103,6 +103,21 @@ for r in normal_relations:
                 q_2 = (t_2 % (r), rel2idx[full_relation_label])
                 all_question = all_question + [q_1, q_2]
 
+questions_for_cross_graph_training = []
+for r in normal_relations:
+    t_1 = '''what is the %s of'''
+    t_2 = '''what is 's %s'''
+    full_relation_label = r.replace(' ', '_')
+    full_relation_label_list.append(full_relation_label)
+    for _CID in species_name_mapping:
+        for name in species_name_mapping[_CID]:
+            tail_entity = _CID + '_' + full_relation_label
+            if tail_entity in full_entity_list:
+                entity_list.append(tail_entity)
+                q_1 = (t_1 % (r), _CID, '0', tail_entity)
+                q_2 = (t_2 % (r), _CID, '0', tail_entity)
+                questions_for_cross_graph_training = questions_for_cross_graph_training + [q_1, q_2]
+
 import csv
 
 with open('question_set_rel', "w", newline='') as the_file:
@@ -110,3 +125,15 @@ with open('question_set_rel', "w", newline='') as the_file:
     writer = csv.writer(the_file, dialect="custom")
     for tup in all_question:
         writer.writerow(tup)
+
+cross_score_file_name = os.path.join(DATA_DIR, 'CrossGraph', 'pubchem_cross_score.tsv')
+df_cross_score = pd.DataFrame(questions_for_cross_graph_training)
+df_cross_score.columns = ['question', 'head', 'domain', 'answer']
+
+df_cross_score.to_csv(cross_score_file_name, sep='\t')
+
+# with open('pubchem_cross_score', "w", newline='') as the_file:
+#     csv.register_dialect("custom", delimiter="\t", skipinitialspace=True)
+#     writer = csv.writer(the_file, dialect="custom")
+#     for tup in all_question:
+#         writer.writerow(tup)

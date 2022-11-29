@@ -1,42 +1,73 @@
 import os
 import random
+
+import pandas as pd
 import torch
+from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
-from Marie.Util.Models.TransE_Dataset import Dataset
+from Marie.Util.Dataset.TransE_Dataset import Dataset
+from Marie.Util.Dataset.Complex_Dataset import ComplexDataset
 from Marie.Util.location import DATA_DIR
+from KGToolbox.NHopExtractor import HopExtractor
 
 
 class Trainer:
 
-    def __init__(self, model, dataset_name, epochs=100, learning_rate=0.01,
-                 data_folder='ontocompchem_calculation', save_model=False, complex=True, pointwise=False, batch_size = 64):
+    def __init__(self, model, dataset_name: str, epochs: int = 100, learning_rate: float = 0.01, gamma: float = 0.9,
+                 data_folder='ontocompchem_calculation', save_model: bool = False, complex: bool = True,
+                 pointwise: bool = False,
+                 batch_size: int = 64, test_step: int = 20):
+        """
+        :param model:
+        :param dataset_name:
+        :param epochs:
+        :param learning_rate:
+        :param data_folder:
+        :param save_model:
+        :param complex:
+        :param pointwise: whether the training is pointwise (or pairwise)
+        :param batch_size: the size of a batch
+        """
         self.epochs = epochs
         self.dataset_name = dataset_name
         self.batch_size = batch_size
         self.learning_rate = learning_rate
+        self.gamma = gamma
         self.step = 0
         self.save_model = save_model
         self.complex = complex
         self.data_folder = data_folder
         self.pointwise = pointwise
-
+        self.test_step = test_step
         train_triplets = [line.split('\t') for line in
                           open(os.path.join(DATA_DIR,
                                             f'{data_folder}/{self.dataset_name}-train.txt')).read().splitlines()]
-
         test_triplets = random.sample(train_triplets, round(len(train_triplets) * 0.2))
-        self.train_set = Dataset(train_triplets, data_folder=data_folder)
-        self.test_set = Dataset(test_triplets, data_folder=data_folder)
+        print("triples prepared")
+        if self.pointwise:
+            df_train = pd.read_csv(os.path.join(DATA_DIR,
+                                                f'{data_folder}/{self.dataset_name}-train.txt'), sep="\t", header=None)
+            df_test = pd.read_csv(os.path.join(DATA_DIR,
+                                               f'{data_folder}/{self.dataset_name}-test.txt'), sep="\t", header=None)
+
+            df_test = df_test.sample(frac=0.05)
+
+            self.train_set = ComplexDataset(df_train, data_folder=data_folder, dataset_name=self.dataset_name)
+            self.test_set = ComplexDataset(df_test, data_folder=data_folder, dataset_name=self.dataset_name)
+        else:
+            self.train_set = Dataset(train_triplets, data_folder=data_folder)
+            self.test_set = Dataset(test_triplets, data_folder=data_folder)
         self.train_dataloader = torch.utils.data.DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
         self.test_dataloader = torch.utils.data.DataLoader(self.test_set, batch_size=self.batch_size, shuffle=True)
-
         self.e_num = self.train_set.ent_num
         self.r_num = self.train_set.rel_num
-        # self.model = model_class(ent_num=self.e_num, rel_num=self.r_num, emb_dim=50)
         self.model = model
-
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+        self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
+
+        self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.data_folder),
+                                          dataset_name=self.dataset_name)
 
     def train(self):
         for epoch_num in tqdm(range(self.epochs)):
@@ -45,27 +76,23 @@ class Trainer:
             for pos_train, neg_train in tqdm(self.train_dataloader):
                 """For pointwise training """
                 self.optimizer.zero_grad()
-
                 if self.pointwise:
-                    # give 1 for pos_train, 0 for neg_train
-                    pos_labels = torch.LongTensor([1]).repeat(len(pos_train[0]))
-                    pos_train.append(pos_labels)
-                    neg_labels = torch.LongTensor([0]).repeat(len(neg_train[0]))
-                    neg_train.append(neg_labels)
-                    pos_train = torch.stack(pos_train)
-                    neg_train = torch.stack(neg_train)
-                    whole_train = torch.cat([pos_train, neg_train], dim=1)
-                    loss = self.model(whole_train)
+                    loss = self.model(pos_train)
                 else:
                     loss = self.model(pos_train, neg_train)
-                loss.mean().backward()
+
+                loss.backward()
                 loss = loss.data.cuda()
                 self.optimizer.step()
                 self.step += 1
                 total_loss_train += loss.mean().item()
             print('total_loss_train: ', total_loss_train)
+            print('current learning rate', self.scheduler.get_lr())
 
-            if epoch_num % 20 == 0:
+            if (epoch_num + 1) % self.test_step == 0:
+                self.scheduler.step()
+
+            if epoch_num % self.test_step == 0:
                 if self.pointwise:
                     self.evaluate_pointwise()
                 else:
@@ -73,8 +100,77 @@ class Trainer:
                 if self.save_model:
                     self.export_embeddings()
 
-    def hit_at_k(self, predictions, ground_truth_idx, k: int = 10):
-        _, indices_top_k = torch.topk(predictions, k=k, largest=False)
+    def k_hit_evaluation(self, largest=False, global_compare=True):
+        total_counter = 0
+        total_hit_1 = 0
+        total_hit_5 = 0
+        total_hit_10 = 0
+        filtered_total_hit_1 = 0
+        filtered_total_hit_5 = 0
+        filtered_total_hit_10 = 0
+        for positive_triplets, _ in tqdm(self.test_dataloader):
+            ground_truth_triplets = torch.transpose(torch.stack(positive_triplets), 0, 1).type(torch.LongTensor)
+            for i, triplet in enumerate(ground_truth_triplets):
+                head = triplet[0]
+                rel = triplet[1]
+                tail_true = triplet[2]
+
+                if global_compare:
+                    head_tensor = head.repeat(self.e_num)
+                    rel_tensor = rel.repeat(self.e_num)
+                    tail_all = torch.range(0, self.e_num - 1).type(torch.LongTensor)
+                    true_idx = tail_true
+                else:
+                    tail_all = self.hop_extractor.extract_neighbour_from_idx(head.item())
+                    tail_true_idx = tail_all.index(tail_true.item())
+                    tail_filtered = []
+                    for tail in tail_all:
+                        # find the
+                        triple_str = f"{head.item()}_{rel.item()}_{tail}"
+                        if not self.hop_extractor.check_triple_existence(triple_str):
+                            tail_filtered.append(tail)
+
+                    tail_filtered.append(tail_true.item())
+                    tail_true_idx_filterd = tail_filtered.index(tail_true.item())
+
+                    tail_all = torch.LongTensor(tail_all)
+                    head_filtered = head.repeat(len(tail_filtered))
+                    rel_filtered = rel.repeat(len(tail_filtered))
+                    tail_filtered = torch.LongTensor(tail_filtered)
+
+                    head_tensor = head.repeat(len(tail_all))
+                    rel_tensor = rel.repeat(len(tail_all))
+
+                    true_idx = tail_true_idx
+
+                new_triplets = torch.stack((head_tensor, rel_tensor, tail_all)).type(torch.LongTensor)
+                prediction = self.model.predict(new_triplets)
+
+                filtered_triplets = torch.stack((head_filtered, rel_filtered, tail_filtered)).type(torch.LongTensor)
+                prediction_filtered = self.model.predict(filtered_triplets)
+
+                total_counter += 1
+                total_hit_1 += self.hit_at_k(prediction, true_idx, k=1, largest=largest)
+                total_hit_5 += self.hit_at_k(prediction, true_idx, k=5, largest=largest)
+                total_hit_10 += self.hit_at_k(prediction, true_idx, k=10, largest=largest)
+
+                filtered_total_hit_1 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=1, largest=largest)
+                filtered_total_hit_5 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=5, largest=largest)
+                filtered_total_hit_10 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=10, largest=largest)
+
+        print('Current Hit 10 rate:', total_hit_10, ' out of ', total_counter, ' ratio is: ',
+              total_hit_10 / total_counter)
+        print('Current Hit 5 rate:', total_hit_5, ' out of ', total_counter, ' ratio is: ', total_hit_5 / total_counter)
+        print('Current Hit 1 rate:', total_hit_1, ' out of ', total_counter, ' ratio is: ', total_hit_1 / total_counter)
+
+        print('Current Filtered Hit 10 rate:', filtered_total_hit_10, ' out of ', total_counter, ' ratio is: ',
+              filtered_total_hit_10 / total_counter)
+        print('Current Filtered Hit 5 rate:', filtered_total_hit_5, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_5 / total_counter)
+        print('Current Filtered Hit 1 rate:', filtered_total_hit_1, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_1 / total_counter)
+
+    def hit_at_k(self, predictions, ground_truth_idx, k: int = 10, largest=False):
+        k = min(k, len(predictions))
+        _, indices_top_k = torch.topk(predictions, k=k, largest=largest)
         if ground_truth_idx in indices_top_k:
             return 1
         else:
@@ -101,7 +197,6 @@ class Trainer:
                 f.write(rel_content)
                 f.close()
 
-
     def evaluate_pointwise(self):
         with torch.no_grad():
             total_pos_acc = 0
@@ -111,50 +206,23 @@ class Trainer:
                 pos_count = torch.numel(pos_pre[pos_pre > 0])
                 pos_acc = pos_count / len(pos_pre)
                 total_pos_acc += pos_acc
-
-                neg_pre = self.model.predict(negative_triplets)  # should all be > 0
+                neg_pre = self.model.predict(negative_triplets)  # should all be < 0
                 neg_count = torch.numel(neg_pre[neg_pre < 0])
                 neg_acc = neg_count / len(neg_pre)
                 total_neg_acc += neg_acc
-
-        #         total_mean_pos += self.model.predict(positive_triplets).mean()
-        #         total_mean_neg += self.model.predict(negative_triplets).mean()
-        #
             average_prediction_pos = total_pos_acc / len(self.test_dataloader)
             average_prediction_neg = total_neg_acc / len(self.test_dataloader)
             print(f'average prediction accuracy for positive {average_prediction_pos}')
             print(f'average prediction accuracy for negative {average_prediction_neg}')
 
+            self.k_hit_evaluation(largest=True, global_compare=False)
 
     def evaluate_pairwise(self):
         total_loss_val = 0
-        hit_10 = 0
-        hit_5 = 0
-        hit_1 = 0
-        total_case = 0
         self.model.eval()
         with torch.no_grad():
             for positive_triplets, _ in self.test_dataloader:
                 prediction = self.model.predict(positive_triplets).mean()
                 total_loss_val += prediction
-
-                ground_truth_triplets = torch.transpose(torch.stack(positive_triplets), 0, 1).type(torch.LongTensor)
-                for i, triplet in enumerate(ground_truth_triplets):
-                    head = triplet[0]
-                    rel = triplet[1]
-                    tail_true = triplet[2]
-                    head_tensor = head.repeat(self.e_num)
-                    rel_tensor = rel.repeat(self.e_num)
-                    tail_all = torch.range(0, self.e_num - 1).type(torch.LongTensor)
-                    new_triplets = torch.stack((head_tensor, rel_tensor, tail_all)).type(torch.LongTensor)
-                    prediction = self.model.predict(new_triplets)
-
-                    total_case += 1
-                    hit_10 += self.hit_at_k(prediction, tail_true, k=10)
-                    hit_5 += self.hit_at_k(prediction, tail_true, k=5)
-                    hit_1 += self.hit_at_k(prediction, tail_true, k=1)
-
-        print('Current Hit 10 rate:', hit_10, ' out of ', total_case, ' ratio is: ', hit_10 / total_case)
-        print('Current Hit 5 rate:', hit_5, ' out of ', total_case, ' ratio is: ', hit_5 / total_case)
-        print('Current Hit 1 rate:', hit_1, ' out of ', total_case, ' ratio is: ', hit_1 / total_case)
+            self.k_hit_evaluation()
         print(f'total_loss_val {total_loss_val}')

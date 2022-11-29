@@ -21,7 +21,7 @@ full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 file_path = os.path.join(TRAINING_DIR, 'pubchem.csv')
 # how much does benenze weigh?
 
-input_file = csv.DictReader(open(file_path).readlines()[0:10000])
+input_file = csv.DictReader(open(file_path).readlines()[0:50000])
 
 species_name_mapping = {}
 entity_list = []
