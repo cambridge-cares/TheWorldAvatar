@@ -147,7 +147,7 @@ def instantiate_forecast_timeseries(tsClient, cfg, forecast):
         with tsClient.connect() as conn:
             tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['ts_data_type']], cfg['time_format'],
                                             conn)
-            ts = TSClient.create_timeseries([str(x) for x in forecast.time_index], [
+            ts = TSClient.create_timeseries([str(x) for x in forecast.time_index.tz_localize('UTC').strftime(TIME_FORMAT)], [
                                             cfg['forecast_iri']], [forecast.values().squeeze().tolist()])
             tsClient.tsclient.addTimeSeriesData(ts, conn)
             
