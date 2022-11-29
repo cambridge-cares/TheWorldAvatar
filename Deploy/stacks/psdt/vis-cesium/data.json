@@ -128,6 +128,12 @@
                     "id": "sub-network-kml-source",
                     "type": "kml",
                     "uri": "http://localhost:3838/static/ps/sewage/sub_network.kml"
+                },
+                {
+                    "id": "erlenbrunnerstr45-sewage-tiles-source",
+                    "type": "tiles",
+                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_sewage.json",
+                    "position": [7.6226484, 49.1804827, 415.0]
                 }
             ],
             "layers": [
@@ -148,6 +154,12 @@
                     "id": "sub-network-kml-layer",
                     "name": "Nebennetz (3D)",
                     "source": "sub-network-kml-source",
+                    "visibility": "none"
+                },
+                {
+                    "id": "erlenbrunnerstr45-sewage-tiles-layer",
+                    "name": "Erlenbrunnerstr. 45 (3D)",
+                    "source": "erlenbrunnerstr45-sewage-tiles-source",
                     "visibility": "none"
                 }
             ]
