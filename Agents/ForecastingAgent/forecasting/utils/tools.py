@@ -8,7 +8,6 @@
 ###############################################
 
 from forecasting.datamodel.iris import *
-from forecasting.utils.properties import *
 from darts import concatenate
 from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
 
