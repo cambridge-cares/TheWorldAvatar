@@ -9,7 +9,7 @@ setup(
     description="The `avgsqmprice` agent calculates the average square metre price of properties for a particular postcode and populates the result to knowledge graph as part of The World Avatar project.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_namespace_packages(exclude=("tests")),
+    packages=find_namespace_packages(exclude=["tests", "tests.*"]),
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent",
     python_requires='>=3.7',
     include_package_data=True,
