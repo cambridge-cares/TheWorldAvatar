@@ -1,0 +1,15 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+.idea/
+*venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets
+*.egg-info
+*.env
