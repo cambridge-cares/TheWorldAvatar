@@ -51,6 +51,8 @@ COPY docker/entrypoint.sh /entrypoint.sh
 WORKDIR /app
 
 # Copy the downloaded dependencies from the builder
+COPY --from=deploy /root/code/target/*.jar /app
+# Copy the downloaded dependencies from the builder
 COPY --from=deploy /root/code/target/lib /app/lib
 
 # Port for Java debugging

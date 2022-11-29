@@ -3,6 +3,8 @@ services:
   stack-client:
     image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.6.0-272-SNAPSHOT
     configs:
+      - blazegraph
+      - ontop
       - postgis
       - geoserver
     secrets:
