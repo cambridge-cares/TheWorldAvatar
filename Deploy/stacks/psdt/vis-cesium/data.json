@@ -18,12 +18,6 @@
                     "position": [7.621620, 49.191232, 380.0]
                 },
                 {
-                    "id": "hugo-ball-ceiling-lod3-tiles-source",
-                    "type": "tiles",
-                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball_ceiling.json",
-                    "position": [7.621620, 49.191232, 380.0]
-                },
-                {
                     "id": "hugo-ball-solarpanel-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_hugoball_solarpanel.json",
@@ -33,13 +27,6 @@
                     "id": "leibniz-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz.json",
-                    "position": [7.607026, 49.202303, 406.5],
-                    "rotation": [0, 0, 2.93]
-                },
-                {
-                    "id": "leibniz-ceiling-lod3-tiles-source",
-                    "type": "tiles",
-                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_leibniz_ceiling.json",
                     "position": [7.607026, 49.202303, 406.5],
                     "rotation": [0, 0, 2.93]
                 },
@@ -54,12 +41,6 @@
                     "id": "erlenbrunnerstr45-lod3-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive.json",
-                    "position": [7.6226484, 49.1804827, 415.0]
-                },
-                {
-                    "id": "erlenbrunnerstr45-ceiling-lod3-tiles-source",
-                    "type": "tiles",
-                    "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_ceiling.json",
                     "position": [7.6226484, 49.1804827, 415.0]
                 },
                 {
@@ -89,12 +70,6 @@
                     "visibility": "none"
                 },
                 {
-                    "id": "hugo-ball-ceiling-lod3-tiles-layer",
-                    "name": "Hugo-Ball-Gymnasium, Dach (3D, LoD3)",
-                    "source": "hugo-ball-ceiling-lod3-tiles-source",
-                    "visibility": "none"
-                },
-                {
                     "id": "hugo-ball-solarpanel-lod3-tiles-layer",
                     "name": "Hugo-Ball-Gymnasium, Solar (3D, LoD3)",
                     "source": "hugo-ball-solarpanel-lod3-tiles-source",
@@ -107,12 +82,6 @@
                     "visibility": "none"
                 },
                 {
-                    "id": "leibniz-ceiling-lod3-tiles-layer",
-                    "name": "Leibniz-Gymnasium, Dach (3D, LoD3)",
-                    "source": "leibniz-ceiling-lod3-tiles-source",
-                    "visibility": "none"
-                },
-                {
                     "id": "leibniz-solarpanel-lod3-tiles-layer",
                     "name": "Leibniz-Gymnasium, Solar (3D, LoD3)",
                     "source": "leibniz-solarpanel-lod3-tiles-source",
@@ -122,12 +91,6 @@
                     "id": "erlenbrunnerstr45-lod3-tiles-layer",
                     "name": "Erlenbrunnerstr. 45 (3D, LoD3)",
                     "source": "erlenbrunnerstr45-lod3-tiles-source",
-                    "visibility": "none"
-                },
-                {
-                    "id": "erlenbrunnerstr45-ceiling-lod3-tiles-layer",
-                    "name": "Erlenbrunnerstr. 45, Dach (3D, LoD3)",
-                    "source": "erlenbrunnerstr45-ceiling-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
