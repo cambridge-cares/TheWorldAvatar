@@ -195,10 +195,10 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     `(Windows)`
     ```bash
     $ python -m pip install --upgrade pip
-    # Install all required packages from setup.py, incl. pytest etc.
-    python -m pip install -e .[dev]
-    # Install agentlogging (separate installation required, as not possible to include in setup.py)
+    # Install pinned version of required packages, these are tested working version
     python -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
+    python -m pip install -e .[dev]
     ```
     Please note: If developing/testing in WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package.
 
