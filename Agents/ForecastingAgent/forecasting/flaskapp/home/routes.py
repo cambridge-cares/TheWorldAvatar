@@ -14,15 +14,15 @@ home_bp = Blueprint(
 # Show an instructional message at the app root
 @home_bp.route('/', methods=['GET'])
 def default():
-    msg = 'Forecasting agent: \n'
-    msg += 'The forecasting agent can be used to forecast a time series. \n'
-    msg += 'The following parameters are required: \n'
-    msg += 'iri: (the IRI of the time series to be forecasted), \n'
-    msg += 'horizon: (the number of steps to forecast) \n'
-    msg += 'available routes: \n'
-    msg += '/api/forecastingAgent/forecast \n'
+    msg = 'Forecasting agent: <BR>'
+    msg += 'The forecasting agent can forecast time series and instantiate the new series in the KG. <BR>'
+    msg += 'The following parameters are required: <BR><BR>'
+    msg += 'iri: (the IRI of the time series to be forecasted), <BR>'
+    msg += 'horizon: (the number of steps to forecast) <BR><BR>'
+    msg += 'available routes: <BR>'
+    msg += '/api/forecastingAgent/forecast <BR><BR>'
 
-    msg += 'Checkout the https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/ for more information.'
+    msg += 'Checkout https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/ for more information.'
 
 
     return msg
