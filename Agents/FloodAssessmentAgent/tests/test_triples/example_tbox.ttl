@@ -3,14 +3,14 @@
 @prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> .
-@prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
-@prefix flood:      <https://www.theworldavatar.com/kg/ontoflood/> . 
 @prefix rt:         <http://environment.data.gov.uk/flood-monitoring/def/core/> . 
 @prefix envo:       <http://purl.obolibrary.org/obo/> . 
+@prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
+@prefix flood:      <https://www.theworldavatar.com/kg/ontoflood/> . 
 
-##########################################
+#################################
 ## Flood Assessment TESTS TBox ##
-##########################################
+#################################
 
 dabgeo:Building rdfs:subClassOf obe:Property .
 
@@ -20,6 +20,8 @@ om:AmountOfMoney om:hasValue om:Measure .
 om:Measure om:hasUnit om:Unit ; 
            om:hasNumericalValue xsd:float . 
 om:Unit om:symbol xsd:string . 
+om:poundSterling rdfs:subClassOf om:Unit ; 
+                 om:symbol "£"^^xsd:string . 
 
 rt:FloodAlertOrWarning flood:hasSeverity flood:Severity ; 
                        flood:warnsAbout envo:ENVO_01000710 . 
