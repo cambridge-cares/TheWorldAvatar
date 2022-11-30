@@ -35,7 +35,8 @@ If you use later a model pretrained with 'darts', conflicts can occur while load
 
 ### **3) Instantiated knowledge graph with time series**
 
-In order to forecast a time series, this series has to be instantiated using  [this Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) beforehand.    
+In order to forecast a time series, this series has to be instantiated using  [the Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) beforehand. 
+[The district heating instantiation module](https://github.com/cambridge-cares/pirmasens) provides an example how that can look like. In case you do not have access you might reach out to sm453@cam.ac.uk to get access.
 
 ### **4) Endpoints**
 
