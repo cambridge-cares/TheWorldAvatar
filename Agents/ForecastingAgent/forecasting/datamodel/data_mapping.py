@@ -2,33 +2,10 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-# purpose of this file is provide configurations for the model which can be specified in the http request 
+# purpose of this file is provide model configurations for the agent which can be specified via 'use_model_configuration' in the http request 
 # The configurations are used to load the model and the respective data
-
-from forecasting.datamodel.iris import *
-from forecasting.kgutils.javagateway import jpsBaseLibGW
-from forecasting.utils.tools import get_covs_heat_supply
-import datetime as dt
-
-
-#NOTE: @mh807: Streamline py4jps gateway usages to avoid clashes
-# PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
-Instant = jpsBaseLibView.java.time.Instant
-TIMECLASS = Instant.now().getClass()
-
-# Create data class for all time series data (i.e. all data as double)
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
-DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
-DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
-INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
-BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
-
-TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-MODEL_MAPPING = {}
-""" KEYS in the MODEL_MAPPING dict:
+# You can add your own model configurations to 'MODEL_MAPPING' here by simple add a new dictionary like for 'TFT_HEAT_SUPPLY' case
+""" KEYS in the dict:
 Required:
 'ts_data_type': Data type from jpsBaseLibView.java.lang
 'frequency': The frequency of the time series data
@@ -66,6 +43,31 @@ Optional:
 
     
 """
+
+from forecasting.datamodel.iris import *
+from forecasting.kgutils.javagateway import jpsBaseLibGW
+from forecasting.utils.tools import get_covs_heat_supply
+import datetime as dt
+
+
+#NOTE: @mh807: Streamline py4jps gateway usages to avoid clashes
+# PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+Instant = jpsBaseLibView.java.time.Instant
+TIMECLASS = Instant.now().getClass()
+
+# Create data class for all time series data (i.e. all data as double)
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
+DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
+INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
+BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
+
+TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+MODEL_MAPPING = {}
+
 # Default mapping which uses Prophet and loads just iri without covariates
 MODEL_MAPPING['DEFAULT'] = {
     'fc_model': {
