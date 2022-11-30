@@ -7,9 +7,8 @@
 # and updates using the PySparqlClient module from pyderivationagent
 
 import uuid
-import datetime as dt
 import pandas as pd
-from rdflib import URIRef, Literal
+from rdflib import URIRef, Literal, Graph
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
@@ -46,8 +45,8 @@ class KGClient(PySparqlClient):
 
 
     def summarise_affected_property_values(self, property_value_iris:list) -> int:
-        # Retrieve property market value estimations and summarise them
-        # Returns sum of property value estimations as int
+        # Retrieve property market values from list of property value IRIs and summarise them
+        # Returns sum of property value estimations as float
 
         # Create VALUES expression for property value IRIs
         iris = ' '.join(['<'+iri+'>' for iri in property_value_iris])
@@ -79,28 +78,87 @@ class KGClient(PySparqlClient):
         return res
 
 
-    # #
-    # # SPARQL UPDATES
-    # #
-    # def instantiate_property_value(self, graph, property_iri, property_value_iri, property_value) -> str:
-    #     # Returns rdflib Graph with triples to instantiate/update property market value estimation
-    #     # Create unique IRIs for new instances
-    #     measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+    #
+    # SPARQL UPDATES
+    #
+    def instantiate_flood_impact(self, graph, flood_alert_warning_iri, 
+                                 affected_buildings_count,
+                                 affected_buildings_value=None, affected_population=None,
+                                 impact_description=None, flood_iri=None) -> Graph:
+        """
+        Returns rdflib Graph with triples to instantiate/update flood impact assessment
         
-    #     # Add triples to graph (RDF Triples to be provided as Python Tuples --> double brackets)
-    #     graph.add((URIRef(property_iri), URIRef(OBE_HAS_MARKET_VALUE), URIRef(property_value_iri)))
-    #     graph.add((URIRef(property_value_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
-    #     graph.add((URIRef(property_value_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
-    #     graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
-    #     graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(property_value, datatype=XSD_INTEGER)))
-    #     graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(OM_GBP)))
-    #     #TODO: Triple with symbol potentially to be removed once OntoUOM contains
-    #     #      all relevant units/symbols and is uploaded to the KB
-    #     graph.add((URIRef(OM_GBP), URIRef(OM_SYMBOL), Literal(GBP_SYMBOL, datatype=XSD_STRING)))
+        Arguments:
+            graph {rdflib.Graph} -- Graph to which triples will be added
+            flood_alert_warning_iri {str} -- IRI of flood alert/warning
+            affected_buildings_count {int} -- Number of affected buildings , i.e. 
+                                              length of list of provided building IRIs
+            affected_buildings_value {float} -- Sum of affected building values, i.e.
+                                                as derived by `summarise_affected_property_values`
+            affected_population {int} -- Number of affected population (if available)
+            impact_description {str} -- Description of flood impact (if available)
+            flood_iri {str} -- IRI of associated flood event, if already instantiated
+        """
 
-    #     return graph
+
+        def _add_amount_of_money_triples(graph, amount_of_money_iri, measure_iri, value, unit, unit_symbol):
+            graph.add((URIRef(amount_of_money_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
+            graph.add((URIRef(amount_of_money_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
+            graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
+            graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(value, datatype=XSD_FLOAT)))
+            graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(unit)))
+            #TODO: Triple with symbol potentially to be removed once OntoUOM contains
+            #      all relevant units/symbols and is uploaded to the KB
+            graph.add((URIRef(unit), URIRef(OM_SYMBOL), Literal(unit_symbol, datatype=XSD_STRING)))
+
+            return graph
 
 
+        if not flood_iri:
+            flood_iri = KB + 'Flood_' + str(uuid.uuid4())
+            # Instantiate "general" flood type if no  more specific flood type is instantiated/given
+            graph.add((URIRef(flood_iri), URIRef(RDF_TYPE), URIRef(FLOOD_FLOOD)))
+
+        # Create unique new IRIs for new/updated output instances of derivation
+        # (replacement of old IRIs taken care of by Derivation Framework)
+        impact_iri = KB + 'Impact_' + str(uuid.uuid4())
+        impact_money_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
+        impact_measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+        population_iri = KB + 'Population_' + str(uuid.uuid4())
+        buildings_iri = KB + 'Buildings_' + str(uuid.uuid4())
+        bldgs_money_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
+        bldgs_measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+
+        # Add triples to graph (RDF Triples to be provided as Python Tuples --> double brackets)
+        graph.add((URIRef(flood_alert_warning_iri), URIRef(FLOOD_WARNS_ABOUT), URIRef(flood_iri)))
+        # Affected population (only instantiate if assessed)
+        if affected_population:
+            graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(population_iri)))
+            graph.add((URIRef(population_iri), URIRef(RDF_TYPE), URIRef(FLOOD_POPULATION)))
+            graph.add((URIRef(population_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_population, datatype=XSD_INTEGER)))
+
+        # Affected buildings
+        graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(buildings_iri)))
+        graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDINGS)))
+        graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_buildings_count, datatype=XSD_INTEGER))) 
+        if affected_buildings_value:
+            graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_MONETARY_VALUE), URIRef(bldgs_money_iri)))
+            graph = _add_amount_of_money_triples(graph, bldgs_money_iri, bldgs_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
+
+        # Total impact (so far only includes value of affected buildings; to be extended potentially)
+        if impact_description or affected_buildings_value:
+            graph.add((URIRef(flood_iri), URIRef(FLOOD_RESULTS_IN), URIRef(impact_iri)))
+            if impact_description:
+                graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_CLASSIFICATION), Literal(impact_description, datatype=XSD_STRING)))
+            if affected_buildings_value:
+                graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_MONETARY_VALUE), URIRef(impact_money_iri)))
+                graph = _add_amount_of_money_triples(graph, impact_money_iri, impact_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
+
+        return graph
+
+    #
+    # Helper functions
+    #
     def remove_unnecessary_whitespace(self, query: str) -> str:
         # Remove unnecessary whitespaces
         query = ' '.join(query.split())
