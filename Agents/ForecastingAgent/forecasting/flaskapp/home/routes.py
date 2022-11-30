@@ -1,7 +1,10 @@
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
 # The purpose of this module is to print available HTTP requests (i.e. routes)
-# at the application root
-from flask import Blueprint, jsonify
 
+from flask import Blueprint, jsonify
 
 # Blueprint Configuration
 home_bp = Blueprint(
@@ -16,6 +19,9 @@ def default():
     msg += 'The following parameters are required: \n'
     msg += 'iri: the IRI of the time series to be forecasted \n'
     msg += 'horizon: the number of steps to forecast \n'
+    msg += 'available routes: \n'
+    msg += '/api/forecastingAgent/forecast \n'
+
     msg += 'Checkout the README.md for more information.'
 
 

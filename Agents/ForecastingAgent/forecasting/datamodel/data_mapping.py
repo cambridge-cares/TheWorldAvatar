@@ -1,12 +1,13 @@
-
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
+# purpose of this file is provide configurations for the model which can be specified in the http request 
+# The configurations are used to load the model and the respective data
 
 from forecasting.datamodel.iris import *
-
-
 from forecasting.kgutils.javagateway import jpsBaseLibGW
-
 from forecasting.utils.tools import get_covs_heat_supply
-
 import datetime as dt
 
 

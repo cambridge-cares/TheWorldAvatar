@@ -86,6 +86,13 @@ class TSClient:
         
         return timeseries
 
+def init_ts(iri, dates, values, tsClient, ts_type, time_format):
+    # call client
+    with tsClient.connect() as conn:
+        tsClient.tsclient.initTimeSeries([iri], [ts_type], time_format, conn)
+        ts = TSClient.create_timeseries(
+            dates.to_list(), [iri], [values.to_list()])
+        tsClient.tsclient.addTimeSeriesData(ts, conn)
 """
 HOW TO USE:
 

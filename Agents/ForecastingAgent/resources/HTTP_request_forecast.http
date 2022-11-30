@@ -1,3 +1,8 @@
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
+# This file shows a sample http request to acces the forecastingAgent. The keys are descriped in the README.md file.
 
 POST http://127.0.0.1:5000/api/forecastingAgent/forecast
 Content-Type: application/json

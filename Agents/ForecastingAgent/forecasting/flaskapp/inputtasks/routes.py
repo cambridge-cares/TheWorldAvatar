@@ -2,7 +2,7 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-
+# the purpose of this file is to provide the routes for the flask app for the KG, which can be used to access the forecast agent 
 
 from flask import Blueprint, request, jsonify
 import traceback
@@ -30,8 +30,7 @@ def api_forecast():
         print('recieved query - start to extract data')
     except Exception as ex:
         #logger.('No JSON "query" object could be identified.')
-        raise InvalidInput('No JSON "query" object could be identified.') from ex
-    
+        return jsonify({'status': '500', 'msg': 'No JSON "query" object could be identified.'}), 500
     # Retrieve data IRI to be updated
     try:
         iri = str(query['iri'])
@@ -43,7 +42,8 @@ def api_forecast():
         print('iri: ' + iri)
     except Exception as ex:
         #logger.('Invalid "iri" provided.')
-        raise InvalidInput('"iri" must be provided.') from ex
+        return jsonify({'status': '500', 'msg': '"iri" must be provided.'}), 500
+
     
     # Retrieve horizon 
     try:
@@ -51,11 +51,12 @@ def api_forecast():
         print('horizon: ' + str(horizon))
     except Exception as ex:
         #logger.info('No horizon, using default.')
-        raise InvalidInput('"horizon" (how many steps to forecast) must be provided.') from ex
+        return jsonify({'status': '500', 'msg': '"horizon" (how many steps to forecast) must be provided.'}), 500
 
     if horizon <= 0:
         #logger.('Invalid "horizon" provided. Must be higher than 0.')
-        raise InvalidInput('Invalid "horizon" provided. Must be higher than 0.')
+        return jsonify({'status': '500', 'msg': 'Invalid "horizon" provided. Must be higher than 0.'}), 500
+        
     
     # Retrieve forecast_start_date 
     try:
@@ -88,5 +89,5 @@ def api_forecast():
     except Exception as ex:
         #logger.("Unable to forecast.", ex)
         print(traceback.format_exc())
-        return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)})
+        return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)}), 500
 

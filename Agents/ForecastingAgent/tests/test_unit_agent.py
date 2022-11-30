@@ -6,7 +6,7 @@ from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
-from forecasting.utils.useful_queries import *
+from forecasting.utils.tools import *
 import pandas as pd
 from forecasting.forecasting_agent.agent import *
 

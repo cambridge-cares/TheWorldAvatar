@@ -1,9 +1,9 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-# Date: 22 Nov 2022                            #
+# Date: 30 Nov 2022                            #
 ################################################
+# The this file is the main forecasting agent to forecast a time series using a trained model or Prophet. The forecast is then stored in the KG.
 
-# The purpose of this module is to forecast a time series using a trained model or Prophet
 from dateutil.parser import isoparse
 import datetime as dt
 import os
@@ -54,7 +54,10 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         model_configuration_name = use_model_configuration
     else:
         model_configuration_name = "DEFAULT"
-
+        
+    if model_configuration_name not in MODEL_MAPPING:
+        raise KeyError(f'No model configuration found for the given key: {model_configuration_name}')
+    
     cfg = MODEL_MAPPING[model_configuration_name].copy()
     cfg['model_configuration_name'] = model_configuration_name
     cfg['iri'] = iri
@@ -83,12 +86,13 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
 
     # or the next date
     elif cfg['forecast_start_date'] == series.time_index[-1] + series.freq:
-        series = series
+        # keep whole series
+        pass
 
     # Timestamp out of series range
     else:
         raise ValueError(
-            f'Cannot split series at {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
+            f'forecast_start_date: {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
 
     # load the model
     # NOTE: If you have multiple different models, you need to edit here the loading function,
@@ -99,7 +103,11 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
             cfg, TFTModel)
         # other models than TFT can have different key then 'input_chunk_length'
         cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
-
+        # check that horizon is bigger than output_chunk_length
+        if cfg['horizon'] < model.model_params['output_chunk_length']:
+            raise ValueError(
+                f'horizon: {cfg["horizon"]} is smaller than output_chunk_length: {model.model_params["output_chunk_length"]}. Specify a horizon bigger than the output_chunk_length of your model.')
+            
     elif 'DEFAULT' == cfg['model_configuration_name']:
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
@@ -166,7 +174,7 @@ def get_forecast_start_date(forecast_start_date, tsClient, cfg):
                 latest = tsClient.tsclient.getLatestData(cfg['ts_iri'], conn)
         except:
             raise KGException(
-                f'No time series data could be retrieved for {cfg["ts_iri"]}')
+                f'No time series data could be retrieved for the given IRI: {cfg["ts_iri"]}')
         return pd.Timestamp(isoparse(latest.getTimes(
         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 

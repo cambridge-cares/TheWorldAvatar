@@ -1,8 +1,8 @@
-###############################################
-# Authors: Magnus Mueller (mm2692@cam.ac.uk)  #
-# Date: 11 Okt 2022                           #
-###############################################
-
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
+# The purpose of this file is to provide helper functions to query and update the KG. Those functions are used in the forecasting agent. 
 
 from forecasting.datamodel.iris import *
 
@@ -125,7 +125,7 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     )
 
     # add darts covariates as string
-    cov_iris += ['dayofyear', 'dayofweek', 'hour']
+    #cov_iris += ['dayofyear', 'dayofweek', 'hour']
     return cov_iris, covariates
 
 
@@ -412,3 +412,7 @@ def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict =
         output += f'''{create_triple_literal(subj, verb, literal[0], literal[1])}'''
 
     return output
+
+
+
+

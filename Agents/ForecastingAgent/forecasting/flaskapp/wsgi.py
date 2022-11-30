@@ -3,6 +3,7 @@
 # Date: 30 Nov 2022                            #
 ################################################
 
+# this is the entry point for the WSGI server, start this to run the application
 from forecasting.flaskapp import create_app
 
 app = create_app()

@@ -1,3 +1,8 @@
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
+# the purpose of this module is to provide iris for the KG, which can be used to query and update the KG
 ### Datamodel ###
 
  # Namespaces #
