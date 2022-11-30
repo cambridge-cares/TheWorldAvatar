@@ -1,11 +1,16 @@
 package uk.ac.cam.cares.jps.base.config.test;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.stubbing.Answer;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+
 
 
 public class KeyValueManagerTest {
@@ -16,39 +21,39 @@ public class KeyValueManagerTest {
     @Test
     public void setTest(){
 
-        try{
+        try (MockedStatic<AgentCaller> aacMock = mockStatic(AgentCaller.class)) {
+
+            //Do not execute  the executeGet() method of the AgentCaller class -> Make it null
+            (aacMock).when(() -> AgentCaller.executeGet((String) any(Object.class)))
+                    .thenAnswer((Answer<Void>) invocation -> null);
+
             KeyValueManager.set(testKey, testValue);
-        }catch (Exception e){
-            assertEquals(JPSRuntimeException.class, e.getClass());
-            assertTrue(e.getMessage().contains("/JPS_BASE/keys/set"));
-            assertTrue(e.getMessage().contains(testKey));
-            assertTrue(e.getMessage().contains(testValue));
+            KeyValueMap keyValueMap = KeyValueMap.getInstance();
+            assertEquals(testValue, keyValueMap.get(testKey));
         }
-
-        KeyValueMap keyValueMap = KeyValueMap.getInstance();
-        assertEquals(testValue, keyValueMap.get(testKey));
-
     }
 
     @Test
     public void getTest() {
 
-        //Testing if statement
-        String test_host = KeyValueManager.get("host");
-        assertEquals("localhost",test_host);
+        try (MockedStatic<AgentCaller> aacMock = mockStatic(AgentCaller.class)) {
 
-        String test_port = KeyValueManager.get("port");
-        assertEquals("8080",test_port);
+            //Testing the ifs statements
+            String test_host = KeyValueManager.get("host");
+            assertEquals("localhost",test_host);
 
-        //Testing try statement
-        try{
-            KeyValueManager.get(testKey);
-        }catch (Exception e){
-            assertEquals(JPSRuntimeException.class, e.getClass());
-            assertTrue(e.getMessage().contains("/JPS_BASE/keys/get"));
-            assertTrue(e.getMessage().contains(testKey));
+            String test_port = KeyValueManager.get("port");
+            assertEquals("8080",test_port);
+
+            KeyValueManager.set(testKey, testValue);
+            KeyValueMap keyValueMap = KeyValueMap.getInstance();
+            //Do not execute  the executeGet() method of the AgentCaller class -> Make it a JSON key and value
+            (aacMock).when(() -> AgentCaller.executeGet((String) any(Object.class),(String) any(Object.class)))
+                    .thenAnswer((Answer<String>)   invocation -> "{\"k1\": \"" + keyValueMap.get(testKey) + "\"}");
+
+            assertEquals(KeyValueManager.get(testKey),testValue);
+
         }
-
     }
 
     @Test
