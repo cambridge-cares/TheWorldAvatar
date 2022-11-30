@@ -30,6 +30,13 @@ Install the `forecasting` project including all required packages listed in `set
 ```
 python -m pip install --upgrade pip  
 python -m pip install -e . 
+
+```
+Or  to enable running tests:
+
+`(Windows)`
+```
+python -m pip install -e .[dev]
 ```
 If you use later a model pretrained with 'darts', conflicts can occur while loading the model, if your version differs from the version with which the model was trained.
 
