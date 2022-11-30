@@ -186,6 +186,26 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+
+
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
+    </owl:Class>
+
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-DC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-DC">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
+    </owl:Class>
+
+
+
   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Quality -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Quality">
