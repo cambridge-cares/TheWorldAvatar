@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   esphome-update-agent:
-    image: esphome-update-agent:1.2.0
+    image: esphome-update-agent:1.3.0
     build: .
     container_name: esphome-update-agent
     pull_policy: if_not_present
