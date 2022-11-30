@@ -93,8 +93,36 @@ Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY
 
 If you need covariates define es well the a function like `get_covs_heat_supply` for the `load_covariates_func` parameter in your configuration. To use your own pretrained model with darts, extend the [agent file] where `load_pretrained_model` is called. You can use as well `load_pretrained_model`, simply specify your model class and set the `input_length` like for `TFT_HEAT_SUPPLY`. 
 
+# 3. How to run tests
+ <span style="color:red"> Be aware: The test will clear your blazegraph namespace!! </span> Therefore, you should create an new blazegraph test namespace. Follow those steps:
 
+1. Activate the virtual environment
+`(Windows)`
+```cmd
+$ python -m venv forecasting_venv
+$ forecasting_venv\Scripts\activate.bat
+(forecasting_venv) $
+```
+2. Install required packages with
+```
+python -m pip install -e .[dev]
+```
+3. A [docker-compose.test.yml](./docker-compose.test.yml) file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows). To spin up the stack, run the following command from the same directory where this README is located:
+```bash
+# Spin up container stack
+docker-compose -f "docker-compose.test.yml" up -d
+```
 
+4. Initialise a new Blazegraph namespace and PostgreSQL database: Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker stack. For Blazegraph, simply open the Blazegraph workbench (e.g. `http://localhost:<port number from docker-compose_stack>/blazegraph`) in any browser and create the needed namespace. For postgreSQL, pgAdmin can be used to connect to the database running within Docker by adding a new server with `localhost` and `port number` as defined in the [docker-compose.test.yml](./docker-compose.test.yml) file. The new database can be created afterwards.
+
+5.  Set your postgres database and blazegraph endpoints in your properties [file](./resources/timeseries.properties). 
+
+6. To start all tests run in your console:
+```
+pytest tests/
+```
+&nbsp;
+<span style="color:red"> Be aware: The test will clear your blazegraph namespace, you should make sure to have a new one for testing purpose. </span> 
 
 
 &nbsp;
