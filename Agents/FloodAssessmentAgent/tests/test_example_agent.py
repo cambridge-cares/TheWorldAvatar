@@ -26,49 +26,36 @@ def test_example_triples():
             raise e
 
 
-# def test_example_data_instantiation(initialise_clients):
-#     """
-#         This test checks that all example data gets correctly instantiated,
-#         including associated time series data in PostgreSQL.
-#     """
-#     # Get SPARQL client from fixture
-#     sparql_client, _, rdb_url = initialise_clients
+def test_example_data_instantiation(initialise_clients):
+    """
+        This test checks that all example data gets correctly instantiated
+    """
+    # Get SPARQL client from fixture
+    sparql_client, _ = initialise_clients
 
-#     ### TRIPPLE STORE ###
-#     # Verify that KG is empty
-#     assert sparql_client.getAmountOfTriples() == 0
+    # Verify that KG is empty
+    assert sparql_client.getAmountOfTriples() == 0
 
-#     # Upload example test triples (ABox & TBox)
-#     cf.initialise_triples(sparql_client)
+    # Upload example test triples (ABox & TBox)
+    cf.initialise_triples(sparql_client)
 
-#     # Verify instantiation of expected number of triples
-#     assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES)
+    # Verify instantiation of expected number of triples
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES)
 
-#     ### POSTGRESQL ###
-#     # Verify that Postgres database is empty
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
+    # Verify proper rdf:type declarations
+    for bldg in cf.BUILDINGS:
+        assert sparql_client.checkInstanceClass(bldg, dm.OBE_BUILDING)
+    for marketvalue in cf.MARKET_VALUES:
+        assert sparql_client.checkInstanceClass(marketvalue, dm.OM_AMOUNT_MONEY)
+    for warning in cf.FLOOD_WARNINGS:
+        assert sparql_client.checkInstanceClass(warning, dm.FLOOD_ALERT_WARNING)
 
-#     # Initialise and Upload time series
-#     cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
-#                              rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
-#                              dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
-#                              dates=cf.DATES, values=cf.VALUES)
-
-#     # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 2
-#     assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
-
-#     # Verify correct retrieval of time series data
-#     dates, values = cf.retrieve_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
-#                              rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
-#                              dataIRI=cf.PRICE_INDEX_INSTANCE_IRI)
-#     assert dates == cf.DATES
-#     # Account for rounding errors
-#     assert pytest.approx(values, rel=1e-5) == cf.VALUES
-
-#     # Verify that dropping all tables works as expected
-#     cf.initialise_database(rdb_url)
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
+    # Verify that poundSterling symbol is correctly retrieved and decoded
+    # NOTE: `summarise_affected_property_values`` summarises only market values with
+    #       correct poundSterling symbol --> passing this test implies that symbol
+    #       is correctly retrieved and decoded
+    market_value = sparql_client.summarise_affected_property_values(cf.MARKET_VALUES)
+    assert pytest.approx(market_value, rel=1e-5) == cf.MARKET_VALUE_1
 
 
 # @pytest.mark.parametrize(

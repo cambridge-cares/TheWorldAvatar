@@ -74,3 +74,4 @@ RDFS_SUBCLASS = RDFS + 'subClassOf'
 
 # Data properties
 RDFS_LABEL = RDFS + 'label'
+RDFS_COMMENT = RDFS + 'comment'

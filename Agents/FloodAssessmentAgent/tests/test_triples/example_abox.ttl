@@ -28,7 +28,7 @@
 :MarketValue_1 rdf:type om:AmountOfMoney ; 
                om:hasValue :Measure_1 . 
 :Measure_1 rdf:type om:Measure ; 
-           om:hasNumericalValue "250000.0"^^xsd:float ; 
+           om:hasNumericalValue "200000.0"^^xsd:float ; 
            om:hasUnit om:poundSterling . 
 
 :Building_2 
@@ -37,7 +37,7 @@
 :MarketValue_2 rdf:type om:AmountOfMoney ; 
                om:hasValue :Measure_2 . 
 :Measure_2 rdf:type om:Measure ; 
-           om:hasNumericalValue "250000.0"^^xsd:float ; 
+           om:hasNumericalValue "500000.0"^^xsd:float ; 
            om:hasUnit om:poundSterling . 
 
 :Building_3 
@@ -46,7 +46,7 @@
 :MarketValue_3 rdf:type om:AmountOfMoney ; 
                om:hasValue :Measure_3 . 
 :Measure_3 rdf:type om:Measure ; 
-           om:hasNumericalValue "250000.0"^^xsd:float ; 
+           om:hasNumericalValue "300000.0"^^xsd:float ; 
            om:hasUnit om:poundSterling . 
 
 :Building_4 
