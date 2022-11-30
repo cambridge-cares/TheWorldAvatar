@@ -127,12 +127,12 @@ public class FloodSparql {
     
     static Map<String, Iri> unitMap = new HashMap<>();
 	static {
-		unitMap.put("mAOD", iri("http://theworldavatar.com/resource/ontouom/metreAOD"));
-		unitMap.put("m", iri("http://theworldavatar.com/resource/ontouom/metreUnspecified"));
-		unitMap.put("mASD", iri("http://theworldavatar.com/resource/ontouom/metreASD"));
+		unitMap.put("mAOD", iri("https://www.theworldavatar.com/kg/ontouom/metreAOD"));
+		unitMap.put("m", iri("https://www.theworldavatar.com/kg/ontouom/metreUnspecified"));
+		unitMap.put("mASD", iri("https://www.theworldavatar.com/kg/ontouom/metreASD"));
 		unitMap.put("mm", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/millimetre"));
-		unitMap.put("mBDAT", iri("http://theworldavatar.com/resource/ontouom/metreBDAT"));
-		unitMap.put("l/s", iri("http://theworldavatar.com/resource/ontouom/litrePerSecond"));
+		unitMap.put("mBDAT", iri("https://www.theworldavatar.com/kg/ontouom/metreBDAT"));
+		unitMap.put("l/s", iri("https://www.theworldavatar.com/kg/ontouom/litrePerSecond"));
 		unitMap.put("m3/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetrePerSecond-Time"));
 		unitMap.put("deg", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/degree"));
 		unitMap.put("m/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/PrefixedMetrePerSecond-Time"));
