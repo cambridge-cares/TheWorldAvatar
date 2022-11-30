@@ -6,10 +6,8 @@ import os
 from configobj import ConfigObj
 from pathlib import Path
 
-# Initialise logger
-##logger = agentlogging.get_logger("prod")
-
-
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 # Define location of properties file
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent.parent, 
                   "resources", "timeseries.properties"))
@@ -36,50 +34,50 @@ def read_properties_file(filepath):
     try:
         DB_URL = props['db.url']
     except KeyError:
-        ##logger.('Key "db.url" is missing in properties file: ' + filepath)
+        logger.error('Key "db.url" is missing in properties file: ' + filepath)
         raise KeyError('Key "db.url" is missing in properties file: ' + filepath)
     if DB_URL == '':
-        ##logger.('No "db.url" value has been provided in properties file: ' + filepath)
+        logger.error('No "db.url" value has been provided in properties file: ' + filepath)
         raise KeyError('No "db.url" value has been provided in properties file: ' + filepath)
 
     # Extract PostgreSQL database username
     try:
         DB_USER = props['db.user']
     except KeyError:
-        ##logger.('Key "db.user" is missing in properties file: ' + filepath)
+        logger.error('Key "db.user" is missing in properties file: ' + filepath)
         raise KeyError('Key "db.user" is missing in properties file: ' + filepath)
     if DB_USER == '':
-        ##logger.('No "db.user" value has been provided in properties file: ' + filepath)
+        logger.error('No "db.user" value has been provided in properties file: ' + filepath)
         raise KeyError('No "db.user" value has been provided in properties file: ' + filepath)
 
     # Extract PostgreSQL database password
     try:
         DB_PASSWORD = props['db.password']
     except KeyError:
-        ##logger.('Key "db.password" is missing in properties file: ' + filepath)
+        logger.error('Key "db.password" is missing in properties file: ' + filepath)
         raise KeyError('Key "db.password" is missing in properties file: ' + filepath)
     if DB_PASSWORD == '':
-        ##logger.('No "db.password" value has been provided in properties file: ' + filepath)
+        logger.error('No "db.password" value has been provided in properties file: ' + filepath)
         raise KeyError('No "db.password" value has been provided in properties file: ' + filepath)
 
     # Extract SPARQL Query endpoint of KG
     try:
         QUERY_ENDPOINT = props['sparql.query.endpoint']
     except KeyError:
-        ##logger.('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
+        logger.error('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
         raise KeyError('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
     if QUERY_ENDPOINT == '':
-        ##logger.('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
+        logger.error('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
         raise KeyError('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
 
     # Extract SPARQL Update endpoint of KG
     try:
         UPDATE_ENDPOINT = props['sparql.update.endpoint']
     except KeyError:
-        ##logger.('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
+        logger.error('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
         raise KeyError('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
     if UPDATE_ENDPOINT == '':
-        ##logger.('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
+        logger.error('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
         raise KeyError('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
 
 

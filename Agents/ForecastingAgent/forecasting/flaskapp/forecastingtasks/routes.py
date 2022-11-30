@@ -7,13 +7,12 @@
 from flask import Blueprint, request, jsonify
 import traceback
 
-#import agentlogging
 import json
 from forecasting.errorhandling.exceptions import InvalidInput
 from forecasting.forecasting_agent.agent import forecast
 
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 
 forecastingtasks_bp = Blueprint(
@@ -27,9 +26,9 @@ def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:
         query = request.json["query"]
-        print('recieved query - start to extract data')
+        logger.info('recieved query - start to extract data')
     except Exception as ex:
-        #logger.('No JSON "query" object could be identified.')
+        logger.error('No JSON "query" object could be identified.')
         return jsonify({'status': '500', 'msg': 'No JSON "query" object could be identified.'}), 500
     # Retrieve data IRI to be updated
     try:
@@ -39,55 +38,60 @@ def api_forecast():
             iri = iri[1:]
         if iri.endswith('>'):
             iri = iri[:-1]
-        print('iri: ' + iri)
+        logger.info('iri: ' + iri)
     except Exception as ex:
-        #logger.('Invalid "iri" provided.')
+        logger.error('No "iri" provided.')
         return jsonify({'status': '500', 'msg': '"iri" must be provided.'}), 500
 
     
     # Retrieve horizon 
     try:
         horizon = int(query['horizon'])
-        print('horizon: ' + str(horizon))
+        logger.info('horizon: ' + str(horizon))
     except Exception as ex:
-        #logger.info('No horizon, using default.')
+        logger.error('No "horizon" provided.')
         return jsonify({'status': '500', 'msg': '"horizon" (how many steps to forecast) must be provided.'}), 500
 
     if horizon <= 0:
-        #logger.('Invalid "horizon" provided. Must be higher than 0.')
+        logger.error('Invalid "horizon" provided. Must be higher than 0.')
         return jsonify({'status': '500', 'msg': 'Invalid "horizon" provided. Must be higher than 0.'}), 500
         
     
     # Retrieve forecast_start_date 
     try:
         forecast_start_date = query['forecast_start_date']
-        print('forecast_start_date: ' + forecast_start_date)
+        logger.info('forecast_start_date: ' + forecast_start_date)
     except KeyError as ex:
-        #logger.info('No forecast_start_date, using most recent date.')
+        logger.warning('No forecast_start_date, using most recent date.')
         # use last available date as forecast_start_date
         forecast_start_date = None
     
     # Retrieve if specific model configuration should be foreced
     try:
         use_model_configuration = query['use_model_configuration']
-        print('use_model_configuration: ' + use_model_configuration)
+        logger.info('use_model_configuration: ' + use_model_configuration)
     except KeyError as ex:
+        logger.warning('No use_model_configuration, using "DEFAULT".')
+
         use_model_configuration = None
     
     # Retrieve data_length 
     try:
         data_length = int(query['data_length'])
-        print('data_length: ' + str(data_length))
+        logger.info('data_length: ' + str(data_length))
     except KeyError as ex:
+        logger.warning('No data_length, using data_length from "DEFAULT" configuration.')
+
         data_length = None
         
     try:
         # Forecast iri
         res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length = data_length)
         res['status'] = '200'
+        logger.info('forecasting successful')
         return jsonify(res)
     except Exception as ex:
-        #logger.("Unable to forecast.", ex)
-        print(traceback.format_exc())
+        logger.error("Unable to forecast.", ex)
+        logger.error(traceback.format_exc())
         return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)}), 500
 

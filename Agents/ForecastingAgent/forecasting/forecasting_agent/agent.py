@@ -26,10 +26,8 @@ from forecasting.utils.properties import *
 from forecasting.utils.tools import *
 from forecasting.utils.tools import *
 
-#import agentlogging
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
-
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
     """
@@ -68,12 +66,14 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     cfg['ts_iri'] = get_ts_iri(cfg, kgClient)
     cfg['forecast_start_date'] = get_forecast_start_date(
         forecast_start_date, tsClient, cfg)
+    logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
     
     # calculate lower and upper bound for timeseries to speed up query
     lowerbound, upperbound = get_ts_lower_upper_bound(cfg)
     cfg['loaded_data_bounds'] = {
         'lowerbound': lowerbound, 'upperbound': upperbound}
-
+    logger.info(f'Using the following time bounds for the query: {cfg["loaded_data_bounds"]}')
+    
     # use model configuration function to get the correct iri timeseries and its covariates
     series, covariates = load_ts_data(
         cfg, kgClient, tsClient)
@@ -83,14 +83,17 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     if cfg['forecast_start_date'] in series.time_index:
         series, backtest_series = series.split_before(
             cfg['forecast_start_date'])
+        logger.info('Forecast start date is in series. Splitting series at forecast start date.')
 
     # or the next date
     elif cfg['forecast_start_date'] == series.time_index[-1] + series.freq:
         # keep whole series
+        logger.info('Forecast start date is the next date after the last date in the series. Keeping whole series.')
         pass
 
     # Timestamp out of series range
     else:
+        logger.error('Forecast start date is out of series range.')
         raise ValueError(
             f'forecast_start_date: {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
 
@@ -105,19 +108,23 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
         # check if length of series is long enough for the model input length
         if len(series) < cfg['fc_model']['input_length']:
+            logger.error('Series is too short for the model input length. Set data_length to at least the length of the model input length or use an other model.')
             raise ValueError(
                 f'Length of series: {len(series)} is shorter than the required input length of the model: {cfg["fc_model"]["input_length"]}')
         # check that horizon is bigger than output_chunk_length
         if cfg['horizon'] < model.model_params['output_chunk_length']:
+            logger.error('Horizon is less than the the model output length. Set horizon to at least the length of the model output length or use an other model.')
             raise ValueError(
                 f'horizon: {cfg["horizon"]} is smaller than output_chunk_length: {model.model_params["output_chunk_length"]}. Specify a horizon bigger than the output_chunk_length of your model.')
             
     elif 'DEFAULT' == cfg['model_configuration_name']:
+        logger.info('Using Prophet model.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
     else:
+        logger.error('No model configuration found for the given name.')
         raise ValueError(
-            f'No model found for model_configuration_name {cfg["model_configuration_name"]}, use one of {MODEL_MAPPING.keys()}')
+            f'No model configuration found for the given name{cfg["model_configuration_name"]}, use one of {MODEL_MAPPING.keys()}')
 
     forecast = get_forecast(series, covariates, model, cfg)
 
@@ -128,6 +135,11 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     cfg['model_input_interval'] = [start_date, series.end_time()]
     cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
     cfg['created_at'] = pd.to_datetime('now', utc=True)
+    logger.info(f'Created forecast at: {cfg["created_at"]}')
+    logger.info(f'Output interval: {cfg["model_output_interval"]}')
+    logger.info(f'Input interval: {cfg["model_input_interval"]}')
+    
+    
     try:
         # get unit from iri and add to forecast
         cfg['unit'] = get_unit(cfg['iri'], kgClient)
@@ -137,13 +149,16 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
 
     update = get_forecast_update(cfg=cfg)
+    
     kgClient.performUpdate(add_insert_data(update))
-
+    logger.info(f'Added forecast ontology to KG')
+    
     # call client
     instantiate_forecast_timeseries(tsClient, cfg, forecast)
-
+    
     if backtest_series is not None:
         cfg['error'] = calculate_error(backtest_series, forecast)
+        logger.info(f'Calculated error: {cfg["error"]}')
     
     # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',
@@ -162,8 +177,11 @@ def instantiate_forecast_timeseries(tsClient, cfg, forecast):
             ts = TSClient.create_timeseries([str(x) for x in forecast.time_index.tz_localize('UTC').strftime(TIME_FORMAT)], [
                                             cfg['forecast_iri']], [forecast.values().squeeze().tolist()])
             tsClient.tsclient.addTimeSeriesData(ts, conn)
+            logger.info(f'Added forecast timeseries to TSDB.')
+
             
     except:
+        logger.error('Could not instantiate forecast timeseries.')
         raise KGException(f'Could not instantiate forecast timeseries {cfg["forecast_iri"]}')
 
 
@@ -196,19 +214,19 @@ def get_forecast(series, covariates, model, cfg):
     :return: The forecasted values
     """
 
-    print(f"Forecasting with {cfg['fc_model']['name']} model")
     if cfg['fc_model']['scale_data']:
         # neural methods perform better with scaled inputs
+        logger.info(f'Scaling data with data of length:{len(series)}. Make sure that series is long enough (controlled with "data_length") to represent the whole data distribution. ')
         scaler = Scaler()
         series = scaler.fit_transform(series)
 
     # make forecast with covariates
     if covariates is not None:
         if cfg['fc_model']['train_again']:
-            # TODO: add option to train model with covariates
+            logger.info(f'Training model again with covariates.')
             # train again with covariates
             model.fit(series, future_covariates=covariates)
-
+        logger.info(f'Making forecast with covariates.')
         try:
             forecast = model.predict(
                 n=cfg['horizon'], future_covariates=covariates, series=series)
@@ -222,12 +240,14 @@ def get_forecast(series, covariates, model, cfg):
     # make prediction without covariates
     else:
         if cfg['fc_model']['train_again']:
+            logger.info(f'Training model again without covariates.')
             model.fit(series)
-
+        logger.info(f'Making forecast without covariates.')
         forecast = model.predict(n=cfg['horizon'])
 
     if cfg['fc_model']['scale_data']:
         # scale back
+        logger.info(f'Scaling back data.')
         forecast = scaler.inverse_transform(forecast)
 
     return forecast
@@ -281,10 +301,10 @@ def load_ts_data(cfg, kgClient, tsClient):
     :return: the timeseries and covariates.
     """
 
-    #logger.info('Loading timeseries from KG')
 
     if 'load_covariates_func' in cfg:
         # load covariates
+        logger.info('Loading covariates with function: ' + cfg['load_covariates_func'].__name__)
         covariates_iris, covariates = cfg['load_covariates_func'](
             kgClient, tsClient, cfg['loaded_data_bounds']['lowerbound'], cfg['loaded_data_bounds']['upperbound'])
         cfg['fc_model']['covariates_iris'] = covariates_iris
@@ -292,6 +312,7 @@ def load_ts_data(cfg, kgClient, tsClient):
         # check if covariates are given for complete future horizon from forecast_start_date
         check_if_enough_covs_exist(cfg, covariates)
     else:
+        logger.info('No covariates loading function given, no covariates are loaded')
         covariates = None
 
     # load timeseries which should be forecasted
@@ -304,7 +325,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     # remove nan values at beginning and end
     series = series.strip()
 
-    print('Done with loading timeseries from KG and TSDB')
+    logger.info('Done with loading timeseries from KG and TSDB')
     return series, covariates
 
 
@@ -332,6 +353,8 @@ def get_ts_iri(cfg, kgClient):
 
 def check_if_enough_covs_exist(cfg, covariates):
     if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
+        logger.error(
+            f'Not enough covariates exist for the given forecast_start_date and horizon. The last covariate date is {covariates.end_time()}')
         raise ValueError(
             f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
     return True
@@ -395,24 +418,24 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
             # download checkpoint model
             path_ckpt, _ = urllib.request.urlretrieve(
                 model_path_ckpt_link, path_to_store / "best-model.ckpt")
-            print(
+            logger.info(
                 f'Downloaded checkpoint model from {model_path_ckpt_link} to {path_ckpt}')
 
         if model_path_pth_link.startswith("https://"):
             # download model
             path_pth, _ = urllib.request.urlretrieve(
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
-            print(f'Downloaded model from {model_path_pth_link} to {path_pth}')
+            logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
     model = ModelClass.load_from_checkpoint(
         path_ckpt.parent.parent.__str__())
-    print(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
+    logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
     pl_trainer_kwargs = {"accelerator": 'cpu'}
     model.model_params['pl_trainer_kwargs'] = pl_trainer_kwargs
     model.trainer_params = pl_trainer_kwargs
-    print(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
+    logger.info(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
     return model
 
 

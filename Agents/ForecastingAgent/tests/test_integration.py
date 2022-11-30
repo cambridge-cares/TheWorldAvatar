@@ -26,7 +26,8 @@ from forecasting.kgutils.tsclient import TSClient, init_ts
 from forecasting.utils.tools import *
 import numpy as np
 import uuid
-
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 # create flask app
 @pytest.fixture(scope='module')
@@ -45,14 +46,14 @@ query_delete = \
     """
        DELETE WHERE {?s ?p ?o}
        """
-print("Deleting all data from KG namespace")
+logger.info("Deleting all data from KG namespace")
 kgClient.performUpdate(query_delete)
 update = ''
 n = 400
 #  the test data
 timestamps = pd.date_range(start='2019-08-05T09:00:00Z', periods=n,
                            freq='H').strftime(TIME_FORMAT)
-print(f'timestamps start: {timestamps[0]}, timestamps end: {timestamps[-1]}')
+logger.info(f'timestamps start: {timestamps[0]}, timestamps end: {timestamps[-1]}')
 
 
 # test data generated heat
@@ -81,7 +82,7 @@ update = add_insert_data(update)
 
 # Execute query
 kgClient.performUpdate(update)
-print("Test data initialized")
+logger.info("Test data initialized")
 
 
 forecast_start_date = (pd.to_datetime(

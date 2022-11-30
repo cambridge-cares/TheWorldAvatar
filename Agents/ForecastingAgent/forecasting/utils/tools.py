@@ -15,7 +15,8 @@ import pandas as pd
 from darts import concatenate
 from forecasting.errorhandling.exceptions import KGException
 
-
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict = {}):
     """
          Constructs proper SPARQL update string from given name, verb-object and verb-literal dictionary.
@@ -95,11 +96,13 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     # 2. ts without MEASURE
     for row in ts_by_type:
         if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE):
+            logger.info(f'Loading air temperature covariate')
             df_air_temp = get_df_of_ts(
                 row['tsIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
             cov_iris.append(row['tsIRI'])
 
         if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
+            logger.info(f'Loading public holiday covariate')
             df_public_holiday = get_df_of_ts(
                 row['tsIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
             cov_iris.append(row['tsIRI'])
@@ -120,7 +123,7 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
         ],
         axis="component",
     )
-
+    logger.info(f'Created time covariates: "dayofyear", "dayofweek", "hour"')
     # add darts covariates as string
     #cov_iris += ['dayofyear', 'dayofweek', 'hour']
     return cov_iris, covariates
@@ -130,8 +133,10 @@ def get_df_of_ts(tsIRI, tsClient, lowerbound, upperbound, column_name="cov", dat
     dates, values = get_ts_data(
         tsIRI, tsClient,  lowerbound=lowerbound, upperbound=upperbound)
     if len(values) == 0:
+        logger.error(f'No data for tsIRI {tsIRI}')
         raise ValueError(
             f"no values for tsIRI {tsIRI}, with lowerbound {lowerbound} and upperbound {upperbound}")
+    logger.info(f'Loaded {len(values)} values for tsIRI {tsIRI} from {lowerbound} to {upperbound}')
     df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name])
     # remove time zone
     df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
