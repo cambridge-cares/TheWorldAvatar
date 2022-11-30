@@ -5,7 +5,7 @@ In the commands below placeholders are shown as `<STACK NAME>`, you will need to
 ## Prerequisites
 
 ### Hardware
-* A total RAM size of 32GB is recommended for smooth execution, particualry in Microsoft Windows.
+* A total RAM size of 32GB is recommended for smooth execution, particularly in Microsoft Windows.
 
 ### Software
 * Building and running a stack has been tested in Microsoft Windows and to some degree Linux, it has not been tested within a MacOS environment.
@@ -45,8 +45,8 @@ To spin up the stack (with default settings) please follow the instructions belo
         ```console
         docker service ls --filter name=<STACK NAME>-nginx
         ```
-    * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_pasword` file.
-    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`. The `Database` slot can be left blank if you don't know what it should be.
+    * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_password` file.
+    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_password` file as the `Password`. The `Database` slot can be left blank if you don't know what it should be.
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
 ## Debugging the Stack Manager in VSCode
@@ -63,7 +63,7 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 You will need permission to push to the CMCL package repository to be able to build the stack-manager project
 
-1. Follow the instuctions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
+1. Follow the instructions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
 
 2. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your GitHub username and access token (with scope to write packages), respectively.
 
