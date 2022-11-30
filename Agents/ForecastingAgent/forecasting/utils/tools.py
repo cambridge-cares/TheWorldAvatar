@@ -88,10 +88,7 @@ def check_cov_matches_rdf_type(row, rdf_type):
 def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     cov_iris = []
 
-    # find covariates by specific type of ts iri.
-    # This just works for the data iri that is used and has unique type.
-    # e.g. in district heating it is not possible to find the covariates for the ts type of EnergyInTimeInterval, because its not unique
-    # the covariate must be found through different identification
+    # The following approach just works for the data iris that have an unique rdf type.
     ts_by_type = kgClient.performQuery(get_ts_by_type())
     # two different types of ts:
     # 1. ts with MEASURE
@@ -166,7 +163,7 @@ def get_time_format(iri, kgClient):
     return time_format
 
 
-def get_ts_data(iri, ts_client, lowerbound, upperbound):
+def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
     """
     It takes a data IRI and a client object, and returns the dates and values of the time series
 
@@ -176,13 +173,21 @@ def get_ts_data(iri, ts_client, lowerbound, upperbound):
     values.
     """
 
-    try:
-        with ts_client.connect() as conn:
-            ts = ts_client.tsclient.getTimeSeriesWithinBounds(
-                [iri], lowerbound, upperbound, conn)
-    except:
-        raise KGException(
-            f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
+    if lowerbound is not None and upperbound is not None:
+        try:
+            with ts_client.connect() as conn:
+                ts = ts_client.tsclient.getTimeSeriesWithinBounds(
+                    [iri], lowerbound, upperbound, conn)
+        except:
+            raise KGException(
+                f"Could not get time series for iri {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
+    else:
+        try:
+            with ts_client.connect() as conn:
+                ts = ts_client.tsclient.getTimeSeries([iri], conn)
+        except:
+            raise KGException(
+                f"Could not get time series for iri {iri}.")
 
     dates = ts.getTimes()
     # Unwrap Java time objects
