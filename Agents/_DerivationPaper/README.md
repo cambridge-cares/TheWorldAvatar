@@ -40,6 +40,21 @@ docker-compose -f "docker-compose_stack.yml" up -d
 
 # Workflow
 
+## 0. Irrgularities in data to double check before deploying agents
+1. Each instantiated `obe:Property` has **ONLY ONE** instance of `obe:TransactionRecord` associated with it via `obe:hasLatestTransactionRecord`. In situation of multiple instances attached, the duplicated ones or the earlier ones should be deleted to keep only the latest one. Those have more than one instance can be filtered out by:
+    ```sparql
+    PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?property (count(?tx) as ?numOfTx)
+    WHERE {
+        ?property rdf:type/rdfs:subClassOf* obe:Property.
+        ?property obe:hasLatestTransactionRecord ?tx.
+    }
+    GROUP BY ?property
+    HAVING (?numOfTx > 1)
+    ```
+
 ## 1. Data Preparation
 
 Upload previously instantiated properties required for the use case. Either download the [consolidated and labeled triples] and place them into the [data] folder before running [data_preparation.py] as main script or follow steps 1.1. - 1.4 below.
@@ -86,6 +101,8 @@ Run the [flood_warning.py] module as main script to instantiate the flood warnin
 &nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
+
+Jiaru Bai (jb2197@cam.ac.uk), November 2022
 
 
 <!-- Links -->
