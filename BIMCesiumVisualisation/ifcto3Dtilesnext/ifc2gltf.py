@@ -45,13 +45,15 @@ def gendict4split(ifc):
     # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
     dict_elements = {"building":
                      ["IfcBuildingElementProxy", "IfcFurnishingElement",
-                      "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement"]}
+                      "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement",
+                      "IfcFlowSegment"]}
 
     hashmapping = {}
     counter = 1
     # Store the IDs that should be generated as part of the interior furniture or solar panel model
     furniture_elements = []
     solar_panel_elements = []
+    sewage_network_elements =[]
     for feature in ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal"]:
         for element in ifc.by_type(feature):
             # If the name contains these key words,generate individual models for them
@@ -67,14 +69,19 @@ def gendict4split(ifc):
             # If the name contain a solar panel, generate a separate solar panel model
             elif find_word(["Solar Panel"], element.Name):
                 solar_panel_elements.append(element.GlobalId)
+            elif find_word(["Manhole"], element.Name):
+                sewage_network_elements.append(element.GlobalId)
             else:
                 furniture_elements.append(element.GlobalId)
-
+    for element in ifc.by_type("IfcFlowSegment"):
+        sewage_network_elements.append(element.GlobalId)
     # Add to dictionary if list is not empty
     if furniture_elements:
         dict_elements["furniture"] = furniture_elements
     if solar_panel_elements:
         dict_elements["solarpanel"] = solar_panel_elements
+    if sewage_network_elements:
+        dict_elements["sewagenetwork"] = sewage_network_elements
     return dict_elements, hashmapping
 
 
