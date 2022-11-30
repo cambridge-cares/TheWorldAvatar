@@ -93,6 +93,15 @@ def avg_sqm_price_derivation_markup(
 ):
     if existing_avg_sqm_price_iri is None:
         try:
+            # TODO [when turning this script into an agent]
+            # It has been observed that the function call createSyncDerivationForNewInfo sometimes fails with the error:
+            # ERROR - HTTPConnectionPool(host='statistics.data.gov.uk', port=80): Max retries exceeded
+            #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f5d38710a60>: Failed to establish a new connection: [Errno 111] Connection refused'))
+            # Given the current design, the derivation will not be created if the above error occurs
+            # i.e. from the KG point of view, nothing happened
+            # One might want to consider retrying the function call if the same error occurs
+            # Either here or in the AverageSquareMetrePriceAgent where the HTTP request is made (the latter is preferred)
+
             # Create sync derivation for new info to get avg_sqm_price computed
             derivation = derivation_client.createSyncDerivationForNewInfo(
                 agentIRI=AVG_SQM_PRICE_AGENT_IRI,
