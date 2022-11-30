@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     author='Magnus Mueller',
     license='MIT',
-    long_description=open('README.md').read(),
+    long_description=open('https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages( exclude=("tests")),
     url="",
