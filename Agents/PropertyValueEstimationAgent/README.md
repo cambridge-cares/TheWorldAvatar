@@ -212,11 +212,18 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
     (prop_venv) $
     ```
 2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
+    > **NOTE** The design of separating `setup.py` and `requirements.txt` in this agent is an effort to avoid version collision. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
+
+    > **NOTE** By design, requirements files and setup script are for different purposes. The former tends to be as specific as possible for reproducibility and production, whereas the latter normally gives a wide range to not limit the choice of packages in development. If you let the pip decide the version of packages, there's a chance it pulls a version of a package that potentially breaks the other packages. For more information, see https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+
+    > **NOTE** With that said, if the agent is not intended to be installed with other agents in the same virtual environment it is also valid to pin all the version numbers in the `setup.py` directly and delete the `requirements.txt`.
 
     `(Windows)`
     ```bash
     (prop_venv) $ python -m pip install --upgrade pip
-    # Install all required packages from setup.py, incl. pytest etc.
+    # Install pinned version of required packages, these are tested working version
+    (prop_venv) $ python -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
     (prop_venv) $ python -m pip install -e .[dev]
     ```
 
@@ -227,7 +234,9 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
     (prop_venv) $ python3 -m pip install --upgrade pip
     # Install prerequsisites for building psycopg2
     (prop_venv) $ sudo apt install libpq-dev python3-dev
-    # Install all required packages from setup.py, incl. pytest etc.
+    # Install pinned version of required packages, these are tested working version
+    (prop_venv) $ python3 -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
     (prop_venv) $ python3 -m pip install -e .[dev]
     ```
 
