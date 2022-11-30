@@ -24,7 +24,7 @@ from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
 from forecasting.utils.properties import *
 from forecasting.utils.tools import *
-from forecasting.utils.useful_queries import *
+from forecasting.utils.tools import *
 
 #import agentlogging
 # Initialise logger

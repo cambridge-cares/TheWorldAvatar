@@ -5,8 +5,7 @@ from forecasting.datamodel.iris import *
 
 from forecasting.kgutils.javagateway import jpsBaseLibGW
 
-from forecasting.utils.useful_queries import get_covs_heat_supply
-from forecasting.datamodel.data_mapping import *
+from forecasting.utils.tools import get_covs_heat_supply
 
 import datetime as dt
 
@@ -24,7 +23,7 @@ DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
 INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
 BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
 
-
+TIME_FORMAT_TS = "YYYY-MM-DDThh:mm:ssZ"
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 MODEL_MAPPING = {}
