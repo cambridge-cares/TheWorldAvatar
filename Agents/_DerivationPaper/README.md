@@ -38,9 +38,18 @@ A [docker-compose_stack.yml] file is provided to spin up a stack with a Blazegra
 docker-compose -f "docker-compose_stack.yml" up -d
 ```
 
+Another `docker-compose-agents.yml` file is provided to spin up a stack with the agents involved in this mvp. To spin up the stack, run the following command from the same directory where this README is located:
+```bash
+# Spin up container stack
+docker-compose -f "docker-compose-agents.yml" up -d
+```
+Or, if you use VS Code, you can right click the docker compose file and select `Compose Up - Select Services` to spin up a specific agent.
+
+> **NOTE** The agents' image mentioned in this docker compose file are mocked version for this mvp that work without using the stack-manager. They are published in `ghcr.io/cambridge-cares`, you may need GitHub personal access token to pull the images for the first time.
+
 # Workflow
 
-## 0. Irrgularities in data to double check before deploying agents
+## 0. Irrgularities in data to double check before uploading data and derivation markup
 1. Each instantiated `obe:Property` has **ONLY ONE** instance of `obe:TransactionRecord` associated with it via `obe:hasLatestTransactionRecord`. In situation of multiple instances attached, the duplicated ones or the earlier ones should be deleted to keep only the latest one. Those have more than one instance can be filtered out by:
     ```sparql
     PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
@@ -96,6 +105,18 @@ Running the [data_preparation.py] module as main script also initialises the Pro
 ## 3. Instantiate Flood Warning
 
 Run the [flood_warning.py] module as main script to instantiate the flood warning (which affects the previously labeled buildings). Please note that only the absolute minimum relationships are instantiated, which are required for the Flood Assessment Agent to pick up the flood warning.
+
+## 4. Create derivation markup
+1. Create derivation markup for `AverageSquareMetrePrice` by executing the below command:
+    ```bash
+    python markup_avg_sqm_price.py
+    ```
+    This file queries all instantiated postal code and requests for derivation markup with the `createSyncDerivationForNewInfo` function to compute the average price on the spot. After running the script, 977 derivations will be generated, which may take ~30 minutes if none of the derivations exist before.
+2. Create derivation markup for `PropertyValueEstimation` by executing the below command:
+    ```bash
+    python markup_property_value_est.py
+    ```
+    This file queries all instantiated properties but takes a short-cut that ONLY requests for derivation markup of the mock affected buildings as listed in `./data/affected_property_iris.csv`. It also uses the `createSyncDerivationForNewInfo` function and will generate 222 derivations once executed. This may take ~6 minutes if none of the derivations exist before.
 
 
 &nbsp;
