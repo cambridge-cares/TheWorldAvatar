@@ -178,9 +178,10 @@ expected_error5 = 'No model configuration found for the given key: blablabla'
 query_error6 = {"query": {
     "iri": generatedHeat_iri,
     "data_length": 168,
-    "horizon": 3,
-    "forecast_start_date": "2099-08-15T01:00:00Z"}}
-expected_error6 = f'Could not get time series for {generatedHeat_ts_iri} with lowerbound '
+    "horizon": 24,
+    "forecast_start_date": "2049-08-15T01:00:00Z"}}
+#expected_error6 = f'Could not get time series for {generatedHeat_ts_iri} with lowerbound'
+expected_error6 = 'no values for tsIRI '
 
 
 @pytest.mark.parametrize("query_dict, expected_error_message", [
@@ -193,9 +194,10 @@ expected_error6 = f'Could not get time series for {generatedHeat_ts_iri} with lo
 ])
 def test_prophet_error(query_dict, expected_error_message, test_client):
 
-    res = test_client.post('/api/forecastingAgent/forecast', json={"headers": {'content_type': 'application/json'},
-                                                                   **query_dict
-                                                                   })
+    res = test_client.post('/api/forecastingAgent/forecast',
+                           json={"headers": {'content_type': 'application/json'},
+                                 **query_dict
+                                 })
     assert res.status_code == 500
     assert expected_error_message in res.json['msg']
 
@@ -277,8 +279,8 @@ expected1 = {'fc_model': {'train_again': False, 'name': 'tft', 'scale_data': Tru
 def test_tft(query_dict, expected, test_client):
 
     res = test_client.post('/api/forecastingAgent/forecast', json={"headers": {'content_type': 'application/json'},
-                                                                        **query_dict
-                                                                        }).json
+                                                                   **query_dict
+                                                                   }).json
     assert res['status'] == str(200)
     # check that forecast is instantiated
     dates, values = get_ts_data(
@@ -286,8 +288,8 @@ def test_tft(query_dict, expected, test_client):
     assert len(dates) == expected['horizon']
     assert len(values) == expected['horizon']
     assert dates[0] == expected['forecast_start_date']
-    for k,v in expected['fc_model'].items():
-         assert res['fc_model'][k] == v
+    for k, v in expected['fc_model'].items():
+        assert res['fc_model'][k] == v
     assert len(res['fc_model']['covariates_iris']) == 2
     assert res['data_length'] == expected['data_length']
     assert res['model_configuration_name'] == expected['model_configuration_name']
@@ -300,18 +302,18 @@ def test_tft(query_dict, expected, test_client):
 
 query_error1 = {"query": {
     "iri": heatDemand_iri,
-     "use_model_configuration": "TFT_HEAT_SUPPLY",
+    "use_model_configuration": "TFT_HEAT_SUPPLY",
     "data_length": 168,
     "horizon": 24}}
 expected_error1 = 'Not enough covariates for complete future horizon. Covariates end at '
 
 query_error2 = {"query": {
     "iri": heatDemand_iri,
-     "forecast_start_date": forecast_start_date,
-     "use_model_configuration": "TFT_HEAT_SUPPLY",
+    "forecast_start_date": forecast_start_date,
+    "use_model_configuration": "TFT_HEAT_SUPPLY",
     "data_length": 168,
     "horizon": 3}}
-expected_error2 = 'Specify a horizon bigger than output_chunk_length'
+expected_error2 = 'Specify a horizon bigger than the output_chunk_length of your model'
 
 
 @pytest.mark.parametrize("query_dict, expected_error_message", [
