@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.query;
+package uk.ac.cam.cares.jps.base.query.test;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.*;
@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
