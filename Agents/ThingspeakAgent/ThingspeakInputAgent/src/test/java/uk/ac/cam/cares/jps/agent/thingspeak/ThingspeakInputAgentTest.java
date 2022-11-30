@@ -14,6 +14,7 @@ import com.github.tomakehurst.wiremock.common.JsonException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -295,7 +296,7 @@ public class ThingspeakInputAgentTest {
         testAgent.initializeTimeSeriesIfNotExist();
         // Should have invoked the time series initialization for each mapping
         Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries()))
-                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any());
+                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
