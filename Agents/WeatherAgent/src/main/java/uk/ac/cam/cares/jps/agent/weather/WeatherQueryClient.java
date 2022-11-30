@@ -90,7 +90,7 @@ class WeatherQueryClient {
     	UNIT_MAP.put(Rainfall, UNIT_MM);
     	UNIT_MAP.put(AtmosphericPressure, UNIT_MBAR);
     	UNIT_MAP.put(AirTemperature, UNIT_CELCIUS);
-    	UNIT_MAP.put(RelativeHumidity, UNIT_FRACTION);
+    	UNIT_MAP.put(RelativeHumidity, UNIT_PERCENTAGE);
     	UNIT_MAP.put(WindSpeed, UNIT_MS);
     	UNIT_MAP.put(WindDirection, UNIT_DEGREE);
 		UNIT_MAP = Collections.unmodifiableMap(UNIT_MAP);
@@ -176,10 +176,6 @@ class WeatherQueryClient {
 		LOGGER.info("Creating time series for station");
     	// then create a table for this weather station
     	tsClient.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, null);
-    	
-    	// populate with current weather data
-		// providing null timestamp will give the current weather data
-    	updateStation(stationIri, null);
     	
     	return stationIri;
     }

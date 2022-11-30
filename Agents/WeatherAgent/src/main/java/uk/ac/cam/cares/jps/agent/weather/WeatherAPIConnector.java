@@ -54,7 +54,7 @@ class WeatherAPIConnector {
 			Map<String,Double> resultMap = new HashMap<>();
 			resultMap.put(WeatherQueryClient.Rainfall, precipitation);
 			resultMap.put(WeatherQueryClient.AtmosphericPressure, apiresult.getJSONObject("main").getDouble("pressure"));
-			resultMap.put(WeatherQueryClient.CloudCover,apiresult.getJSONObject("clouds").getDouble("all")/100);
+			resultMap.put(WeatherQueryClient.CloudCover,apiresult.getJSONObject("clouds").getDouble("all"));
 			resultMap.put(WeatherQueryClient.WindSpeed, apiresult.getJSONObject("wind").getDouble("speed"));
 			if (apiresult.getJSONObject("wind").has("deg")) {
 				resultMap.put(WeatherQueryClient.WindDirection, apiresult.getJSONObject("wind").getDouble("deg"));
@@ -106,7 +106,7 @@ class WeatherAPIConnector {
 			Map<String,Double> resultMap = new HashMap<>();
 			resultMap.put(WeatherQueryClient.Rainfall, precipitation);
 			resultMap.put(WeatherQueryClient.AtmosphericPressure, data.getDouble("pressure"));
-			resultMap.put(WeatherQueryClient.CloudCover,data.getDouble("clouds")/100);
+			resultMap.put(WeatherQueryClient.CloudCover,data.getDouble("clouds"));
 			resultMap.put(WeatherQueryClient.WindSpeed, data.getDouble("wind_speed"));
 			resultMap.put(WeatherQueryClient.WindDirection, data.getDouble("wind_deg"));
 			resultMap.put(WeatherQueryClient.RelativeHumidity, data.getDouble("humidity"));
