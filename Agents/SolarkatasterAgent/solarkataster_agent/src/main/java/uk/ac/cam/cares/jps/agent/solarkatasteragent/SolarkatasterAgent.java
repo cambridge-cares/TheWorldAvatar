@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit;
 @WebServlet(urlPatterns = {"/run"})
 public class SolarkatasterAgent extends JPSAgent {
     public static final String KEY_OID = "oid";
-    public static final String KEY_GEB = "geb_id";
+    public static final String KEY_MOD = "mod_id";
     public static final String KEY_JAN = "jan_median";
     public static final String KEY_FEB = "feb_median";
     public static final String KEY_MRZ = "mrz_median";
@@ -39,6 +39,7 @@ public class SolarkatasterAgent extends JPSAgent {
     public static final String KEY_DEZ = "dez_median";
     public List<String> TIME_SERIES = Arrays.asList(KEY_JAN, KEY_FEB, KEY_MRZ, KEY_APR, KEY_MAI, KEY_JUN, KEY_JUL, KEY_AUG, KEY_SEP, KEY_OKT, KEY_NOV, KEY_DEZ);
     public static final String KEY_TABLE = "table";
+    public static final String KEY_CHUNK = "chunk";
 
     private String dbUrl;
     private String dbUser;
@@ -75,13 +76,13 @@ public class SolarkatasterAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)){
-            JSONArray maxOIDArray = rdbStoreClient.executeQuery(getMaxOidString(requestParams.getString(KEY_TABLE)));
+            JSONArray OIDArray = rdbStoreClient.executeQuery(getMinMaxOidString(requestParams.getString(KEY_TABLE)));
 
-            Integer max = maxOIDArray.getJSONObject(0).getInt("max");
+            Integer max = OIDArray.getJSONObject(0).getInt("max");
 
-            Integer step = Math.round(max / 50);
+            Integer start = OIDArray.getJSONObject(0).getInt("min");
 
-            Integer start = 0;
+            Integer step = Math.round((max - start) / requestParams.getInt(KEY_CHUNK));
 
             ArrayList<List> dataArrayList;
             JSONArray dataArray;
@@ -115,7 +116,7 @@ public class SolarkatasterAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         try {
-            if (requestParams.get(KEY_TABLE).toString().isEmpty()) {
+            if (requestParams.get(KEY_TABLE).toString().isEmpty() || !(requestParams.get(KEY_CHUNK) instanceof Integer)) {
                 throw new BadRequestException();
             }
         }
@@ -132,7 +133,7 @@ public class SolarkatasterAgent extends JPSAgent {
         ResourceBundle config = ResourceBundle.getBundle("config");
 
         ubemURI = config.getString("uri.ontology.ubem");
-        ubemSolar = ubemURI + "SolarIrradiationValue";
+        ubemSolar = ubemURI + "MonthlyAverageSolarIrradiationValue";
         dbUrl = config.getString("db.url");
         dbUser = config.getString("db.user");
         dbPassword = config.getString("db.password");
@@ -156,7 +157,7 @@ public class SolarkatasterAgent extends JPSAgent {
     private String getQueryString(String tableName, Integer start, Integer end) {
         String query;
 
-        query = "SELECT " + KEY_OID + ", " + KEY_GEB;
+        query = "SELECT " + KEY_MOD;
 
         for (int i = 0; i < TIME_SERIES.size(); i++){
             query = query + ", " + TIME_SERIES.get(i);
@@ -218,15 +219,13 @@ public class SolarkatasterAgent extends JPSAgent {
         ArrayList<List> output = new ArrayList<>();
 
         JSONObject temp;
-        String id;
         List<TimeSeries<Double>> tsList = new ArrayList<>();
         List<List<String>> dataIRI = new ArrayList<>();
         List<?> times = Collections.nCopies(TIME_SERIES.size(), null);
 
         for (int i = 0; i < dataArray.length(); i++){
             temp = dataArray.getJSONObject(i);
-            id = temp.getString(KEY_GEB) + String.valueOf(temp.getInt(KEY_OID));
-            dataIRI.add(Arrays.asList(ubemSolar + "_" + id));
+            dataIRI.add(Arrays.asList(ubemSolar + "_" + temp.getString(KEY_MOD)));
             tsList.add(new TimeSeries(times, dataIRI.get(i), Arrays.asList(getDoubleList(temp))));
         }
 
@@ -237,12 +236,12 @@ public class SolarkatasterAgent extends JPSAgent {
     }
 
     /**
-     * Construct query for largest OID as a string
+     * Construct query for smallest largest OID as a string
      * @param tableName name of table for which to query Solarkataster data from
      * @return SQL query as a string
      */
-    private String getMaxOidString(String tableName) {
-        return "SELECT MAX(" + KEY_OID + ") FROM \"" + tableName + "\"";
+    private String getMinMaxOidString(String tableName) {
+        return "SELECT MIN(" + KEY_OID + "), MAX(" + KEY_OID + ") FROM \"" + tableName + "\"";
     }
 }
 
