@@ -82,7 +82,7 @@ or [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with the agen
 ### Input parameters
 - **iri** is the `iri` of the object which has a time series attached to it. This iri will receive the hasForecastedValue instantiation.
 - **horizon** the time steps the agent forecasts autorecursively into the future.
-- **forecast_start_date** is the start day of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
+- **forecast_start_date** is the start dateTime of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
 - **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
 If not set the default value from the [mapping file] is used.
 - **use_model_configuration** if specified this model configuration from the [mapping file] is used.  
