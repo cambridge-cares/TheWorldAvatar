@@ -59,7 +59,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     if data_length is not None:
         cfg['data_length'] = data_length
         
-    cfg['ts_iri'] = get_ts_iri(cfg, kgClient)
+    cfg['dataIRI'] = get_dataIRI(cfg, kgClient)
     cfg['forecast_start_date'] = get_forecast_start_date(
         forecast_start_date, tsClient, cfg)
     logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
@@ -189,10 +189,10 @@ def get_forecast_start_date(forecast_start_date, tsClient, cfg):
         # get the last value of ts and set next date as forecast start date
         try:
             with tsClient.connect() as conn:
-                latest = tsClient.tsclient.getLatestData(cfg['ts_iri'], conn)
+                latest = tsClient.tsclient.getLatestData(cfg['dataIRI'], conn)
         except:
             raise KGException(
-                f'No time series data could be retrieved for the given IRI: {cfg["ts_iri"]}')
+                f'No time series data could be retrieved for the given IRI: {cfg['dataIRI']}')
         return pd.Timestamp(isoparse(latest.getTimes(
         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 
@@ -312,7 +312,7 @@ def load_ts_data(cfg, kgClient, tsClient):
         covariates = None
 
     # load timeseries which should be forecasted
-    df = get_df_of_ts(cfg['ts_iri'], tsClient, cfg['loaded_data_bounds']['lowerbound'],
+    df = get_df_of_ts(cfg['dataIRI'], tsClient, cfg['loaded_data_bounds']['lowerbound'],
                       cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
 
     # df to darts timeseries
@@ -325,7 +325,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     return series, covariates
 
 
-def get_ts_iri(cfg, kgClient):
+def get_dataIRI(cfg, kgClient):
     """
     Retrieves the time series IRI from the KG.
     Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
@@ -340,11 +340,11 @@ def get_ts_iri(cfg, kgClient):
     """
     try:
         # try if ts hasValue where the actual ts is stored
-        ts_iri = get_ts_value_iri(cfg['iri'], kgClient)
+        dataIRI = get_dataIRI_for_ts_with_hasValue_iri(cfg['iri'], kgClient)
     except IndexError as e:
-        ts_iri = cfg['iri']
+        dataIRI = cfg['iri']
 
-    return ts_iri
+    return dataIRI
 
 
 def check_if_enough_covs_exist(cfg, covariates):
@@ -444,7 +444,7 @@ def get_forecast_update(cfg):
         'frequency': the frequency of the time series data
         'horizon': the length of the forecast
         'data_length': the length of the time series data to retrieve before the forecast_start_date
-        'ts_iri': the iri of the timeseries which is forecasted
+        'dataIRI': the iri of the timeseries which is forecasted
         'iri': the iri which has the predicate hasTimeSeries
         'fc_model': the configuration of the model
         'model_configuration_name': the name of the model configuration
@@ -464,7 +464,7 @@ def get_forecast_update(cfg):
     update += get_properties_for_subj(subj=forecastingModel_iri, verb_obj={
         RDF_TYPE: TS_FORECASTINGMODEL,
         **covariate_update,
-        TS_HASTRAININGTIMESERIES: cfg['ts_iri'],
+        TS_HASTRAININGTIMESERIES: cfg['dataIRI'],
     }, verb_literal={
         RDFS_LABEL: cfg['fc_model']['name'],
     })

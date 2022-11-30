@@ -70,8 +70,8 @@ def get_predecessor_type_and_predicate(iri, kgClient):
     return {r["predicate"]: r["predecessorType"] for r in cfg}
 
 
-def get_ts_value_iri(iri, kgClient):
-    # get ts value iri of iri
+def get_dataIRI_for_ts_with_hasValue_iri(iri, kgClient):
+    # get dataIRI for time series which has value iri
     query = f"""
     SELECT ?tsValueIRI
     WHERE {{
@@ -100,14 +100,14 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
         if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE):
             logger.info(f'Loading air temperature covariate')
             df_air_temp = get_df_of_ts(
-                row['tsIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
-            cov_iris.append(row['tsIRI'])
+                row['dataIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
+            cov_iris.append(row['dataIRI'])
 
         if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
             logger.info(f'Loading public holiday covariate')
             df_public_holiday = get_df_of_ts(
-                row['tsIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
-            cov_iris.append(row['tsIRI'])
+                row['dataIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
+            cov_iris.append(row['dataIRI'])
 
     # create covariates list with time covariates for the forecast
     # Attention: be aware to have same order of covariates as during training
@@ -131,15 +131,15 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     return cov_iris, covariates
 
 
-def get_df_of_ts(tsIRI, tsClient, lowerbound, upperbound, column_name="cov", date_name="Date"):
+def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", date_name="Date"):
     dates, values = get_ts_data(
-        tsIRI, tsClient,  lowerbound=lowerbound, upperbound=upperbound)
+        dataIRI, tsClient,  lowerbound=lowerbound, upperbound=upperbound)
     if len(values) == 0:
-        logger.error(f'No data for tsIRI {tsIRI}')
+        logger.error(f'No data for dataIRI {dataIRI}')
         raise ValueError(
-            f"no values for tsIRI {tsIRI}, with lowerbound {lowerbound} and upperbound {upperbound}")
+            f"no values for dataIRI {dataIRI}, with lowerbound {lowerbound} and upperbound {upperbound}")
     logger.info(
-        f'Loaded {len(values)} values for tsIRI {tsIRI} from {lowerbound} to {upperbound}')
+        f'Loaded {len(values)} values for dataIRI {dataIRI} from {lowerbound} to {upperbound}')
     df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name])
     # remove time zone
     df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
@@ -206,7 +206,7 @@ def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
 
 def get_ts_by_type():
     """
-    It returns a SPARQL query that will return all the iris and tsIRIs in the graph, along with the
+    It returns a SPARQL query that will return all the iris and dataIRIs in the graph, along with the
     type of the iri.
 
     It distinguishes between measures and non-measures. 
@@ -214,12 +214,12 @@ def get_ts_by_type():
     """
 
     return f"""
-     SELECT  distinct ?iri ?tsIRI ?type_with_measure ?type_without_measure
+     SELECT  distinct ?iri ?dataIRI ?type_with_measure ?type_without_measure
      WHERE {{
       
-       ?tsIRI <{TS_HASTIMESERIES}> ?ts . 
-       ?tsIRI <{RDF_TYPE}> ?type_without_measure .
-       OPTIONAL {{ ?iri <{OM_HASVALUE}> ?tsIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
+       ?dataIRI <{TS_HASTIMESERIES}> ?ts . 
+       ?dataIRI <{RDF_TYPE}> ?type_without_measure .
+       OPTIONAL {{ ?iri <{OM_HASVALUE}> ?dataIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
        
      }}
      """

@@ -61,19 +61,19 @@ test_data2 = pd.DataFrame({
     'generatedHeat': np.random.rand(n)})
 
 generatedHeat_iri = KB + "GeneratedHeat_" + str(uuid.uuid4())
-generatedHeat_ts_iri = KB + 'Measure_' + str(uuid.uuid4())
+generatedHeat_dataIRI = KB + 'Measure_' + str(uuid.uuid4())
 
 
-update += get_properties_for_subj(subj=generatedHeat_ts_iri, verb_obj={
+update += get_properties_for_subj(subj=generatedHeat_dataIRI, verb_obj={
     RDF_TYPE: OM_MEASURE,
     OM_HASUNIT: OM_MEGAWATTHOUR
 })
 update += get_properties_for_subj(subj=generatedHeat_iri, verb_obj={
     RDF_TYPE: OHN_GENERATEDHEATAMOUNT,
-    OM_HASVALUE: generatedHeat_ts_iri
+    OM_HASVALUE: generatedHeat_dataIRI
 })
 
-init_ts(generatedHeat_ts_iri,
+init_ts(generatedHeat_dataIRI,
         test_data2['timestamp'], test_data2['generatedHeat'], tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
 # Convert to proper format
@@ -180,8 +180,8 @@ query_error6 = {"query": {
     "data_length": 168,
     "horizon": 24,
     "forecast_start_date": "2049-08-15T01:00:00Z"}}
-#expected_error6 = f'Could not get time series for {generatedHeat_ts_iri} with lowerbound'
-expected_error6 = 'no values for tsIRI '
+#expected_error6 = f'Could not get time series for {generatedHeat_dataIRI} with lowerbound'
+expected_error6 = 'no values for dataIRI '
 
 
 @pytest.mark.parametrize("query_dict, expected_error_message", [
@@ -215,36 +215,36 @@ test_data = pd.DataFrame({
 # initialize the test data in the KG
 # heatDemand
 heatDemand_iri = KB + "HeatDemand_" + str(uuid.uuid4())
-heatDemand_ts_iri = KB + 'Measure_' + str(uuid.uuid4())
-update += get_properties_for_subj(subj=heatDemand_ts_iri, verb_obj={
+heatDemand_dataIRI = KB + 'Measure_' + str(uuid.uuid4())
+update += get_properties_for_subj(subj=heatDemand_dataIRI, verb_obj={
     RDF_TYPE: OM_MEASURE,
     OM_HASUNIT: OM_MEGAWATTHOUR})
 update += get_properties_for_subj(subj=heatDemand_iri, verb_obj={
     RDF_TYPE: OHN_HEATDEMAND,
-    OM_HASVALUE: heatDemand_ts_iri})
+    OM_HASVALUE: heatDemand_dataIRI})
 
 
-init_ts(heatDemand_ts_iri,
+init_ts(heatDemand_dataIRI,
         test_data['timestamp'], test_data['heatDemand'],  tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
 # air temperature
 airTemp_iri = KB + "AirTemperature_" + str(uuid.uuid4())
-airTemp_ts_iri = airTemp_iri
-update += get_properties_for_subj(subj=airTemp_ts_iri, verb_obj={
+airTemp_dataIRI = airTemp_iri
+update += get_properties_for_subj(subj=airTemp_dataIRI, verb_obj={
     RDF_TYPE: ONTOEMS_AIRTEMPERATURE,
-    OM_HASVALUE: airTemp_ts_iri})
+    OM_HASVALUE: airTemp_dataIRI})
 
-init_ts(airTemp_ts_iri, test_data['timestamp'], test_data['airTemp'],
+init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
         tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
 # is holiday
 isHoliday_iri = KB + "IsHoliday_" + str(uuid.uuid4())
-isHoliday_ts_iri = isHoliday_iri
-update += get_properties_for_subj(subj=isHoliday_ts_iri, verb_obj={
+isHoliday_dataIRI = isHoliday_iri
+update += get_properties_for_subj(subj=isHoliday_dataIRI, verb_obj={
     RDF_TYPE: OHN_ISPUBLICHOLIDAY,
-    OM_HASVALUE: isHoliday_ts_iri})
+    OM_HASVALUE: isHoliday_dataIRI})
 
-init_ts(isHoliday_ts_iri, test_data['timestamp'],
+init_ts(isHoliday_dataIRI, test_data['timestamp'],
         test_data['isHoliday'],  tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
 
