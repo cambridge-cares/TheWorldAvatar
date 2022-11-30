@@ -91,7 +91,8 @@ If not set the default value from the [mapping file] is used.
 ## Custom model configurations and new models
 Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
 
-If you need covariates define es well the a function like `get_covs_heat_supply` for the `load_covariates_func` parameter in your configuration. To use your own pretrained model with darts, extend the [agent file] where `load_pretrained_model` is called. You can use as well `load_pretrained_model`, simply specify your model class and set the `input_length` like for `TFT_HEAT_SUPPLY`. 
+If you need covariates, define a function which load them like `get_covs_heat_supply` for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with darts, expand the [agent file] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. 
+
 
 # 3. How to run tests
  <span style="color:red"> Be aware: The test will clear your blazegraph namespace!! </span> Therefore, you should create an new blazegraph test namespace. Follow those steps:
