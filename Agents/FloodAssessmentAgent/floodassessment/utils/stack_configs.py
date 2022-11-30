@@ -58,7 +58,7 @@ def retrieve_settings():
 
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
-
-DB_URL = 'jdbc:postgresql://localhost:9997/postgres'
+#TODO: Adjust ports as needed
+DB_URL = f'jdbc:postgresql://localhost:9997/{DATABASE}'
 QUERY_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{NAMESPACE}/sparql'
 UPDATE_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{NAMESPACE}/sparql'
