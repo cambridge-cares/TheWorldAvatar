@@ -65,7 +65,7 @@ After verifying the received HTTP request, the agent loads a model configuration
 Next the agent loads the time series (+ covariates if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
 
 Then, it loads the model. This is either a pretrained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
-Finally the forecasted time series is instantiated. For that purpose a new forecast iri is created and attached to the iri specified in the request.
+Finally the forecasted time series is instantiated. For that purpose a new forecast iri is created and attached to the iri specified in the request. Further metadata, e.g. which data and models are used, are included as well. The complete ontology can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl).
 
 ## Starting the agent
 Buy running  
