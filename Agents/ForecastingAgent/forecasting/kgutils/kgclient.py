@@ -8,13 +8,12 @@
 
 import json
 
-#import agentlogging
 from forecasting.errorhandling.exceptions import KGException
 from forecasting.kgutils.javagateway import jpsBaseLibGW
 
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
 
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 class KGClient:
     

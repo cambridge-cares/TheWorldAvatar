@@ -6,20 +6,15 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-#import agentlogging
 from forecasting.errorhandling.exceptions import TSException
 from forecasting.kgutils.javagateway import jpsBaseLibGW
-from forecasting.kgutils.kgclient import KGClient
 from forecasting.datamodel.data_mapping import TIMECLASS
 from forecasting.utils.properties import *
 from contextlib import contextmanager
 
 
-# Initialise logger
-#logger = agentlogging.get_logger("prod")
-# The purpose of this module is to provide functionality to use
-# the TimeSeriesClient from the JPS_BASE_LIB
-
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
 
 class TSClient:
 
@@ -45,12 +40,14 @@ class TSClient:
         try:
             self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
         except Exception as ex:
+            logger.error("Unable to initialise TS Remote Store client.")
             raise TSException("Unable to initialise TS Remote Store client.") from ex
 
         # 2) Initiliase TimeSeriesClient
         try:
             self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
         except Exception as ex:
+            logger.error("Unable to initialise TS client.")
             raise TSException("Unable to initialise TS client.") from ex
 
 
@@ -82,6 +79,7 @@ class TSClient:
         try:
             timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
         except Exception as ex:
+            logger.error("Unable to create TimeSeries object.")
             raise TSException("Unable to create timeseries.") from ex
         
         return timeseries
@@ -93,6 +91,7 @@ def init_ts(iri, dates, values, tsClient, ts_type, time_format):
         ts = TSClient.create_timeseries(
             dates.to_list(), [iri], [values.to_list()])
         tsClient.tsclient.addTimeSeriesData(ts, conn)
+    logger.info(f"Time series initialised in KG: {iri}")
 """
 HOW TO USE:
 
