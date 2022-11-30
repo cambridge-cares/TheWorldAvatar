@@ -103,6 +103,10 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
             cfg, TFTModel)
         # other models than TFT can have different key then 'input_chunk_length'
         cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
+        # check if length of series is long enough for the model input length
+        if len(series) < cfg['fc_model']['input_length']:
+            raise ValueError(
+                f'Length of series: {len(series)} is shorter than the required input length of the model: {cfg["fc_model"]["input_length"]}')
         # check that horizon is bigger than output_chunk_length
         if cfg['horizon'] < model.model_params['output_chunk_length']:
             raise ValueError(
@@ -138,8 +142,8 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     # call client
     instantiate_forecast_timeseries(tsClient, cfg, forecast)
 
-    #if backtest_series is not None:
-    #    cfg['error'] = calculate_error(backtest_series, forecast)
+    if backtest_series is not None:
+        cfg['error'] = calculate_error(backtest_series, forecast)
     
     # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',

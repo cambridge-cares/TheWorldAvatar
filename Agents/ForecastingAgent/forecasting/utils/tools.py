@@ -166,7 +166,7 @@ def get_time_format(iri, kgClient):
     return time_format
 
 
-def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
+def get_ts_data(iri, ts_client, lowerbound, upperbound):
     """
     It takes a data IRI and a client object, and returns the dates and values of the time series
 
@@ -176,21 +176,13 @@ def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
     values.
     """
 
-    if lowerbound is not None and upperbound is not None:
-        try:
-            with ts_client.connect() as conn:
-                ts = ts_client.tsclient.getTimeSeriesWithinBounds(
-                    [iri], lowerbound, upperbound, conn)
-        except:
-            raise KGException(
-                f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
-    else:
-        try:
-            with ts_client.connect() as conn:
-                ts = ts_client.tsclient.getTimeSeries([iri], conn)
-        except:
-            raise KGException(
-                f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
+    try:
+        with ts_client.connect() as conn:
+            ts = ts_client.tsclient.getTimeSeriesWithinBounds(
+                [iri], lowerbound, upperbound, conn)
+    except:
+        raise KGException(
+            f"Could not get time series for {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
 
     dates = ts.getTimes()
     # Unwrap Java time objects
