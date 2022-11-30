@@ -84,31 +84,46 @@ class FloodAssessmentAgent(DerivationAgent):
                                    derivation_outputs: DerivationOutputs):
         """
             This method takes 
-                1 IRI of LRPPI:TransactionRecord & 1 IRI of OntoBuiltEnv:PropertyPriceIndex
-                or 
-                1 IRI of OntoBuiltEnv:AveragePricePerSqm & 1 IRI of OM:Area
-            to assess the estimated value of a property and generate
-                1 IRI of OM:AmountOfMoney
-                (actually, this includes an entire set of triples due to ontology
-                 of units of measure representation of OM:AmountOfMoney)
+                1 IRI of RT:FloodALertOrWarning
+                and
+                1 List of OBE:Building IRIs (could be empty)
+                1 List of OM:AmountMoney IRIs (could be empty)
+            to assess the estimated impact of a potential flood and generate
+                1 IRI of Flood:Impact
+                1 IRI of Flood:Population
+                1 IRI of Flood:Buildings
+                (including the respective instantiation of OM:AmountOfMoney + full
+                 set of triples due to ontology of units of measure representation)
         """
 
-        # # Get input IRIs from the agent inputs (derivation_inputs)
-        # # (returns dict of inputs with input concepts as keys and values as list)
-        # inputs = derivation_inputs.getInputs()
-        # derivIRI = derivation_inputs.getDerivationIRI()
-        # tx_iri, ppi_iri, avgsqm_iri, area_iri = self.validate_input_values(inputs=inputs,
-        #                                             derivationIRI=derivIRI)
+        # Get input IRIs from the agent inputs (derivation_inputs)
+        # (returns dict of inputs with input concepts as keys and values as list)
+        inputs = derivation_inputs.getInputs()
+        derivIRI = derivation_inputs.getDerivationIRI()
+        tx_iri, ppi_iri, avgsqm_iri, area_iri = self.validate_input_values(inputs=inputs,
+                                                    derivationIRI=derivIRI)
         
-        # # Assess property value estimate in case all required inputs are available
-        # # (i.e. relevant inputs have been marked up successfully)
-        # g = self.estimate_property_market_value(transaction_iri=tx_iri,
-        #                                         prop_price_index_iri=ppi_iri, 
-        #                                         avgsqm_price_iri=avgsqm_iri, 
-        #                                         floor_area_iri=area_iri)        
+        # Assess property value estimate in case all required inputs are available
+        # (i.e. relevant inputs have been marked up successfully)
+        g = self.estimate_property_market_value(transaction_iri=tx_iri,
+                                                prop_price_index_iri=ppi_iri, 
+                                                avgsqm_price_iri=avgsqm_iri, 
+                                                floor_area_iri=area_iri)        
 
-        # # Collect the generated triples derivation_outputs
-        # derivation_outputs.addGraph(g)
+        # Collect the generated triples derivation_outputs
+        derivation_outputs.addGraph(g)
+
+
+    def estimate_number_of_affected_people(flood_alert_warning_iri: str) -> int:
+        """
+            Estimate the number of "affected" people by a flood alert/warning using 
+            PostGIS' geospatial count over population density raster data within the
+            boundary of the ArealExtendPolygon associated with the flood alert/warning
+        """
+        #TODO: Implement this method using Ontop in the Stack, i.e. query 
+        #      Blazegraph using SERVICE keyword
+        
+        return None
 
 
     def estimate_property_market_value(self, transaction_iri:str = None,
