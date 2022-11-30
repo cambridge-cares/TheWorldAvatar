@@ -209,15 +209,12 @@ def get_ts_by_type():
     """
 
     return f"""
-     prefix rdf: <{RDF}>
-     prefix om: <{OM}>
-     prefix ts: <{TS}>
      SELECT  distinct ?iri ?tsIRI ?type_with_measure ?type_without_measure
      WHERE {{
       
-       ?tsIRI ts:hasTimeSeries ?ts . 
-       ?tsIRI rdf:type ?type_without_measure .
-       OPTIONAL {{ ?iri om:hasValue ?tsIRI . ?iri rdf:type ?type_with_measure }} . 
+       ?tsIRI <{TS_HASTIMESERIES}> ?ts . 
+       ?tsIRI <{RDF_TYPE}> ?type_without_measure .
+       OPTIONAL {{ ?iri <{OM_HASVALUE}> ?tsIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
        
      }}
      """
