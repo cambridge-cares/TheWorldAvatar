@@ -52,7 +52,15 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 ## Adding custom containers
 
-It is possible to spin up other containers in the stack using the stack-manager. This is particularly useful for adding agents into a stack.
+It is possible to spin up other containers in the stack using the stack-manager.
+This is particularly useful for adding agents into a stack.
+
+The stack-manager will handle creating the containers so there is no need to create the containers using `docker` or `docker compose` before running the stack-manager.
+
+If the configuration file for a container is present when a stack is initially spun up then it will be added then.
+To add a container after a stack has been spun up just add the configuration file and run the stack-manager again, the previously started containers will be unaffected.
+
+> :warning: **Warning:** The stack-manager does not attempt to build a container's image so all images need to be built prior to running the stack-manager.
 
 ### Configuration Files
 
