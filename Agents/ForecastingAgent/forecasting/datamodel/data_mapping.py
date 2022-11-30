@@ -7,13 +7,14 @@
 # You can add your own model configurations to 'MODEL_MAPPING' here by simple add a new dictionary like for 'TFT_HEAT_SUPPLY' case
 """ KEYS in the dict:
 Required:
-'ts_data_type': Data type from jpsBaseLibView.java.lang
+'ts_data_type': Java data type for time series values , e.g. jpsBaseLibView.java.lang.Double.TYPE
 'frequency': The frequency of the time series data
 'data_length': The maximum length of the time series data, which is loaded before the forecast_start_data.
-    The data is used to:
+    The loaded data is used to:
         1. Train the model if `train_again` is True or
-        2. To scale the data if `scale` is True
-        3. Create the forecast, but Neural Methods have fixed input length (same as during training), which is used finally
+        2. Scale the data if `scale` is True
+        3. Create the forecast as Input to the model. 
+        Neural Methods have a fixed input length (same as during training), therefore they use the last values of the time series data with respect to their input length to create the forecast.
 'fc_model': The forecasting model which is used to create the forecast.
     It is a dict with the following keys:
     Required:
