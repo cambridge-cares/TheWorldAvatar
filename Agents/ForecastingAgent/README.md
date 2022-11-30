@@ -42,14 +42,12 @@ In order to forecast a time series, this series has to be instantiated using  [t
 
 Set your postgres database and blazegraph endpoints in your properties [file](./resources/timeseries.properties). 
 
-&nbsp;
 
+&nbsp;
 # 2. Using the Agent
 ## General workflow
 
-<div style="width: 640px; height: 480px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:640px; height:480px" src="https://lucid.app/documents/embedded/def34dba-537c-48c7-9fa4-89bda55b4dc5" id="Edean5do9Edr"></iframe></div>
-
-
+- [Agent uml](https://lucid.app/lucidchart/def34dba-537c-48c7-9fa4-89bda55b4dc5/edit?viewport_loc=-3263%2C-197%2C3677%2C1765%2C0_0&invitationId=inv_1ed2a56a-16f0-4884-a5cb-a5aa69daba1e)
 
 The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`.
 
