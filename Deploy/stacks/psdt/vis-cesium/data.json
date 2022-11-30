@@ -133,7 +133,7 @@
                     "id": "erlenbrunnerstr45-sewage-tiles-source",
                     "type": "tiles",
                     "uri": "http://localhost:3838/static/ps/buildings/lod3/tileset_fourtyfive_sewage.json",
-                    "position": [7.6226484, 49.1804827, 415.0]
+                    "position": [7.622713, 49.180485, 415.0]
                 }
             ],
             "layers": [
