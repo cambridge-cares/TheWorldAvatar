@@ -23,6 +23,10 @@ RT_FLOOD_ALERT_WARNING = RT + 'FloodAlertOrWarning'
 PPI = 'http://landregistry.data.gov.uk/def/ppi/'
 PPI_TRANSACTIONRECORD = PPI + 'TransactionRecord'
 
+# OM_AMOUNT_MONEY
+OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
+OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
+
 # From OntoBuiltEnv TBox
 OBE_POSTALCODE = OBE + 'PostalCode'
 OBE_PROPERTY = OBE + 'Property'
@@ -33,6 +37,10 @@ OBE_HASLATESTTRANSACTIONRECORD = OBE + 'hasLatestTransactionRecord'
 OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
+OBE_HASTOTALFLOORAREA = OBE + 'hasTotalFloorArea'
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
+
+# From OntoFlood TBox
 OF_HAS_SEVERITY = OF + 'hasSeverity'
 # From OntoFlood ABox
 OF_FLOOD_WARNING = OF + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
