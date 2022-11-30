@@ -13,4 +13,5 @@ SPARQL_UPDATE_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{KG_NAMESP
 DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
 
 # Agent IRI
-AVG_SQM_PRICE_AGENT_IRI = 'http://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service'
+AVG_SQM_PRICE_AGENT_IRI = 'http://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service'
+PROPERTY_VALUE_ESTIMATION_AGENT_IRI = 'http://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service'
