@@ -151,7 +151,6 @@ OM_MEGAWATT = OM + 'megawatt'
 OM_DEGREE = OM + 'degreeCelsius'
 OM_EURO = OM + 'euro'
 OM_BAR = OM + 'bar'
-# TODO: add real Units, this are placeholders, check all units in the ontology
 OM_MEGAWATTHOUR = OM + 'megawattHour'
 OM_KGPERM3 = OM + 'kilogramPerCubicMetre'
 OM_KJPERKGPERK = OM + 'kilojoulePerKilogramPerKelvin'
