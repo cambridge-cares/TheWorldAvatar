@@ -14,10 +14,10 @@ def create_app(test_config=None):
     with app.app_context():
         # Import parts of application
         import forecasting.flaskapp.home.routes as home
-        import forecasting.flaskapp.inputtasks.routes as inputtasks
+        import forecasting.flaskapp.forecastingtasks.routes as forecastingtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
-        app.register_blueprint(inputtasks.inputtasks_bp)
+        app.register_blueprint(forecastingtasks.forecastingtasks_bp)
 
     return app

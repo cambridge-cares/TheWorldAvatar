@@ -16,13 +16,13 @@ from forecasting.forecasting_agent.agent import forecast
 #logger = agentlogging.get_logger("prod")
 
 
-inputtasks_bp = Blueprint(
-    'inputtasks_bp', __name__
+forecastingtasks_bp = Blueprint(
+    ' forecastingtasks_bp', __name__
 )
 
 
 # Define route for API to forecast
-@inputtasks_bp.route("/api/forecastingAgent/forecast", methods=["POST"])
+@forecastingtasks_bp.route("/api/forecastingAgent/forecast", methods=["POST"])
 def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:
