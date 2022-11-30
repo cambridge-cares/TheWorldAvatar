@@ -83,42 +83,40 @@ class FloodAssessmentAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         """
-            This method takes 
-                1 IRI of RT:FloodALertOrWarning
-                and
-                1 List of OBE:Building IRIs (could be empty)
-                1 List of OM:AmountMoney IRIs (could be empty)
-            to assess the estimated impact of a potential flood and generate
-                1 IRI of Flood:Impact
-                1 IRI of Flood:Population
-                1 IRI of Flood:Buildings
-                (including the respective instantiation of OM:AmountOfMoney + full
-                 set of triples due to ontology of units of measure representation)
+        This method takes 
+            1 IRI of RT:FloodALertOrWarning
+            1 List of OBE:Building IRIs (could be empty)
+            1 List of OM:AmountMoney IRIs (could be empty)
+        to assess the estimated impact of a potential flood and generate
+            1 IRI of Flood:Impact
+            1 IRI of Flood:Population
+            1 IRI of Flood:Buildings
+            (including the respective instantiation of OM:AmountOfMoney + full
+                set of triples due to ontology of units of measure representation)
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        tx_iri, ppi_iri, avgsqm_iri, area_iri = self.validate_input_values(inputs=inputs,
-                                                    derivationIRI=derivIRI)
+        warning, buildings, estimations = self.validate_input_values(inputs=inputs,
+                                               derivationIRI=derivIRI)
         
-        # Assess property value estimate in case all required inputs are available
+        # Assess potential flood impacts in case all required inputs are available
         # (i.e. relevant inputs have been marked up successfully)
-        g = self.estimate_property_market_value(transaction_iri=tx_iri,
-                                                prop_price_index_iri=ppi_iri, 
-                                                avgsqm_price_iri=avgsqm_iri, 
-                                                floor_area_iri=area_iri)        
+        g = self.estimate_potential_flood_impact(warning_iri=warning,
+                                                 building_iris=buildings, 
+                                                 estimation_iris=estimations)       
 
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
 
 
-    def estimate_number_of_affected_people(flood_alert_warning_iri: str) -> int:
+    def estimate_number_of_affected_people(self, flood_alert_warning_iri: str) -> int:
         """
-            Estimate the number of "affected" people by a flood alert/warning using 
-            PostGIS' geospatial count over population density raster data within the
-            boundary of the ArealExtendPolygon associated with the flood alert/warning
+        Estimate the number of "affected" people by a flood alert/warning using 
+        PostGIS' geospatial count over population density raster data within the
+        boundary of the ArealExtendPolygon associated with the flood alert/warning
         """
         #TODO: Implement this method using Ontop in the Stack, i.e. query 
         #      Blazegraph using SERVICE keyword
@@ -126,79 +124,74 @@ class FloodAssessmentAgent(DerivationAgent):
         return None
 
 
-    def estimate_property_market_value(self, transaction_iri:str = None,
-                                       prop_price_index_iri:str = None, 
-                                       avgsqm_price_iri:str = None, 
-                                       floor_area_iri:str = None):
+    def estimate_potential_flood_impact(self, warning_iri:str = None,
+                                        building_iris:list = None, 
+                                        estimation_iris:list = None):
         """
-        Estimate market value of property (i.e. building or flat) based on given inputs.
-        Prio1: LRPPI:TransactionRecord & OntoBuiltEnv:PropertyPriceIndex
-        Prio2: OntoBuiltEnv:AveragePricePerSqm & OM:Area
+        Estimate number of people and buildings affected by a flood alert/warning
+        and create corresponding (derivation) output triples (as graph)
 
         Arguments:
-            transaction_iri {str} - IRI of LRPPI:TransactionRecord
-            prop_price_index_iri {str} - IRI of OntoBuiltEnv:PropertyPriceIndex
-            avgsqm_price_iri {str} - IRI of OntoBuiltEnv:AveragePricePerSqm
-            floor_area_iri {str} - IRI of OM:Area
+            warning_iri {str} - IRI of RT:FloodALertOrWarning
+            building_iris {str} - List of OBE:Building IRIs
+            estimation_iris {str} - List of OM:AmountMoney IRIs
         Returns:
             Graph to instantiate/update property market value
         """
 
-        # Initialise market value and return triples
-        market_value = None
+        # Initialise return graph
         g = Graph()
 
-        # # Prio 1: Check if transaction record and property price index are provided
-        # # (i.e. market value assessment based on previous transaction)
-        # if transaction_iri and prop_price_index_iri:
-        #     # Initialise TS client
-        #     ts_client = TSClient(kg_client=self.sparql_client)
-        #     # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
-        #     # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
-        #     # (https://landregistry.data.gov.uk/app/ukhpi/doc)
-        #     try:
-        #         # Retrieve time series in try-with-resources block to ensure closure of RDB connection
-        #         with ts_client.connect() as conn:
-        #             ts = ts_client.tsclient.getTimeSeries([prop_price_index_iri], conn)
-        #         dates = [d.toString() for d in ts.getTimes()]
-        #         values = [v for v in ts.getValues(prop_price_index_iri)]
-        #     except Exception as ex:
-        #         self.logger.error('Error retrieving/unwrapping Property Price Index time series')
-        #         raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
+        # Check severity (i.e. status) of flood alert/warning
+        if warning_iri == FLOOD_SEVERITY_INACTIVE:
+            # If flood alert/warning is inactive --> set impact to zero
+            affected_population = 0
+            affected_buildings_count = 0
+            affected_buildings_value = 0
+            self.logger.info(f"Flood alert/warning '{warning_iri}' marked as inactive.")
+        else:
+            # If flood alert/warning is active --> assess impact
+            affected_population = self.estimate_number_of_affected_people(warning_iri)
+            affected_buildings_count = len(building_iris)
+            affected_buildings_value = self.sparql_client.summarise_affected_property_values(estimation_iris)
 
-        #     # Create UKHPI series with conditioned date index
-        #     ukhpi = pd.Series(index=dates, data=values)
-        #     ukhpi = ukhpi.astype(float)
-        #     ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
-        #     ukhpi.sort_index(ascending=False, inplace=True)
-        #     ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
+            #TODO: Retrieve potentially already instantiated flood instance
+            #      (otherwise new Flood instance will be created by derivation)
+            flood_iri = None
 
-        #     # 2) Retrieve previous sales transaction details for previous transaction IRI
-        #     #    and adjust to current market value
-        #     res = self.sparql_client.get_transaction_details(transaction_iri)
-        #     ukhpi_now = ukhpi.iloc[0]
-        #     ukhpi_old = ukhpi[res['date']]
-        #     market_value = res['price'] * ukhpi_now / ukhpi_old
+        # Generate textual description of potential impact
+        #TODO: Potentially to be refined based on actual information from API
+        impact_description = self.create_impact_description(warning_iri)
 
-        # # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
-        # elif avgsqm_price_iri and floor_area_iri and not market_value:
-        #     # NOTE: To ensure availability of AvgSqmPrice (i.e. derivation being computed by
-        #     #       AvgSqmPrice Agent), AvgSqmPrice should be marked up as Synchronous Derivation
-        #     res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
-        #     market_value = res['floor_area'] * res['avg_price']
+        # Create triples to instantiate for flood impact assessment
+        g = self.sparql_client.instantiate_flood_impact(graph=g,
+                                    flood_alert_warning_iri=warning_iri,
+                                    affected_buildings_count=affected_buildings_count,
+                                    affected_buildings_value=affected_buildings_value,
+                                    affected_population=affected_population,
+                                    impact_description=impact_description,
+                                    flood_iri=flood_iri)
 
-        # if market_value:
-        #     # Round property market value to full kGBP
-        #     market_value = round(market_value/1000)*1000
-        #     # Create instantiation/update triples
-        #     market_value_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
-        #     # Create rdflib graph with update triples 
-        #     g = self.sparql_client.instantiate_property_value(graph=g,
-        #                                         property_iri=res['property_iri'],
-        #                                         property_value_iri=market_value_iri, 
-        #                                         property_value=market_value)
-        # # Return graph with SPARQL update (empty for unavailable market value)
+        # Return graph with SPARQL update (empty for unavailable market value)
         return g
+
+
+    def create_impact_description(self, warning_iri):
+        """
+        Create textual description of flood impact, currently based on:
+        https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
+        """
+        # Initialise return value
+        impact_description = None
+
+        if warning_iri == FLOOD_SEVERITY_SEVERE:
+            impact_description = "Severe Flooding, Danger to Life."
+        elif warning_iri == FLOOD_SEVERITY_WARNING:
+            impact_description = "Flooding is Expected, Immediate Action Required."
+        elif warning_iri == FLOOD_SEVERITY_ALERT:
+            impact_description = "Flooding is Possible, Be Prepared."
+        
+        return impact_description
 
 
 def default():
