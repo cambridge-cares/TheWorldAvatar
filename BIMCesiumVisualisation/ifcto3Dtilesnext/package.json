@@ -1,9 +1,0 @@
-{
-  "name": "ifcto3dtilesnext",
-  "version": "1.0.0",
-  "description": "This npm package is only to install the gltf-pipeline tool for converting glb to glTF.",
-  "author": "qhouyee",
-  "dependencies": {
-    "gltf-pipeline": "^3.0.5"
-  }
-}

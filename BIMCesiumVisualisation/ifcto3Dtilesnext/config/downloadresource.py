@@ -44,10 +44,10 @@ def dl_zip(url, outpath_enum=1, extractall=True):
 
     # Match enum input to the required paths
     if outpath_enum == 1:
-        output_path = "./resources/"
+        output_path = "./agent/resources/"
     elif outpath_enum == 2:
         # Edit the environment name
-        output_path = "<venv>/Lib/site-packages/"
+        output_path = "bimv/Lib/site-packages/"
         if "<venv>" in output_path:
             print(
                 "Please change <venv> in line 58 to your python virtual environment name")

@@ -8,7 +8,7 @@ This module generates glTF models from the IFC file.
 from ifcopenshell.util.selector import Selector
 
 # Self imports
-from utils import find_word, run_shellcommand
+from utils import find_word, run_shellcommand, retrieve_abs_filepath
 
 
 def verify_feature_exists(featurelist, ifc):
@@ -53,7 +53,7 @@ def gendict4split(ifc):
     # Store the IDs that should be generated as part of the interior furniture or solar panel model
     furniture_elements = []
     solar_panel_elements = []
-    sewage_network_elements =[]
+    sewage_network_elements = []
     for feature in ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal"]:
         for element in ifc.by_type(feature):
             # If the name contains these key words,generate individual models for them
@@ -138,14 +138,16 @@ def conv2gltf(ifc, input_ifc):
 
     for key, value_list in dict_for_split.items():
         glbpath = "./data/glb/" + key + ".glb"
+        glbpath = retrieve_abs_filepath(glbpath)
         gltfpath = "./data/gltf/" + key + ".gltf"
+        gltfpath = retrieve_abs_filepath(gltfpath)
 
         # Initialise the commands and append accordingly
-        ifcconvert_command = ["./resources/IfcConvert", input_ifc, glbpath]
+        ifcconvert_command = [
+            "./agent/resources/IfcConvert", input_ifc, glbpath]
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
         glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
-
         # Convert from IFC -> glb -> glTF
         print("Converting " + key + " to glTF...")
         run_shellcommand(ifcconvert_command)

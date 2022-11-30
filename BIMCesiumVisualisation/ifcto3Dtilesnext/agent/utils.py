@@ -29,15 +29,28 @@ def install_glbconverter():
     Installs the glb converter tool "gltf-pipeline" from npm through package.json
     """
     print("Checking for gltf-pipeline package from npm...")
-    run_shellcommand("npm install", True)
+    run_shellcommand("npm install -g gltf-pipeline", True)
     print("gltf-pipeline package is available!")
+
+
+def retrieve_abs_filepath(filepath):
+    """
+    Runs commands in the shell
+    All non-error messages are suppressed
+
+    Argument:
+    command - Command arguments in the form ["command","command2"] or "command command2"
+    require_shell - Boolean indicating if shell is required. Must be True for npm operations
+    """
+    return os.path.abspath(filepath)
 
 
 def read_ifc_file():
     """
     Reads IFC file located at ./data/ifc directory into required file paths
     """
-    ifcpath = os.path.join('.', 'data', 'ifc')
+    ifcpath = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), os.pardir, 'data', 'ifc'))
     filelist = [file for file in os.listdir(ifcpath) if os.path.isfile(
         os.path.join(ifcpath, file)) and not file == ".gitignore"]
 

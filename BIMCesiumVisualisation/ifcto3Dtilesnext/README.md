@@ -29,7 +29,7 @@ A brief description of its workflow can be found below:
     python -m pip install -r config/requirements.txt
     ```
 
-5) Download resources in cmd from `<root>` (Change the `<venv>` on line 52 to `<venv_name>`):
+5) Download resources in cmd from `<root>` (Change the `<venv>` on line 58 to `<venv_name>`):
      ```
     python config/downloadresource.py
     ```
@@ -44,26 +44,28 @@ A brief description of its workflow can be found below:
             - Extract and place the `ifcopenshell` from `blenderbim/libs/site/packages/`
             - Delete the remaining extracted content
     
-    - `<root>\resources`
+    - `<root>\agent\resources`
         1. IfcConvert.exe
-            - Required to convert IFC to DAE format
+            - Required to convert IFC to glb format
             - If not, download the IfcConvert.exe from: https://blenderbim.org/docs-python/ifcconvert/installation.html
-        2. COLLADA2GLTF folder
-            - Required to convert DAE to glTF format
-            - If not, download and unzip the zip folder for your OS under the release section from: https://github.com/KhronosGroup/COLLADA2GLTF
+    - `npm global location`
+        2. gltf-pipeline NPM package
+            - Required to convert glb to glTF format
+            - Read documentation from https://github.com/CesiumGS/gltf-pipeline
+            - If not, install the library globally using `npm install -g gltf-pipeline`
 
 ## Usage
 1. Place the IFC file in `<root>\data\ifc`
 2. Open `cmd` terminal and navigate into the `<root>`
 3. Please run the following commands in the `cmd` terminal (from within the `<root>` directory and with **activated** virtual environment <venv_name>)
     ```
-    python main.py
+    python agent\main.py
     ```
 
 ## For Developers
 There are five modules available in the sub-directory.
 - `main.py` imports the developed functions to execute the conversion process
-- `utils.py` contain miscellaneous functions and global variables
+- `utils.py` contain miscellaneous functions
 - `ifc2gltf.py` contain the functions that splits the ifc file into their individual assets and converts them into glTF models
     - Add additional IFC feature classes here if we encounter them
 - `ifc2tileset.py` contain the functions to generate the tileset and write them to json
