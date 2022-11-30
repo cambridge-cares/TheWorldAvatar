@@ -8,7 +8,7 @@
 """ KEYS in the dict:
 Required:
 'ts_data_type': Java data type for time series values , e.g. jpsBaseLibView.java.lang.Double.TYPE
-'frequency': The frequency of the time series data
+'frequency': The frequency of the time series data, as a datetime timedelta object which represents a duration, the difference between two dates
 'data_length': The maximum length of the time series data, which is loaded before the forecast_start_data.
     The loaded data is used to:
         1. Train the model if `train_again` is True or
