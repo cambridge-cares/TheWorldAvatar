@@ -271,10 +271,16 @@ public class Aermod {
         httpPost.setHeader("Authorization", "Basic " + encodedAuth);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(httpPost);) {
-            String fileURL = response.getFirstHeader("dispersionMatrix").getValue();
-            LOGGER.info("File URL at file server: {}", fileURL);
-            return fileURL;
+            if (response.getFirstHeader("dispersionMatrix") == null) {
+                throw new RuntimeException("Header from file server is null");
+            } else {
+                String fileURL = response.getFirstHeader("dispersionMatrix").getValue();
+                LOGGER.info("File URL at file server: {}", fileURL);
+                return fileURL;
+            }
         } catch (IOException e) {
+            LOGGER.error("File upload failed");
+            LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
