@@ -1,6 +1,6 @@
 # Forecasting Agent
 
-<span style="color:red">Tests are currently still excluded.</span>
+This agent reads a time series from a KG and forecasts the time series using pre-trained models or Prophet. Finally, the forecast is reinstantiated into the KG.  The agent can be accessed via Flask requequests.
 
 # 1. Setup
 
