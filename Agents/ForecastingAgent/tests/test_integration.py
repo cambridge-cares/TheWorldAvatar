@@ -14,18 +14,17 @@
 # 4. Check if forecast/ error is correct
 
 import pytest
-from forecasting.errorhandling.exceptions import InvalidInput
 
 from forecasting.flaskapp import create_app
 from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
 from forecasting.utils.properties import *
-from forecasting.errorhandling.exceptions import KGException
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient, init_ts
 from forecasting.utils.tools import *
 import numpy as np
 import uuid
+
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 

@@ -7,8 +7,6 @@
 from flask import Blueprint, request, jsonify
 import traceback
 
-import json
-from forecasting.errorhandling.exceptions import InvalidInput
 from forecasting.forecasting_agent.agent import forecast
 
 from py4jps import agentlogging

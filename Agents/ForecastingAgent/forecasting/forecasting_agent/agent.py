@@ -5,25 +5,21 @@
 # The this file is the main forecasting agent to forecast a time series using a trained model or Prophet. The forecast is then stored in the KG.
 
 from dateutil.parser import isoparse
-import datetime as dt
 import os
-import time
 import urllib
 import uuid
-from darts.metrics import mape, mase, mse, rmse, smape
+from darts.metrics import mape, mse, rmse, smape
 
 import pandas as pd
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
 from darts.models import Prophet, TFTModel
-
+from forecasting.utils.properties import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
 from forecasting.errorhandling.exceptions import KGException
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
-from forecasting.utils.properties import *
-from forecasting.utils.tools import *
 from forecasting.utils.tools import *
 
 from py4jps import agentlogging

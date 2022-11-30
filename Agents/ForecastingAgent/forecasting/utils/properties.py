@@ -8,6 +8,8 @@ from pathlib import Path
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
+
+
 # Define location of properties file
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent.parent, 
                   "resources", "timeseries.properties"))

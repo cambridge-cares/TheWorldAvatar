@@ -2,7 +2,7 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-# The purpose of this file is to provide helper functions to query and update the KG. Those functions are used in the forecasting agent. 
+# The purpose of this file is to provide helper functions to query and update the KG. Those functions are used in the forecasting agent.
 
 from forecasting.datamodel.iris import *
 
@@ -17,6 +17,8 @@ from forecasting.errorhandling.exceptions import KGException
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
+
+
 def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict = {}):
     """
          Constructs proper SPARQL update string from given name, verb-object and verb-literal dictionary.
@@ -136,7 +138,8 @@ def get_df_of_ts(tsIRI, tsClient, lowerbound, upperbound, column_name="cov", dat
         logger.error(f'No data for tsIRI {tsIRI}')
         raise ValueError(
             f"no values for tsIRI {tsIRI}, with lowerbound {lowerbound} and upperbound {upperbound}")
-    logger.info(f'Loaded {len(values)} values for tsIRI {tsIRI} from {lowerbound} to {upperbound}')
+    logger.info(
+        f'Loaded {len(values)} values for tsIRI {tsIRI} from {lowerbound} to {upperbound}')
     df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name])
     # remove time zone
     df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
@@ -411,7 +414,3 @@ def get_properties_for_subj(subj: str, verb_obj: dict = {}, verb_literal: dict =
         output += f'''{create_triple_literal(subj, verb, literal[0], literal[1])}'''
 
     return output
-
-
-
-
