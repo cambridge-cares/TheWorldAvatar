@@ -57,7 +57,7 @@ Set your postgres database and blazegraph endpoints in your properties [file](./
 
 
 This section describes the workflow and most important steps to access and extent the agent.
-This [Agent uml](https://lucid.app/lucidchart/def34dba-537c-48c7-9fa4-89bda55b4dc5/edit?viewport_loc=-3263%2C-197%2C3677%2C1765%2C0_0&invitationId=inv_1ed2a56a-16f0-4884-a5cb-a5aa69daba1e) provides an overview of how the agent works.
+This Agent uml diagram provides an overview of how the agent works:![Agent uml](https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png) 
 
 The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`.
 After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (this will use the Prophet model) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration dict consists of. 
