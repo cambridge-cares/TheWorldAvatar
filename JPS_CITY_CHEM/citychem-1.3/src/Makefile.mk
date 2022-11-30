@@ -16,14 +16,14 @@
 # debugging: gdb episode.exe, then 'run' and 'bt'
 
 
-#Compilation with gfortran-9
-#F90 = gfortran-9
+#Compilation with gfortran
+#F90 = gfortran
 #Compilation with intel fortran
 #F90 = ifort
 
-F90 =  gfortran-9
+F90 =  gfortran
 
-#Compilation flags with gfortran-9
+#Compilation flags with gfortran
 #flags for debugging (use for the test examples). Optimization (-O) flags cannot be used together with -ggdb.
 #F90FLAGS =  -ggdb -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n -ffree-form
 #Optimized run -O2
