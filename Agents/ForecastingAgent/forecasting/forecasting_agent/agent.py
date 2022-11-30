@@ -418,10 +418,9 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
 
 def get_forecast_update(cfg):
     """
-    It takes a forecast object, a timeseries client and a knowledge graph client as input and
-    instantiates the forecast in the knowledge graph.
+    Takes a model configuration and returns the forecast SPARQL update query to instantiate the forecast in the KG
 
-    :param cfg: a dictionary with metainformation to be instantiated in the knowledge graph:
+    :param cfg: a dictionary with meta information:
         'forecast_start_date': the start date of the forecast
         'frequency': the frequency of the time series data
         'horizon': the length of the forecast
@@ -432,9 +431,6 @@ def get_forecast_update(cfg):
         'model_configuration_name': the name of the model configuration
         'loaded_data_bounds': the lower and upper bounds of the time series
         'forecast_name': the name of the forecast
-    :param forecast: the forecast darts series object
-    :param tsClient: a client for the timeseries database
-    :param kgClient: a client to the knowledge graph
     """
     #  instantiate forecast in KG
     cfg['forecast_iri'] = KB + 'Forecast_' + str(uuid.uuid4())
