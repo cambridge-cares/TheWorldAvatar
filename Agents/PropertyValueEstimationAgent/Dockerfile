@@ -24,6 +24,7 @@ COPY ./tmp_stack ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+COPY ./requirements.txt .
 
 # Access build arguments from docker-compose.yml
 # (Use ENV instead of ARG for variable to be available in ENTRYPOINT command)
@@ -32,6 +33,7 @@ ENV AGENTDIR=${agentdir}
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
 RUN python -m pip install -e .
 
 # Add StackClients py4jps resources
