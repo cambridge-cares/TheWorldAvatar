@@ -92,7 +92,7 @@ class FloodAssessmentAgent(DerivationAgent):
             1 IRI of Flood:Population
             1 IRI of Flood:Buildings
             (including the respective instantiation of OM:AmountOfMoney + full
-                set of triples due to ontology of units of measure representation)
+             set of triples due to ontology of units of measure representation)
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
@@ -198,8 +198,9 @@ def default():
     """
         Instructional message at the app root.
     """
-    # TODO: Update path to main upon merging
-    msg  = "This is an asynchronous agent to estimate the market value of a particular property (i.e. building, flat).<BR>"
+    msg  = "This is an asynchronous agent to estimate the potential damage of a flood based on instantiated Flood Alerts and Warnings with regards to <BR>"
+    msg += "1) the number of affected people (i.e. people living in flood polygon associated with raised alert/warning) as well as"
+    msg += "2) the number and estimated value of affected buildings (i.e. number and cumulative value of buildings located in flood polygon).<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAssessmentAgent<BR>"
     return msg
