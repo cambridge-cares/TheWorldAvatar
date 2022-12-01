@@ -381,6 +381,11 @@ public class TimeHandler {
         }
 
         LOGGER.debug("...call to TimeseriesClient completed.");
+        LOGGER.debug(
+            "Got a timeseries object with {} time values, and {} data values.",
+            result.getTimes().size(),
+            result.getValues(fixedIRI).size()
+        );
         return result;
     }
 

@@ -397,6 +397,10 @@ public class FeatureInfoAgent extends JPSAgent {
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build RBD client
+        LOGGER.info("Establishing connection to RBD for timeseries...");
+        LOGGER.info("     Using URL: {}", postEndpoint.get().url());
+        LOGGER.info("     Using Username: {}", postEndpoint.get().username());
+
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
             postEndpoint.get().url(),
             postEndpoint.get().username(),
