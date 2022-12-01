@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  floodassessment_agent:
+    image: ghcr.io/cambridge-cares/floodassessment_agent_test_debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug_test
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: floodassessment
+    environment:
+      # The following environment variables are required for the agent Docker container to start
+      # Similar to the `agent_test.env` file for local testing, triple store endpoints are just 
+      # placeholders and "overwritten" by the mocked `stack_configs.py` module. However, some entry
+      # is required to avoid Exceptions from the AgentConfig class (same applies to other keywords left blank)
+      #
+      # Stack & Stack Client parameters can be neglected as overwritten by mocked module imports
+      #
+      #--- Derivation Agent parameters ---#
+      - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5012/FloodAssessment
+      - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
+      - DERIVATION_PERIODIC_TIMESCALE=5
+      - REGISTER_AGENT=false
+      # Required inputs, although values retrieved from mocked `stack_configs.py`
+      - SPARQL_QUERY_ENDPOINT=''
+      - SPARQL_UPDATE_ENDPOINT=''
+      # Required inputs, although not used when initialising DerivationAgent
+      - KG_USERNAME=''
+      - KG_PASSWORD=''
+      - FILE_SERVER_ENDPOINT=''
+      - FILE_SERVER_USERNAME=''
+      - FILE_SERVER_PASSWORD=''
+    ports:
+      - 5012:5000
+      - 5678:5678
+    volumes:
+      # To run docker inside docker, mount default Unix socket docker.sock as a volume
+      # (https://devopscube.com/run-docker-in-docker/)
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount agent code as well as tests as volumes
+      - ./floodassessment:/app/floodassessment
+      - ./tests:/app/tests
