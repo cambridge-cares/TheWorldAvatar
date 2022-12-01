@@ -45,7 +45,7 @@ class MOOonly extends Simulation {
 
         @Override
         protected void generateFiles() throws FileGenerationException {
-                generateInitialFile();
+                generateInitialFileFromMetaData();
                 super.generateFiles();
         }
 
