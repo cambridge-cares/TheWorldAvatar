@@ -33,7 +33,7 @@ from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils_generation module
 import kg_utils_generation as kg
 # get the BMRS API Dataframe generating and CSV writing script. 
-from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
+#from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
 
 units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
 powerplant_class_prefix = 'PowerPlant_'
@@ -341,7 +341,7 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     if variables is None:
         print('Time series could not be created for the following asset:', assetIRI)
         return
-    times, values = ExcelToTimeseries.excelToKG(power_data, assetIRI)
+    times, values = ExcelToTimeseries.excelToKG(power_data, assetIRI) #excelToKG takes a file containing export, curtailment (or any other data of the same format), and returns timestamps and values in lists. 
     #Reformat times. 
     #times = times.values.reshape(-1,).tolist()
     #New (not required)
@@ -411,6 +411,35 @@ def take_day(df, starting, periods):
     return dfSlice, ending, more
 
 
+def EIC_check(IRI, EIC_list, name_list):
+    """
+        For each powerplant, add an EIC if one exists and is not added already. 
+        The IRI should be the name. 
+        The EIC_list and name_list should be of equal length, with corresponding positions (i.e. 0, 1, 2,...,n) refering to the same powerplant. 
+
+        EIC_list example: plants_with_data_full
+        name_list example: plants_with_data_full_name
+    """
+    #If the IRI is not the name, but instead is a URL, then maybe add a split here for it. This is optional based on what the input ends up being. 
+    IRI = IRI.replace('\\', ' ')
+    IRI = IRI.replace('/', ' ')
+    IRI = IRI.split()
+    if type(IRI) == list:
+        IRI = IRI[-1]
+
+    #Is there already an EIC, if so, then return. 
+    ###ADD QUERY HERE, FOLLOWED BY IF WHICH RETURNS IF ONE EXISTS###
+
+    #If there is not an EIC, does one exist? 
+    if IRI not in name_list:
+        return
+    
+    #If there is, then add the EIC from the list. 
+    else:
+        EIC = EIC_list[name_list.index(IRI)]
+        ###THEN ADD THE EIC###
+
+
 def update_triple_store():
     """
         Main function to assimilate power time series data into KG, incl. instantiation
@@ -431,8 +460,10 @@ def update_triple_store():
     #powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
     #New (EICs)
     plants_with_data_full = ["48WSTN0000ABRBON", "48WSTN0000ABRTWR", "48WSTN0000ACHRWV", "48WSTN0000ANSUWY", "48WSTN0000ARCHW6", "48WSTN0000ASHWWA", "48WSTN1000BABAWQ", "48WSTN0000BEATOG", "48WSTN0000BEINWN", "48WSTN0000BETHWY", "48WSTN0000BHLAWZ", "48WSTN0000BLKWWR", "48WSTN00000BLLAV", "48WSTN00000BLLXM", "48WSTN0000BNAKWJ", "48WSTN0000BNWKW5", "48WSTN0000BOWLWY", "48WSTN0000BRBEOT", "48WSTN0000BRDUWV", "48WSTN0000BRYBW4", "48WSTN0000BTUIWQ", "48WSTN0000BURBWH", "48WSTN0000CAUSWB", "48WSTN0000CGTHWI", "48WSTN0000CLDCWZ", "48WSTN0000CLDNW2", "48WSTN0000CLDRWR", "48WSTN0000CLDSWO", "48WSTN0000COUWW3", "48WSTN0000CRMLWG", "48WSTN0000CRYRBT", "48WSTN0000CRYRWO", "48WSTN0000DALSW4", "48WSTN0000DDGNO3", "48WSTN0000DEUCWX", "PLACEHOLDER1", "48WSTN0000DRDGWO", "48WSTN0000DRSLWN", "48WSTN0000DUNGW6", "48WSTN00000EAAOS", "48WSTN0000EARBWP", "48WSTN0000EDINWA", "48WSTN1000EWHLWQ", "48WSTN0000FAARW2", "48WSTN0000FALGWS", "48WSTN1000FDUNTQ", "48WSTN0000FSDLWT", "48WSTN0000GAOFOT", "48WSTN0000GDSTWE", "48WSTN0000GFLDW6", "48WSTN0000GLOFWW", "48WSTN0000GLWSWZ", "48WSTN0000GNFSWJ", "48WSTN0000GRGBW9", "48WSTN0000GRIFWQ", "PLACEHOLDER2", "48WSTN0000HADHW8", "48WSTN0000HLTWWT", "48WSTN0000HMGTOR", "48WSTN0000HOWAOA", "48WSTN0000HRSTWC", "48WSTN0000HYWDW9", "48WSTN0000KILBWA", "48WSTN0000KLGLWM", "48WSTN0000LARYWP", "48WSTN0000LCLTWH", "48WSTN0000MDHLW9", "48WSTN0000MILWW9", "48WSTN0000MINSWD", "48WSTN0000MKHLWB", "48WSTN0000MOWEO5", "48WSTN0000NHOYWR", "48WSTN1000NOVAWQ", "48WSTN0000OMNDWQ", "48WSTN0000PAUHW3", "48WSTN0000RCBKOV", "48WSTN0000RHYFWK", "48WSTN0000RMPNON", "48WSTN00000RREWF", "48WSTN00000RRWWZ", "48WSTN0000RSHLWF", "48WSTN0000SHRSW3", "48WSTN0000STLGW3", "48WSTN0000STRNWW", "48WSTN0000TDBNWM", "48WSTN0000THNTWA", "48WSTN0000TULWBN", "48WSTN0000TULWWI", "48WSTN0000WDNSWF", "48WSTN1000WHILWQ", "48WSTN0000WLNYWV", "48WSTN0000WLNY3F", "48WSTN0000WLNY4D", "48WSTN0000WTMSOT"]
+    plants_with_data_full_name = ["Aberdeen", "Auchrobert", "AChruach", "An_Suidhe", "Arecleoch", "Andershaw", "Baillie", "Beatrice", "Beinneun", "Beinn_Tharsuinn", "Bhlaraidh", "Blackcraig", "Black_Law", "Black_Law_II", "Ben_Aketil", "Burn_of_Whilk", "Barrow", "Burbo_Extension", "Braes_of_Doune", "Berry_Burn", "Beinn_an_Tuirc_II", "Burbo", "Causeymire", "Corriegarth", "Clyde_(Central)", "Clyde_(North)", "Clashindarroch", "Clyde_(South)", "Cour", "Corriemoillie", "Crystal_Rig_II", "Crystal_Rig_I", "Dalswinton", "Dudgeon_1", "Deucheran_Hill", "Dorenell", "Drumderg", "Dersalloch", "Dunmaglass", "East_Anglia_One", "Earlsburn", "Edinbane", "Ewe_Hill_II", "Farr", "Fallago_Rig", "Lynn", "Freasdail", "Galloper", "Gordonstown_Hill", "Goole_Fields_A", "Glens_of_Foudland", "Galawhistle", "Gunfleet_Sands_1_2", "Greater_Gabbard", "Griffin", "Gwynt_y_Mor", "Hadyard_Hill", "Hill_of_Towie", "Humber_Gateway", "Hornsea_1", "Harestanes", "Hywind_1", "Kilbraur", "Kilgallioch", "London_Array", "Lochluichart", "Mid_Hill", "Millennium", "Minsca", "Mark_Hill", "Moray_East", "North_Hoyle", "Novar", "Ormonde", "Pauls_Hill", "Race_Bank", "Rhyl_Flats", "Rampion", "Robin_Rigg_East", "Robin_Rigg_West", "Rosehall", "Sheringham_Shoal_1", "Stronelairg", "Strathy_North", "Toddleburn", "Thanet", "Twinshiels", "Tullo", "West_of_Duddon_Sands", "Whitelee", "Walney_1_2", "Walney_3", "Walney_4", "Westermost_Rough"]
     plants_with_data_checked = ["48WSTN0000ABRBON", "48WSTN0000ARCHW6", "48WSTN1000BABAWQ", "48WSTN0000BEATOG", "48WSTN0000BEINWN", "48WSTN0000BHLAWZ", "48WSTN0000BLKWWR", "48WSTN00000BLLAV", "48WSTN00000BLLXM", "48WSTN0000BOWLWY", "48WSTN0000BRBEOT", "48WSTN0000BRDUWV", "48WSTN0000BRYBW4", "48WSTN0000CGTHWI", "48WSTN0000CLDCWZ", "48WSTN0000CLDNW2", "48WSTN0000CLDSWO", "48WSTN0000CRYRBT", "48WSTN0000DDGNO3", "48WSTN0000DRSLWN", "48WSTN0000DUNGW6", "48WSTN00000EAAOS", "48WSTN0000FALGWS", "48WSTN0000GLWSWZ", "48WSTN0000GNFSWJ", "48WSTN0000GRGBW9", "48WSTN0000GRIFWQ", "48WSTN0000HADHW8", "48WSTN0000HMGTOR", "48WSTN0000HOWAOA", "48WSTN0000HRSTWC", "48WSTN0000KILBWA", "48WSTN0000KLGLWM", "48WSTN0000LCLTWH", "48WSTN0000MILWW9", "48WSTN0000MKHLWB", "48WSTN0000RCBKOV", "48WSTN0000RMPNON", "48WSTN00000RREWF", "48WSTN00000RRWWZ", "48WSTN0000STLGW3", "48WSTN0000STRNWW", "48WSTN1000WHILWQ", "48WSTN0000WLNYWV", "48WSTN0000WLNY3F", "48WSTN0000WLNY4D", "48WSTN0000WTMSOT"]
-    
+    plants_with_data_checked_name = ["Aberdeen", "Arecleoch", "Baillie", "Beatrice", "Beinneun", "Bhlaraidh", "Blackcraig", "Black_Law", "Black_Law_II", "Barrow", "Burbo_Extension", "Braes_of_Doune", "Berry_Burn", "Corriegarth", "Clyde_(Central)", "Clyde_(North)", "Clyde_(South)", "Crystal_Rig_II", "Dudgeon_1", "Dersalloch", "Dunmaglass", "East_Anglia_One", "Fallago_Rig", "Galawhistle", "Gunfleet_Sands_1_2", "Greater_Gabbard", "Griffin", "Hadyard_Hill", "Humber_Gateway", "Hornsea_1", "Harestanes", "Kilbraur", "Kilgallioch", "Lochluichart", "Millennium", "Mark_Hill", "Race_Bank", "Rampion", "Robin_Rigg_East", "Robin_Rigg_West", "Stronelairg", "Strathy_North", "Whitelee", "Walney_1_2", "Walney_3", "Walney_4", "Westermost_Rough"]
+
     # Retrieve all instantiated powerplants in KG
     powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
     powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
@@ -450,12 +481,13 @@ def update_triple_store():
         if (gt not in powerplants_instantiated.keys()) and (gt != ""):
             instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
-    print("Location Check!")
+    
     # Retrieve update of instantiated powerplants in KG (in case any new powerplants were added)
     if new_powerplants:
         powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
         powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
     # Assimilate power data for instantiated  powerplants
+    
     for pp in powerplants_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[pp]) is None:
