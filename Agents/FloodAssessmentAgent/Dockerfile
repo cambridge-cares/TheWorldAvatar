@@ -115,6 +115,9 @@ COPY ./tests ./tests
 # Copy docker-compose-file to spin up testcontainers
 COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
+# Adjust the logger_name to enable more logging information for tests
+RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./$AGENTDIR/entry_point.py
+
 # Ensure SPARQL endpoints contain 'host.docker.internal' instead of 'localhost' for dockerised agent tests
 RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/env_configs_mock.py
 RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/stack_configs_mock.py
