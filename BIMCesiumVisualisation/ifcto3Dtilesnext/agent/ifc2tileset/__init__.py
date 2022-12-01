@@ -6,9 +6,10 @@ generate the tilesets for the IFC file and its glTF models.
 """
 
 # Self imports
-from ifc2tileset.tile_helper import gen_solarpanel_tileset, jsonwriter
+from ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
 from ifc2tileset.root_tile import gen_root_content
 from ifc2tileset.asset_tiles import gen_tileset_assets
+
 
 def gen_tilesets(hashmapping):
     """
@@ -17,8 +18,9 @@ def gen_tilesets(hashmapping):
     Argument:
         hashmappings - A hashtable to match assets to their IFC ID
     """
-    # Create and write a separate tileset for solar panels
+    # Create and write separate tilesets if they exist
     gen_solarpanel_tileset()
+    gen_sewagenetwork_tileset()
 
     # If there are assets, generate tilesets with asset information
     if hashmapping:

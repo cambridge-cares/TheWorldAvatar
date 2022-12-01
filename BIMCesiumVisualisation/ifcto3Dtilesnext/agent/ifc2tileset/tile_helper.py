@@ -1,7 +1,7 @@
 """
 # Author: qhouyee #
 
-This module generates the tilesets for the IFC file and its glTF models.
+This module provides helper methods to generate separate tilesets and write to a json file.
 """
 
 # Standard library imports
@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Self imports
 from ifc2tileset.root_tile import root_tile
+
 
 def gen_solarpanel_tileset():
     """
@@ -21,6 +22,18 @@ def gen_solarpanel_tileset():
         tileset = root_tile()
         tileset["root"]["content"] = {"uri": "./gltf/solarpanel.gltf"}
         jsonwriter(tileset, "tileset_solarpanel")
+
+
+def gen_sewagenetwork_tileset():
+    """
+    Generates and write the tileset for sewage network into 3D Tiles Next format if it exists
+    """
+    sewage_file_path = "./data/gltf/sewagenetwork.gltf"
+    sewagepath = Path(sewage_file_path)
+    if sewagepath.is_file():
+        tileset = root_tile()
+        tileset["root"]["content"] = {"uri": "./gltf/sewagenetwork.gltf"}
+        jsonwriter(tileset, "tileset_sewage")
 
 
 def jsonwriter(tileset, tileset_string):

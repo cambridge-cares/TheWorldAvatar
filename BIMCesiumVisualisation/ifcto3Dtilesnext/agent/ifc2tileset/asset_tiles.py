@@ -1,11 +1,12 @@
 """
 # Author: qhouyee #
 
-This module generates the tilesets for the IFC file and its glTF models.
+This module provides methods to generate tilesets related to assets.
 """
 
 # Self imports
 from ifc2tileset.root_tile import gen_root_content, bbox_child
+
 
 def init_asset_tiles():
     """
