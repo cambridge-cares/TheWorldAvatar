@@ -43,7 +43,7 @@ public class Algorithm {
         return saveSurrogate;
     }
 
-    public void getSaveSurrogate(Boolean saveSurrogate) {
+    public void setSaveSurrogate(Boolean saveSurrogate) {
         this.saveSurrogate = saveSurrogate;
     }
 
