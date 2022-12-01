@@ -119,6 +119,9 @@ public class SolarkatasterAgent extends JPSAgent {
             if (requestParams.get(KEY_TABLE).toString().isEmpty() || !(requestParams.get(KEY_CHUNK) instanceof Integer)) {
                 throw new BadRequestException();
             }
+            else if (requestParams.getInt(KEY_CHUNK) < 1) {
+                throw new BadRequestException();
+            }
         }
         catch (Exception e){
             throw new BadRequestException();
