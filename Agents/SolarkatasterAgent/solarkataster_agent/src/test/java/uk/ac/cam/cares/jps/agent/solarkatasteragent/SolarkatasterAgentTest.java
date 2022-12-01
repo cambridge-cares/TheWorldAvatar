@@ -54,6 +54,14 @@ public class SolarkatasterAgentTest {
         RemoteRDBStoreClient mockRDBClient = mock(RemoteRDBStoreClient.class);
         TimeSeriesClient mockTS = mock(TimeSeriesClient.class);
 
+        Field KEY_TABLE = agent.getClass().getDeclaredField("KEY_TABLE");
+        KEY_TABLE.setAccessible(true);
+        String key_table = (String) KEY_TABLE.get(agent);
+
+        Field KEY_CHUNK = agent.getClass().getDeclaredField("KEY_CHUNK");
+        KEY_CHUNK.setAccessible(true);
+        String key_chunk = (String) KEY_CHUNK.get(agent);
+
         Field tsClient = agent.getClass().getDeclaredField("tsClient");
         tsClient.setAccessible(true);
         tsClient.set(agent, mockTS);
@@ -69,7 +77,7 @@ public class SolarkatasterAgentTest {
         doReturn(true).when(agent).validateInput(any(JSONObject.class));
 
         doReturn("test").when(mockJSONObject).getString(anyString());
-        doReturn(1).when(mockJSONObject).getInt(anyString());
+        when(mockJSONObject.getInt(anyString())).thenReturn(2).thenReturn(1).thenReturn(1);
 
         doReturn(mockJSONArray).when(mockRDBClient).executeQuery(anyString());
         doReturn(mock(Connection.class)).when(mockRDBClient).getConnection();
@@ -95,8 +103,13 @@ public class SolarkatasterAgentTest {
         KEY_TABLE.setAccessible(true);
         String key_table = (String) KEY_TABLE.get(agent);
 
+        Field KEY_CHUNK = agent.getClass().getDeclaredField("KEY_CHUNK");
+        KEY_CHUNK.setAccessible(true);
+        String key_chunk = (String) KEY_CHUNK.get(agent);
+
         JSONObject testJSONObject = new JSONObject();
         testJSONObject.put(key_table, "test");
+        testJSONObject.put(key_chunk, 1);
 
         assertTrue((Boolean) validateInput.invoke(agent, testJSONObject));
     }
@@ -141,23 +154,16 @@ public class SolarkatasterAgentTest {
         JSONObject testJSON1 = new JSONObject();
         JSONObject testJSON2 = new JSONObject();
 
-        Field KEY_OID = agent.getClass().getDeclaredField("KEY_OID");
-        KEY_OID.setAccessible(true);
-        String key_oid = (String) KEY_OID.get(agent);
-
-        Field KEY_GEB = agent.getClass().getDeclaredField("KEY_GEB");
-        KEY_GEB.setAccessible(true);
-        String key_geb = (String) KEY_GEB.get(agent);
+        Field KEY_MOD = agent.getClass().getDeclaredField("KEY_MOD");
+        KEY_MOD.setAccessible(true);
+        String key_mod = (String) KEY_MOD.get(agent);
 
         Field TIME_SERIES = agent.getClass().getDeclaredField("TIME_SERIES");
         TIME_SERIES.setAccessible(true);
         List<String> time_series = (List <String>) TIME_SERIES.get(agent);
 
-        testJSON1.put(key_oid, 1);
-        testJSON2.put(key_oid, 2);
-
-        testJSON1.put(key_geb, "test1");
-        testJSON2.put(key_geb, "test2");
+        testJSON1.put(key_mod, "test1");
+        testJSON2.put(key_mod, "test2");
 
         for (int i = 0; i < time_series.size(); i++){
             testJSON1.put(time_series.get(i), i + 0.01);
@@ -175,8 +181,8 @@ public class SolarkatasterAgentTest {
 
         assertEquals(IRI1.size(), 1);
         assertEquals(IRI2.size(), 1);
-        assertTrue(IRI1.get(0).contains(testJSON1.getString(key_geb) + String.valueOf(testJSON1.getInt(key_oid))));
-        assertTrue(IRI2.get(0).contains(testJSON2.getString(key_geb) + String.valueOf(testJSON2.getInt(key_oid))));
+        assertTrue(IRI1.get(0).contains("test1"));
+        assertTrue(IRI2.get(0).contains("test2"));
 
         List<TimeSeries<Double>> tsList = (List<TimeSeries<Double>>) result.get(1);
         TimeSeries<Double> ts1 = tsList.get(0);
@@ -196,7 +202,7 @@ public class SolarkatasterAgentTest {
     @Test
     public void testGetQueryString() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         SolarkatasterAgent agent = new SolarkatasterAgent();
-        Method getQueryString = agent.getClass().getDeclaredMethod("getQueryString", String.class);
+        Method getQueryString = agent.getClass().getDeclaredMethod("getQueryString", String.class, Integer.class, Integer.class);
 
         assertNotNull(getQueryString);
         getQueryString.setAccessible(true);
@@ -209,16 +215,19 @@ public class SolarkatasterAgentTest {
         KEY_OID.setAccessible(true);
         String key_oid = (String) KEY_OID.get(agent);
 
-        Field KEY_GEB = agent.getClass().getDeclaredField("KEY_GEB");
-        KEY_GEB.setAccessible(true);
-        String key_geb = (String) KEY_GEB.get(agent);
+        Field KEY_MOD = agent.getClass().getDeclaredField("KEY_MOD");
+        KEY_MOD.setAccessible(true);
+        String key_mod = (String) KEY_MOD.get(agent);
 
-        String result = (String) getQueryString.invoke(agent, "testTable");
+        String result = (String) getQueryString.invoke(agent, "testTable", 1, 2);
 
         assertTrue(result.contains("SELECT"));
         assertTrue(result.contains("testTable"));
-        assertTrue(result.contains(key_geb));
+        assertTrue(result.contains("BETWEEN"));
+        assertTrue(result.contains(key_mod));
         assertTrue(result.contains(key_oid));
+        assertTrue(result.contains("1"));
+        assertTrue(result.contains("2"));
 
         for (int i = 0; i < time_series.size(); i++){
             assertTrue(result.contains(time_series.get(i)));
@@ -256,25 +265,25 @@ public class SolarkatasterAgentTest {
         verify(mockTS, times(1)).bulkInitTimeSeries(anyList(), anyList(), anyList(), any(Connection.class), anyList(), anyList(), anyList());
     }
 
+
     @Test
-    public void testGetData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public void testGetMinMaxOidString() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         SolarkatasterAgent agent = new SolarkatasterAgent();
-        Method getData = agent.getClass().getDeclaredMethod("getData", String.class);
+        Method getMinMaxOidString = agent.getClass().getDeclaredMethod("getMinMaxOidString", String.class);
 
-        assertNotNull(getData);
-        getData.setAccessible(true);
+        assertNotNull(getMinMaxOidString);
+        getMinMaxOidString.setAccessible(true);
 
-        RemoteRDBStoreClient mockRDBClient = mock(RemoteRDBStoreClient.class);
+        Field KEY_OID = agent.getClass().getDeclaredField("KEY_OID");
+        KEY_OID.setAccessible(true);
+        String key_oid = (String) KEY_OID.get(agent);
 
-        Field rdbStoreClient = agent.getClass().getDeclaredField("rdbStoreClient");
-        rdbStoreClient.setAccessible(true);
-        rdbStoreClient.set(agent, mockRDBClient);
+        String result = (String) getMinMaxOidString.invoke(agent, "test");
 
-        doReturn(new JSONArray()).when(mockRDBClient).executeQuery(anyString());
-
-        getData.invoke(agent, "test");
-
-        verify(mockRDBClient, times(1)).executeQuery(anyString());
+        assertTrue(result.contains("MIN"));
+        assertTrue(result.contains("MAX"));
+        assertTrue(result.contains(key_oid));
+        assertTrue(result.contains("test"));
     }
 
 }
