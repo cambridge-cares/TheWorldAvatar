@@ -53,15 +53,7 @@ public class SolarkatasterAgentTest {
         JSONArray mockJSONArray = mock(JSONArray.class);
         RemoteRDBStoreClient mockRDBClient = mock(RemoteRDBStoreClient.class);
         TimeSeriesClient mockTS = mock(TimeSeriesClient.class);
-
-        Field KEY_TABLE = agent.getClass().getDeclaredField("KEY_TABLE");
-        KEY_TABLE.setAccessible(true);
-        String key_table = (String) KEY_TABLE.get(agent);
-
-        Field KEY_CHUNK = agent.getClass().getDeclaredField("KEY_CHUNK");
-        KEY_CHUNK.setAccessible(true);
-        String key_chunk = (String) KEY_CHUNK.get(agent);
-
+        
         Field tsClient = agent.getClass().getDeclaredField("tsClient");
         tsClient.setAccessible(true);
         tsClient.set(agent, mockTS);
