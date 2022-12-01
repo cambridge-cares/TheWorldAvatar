@@ -37,23 +37,9 @@ public class InputMetaData {
         List<Double> means = new ArrayList<>();
         List<String> scaling = new ArrayList<>();
 
-        if (inputs != null) {
-            varNames = algorithm.getVariables().stream().map(Variable::getName)
-                    .collect(Collectors.toList());
+        if (algorithm.getSurrogateToLoad() != null) {
 
-            minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            maxima = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            scaling = Collections.nCopies(varNames.size(), "linear");
-        } else if (algorithm.getSurrogateToLoad() != null) {
-
-            Path path = Simulation.getSurrogateDirectory(modsBackend, algorithm)
+            Path path = Simulation.getSurrogateDirectory(modsBackend)
                     .resolve(DEFAULT_INPUT_INFO_FILE_NAME);
 
             if (!Files.exists(path)) {
@@ -76,6 +62,20 @@ public class InputMetaData {
                         HttpStatus.NO_CONTENT,
                         "Failed to read data info load file.", ex);
             }
+        } else if (inputs != null) {
+            varNames = algorithm.getVariables().stream().map(Variable::getName)
+                    .collect(Collectors.toList());
+
+            minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            maxima = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
+                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+            scaling = Collections.nCopies(varNames.size(), "linear");
         } else {
             throw new IOException("No input data or load location provided.");
         }
