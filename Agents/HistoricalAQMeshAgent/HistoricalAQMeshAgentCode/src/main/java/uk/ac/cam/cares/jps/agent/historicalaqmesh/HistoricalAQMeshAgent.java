@@ -147,8 +147,6 @@ public class HistoricalAQMeshAgent {
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
-            } finally {
-            	tsClient.disconnectRDB();
             }
             }
         }
@@ -175,8 +173,6 @@ public class HistoricalAQMeshAgent {
         		else {
         			throw e;
         		}        		
-        	} finally {
-        		tsClient.disconnectRDB();
         	}
         }
         return true;
@@ -211,9 +207,7 @@ public class HistoricalAQMeshAgent {
                         LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                     } catch (Exception e) {
                     	throw new JPSRuntimeException("Could not add timeseries data!");
-                    } finally {
-                    	tsClient.disconnectRDB();
-                    }
+                    } 
                 }
             }
         }

@@ -248,7 +248,6 @@ class MapHandler_Mapbox extends MapHandler {
             if(a.order < b.order) return -1;
             return 0;
         });
-        console.log(allLayers);
 
         // Plot them
         allLayers.forEach(layer => this.plotLayer(null, layer));

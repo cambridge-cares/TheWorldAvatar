@@ -53,7 +53,7 @@ public final class MoDSBackend {
     public void run() throws IOException {
         LOGGER.info("simDir = '{}'", simDir);
 
-        if (null != process && process.isAlive()) {
+        if (isAlive()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Process with job ID '" + jobID + "' already running.");
@@ -88,6 +88,10 @@ public final class MoDSBackend {
             }
         }, "timout-enforcer-" + jobID);
         timoutEnforcer.start();
+    }
+
+    public boolean isAlive() {
+        return null != process && process.isAlive();
     }
 
     public void checkState() {

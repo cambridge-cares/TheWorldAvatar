@@ -46,7 +46,9 @@ public class SparqlClient {
 	public static Iri LowerLimit = p_namespace.iri("LowerLimit");
 	public static Iri NumberOfPoints = p_namespace.iri("NumberOfPoints");
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-	
+	public static Iri InputPlaceholderExceptionThrow = p_namespace.iri("InputPlaceholderExceptionThrow");
+	public static Iri OutputPlaceholderExceptionThrow = p_namespace.iri("OutputPlaceholderExceptionThrow");
+
 	// property
 	public static Iri hasPoint = p_namespace.iri("hasPoint");
 	public static Iri hasValue = p_namespace.iri("hasValue");
@@ -258,7 +260,21 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return numberOfPoints_iri;
     }
-    
+
+	/**
+	 * This method creates a InputPlaceholderExceptionThrow instance.
+	 * <iri> a <InputPlaceholderExceptionThrow>
+	 * <iri> a owl:NamedIndividual
+	 * @return
+	 */
+	public String createInputPlaceholderExceptionThrow() {
+		String inputPlaceholderExceptionThrowIRI = namespace + UUID.randomUUID().toString();
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(iri(inputPlaceholderExceptionThrowIRI).isA(InputPlaceholderExceptionThrow).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+		storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+		return inputPlaceholderExceptionThrowIRI;
+	}
+
     /**
      * This method queries ?x a <UpperLimit>.
      * @return
