@@ -72,6 +72,9 @@ class FloodAssessmentAgent(DerivationAgent):
         # (i.e. in principle both lists could be empty without causing issues)
         building_iris = inputs.get(OBE_BUILDING)
         value_estimation_iris = inputs.get(OM_AMOUNT_MONEY)
+        # Create empty lists in case no buildings or value estimations have been marked up
+        building_iris = [] if building_iris is None else building_iris
+        value_estimation_iris = [] if value_estimation_iris is None else value_estimation_iris
 
         if len(value_estimation_iris) > len(building_iris):
             self.logger.error(f"Derivation {derivationIRI}: More value estimations than buildings provided.")

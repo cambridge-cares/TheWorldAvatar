@@ -63,7 +63,8 @@ def test_example_data_instantiation(initialise_clients):
     [
         (cf.DERIVATION_INPUTS_1, False, cf.DERIVATION_TRIPLES_1, cf.DERIVATION_OUTPUTS_1, cf.FLOOD_ASSESSMENT_1),   # Inactive flood warning --> values at risk = 0
         (cf.DERIVATION_INPUTS_2, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_2),   # Active flood warnings --> actual values at risk
-        (cf.DERIVATION_INPUTS_3, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_3)
+        (cf.DERIVATION_INPUTS_3, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_3),
+        (cf.DERIVATION_INPUTS_5, False, cf.DERIVATION_TRIPLES_5, cf.DERIVATION_OUTPUTS_5, cf.FLOOD_ASSESSMENT_5),
     ],
 )
 def test_monitor_derivations(
