@@ -2,7 +2,7 @@ version: "3.8"
 
 networks:
   stack:
-    name: testStack
+    name: <STACK-NAME>
     driver: overlay
     attachable: true
 
