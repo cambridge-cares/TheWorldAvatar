@@ -35,25 +35,48 @@ def install_glbconverter():
 
 def retrieve_abs_filepath(filepath):
     """
-    Runs commands in the shell
-    All non-error messages are suppressed
+    Retrieves absolute file path from a relative file path
 
     Argument:
-    command - Command arguments in the form ["command","command2"] or "command command2"
-    require_shell - Boolean indicating if shell is required. Must be True for npm operations
+    filepath - A relative file path
+    Returns:
+    Absolute file path
     """
-    return os.path.abspath(filepath)
+    if filepath == ".":
+        return os.getcwd()
+    else:
+        return os.path.abspath(filepath)
 
 
-def read_ifc_file():
+def read_ifc_file(ifc_dir):
     """
     Reads IFC file located at ./data/ifc directory into required file paths
-    """
-    ifcpath = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), os.pardir, 'data', 'ifc'))
-    filelist = [file for file in os.listdir(ifcpath) if os.path.isfile(
-        os.path.join(ifcpath, file)) and not file == ".gitignore"]
 
+    Argument:
+    ifc_dir - A list containing the nested directories to the IFC input from the root directory
+            Eg:[data, ifc]
+    Returns:
+    File path to the IFC file
+    """
+    # If empty list,
+    if not ifc_dir:
+        ifc_relpath = "."
+    else:
+        for directory in ifc_dir:
+            # Check if this variable exist
+            try:
+                ifc_relpath
+            # If it doesn't exist, initialise the variable
+            except NameError:
+                ifc_relpath = os.path.join(".", directory)
+            # If it exist, append to filepath
+            else:
+                ifc_relpath = os.path.join(ifc_relpath, directory)
+
+    ifcpath = retrieve_abs_filepath(ifc_relpath)
+
+    filelist = [file for file in os.listdir(ifcpath)
+                if os.path.isfile(os.path.join(ifcpath, file)) and not file == ".gitignore"]
     ifc_input = ""
     if not filelist:
         raise FileNotFoundError(

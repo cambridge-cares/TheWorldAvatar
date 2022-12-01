@@ -59,7 +59,7 @@ A brief description of its workflow can be found below:
 2. Open `cmd` terminal and navigate into the `<root>`
 3. Please run the following commands in the `cmd` terminal (from within the `<root>` directory and with **activated** virtual environment <venv_name>)
     ```
-    python agent\main.py
+    python agent
     ```
 
 ## For Developers
