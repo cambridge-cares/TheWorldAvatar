@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
         @Type(value = Vector.class, names = { "Vector", "vector" }),
         @Type(value = Raster.class, names = { "Raster", "raster" }),
-        @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }) })
+        @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }),
+        @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv", }) })
 public abstract class DataSubset {
 
     private String name;
