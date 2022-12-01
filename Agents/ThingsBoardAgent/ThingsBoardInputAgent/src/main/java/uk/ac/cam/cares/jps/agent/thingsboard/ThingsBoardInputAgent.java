@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.io.File;
@@ -47,7 +48,7 @@ public class ThingsBoardInputAgent{
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "thingsboard";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "thingsboard";
     /**
      * The time unit used for all time series maintained by the ThingsBoard agent
      */
@@ -146,7 +147,7 @@ public class ThingsBoardInputAgent{
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 try {
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
