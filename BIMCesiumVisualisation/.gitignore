@@ -39,6 +39,7 @@ env/
 # JavaScript:
 node_modules/
 jspm_packages/
+package-lock.json
 
 # Compiled/binary output folders:
 bin/

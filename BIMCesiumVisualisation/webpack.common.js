@@ -15,6 +15,7 @@ module.exports = {
         toUrlUndefined: true
     },
     resolve: {
+        fallback: { "https": false, "zlib": false, "http": false, "url": false },
         alias: {
             cesium: path.resolve(__dirname, cesiumSource)
         },
