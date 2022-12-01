@@ -81,7 +81,7 @@ class KGClient(PySparqlClient):
     #
     # SPARQL UPDATES
     #
-    def instantiate_flood_impact(self, graph, flood_alert_warning_iri, 
+    def instantiate_flood_impact(self, graph: Graph, flood_alert_warning_iri,
                                  affected_buildings_count,
                                  affected_buildings_value=None, affected_population=None,
                                  impact_description=None, flood_iri=None) -> Graph:
@@ -101,7 +101,7 @@ class KGClient(PySparqlClient):
         """
 
 
-        def _add_amount_of_money_triples(graph, amount_of_money_iri, measure_iri, value, unit, unit_symbol):
+        def _add_amount_of_money_triples(graph: Graph, amount_of_money_iri, measure_iri, value, unit, unit_symbol):
             graph.add((URIRef(amount_of_money_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
             graph.add((URIRef(amount_of_money_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
             graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
@@ -115,7 +115,7 @@ class KGClient(PySparqlClient):
 
         if not flood_iri:
             flood_iri = KB + 'Flood_' + str(uuid.uuid4())
-            # Instantiate "general" flood type if no  more specific flood type is instantiated/given
+            # Instantiate "general" flood type if no more specific flood type is instantiated/given
             graph.add((URIRef(flood_iri), URIRef(RDF_TYPE), URIRef(FLOOD_FLOOD)))
 
         # Create unique new IRIs for new/updated output instances of derivation
