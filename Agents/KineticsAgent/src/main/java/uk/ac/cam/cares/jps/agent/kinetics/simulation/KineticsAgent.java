@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +37,6 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileSystemUtils;
 
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentProperty;
@@ -332,23 +332,24 @@ public class KineticsAgent extends JPSAgent {
 	}
 
     private boolean isFinished(String jobFolder) throws IOException {
-        Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.log");
+        Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.progress");
 
         if(Files.exists(logFile)) {
             KineticsAgent.logToFile("log exists");
             String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
-            boolean contains = logContents.contains("Post-processing complete") || logContents.contains("Total CPU-time");
-            KineticsAgent.logToFile("contains is " + contains);
+            boolean contains = logContents.contains("progress_total=1");
 
             if(!contains) {
-                // If not modified in 5 minutes, assume finished but failed 
+                // If not modified in 15 minutes, assume finished but failed 
                 BasicFileAttributes attr = Files.readAttributes(logFile, BasicFileAttributes.class);
 
                 LocalDateTime modified = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
                 LocalDateTime now = LocalDateTime.now();
                 Duration duration = Duration.between(modified, now);
-                KineticsAgent.logToFile("Duration is " + duration.getSeconds());
-                return duration.getSeconds() >= (5 * 60);
+                
+                boolean expired = duration.getSeconds() >= (15 * 60);
+                if(expired) KineticsAgent.logToFile("Marking as failed due to expiration!");
+                return expired;
             }
             return true;
         }
@@ -385,7 +386,6 @@ public class KineticsAgent extends JPSAgent {
 
         for(File file : list) {
             Path path = Paths.get(file.getAbsolutePath());
-            KineticsAgent.logToFile("Processing: " + path);
 
             try {
                 // Has the simulation finished
@@ -403,7 +403,7 @@ public class KineticsAgent extends JPSAgent {
                         // Wait for the result
                         long start = System.currentTimeMillis();
                         while(this.postProcessing && (System.currentTimeMillis() - start) < 30_000) {
-                            Thread.sleep(1000);
+                            Thread.sleep(3000);
                         }
                         KineticsAgent.logToFile("No longer post-processing.");
 
@@ -467,16 +467,30 @@ public class KineticsAgent extends JPSAgent {
         Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
         Files.createDirectories(outputsDir);
 
-        try {
-            File src = jobFolder.toFile();
-            File dest = outputsDir.toFile();
-            FileSystemUtils.copyRecursively(src, dest);
-        } catch(Exception excep) {
-            KineticsAgent.logToFile("Exception when moving outputs", excep);
+        try (Stream<Path> walker = Files.walk(jobFolder, 1)) {
+            walker.forEach(path -> {
+                if(!Files.isDirectory(path)) {
+                    try {
+                        Path dest = Paths.get(outputsDir.toString(), path.getFileName().toString());
+                        Files.copy(path, dest);
+                        
+                        // KineticsAgent.logToFile("Copied following files:");
+                        // KineticsAgent.logToFile("   FROM:  " + path);
+                        // KineticsAgent.logToFile("   TO:    " + dest);
+
+                    } catch (IOException innerExcep) {
+                        KineticsAgent.logToFile("Exception when moving output files into new folder!", innerExcep);
+                        KineticsAgent.logToFile(innerExcep.getMessage());
+                        this.postProcessing = false;
+                    }
+                }
+            });
+        } catch(IOException outerExcep) {
+            KineticsAgent.logToFile("Exception when moving output files into new folder!", outerExcep);
             this.postProcessing = false;
         }
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
         KineticsAgent.logToFile("Moved files to output dir");
 
 		// Get the location of the python scripts directory
@@ -555,9 +569,12 @@ public class KineticsAgent extends JPSAgent {
 		}
 		
 		// Copy the JSON up into the job folder just in case Feroz expects it there
-        Path jsonCopy = Paths.get(jobFolder.toString(), outputFilename);
+        String fileName = (outputFilename.endsWith(".json")) ? outputFilename : outputFilename + ".json";
+        Path jsonCopy = Paths.get(jobFolder.toString(), fileName);
         if(!Files.exists(jsonCopy)) {
             Files.copy(outputsJSON, jsonCopy);
+            KineticsAgent.logToFile("   FROM:  " + outputsJSON);
+            KineticsAgent.logToFile("   TO:    " + jsonCopy);
         }
 		
 		// Remove the temporary directory
