@@ -4,16 +4,13 @@
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
-import pandas as pd
 import requests
 import pytest
 import time
-import uuid
 import os
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
-from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                               DATABASE, DB_USER, DB_PASSWORD
+from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from tests.mockutils.env_configs_mock import HOSTNAME
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
@@ -24,8 +21,8 @@ from pyderivationagent.conf import config_derivation_agent
 from pyderivationagent import PyDerivationClient
 
 from floodassessment.datamodel.iris import *
-from floodassessment.kg_operations.kgclient import KGClient
 from floodassessment.agent import FloodAssessmentAgent
+from floodassessment.kg_operations.kgclient import KGClient
 
 
 # ----------------------------------------------------------------------------------
@@ -45,7 +42,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # the .env file to avoid Exceptions from the AgentConfig class (the same applies to other keywords left blank)
 #
 # To ensure proper mocking of the `stack_configs.py` module, please provide the 
-# DATABASE, DB_USER, DB_PASSWORD environment variables in the respective files:
+# DATABASE, NAMESPACE, DB_USER, DB_PASSWORD environment variables in the respective files:
 #   tests\mockutils\env_configs_mock.py
 #   tests\mockutils\stack_configs_mock.py
 # Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved 
@@ -58,6 +55,7 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 
 # Derivation markup
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
+
 # IRIs of derivation's (pure) inputs
 # NOTE Should be consistent with the ones in test_triples/example_abox.ttl
 TEST_TRIPLES_BASE_IRI = 'https://www.example.com/kg/ontoflood/'
@@ -78,30 +76,30 @@ FLOOD_WARNING_1 = TEST_TRIPLES_BASE_IRI + 'FloodWarning_1'
 FLOOD_WARNING_2 = TEST_TRIPLES_BASE_IRI + 'FloodWarning_2'
 FLOOD_WARNINGS = [FLOOD_WARNING_1, FLOOD_WARNING_2]
 
+# Define input sets to test
+DERIVATION_INPUTS_1 = [FLOOD_WARNING_1,
+                       BUILDING_1, BUILDING_2, BUILDING_3, BUILDING_4,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_2 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2, BUILDING_3, BUILDING_4,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_3 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2,
+                       MARKET_VALUE_1, MARKET_VALUE_2]
+DERIVATION_INPUTS_4 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_5 = [FLOOD_WARNING_2]
 
-# # PropertyPriceIndex
-# PRICE_INDEX_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'PropertyPriceIndex_1'
-# # AveragePricePerSqm
-# AVERAGE_SQM_PRICE = TEST_TRIPLES_BASE_IRI + 'AveragePricePerSqm_1'
-# # TransactionRecords
-# TRANSACTION_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_1'
-# TRANSACTION_INSTANCE_2_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_2'
-# TRANSACTION_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_3'
-# # FloorArea
-# FLOOR_AREA_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Area_1'
-# FLOOR_AREA_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Area_3'
+# Test against pre-calculated value estimates from Excel (rounded)
+# (Number of buildings at risk, value of building at risk, people at risk)
+FLOOD_ASSESSMENT_1 = (0, 0, 0)          # Inactive flood alert
+FLOOD_ASSESSMENT_2 = (4, 1000000, None) # Active flood alert with buildings at risk
+FLOOD_ASSESSMENT_3 = (2, 700000, None)  # Active flood alert with buildings at risk
+FLOOD_ASSESSMENT_5 = (0, None, None)    # Active flood alert without buildings at risk
 
-# # Define input sets to test
-# DERIVATION_INPUTS_1 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
-#                        AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_1_IRI]
-# DERIVATION_INPUTS_2 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
-#                        AVERAGE_SQM_PRICE]
-# DERIVATION_INPUTS_3 = [AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_3_IRI]
-# DERIVATION_INPUTS_4 = [TRANSACTION_INSTANCE_2_IRI, TRANSACTION_INSTANCE_3_IRI]
-# # Test against pre-calculated value estimates from Excel (rounded)
-MARKET_VALUE_1 = 1000000
-# MARKET_VALUE_2 = 938000
-# EXCEPTION_STATUS_1 = "More than one 'TransactionRecord' IRI provided"
+EXCEPTION_STATUS_1 = "More value estimations than buildings provided"
+
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
@@ -110,12 +108,30 @@ MARKET_VALUE_1 = 1000000
 # Expected number of triples
 TBOX_TRIPLES = 25
 ABOX_TRIPLES = 26
-# TIME_TRIPLES_PER_PURE_INPUT = 6
-# DERIV_STATUS_TRIPLES = 2        # derivation status triples
-# AGENT_SERVICE_TRIPLES = 5       # agent service triples
-# DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
-# DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-# MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
+TIME_TRIPLES_PER_PURE_INPUT = 6
+#NOTE: derivation status triples get removed again after successful derivation execution
+DERIV_STATUS_TRIPLES = 2         # derivation status triples
+AGENT_SERVICE_TRIPLES = 5        # agent service triples
+DERIV_INPUT_TRIPLES = 2 + 3*3    # triples for derivation input message & parts:
+                                 # 2 triples for message, 3 triples per input concept
+DERIV_OUTPUT_TRIPLES = 2 + 3*3   # triples for derivation output message & parts:
+                                 # 2 triples for message, 3 triples per output concept
+# Flood assessment / derivation output triples
+FLOOD_ASSESSMENT_GENERAL = 5+2     # general flood assessment markup (i.e., newly instantiated
+                                   # FloodIRI, warnsAbout, number of affected buildings)
+                                   # + 2 "belongs to" triples
+FLOOD_ASSESSMENT_POPULATION = 3+1  # In case affected population is given +
+                                   # + 1 "belongs to" triple
+FLOOD_ASSESSMENT_BUILDINGS = 13+4  # In case value of affected buildings is given
+                                   # + 4 "belongs to" triples
+FLOOD_ASSESSMENT_DESCRIPTION = 1   # In case description is given
+
+# Define expected number of derivation triples
+DERIVATION_TRIPLES_1 = FLOOD_ASSESSMENT_GENERAL + FLOOD_ASSESSMENT_POPULATION + \
+                       FLOOD_ASSESSMENT_BUILDINGS - DERIV_STATUS_TRIPLES
+DERIVATION_TRIPLES_2 = FLOOD_ASSESSMENT_GENERAL + FLOOD_ASSESSMENT_BUILDINGS + \
+                       FLOOD_ASSESSMENT_DESCRIPTION - DERIV_STATUS_TRIPLES
+DERIVATION_TRIPLES_5 = FLOOD_ASSESSMENT_GENERAL - DERIV_STATUS_TRIPLES
 
 
 # ----------------------------------------------------------------------------------
