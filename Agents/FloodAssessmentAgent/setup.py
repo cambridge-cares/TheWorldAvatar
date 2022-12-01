@@ -21,14 +21,13 @@ setup(
         'requests==2.28.1',
         'pyderivationagent==1.4.1'
     ],
-    # extras_require={
-    #     "dev": [
-    #         "testcontainers==3.7.0",
-    #         "pytest==7.2.0",
-    #         "pytest-docker-compose==3.2.1",
-    #         "pytest-rerunfailures==10.2",
-    #         "pytest-mock==3.10.0",
-    #         "psycopg2==2.9.5"
-    #     ],
-    # }
+    extras_require={
+        "dev": [
+            "testcontainers==3.7.0",
+            "pytest==7.2.0",
+            "pytest-docker-compose==3.2.1",
+            "pytest-rerunfailures==10.2",
+            "pytest-mock==3.10.0"
+        ],
+    }
 )
