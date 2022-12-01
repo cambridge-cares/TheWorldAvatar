@@ -143,7 +143,8 @@ class FloodAssessmentAgent(DerivationAgent):
         g = Graph()
 
         # Check severity (i.e. status) of flood alert/warning
-        if warning_iri == FLOOD_SEVERITY_INACTIVE:
+        severity = self.sparql_client.get_flood_alert_warning_severity(warning_iri)
+        if severity == FLOOD_SEVERITY_INACTIVE:
             # If flood alert/warning is inactive --> set impact to zero
             affected_population = 0
             affected_buildings_count = 0
@@ -155,9 +156,9 @@ class FloodAssessmentAgent(DerivationAgent):
             affected_buildings_count = len(building_iris)
             affected_buildings_value = self.sparql_client.summarise_affected_property_values(estimation_iris)
 
-            #TODO: Retrieve potentially already instantiated flood instance
-            #      (otherwise new Flood instance will be created by derivation)
-            flood_iri = None
+        #TODO: Retrieve potentially already instantiated flood instance
+        #      (otherwise new Flood instance will be created by derivation)
+        flood_iri = None
 
         # Generate textual description of potential impact
         #TODO: Potentially to be refined based on actual information from API

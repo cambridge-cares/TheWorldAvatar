@@ -105,12 +105,11 @@ class KGClient(PySparqlClient):
             graph.add((URIRef(amount_of_money_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
             graph.add((URIRef(amount_of_money_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
             graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
-            graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(value, datatype=XSD_FLOAT)))
+            graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(float(value), datatype=XSD_FLOAT)))
             graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(unit)))
             #TODO: Triple with symbol potentially to be removed once OntoUOM contains
             #      all relevant units/symbols and is uploaded to the KB
             graph.add((URIRef(unit), URIRef(OM_SYMBOL), Literal(unit_symbol, datatype=XSD_STRING)))
-
             return graph
 
 
@@ -132,7 +131,7 @@ class KGClient(PySparqlClient):
         # Add triples to graph (RDF Triples to be provided as Python Tuples --> double brackets)
         graph.add((URIRef(flood_alert_warning_iri), URIRef(FLOOD_WARNS_ABOUT), URIRef(flood_iri)))
         # Affected population (only instantiate if assessed)
-        if affected_population:
+        if affected_population is not None:
             graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(population_iri)))
             graph.add((URIRef(population_iri), URIRef(RDF_TYPE), URIRef(FLOOD_POPULATION)))
             graph.add((URIRef(population_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_population, datatype=XSD_INTEGER)))
@@ -141,17 +140,19 @@ class KGClient(PySparqlClient):
         graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(buildings_iri)))
         graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDINGS)))
         graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_buildings_count, datatype=XSD_INTEGER))) 
-        if affected_buildings_value:
+        if affected_buildings_value is not None:
             graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_MONETARY_VALUE), URIRef(bldgs_money_iri)))
+            # Add OM markup for amount of money
             graph = _add_amount_of_money_triples(graph, bldgs_money_iri, bldgs_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
 
         # Total impact (so far only includes value of affected buildings; to be extended potentially)
-        if impact_description or affected_buildings_value:
+        if impact_description or (affected_buildings_value is not None):
             graph.add((URIRef(flood_iri), URIRef(FLOOD_RESULTS_IN), URIRef(impact_iri)))
             if impact_description:
                 graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_CLASSIFICATION), Literal(impact_description, datatype=XSD_STRING)))
-            if affected_buildings_value:
+            if affected_buildings_value is not None:
                 graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_MONETARY_VALUE), URIRef(impact_money_iri)))
+                # Add OM markup for amount of money
                 graph = _add_amount_of_money_triples(graph, impact_money_iri, impact_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
 
         return graph
