@@ -54,7 +54,7 @@ COPY ./config/data.csv /root/data.csv
 # Set the required environment variable
 ENV READINGS="/root/data.csv"
 
-COPY --from=builder /root/HistoricalPirmasensStationAgent/output/historical-pirmasens-station-agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HistoricalPirmasensStationAgent/output/historical-pirmasens-station-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
