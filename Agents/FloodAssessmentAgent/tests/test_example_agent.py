@@ -62,12 +62,13 @@ def test_example_data_instantiation(initialise_clients):
     "derivation_input_set, expect_exception, expected_deriv_triples, expected_deriv_types, expected_assessment",
     [
         (cf.DERIVATION_INPUTS_1, False, cf.DERIVATION_TRIPLES_1, cf.DERIVATION_OUTPUTS_1, cf.FLOOD_ASSESSMENT_1),   # Inactive flood warning --> values at risk = 0
-        (cf.DERIVATION_INPUTS_2, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_2)   # Active flood warning --> actual values at risk
+        (cf.DERIVATION_INPUTS_2, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_2),   # Active flood warnings --> actual values at risk
+        (cf.DERIVATION_INPUTS_3, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_3)
     ],
 )
 def test_monitor_derivations(
     initialise_clients, create_example_agent, derivation_input_set, expect_exception, 
-    expected_deriv_triples, expected_deriv_types, expected_assessment    
+    expected_deriv_triples, expected_deriv_types, expected_assessment, mocker
 ):
     """
         Test if derivation agent performs derivation update as expected
@@ -75,7 +76,12 @@ def test_monitor_derivations(
         within memory or deployed in docker container (to mimic the production environment)
     """
 
-    #TODO: Mock population assessment --> return None
+    # -------------------------------------------------------------------------
+    # Mock method call to assess number of people potentially affected by flood
+    # (normally to be assessed using PostGIS' geospatial capabilities via Ontop)
+    mocker.patch('floodassessment.agent.impact_assessment.FloodAssessmentAgent.estimate_number_of_affected_people',
+                 return_value=None)
+    # -------------------------------------------------------------------------
 
     # Get required clients from fixtures
     sparql_client, derivation_client = initialise_clients
