@@ -138,8 +138,9 @@ public class JenaResultSetFormatter {
 	
 	public static List<String[]> convertToListofStringArraysWithKeys(String resultJSONW3CStandard, String[] keys) {
 		
-		List<String[]> result = new ArrayList<String[]>();		
-		JSONArray ja = new JSONArray(new JSONObject(resultJSONW3CStandard).getString("results"));
+		List<String[]> result = new ArrayList<String[]>();
+		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(resultJSONW3CStandard);
+		JSONArray ja = jo.getJSONArray("results");
 	
 		for (int i=0; i<ja.length(); i++) {
 			String[] array = new String[keys.length];
@@ -188,7 +189,7 @@ public class JenaResultSetFormatter {
 			jsonStringer.object().key(csvgroup.get(0)[0]).object().key("type").value(headertype[0]).key("value")
 					.value(csvgroup.get(y)[0]);
 			for (int h = 1; h < csvgroup.get(0).length; h++) {
-				jsonStringer.endObject().key(csvgroup.get(0)[h]).object().key("type").value(headertype[h]).key("value")
+				jsonStringer.endObject().key(csvgroup.get(0)[h]).object().key("type").value(headertype[h-1]).key("value")
 						.value(csvgroup.get(y)[h]);
 			}
 			jsonStringer.endObject().endObject();
