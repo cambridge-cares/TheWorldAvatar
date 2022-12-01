@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   Historical-NUSDavis-agent:
-    image: historical-nusdavis-agent:1.2.0
+    image: historical-nusdavis-agent:1.3.0
     build: .
     container_name: Historical-NUSDavis-agent
     pull_policy: if_not_present
