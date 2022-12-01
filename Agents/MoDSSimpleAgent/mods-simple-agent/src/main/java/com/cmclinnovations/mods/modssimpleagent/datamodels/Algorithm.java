@@ -51,7 +51,7 @@ public class Algorithm {
         return surrogateToLoad;
     }
 
-    public void getSurrogateToLoad(String surrogateToLoad) {
+    public void setSurrogateToLoad(String surrogateToLoad) {
         this.surrogateToLoad = surrogateToLoad;
     }
 
