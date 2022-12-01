@@ -47,6 +47,8 @@ Or, if you use VS Code, you can right click the docker compose file and select `
 
 > **NOTE** The agents' image mentioned in this docker compose file are mocked version for this mvp that work without using the stack-manager. They are published in `ghcr.io/cambridge-cares`, you may need GitHub personal access token to pull the images for the first time.
 
+> **NOTE** All agents in the `docker-compose-agents.yml` are configured with `REGISTER_AGENT=true`, so one need to make sure the blazegraph container is ready to accept SPARQL query/update before spinning up the agents.
+
 # Workflow
 
 ## 0. Irrgularities in data to double check before uploading data and derivation markup
