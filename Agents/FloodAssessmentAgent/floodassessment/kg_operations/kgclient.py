@@ -148,6 +148,7 @@ class KGClient(PySparqlClient):
         # Total impact (so far only includes value of affected buildings; to be extended potentially)
         if impact_description or (affected_buildings_value is not None):
             graph.add((URIRef(flood_iri), URIRef(FLOOD_RESULTS_IN), URIRef(impact_iri)))
+            graph.add((URIRef(impact_iri), URIRef(RDF_TYPE), URIRef(FLOOD_IMPACT)))
             if impact_description:
                 graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_CLASSIFICATION), Literal(impact_description, datatype=XSD_STRING)))
             if affected_buildings_value is not None:
