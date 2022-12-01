@@ -55,7 +55,7 @@ def test_example_data_instantiation(initialise_clients):
     #       correct poundSterling symbol --> passing this test implies that symbol
     #       is correctly retrieved and decoded
     market_value = sparql_client.summarise_affected_property_values(cf.MARKET_VALUES)
-    assert pytest.approx(market_value, rel=1e-5) == cf.MARKET_VALUE_1
+    assert pytest.approx(market_value, rel=1e-5) == cf.FLOOD_ASSESSMENT_2[1]
 
 
 @pytest.mark.parametrize(
