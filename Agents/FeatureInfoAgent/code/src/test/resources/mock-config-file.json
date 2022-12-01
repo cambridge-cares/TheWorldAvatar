@@ -1,16 +1,17 @@
 {
-    "hours": -1,
     "database_name": "flood_ontoems",
     "queries": [
         {
             "class": "com.cmclinnovations.kg.ClassOne",
             "metaFile": "classOneMeta.sparql",
-            "timeFile": "classOneTime.sparql"
+            "timeFile": "classOneTime.sparql",
+            "timeLimit": 48
         },
         {
             "class": "com.cmclinnovations.kg.ClassTwo",
             "metaFile": "classTwoMeta.sparql",
-            "timeFile": "classTwoTime.sparql"
+            "timeFile": "classTwoTime.sparql",
+            "timeLimit": -1
         },
         {
             "class": "com.cmclinnovations.kg.ClassThree",

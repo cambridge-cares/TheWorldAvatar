@@ -45,6 +45,11 @@ public class ConfigStore extends ContainerClient {
     protected final Map<String, String> timeQueries = new HashMap<>();
 
     /**
+     * Limits (in hours) for time data per class.
+     */
+    protected final Map<String, Integer> timeLimits = new HashMap<>();
+
+    /**
      * Any other settings specified in the config file.
      */
     protected final Map<String, Object> otherSettings = new HashMap<>();
@@ -215,13 +220,26 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
+     * Returns the time limit (in hours) for the input class name.
+     * 
+     * @param clazz class name
+     * @return time limit (hours)
+     */
+    public int getTimeLimit(String clazz) {
+        if(!timeLimits.keySet().contains(clazz)) {
+            return 24;
+        }
+        return timeLimits.get(clazz);
+    }
+
+    /**
      * Registers a metadata query file for the input class name.
      * 
      * @param clazz class name.
      * @param queryFile location of query file.
      */
     public void addMetaQueryForClass(String clazz, String queryFile) {
-        metaQueries.put(clazz, queryFile);
+        this.metaQueries.put(clazz, queryFile);
     }
 
     /**
@@ -231,7 +249,17 @@ public class ConfigStore extends ContainerClient {
      * @param queryFile location of query file.
      */
     public void addTimeQueryForClass(String clazz, String queryFile) {
-        timeQueries.put(clazz, queryFile);
+        this.timeQueries.put(clazz, queryFile);
+    }
+
+    /**
+     * Add a time limit (hours) for the input class.
+     * 
+     * @param clazz class name
+     * @param timeLimit time limit (hours)
+     */
+    public void addTimeLimitForClass(String clazz, int timeLimit) {
+        this.timeLimits.put(clazz, timeLimit);
     }
 
     /**
@@ -361,6 +389,13 @@ public class ConfigStore extends ContainerClient {
                 String timeFile = entry.getString("timeFile");
                 if(!timeFile.isBlank()) timeQueries.put(className, timeFile);
             } 
+
+            if(entry.has("timeLimit")) {
+                Integer timeLimit = entry.getInt("timeLimit");
+                timeLimits.put(className, timeLimit);
+            } else {
+                timeLimits.put(className, 24);
+            }
         }
 
         // Store other settings

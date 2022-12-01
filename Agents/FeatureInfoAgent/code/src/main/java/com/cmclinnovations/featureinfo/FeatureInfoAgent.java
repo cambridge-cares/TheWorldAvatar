@@ -411,11 +411,6 @@ public class FeatureInfoAgent extends JPSAgent {
             (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
         );
 
-        // Set the number of hours to get data for
-        if(CONFIG.getSetting("hours") != null) {
-            handler.setHours(Integer.parseInt(CONFIG.getSetting("hours").toString()));
-        }
-        
         // Run queries and return timeseries JSON
         LOGGER.info("Running query to gather timeseries...");
         JSONArray result =  handler.getData(response);

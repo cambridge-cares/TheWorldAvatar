@@ -578,6 +578,19 @@ public class FeatureInfoAgentTest {
 
         when(tsClient.getTimeSeries(
             ArgumentMatchers.anyList(),
+            ArgumentMatchers.any(Connection.class)))
+            .thenReturn(
+                new TimeSeries<Instant>(
+                    Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
+                    Arrays.asList("http://measurement-iri.com"),
+                    Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
+                )
+            );
+
+        when(tsClient.getTimeSeriesWithinBounds(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
             ArgumentMatchers.any()))
             .thenReturn(
                 new TimeSeries<Instant>(

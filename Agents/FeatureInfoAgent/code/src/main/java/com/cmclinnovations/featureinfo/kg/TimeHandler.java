@@ -44,6 +44,16 @@ public class TimeHandler {
     private static final Logger LOGGER = LogManager.getLogger(TimeHandler.class);
 
     /**
+     * Constant name for measurement IRI column
+     */
+    private static final String MEASUREMENT = "Measurement";
+    
+    /**
+     * Constant name for forecast IRI column
+     */
+    private static final String FORECAST = "Forecast";
+
+    /**
      * IRI of the asset.
      */
     private final String iri;
@@ -124,15 +134,6 @@ public class TimeHandler {
     }
 
     /**
-     * Sets the most recent N hours to get data for.
-     * 
-     * @param hours most recent N hours
-     */
-    public void setHours(int hours) {
-        this.hours = hours;
-    }
-
-    /**
      * Queries the KG to determine measurement details using the provided timeQuery, then passes
      * these measurement IRIs to the TimeSeriesClient to get real timeseries data.
      * 
@@ -150,6 +151,9 @@ public class TimeHandler {
             response.getWriter().write("{\"description\":\"Could not determine any Blazegraph endpoints.\"}");
             return null;
         }
+
+        // Lookup time limit attached to class
+        this.hours = FeatureInfoAgent.CONFIG.getTimeLimit(classMatch);
 
         // Lookup queries attached to classes
         String queryTemplate = FeatureInfoAgent.CONFIG.getTimeQuery(this.classMatch);
@@ -214,7 +218,7 @@ public class TimeHandler {
                 boolean toRemove = false;
 
                 // Don't touch the measurement property
-                if(key.equalsIgnoreCase("Measurement") || key.equalsIgnoreCase("Forecast")) continue;
+                if(key.equalsIgnoreCase(MEASUREMENT) || key.equalsIgnoreCase(FORECAST)) continue;
 
                 // Replace underscores with spaces
                 if(key.contains("_") || value.contains("_")) {
@@ -251,8 +255,8 @@ public class TimeHandler {
             for(int i = 0; i < measurements.length(); i++) {
                 JSONObject entry = measurements.getJSONObject(i);
 
-                String measureIRI = entry.getString("Measurement");
-                if(measureIRI == null) measureIRI = entry.getString("Forecast");
+                String measureIRI = entry.getString(MEASUREMENT);
+                if(measureIRI == null) measureIRI = entry.getString(FORECAST);
 
                 // Get timeseries object
                 TimeSeries<Instant> tsObject = this.buildTimeseriesObject(measureIRI, rdbConnection);
@@ -275,13 +279,13 @@ public class TimeHandler {
         for(int i = 0; i < measurements.length(); i++) {
             JSONObject entry = measurements.getJSONObject(i);
 
-            if(entry.has("Measurement")) {
-                String measurementIRI = entry.getString("Measurement");
+            if(entry.has(MEASUREMENT)) {
+                String measurementIRI = entry.getString(MEASUREMENT);
                 names.put(measurementIRI, entry.optString("Name"));
                 units.put(measurementIRI, entry.optString("Unit"));
 
-            } else if(entry.has("Forecast")) {
-                String forecastIRI = entry.getString("Forecast");
+            } else if(entry.has(FORECAST)) {
+                String forecastIRI = entry.getString(FORECAST);
                 names.put(forecastIRI, entry.optString("Name"));
                 units.put(forecastIRI, entry.optString("Unit"));
 
@@ -310,7 +314,7 @@ public class TimeHandler {
                 JSONObject newEntry = new JSONObject();
 
                 oldEntry.keySet().forEach(key ->  {
-                    if(!key.equals("Measurement") && !key.equals("Forecase") && !key.equals("Name") && !key.equals("Unit")) {
+                    if(!key.equals(MEASUREMENT) && !key.equals(FORECAST) && !key.equals("Name") && !key.equals("Unit")) {
                         newEntry.put(key, oldEntry.get(key));
                     }
                 });
@@ -358,11 +362,16 @@ public class TimeHandler {
         TimeSeries<Instant> result = null;
         if(this.hours < 0) {
             // Get all data
+            LOGGER.debug("Getting timeseries without limit...");
             result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)), rdbConnection);
+
         } else {
+            LOGGER.debug("Getting timeseries with limit of last {} hours...", this.hours);
+
             // Determine bounds
             Instant lowerBound = LocalDateTime.now().minusHours(this.hours).toInstant(ZoneOffset.UTC);
             Instant upperBound = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+
             result = this.tsClient.getTimeSeriesWithinBounds(
                     new ArrayList<>(Arrays.asList(fixedIRI)),
                     lowerBound,
@@ -370,6 +379,8 @@ public class TimeHandler {
                     rdbConnection
             );
         }
+
+        LOGGER.debug("...call to TimeseriesClient completed.");
         return result;
     }
 

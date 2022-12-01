@@ -8,27 +8,17 @@
 # be run from the "example-dt-vis" folder, not from within this "docker" directory.
 # See the README for more details.
 # 
-# Stages:
-#	- dev:	vis will use development versions of remote JS and CSS
-#	- prod:	vis will use production versions of remote JS and CSS
-#
 #########################
 
 
-##### DEVELOPMENT STAGE #####
 # Using Alpine as the base image
-FROM  alpine:3.14.0 as dev
-
-# Meta data
-LABEL authors = "support@cmclinnovations.com"
-LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Example Digital Twin"
+FROM  alpine:3.14.0 as dtvf
 
 # Install utilities
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix
 
 # Install Apache and PHP
-RUn apk update && apk add apache2 php7-apache2
+RUN apk update && apk add apache2 php7-apache2
 
 # Copy in the start-up script
 COPY ./docker/start-up.sh /usr/local/start-up.sh
@@ -50,16 +40,5 @@ RUN chmod -R 775 /var/www/
 # Expose port 80
 EXPOSE 80
 
-# Copy in the HTML file that designates the DEVELOPMENT imports
-#COPY head-dev.html head.html
-
 # Run cron daemon and boot script at start
 CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh" ]
-
-
-##### PRODUCTION STAGE #####
-# Using development image as the base 
-FROM dev as prod
-
-# Copy in the HTML file that designates the PRODUCTION imports
-#COPY head-prod.html head.html

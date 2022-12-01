@@ -87,6 +87,7 @@ public class TimeHandlerTest {
 
             // Add to the config
             CONFIG.addTimeQueryForClass("SAMPLE-CLASS", tmpQuery.toString());
+            CONFIG.addTimeLimitForClass("SAMPLE-CLASS", 72);
             LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
         } catch(IOException exception) {
             exception.printStackTrace(System.out);
@@ -161,6 +162,19 @@ public class TimeHandlerTest {
                     )
                 );
 
+            when(tsClient.getTimeSeriesWithinBounds(
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any()))
+                .thenReturn(
+                    new TimeSeries<Instant>(
+                        Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
+                        Arrays.asList("http://fake-measurement-iri.com"),
+                        Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
+                    )
+                );
+
             // Set up a mock response
             HttpServletResponse httpResponse = mock(HttpServletResponse.class);
             StringWriter strWriter = new StringWriter();
@@ -169,7 +183,6 @@ public class TimeHandlerTest {
 
             // Handler setup
             handler.setClients(rsClient, rdbClient, tsClient);
-            handler.setHours(-1);
 
             // Get the resulting JSON object
             JSONArray result = handler.getData(httpResponse);
