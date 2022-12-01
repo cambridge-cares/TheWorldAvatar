@@ -65,6 +65,7 @@ def test_example_data_instantiation(initialise_clients):
         (cf.DERIVATION_INPUTS_2, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_2),   # Active flood warnings --> actual values at risk
         (cf.DERIVATION_INPUTS_3, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_3),
         (cf.DERIVATION_INPUTS_5, False, cf.DERIVATION_TRIPLES_5, cf.DERIVATION_OUTPUTS_5, cf.FLOOD_ASSESSMENT_5),
+        (cf.DERIVATION_INPUTS_4, True, None, None, cf.EXCEPTION_STATUS_1),                                          # Test exception        
     ],
 )
 def test_monitor_derivations(
@@ -134,8 +135,7 @@ def test_monitor_derivations(
         # erroneous derivation markup
         time.sleep(10)
         exception = cf.get_derivation_status(sparql_client, derivation_iri)
-        #TODO
-        #assert expected_estimate in exception
+        assert expected_assessment in exception
 
     else:
         t1 = time.time()
