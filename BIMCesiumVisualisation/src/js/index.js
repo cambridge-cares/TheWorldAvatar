@@ -6,19 +6,20 @@ import { addTileset, addModel, addKml, addWMSLayer, addWMTSLayer } from './funct
 import { addDiv, addCloseButton, createMetadataHtml } from './functions/html-elements.js';
 
 // Create a new viewer object
-const viewer = new Cesium.Viewer("cesiumContainer", {
+const viewer = new Cesium.Viewer("cesiumContainer",{
   timeline: false,
   animation: false,
-  imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-    url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-  }),
-  baseLayerPicker: false,
-  homeButton: false,
-  infoBox: false,
+  imageryProvider: new Cesium.OpenStreetMapImageryProvider({
+    url : 'https://a.tile.openstreetmap.org/'
+}),
+  baseLayerPicker: false, 
+  homeButton: false, 
+  infoBox: false, 
   navigationHelpButton: false,
   projectionPicker: false,
   fullscreenButton: false,
   geocoder: false,
+  sceneModePicker: false,
   selectionIndicator: false
 });
 
