@@ -91,6 +91,10 @@ DERIVATION_INPUTS_4 = [FLOOD_WARNING_2,
                        MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
 DERIVATION_INPUTS_5 = [FLOOD_WARNING_2]
 
+# Define expected output sets
+DERIVATION_OUTPUTS_1 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_POPULATION, FLOOD_BUILDINGS,
+                        OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
+
 # Test against pre-calculated value estimates from Excel (rounded)
 # (Number of buildings at risk, value of building at risk, people at risk)
 FLOOD_ASSESSMENT_1 = (0, 0, 0)          # Inactive flood alert
@@ -122,8 +126,8 @@ FLOOD_ASSESSMENT_GENERAL = 5+2     # general flood assessment markup (i.e., newl
                                    # + 2 "belongs to" triples
 FLOOD_ASSESSMENT_POPULATION = 3+1  # In case affected population is given +
                                    # + 1 "belongs to" triple
-FLOOD_ASSESSMENT_BUILDINGS = 13+4  # In case value of affected buildings is given
-                                   # + 4 "belongs to" triples
+FLOOD_ASSESSMENT_BUILDINGS = 14+5  # In case value of affected buildings is given
+                                   # + 5 "belongs to" triples
 FLOOD_ASSESSMENT_DESCRIPTION = 1   # In case description is given
 
 # Define expected number of derivation triples
@@ -236,32 +240,69 @@ def initialise_triples(sparql_client):
         sparql_client.uploadGraph(g)
 
 
-# def get_marketvalue_details(sparql_client, market_value_iri):
-#     # Returns details associated with Market Value instance (om:AmountOfMoney)
-#     query = f"""
-#         SELECT ?value ?unit ?input_iri ?input_type
-#         WHERE {{
-#         <{market_value_iri}> <{RDF_TYPE}> <{OM_AMOUNT_MONEY}> ; 
-#                              <{OM_HAS_VALUE}> ?measure ; 
-#                              <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
-#         ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
-#                  <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit ; 
-#                  <{OM_NUM_VALUE}> ?value . 
-#         ?input_iri <{RDF_TYPE}> ?input_type . 
-#         }}
-#         """
-#     response = sparql_client.performQuery(query)
-#     if len(response) == 0:
-#         return None
-#     else:
-#         # Derivation inputs (i.e. isDerivedFrom)
-#         key = set([x['input_type'] for x in response])
-#         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
-#         # Market Value and monetary unit
-#         market_value = list(set([float(x['value']) for x in response]))
-#         # NOTE: Fix encoding issue with pound sterling
-#         unit = list(set([str(x['unit']).encode('ISO-8859-1').decode('utf-8') for x in response]))
-#         return inputs, market_value, unit
+def get_flood_assessment_details(sparql_client, derivation_iri):
+    # Returns details associated with Derivation instance
+    query = f"""
+        SELECT ?input_iri ?input_type ?population ?bldgs ?bldg_value ?bldg_unit
+               ?impact_value ?impact_unit
+        WHERE {{
+            <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
+            ?input_iri <{RDF_TYPE}> ?input_type . 
+            ?buildings_iri <{RDF_TYPE}> <{FLOOD_BUILDINGS}> ; 
+                           <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                           <{FLOOD_HAS_TOTAL_COUNT}> ?bldgs . 
+            OPTIONAL {{
+                ?buildings_iri <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?building_value . 
+                ?building_value <{OM_HAS_VALUE}> ?building_measure . 
+                ?building_measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                                  <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?bldg_unit ; 
+                                  <{OM_NUM_VALUE}> ?bldg_value . 
+            }}
+            OPTIONAL {{
+                ?population_iri <{RDF_TYPE}> <{FLOOD_POPULATION}> ; 
+                                <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                                <{FLOOD_HAS_TOTAL_COUNT}> ?population . 
+            }}
+            OPTIONAL {{ 
+                ?impact <{RDF_TYPE}> <{FLOOD_IMPACT}> ; 
+                        <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                        <{FLOOD_HAS_MONETARY_VALUE}> ?imp_value . 
+                ?imp_value <{OM_HAS_VALUE}> ?imp_measure . 
+                ?imp_measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                             <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?impact_unit ; 
+                             <{OM_NUM_VALUE}> ?impact_value . 
+            }}
+        }}
+        """
+    response = sparql_client.performQuery(query)
+    if len(response) == 0:
+        return None
+    else:
+        # Derivation inputs (i.e. isDerivedFrom)
+        key = set([x['input_type'] for x in response])
+        inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
+        # Extract impact, population and building details
+        impacts = {'population': None, 
+                   'bldgs': None,
+                   'bldg_value': None,
+                   'bldg_unit': None,
+                   'impact_value': None,
+                   'impact_unit': None
+                   }
+        for imp in impacts:
+            # Extract value if present in response
+            if 'unit' in imp:
+                try:
+                    impacts[imp] = list(set([str(x[imp]).encode('ISO-8859-1').decode('utf-8') for x in response]))
+                except:
+                    pass
+            else:
+                try:
+                    impacts[imp] = list(set([float(x[imp]) for x in response]))
+                except:
+                    pass
+
+        return inputs, impacts
 
 
 def get_derivation_status(sparql_client, derivation_iri):
