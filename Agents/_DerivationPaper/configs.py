@@ -15,3 +15,4 @@ DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
 # Agent IRI
 AVG_SQM_PRICE_AGENT_IRI = 'http://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service'
 PROPERTY_VALUE_ESTIMATION_AGENT_IRI = 'http://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service'
+FLOOD_ASSESSMENT_AGENT_IRI = 'http://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service'

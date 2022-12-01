@@ -39,6 +39,7 @@ OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HASTOTALFLOORAREA = OBE + 'hasTotalFloorArea'
 OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
+OBE_HASWGS84LATITUDELONGITUDE = OBE + 'hasWGS84LatitudeLongitude'
 
 # From OntoFlood TBox
 OF_HAS_SEVERITY = OF + 'hasSeverity'
