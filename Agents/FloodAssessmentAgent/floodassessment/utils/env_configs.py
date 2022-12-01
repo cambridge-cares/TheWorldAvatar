@@ -46,8 +46,4 @@ def retrieve_settings():
 
 
 # Run when module is imported
-#TODO: uncomment and remove overwriting
-#retrieve_settings()
-
-DATABASE = 'postgres'
-NAMESPACE = 'mvp'
+retrieve_settings()

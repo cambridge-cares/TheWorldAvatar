@@ -53,12 +53,4 @@ def retrieve_settings():
 
 
 # Run when module is imported
-#TODO: uncomment and remove overwriting
-#retrieve_settings()
-
-DB_USER = 'postgres'
-DB_PASSWORD = 'postgres'
-#TODO: Adjust ports as needed
-DB_URL = f'jdbc:postgresql://localhost:9997/{DATABASE}'
-QUERY_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{NAMESPACE}/sparql'
-UPDATE_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{NAMESPACE}/sparql'
+retrieve_settings()
