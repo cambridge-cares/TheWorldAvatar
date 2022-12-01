@@ -207,46 +207,41 @@ def test_monitor_derivations(
         agent.scheduler.shutdown()
 
 
-# @pytest.mark.skipif(not DOCKERISED_TEST, reason="Test only applicable for Dockerised test")
-# def test_wrongly_marked_up_derivations(
-#     initialise_clients, create_example_agent    
-# ):
-#     """
-#         Test that no derivation outputs are generated if the markup is incorrect, i.e.
-#         an agent with a different ONTOAGENT_SERVICE_IRI gets registered
-#     """
+@pytest.mark.skipif(not DOCKERISED_TEST, reason="Test only applicable for Dockerised test")
+def test_wrongly_marked_up_derivations(
+    initialise_clients, create_example_agent    
+):
+    """
+        Test that no derivation outputs are generated if the markup is incorrect, i.e.
+        an agent with a different ONTOAGENT_SERVICE_IRI gets registered
+    """
 
-#     # Get required clients from fixtures
-#     sparql_client, derivation_client, rdb_url = initialise_clients
+    # Get required clients from fixtures
+    sparql_client, derivation_client = initialise_clients
 
-#     # Initialise all triples in test_triples + initialise time series in RDB
-#     cf.initialise_triples(sparql_client)
-#     cf.initialise_database(rdb_url)
-#     cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
-#                              rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
-#                              dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
-#                              dates=cf.DATES, values=cf.VALUES)
+    # Initialise all triples in test_triples
+    cf.initialise_triples(sparql_client)
 
-#     # Verify correct number of triples (not marked up with timestamp yet)
-#     triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
-#     assert sparql_client.getAmountOfTriples() == triples
+    # Verify correct number of triples (not marked up with timestamp yet)
+    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES)
+    assert sparql_client.getAmountOfTriples() == triples
 
-#     # Create agent instance and register agent in KG; however, use a different
-#     # ONTOAGENT_SERVICE_IRI than the one started when spinning up the Dockerised agent
-#     agent = create_example_agent(alter_agent_iri=True)
+    # Create agent instance and register agent in KG; however, use a different
+    # ONTOAGENT_SERVICE_IRI than the one started when spinning up the Dockerised agent
+    agent = create_example_agent(alter_agent_iri=True)
 
-#     # Create derivation instance for new information
-#     derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, cf.DERIVATION_INPUTS_1)
-#     print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    # Create derivation instance for new information
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, cf.DERIVATION_INPUTS_1)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
 
-#     with pytest.raises(Exception, match="No derivation has been identified/updated"):
+    with pytest.raises(Exception, match="No derivation has been identified/updated"):
 
-#         t1 = time.time()
-#         # Query timestamp of the derivation for every 10 seconds until it's updated
-#         currentTimestamp_derivation = 0
-#         while currentTimestamp_derivation == 0:
-#             # Raise exception if after 60s no derivation has been identified/updated
-#             if time.time() - t1 > 60:
-#                 raise Exception("No derivation has been identified/updated")
-#             time.sleep(10)
-#             currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
+        t1 = time.time()
+        # Query timestamp of the derivation for every 10 seconds until it's updated
+        currentTimestamp_derivation = 0
+        while currentTimestamp_derivation == 0:
+            # Raise exception if after 60s no derivation has been identified/updated
+            if time.time() - t1 > 60:
+                raise Exception("No derivation has been identified/updated")
+            time.sleep(10)
+            currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
