@@ -60,7 +60,7 @@ COPY ./config/aqmeshParticleAndGeneralData.xlsx /root/aqmeshParticleAndGeneralDa
 # Set the required environment variable
 ENV PARTICLEGENERAL_READINGS="/root/aqmeshParticleAndGeneralData.xlsx"
 
-COPY --from=builder /root/HistoricalAQMeshAgentCode/output/historical-aqmesh-agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HistoricalAQMeshAgentCode/output/historical-aqmesh-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
