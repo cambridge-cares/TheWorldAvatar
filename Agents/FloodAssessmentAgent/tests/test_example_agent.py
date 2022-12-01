@@ -61,7 +61,8 @@ def test_example_data_instantiation(initialise_clients):
 @pytest.mark.parametrize(
     "derivation_input_set, expect_exception, expected_deriv_triples, expected_deriv_types, expected_assessment",
     [
-        (cf.DERIVATION_INPUTS_1, False, cf.DERIVATION_TRIPLES_1, cf.DERIVATION_OUTPUTS_1, cf.FLOOD_ASSESSMENT_1)     # Inactive flood warning --> values at risk = 0
+        (cf.DERIVATION_INPUTS_1, False, cf.DERIVATION_TRIPLES_1, cf.DERIVATION_OUTPUTS_1, cf.FLOOD_ASSESSMENT_1),   # Inactive flood warning --> values at risk = 0
+        (cf.DERIVATION_INPUTS_2, False, cf.DERIVATION_TRIPLES_2, cf.DERIVATION_OUTPUTS_2, cf.FLOOD_ASSESSMENT_2)   # Active flood warning --> actual values at risk
     ],
 )
 def test_monitor_derivations(

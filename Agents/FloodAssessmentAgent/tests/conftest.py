@@ -94,6 +94,8 @@ DERIVATION_INPUTS_5 = [FLOOD_WARNING_2]
 # Define expected output sets
 DERIVATION_OUTPUTS_1 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_POPULATION, FLOOD_BUILDINGS,
                         OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
+DERIVATION_OUTPUTS_2 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDINGS,
+                        OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
 
 # Test against pre-calculated value estimates from Excel (rounded)
 # (Number of buildings at risk, value of building at risk, people at risk)

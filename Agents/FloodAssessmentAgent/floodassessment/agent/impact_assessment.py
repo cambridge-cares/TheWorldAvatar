@@ -162,7 +162,7 @@ class FloodAssessmentAgent(DerivationAgent):
 
         # Generate textual description of potential impact
         #TODO: Potentially to be refined based on actual information from API
-        impact_description = self.create_impact_description(warning_iri)
+        impact_description = self.create_impact_description(severity)
 
         # Create triples to instantiate for flood impact assessment
         g = self.sparql_client.instantiate_flood_impact(graph=g,
@@ -177,7 +177,7 @@ class FloodAssessmentAgent(DerivationAgent):
         return g
 
 
-    def create_impact_description(self, warning_iri):
+    def create_impact_description(self, severity_iri):
         """
         Create textual description of flood impact, currently based on:
         https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
@@ -185,11 +185,11 @@ class FloodAssessmentAgent(DerivationAgent):
         # Initialise return value
         impact_description = None
 
-        if warning_iri == FLOOD_SEVERITY_SEVERE:
+        if severity_iri == FLOOD_SEVERITY_SEVERE:
             impact_description = "Severe Flooding, Danger to Life."
-        elif warning_iri == FLOOD_SEVERITY_WARNING:
+        elif severity_iri == FLOOD_SEVERITY_WARNING:
             impact_description = "Flooding is Expected, Immediate Action Required."
-        elif warning_iri == FLOOD_SEVERITY_ALERT:
+        elif severity_iri == FLOOD_SEVERITY_ALERT:
             impact_description = "Flooding is Possible, Be Prepared."
         
         return impact_description
