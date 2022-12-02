@@ -2225,7 +2225,7 @@ public class DerivationSparql {
 			if (!upstreamPath.equals(PLACEHOLDER_IRI)) {
 				GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivationPreBind);
 				// NOTE here we use a BIND clause to restrict the derivation instance to be queried in the following
-				// query, this is to avoid the situation where the inputs of the derivation is too many thus the triple
+				// query, this is to avoid the situation where the inputs of the derivation are too many thus the triple
 				// store execute the two blocks of query separately and then join them together, which is observed to
 				// crash the triple store
 				GraphPattern derivationBindPattern = new Bind(derivationPreBind, derivation);

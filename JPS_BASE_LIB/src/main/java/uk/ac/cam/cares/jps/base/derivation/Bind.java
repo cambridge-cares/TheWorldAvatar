@@ -6,7 +6,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.util.SparqlBuilderUtils;
 
 /**
- * TODO remove this class once we moved to Java 11 and upgradeed to rdf4j-sparqlbuilder>=4.0.0
+ * TODO remove this class once we moved to Java 11 and upgraded to rdf4j-sparqlbuilder>=4.0.0
  * This is a workaround for the SparqlBuilder library.
  * The BIND clause is added since their 4.0.0 release, which requires minimum Java 11.
  * Given the jps-base-lib is still Java 8, the clause is implemented here.

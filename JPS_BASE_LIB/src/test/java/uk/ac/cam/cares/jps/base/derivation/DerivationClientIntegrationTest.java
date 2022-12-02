@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * NOTE: all tests provided in this class are stress tests. It is recommended to run one test at a time.
  * Or you can run testCleanUpFinishedDerivationUpdateStressTest by itself first, then comment out it and
- * run the rest all together.
+ * run the rest altogether.
  */
 @Testcontainers
 public class DerivationClientIntegrationTest {
@@ -135,7 +135,7 @@ public class DerivationClientIntegrationTest {
      * The test is inspired by the King's Lynn use case where the number of (non-derivation) triples
      * is around 620k, and the number of normal derivations is around 1200.
      * The agent is required to clean up 1 async derivation with ~450 inputs and ~5 outputs.
-     * In this test, the non-derivation triples were set to 600k, the number of normal derivaiton
+     * In this test, the non-derivation triples were set to 500k, the number of normal derivation
      * is the same as numberOfIRIs (300 as default), and the number of async derivations is 1 with
      * 2000 inputs and 5 outputs. The whole test takes around 60s once the docker container is up.
      *
