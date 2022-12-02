@@ -157,10 +157,7 @@ OM_KJPERKGPERK = OM + 'kilojoulePerKilogramPerKelvin'
 OM_EUROPERMEGAWATTHOUR = OM + 'euroPerMegawattHour' 
 
 ### ONTOEMS ###
-ONTOEMS_HASFORECASTEDVALUE = ONTOEMS + "hasForecastedValue"
-ONTOEMS_CREATEDON = ONTOEMS + "createdOn"
 ONTOEMS_AIRTEMPERATURE = ONTOEMS + "AirTemperature"
-ONTOEMS_FORECAST = ONTOEMS + "Forecast"
 
 ### ONTOPOWSYS ###
 ONTOPOWSYS_THERMALENERGYSTORAGE = ONTOPOWSYS + "ThermalEnergyStorage"
@@ -175,6 +172,7 @@ TS_HASTIMESERIES = TS + "hasTimeSeries"
 TS_HASINPUTTIMEINTERVAL = TS + "hasInputTimeInterval"
 TS_HASOUTPUTTIMEINTERVAL = TS + "hasOutputTimeInterval"
 TS_HASFORECAST = TS + "hasForecast"
+TS_FORECAST = TS + "Forecast"
 TS_HASRDB = TS + "hasRDB"
 TS_HASTIMEUNIT = TS + "hasTimeUnit"
 TS_TIMESERIES = TS + "TimeSeries"

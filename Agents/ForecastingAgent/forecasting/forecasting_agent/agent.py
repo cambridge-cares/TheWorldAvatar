@@ -509,7 +509,7 @@ def get_forecast_update(cfg):
     })
 
     update += get_properties_for_subj(subj=cfg['forecast_iri'], verb_obj={
-        RDF_TYPE: ONTOEMS_FORECAST,
+        RDF_TYPE: TS_FORECAST,
         **unit,
         TS_HASFORECASTINGMODEL: forecastingModel_iri,
         TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
