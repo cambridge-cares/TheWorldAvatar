@@ -31,6 +31,7 @@
                     "type": "circle",
                     "treeable": false,
                     "maxzoom": 10,
+                    "order": 0,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -47,6 +48,7 @@
                     "source": "buildings-affected",
                     "type": "circle",
                     "minzoom": 12,
+                    "order": 3,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -67,6 +69,7 @@
                     "source": "buildings-not-affected",
                     "type": "circle",
                     "minzoom": 12,
+                    "order": 2,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -94,6 +97,7 @@
                     "name": "Active flood warnings", 
                     "source": "flood-warning",
                     "type": "fill",
+                    "order": 1,
                     "layout": {
                         "visibility": "visible"
                     },
