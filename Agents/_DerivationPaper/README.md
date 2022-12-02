@@ -122,6 +122,32 @@ Run the [flood_warning.py] module as main script to instantiate the flood warnin
 
 
 &nbsp;
+# Digital Twin Visualisation Framework (DTVF)
+
+The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]). The file structure is based on the [example Mapbox visualisation].
+
+&nbsp;
+## Creating the Visualisation
+
+Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from within the [visualisation] directory:
+
+```bash
+# To build the Image:
+docker-compose -p kings-lynn -f ./docker/docker-compose.yml build --force-rm
+# To generate a Container (i.e. run the Image):
+docker-compose -p kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
+
+# To rebuild the image and deploy the container:
+bash ./redeploy.sh
+```
+
+**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
+
+
+<!-- Links -->
+
+
+&nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
 
@@ -133,6 +159,8 @@ Jiaru Bai (jb2197@cam.ac.uk), November 2022
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [Docker environment]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
 
 <!-- Data -->
 [kg_data folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
@@ -147,3 +175,5 @@ Jiaru Bai (jb2197@cam.ac.uk), November 2022
 [property_price_index.py]: property_price_index.py
 [flood_warning.py]: flood_warning.py
 [affected_property_iris]: data/affected_property_iris.csv
+[docker-compose_stack.yml]: docker-compose_stack.yml
+[visualisation]: visualisation/
