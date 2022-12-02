@@ -5,7 +5,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.5.3</version>
+  <version>1.6.0</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -107,9 +107,9 @@
     </dependency>
 
     <dependency>
-        <groupId>net.sf.py4j</groupId>
-        <artifactId>py4j</artifactId>
-        <version>0.10.9.1</version>
+      <groupId>net.sf.py4j</groupId>
+      <artifactId>py4j</artifactId>
+      <version>0.10.9.1</version>
     </dependency>
 
   </dependencies>
@@ -125,10 +125,10 @@
           <archive>
             <manifest>
               <!-- These properties add the copied dependencies to the classpath so the .jar can find them at runtime. -->
-                <addClasspath>true</addClasspath>
-                <classpathPrefix>./lib/</classpathPrefix>
-                <classpathLayoutType>simple</classpathLayoutType>
-                <useUniqueVersions>false</useUniqueVersions>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>./lib/</classpathPrefix>
+              <classpathLayoutType>simple</classpathLayoutType>
+              <useUniqueVersions>false</useUniqueVersions>
               <mainClass>com.cmclinnovations.stack.App</mainClass>
             </manifest>
           </archive>
@@ -279,9 +279,9 @@
       </dependency>
 
       <dependency>
-          <groupId>net.sf.py4j</groupId>
-          <artifactId>py4j</artifactId>
-          <version>0.10.9.1</version>
+        <groupId>net.sf.py4j</groupId>
+        <artifactId>py4j</artifactId>
+        <version>0.10.9.1</version>
       </dependency>
 
     </dependencies>

@@ -75,8 +75,18 @@ public class GenericElementClassifier {
         element = StringUtils.getStringAfterLastCharacterOccurrence(element, "#");
         if (name.contains("electricalmeter")) {
             classMapping.put(element, "ElectricityMeter");
-        } else if (name.contains("weatherstation")) {
+        } else if (name.contains("watermeter")) {
+            classMapping.put(element, "WaterMeter");
+        } else if (name.contains("oilmeter")) {
+            classMapping.put(element, "OilMeter");
+        } else if (name.contains("pollutionmeter")) {
             classMapping.put(element, "PollutionMeter");
+        } else if (name.contains("illuminancesensor")) {
+            classMapping.put(element, "IlluminanceSensor");
+        } else if (name.contains("carbondioxidesensor")) {
+            classMapping.put(element, "CarbonDioxideGasSensor");
+        } else if (name.contains("weatherstation")) {
+            classMapping.put(element, "WeatherStation");
         } else if (name.contains("solarpanel")) {
             classMapping.put(element, "SolarPanel");
         }
