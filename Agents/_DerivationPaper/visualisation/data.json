@@ -24,7 +24,7 @@
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,
-                    "maxzoom": 11,
+                    "maxzoom": 10,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -49,7 +49,7 @@
                         "circle-opacity": 1.0,
                         "circle-color": [
                             "interpolate", ["linear"],
-                            ["number", ["get", "market_value"]],
+                            ["number", ["get", "Property market value (£)"]],
                             10, "#E59A9B",
                             100, "#AD0709"
                         ]

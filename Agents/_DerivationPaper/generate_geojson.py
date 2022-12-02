@@ -39,7 +39,7 @@ def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
             "type": "Feature",
             "properties": {{
                 "IRI": "{pt.iri}",
-                "market_value": {v}
+                "Property market value (£)": {v}
             }},
             "geometry": {{
                 "type": "Point",
@@ -57,8 +57,9 @@ def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     # finishing file end 
     end_geojson = """]}"""
     geojson_str += end_geojson
-    with open(filepath, 'w') as f:
-        f.write(json.dumps(json.loads(geojson_str), indent=4))
+    # To ensure correct formatting of GBP symbol suppress ascii encoding
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(json.dumps(json.loads(geojson_str), ensure_ascii=False, indent=4))
     print(f'Geojson file created at {filepath}')
 
 
