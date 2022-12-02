@@ -1,6 +1,14 @@
 # Forecasting Agent
 
-This agent reads a time series from a KG and forecasts the time series using pre-trained models or Prophet. Finally, the forecast is reinstantiated into the KG.  The agent can be accessed via Flask requests.
+This `Forecasting Agent` can be used to read time series data from a knowledge graph (KG), create a time series forecast, and instantiate the forecast back into the KG using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient] and forecasts are created using either pre-trained models or Facebook's [Prophet] (default). 
+
+The Python library [Darts] is used to define, train, and store forecasting models as well as to create the forecasts. It contains a variety of models, from classics such as ARIMA to deep neural networks. 
+
+The agent relies on [py4jps] to access the [JPS_BASE_LIB] (incl. the [TimeSeriesClient]) and is implemented as Flask App to respond to HTTP requests.
+
+```diff
+- The agent is currently not Dockerised; however, this is planned for the near future.
+```
 
 # 1. Setup
 
@@ -129,8 +137,7 @@ pytest tests/
 &nbsp;
 # Authors #
 Magnus Mueller (mm2692@cam.ac.uk), November 2022
-
-Markus Hofmeister (mh807@cam.ac.uk), October 2022
+Markus Hofmeister (mh807@cam.ac.uk), November 2022
 
 
 <!-- Links -->
@@ -162,6 +169,12 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
+
+[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
+[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+
+[Darts]: https://unit8co.github.io/darts/index.html
+[Prophet]: https://github.com/facebook/prophet
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
