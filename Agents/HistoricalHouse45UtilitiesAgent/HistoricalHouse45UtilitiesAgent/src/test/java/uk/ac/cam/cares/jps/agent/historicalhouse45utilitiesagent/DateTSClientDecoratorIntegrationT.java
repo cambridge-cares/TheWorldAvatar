@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,7 +34,7 @@ public class DateTSClientDecoratorIntegrationT {
     @Container
     GenericContainer blazegraph = new GenericContainer(DockerImageName.parse("nawer/blazegraph:latest"))
             .withExposedPorts(9999);
-    private TimeSeriesClient<LocalDate> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
     private static DateTSClientDecorator testDecorator;
     private static RemoteStoreClient kbClient;
     // Lists of test values
@@ -54,6 +52,7 @@ public class DateTSClientDecoratorIntegrationT {
     private static final String TIMESERIES_KEY = "timeseries";
     private static final String TIMESERIES_VAR = "?" + TIMESERIES_KEY;
     private static final String TIMESERIES_CLASS = "<https://www.theworldavatar.com/kg/ontotimeseries/StepwiseCumulativeTimeSeries>";
+    private final String instantTimeZone = "T00:00:00Z"; // UTC Time zone
 
     @BeforeAll
     static void genTestData() {
@@ -86,7 +85,7 @@ public class DateTSClientDecoratorIntegrationT {
         kbClient = new RemoteStoreClient(endpoint, endpoint);
 
         // Initialise TimeSeriesClient with pre-configured kb client
-        tsClient = new TimeSeriesClient<>(kbClient, LocalDate.class);
+        tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
 
         // Set TSClient for the targeted test class
         testDecorator = new DateTSClientDecorator("dates");
@@ -111,7 +110,7 @@ public class DateTSClientDecoratorIntegrationT {
     @Test
     void testInitializeTimeSeriesWithExistingTimeSeries() throws SQLException {
         // Create spy to verify executions on the time series client
-        TimeSeriesClient<LocalDate> tsClientSpy = Mockito.spy(tsClient);
+        TimeSeriesClient<Instant> tsClientSpy = Mockito.spy(tsClient);
         testDecorator.setTsClient(tsClientSpy);
         // Run code twice but should only be initialized once
         testDecorator.initializeTimeSeries(testReadings, testMappings);
@@ -126,12 +125,12 @@ public class DateTSClientDecoratorIntegrationT {
         testDecorator.initializeTimeSeries(testReadings, testMappings);
         testDecorator.updateData(testReadings, testMappings);
 
-        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
+        TimeSeries<Instant> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
         assertAll(
                 () -> assertEquals(testReadings.get("dates").size(), postgresTSData.getTimes().size()),
                 // Test data will be returned in LocalDate as time series client is set to LocalDate
-                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
-                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(Instant.parse("2022-04-14"+instantTimeZone), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(Instant.parse("2022-06-14"+instantTimeZone), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
                 // Verify test data is accurate
                 () -> assertEquals(measureValues, postgresTSData.getValues(testIRIs.get(0))),
                 () -> assertEquals(ratesValues, postgresTSData.getValues(testIRIs.get(1)))
@@ -154,11 +153,11 @@ public class DateTSClientDecoratorIntegrationT {
         testDecorator.updateData(updatedReadings, testMappings);
 
         // Test if data has been updated to new values and old values are no longer present
-        TimeSeries<LocalDate> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
+        TimeSeries<Instant> postgresTSData = tsClient.getTimeSeries(testIRIs, testDecorator.getRDBClient().getConnection());
         assertAll(
                 () -> assertEquals(updatedReadings.get("dates").size(), postgresTSData.getTimes().size()),
-                () -> assertEquals(LocalDate.parse("2022-04-14"), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
-                () -> assertEquals(LocalDate.parse("2022-06-14"), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(Instant.parse("2022-04-14"+instantTimeZone), tsClient.getMinTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
+                () -> assertEquals(Instant.parse("2022-06-14"+instantTimeZone), tsClient.getMaxTime(testIRIs.get(0), testDecorator.getRDBClient().getConnection())),
                 () -> assertNotEquals(measureValues, postgresTSData.getValues(testIRIs.get(0))),
                 () -> assertEquals(updatedMeasureValues, postgresTSData.getValues(testIRIs.get(0)))
         );

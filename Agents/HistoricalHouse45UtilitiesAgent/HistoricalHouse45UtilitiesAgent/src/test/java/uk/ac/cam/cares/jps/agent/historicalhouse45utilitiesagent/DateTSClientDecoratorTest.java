@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DateTSClientDecoratorTest {
     private DateTSClientDecorator testDecorator;
     @Mock
-    private TimeSeriesClient<LocalDate> mockTSClient;
+    private TimeSeriesClient<Instant> mockTSClient;
     private static Map<String, String> testMappings;
     private static Map<String, List<?>> testReadings;
     private static final List<String> testIRIs = Arrays.asList("iri1", "iri2", "iri3");

@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,7 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * A decorator that interacts the Time Series client in the JPS-base-lib dependency. It provides functionality specific to this agent.
+ * A decorator that interacts with the Time Series client in the JPS-base-lib dependency. It provides functionality specific to this agent.
+ * Only Instant times are uploaded to the TS client.
  *
  * @author qhouyee
  */
@@ -28,9 +30,10 @@ class DateTSClientDecorator {
     private static final Logger LOGGER = LogManager.getLogger(HistoricalHouse45UtilitiesAgent.class);
     private static int[] dateArrays = null;
     private static String dateKey;
-    private TimeSeriesClient<LocalDate> tsClient;
+    private TimeSeriesClient<Instant> tsClient;
     private RemoteRDBStoreClient rdbClient;
-    public final String timeUnit = LocalDate.class.getSimpleName(); // The time unit used by the Excel Workbook
+    public final String timeUnit = Instant.class.getSimpleName(); // The time unit used by the Excel Workbook
+    private final String instantTimeZone = "T00:00:00Z"; // UTC Time zone
 
     /**
      * Standard constructor
@@ -49,7 +52,7 @@ class DateTSClientDecorator {
      *
      * @param tsClient The time series client to use.
      */
-    protected void setTsClient(TimeSeriesClient<LocalDate> tsClient) {
+    protected void setTsClient(TimeSeriesClient<Instant> tsClient) {
         this.tsClient = tsClient;
     }
 
@@ -129,8 +132,7 @@ class DateTSClientDecorator {
      * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
      */
     protected void updateData(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
-        TimeSeries<LocalDate> timeSeries;
-        timeSeries = convertReadingsToTimeSeries(excelReadings, iriMappings);
+        TimeSeries<Instant> timeSeries = convertReadingsToTimeSeries(excelReadings, iriMappings);
         // Update each time series
         try {
             tsClient.addTimeSeriesData(timeSeries, rdbClient.getConnection());
@@ -142,23 +144,31 @@ class DateTSClientDecorator {
 
     /**
      * Converts the readings in the form of hash maps to time series format for use with the time series client.
+     * The time series must be in Instant class.
      *
      * @param readings    Readings stored in a hash map.
      * @param iriMappings Data IRI mappings to their measures' names.
      * @return A time series object.
      */
-    private TimeSeries<LocalDate> convertReadingsToTimeSeries(Map<String, List<?>> readings, Map<String, String> iriMappings) {
+    private TimeSeries<Instant> convertReadingsToTimeSeries(Map<String, List<?>> readings, Map<String, String> iriMappings) {
         List<String> dataKeys = new ArrayList<>(iriMappings.keySet());
         List<String> iris = new ArrayList<>(iriMappings.values());
-        List<LocalDate> dateItems = new ArrayList<>();
-
+        List<Instant> instantItems = new ArrayList<>();
+        // Handling dates values
         if (dateArrays == null) {
             List<LocalDateTime> dateValues = (List<LocalDateTime>) readings.get(dateKey);
             for (LocalDateTime dates : dateValues) {
-                dateItems.add(dates.toLocalDate());
+                // Convert LocalDateTime to Instant class
+                String instance = dates.toLocalDate().toString() +instantTimeZone;
+                instantItems.add(Instant.parse(instance));
             }
         } else {
-            dateItems = (List<LocalDate>) readings.get(dateKey);
+            List<LocalDate> dateItems = (List<LocalDate>) readings.get(dateKey);
+            for (LocalDate date : dateItems){
+                // Convert LocalDate to Instant class
+                String instance = date.toString() +instantTimeZone;
+                instantItems.add(Instant.parse(instance));
+            }
         }
 
         List<List<?>> dataValues = new ArrayList<>();
@@ -166,6 +176,6 @@ class DateTSClientDecorator {
             dataValues.add(readings.get(key));
         }
         // Create the time series object
-        return new TimeSeries<>(dateItems, iris, dataValues);
+        return new TimeSeries<>(instantItems, iris, dataValues);
     }
 }

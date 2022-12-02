@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
@@ -180,7 +181,7 @@ public class HistoricalHouse45UtilitiesAgent extends JPSAgent {
             RemoteStoreClient kbClient = new RemoteStoreClient(
                     clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
                     clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY));
-            TimeSeriesClient<LocalDate> tsClient = new TimeSeriesClient<>(kbClient, LocalDate.class);
+            TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
             agentTSClient = new DateTSClientDecorator(dateKey, dateArrays);
             agentTSClient.setTsClient(tsClient);
             agentTSClient.setRDBClient(clientConfig.get(FileManager.RDB_URL_KEY), clientConfig.get(FileManager.RDB_USER_KEY), clientConfig.get(FileManager.RDB_PASS_KEY));

@@ -8,6 +8,7 @@ When called for the first time, it will initialize the KG and RDB. Subsequently,
 More details on the classes, public methods, and documentation is available in the source code.
 
 At present, this agent can only work with Dates. If time information is required, an additional class will have to be developed to handle this input.
+Note that the time series uploaded into the RDB will be of Instant class. 
 
 ## Instructions
 ### 1. Excel pre-processing
