@@ -79,7 +79,6 @@ MODEL_MAPPING['DEFAULT'] = {
     'frequency': dt.timedelta(hours=1),
     'data_length': 1000,  # 365 * 24 * 2, # 300
     'ts_data_type': DOUBLE,
-
 }
 
 MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
@@ -94,5 +93,4 @@ MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
     'frequency': MODEL_MAPPING['DEFAULT']['frequency'],
     'data_length': MODEL_MAPPING['DEFAULT']['data_length'],
     'ts_data_type': MODEL_MAPPING['DEFAULT']['ts_data_type'],
-
 }

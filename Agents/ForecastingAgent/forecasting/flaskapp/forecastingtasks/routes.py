@@ -1,6 +1,6 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-# Date: 30 Nov 2022                            #
+# based on: Markus Hofmeister (mh807@cam.ac.uk)#
 ################################################
 # the purpose of this file is to provide the routes for the flask app for the KG, which can be used to access the forecast agent 
 
