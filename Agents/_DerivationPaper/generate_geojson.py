@@ -35,10 +35,7 @@ def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
         feature = f"""{{
             "type": "Feature",
             "properties": {{
-                "IRI": "{pt.iri}",
-                "marker-color": "#000000",
-                "marker-size": "medium",
-                "marker-symbol": ""
+                "IRI": "{pt.iri}"
             }},
             "geometry": {{
                 "type": "Point",
@@ -133,5 +130,5 @@ if __name__ == '__main__':
         ) for iri in affected_building_iris
     ]
     # Generate geojson file
-    fp = os.path.join(Path(__file__).parent, 'data', bldgs_geojson)
+    fp = os.path.join(Path(__file__).parent, 'visualisation','data', bldgs_geojson)
     generate_geojson(bldg_pts, fp)

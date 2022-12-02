@@ -9,6 +9,12 @@
                     "type": "geojson",
                     "data": "data/aoi.geojson", 
                     "generateId": true
+                },
+                {
+                    "id": "buildings-affected",
+                    "type": "geojson",
+                    "data": "data/affected_buildings.geojson", 
+                    "generateId": true
                 }
             ], 
             "layers": [
@@ -18,13 +24,29 @@
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,
-                    "maxzoom": 10,
+                    "maxzoom": 11,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
                         "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
                         "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "buildings-affected-layer",
+                    "name": "Buildings at risk of flooding", 
+                    "source": "buildings-affected",
+                    "type": "circle",
+                    "minzoom": 12,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 15, 10],
+                        "circle-opacity": 1.0,
                         "circle-color": "#000000",
                         "circle-stroke-width": 0
                     }
