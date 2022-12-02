@@ -5,12 +5,9 @@
         {
             "type": "Feature",
             "id": 1,
-            "properties": {"description": "Tidal River Great Ouse at West Lynn",
-                            "fill-color": "#f2711b",
-                            "fill-opacity": 0.33,
-                            "fill-outline-color": "#000000",
-                            "metadataURL": "data/flood-areas-meta.json",
-                            "name": "052FWTKLNWL"},
+            "properties": {"name": "Flood warning 1",
+                           "description": "Tidal River Great Ouse at West Lynn"
+                        },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [[
@@ -94,7 +91,8 @@
                     [0.38596, 52.75899],
                     [0.38822, 52.75897],
                     [0.389, 52.75621]
-                    ]]         
+                    ]
+                ]         
             }
         }
     ]

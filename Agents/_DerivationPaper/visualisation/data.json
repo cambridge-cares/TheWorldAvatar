@@ -14,7 +14,7 @@
             "layers": [
                 {
                     "id": "aoi-layer",
-                    "name": "This layer is the area of interest and has a long name", 
+                    "name": "Area of interest", 
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,
@@ -27,6 +27,33 @@
                         "circle-opacity": 0.25,
                         "circle-color": "#000000",
                         "circle-stroke-width": 0
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Flood Warnings",
+            "sources": [
+                {
+                    "id": "flood-warning",
+                    "type": "geojson",
+                    "data": "data/flood-areas.geojson", 
+                    "generateId": true
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "flood-warning-layer",
+                    "name": "Active flood warnings", 
+                    "source": "flood-warning",
+                    "type": "fill",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#f2711b",
+                        "fill-opacity": 0.33,
+                        "fill-outline-color": "#000000"
                     }
                 }
             ]

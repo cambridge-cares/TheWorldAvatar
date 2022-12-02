@@ -143,6 +143,8 @@ bash ./redeploy.sh
 
 **Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
 
+Once started successfully, the visualisation will be available at `http://localhost:80`.
+
 
 <!-- Links -->
 
