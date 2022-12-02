@@ -47,8 +47,12 @@
                     "paint": {
                         "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 15, 10],
                         "circle-opacity": 1.0,
-                        "circle-color": "#000000",
-                        "circle-stroke-width": 0
+                        "circle-color": [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "market_value"]],
+                            10, "#E59A9B",
+                            100, "#AD0709"
+                        ]
                     }
                 }
             ]
@@ -73,7 +77,7 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-color": "#f2711b",
+                        "fill-color": "#0275C0",
                         "fill-opacity": 0.33,
                         "fill-outline-color": "#000000"
                     }

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 import json
 import os
+import random
 
 from pyderivationagent.data_model import iris as pda_iris
 from pyderivationagent import PySparqlClient
@@ -32,10 +33,13 @@ class BuildingPoint:
 def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     geojson_str = """{ "type": "FeatureCollection", "features": ["""
     for pt in bldg_pts:
+        #TODO: replace with actual value query
+        v = random.randint(10,100)
         feature = f"""{{
             "type": "Feature",
             "properties": {{
-                "IRI": "{pt.iri}"
+                "IRI": "{pt.iri}",
+                "market_value": {v}
             }},
             "geometry": {{
                 "type": "Point",
