@@ -8,8 +8,6 @@ services:
     restart: unless-stopped
     ports:
       - "9998:8080"
-    volumes:
-      - blazegraph_fc_data_test:/blazegraph
 
   postgres_fc_test:
     container_name: "postgres_fc_agent_test"
@@ -20,12 +18,3 @@ services:
     restart: unless-stopped
     ports:
       - "9431:5432"
-    volumes:
-      - postgres_fc_data_test:/var/lib/postgresql/data
-
-# you have to first instantiate the data to then use here the existing external volumes 
-volumes:
-  blazegraph_fc_data_test:
-    name: "blazegraph_fc_data_test"
-  postgres_fc_data_test:
-    name: "postgres_fc_data_test"

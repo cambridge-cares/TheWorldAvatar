@@ -111,17 +111,14 @@ If you need covariates, define a function which load them (similarly to `get_cov
 
 1. Create and activate a virtual environment and install all required packages as described under [Setup](#1-setup).
 
-2. A [docker-compose.test.yml] file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows). To spin up the stack, run the following command from the same directory where this README is located:
+2. A [docker-compose.test.yml] file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. No volumes are used as data is only used for testing.
 ```bash
 # Spin up container stack
 docker-compose -f "docker-compose.test.yml" up -d
 ```
+3.  Set your postgres database and blazegraph endpoints in your properties [properties file] by simply uncommenting the test endpoints (and commenting out the production endpoints). As testing uses the default endpoints (`kb` for Blazegraph and `postgres` for PostgreSQL) they do not need to be created manually beforehand.
 
-4. Initialise a new Blazegraph namespace and PostgreSQL database: Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker stack. For Blazegraph, simply open the Blazegraph workbench (e.g. `http://localhost:<port number from docker-compose_stack>/blazegraph`) in any browser and create the needed namespace. For postgreSQL, pgAdmin can be used to connect to the database running within Docker by adding a new server with `localhost` and `port number` as defined in the [docker-compose.test.yml](./docker-compose.test.yml) file. The new database can be created afterwards.
-
-5.  Set your postgres database and blazegraph endpoints in your properties [properties file]. 
-
-6. To start all tests run in your console:
+4. To start all tests run in your console:
 ```
 pytest tests/
 ```
