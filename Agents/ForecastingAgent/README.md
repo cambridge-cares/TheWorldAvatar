@@ -46,16 +46,16 @@ Or  to enable running tests:
 ```
 python -m pip install -e .[dev]
 ```
-If you use later a model pretrained with 'darts', conflicts can occur while loading the model, if your version differs from the version with which the model was trained.
+If you intend to use a forecasting model pre-trained with [Darts]: Please be aware of potential issues when loading the model, in case of version clashes between the current environment and the one used for training.
 
 ### **3) Instantiated knowledge graph with time series**
 
-In order to forecast a time series, this series has to be instantiated using  [the Time Series Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) beforehand. 
-[The district heating instantiation module](https://github.com/cambridge-cares/pirmasens) provides an example how that can look like. In case you do not have access you might reach out to sm453@cam.ac.uk to get access.
+In order to forecast a time series, it needs to be instantiated using the [TimeSeriesClient] beforehand. 
+[The district heating instantiation module](https://github.com/cambridge-cares/pirmasens) provides an example of how that can look like. In case you do not have access you might reach out to _sm453\<at>cam.ac.uk_ to get access.
 
 ### **4) Endpoints**
 
-Set your postgres database and blazegraph endpoints in your properties [file](./resources/timeseries.properties). 
+Set your `PostgreSQL` database and `Blazegraph` endpoints in your [properties file]. 
 
 
 &nbsp;
@@ -63,17 +63,21 @@ Set your postgres database and blazegraph endpoints in your properties [file](./
 ## General workflow
 
 
-
 This section describes the workflow and most important steps to access and extent the agent.
-This Agent uml diagram provides an overview of how the agent works:![Agent uml](https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png) 
+The Agent UML diagram provides an overview of how the agent works:
 
-The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`.
-After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (this will use the Prophet model) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration dict consists of. 
+<p align="center">
+    <img src="https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png" alt="drawing" width="50%"/>
+</p>
 
-Next the agent loads the time series (+ covariates if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
+The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`. After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (which will use [Prophet]) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration `dict` consists of. 
 
-Then, it loads the model. This is either a pretrained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
-Finally the forecasted time series is instantiated. For that purpose a new forecast iri is created and attached to the iri specified in the request. Further metadata, e.g. which data and models are used, are included as well. The complete ontology can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl).
+Next the agent loads the time series (+ `covariates` if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
+
+Then, it loads the model. This is either a pre-trained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
+
+Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology.
+
 
 ## Starting the agent
 Buy running  
@@ -182,3 +186,5 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [resources]: ./resources
 [stack.sh]: ./stack.sh
 [stack_configs]: ./landregistry/utils/stack_configs.py
+
+[properties file]: ./resources/timeseries.properties
