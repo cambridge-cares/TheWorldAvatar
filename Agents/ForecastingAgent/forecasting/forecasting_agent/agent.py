@@ -467,10 +467,10 @@ def get_forecast_update(cfg):
     update += get_properties_for_subj(subj=forecastingModel_iri, verb_obj={
         RDF_TYPE: TS_FORECASTINGMODEL,
         **covariate_update,
+        **training_series,
         
     }, verb_literal={
         RDFS_LABEL: cfg['fc_model']['name'],
-        **training_series,
     })
 
     if 'model_path_ckpt_link' in cfg['fc_model']:
