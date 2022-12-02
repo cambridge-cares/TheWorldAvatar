@@ -6,8 +6,14 @@
             "type": "Feature",
             "id": 1,
             "properties": {"name": "Flood warning 1",
-                           "description": "Tidal River Great Ouse at West Lynn"
-                        },
+                           "description": "Tides are expected to be higher than usual as a result of a low pressure surge and strong North-Westerly Winds. Flooding along coastal and river areas is possible at this time, however conditions may apply two to four hours either side of the high tide. We expect flooding to affect certain areas of West King's Lynn.",
+                           "Severity": "Medium",
+                           "People at risk": 2100,
+                           "Buildings at risk": {
+                                "Number of building": 222,
+                                "Estimated market value (£m)": 87.4
+                            }
+            },
             "geometry": {
                 "type": "Polygon",
                 "coordinates": [[
