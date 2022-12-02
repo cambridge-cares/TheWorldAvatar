@@ -154,15 +154,6 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
     }
 
     /**
-     * Executes the update request supplied by the calling method.
-     * @param update as UpdateRequest
-     */
-    @Override
-    public int executeUpdate(UpdateRequest update){
-        return executeUpdate(update.toString());
-    }
-
-    /**
      * Executes the update operation that is provided through the constructor or setter method.
      * @return
      */
