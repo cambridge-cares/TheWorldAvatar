@@ -106,14 +106,17 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     # two different types of ts:
     # 1. ts with MEASURE
     # 2. ts without MEASURE
+    
+    df_air_temp, df_public_holiday = None, None
+    # NOTE: If multiple ts have the same air_temp and public_holiday rdf type, then the first one is used.
     for row in ts_by_type:
-        if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE):
+        if check_cov_matches_rdf_type(row, ONTOEMS_AIRTEMPERATURE) and df_air_temp is None:
             logger.info(f'Loading air temperature covariate')
             df_air_temp = get_df_of_ts(
                 row['dataIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
             cov_iris.append(row['dataIRI'])
 
-        if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY):
+        if check_cov_matches_rdf_type(row, OHN_ISPUBLICHOLIDAY) and df_public_holiday is None:
             logger.info(f'Loading public holiday covariate')
             df_public_holiday = get_df_of_ts(
                 row['dataIRI'], tsClient, lowerbound=lowerbound, upperbound=upperbound)
