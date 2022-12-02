@@ -67,7 +67,7 @@ This section describes the workflow and most important steps to access and exten
 The Agent UML diagram provides an overview of how the agent works:
 
 <p align="center">
-    <img src="https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png" alt="drawing" width="50%"/>
+    <img src="https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png" alt="drawing" width="500"/>
 </p>
 
 The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`. After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (which will use [Prophet]) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration `dict` consists of. 
@@ -84,43 +84,34 @@ Buy running
 ```
 python forecasting\flaskapp\wsgi.py
 ```
-or [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the flask app with the agent starts. To check if the agent works, open the port on which the agent is running, e.g. `http://127.0.0.1:5000` in your browser. 
+or [main in wsgi.py](./forecasting/flaskapp/wsgi.py) the Flask App with the agent starts. To check if the agent started up properly, open the URL address the agent is running on, e.g. `http://127.0.0.1:5000` in your browser. 
 
 
 &nbsp;
-## Send http requests
-[HTTPRequest_forecast](./resources/HTTP_request_forecast.http) shows a sample request to forecast an `iri`. 
+## Send HTTP requests
+
+Forecasting a time series is triggered by received HTTP requests. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
 
 ### Input parameters
-- **iri** is the `iri` of the object which has a time series attached to it. This iri will receive the hasForecastedValue instantiation.
-- **horizon** the time steps the agent forecasts autorecursively into the future.
-- **forecast_start_date** is the start dateTime of the forecast, if not specified, simple the last value is taken as a starting point. The series is split here and future available data is used to calculate the forecasting error.
-- **data_length** determines the number of values loaded before `forecast_start_date`. This data is used directly as input to fit prophet or to scale the input for the pre-trained neural network.
-If not set the default value from the [mapping file] is used.
-- **use_model_configuration** if specified this model configuration from the [mapping file] is used.  
+- **iri**: the `iri` of the instance which has a time series attached to it. This iri will receive the `hasForecastedValue` relationship.
+- **horizon**: the number of time steps the agent forecasts autorecursively into the future.
+- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error.
+- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network. (If not set the default value from the [mapping file] is used)
+- **use_model_configuration**: if specified this model configuration from the [mapping file] is used.  
 
 
 ## Custom model configurations and new models
 Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
 
-If you need covariates, define a function which load them like `get_covs_heat_supply` for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with darts, expand the [agent file] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. 
+If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. 
 
 
 # 3. How to run tests
- <span style="color:red"> Be aware: The test will clear your blazegraph namespace!! </span> Therefore, you should create an new blazegraph test namespace. Follow those steps:
+ <span style="color:red"> Be aware: The test will clear your Blazegraph namespace!! </span> Therefore, you should create a new Blazegraph test namespace. Follow those steps:
 
-1. Activate the virtual environment
-`(Windows)`
-```cmd
-$ python -m venv forecasting_venv
-$ forecasting_venv\Scripts\activate.bat
-(forecasting_venv) $
-```
-2. Install required packages with
-```
-python -m pip install -e .[dev]
-```
-3. A [docker-compose.test.yml](./docker-compose.test.yml) file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows). To spin up the stack, run the following command from the same directory where this README is located:
+1. Create and activate a virtual environment and install all required packages as described under [Setup](#1-setup).
+
+2. A [docker-compose.test.yml] file is provided to spin up a stack with a Blazegraph and a PostgreSQL container. Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows). To spin up the stack, run the following command from the same directory where this README is located:
 ```bash
 # Spin up container stack
 docker-compose -f "docker-compose.test.yml" up -d
@@ -128,63 +119,32 @@ docker-compose -f "docker-compose.test.yml" up -d
 
 4. Initialise a new Blazegraph namespace and PostgreSQL database: Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker stack. For Blazegraph, simply open the Blazegraph workbench (e.g. `http://localhost:<port number from docker-compose_stack>/blazegraph`) in any browser and create the needed namespace. For postgreSQL, pgAdmin can be used to connect to the database running within Docker by adding a new server with `localhost` and `port number` as defined in the [docker-compose.test.yml](./docker-compose.test.yml) file. The new database can be created afterwards.
 
-5.  Set your postgres database and blazegraph endpoints in your properties [file](./resources/timeseries.properties). 
+5.  Set your postgres database and blazegraph endpoints in your properties [properties file]. 
 
 6. To start all tests run in your console:
 ```
 pytest tests/
 ```
-&nbsp;
-<span style="color:red"> Be aware: The test will clear your blazegraph namespace, you should make sure to have a new one for testing purpose. </span> 
-
 
 &nbsp;
 # Authors #
 Magnus Mueller (mm2692@cam.ac.uk), November 2022
+
 Markus Hofmeister (mh807@cam.ac.uk), November 2022
 
 
 <!-- Links -->
 <!-- websites -->
-[agent file]: /forecasting/forecasting_agent/agent.py
-[mapping file]: /forecasting/datamodel/data_mapping.py
-[allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
-[Container registry on Github]: https://ghcr.io
-[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[http://localhost:5000/]: http://localhost:5000/
-[Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
-[JDBC driver]: https://jdbc.postgresql.org/download/ 
-[OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
-[personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
-[Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
-[VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
-[HM Land Registry Open Data]: https://landregistry.data.gov.uk/
-[Price Paid Linked Data]: https://landregistry.data.gov.uk/app/root/doc/ppd
-[UK House Price Index Linked Data]: https://landregistry.data.gov.uk/app/ukhpi/doc
-[HM Land Registry SPARQL endpoint]: http://landregistry.data.gov.uk/landregistry/query
-
-<!-- github -->
-[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
-[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
-
 [OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
-
 [Darts]: https://unit8co.github.io/darts/index.html
 [Prophet]: https://github.com/facebook/prophet
 
 <!-- files -->
-[Dockerfile]: ./Dockerfile
-[docker compose file]: ./docker-compose.yml
-[resources]: ./resources
-[stack.sh]: ./stack.sh
-[stack_configs]: ./landregistry/utils/stack_configs.py
-
 [properties file]: ./resources/timeseries.properties
+[HTTP_Request_forecast]: ./resources/HTTP_request_forecast.http
+[agent module]: /forecasting/forecasting_agent/agent.py
+[mapping file]: /forecasting/datamodel/data_mapping.py
+[docker-compose.test.yml]: ./docker-compose.test.yml
