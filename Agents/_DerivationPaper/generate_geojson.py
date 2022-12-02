@@ -1,3 +1,5 @@
+# This module creates geojson output files for visualisation of (affected) buildings
+
 from pathlib import Path
 from typing import List
 import json
@@ -5,26 +7,20 @@ import os
 
 from pyderivationagent.data_model import iris as pda_iris
 from pyderivationagent import PySparqlClient
-from pyderivationagent import PyDerivationClient
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
-from configs import DERIVATION_INSTANCE_BASE_URL
-from configs import FLOOD_ASSESSMENT_AGENT_IRI
 import iris
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
-# This module creates derivation markup for flood assessment of a property
-
 # Specify name of csv with affected properties (determined using QGIS)
 affected = 'affected_property_iris.csv'
 
-# Flood warning iri
-flood_warning_iri = iris.flood_warning_iri
-
+# Specify geojson output file name
+bldgs_geojson = 'affected_buildings.geojson'
 
 class BuildingPoint:
     def __init__(self, lat, long, iri):
@@ -33,7 +29,7 @@ class BuildingPoint:
         self.iri = iri
 
 
-def generate_geojson(bldg_pts: List[BuildingPoint]):
+def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     geojson_str = """{ "type": "FeatureCollection", "features": ["""
     for pt in bldg_pts:
         feature = f"""{{
@@ -60,9 +56,9 @@ def generate_geojson(bldg_pts: List[BuildingPoint]):
     # finishing file end 
     end_geojson = """]}"""
     geojson_str += end_geojson
-    with open('affected_buildings.geojson', 'w') as f:
+    with open(filepath, 'w') as f:
         f.write(json.dumps(json.loads(geojson_str), indent=4))
-    print('Geojson file created at affected_buildings.geojson')
+    print(f'Geojson file created at {filepath}')
 
 
 def get_the_affected_buildings(input_csv):
@@ -137,4 +133,5 @@ if __name__ == '__main__':
         ) for iri in affected_building_iris
     ]
     # Generate geojson file
-    generate_geojson(bldg_pts)
+    fp = os.path.join(Path(__file__).parent, 'data', bldgs_geojson)
+    generate_geojson(bldg_pts, fp)
