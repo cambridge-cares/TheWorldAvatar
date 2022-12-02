@@ -192,7 +192,7 @@ def get_forecast_start_date(forecast_start_date, tsClient, cfg):
                 latest = tsClient.tsclient.getLatestData(cfg['dataIRI'], conn)
         except:
             raise KGException(
-                f'No time series data could be retrieved for the given IRI: {cfg['dataIRI']}')
+                f"No time series data could be retrieved for the given IRI: {cfg['dataIRI']}")
         return pd.Timestamp(isoparse(latest.getTimes(
         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 
