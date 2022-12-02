@@ -81,6 +81,14 @@ docker-compose up -d
 *Integration tests (`DateTSClientDecoratorIntegrationT` and `QueryHandlerIntegrationT`) are ignored in the default Maven test settings and when building the agent in Docker. 
 They can be run in a CLI with `mvn clean integration-test`, and must not be included when creating the Docker image. The test containers are unable to access the host Docker daemon from within the container.
 
+#### 2.3 Stack Deployment
+
+If you want to spin up this agent as part of a stack, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mount as required.
+- Start the stack manager as usual. This should start the container.
+
 ### 3. Running the Agent
 #### 3.1 Precursor
 In the `root/data` directory, please place the Excel workbook. If there is a preceding mapping file,
