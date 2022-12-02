@@ -460,7 +460,7 @@ def get_forecast_update(cfg):
         TS_HASCOVARIATE: cfg['covariates_iris']} if 'covariates_iris' in cfg else {}
 
     # if Train again is given, set the hasTrainingTimeSeries to the new training series
-    training_series = {TS_HASTRAININGTIMESERIES: cfg['dataIRI']} if 'train_again' in cfg['fc_model'] and cfg['fc_model']['train_again'] else {}
+    training_series = {TS_HASTRAININGTIMESERIES: cfg['tsIRI']} if 'train_again' in cfg['fc_model'] and cfg['fc_model']['train_again'] else {}
     
     # model
     forecastingModel_iri = KB + 'ForecastingModel_' + str(uuid.uuid4())
