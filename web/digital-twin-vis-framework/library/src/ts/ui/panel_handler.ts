@@ -221,6 +221,7 @@ class PanelHandler {
         };
 
         let self = this;
+        
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
 
             if(rawJSON === null || rawJSON === undefined) {
@@ -283,16 +284,34 @@ class PanelHandler {
      * @param properties feature properties
      */
     public showBuiltInData(properties) {
-        this.prepareMetaContainers(true, false);
+        this.prepareMetaContainers(true, true);
         document.getElementById("metaTreeContainer").innerHTML = "";
 
         if(Object.keys(properties).length > 0) {
+            let formattedProps = JSONFormatter.formatJSON(properties);
+            console.log("--- PROPERTIES ---");
+            console.log(formattedProps);
+
             // @ts-ignore
-            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+            let metaTree = JsonView.renderJSON(formattedProps, document.getElementById("metaTreeContainer"));
             // @ts-ignore
             JsonView.expandChildren(metaTree);
             // @ts-ignore
             JsonView.selectiveCollapse(metaTree);
+
+            // Render timeseries
+            document.getElementById("metaTimeContainer").innerHTML = "";
+            let time = this.TESTJSON["time"];
+
+            if(time !== null && time !== undefined) {
+                // Plot data
+                this.timeseriesHandler.parseData(time);
+                this.timeseriesHandler.showData("metaTimeContainer");
+
+                // Auto-select the first option in the dropdown
+                let select = document.getElementById("time-series-select") as HTMLInputElement;
+                select.onchange(null);
+            }
         } else {
             document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
         }
@@ -391,4 +410,6 @@ class PanelHandler {
             }
         });
     }
+
+    private TESTJSON = JSON.parse("{\"meta\":[{\"Thisisatestlabel.\":\"\\\"3.1415926\\\"^^<http://www.w3.org/2001/XMLSchema#double>\"}],\"time\":[{\"data\":[\"GroundFloorMonthlyElectricityConsumption31876ab5-48be-4bf6-b07b-545b7ca7e680\"],\"values\":[[2,1,0,0,2,0,0]],\"timeClass\":\"Instant\",\"valuesClass\":[\"Number\"],\"id\":1,\"units\":[\"\\\"kW.h\\\"^^<http://qudt.org/schema/qudt/UCUMcs>\"],\"time\":[\"2021-12-31T00:00:00Z\",\"2022-01-31T00:00:00Z\",\"2022-02-28T00:00:00Z\",\"2022-03-31T00:00:00Z\",\"2022-04-30T00:00:00Z\",\"2022-05-31T00:00:00Z\",\"2022-06-30T00:00:00Z\"],\"properties\":[{\"PropertyOne\":[\"One\",\"Two\",\"Three\"],\"PropertyTwo\":[\"A\",\"B\",\"C\"]}]}]}");
 }

@@ -17,8 +17,12 @@ class TimeseriesHandler {
      * 
      * @param {JSONObject[]} entries 
      */
-    public parseData(entries) {
+    public parseData(json) {
         this._selectedData = [];
+        let entries = JSONFormatter.formatJSON(json);
+
+        console.log("--- ENTRIES ---");
+        console.log(entries);
 
         if(!Array.isArray(entries)) {
             // Not a JSON Array, wrap in one
