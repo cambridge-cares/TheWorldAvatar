@@ -134,7 +134,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     logger.info(f'Created forecast at: {cfg["created_at"]}')
     logger.info(f'Output interval: {cfg["model_output_interval"]}')
     logger.info(f'Input interval: {cfg["model_input_interval"]}')
-    
+    cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
     
     try:
         # get unit from iri and add to forecast
@@ -459,14 +459,18 @@ def get_forecast_update(cfg):
     covariate_update = {
         TS_HASCOVARIATE: cfg['covariates_iris']} if 'covariates_iris' in cfg else {}
 
+    # if Train again is given, set the hasTrainingTimeSeries to the new training series
+    training_series = {TS_HASTRAININGTIMESERIES: cfg['dataIRI']} if 'train_again' in cfg['fc_model'] and cfg['fc_model']['train_again'] else {}
+    
     # model
     forecastingModel_iri = KB + 'ForecastingModel_' + str(uuid.uuid4())
     update += get_properties_for_subj(subj=forecastingModel_iri, verb_obj={
         RDF_TYPE: TS_FORECASTINGMODEL,
         **covariate_update,
-        TS_HASTRAININGTIMESERIES: cfg['dataIRI'],
+        
     }, verb_literal={
         RDFS_LABEL: cfg['fc_model']['name'],
+        **training_series,
     })
 
     if 'model_path_ckpt_link' in cfg['fc_model']:
@@ -507,6 +511,7 @@ def get_forecast_update(cfg):
     update += get_properties_for_subj(subj=cfg['forecast_iri'], verb_obj={
         RDF_TYPE: ONTOEMS_FORECAST,
         **unit,
+        TS_HASFORECASTINGMODEL: forecastingModel_iri,
         TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
         TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri,
     }, verb_literal={
