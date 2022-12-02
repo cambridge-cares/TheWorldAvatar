@@ -1,0 +1,35 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Buildings",
+            "sources": [
+                {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi.geojson", 
+                    "generateId": true
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest and has a long name", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 10,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                }
+            ]
+        }
+    ]
+}
