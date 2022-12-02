@@ -15,6 +15,12 @@
                     "type": "geojson",
                     "data": "data/affected_buildings.geojson", 
                     "generateId": true
+                },
+                {
+                    "id": "buildings-not-affected",
+                    "type": "geojson",
+                    "data": "data/not_affected_buildings.geojson", 
+                    "generateId": true
                 }
             ], 
             "layers": [
@@ -53,6 +59,21 @@
                             10, "#E59A9B",
                             100, "#AD0709"
                         ]
+                    }
+                },
+                {
+                    "id": "buildings-not-affected-layer",
+                    "name": "Other Buildings", 
+                    "source": "buildings-not-affected",
+                    "type": "circle",
+                    "minzoom": 12,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 15, 10],
+                        "circle-opacity": 1.0,
+                        "circle-color": "#000000"
                     }
                 }
             ]
