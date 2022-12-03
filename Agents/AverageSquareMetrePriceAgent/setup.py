@@ -10,14 +10,14 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=["tests", "tests.*"]),
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent",
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
         'flask~=2.1.0',
         'JayDeBeApi~=1.2.3',
         'pandas~=1.5.1',
-        'py4jps~=1.0.29',
+        'py4jps~=1.0.30',
         'requests~=2.28.1',
         'pyderivationagent~=1.4.1'
     ],

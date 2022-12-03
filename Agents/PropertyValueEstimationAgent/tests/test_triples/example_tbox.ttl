@@ -37,6 +37,8 @@ om:Area om:hasValue om:Measure .
 om:Measure om:hasUnit om:Unit ; 
            om:hasNumericalValue xsd:float . 
 om:Unit om:symbol xsd:string . 
+om:poundSterling rdfs:subClassOf om:Unit ; 
+                 om:symbol "£"^^xsd:string . 
 
 obe:PropertyPriceIndex obe:representativeFor obe:AdministrativeDistrict ; 
                        ts:hasTimeSeries ts:TimeSeries . 
