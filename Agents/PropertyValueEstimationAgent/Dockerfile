@@ -150,6 +150,10 @@ COPY ./$AGENTDIR ./$AGENTDIR
 # Adjust logging level
 RUN sed -i "s|logger_name='prod'|logger_name='dev' |g" ./$AGENTDIR/entry_point.py
 
+# NOTE Workaround for unstable Java-python connection when handling sync HTTP request and monitoring async derivation at the same time
+# Disable async derivation handling by shutdown the scheduler
+RUN sed -i "/agent.start_all_periodical_job()/a \ \ \ \ agent.scheduler.shutdown()" ./$AGENTDIR/entry_point.py
+
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 COPY ./_derivation_mvp_mock/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 COPY ./_derivation_mvp_mock/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
