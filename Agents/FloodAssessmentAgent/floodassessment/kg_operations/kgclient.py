@@ -101,15 +101,16 @@ class KGClient(PySparqlClient):
         """
 
 
-        def _add_amount_of_money_triples(graph: Graph, amount_of_money_iri, measure_iri, value, unit, unit_symbol):
+        def _add_amount_of_money_triples(graph: Graph, amount_of_money_iri, measure_iri, value, unit):
             graph.add((URIRef(amount_of_money_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
             graph.add((URIRef(amount_of_money_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
             graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
             graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(float(value), datatype=XSD_FLOAT)))
             graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(unit)))
-            #TODO: Triple with symbol potentially to be removed once OntoUOM contains
-            #      all relevant units/symbols and is uploaded to the KB
-            graph.add((URIRef(unit), URIRef(OM_SYMBOL), Literal(unit_symbol, datatype=XSD_STRING)))
+            #NOTE: PoundSterling symbol '£' excluded from recurring updates 
+            #      There have been encoding issues within the KG with recurring instantiations; hence,
+            #      the agent requires the symbol to be instantiated with the KG beforehand, i.e.
+            #      when uploading the ontology initially (using the EnergyPerformanceCertificate agent)
             return graph
 
 
@@ -143,7 +144,7 @@ class KGClient(PySparqlClient):
         if affected_buildings_value is not None:
             graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_MONETARY_VALUE), URIRef(bldgs_money_iri)))
             # Add OM markup for amount of money
-            graph = _add_amount_of_money_triples(graph, bldgs_money_iri, bldgs_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
+            graph = _add_amount_of_money_triples(graph, bldgs_money_iri, bldgs_measure_iri, affected_buildings_value, OM_GBP)
 
         # Total impact (so far only includes value of affected buildings; to be extended potentially)
         if impact_description or (affected_buildings_value is not None):
@@ -154,7 +155,7 @@ class KGClient(PySparqlClient):
             if affected_buildings_value is not None:
                 graph.add((URIRef(impact_iri), URIRef(FLOOD_HAS_MONETARY_VALUE), URIRef(impact_money_iri)))
                 # Add OM markup for amount of money
-                graph = _add_amount_of_money_triples(graph, impact_money_iri, impact_measure_iri, affected_buildings_value, OM_GBP, GBP_SYMBOL)
+                graph = _add_amount_of_money_triples(graph, impact_money_iri, impact_measure_iri, affected_buildings_value, OM_GBP)
 
         return graph
 
