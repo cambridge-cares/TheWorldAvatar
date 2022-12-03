@@ -4,6 +4,7 @@ RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # UK API namespaces
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
+UOM = 'https://www.theworldavatar.com/kg/ontouom/'
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -29,6 +30,7 @@ PPI_TRANSACTIONRECORD = PPI + 'TransactionRecord'
 OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
 OM_HAS_VALUE = OM + 'hasValue'
 OM_HAS_NUMERICAL_VALUE = OM + 'hasNumericalValue'
+OM_SYMBOL = OM + 'symbol'
 
 # From OntoBuiltEnv TBox
 OBE_POSTALCODE = OBE + 'PostalCode'
@@ -49,6 +51,16 @@ OBE_HASWGS84LATITUDELONGITUDE = OBE + 'hasWGS84LatitudeLongitude'
 OF_HAS_SEVERITY = OF + 'hasSeverity'
 # From OntoFlood ABox
 OF_FLOOD_WARNING = OF + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
+
+# OM / UOM unit symbols
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
+OM_GBP = OM + 'poundSterling'
+# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
+#       claiming to use utf-8 encoding while actually using iso-8859-1
+#       --> PoundSterling displayed wrongly in GUI but correctly retrieved within code
+# Details: https://github.com/blazegraph/database/issues/224
+GBP_PER_SM = '£ m-2'
+GBP_SYMBOL = '£'
 
 # HARDCODED INSTANCE IRIS
 # (i.e. IRIs of previously instantiated instances to avoid unnecessary querying)

@@ -78,7 +78,7 @@ This minimum demonstration example is based on two previously exported sets of t
 
 Before starting the instantiation, ensure that the properties in [configs.py] match the settings in the `docker-compose_stack.yml` file. Then download the [consolidated triples] file and place it into the [data] folder (filename to be specified in [data_preparation.py]).
 
-Then simply run [data_preparation.py] as main script.
+Then simply run [data_preparation.py] as main script. **Please note** that this also add triples to represent the pound sterling symbol properly.
 
 ## 1.3 Identify buildings within flood polygon
 
@@ -170,7 +170,7 @@ Jiaru Bai (jb2197@cam.ac.uk), November 2022
 [kg_data folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
 [geospatial_analysis folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/geospatial_analysis
 [consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=20221130_consolidated_properties.nt
-[consolidated and labeled triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=20221130_consolidated_and_labeled_properties.nt
+[consolidated and labeled triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=20221203_consolidated_and_labeled_properties.nt
 
 [resources]: resources
 [configs.py]: configs.py

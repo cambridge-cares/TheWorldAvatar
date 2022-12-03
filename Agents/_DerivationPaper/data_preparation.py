@@ -14,8 +14,10 @@ from pyderivationagent.kg_operations import PySparqlClient
 
 # REQUIRED FILES
 # Specify name of n-triples file with consolidated property data (to be further amended)
-#triples_file = 'consolidated_properties.nt'
-triples_file = 'consolidated_and_labeled_properties.nt'
+triples_file = '20221130_consolidated_properties.nt'
+#triples_file = '20221130_consolidated_and_labeled_properties.nt'
+#triples_file = '20221201_FloodAssessment_markup_stuck_at_Finished_status.nt'
+#triples_file = '20221202_FloodAssessment_derivation_markup.nt'
 
 # Specify name of building location csv to be extracted from KG
 bldg_loc = 'building_locations.csv'
@@ -62,6 +64,17 @@ def create_blazegraph_namespace(endpoint):
         print('Namespace \"{}\" already exists\n'.format(ns))
     else:
         print('Request status code: {}\n'.format(response.status_code))
+
+
+def insert_pound_sterling_symbols():
+    # Return query to instantiate pound sterling symbols
+    query = f"""
+    INSERT DATA {{
+        <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
+        <{OM_GBP}> <{OM_SYMBOL}> \"{GBP_SYMBOL}\"^^<{XSD_STRING}> . 
+        }}
+    """
+    return query
 
 
 def extract_property_locations(kg_client, output_file):
@@ -115,13 +128,17 @@ if __name__ == '__main__':
     triples = os.path.join(Path(__file__).parent, 'data', triples_file)
     kg_client.uploadOntology(triples)
 
+    # Instantiate pound sterling symbols
+    query = insert_pound_sterling_symbols()
+    kg_client.performUpdate(query)
+
     # 2) Extract building (point) locations from KG
     bldg_locations = os.path.join(Path(__file__).parent, 'data', bldg_loc)
-    #extract_property_locations(kg_client, bldg_locations)
+    extract_property_locations(kg_client, bldg_locations)
 
     # 3) Attach rdfs:label to affected properties
     affected_bldg = os.path.join(Path(__file__).parent, 'data', affected)
-    #attach_labels(kg_client, label=label, input_csv=affected_bldg)
+    attach_labels(kg_client, label=label, input_csv=affected_bldg)
 
     # 4) Initialise Property Price Index
     #NOTE: This initialises the property price index; however, no pure input time
