@@ -13,7 +13,7 @@ import requests
 
 from pyderivationagent.kg_operations import PySparqlClient
 
-import agentlogging
+from py4jps import agentlogging
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import GBP_PER_SM
 from avgsqmpriceagent.errorhandling.exceptions import APIException
