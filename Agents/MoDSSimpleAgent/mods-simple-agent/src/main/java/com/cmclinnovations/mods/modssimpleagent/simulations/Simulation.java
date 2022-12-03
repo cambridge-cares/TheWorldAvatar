@@ -39,6 +39,7 @@ public class Simulation {
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
     public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
+    public static final String DEFAULT_SAMPLING_ALGORITHM_NAME = "SamplingAlg";
 
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
@@ -48,6 +49,7 @@ public class Simulation {
     public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("savedsurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
+    public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
 
     private static final String REQUEST_FILE_NAME = "request.json";
 
@@ -101,6 +103,8 @@ public class Simulation {
                 return new HDMR(request, inputFile, modsBackend, inputMetaData);
             case "MOOonly":
                 return new MOOonly(request, inputFile, modsBackend, inputMetaData);
+            case "Evaluate":
+                return new Evaluate(request, inputFile, modsBackend, inputMetaData);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -251,14 +255,15 @@ public class Simulation {
         inputFile.marshal(modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
     }
 
-    protected final void generateInitialFile() throws FileGenerationException {
+    protected final void generateInitialFileFromInputs() throws FileGenerationException {
         Data inputs = getRequest().getInputs();
         Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
-        if (inputs != null)
-            new CSVDataFile(inputs.getAverages()).marshal(path);
-        else {
-            new CSVDataFile(inputMetaData.meansToData()).marshal(path);
-        }
+        new CSVDataFile(inputs.getAverages()).marshal(path);
+    }
+
+    protected final void generateInitialFileFromMetaData() throws FileGenerationException {
+        Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
+        new CSVDataFile(inputMetaData.meansToData()).marshal(path);
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
@@ -273,6 +278,21 @@ public class Simulation {
         } catch (IOException ex) {
             throw new FileGenerationException(
                     "Failed to create subdirectory for algorithm '" + DATA_ALGORITHM_NAME + "'.", ex);
+        }
+    }
+
+    protected final void generateSamplingAlgDataFiles() throws FileGenerationException {
+        Path samplingAlgDataPath;
+        try {
+            samplingAlgDataPath = modsBackend.createSubDir(SAMPLING_ALGORITHM_FILE_NAME);
+
+            new CSVDataSeparateFiles(getRequest().getInputs(),
+                    SAMPLING_ALGORITHM_FILE_NAME + "_" + Variable.SUBTYPE_PREFIX,
+                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_")
+                    .marshal(samplingAlgDataPath);
+        } catch (IOException ex) {
+            throw new FileGenerationException(
+                    "Failed to create subdirectory for algorithm '" + SAMPLING_ALGORITHM_FILE_NAME + "'.", ex);
         }
     }
 
@@ -311,8 +331,8 @@ public class Simulation {
         request.getAlgorithms().stream()
                 .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
                 .forEach(algorithm -> {
-                    Path saveDirectory = getSaveDirectory(algorithm);
-                    Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
+                    Path saveDirectory = getSaveDirectory();
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
                     try {
                         copyDirectory(surrogateDirectory, saveDirectory);
@@ -330,11 +350,11 @@ public class Simulation {
                 });
     }
 
-    public static Path getSurrogateDirectory(MoDSBackend modsBackend, Algorithm algorithm) {
+    public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
         return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
-    private Path getSaveDirectory(Algorithm algorithm) {
+    private Path getSaveDirectory() {
         return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
                 .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
@@ -344,7 +364,7 @@ public class Simulation {
                 .filter(algorithm -> algorithm.getSurrogateToLoad() != null)
                 .forEach(algorithm -> {
                     try {
-                        Path surrogateDirectory = getSurrogateDirectory(modsBackend, algorithm);
+                        Path surrogateDirectory = getSurrogateDirectory(modsBackend);
                         Path loadDirectory = getLoadDirectory(algorithm);
 
                         if (!Files.exists(loadDirectory)) {
@@ -354,7 +374,7 @@ public class Simulation {
                         copyDirectory(loadDirectory, surrogateDirectory);
 
                         LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                                loadDirectory.toAbsolutePath());
+                            surrogateDirectory.toAbsolutePath());
 
                     } catch (IOException ex) {
                         throw new ResponseStatusException(
