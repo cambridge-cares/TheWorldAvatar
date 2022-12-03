@@ -5,7 +5,6 @@ from typing import List
 import json
 import os
 
-from pyderivationagent.data_model import iris as pda_iris
 from pyderivationagent import PySparqlClient
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 
@@ -40,6 +39,11 @@ query_not_affected = f"""
     
 geojson_affected = 'affected_buildings.geojson'
 geojson_not_affected = 'not_affected_buildings.geojson'
+
+# Specify filepath to flood area geojson file
+flood_area = 'flood-areas.geojson'
+flood_original = os.path.join(Path(__file__).parent, 'data', flood_area)
+flood_amended = os.path.join(Path(__file__).parent, 'visualisation', 'data', flood_area)
 
 
 class BuildingPoint:
@@ -88,7 +92,7 @@ def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     print(f'Geojson file created at {filepath}')
 
 
-def retrieve_property_location(sparql_client: PySparqlClient, query: str):
+def retrieve_property_locations(sparql_client: PySparqlClient, query: str):
     # Retrieve building data from KG (both for affected and not affected buildings)
 
     # Remove unnecessary whitespaces
@@ -102,6 +106,7 @@ def retrieve_property_location(sparql_client: PySparqlClient, query: str):
     # {
     #     "property": {
     #         'lat_long': lat_long,
+    #         'value': value
     #     },
     #     ... (other properties)
     # }
@@ -117,19 +122,43 @@ def retrieve_property_location(sparql_client: PySparqlClient, query: str):
     return property_info_dct
 
 
+def get_assessment_for_area(individual_properties: dict):
+    # Summarises values of affected buildings into total for area
+    # `individual_properties` is dict as returned by `retrieve_property_locations`
+
+    n = len(individual_properties)
+    vals = [v['value'] for k,v in individual_properties.items()]
+    total_value = 0
+    for v in vals:
+        try:
+            v = int(v)
+            total_value += v
+        except TypeError:
+            pass
+    
+    return n, total_value
+
+
 if __name__ == '__main__':
+    
     # Create a PySparqlClient instance
     sparql_client = PySparqlClient(
         query_endpoint=SPARQL_QUERY_ENDPOINT,
         update_endpoint=SPARQL_UPDATE_ENDPOINT,
     )
-
+    
+    # Initialise areal assessment
+    total_bldgs, total_value = 0, 0
+    
     buildings = [(query_affected, geojson_affected), 
                  (query_not_affected, geojson_not_affected)]
 
     for query, geojson in buildings:
         # Retrieve all affected building info
-        property_location_dct = retrieve_property_location(sparql_client, query)
+        property_location_dct = retrieve_property_locations(sparql_client, query)
+
+        if geojson == geojson_affected:
+            total_bldgs, total_value = get_assessment_for_area(property_location_dct)
 
         # Construct a list of BuildingPoint objects
         bldg_pts = [
@@ -140,6 +169,19 @@ if __name__ == '__main__':
                 iri=iri
             ) for iri in property_location_dct.keys()
         ]
+
         # Generate geojson file
         fp = os.path.join(Path(__file__).parent, 'visualisation','data', geojson)
         generate_geojson(bldg_pts, fp)
+
+    # Create amended flood area geojson with updated assessment
+    # To ensure correct formatting of GBP symbol suppress ascii encoding and use UTF-8
+    with open(flood_original, encoding='utf-8') as f:
+        area = json.load(f)
+    total_value = round(total_value/1000000,2)
+    area['features'][0]['properties']['Buildings at risk']['Number of buildings'] = total_bldgs
+    area['features'][0]['properties']['Buildings at risk']['Estimated market value (£m)'] = total_value
+    # To ensure correct formatting of GBP symbol suppress ascii encoding
+    with open(flood_amended, 'w', encoding='utf-8') as f:
+        f.write(json.dumps(area, ensure_ascii=False, indent=4))
+    

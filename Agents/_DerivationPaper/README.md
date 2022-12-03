@@ -132,19 +132,18 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from within the [visualisation] directory:
 
 ```bash
-# Copy flood area polygon into the visualisation data folder
-cp ../data/flood-areas.geojson ./data/flood-areas.geojson
-
 # To build the Image:
 docker-compose -p kings-lynn -f ./docker/docker-compose.yml build --force-rm
 # To generate a Container (i.e. run the Image):
 docker-compose -p kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
 
-# To rebuild the image and deploy the container (incl. copying over required data files for visualisation):
+# To rebuild the image and deploy the container
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
+**Please note**: 
+1) A valid Mapbox API username and token must be provided in your `index.html` file.
+2) All required data files for visualisation should be available. Simply run the [generate_geojson] script to create them.
 
 Once started successfully, the visualisation will be available at `http://localhost:80`.
 
@@ -182,3 +181,4 @@ Jiaru Bai (jb2197@cam.ac.uk), November 2022
 [affected_property_iris]: data/affected_property_iris.csv
 [docker-compose_stack.yml]: docker-compose_stack.yml
 [visualisation]: visualisation/
+[generate_geojson]: generate_geojson.py
