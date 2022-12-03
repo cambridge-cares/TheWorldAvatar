@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 import json
 import os
-import random
 
 from pyderivationagent.data_model import iris as pda_iris
 from pyderivationagent import PySparqlClient
@@ -17,30 +16,56 @@ from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
-# Specify name of csv with affected properties (determined using QGIS)
-affected = 'affected_property_iris.csv'
+# Specify queries and geojson output file names
+# NOTE Here we mocked the affected buildings, i.e. determined beforehand and got label
+#      "affected"; this should finally be done by querying the flood event polygon from ontop
+# NOTE For this iteration, we assume that the property value estimation is already 
+#      computed if the derivation is created
+query_affected = f"""
+    SELECT DISTINCT ?property ?lat_long ?value
+    WHERE {{
+        ?property <{iris.RDF_TYPE}> <{iris.OBE_BUILDING}> ; 
+                  <{iris.RDFS_LABEL}> "affected" ; 
+                  <{iris.OBE_HASWGS84LATITUDELONGITUDE}> ?lat_long ; 
+                  <{iris.OBE_HASMARKETVALUE}>/<{iris.OM_HAS_VALUE}>/<{iris.OM_HAS_NUMERICAL_VALUE}> ?value
+    }}"""
+query_not_affected = f"""
+    SELECT DISTINCT ?property ?lat_long ?value
+    WHERE {{
+        ?property <{iris.RDF_TYPE}> <{iris.OBE_BUILDING}> ; 
+                  <{iris.OBE_HASWGS84LATITUDELONGITUDE}> ?lat_long . 
+        OPTIONAL {{ ?property <{iris.OBE_HASMARKETVALUE}>/<{iris.OM_HAS_VALUE}>/<{iris.OM_HAS_NUMERICAL_VALUE}> ?value }}
+        FILTER NOT EXISTS {{ ?property <{iris.RDFS_LABEL}> "affected" }}
+    }}"""
+    
+geojson_affected = 'affected_buildings.geojson'
+geojson_not_affected = 'not_affected_buildings.geojson'
 
-# Specify geojson output file name
-bldgs_geojson = 'affected_buildings.geojson'
 
 class BuildingPoint:
-    def __init__(self, lat, long, iri):
+    def __init__(self, lat, long, iri, value=None):
         self.lat = lat
         self.long = long
         self.iri = iri
+        self.value = value
 
 
 def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     geojson_str = """{ "type": "FeatureCollection", "features": ["""
     for pt in bldg_pts:
-        #TODO: replace with actual value query
-        v = random.randint(10,100)
+        # Include market value node if available
+        if pt.value:
+            properties_node = f""""properties": {{
+                "IRI": "{pt.iri}",
+                "Property market value (£)": {pt.value}
+            }}"""
+        else:
+            properties_node = f""""properties": {{
+                "IRI": "{pt.iri}"
+            }}"""
         feature = f"""{{
             "type": "Feature",
-            "properties": {{
-                "IRI": "{pt.iri}",
-                "Property market value (£)": {v}
-            }},
+            {properties_node},
             "geometry": {{
                 "type": "Point",
                 "coordinates": [
@@ -63,29 +88,8 @@ def generate_geojson(bldg_pts: List[BuildingPoint], filepath: str):
     print(f'Geojson file created at {filepath}')
 
 
-def get_the_affected_buildings(input_csv):
-    """
-    Get the list of buildings that are affected by the flood event.
-    To do it perooperly, the area should be queried from the polygon of the flood event.
-    """
-    # Extract IRIs from csv file
-    with open(input_csv, 'r') as f:
-        iris = f.read()
-    iris = iris.split('\n')
-    iris = iris[1:-1]
-    return iris
-
-
-def retrieve_affected_property_location(sparql_client: PySparqlClient, affected_property_iris: list):
-    # Construct query to retrieve below information for each affected property from KG
-    # NOTE for this iteration, we assume that the property value estimation is already computed if the derivation is created
-    # - market value (mv) IRI
-    query = f"""{pda_iris.PREFIX_RDF} {pda_iris.PREFIX_RDFS}
-            SELECT DISTINCT ?property ?lat_long
-            WHERE {{
-                VALUES ?property {{ <{'> <'.join(affected_property_iris)}> }}
-                ?property <{iris.OBE_HASWGS84LATITUDELONGITUDE}> ?lat_long.
-            }}"""
+def retrieve_property_location(sparql_client: PySparqlClient, query: str):
+    # Retrieve building data from KG (both for affected and not affected buildings)
 
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
@@ -108,6 +112,7 @@ def retrieve_affected_property_location(sparql_client: PySparqlClient, affected_
         sub_response = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'property', property_iri)
         # it will be assigned as None if the key is not found
         property_info_dct[property_iri]['lat_long'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'lat_long')
+        property_info_dct[property_iri]['value'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'value')
 
     return property_info_dct
 
@@ -119,21 +124,22 @@ if __name__ == '__main__':
         update_endpoint=SPARQL_UPDATE_ENDPOINT,
     )
 
-    # TODO here we mocked the affected buildings, should be done by querying the flood event polygon from ontop
-    # Get the list of buildings that are affected by the flood event
-    affected_building_iris = get_the_affected_buildings(os.path.join(Path(__file__).parent, 'data', affected))
+    buildings = [(query_affected, geojson_affected), 
+                 (query_not_affected, geojson_not_affected)]
 
-    # Retrieve all affected building info
-    property_location_dct = retrieve_affected_property_location(sparql_client, affected_building_iris)
+    for query, geojson in buildings:
+        # Retrieve all affected building info
+        property_location_dct = retrieve_property_location(sparql_client, query)
 
-    # Construct a list of BuildingPoint objects
-    bldg_pts = [
-        BuildingPoint(
-            lat=float(property_location_dct[iri]['lat_long'].split('#')[0]),
-            long=float(property_location_dct[iri]['lat_long'].split('#')[1]),
-            iri=iri,
-        ) for iri in affected_building_iris
-    ]
-    # Generate geojson file
-    fp = os.path.join(Path(__file__).parent, 'visualisation','data', bldgs_geojson)
-    generate_geojson(bldg_pts, fp)
+        # Construct a list of BuildingPoint objects
+        bldg_pts = [
+            BuildingPoint(
+                lat=float(property_location_dct[iri]['lat_long'].split('#')[0]),
+                long=float(property_location_dct[iri]['lat_long'].split('#')[1]),
+                value=None if not property_location_dct[iri]['value'] else int(property_location_dct[iri]['value']),
+                iri=iri
+            ) for iri in property_location_dct.keys()
+        ]
+        # Generate geojson file
+        fp = os.path.join(Path(__file__).parent, 'visualisation','data', geojson)
+        generate_geojson(bldg_pts, fp)

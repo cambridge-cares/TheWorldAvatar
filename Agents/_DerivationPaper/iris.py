@@ -3,8 +3,10 @@ RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # UK API namespaces
+OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
+DABGEO = 'http://www.purl.org/oema/infrastructure/'
 # CoMo/CARES namespaces
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 OF = 'https://www.theworldavatar.com/kg/ontoflood/'
@@ -24,12 +26,14 @@ PPI = 'http://landregistry.data.gov.uk/def/ppi/'
 PPI_TRANSACTIONRECORD = PPI + 'TransactionRecord'
 
 # OM_AMOUNT_MONEY
-OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
+OM_HAS_VALUE = OM + 'hasValue'
+OM_HAS_NUMERICAL_VALUE = OM + 'hasNumericalValue'
 
 # From OntoBuiltEnv TBox
 OBE_POSTALCODE = OBE + 'PostalCode'
 OBE_PROPERTY = OBE + 'Property'
+OBE_BUILDING = DABGEO + 'Building'
 OBE_HASPOSTALCODE = OBE + 'hasPostalCode'
 OBE_HASADMINISTRATIVEDISTRICT = OBE + 'hasAdministrativeDistrict'
 OBE_HASADDRESS = OBE + 'hasAddress'
