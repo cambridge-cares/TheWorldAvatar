@@ -53,14 +53,16 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 15, 10],
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1, 18, 10],
                         "circle-opacity": 1.0,
                         "circle-color": [
                             "interpolate", ["linear"],
                             ["number", ["get", "Property market value (£)"]],
-                            10, "#E59A9B",
-                            100, "#AD0709"
-                        ]
+                            120000, "#F7BA56",
+                            400000, "#AD0709"
+                        ],
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 0.5
                     }
                 },
                 {
@@ -74,7 +76,7 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2, 15, 10],
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1, 18, 10],
                         "circle-opacity": 1.0,
                         "circle-color": "#000000"
                     }
