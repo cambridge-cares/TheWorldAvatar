@@ -58,7 +58,7 @@
                         "circle-color": [
                             "interpolate", ["linear"],
                             ["number", ["get", "Property market value (£)"]],
-                            120000, "#F7BA56",
+                            100000, "#F7BA56",
                             400000, "#AD0709"
                         ],
                         "circle-stroke-color": "#000000",

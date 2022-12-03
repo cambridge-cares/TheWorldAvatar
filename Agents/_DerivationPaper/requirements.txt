@@ -3,3 +3,4 @@ pyderivationagent==1.4.1
 requests==2.28.1
 pandas==1.5.2
 chemistry-and-robots==1.2.1
+matplotlib==3.6.2
