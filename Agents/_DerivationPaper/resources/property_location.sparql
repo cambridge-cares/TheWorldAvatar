@@ -7,6 +7,9 @@ SELECt ?property ?location
 WHERE
 {
 	?property  rdf:type/rdfs:subClassOf* obe:Property ; 
-               obe:hasLatestTransactionRecord ?tx ; 
+               # Initially only properties with available transaction record
+               # have been considered to identify buildings within the flood
+               # polygon; this is obviously not correct --> comment out
+               #obe:hasLatestTransactionRecord ?tx ; 
                obe:hasWGS84LatitudeLongitude ?location
 }

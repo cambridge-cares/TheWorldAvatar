@@ -26,7 +26,7 @@ query_affected = f"""
         ?property <{iris.RDF_TYPE}> <{iris.OBE_BUILDING}> ; 
                   <{iris.RDFS_LABEL}> "affected" ; 
                   <{iris.OBE_HASWGS84LATITUDELONGITUDE}> ?lat_long ; 
-                  <{iris.OBE_HASMARKETVALUE}>/<{iris.OM_HAS_VALUE}>/<{iris.OM_HAS_NUMERICAL_VALUE}> ?value
+        OPTIONAL {{ ?property <{iris.OBE_HASMARKETVALUE}>/<{iris.OM_HAS_VALUE}>/<{iris.OM_HAS_NUMERICAL_VALUE}> ?value }}
     }}"""
 query_not_affected = f"""
     SELECT DISTINCT ?property ?lat_long ?value

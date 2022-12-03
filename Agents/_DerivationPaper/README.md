@@ -169,8 +169,8 @@ Jiaru Bai (jb2197@cam.ac.uk), November 2022
 <!-- Data -->
 [kg_data folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data
 [geospatial_analysis folder]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/geospatial_analysis
-[consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=consolidated_properties.nt
-[consolidated and labeled triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=consolidated_and_labeled_properties.nt
+[consolidated triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=20221130_consolidated_properties.nt
+[consolidated and labeled triples]: https://www.dropbox.com/home/CoMo%20shared/mh807/DerivationPaper/kg_data?preview=20221130_consolidated_and_labeled_properties.nt
 
 [resources]: resources
 [configs.py]: configs.py
