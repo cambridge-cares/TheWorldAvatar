@@ -1,14 +1,14 @@
 from setuptools import setup, find_namespace_packages
 
 setup(
-    name='propertyvalueestimation',
+    name='floodassessment',
     version='0.0.1',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
     python_requires='>=3.8',
-    description="The `propertyvalueestimation` agent calculates the latest market value estimation for a particular property and populates the result to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent",
+    description="The `floodassessment` agent assesses the number of affected people and buildings (incl. value estimate) of a particular flood warning/alert and instantiates the impact in the knowledge graph as part of The World Avatar project.",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAssessmentAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
@@ -27,8 +27,7 @@ setup(
             "pytest==7.2.0",
             "pytest-docker-compose==3.2.1",
             "pytest-rerunfailures==10.2",
-            "pytest-mock==3.10.0",
-            "psycopg2==2.9.5"
+            "pytest-mock==3.10.0"
         ],
     }
 )

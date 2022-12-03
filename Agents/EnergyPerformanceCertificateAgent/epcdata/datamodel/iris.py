@@ -148,6 +148,7 @@ OM_SYMBOL = OM + 'symbol'
 OM_M = OM + 'metre'
 OM_M2 = OM + 'squareMetre'
 OM_GBP = OM + 'poundSterling'
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
 
 # GeoSPARQL
 GEO_FEATURE = GEO + 'Feature'

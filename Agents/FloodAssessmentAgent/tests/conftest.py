@@ -4,17 +4,13 @@
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
-import psycopg2 as pg
-import pandas as pd
 import requests
 import pytest
 import time
-import uuid
 import os
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
-from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                               DATABASE, DB_USER, DB_PASSWORD
+from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from tests.mockutils.env_configs_mock import HOSTNAME
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
@@ -24,11 +20,9 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERI
 from pyderivationagent.conf import config_derivation_agent
 from pyderivationagent import PyDerivationClient
 
-from propertyvalueestimation.datamodel.iris import *
-from propertyvalueestimation.datamodel.data import DATACLASS, TIME_FORMAT_SHORT
-from propertyvalueestimation.kg_operations.kgclient import KGClient
-from propertyvalueestimation.kg_operations.tsclient import TSClient
-from propertyvalueestimation.agent import PropertyValueEstimationAgent
+from floodassessment.datamodel.iris import *
+from floodassessment.agent import FloodAssessmentAgent
+from floodassessment.kg_operations.kgclient import KGClient
 
 
 # ----------------------------------------------------------------------------------
@@ -48,7 +42,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # the .env file to avoid Exceptions from the AgentConfig class (the same applies to other keywords left blank)
 #
 # To ensure proper mocking of the `stack_configs.py` module, please provide the 
-# DATABASE, DB_USER, DB_PASSWORD environment variables in the respective files:
+# DATABASE, NAMESPACE, DB_USER, DB_PASSWORD environment variables in the respective files:
 #   tests\mockutils\env_configs_mock.py
 #   tests\mockutils\stack_configs_mock.py
 # Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved 
@@ -58,60 +52,94 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # NOTE These names need to match the ones given in the `docker-compose-test.yml` file
 KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
-RDB_SERVICE = "postgres_agent_test"
-RDB_ROUTE = DATABASE
 
 # Derivation markup
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
+
 # IRIs of derivation's (pure) inputs
 # NOTE Should be consistent with the ones in test_triples/example_abox.ttl
-TEST_TRIPLES_BASE_IRI = 'https://www.example.com/kg/ontobuiltenv/'
+TEST_TRIPLES_BASE_IRI = 'https://www.example.com/kg/ontoflood/'
 
-# PropertyPriceIndex
-PRICE_INDEX_INSTANCE_IRI = TEST_TRIPLES_BASE_IRI + 'PropertyPriceIndex_1'
-# AveragePricePerSqm
-AVERAGE_SQM_PRICE = TEST_TRIPLES_BASE_IRI + 'AveragePricePerSqm_1'
-# TransactionRecords
-TRANSACTION_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_1'
-TRANSACTION_INSTANCE_2_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_2'
-TRANSACTION_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Transaction_3'
-# FloorArea
-FLOOR_AREA_INSTANCE_1_IRI = TEST_TRIPLES_BASE_IRI + 'Area_1'
-FLOOR_AREA_INSTANCE_3_IRI = TEST_TRIPLES_BASE_IRI + 'Area_3'
+# Buildings
+BUILDING_1 = TEST_TRIPLES_BASE_IRI + 'Building_1'
+BUILDING_2 = TEST_TRIPLES_BASE_IRI + 'Building_2'
+BUILDING_3 = TEST_TRIPLES_BASE_IRI + 'Building_3'
+BUILDING_4 = TEST_TRIPLES_BASE_IRI + 'Building_4'
+BUILDINGS = [BUILDING_1, BUILDING_2, BUILDING_3, BUILDING_4]
+# Property market value estimations
+MARKET_VALUE_1 = TEST_TRIPLES_BASE_IRI + 'MarketValue_1'
+MARKET_VALUE_2 = TEST_TRIPLES_BASE_IRI + 'MarketValue_2'
+MARKET_VALUE_3 = TEST_TRIPLES_BASE_IRI + 'MarketValue_3'
+MARKET_VALUES = [MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+# Flood warnings
+FLOOD_WARNING_1 = TEST_TRIPLES_BASE_IRI + 'FloodWarning_1'
+FLOOD_WARNING_2 = TEST_TRIPLES_BASE_IRI + 'FloodWarning_2'
+FLOOD_WARNINGS = [FLOOD_WARNING_1, FLOOD_WARNING_2]
 
 # Define input sets to test
-DERIVATION_INPUTS_1 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
-                       AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_1_IRI]
-DERIVATION_INPUTS_2 = [PRICE_INDEX_INSTANCE_IRI, TRANSACTION_INSTANCE_1_IRI,
-                       AVERAGE_SQM_PRICE]
-DERIVATION_INPUTS_3 = [AVERAGE_SQM_PRICE, FLOOR_AREA_INSTANCE_3_IRI]
-DERIVATION_INPUTS_4 = [TRANSACTION_INSTANCE_2_IRI, TRANSACTION_INSTANCE_3_IRI]
+DERIVATION_INPUTS_1 = [FLOOD_WARNING_1,
+                       BUILDING_1, BUILDING_2, BUILDING_3, BUILDING_4,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_2 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2, BUILDING_3, BUILDING_4,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_3 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2,
+                       MARKET_VALUE_1, MARKET_VALUE_2]
+DERIVATION_INPUTS_4 = [FLOOD_WARNING_2,
+                       BUILDING_1, BUILDING_2,
+                       MARKET_VALUE_1, MARKET_VALUE_2, MARKET_VALUE_3]
+DERIVATION_INPUTS_5 = [FLOOD_WARNING_2]
+
+# Define expected output sets
+DERIVATION_OUTPUTS_1 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_POPULATION, FLOOD_BUILDINGS,
+                        OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
+DERIVATION_OUTPUTS_2 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDINGS,
+                        OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
+DERIVATION_OUTPUTS_5 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDINGS]
+
 # Test against pre-calculated value estimates from Excel (rounded)
-MARKET_VALUE_1 = 936000
-MARKET_VALUE_2 = 938000
-EXCEPTION_STATUS_1 = "More than one 'TransactionRecord' IRI provided"
+# (Number of buildings at risk, value of building at risk, people at risk)
+FLOOD_ASSESSMENT_1 = (0, 0, 0)          # Inactive flood alert
+FLOOD_ASSESSMENT_2 = (4, 1000000, None) # Active flood alert with buildings at risk
+FLOOD_ASSESSMENT_3 = (2, 700000, None)  # Active flood alert with buildings at risk
+FLOOD_ASSESSMENT_5 = (0, None, None)    # Active flood alert without buildings at risk
+
+EXCEPTION_STATUS_1 = "More value estimations than buildings provided"
+
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
 #
 
-# Property price index test data
-dates = pd.date_range(start='1990-01-01', freq='M', end='2022-10-01')
-VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
-VALUES = [i*(100/len(dates)) for i in range(1, len(dates)+1)]
-DATES = dates.strftime('%Y-%m').tolist()
-DATES = [d+'-01' for d in DATES]
-
 # Expected number of triples
 TBOX_TRIPLES = 25
-ABOX_TRIPLES = 48
-TS_TRIPLES = 4
+ABOX_TRIPLES = 26
 TIME_TRIPLES_PER_PURE_INPUT = 6
-DERIV_STATUS_TRIPLES = 2        # derivation status triples
-AGENT_SERVICE_TRIPLES = 5       # agent service triples
-DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
-DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-MARKET_VALUE_TRIPLES = 6        # triples added by `instantiate_property_value`
+#NOTE: derivation status triples get removed again after successful derivation execution
+DERIV_STATUS_TRIPLES = 2         # derivation status triples
+AGENT_SERVICE_TRIPLES = 5        # agent service triples
+DERIV_INPUT_TRIPLES = 2 + 3*3    # triples for derivation input message & parts:
+                                 # 2 triples for message, 3 triples per input concept
+DERIV_OUTPUT_TRIPLES = 2 + 3*3   # triples for derivation output message & parts:
+                                 # 2 triples for message, 3 triples per output concept
+# Flood assessment / derivation output triples
+FLOOD_ASSESSMENT_GENERAL = 5+2     # general flood assessment markup (i.e., newly instantiated
+                                   # FloodIRI, warnsAbout, number of affected buildings)
+                                   # + 2 "belongs to" triples
+FLOOD_ASSESSMENT_POPULATION = 3+1  # In case affected population is given +
+                                   # + 1 "belongs to" triple
+FLOOD_ASSESSMENT_BUILDINGS = 14+5  # In case value of affected buildings is given
+                                   # + 5 "belongs to" triples
+FLOOD_ASSESSMENT_DESCRIPTION = 1   # In case description is given
+
+# Define expected number of derivation triples
+DERIVATION_TRIPLES_1 = FLOOD_ASSESSMENT_GENERAL + FLOOD_ASSESSMENT_POPULATION + \
+                       FLOOD_ASSESSMENT_BUILDINGS - DERIV_STATUS_TRIPLES
+DERIVATION_TRIPLES_2 = FLOOD_ASSESSMENT_GENERAL + FLOOD_ASSESSMENT_BUILDINGS + \
+                       FLOOD_ASSESSMENT_DESCRIPTION - DERIV_STATUS_TRIPLES
+DERIVATION_TRIPLES_5 = FLOOD_ASSESSMENT_GENERAL + FLOOD_ASSESSMENT_DESCRIPTION - \
+                       DERIV_STATUS_TRIPLES + 3 # triples to create Impact IRI incl. "belongsTo"
 
 
 # ----------------------------------------------------------------------------------
@@ -143,41 +171,13 @@ def get_blazegraph_service_url(session_scoped_container_getter):
 
 
 @pytest.fixture(scope="session")
-def get_postgres_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
-        service = session_scoped_container_getter.get(service_name).network_info[0]
-        service_url = f"jdbc:postgresql://{hostname}:{service.host_port}/{url_route}"
-        print(f'PostgreSQL endpoint: {service_url}')
-
-        # This will run only once per entire test session
-        # It ensures that the requested PostgreSQL Docker service is ready to accept queries
-        service_available = False
-        while not service_available:
-            try:
-                conn = pg.connect(host=hostname, port=service.host_port,
-                                  user=DB_USER, password=DB_PASSWORD,
-                                  database=DATABASE)
-                if conn.status == pg.extensions.STATUS_READY:
-                    service_available = True
-            except Exception:
-                time.sleep(3)
-
-        print('Connected to PostgreSQL.')
-        return service_url
-    return _get_service_url
-
-
-@pytest.fixture(scope="session")
-def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
+def initialise_clients(get_blazegraph_service_url):
     # Retrieve "user-facing" endpoints for all clients/services relevant for testing
     # (i.e. invoked during testing from outside the Docker stack)
     # --> those shall be `localhost:...` even when agent is running as Docker container
     
     # Retrieve endpoint for triple store
     sparql_endpoint = get_blazegraph_service_url(KG_SERVICE, url_route=KG_ROUTE)
-
-    # Retrieve endpoint for postgres
-    rdb_url = get_postgres_service_url(RDB_SERVICE, url_route=RDB_ROUTE)
 
     # Create SparqlClient for testing
     sparql_client = KGClient(sparql_endpoint, sparql_endpoint)
@@ -189,7 +189,7 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
         update_endpoint=sparql_client.update_endpoint,
     )
 
-    yield sparql_client, derivation_client, rdb_url
+    yield sparql_client, derivation_client
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -207,7 +207,7 @@ def create_example_agent():
         alter_agent_iri:bool=False,
     ):
         agent_config = config_derivation_agent(AGENT_ENV)
-        agent = PropertyValueEstimationAgent(
+        agent = FloodAssessmentAgent(
             register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not alter_agent_iri else \
                       agent_config.ONTOAGENT_SERVICE_IRI + '_altered',
@@ -244,80 +244,38 @@ def initialise_triples(sparql_client):
         sparql_client.uploadGraph(g)
 
 
-def initialise_database(rdb_url):
-    # Deletes all tables in the database (before initialising prepared tables)
-    with connect_to_rdb(rdb_url) as conn:
-        cur=conn.cursor()
-        sql_query = """
-            DROP SCHEMA public CASCADE;
-            CREATE SCHEMA public;
-        """
-        cur.execute(sql_query)
-
-
-def get_number_of_rdb_tables(rdb_url):
-    # Returns total number of tables in given database
-    with connect_to_rdb(rdb_url) as conn:
-        cur=conn.cursor()
-        sql_query = """
-            SELECT table_name FROM information_schema.tables
-            WHERE table_schema = 'public'
-        """
-        cur.execute(sql_query)
-        rows = cur.fetchall()
-        return len(rows)
-
-
-def connect_to_rdb(rdb_url):
-        # Retrieve host and port from RDB URL assuming default format like
-        # jdbc:postgresql://localhost:5432/<url_route>
-        host = rdb_url.split(':')[2].replace('//', '')
-        port = rdb_url.split(':')[3].split('/')[0]
-        return pg.connect(host=host, port=port, database=DATABASE,
-                          user=DB_USER, password=DB_PASSWORD)
-
-
-def initialise_timeseries(kgclient, dataIRI, dates, values, rdb_url, 
-                          rdb_user, rdb_password):
-    # Initialise timeseries (in Blazegraph and PostgreSQL) with given dates and values
-    # Initialise time series client
-    ts_client = TSClient(kg_client=kgclient, rdb_url=rdb_url, rdb_user=rdb_user, 
-                         rdb_password=rdb_password)
-    # Create time series from test data                        
-    ts = TSClient.create_timeseries(dates, [dataIRI], [values])
-    
-    with ts_client.connect() as conn:
-        # Initialise time series in Blazegraph and PostgreSQL
-        ts_client.tsclient.initTimeSeries([dataIRI], [DATACLASS], TIME_FORMAT_SHORT, conn)
-        # Add test time series data
-        ts_client.tsclient.addTimeSeriesData(ts, conn)
-
-
-def retrieve_timeseries(kgclient, dataIRI, rdb_url, rdb_user, rdb_password):
-    # Initialise time series client
-    ts_client = TSClient(kg_client=kgclient, rdb_url=rdb_url, rdb_user=rdb_user, 
-                         rdb_password=rdb_password)
-    with ts_client.connect() as conn:
-        ts = ts_client.tsclient.getTimeSeries([dataIRI], conn)
-    dates = ts.getTimes()
-    # Unwrap Java time objects
-    dates = [d.toString() for d in dates]
-    values = ts.getValues(dataIRI)
-    return dates, values
-
-
-def get_marketvalue_details(sparql_client, market_value_iri):
-    # Returns details associated with Market Value instance (om:AmountOfMoney)
+def get_flood_assessment_details(sparql_client, derivation_iri):
+    # Returns details associated with Derivation instance
     query = f"""
-        SELECT ?value ?unit ?input_iri ?input_type
+        SELECT ?input_iri ?input_type ?population ?bldgs ?bldg_value ?bldg_unit
+               ?impact_value ?impact_unit
         WHERE {{
-        <{market_value_iri}> <{RDF_TYPE}> <{OM_AMOUNT_MONEY}> ; 
-                             <{OM_HAS_VALUE}> ?measure ; 
-                             <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
-        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
-                 <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit ; 
-                 <{OM_NUM_VALUE}> ?value . 
-        ?input_iri <{RDF_TYPE}> ?input_type . 
+            <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
+            ?input_iri <{RDF_TYPE}> ?input_type . 
+            ?buildings_iri <{RDF_TYPE}> <{FLOOD_BUILDINGS}> ; 
+                           <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                           <{FLOOD_HAS_TOTAL_COUNT}> ?bldgs . 
+            OPTIONAL {{
+                ?buildings_iri <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?building_value . 
+                ?building_value <{OM_HAS_VALUE}> ?building_measure . 
+                ?building_measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                                  <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?bldg_unit ; 
+                                  <{OM_NUM_VALUE}> ?bldg_value . 
+            }}
+            OPTIONAL {{
+                ?population_iri <{RDF_TYPE}> <{FLOOD_POPULATION}> ; 
+                                <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                                <{FLOOD_HAS_TOTAL_COUNT}> ?population . 
+            }}
+            OPTIONAL {{ 
+                ?impact <{RDF_TYPE}> <{FLOOD_IMPACT}> ; 
+                        <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
+                        <{FLOOD_HAS_MONETARY_VALUE}> ?imp_value . 
+                ?imp_value <{OM_HAS_VALUE}> ?imp_measure . 
+                ?imp_measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
+                             <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?impact_unit ; 
+                             <{OM_NUM_VALUE}> ?impact_value . 
+            }}
         }}
         """
     response = sparql_client.performQuery(query)
@@ -327,11 +285,28 @@ def get_marketvalue_details(sparql_client, market_value_iri):
         # Derivation inputs (i.e. isDerivedFrom)
         key = set([x['input_type'] for x in response])
         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
-        # Market Value and monetary unit
-        market_value = list(set([float(x['value']) for x in response]))
-        # NOTE: Fix encoding issue with pound sterling
-        unit = list(set([str(x['unit']).encode('ISO-8859-1').decode('utf-8') for x in response]))
-        return inputs, market_value, unit
+        # Extract impact, population and building details
+        impacts = {'population': None, 
+                   'bldgs': None,
+                   'bldg_value': None,
+                   'bldg_unit': None,
+                   'impact_value': None,
+                   'impact_unit': None
+                   }
+        for imp in impacts:
+            # Extract value if present in response
+            if 'unit' in imp:
+                try:
+                    impacts[imp] = list(set([str(x[imp]).encode('ISO-8859-1').decode('utf-8') for x in response]))
+                except:
+                    pass
+            else:
+                try:
+                    impacts[imp] = list(set([float(x[imp]) for x in response]))
+                except:
+                    pass
+
+        return inputs, impacts
 
 
 def get_derivation_status(sparql_client, derivation_iri):
