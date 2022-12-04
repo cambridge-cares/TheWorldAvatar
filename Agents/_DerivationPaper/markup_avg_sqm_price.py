@@ -20,12 +20,14 @@ logger = agentlogging.get_logger('dev')
 
 def retrieve_postal_code_info(sparql_client: PySparqlClient):
     # Construct query to retrieve below information for each postal code from KG
-    # - transaction record (tx) IRI
+    # - transaction record (tx) IRI (if available) - to accommodate for the case where there is no tx for a postal code but buildings in the postal code are affected by a flood
     # - property price index (ppi) IRI
     # Also, the query retrieve below information for each postal code if available
     # - average price per square meter (asp) IRI
     # - average price per square meter derivarion (derivation)
     # - transaction record used to calculate the existing asp (deriv_tx)
+    # NOTE the query is written in a way that it only retrieves postal code that has at least one property in it
+    # TODO [when turning this script into an agent] cover situation where the flood area contains no property
     query = f"""{pda_iris.PREFIX_RDF} {pda_iris.PREFIX_RDFS}
             SELECT DISTINCT ?postal ?tx ?ppi ?asp ?derivation ?deriv_tx
             WHERE {{
@@ -35,7 +37,7 @@ def retrieve_postal_code_info(sparql_client: PySparqlClient):
                 ?ppi <{iris.OBE_REPRESENTATIVE_FOR}> ?district.
                 ?property <{iris.OBE_HASADDRESS}> ?address.
                 ?property rdf:type/rdfs:subClassOf* <{iris.OBE_PROPERTY}>.
-                ?property <{iris.OBE_HASLATESTTRANSACTIONRECORD}> ?tx.
+                OPTIONAL {{ ?property <{iris.OBE_HASLATESTTRANSACTIONRECORD}> ?tx. }}
                 OPTIONAL {{
                     ?asp <{iris.OBE_REPRESENTATIVE_FOR}> ?postal.
                     ?asp <{pda_iris.ONTODERIVATION_BELONGSTO}> ?derivation.
@@ -62,13 +64,14 @@ def retrieve_postal_code_info(sparql_client: PySparqlClient):
     #     },
     #     ... # Postal code 2, 3, ...
     # ]
-    # NOTE As asp/derivation/deriv_tx are optional, they may not be presented in the returned list of dicts
+    # NOTE As tx/asp/derivation/deriv_tx are optional, they may not be presented in the returned list of dicts
     postal_code_info_lst = []
     postal_code_lst = dal.get_unique_values_in_list_of_dict(response, 'postal')
     for postal_code in postal_code_lst:
         postal_code_info = {}
         postal_code_info['postal_code'] = postal_code
         sub_response = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'postal', postal_code)
+        # 'tx' returned value will be an empty list if no tx is found
         postal_code_info['tx'] = dal.get_unique_values_in_list_of_dict(sub_response, 'tx')
         postal_code_info['ppi'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'ppi')
         # The function dal.get_the_unique_value_in_list_of_dict returns None if key `asp` does not exist
@@ -124,7 +127,9 @@ def avg_sqm_price_derivation_markup(
         new_tx_iri_lst = [iri for iri in transaction_record_iri_lst if iri not in existing_asp_derivation_tx_iri_lst]
         # Add the new tx iri to the existing derivation and request for update
         if bool(new_tx_iri_lst):
-            # Add timestamp to new tx iri
+            # NOTE this block of code is never reached in the derivation mvp as we only changed PropertyPriceIndex
+            # TODO [when turning this script into an agent] test this block of code
+            # Add timestamp to new tx iri (nothing happens if the iri already has timestamp)
             derivation_client.addTimeInstanceCurrentTimestamp(new_tx_iri_lst)
             # Add new tx iri to the existing derivation
             sparql_client.performUpdate(
@@ -149,7 +154,7 @@ if __name__ == '__main__':
     )
 
     # Retrieve all postal code info
-    # TODO this method assumes that each postal code already has at least one transaction record
+    # TODO this method assumes that each postal code already has at least one property, should expand to include postal code with no property
     postal_code_info_lst = retrieve_postal_code_info(sparql_client)
     print(f'Number of postal codes: {len(postal_code_info_lst)}')
 
