@@ -2148,6 +2148,7 @@ public class DerivationSparql {
 		List<Iri> targetDerivationTypeIriList = targetDerivationTypeList.stream().map(iri -> derivationToIri.get(iri))
 				.collect(Collectors.toList());
 		SelectQuery query = Queries.SELECT();
+		Variable derivationPreBind = query.var();
 		Variable derivation = query.var();
 		Variable input = query.var();
 		Variable inputType = query.var();
@@ -2222,8 +2223,13 @@ public class DerivationSparql {
 		// also here we alter the depth of the queried DAG by using upstreamPath
 		if (!rootDerivationIRI.equals(PLACEHOLDER)) {
 			if (!upstreamPath.equals(PLACEHOLDER_IRI)) {
-				GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivation);
-				query.where(rootDerivationPattern);
+				GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivationPreBind);
+				// NOTE here we use a BIND clause to restrict the derivation instance to be queried in the following
+				// query, this is to avoid the situation where the inputs of the derivation are too many thus the triple
+				// store execute the two blocks of query separately and then join them together, which is observed to
+				// crash the triple store
+				GraphPattern derivationBindPattern = new Bind(derivationPreBind, derivation);
+				query.where(rootDerivationPattern, derivationBindPattern);
 			} else {
 				ValuesPattern rootDerivationPattern = new ValuesPattern(derivation,
 						Arrays.asList(iri(rootDerivationIRI)));
