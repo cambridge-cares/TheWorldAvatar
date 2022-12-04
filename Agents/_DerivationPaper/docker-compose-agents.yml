@@ -11,7 +11,7 @@ services:
     env_file:
       # this file contains the environment variables for derivation agent parameters
       - ./env_files/agent.avgsqmprice.env
-    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload"]
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload", "--limit-request-line", "0"]
 
   propertyvalue_agent_deriv_mvp:
     image: ghcr.io/cambridge-cares/propertyvalue_agent_deriv_mvp:1.0.0-SNAPSHOT
@@ -23,7 +23,7 @@ services:
     env_file:
       # this file contains the environment variables for derivation agent parameters
       - ./env_files/agent.propertyvalue.env
-    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload"]
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload", "--limit-request-line", "0"]
 
   floodassessment_agent_deriv_mvp:
     image: ghcr.io/cambridge-cares/floodassessment_agent_deriv_mvp:1.0.0-SNAPSHOT
