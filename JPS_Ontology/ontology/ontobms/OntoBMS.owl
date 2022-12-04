@@ -190,15 +190,6 @@
 
 
 
-  <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Power -->
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
-
-
-
   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC">
