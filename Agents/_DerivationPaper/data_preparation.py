@@ -13,11 +13,8 @@ from property_price_index import initialise_ukhpi
 from pyderivationagent.kg_operations import PySparqlClient
 
 # REQUIRED FILES
-# Specify name of n-triples file with consolidated property data (to be further amended)
-triples_file = '20221130_consolidated_properties.nt'
-#triples_file = '20221130_consolidated_and_labeled_properties.nt'
-#triples_file = '20221201_FloodAssessment_markup_stuck_at_Finished_status.nt'
-#triples_file = '20221202_FloodAssessment_derivation_markup.nt'
+# Specify name of n-triples file with consolidated property data
+triples_file = '20221203_consolidated_and_labeled_properties.nt'
 
 # Specify name of building location csv to be extracted from KG
 bldg_loc = 'building_locations.csv'
