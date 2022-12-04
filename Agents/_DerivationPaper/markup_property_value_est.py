@@ -10,6 +10,7 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 from configs import DERIVATION_INSTANCE_BASE_URL
 from configs import PROPERTY_VALUE_ESTIMATION_AGENT_IRI
+from configs import PROPERTY_VALUE_ESTIMATION_AGENT_URL
 import iris
 
 from py4jps import agentlogging
@@ -99,8 +100,13 @@ def property_value_estimation_derivation_markup(
             # Create sync derivation for new info to get property value estimation computed
             input_lst = [property_price_index_iri, floor_area_iri, transaction_record_iri, avg_sqm_price_iri]
             input_iris = [iri for iri in input_lst if iri is not None]
-            derivation = derivation_client.createSyncDerivationForNewInfo(
+            # NOTE Here we use the function call createSyncDerivationForNewInfoWithHttpUrl instead of createSyncDerivationForNewInfo
+            # This is to workaround the fact that the hasHttpUrl for the agent operation is stored with host.docker.internal
+            #   which is not accessible from the host machine, hence we converted it to localhost and manually pass it in
+            # TODO [when turning this script into an agent] keep host.docker.internal or let stack manager to take care of the routing
+            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
                 agentIRI=PROPERTY_VALUE_ESTIMATION_AGENT_IRI,
+                agentURL=PROPERTY_VALUE_ESTIMATION_AGENT_URL,
                 inputsIRI=input_iris,
                 derivationType=pda_iris.ONTODERIVATION_DERIVATION,
             )
