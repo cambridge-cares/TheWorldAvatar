@@ -94,6 +94,7 @@ class AvgSqmPriceAgent(DerivationAgent):
 
 
         # Check whether previous transactions are available
+        #TODO: return empty list for non available previous transactions
         if inputs.get(LRPPI_TRANSACTION_RECORD):
             tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
         else:

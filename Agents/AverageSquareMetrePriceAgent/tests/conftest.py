@@ -81,12 +81,14 @@ DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
                        TRANSACTION_INSTANCE_3_IRI]
 POSTCODE_1 = 'ABC 123'
-# test against previously calculated average value from Excel (rounded)
+# Test average against previously calculated average value from Excel (rounded)
 AVGPRICE_1 = 3351
 DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
 POSTCODE_2 = 'DEF 456'
 AVGPRICE_2 = 3600
+# Test for postcodes without transaction records
+DERIVATION_INPUTS_3 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI]
 
 
 # ----------------------------------------------------------------------------------
