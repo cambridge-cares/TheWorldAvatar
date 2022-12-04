@@ -8,7 +8,8 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
 
 from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 from configs import DERIVATION_INSTANCE_BASE_URL
-from configs import AVG_SQM_PRICE_AGENT_IRI
+from configs import AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI
+from configs import AVERAGE_SQUARE_METRE_PRICE_AGENT_URL
 import iris
 
 from py4jps import agentlogging
@@ -103,8 +104,13 @@ def avg_sqm_price_derivation_markup(
             # Either here or in the AverageSquareMetrePriceAgent where the HTTP request is made (the latter is preferred)
 
             # Create sync derivation for new info to get avg_sqm_price computed
-            derivation = derivation_client.createSyncDerivationForNewInfo(
-                agentIRI=AVG_SQM_PRICE_AGENT_IRI,
+            # NOTE Here we use the function call createSyncDerivationForNewInfoWithHttpUrl instead of createSyncDerivationForNewInfo
+            # This is to workaround the fact that the hasHttpUrl for the agent operation is stored with host.docker.internal
+            #   which is not accessible from the host machine, hence we converted it to localhost and manually pass it in
+            # TODO [when turning this script into an agent] keep host.docker.internal or let stack manager to take care of the routing
+            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                agentIRI=AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI,
+                agentURL=AVERAGE_SQUARE_METRE_PRICE_AGENT_URL,
                 inputsIRI=[postal_code_iri, property_price_index_iri] + transaction_record_iri_lst,
                 derivationType=pda_iris.ONTODERIVATION_DERIVATION,
             )
