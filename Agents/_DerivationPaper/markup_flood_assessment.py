@@ -25,6 +25,27 @@ affected = 'affected_property_iris.csv'
 # Flood warning iri
 flood_warning_iri = iris.flood_warning_iri
 
+
+def retrieve_flood_assessment_derivation_iri(
+    sparql_client: PySparqlClient,
+    flood_warning_iri: str,
+    flood_assessment_agent_iri: str,
+):
+    query = f"""
+            SELECT DISTINCT ?flood_assessment_derivation
+            WHERE {{
+                ?flood_assessment_derivation <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{flood_warning_iri}>.
+                ?flood_assessment_derivation <{pda_iris.ONTODERIVATION_ISDERIVEDUSING}> <{flood_assessment_agent_iri}>.
+            }}"""
+    query = ' '.join(query.split())
+    logger.info(f"Query to retrieve flood assessment derivation iri: {query}")
+    response = sparql_client.performQuery(query)
+    logger.info(f"Response: {response}")
+    if len(response) == 0:
+        return None
+    else:
+        return response[0].get('flood_assessment_derivation')
+
 def retrieve_affected_property_info(sparql_client: PySparqlClient, affected_property_iris: list):
     # Construct query to retrieve below information for each affected property from KG
     # NOTE for this iteration, we assume that the property value estimation is already computed if the derivation is created
@@ -67,28 +88,24 @@ def flood_assessment_derivation_markup(
     flood_warning_iri: str,
     affected_building_iris: List[str],
     property_value_iris: List[str],
+    flood_assessment_derivation_iri: str = None,
 ):
-
-    try:
-        # Create async derivation for new info to get flood assessment computed
-        input_lst = [flood_warning_iri] + affected_building_iris + property_value_iris
-        # derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
-        #     agentIRI=FLOOD_ASSESSMENT_AGENT_IRI,
-        #     inputsAndDerivations=input_lst,
-        # )
-        # logger.info(f"Created Async derivation for new info: {derivation_iri}, which will be computed shortly")
-        derivation = derivation_client.createSyncDerivationForNewInfo(
-            agentIRI=FLOOD_ASSESSMENT_AGENT_IRI,
-            inputsIRI=input_lst,
-            derivationType=pda_iris.ONTODERIVATION_DERIVATION,
-        )
-        logger.info(f"Created Sync derivation for new info: {derivation.getIri()}")
-        # logger.info(f"Derivation status: {derivation.getBelongsToIris()}")
-    except Exception as e:
-        logger.error(f"Failed to create async derivation for new info, inputsAndDerivations: {str(input_lst)}")
-        raise e
-
-    # TODO add request for updateDerivation if the flood warning derivation is already instantiated
+    if flood_assessment_derivation_iri is None:
+        try:
+            # Create async derivation for new info to get flood assessment computed
+            input_lst = [flood_warning_iri] + affected_building_iris + property_value_iris
+            derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
+                agentIRI=FLOOD_ASSESSMENT_AGENT_IRI,
+                inputsAndDerivations=input_lst,
+            )
+            logger.info(f"Created Async derivation for new info: {derivation_iri}, which will be computed shortly")
+        except Exception as e:
+            logger.error(f"Failed to create async derivation for new info, inputsAndDerivations: {str(input_lst)}")
+            raise e
+    else:
+        # Request for derivation update if the flood warning derivation is already instantiated
+        derivation_client.unifiedUpdateDerivation(flood_assessment_derivation_iri)
+        logger.info(f"Requested for derivation update: {flood_assessment_derivation_iri}, should be done shortly")
 
 
 def get_the_affected_buildings(input_csv):
@@ -135,4 +152,9 @@ if __name__ == '__main__':
         flood_warning_iri=flood_warning_iri,
         affected_building_iris=affected_building_iris,
         property_value_iris=[property_info_dct[iri]['mv'] for iri in affected_building_iris],
+        flood_assessment_derivation_iri=retrieve_flood_assessment_derivation_iri(
+            sparql_client=sparql_client,
+            flood_warning_iri=flood_warning_iri,
+            flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI,
+        )
     )
