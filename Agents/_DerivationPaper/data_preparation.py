@@ -86,6 +86,8 @@ def extract_property_locations(kg_client, output_file):
     # Execute query and retrieve results
     results = kg_client.performQuery(query)
     df = pd.DataFrame(results)
+    # TODO encountered below warning when running this script as main
+    # FutureWarning: In a future version of pandas all arguments of StringMethods.split except for the argument 'pat' will be keyword-only.
     df[['latitude', 'longitude']] = df['location'].str.split('#', 1, expand=True)
 
     # Write results to csv file
