@@ -31,8 +31,10 @@ def retrieve_property_info(sparql_client: PySparqlClient):
     # NOTE for this iteration, we assume that the average sqm price is already computed if the derivation is created
     # Also query if the market value is already computed
     # - market value (mv) IRI (if available)
+    # - market value derivation IRI (if available)
+    # - market value derivation isDerivedFrom existing transaction record (if available)
     query = f"""{pda_iris.PREFIX_RDF} {pda_iris.PREFIX_RDFS}
-            SELECT DISTINCT ?property ?ppi ?area ?tx ?asp ?mv
+            SELECT DISTINCT ?property ?ppi ?area ?tx ?asp ?mv ?derivation ?deriv_tx
             WHERE {{
                 ?property rdf:type/rdfs:subClassOf* <{iris.OBE_PROPERTY}>.
                 ?property <{iris.OBE_HASADDRESS}> ?address.
@@ -49,6 +51,11 @@ def retrieve_property_info(sparql_client: PySparqlClient):
                 }}
                 OPTIONAL {{
                     ?property <{iris.OBE_HASMARKETVALUE}> ?mv.
+                    ?mv <{pda_iris.ONTODERIVATION_BELONGSTO}> ?derivation.
+                    OPTIONAL {{
+                        ?derivation <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?deriv_tx.
+                        ?deriv_tx rdf:type <{iris.PPI_TRANSACTIONRECORD}>.
+                    }}
                 }}
             }}"""
 
@@ -75,12 +82,14 @@ def retrieve_property_info(sparql_client: PySparqlClient):
     for property_iri in property_lst:
         property_info_dct[property_iri] = {}
         sub_response = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'property', property_iri)
-        # it will be assigned as None if the key is not found
+        # it will be assigned as None if the key is not found, and it will raise an error if there are more than one
         property_info_dct[property_iri]['ppi'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'ppi')
         property_info_dct[property_iri]['area'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'area')
         property_info_dct[property_iri]['tx'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'tx')
         property_info_dct[property_iri]['asp'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'asp')
         property_info_dct[property_iri]['mv'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'mv')
+        property_info_dct[property_iri]['derivation'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'derivation')
+        property_info_dct[property_iri]['deriv_tx'] = dal.get_the_unique_value_in_list_of_dict(sub_response, 'deriv_tx')
 
     return property_info_dct
 
@@ -94,6 +103,8 @@ def property_value_estimation_derivation_markup(
     transaction_record_iri: str = None,
     avg_sqm_price_iri: str = None,
     market_value_iri: str = None,
+    market_value_derivation_iri: str = None,
+    market_value_derivation_tx_iri: str = None,
 ):
     if market_value_iri is None:
         try:
@@ -116,28 +127,49 @@ def property_value_estimation_derivation_markup(
             logger.error(f"Failed to create sync derivation for new info, inputsIRI: {str(input_iris)}")
             raise e
     else:
-        logger.info(f"Market value is already computed for {property_iri}, no need to create derivation")
-        # TODO think through what to do if the market value is already computed
-        pass
-        # # Construct a list of tx iri that are not used to calculate the existing avg sqm price
-        # new_tx_iri_lst = [iri for iri in transaction_record_iri_lst if iri not in existing_asp_derivation_tx_iri_lst]
-        # # Add the new tx iri to the existing derivation and request for update
-        # if bool(new_tx_iri_lst):
-        #     # Add timestamp to new tx iri
-        #     derivation_client.addTimeInstanceCurrentTimestamp(new_tx_iri_lst)
-        #     # Add new tx iri to the existing derivation
-        #     sparql_client.performUpdate(
-        #         f"""
-        #         INSERT DATA {{
-        #             VALUES ?tx {{ {' '.join([f'<{iri}>' for iri in new_tx_iri_lst])} }}
-        #             <{existing_asp_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?tx.
-        #         }}"""
-        #     )
-        #     # Request for derivation update
-        #     derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
-        #     logger.info(f"Added new tx iri ({new_tx_iri_lst}) to existing derivation: {existing_asp_derivation_iri}")
-        # else:
-        #     logger.info(f"No new tx iri to add to existing derivation: {existing_asp_derivation_iri}")
+        # This means the property already has a market value, so we don't need to create a new derivation
+        # NOTE this block of code is never reached in the derivation mvp as we only changed PropertyPriceIndex
+        # TODO [when turning this script into an agent] test this block of code
+        logger.info(f"Market value {market_value_iri} exists for Property {property_iri}, no need to create derivation, checking if need to add any new transaction record...")
+
+        if market_value_derivation_tx_iri is None:
+            if transaction_record_iri is not None:
+                # This means the market value is derived from AverageSquareMetrePrice and FloorArea, but not from TransactionRecord
+                # Moreover, a new TransactionRecord was made available in HM Land Registry after the last time the PropertyValueEstimation was computed
+                # Therefore, here we add the new TransactionRecord to the inputs of derivation
+                # Add timestamp to new tx iri (nothing happens if the iri already has timestamp)
+                derivation_client.addTimeInstanceCurrentTimestamp(transaction_record_iri)
+                # Add new tx iri to the existing derivation
+                sparql_client.performUpdate(
+                    f"""
+                    INSERT DATA {{
+                        <{market_value_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{transaction_record_iri}>.
+                    }}"""
+                )
+                # Request for derivation update
+                derivation_client.unifiedUpdateDerivation(market_value_derivation_iri)
+                logger.info(f"Added new tx iri ({transaction_record_iri}) to existing derivation: {market_value_derivation_iri} and requested for an update")
+            else:
+                # This means the market value is derived from AverageSquareMetrePrice and FloorArea, but not from TransactionRecord
+                # Moreover, there's no new TransactionRecord made available in HM Land Registry
+                # Therefore, here we do nothing
+                logger.info(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include AverageSquareMetrePrice {avg_sqm_price_iri} and FloorArea {floor_area_iri}, but not TransactionRecord, no new TransactionRecord is made available in HM Land Registry")
+        else:
+            # market_value_derivation_tx_iri is not None, so market value is derived from TransactionRecord
+            # Given the design of PropertySales Instantiation (HM Land Registry Agent), if a new TransactionRecord is available:
+            #   the IRI of the TransactionRecord will be kept the same, only its value and timestamp will be updated
+            # Therefore, the market_value_derivation_tx_iri and transaction_record_iri MUST be the same
+
+            if market_value_derivation_tx_iri != transaction_record_iri:
+                raise Exception(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include TransactionRecord {market_value_derivation_tx_iri}, but it is different from the TransactionRecord {transaction_record_iri} directly connected to Property {property_iri} via {iris.OBE_HASLATESTTRANSACTIONRECORD}")
+            else:
+                # One may choose to request for update this derivation here but it is not strictly necessary
+                # As one can always request for update at another time where the information is actually needed
+                # Or one can marked the market value as input to other derivations so that it will be updated automatically by the Derived Information Framework
+                # So the PropertyValueEstimation Derivation will always have correct inputs as long as the TransactionRecord is marked up in the first place
+                # And the timestmap update of the TransactionRecord at HM Land Registry Agent side will make the PropertyValueEstimation Derivation outdated
+                #   which will be handled by the Derived Information Framework
+                logger.info(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include TransactionRecord {transaction_record_iri}")
 
 
 def get_the_affected_buildings(input_csv):
