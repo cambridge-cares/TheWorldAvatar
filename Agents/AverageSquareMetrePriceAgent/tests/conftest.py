@@ -15,7 +15,6 @@ import pytest
 import time
 import uuid
 import os
-import re
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, THRESHOLD, \
