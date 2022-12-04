@@ -97,8 +97,9 @@ class AvgSqmPriceAgent(DerivationAgent):
         if inputs.get(LRPPI_TRANSACTION_RECORD):
             tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
         else:
-            self.logger.error(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
-            raise Exception(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
+            # Return empty list (instead of None) for non available previous transactions
+            tx_iris = []
+            self.logger.info(f"Derivation {derivationIRI}: No previous property sales transactions available for postcode.")
 
         return postcode_iri, ppi_iri, tx_iris
 

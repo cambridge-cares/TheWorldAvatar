@@ -113,7 +113,7 @@ class KGClient(PySparqlClient):
         return tx_iris
 
 
-    def get_tx_count_for_postcodes(self, postcodes:list) -> str:
+    def get_tx_count_for_postcodes(self, postcodes:list) -> dict:
         # Retrieve number of available sales transactions for postcode(s) and
         # return dictionary with postcode as key and number of transactions as value
         values_statement = self.format_literal_values_statement(postcodes)    
