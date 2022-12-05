@@ -1,23 +1,27 @@
-# This module creates geojson output files for visualisation of (affected) buildings
+# This module creates geojson output files for visualisation of the flood assessment
 
 from pathlib import Path
 from typing import List
+import requests
 import json
 import os
 
 from pyderivationagent import PySparqlClient
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 
-from configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
+from configs import get_sparql_query_endpoint, get_sparql_update_endpoint
+from configs import KG_FIRST_ROUND_NAMESPACE, KG_SECOND_ROUND_NAMESPACE
 import iris
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
-# Specify number of derivation cascade, i.e. 1st or 2nd
-cascade = '_first_round'
-#cascade = '_second_round'
+# Specify the file name for the snapshot triples
+triples_snapshot = {
+    KG_FIRST_ROUND_NAMESPACE: '20221204_snapshot_after_the_first_round_derivation.nt',
+    KG_SECOND_ROUND_NAMESPACE: '20221204_snapshot_after_the_second_round_derivation.nt',
+}
 
 # Specify queries and geojson output file names
 # NOTE Here we mocked the affected buildings, i.e. determined beforehand and got label
@@ -40,14 +44,6 @@ query_not_affected = f"""
         OPTIONAL {{ ?property <{iris.OBE_HASMARKETVALUE}>/<{iris.OM_HAS_VALUE}>/<{iris.OM_HAS_NUMERICAL_VALUE}> ?value }}
         FILTER NOT EXISTS {{ ?property <{iris.RDFS_LABEL}> "affected" }}
     }}"""
-    
-geojson_affected = f'affected_buildings{cascade}.geojson'
-geojson_not_affected = f'not_affected_buildings{cascade}.geojson'
-
-# Specify filepath to flood area geojson file
-flood_area = f'flood-areas{cascade}.geojson'
-flood_original = os.path.join(Path(__file__).parent, 'data', flood_area)
-flood_amended = os.path.join(Path(__file__).parent, 'visualisation', 'data', flood_area)
 
 
 class BuildingPoint:
@@ -108,10 +104,7 @@ def retrieve_property_locations(sparql_client: PySparqlClient, query: str):
     # Rearrange response into a dictionary where the information for each property are grouped together
     # Target format of the dictionary:
     # {
-    #     "property": {
-    #         'lat_long': lat_long,
-    #         'value': value
-    #     },
+    #     "property": { 'lat_long': lat_long, 'value': value },
     #     ... (other properties)
     # }
     property_info_dct = {}
@@ -143,49 +136,124 @@ def get_assessment_for_area(individual_properties: dict):
     return n, total_value
 
 
+def generate_geojson_for_buildings(
+    sparql_client: PySparqlClient,
+    query: str,
+    geojson_filepath: str,
+):
+    # Retrieve all affected building info
+    property_location_dct = retrieve_property_locations(sparql_client, query)
+
+    # Construct a list of BuildingPoint objects
+    bldg_pts = [
+        BuildingPoint(
+            lat=float(property_location_dct[iri]['lat_long'].split('#')[0]),
+            long=float(property_location_dct[iri]['lat_long'].split('#')[1]),
+            value=None if not property_location_dct[iri]['value'] else int(property_location_dct[iri]['value']),
+            iri=iri
+        ) for iri in property_location_dct.keys()
+    ]
+
+    # Generate geojson file
+    fp = os.path.join(Path(__file__).parent, 'visualisation','data', geojson_filepath)
+    generate_geojson(bldg_pts, fp)
+
+    return property_location_dct
+
+
+def create_blazegraph_namespace(endpoint):
+    """
+    Creates Blazegraph namespace with name as specified in SPARQL update endpoint
+    """
+
+    # Extract Blazegraph REST API url from SPARQL endpoint
+    url = endpoint[:endpoint.find('namespace') + len('namespace')]
+
+    # Extract name for new namespace from SPARQL endpoint
+    ns = endpoint[endpoint.find('namespace') + len('namespace') + 1:]
+    ns = ns[:ns.find('/')]
+
+    # Define POST request header and payload
+    header = {'Content-type': 'text/plain'}
+
+    payload = 'com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms\r\n' \
+              'com.bigdata.rdf.sail.isolatableIndices=false\r\n' \
+              'com.bigdata.rdf.sail.truthMaintenance=false\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.justify=false\r\n' \
+              'com.bigdata.namespace.{}.spo.com.bigdata.btree.BTree.branchingFactor=1024\r\n' \
+              'com.bigdata.rdf.sail.namespace={}\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.quads=False\r\n' \
+              'com.bigdata.namespace.{}.lex.com.bigdata.btree.BTree.branchingFactor=400\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.geoSpatial=False\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers=false'.format(ns, ns, ns)
+
+    # Post the request
+    response = requests.post(url, payload, headers=header)
+
+    if response.status_code == 201:
+        print('New namespace \"{}\" successfully created.\n'.format(ns))
+    elif response.status_code == 409:
+        print('Namespace \"{}\" already exists\n'.format(ns))
+    else:
+        print('Request status code: {}\n'.format(response.status_code))
+
+
 if __name__ == '__main__':
-    
-    # Create a PySparqlClient instance
-    sparql_client = PySparqlClient(
-        query_endpoint=SPARQL_QUERY_ENDPOINT,
-        update_endpoint=SPARQL_UPDATE_ENDPOINT,
-    )
-    
-    # Initialise areal assessment
-    total_bldgs, total_value = 0, 0
-    
-    buildings = [(query_affected, geojson_affected), 
-                 (query_not_affected, geojson_not_affected)]
+    # Iterate through the first and second round of assessments to generate geojson files
+    for cascade in [KG_FIRST_ROUND_NAMESPACE, KG_SECOND_ROUND_NAMESPACE]:
+        logger.info("======================================================================================")
+        logger.info(f"Generating geojson for {cascade}")
+        sparql_query_endpoint = get_sparql_query_endpoint(cascade)
+        sparql_update_endpoint = get_sparql_update_endpoint(cascade)
 
-    for query, geojson in buildings:
-        # Retrieve all affected building info
-        property_location_dct = retrieve_property_locations(sparql_client, query)
+        # 1) Upload results to Blazegraph for visualisation
+        # Create Blazegraph namespace if it does not exist
+        logger.info(f"Creating Blazegraph namespace for {cascade}")
+        create_blazegraph_namespace(sparql_query_endpoint)
 
-        if geojson == geojson_affected:
-            total_bldgs, total_value = get_assessment_for_area(property_location_dct)
+        # Create a PySparqlClient instance
+        sparql_client = PySparqlClient(
+            query_endpoint=sparql_query_endpoint,
+            update_endpoint=sparql_update_endpoint,
+        )
 
-        # Construct a list of BuildingPoint objects
-        bldg_pts = [
-            BuildingPoint(
-                lat=float(property_location_dct[iri]['lat_long'].split('#')[0]),
-                long=float(property_location_dct[iri]['lat_long'].split('#')[1]),
-                value=None if not property_location_dct[iri]['value'] else int(property_location_dct[iri]['value']),
-                iri=iri
-            ) for iri in property_location_dct.keys()
-        ]
+        # Upload results to Blazegraph
+        triples = os.path.join(Path(__file__).parent, 'data', triples_snapshot[cascade])
+        logger.info(f"Uploading triples to Blazegraph for {cascade}")
+        sparql_client.uploadOntology(triples)
+        logger.info(f"Triples uploaded to Blazegraph for {cascade}")
 
-        # Generate geojson file
-        fp = os.path.join(Path(__file__).parent, 'visualisation','data', geojson)
-        generate_geojson(bldg_pts, fp)
+        # 2) Generate geojson files for visualisation
+        # Prepare file path for geojson files
+        geojson_affected = f'affected_buildings{cascade}.geojson'
+        flood_area_original_filename = f'flood-areas.geojson'
+        flood_amended_filename = f'flood-areas{cascade}.geojson'
+        flood_original = os.path.join(Path(__file__).parent, 'data', flood_area_original_filename)
+        flood_amended = os.path.join(Path(__file__).parent, 'visualisation', 'data', flood_amended_filename)
 
-    # Create amended flood area geojson with updated assessment
-    # To ensure correct formatting of GBP symbol suppress ascii encoding and use UTF-8
-    with open(flood_original, encoding='utf-8') as f:
-        area = json.load(f)
-    total_value = round(total_value/1000000,2)
-    area['features'][0]['properties']['Buildings at risk']['Number of buildings'] = total_bldgs
-    area['features'][0]['properties']['Buildings at risk']['Estimated market value (£m)'] = total_value
-    # To ensure correct formatting of GBP symbol suppress ascii encoding
-    with open(flood_amended, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(area, ensure_ascii=False, indent=4))
-    
+        # Generate geojson files for affected buildings
+        property_location_dct = generate_geojson_for_buildings(sparql_client, query_affected, geojson_affected)
+        # Initialise areal assessment
+        total_bldgs, total_value = get_assessment_for_area(property_location_dct)
+
+        # Create amended flood area geojson with updated assessment
+        # To ensure correct formatting of GBP symbol suppress ascii encoding and use UTF-8
+        with open(flood_original, encoding='utf-8') as f:
+            area = json.load(f)
+        total_value = round(total_value/1000000,2)
+        area['features'][0]['properties']['Buildings at risk']['Number of buildings'] = total_bldgs
+        area['features'][0]['properties']['Buildings at risk']['Estimated market value (£m)'] = total_value
+        # To ensure correct formatting of GBP symbol suppress ascii encoding
+        with open(flood_amended, 'w', encoding='utf-8') as f:
+            f.write(json.dumps(area, ensure_ascii=False, indent=4))
+        logger.info(f"Geojson files generated for {cascade}: {geojson_affected} and {flood_amended_filename}")
+
+    # Also generate geojson file for buildings not affected by flood
+    geojson_not_affected = f'not_affected_buildings.geojson'
+    # NOTE here we reuse the sparql_client from the second round of assessments
+    generate_geojson_for_buildings(sparql_client, query_not_affected, geojson_not_affected)
+    logger.info(f"Geojson files generated for buildings not affected by flood: {geojson_not_affected}")
+
+# Amend flood area geojson with updated assessment
+import amend_geojsons

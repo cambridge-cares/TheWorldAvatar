@@ -5,6 +5,12 @@ from pyderivationagent import config_derivation_agent
 def host_docker_internal_to_localhost(url: str):
     return url.replace('host.docker.internal', 'localhost')
 
+def get_sparql_query_endpoint(namespace: str):
+    return f'http://localhost:9998/blazegraph/namespace/{namespace}/sparql'
+
+def get_sparql_update_endpoint(namespace: str):
+    return f'http://localhost:9998/blazegraph/namespace/{namespace}/sparql'
+
 # Endpoints and properties for KG and RDB interaction
 # (need to match values specified in docker-compose file)
 DB_USER = 'postgres'
@@ -13,8 +19,8 @@ KG_NAMESPACE = 'mvp'
 
 # Use default 'postgres' namespace for RDB
 DB_URL = 'jdbc:postgresql://localhost:9997/postgres'
-SPARQL_QUERY_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{KG_NAMESPACE}/sparql'
-SPARQL_UPDATE_ENDPOINT = f'http://localhost:9998/blazegraph/namespace/{KG_NAMESPACE}/sparql'
+SPARQL_QUERY_ENDPOINT = get_sparql_query_endpoint(KG_NAMESPACE)
+SPARQL_UPDATE_ENDPOINT = get_sparql_update_endpoint(KG_NAMESPACE)
 
 # Derivation instance base URL
 DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
@@ -41,3 +47,7 @@ PROPERTY_VALUE_ESTIMATION_AGENT_URL = host_docker_internal_to_localhost(pve_agen
 # 'http://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service'
 FLOOD_ASSESSMENT_AGENT_IRI = fa_agent_config.ONTOAGENT_SERVICE_IRI
 FLOOD_ASSESSMENT_AGENT_URL = host_docker_internal_to_localhost(fa_agent_config.ONTOAGENT_OPERATION_HTTP_URL)
+
+# Namespaces for the visualisation
+KG_FIRST_ROUND_NAMESPACE = '_first_round'
+KG_SECOND_ROUND_NAMESPACE = '_second_round'
