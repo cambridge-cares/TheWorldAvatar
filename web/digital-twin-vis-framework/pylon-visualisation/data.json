@@ -184,7 +184,7 @@
                     "name": "Low Voltage Overhead Lines",
                     "source": "low-overhead-lines-source",
                     "treeable": false,
-                    "minzoom": 7,
+                    "minzoom": 8,
                     "layout": {
                         "visibility": "visible"
                     }
