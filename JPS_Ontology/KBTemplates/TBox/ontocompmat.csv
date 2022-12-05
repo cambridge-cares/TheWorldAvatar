@@ -1,0 +1,11 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoCompMat,TBox,http://www.theworldavatar.com/kg/ontocompmat,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoCompMat,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoCompMat,TBox,OntoCompMat is an ontology developed for representing composite composite materials.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoCompMat,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Composite Material,Class,http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356,,,,,"A material consisting of two or more distinct phases bonded together (Comprehensive Composite Materials, 2000)",,"Composite material, Composite"
+Polymer Matrix Composite,Class,Composite Material,,,,,,,"Polymer matrix composite, PMC"
+Metal Matrix Composite,Class,Composite Material,,,,,,,"Metal matrix composite, MMC"
+Ceramic Matrix Composite,Class,Composite Material,,,,,,,"Ceramic matrix composite, CMC"
+Carbon Matrix Composite,Class,Composite Material,,,,,,,"Carbon matrix composite, CAMC"
+Carbon-carbon Composite,Class,Carbon Matrix Composite,,,,,,,"Carbon–carbon composite, CCC"
