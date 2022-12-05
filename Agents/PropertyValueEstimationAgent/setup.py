@@ -17,7 +17,7 @@ setup(
         'flask~=2.1.0',
         'JayDeBeApi~=1.2.3',
         'pandas~=1.5.1',
-        'py4jps~=1.0.29',
+        'py4jps~=1.0.30',
         'requests~=2.28.1',
         'pyderivationagent~=1.4.1'
     ],
