@@ -12,7 +12,7 @@ For each of the building in the Solarkataster data, the 12 parameters are instan
 
 The agent is available at http://localhost:10101/solarkataster_agent/run
 
-The agent accepts two parameters, `table` and `chunk`. `table` should be the table name of the Solarkataster data. `chunk` should be an integer, representing how many chunks to divide the SPARQl update in.
+The agent accepts two parameters, `table` and `chunk`. `table` should be the table name of the Solarkataster data. `chunk` should be an integer, representing how many chunks to divide the SPARQL update in.
 
 Example request:
 ```
