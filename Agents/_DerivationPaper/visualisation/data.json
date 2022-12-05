@@ -60,13 +60,13 @@
                         {
                             "id": "buildings-affected-1",
                             "type": "geojson",
-                            "data": "data/affected_buildings_first_round.geojson", 
+                            "data": "data/affected_buildings_first_round_adj.geojson", 
                             "generateId": true
                         },
                         {
                             "id": "buildings-affected-2",
                             "type": "geojson",
-                            "data": "data/affected_buildings_second_round.geojson", 
+                            "data": "data/affected_buildings_second_round_adj.geojson", 
                             "generateId": true
                         }
                     ], 
