@@ -101,25 +101,14 @@ def append_ifcconvert_command(key, value, ifcconvert_command):
     # Add the entities arg for only building key
     if key == "building":
         ifcconvert_command += ["--exclude", "entities"]
-        id_attributes = []
-        while len(value) > 0:
-            item = value.pop(0)
-            if isinstance(item, dict):
-                id_attributes = item["id"]
-            else:
-                ifcconvert_command += [item]
-        # If there are IDs available, append them to the command
-        if id_attributes:
-            ifcconvert_command += ["attribute", "GlobalId"]
-            ifcconvert_command += id_attributes
     # Other keys will only require an attribute arg
     else:
         ifcconvert_command += ["--include", "attribute", "GlobalId"]
-        # Value may be either a list or a single object
-        if isinstance(value, list):
-            ifcconvert_command += value
-        else:
-            ifcconvert_command += [value]
+    # Value may be either a list or a single object
+    if isinstance(value, list):
+        ifcconvert_command += value
+    else:
+        ifcconvert_command += [value]
     return ifcconvert_command
 
 
