@@ -2,7 +2,7 @@
     "name": "pylons",
     "externalDatasets": [
         "pylons",
-        "forestry",
+        "forestry-reduced",
         "cropmap-reduced"
     ]
 }
