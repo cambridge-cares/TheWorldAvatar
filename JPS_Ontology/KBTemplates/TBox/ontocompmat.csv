@@ -3,9 +3,33 @@ OntoCompMat,TBox,http://www.theworldavatar.com/kg/ontocompmat,https://www.w3.org
 OntoCompMat,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoCompMat,TBox,OntoCompMat is an ontology developed for representing composite composite materials.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoCompMat,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-Composite Material,Class,http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356,,,,,"A material consisting of two or more distinct phases bonded together (Comprehensive Composite Materials, 2000)",,"Composite material, Composite"
-Polymer Matrix Composite,Class,Composite Material,,,,,,,"Polymer matrix composite, PMC"
-Metal Matrix Composite,Class,Composite Material,,,,,,,"Metal matrix composite, MMC"
-Ceramic Matrix Composite,Class,Composite Material,,,,,,,"Ceramic matrix composite, CMC"
-Carbon Matrix Composite,Class,Composite Material,,,,,,,"Carbon matrix composite, CAMC"
-Carbon-carbon Composite,Class,Carbon Matrix Composite,,,,,,,"Carbon–carbon composite, CCC"
+Composite Material,Class,http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356,IS-A,,,,"A material consisting of two or more distinct phases bonded together (Comprehensive Composite Materials, 2000). A composite material is composed from at least two materials, where one is the reinforcing material and other is the matrix material (Advanced Composite Materials for Automotive Applications, 2013). ",,"Composite material, Composite"
+Polymer Matrix Composite,Class,Composite Material,IS-A,,,,,,"Polymer matrix composite, PMC"
+Metal Matrix Composite,Class,Composite Material,IS-A,,,,,,"Metal matrix composite, MMC"
+Ceramic Matrix Composite,Class,Composite Material,IS-A,,,,,,"Ceramic matrix composite, CMC"
+Carbon Matrix Composite,Class,Composite Material,IS-A,,,,,,"Carbon matrix composite, CAMC"
+Carbon-carbon Composite,Class,Carbon Matrix Composite,IS-A,,,,,,"Carbon–carbon composite, CCC"
+,,,,,,,,,
+,,,,,,,,,
+Unidirectional Composite,,,,,,,,,
+Composite Laminate,,,,,,,,,
+Glass Fibre,,,,,,,,,
+Carbon Reinforced Polymer,,,,,,,,,
+Carbon Ceramic Composite,,,,,,,,,
+Nanocomposite,,,,,,,,,
+Natural Fibre Reinforced Polymer,,,,,,,,,
+Green Composite,,,,,,,,,
+Glass Fibre Reinforced Polymer,,,,,,,,,
+Carbon Fibre Composite,,,,,,,,,
+Reinforced plastic,,,,,,,,,
+Polymer composite,,,,,,,,,
+Common Filler,,,,,,,,,
+"Calcium Carbonate, CaCO3",,,,,,,,,
+Talc,,,,,,,,,
+Wollastonite,,,,,,,,,
+Carbon Fibre,,,,,,,,,
+,,,,,,,,,
+Polymer Composite,Class,Polymer Composite,IS-A,,,,,,
+Non-structural Composite,Class,Polymer Composite,IS-A,,,,,,
+Semi-structural Composite,Class,Polymer Composite,IS-A,,,,,,
+Structural Composite,Class,Polymer Composite,IS-A,,,,,,
