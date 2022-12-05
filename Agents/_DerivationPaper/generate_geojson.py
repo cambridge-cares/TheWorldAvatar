@@ -15,6 +15,10 @@ from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
+# Specify number of derivation cascade, i.e. 1st or 2nd
+cascade = '_first_round'
+#cascade = '_second_round'
+
 # Specify queries and geojson output file names
 # NOTE Here we mocked the affected buildings, i.e. determined beforehand and got label
 #      "affected"; this should finally be done by querying the flood event polygon from ontop
@@ -37,11 +41,11 @@ query_not_affected = f"""
         FILTER NOT EXISTS {{ ?property <{iris.RDFS_LABEL}> "affected" }}
     }}"""
     
-geojson_affected = 'affected_buildings.geojson'
-geojson_not_affected = 'not_affected_buildings.geojson'
+geojson_affected = f'affected_buildings{cascade}.geojson'
+geojson_not_affected = f'not_affected_buildings{cascade}.geojson'
 
 # Specify filepath to flood area geojson file
-flood_area = 'flood-areas.geojson'
+flood_area = f'flood-areas{cascade}.geojson'
 flood_original = os.path.join(Path(__file__).parent, 'data', flood_area)
 flood_amended = os.path.join(Path(__file__).parent, 'visualisation', 'data', flood_area)
 
