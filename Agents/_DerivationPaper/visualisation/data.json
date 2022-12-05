@@ -82,12 +82,17 @@
                                 "visibility": "visible"
                             },
                             "paint": {
-                                "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1, 18, 10],
-                                "circle-opacity": 1.0,
+                                "circle-radius": [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "Property market value (£)"]],
+                                    140000, 5,
+                                    420000, 10
+                                ],
+                                "circle-opacity": 0.66,
                                 "circle-color": [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "Property market value (£)"]],
-                                    140000, "#F7BA56",
+                                    140000, "#0275C0",
                                     420000, "#AD0709"
                                 ],
                                 "circle-stroke-color": "#000000",
@@ -105,12 +110,17 @@
                                 "visibility": "visible"
                             },
                             "paint": {
-                                "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 1, 18, 10],
-                                "circle-opacity": 1.0,
+                                "circle-radius": [
+                                    "interpolate", ["linear"],
+                                    ["number", ["get", "Property market value (£)"]],
+                                    140000, 5,
+                                    420000, 10
+                                ],
+                                "circle-opacity": 0.66,
                                 "circle-color": [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "Property market value (£)"]],
-                                    140000, "#F7BA56",
+                                    140000, "#0275C0",
                                     420000, "#AD0709"
                                 ],
                                 "circle-stroke-color": "#000000",
@@ -148,8 +158,14 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-color": "#0275C0",
-                        "fill-opacity": 0.33,
+                        "fill-color": [
+                            "interpolate", ["linear"],
+                            ["/", ["number", ["get", "Estimated market value (£m)", ["get", "Buildings at risk"]]],
+                                  ["number", ["get", "Number of buildings", ["get", "Buildings at risk"]]]],
+                            140, "#0275C0",
+                            420, "#AD0709"
+                        ],
+                        "fill-opacity": 0.25,
                         "fill-outline-color": "#000000"
                     }
                 },
@@ -158,13 +174,19 @@
                     "name": "Derivation cascade 1", 
                     "source": "flood-warning-1",
                     "type": "fill",
-                    "order": 1,
+                    "order": 0.33,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-color": "#0275C0",
-                        "fill-opacity": 0.33,
+                        "fill-color": [
+                            "interpolate", ["linear"],
+                            ["/", ["number", ["get", "Estimated market value (£m)", ["get", "Buildings at risk"]]],
+                                  ["number", ["get", "Number of buildings", ["get", "Buildings at risk"]]]],
+                            140, "#0275C0",
+                            420, "#AD0709"
+                        ],
+                        "fill-opacity": 0.25,
                         "fill-outline-color": "#000000"
                     }
                 }
