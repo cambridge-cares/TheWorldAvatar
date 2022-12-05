@@ -9,5 +9,13 @@
 	"line_ukpn_33kv": "data/ukpn/icons/line_ukpn_medium_icon.png",
 	"line-ukpn-132kv": "data/ukpn/icons/line_ukpn_high_icon.png",
 	"NG_logo": "data/ukpn/icons/NG_logo.png",
-	"UKPN_logo": "data/ukpn/icons/NG_logo.png"
+	"trees_woody_plants_hedgerows": "data/vegetation/icons/trees-woody-plants-hedgerows.png",
+	"perennial_crops_and_isolated_trees": "data/vegetation/icons/perennial-crops-and-isolated-trees.png",
+	"heathland_and_bracken": "data/vegetation/icons/heathland-and-bracken.png",
+	"short_rotation_coppice": "data/vegetation/icons/short-rotation-coppice.png",
+	"unknown_or_mixed_vegetation": "data/vegetation/icons/unknown-or-mixed-vegetation.png",
+	"woodland": "data/woodland/icons/woodland.png",
+	"light_woodland": "data/woodland/icons/light_woodland.png",
+	"young_woodland": "data/woodland/icons/young_woodland.png",
+	"uncertain": "data/woodland/icons/uncertain.png"
 }
