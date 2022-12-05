@@ -88,7 +88,7 @@
                                     140000, 5,
                                     420000, 10
                                 ],
-                                "circle-opacity": 0.66,
+                                "circle-opacity": 1.0,
                                 "circle-color": [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "Property market value (£)"]],
@@ -116,7 +116,7 @@
                                     140000, 5,
                                     420000, 10
                                 ],
-                                "circle-opacity": 0.66,
+                                "circle-opacity": 1.0,
                                 "circle-color": [
                                     "interpolate", ["linear"],
                                     ["number", ["get", "Property market value (£)"]],
