@@ -11,6 +11,8 @@ CommonSpace,Class,https://w3id.org/bot#Space,IS-A,,,,,http://www.theworldavatar.
 https://w3id.org/bot#Space,Class,https://w3id.org/bot#Zone,IS-A,,,,,https://w3id.org/bot#,
 https://saref.etsi.org/saref4bldg/BuildingDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/saref4bldg/,
 https://saref.etsi.org/saref4bldg/DistributionDevice,Class,https://saref.etsi.org/saref4bldg/BuildingDevice,IS-A,,,,,https://saref.etsi.org/saref4bldg/,
+ElectricalPower-AC,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Power,IS-A,,,,,http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#,
+ElectricalPower-DC,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Power,IS-A,,,,,http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#,
 https://saref.etsi.org/saref4bldg/DistributionFlowDevice,Class,https://saref.etsi.org/saref4bldg/DistributionDevice,IS-A,,,,,https://saref.etsi.org/saref4bldg/,
 https://saref.etsi.org/saref4bldg/EnergyConversionDevice,Class,https://saref.etsi.org/saref4bldg/DistributionFlowDevice,IS-A,,,,,https://saref.etsi.org/saref4bldg/,
 https://saref.etsi.org/saref4bldg/Coil,Class,https://saref.etsi.org/saref4bldg/EnergyConversionDevice,IS-A,,,,,https://saref.etsi.org/saref4bldg/,

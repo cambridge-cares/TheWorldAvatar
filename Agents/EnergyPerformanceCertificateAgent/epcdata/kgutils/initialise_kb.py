@@ -12,6 +12,7 @@ import requests
 import agentlogging
 
 from epcdata.datamodel.iris import *
+from epcdata.datamodel.data_mapping import GBP, GBP_PER_SM
 from epcdata.errorhandling.exceptions import KGException
 from epcdata.kgutils.javagateway import jpsBaseLibGW
 from epcdata.kgutils.kgclient import KGClient
@@ -66,12 +67,30 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
+def instantiate_GBP_units():
+    """
+        Return SPARQL update to instantiate required GBP units
+    """
+
+    # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
+    #       claiming to use utf-8 encoding while actually using iso-8859-1
+    #       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
+
+    query = f"""
+        INSERT DATA {{
+            <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
+            <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> . 
+    }}"""
+
+    return query
+
 def initialise_kb():
     """
         Uploads TBox and ABox from TWA to KG namespace
     """
 
     # URLs to .owl files
+    #TODO: Potentially to be replaced with better maintained Github Links
     tbox = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
     abox = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
 
@@ -113,3 +132,15 @@ def initialise_kb():
             except Exception as ex:
                 logger.error("Unable to initialise knowledge base with TBox and ABox.")
                 raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
+        
+        # Upload GBP symbols to KG (not directly part of OntoBuiltEnv ontology TBox or ABox,
+        # but required within KG for proper agent execution later on (i.e. derivation agents,
+        # and visualisation purposes)
+        logger.info('Instantiating GBP symbols ...')
+        query = instantiate_GBP_units()
+        try:
+            kg_client.performUpdate(query)
+        except Exception as ex:
+            logger.error("Unable to initialise GBP symbols in KG.")
+            raise KGException("Unable to initialise GBP symbols in KG.") from ex
+
