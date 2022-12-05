@@ -9,8 +9,8 @@
                            "description": "Tides are expected to be higher than usual as a result of a low pressure surge and strong North-Westerly Winds. Flooding along coastal and river areas is possible at this time, however conditions may apply two to four hours either side of the high tide. We expect flooding to affect certain areas of West King's Lynn.",
                            "Severity": "Medium",
                            "Buildings at risk": {
-                                "Number of buildings": 222,
-                                "Estimated market value (£m)": 87.4
+                                "Number of buildings": 1,
+                                "Estimated market value (£m)": 1.0
                             }
             },
             "geometry": {
