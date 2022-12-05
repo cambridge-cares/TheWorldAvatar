@@ -6,7 +6,7 @@ This conversion tool processes an IFC file into the [3D Tiles Next](https://gith
 A brief description of its workflow can be found below:
 1. The geometries in the IFC file are split based on their individual assets. These are converted into glTF models that are stored locally.
 2. During the splitting process, a mapping dictionary is generated that links the asset file names to their UID and names. 
-3. TWO 3D Tilesets are generated for the building and solar panels (if solar panels exist). The mapping dictionary supplements the tileset with asset information (if any).
+3. THREE 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The mapping dictionary supplements the tileset with asset information (if any).
 
 # Instructions
 ## Pre-Requisite
@@ -55,6 +55,13 @@ A brief description of its workflow can be found below:
             - If not, install the library globally using `npm install -g gltf-pipeline`
 
 ## Usage
+### 1. Running Tests
+1. Open `cmd` terminal and navigate into the `<root>` containing this README
+2. Please run the following commands in the `cmd` terminal (from within the `<root>` directory and with **activated** virtual environment <venv_name>)
+    ```
+    python pytest
+    ```
+### 2. Running tool
 1. Place the IFC file in `<root>\data\ifc`
 2. Open `cmd` terminal and navigate into the `<root>`
 3. Please run the following commands in the `cmd` terminal (from within the `<root>` directory and with **activated** virtual environment <venv_name>)
@@ -64,13 +71,13 @@ A brief description of its workflow can be found below:
 
 ## For Developers
 There are five modules available in the sub-directory.
-- `main.py` imports the developed functions to execute the conversion process
-- `utils.py` contain miscellaneous functions
-- `ifc2gltf.py` contain the functions that splits the ifc file into their individual assets and converts them into glTF models
+- `agent` imports the developed functions to execute the conversion process
+- `agent/utils.py` contain miscellaneous functions
+- `agent/ifc2gltf.py` contain the functions that splits the ifc file into their individual assets and converts them into glTF models
     - Add additional IFC feature classes here if we encounter them
-- `ifc2tileset.py` contain the functions to generate the tileset and write them to json
+- `agent/ifc2tileset` directory contains submodules with functions to generate the tileset and write them to json
     - If you are unable to see the assets, **Modify the bounding box coordinates** according to your use case
-- `downloadresource.py` downloads the required external resources for the Windows OS
+- `config/downloadresource.py` downloads the required external resources for the Windows OS
 
 As Git does not allow empty directories, `.gitignore` files have been added to the subdirectories  of `<root>\data\`. This is important to set up the file structure for the code to run. 
 

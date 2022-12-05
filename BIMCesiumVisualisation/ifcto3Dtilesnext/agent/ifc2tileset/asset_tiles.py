@@ -49,6 +49,33 @@ def init_asset_tiles():
     return tileset
 
 
+def appenddict_rec(tileset_root, assetlist, i=6):
+    """
+    Recursively adds every i assets to a new child node of the required format.
+    Function will only run if there are more than 6 assets.
+
+    Arguments:
+        tileset_root - a nested dictionary starting from tileset['root']
+        assetlist - a list of nested dictionary to add duplicate keys
+        i - an integer denoting number of assets to add per child.
+            Set to 6 as default as that is the current limit
+
+    CAVEAT: Functionality for visualising tilesets with >10 child nodes
+    in Cesium has yet to be tested. If the code fails to work for more child nodes,
+    DO NOT change this code.
+    Edit the asset2tileset function instead to stop when above the max limit of child nodes
+    """
+    if len(assetlist) > i:
+        tileset_root['children'][0]['children'] = [{
+            "boundingVolume": {"box": bbox_child()},
+            "geometricError": 50,
+            "contents": assetlist[i:i+6]
+        }]
+        appenddict_rec(tileset_root['children'][0], assetlist, i+6)
+    else:
+        return
+
+
 def gen_tileset_assets(hashmapping):
     """
     Add asset properties into the tileset.
@@ -79,29 +106,3 @@ def gen_tileset_assets(hashmapping):
     # Add the remaining assets to the next nested child node of tileset
     appenddict_rec(tileset['root'], assetlist)
     return tileset
-
-
-def appenddict_rec(tileset_root, assetlist, i=6):
-    """
-    Recursively adds every i assets to a new child node of the required format
-
-    Arguments:
-        tileset_root - a nested dictionary starting from tileset['root']
-        assetlist - a list of nested dictionary to add duplicate keys
-        i - an integer denoting number of assets to add per child.
-            Set to 6 as default as that is the current limit
-
-    CAVEAT: Functionality for visualising tilesets with >10 child nodes
-    in Cesium has yet to be tested. If the code fails to work for more child nodes,
-    DO NOT change this code.
-    Edit the asset2tileset function instead to stop when above the max limit of child nodes
-    """
-    if i < len(assetlist):
-        tileset_root['children'][0]['children'] = [{
-            "boundingVolume": {"box": bbox_child()},
-            "geometricError": 50,
-            "contents": assetlist[i:i+6]
-        }]
-        appenddict_rec(tileset_root['children'][0], assetlist, i+6)
-    else:
-        return
