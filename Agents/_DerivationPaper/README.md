@@ -190,7 +190,7 @@ bash ./redeploy.sh
 
 **Please note**: 
 1) A valid Mapbox API username and token must be provided in your `index.html` file.
-2) All required data files for visualisation should be available. Simply run the [generate_geojson] script to create them. **Please note**: To enhance the visualisation, a [amend_geojsons] script is provided to post-process the generated geojson files, i.e. ensures consistent plotting sequence of buildings between derivation layers and improved scaling of property value estimates.
+2) All required data files for visualisation should be available. This requires the docker stack of knowledge graph to be up and running. Also one need to place the two snapshot files ([snapshot after the first round derivation] and [snapshot after the second round derivation]) in the [data] folder. Once these requirements are satisfied, one can simply run the [generate_geojson] script to create the required geojson files. **Please note**: To enhance the visualisation, [generate_geojson] calls a [amend_geojsons] script to post-process the generated geojson files, i.e. ensures consistent plotting sequence of buildings between derivation layers and improved scaling of property value estimates. 
 
 Once started successfully, the visualisation will be available at `http://localhost:80`.
 
