@@ -190,7 +190,7 @@ bash ./redeploy.sh
 
 **Please note**: 
 1) A valid Mapbox API username and token must be provided in your `index.html` file.
-2) All required data files for visualisation should be available. Simply run the [generate_geojson] script to create them.
+2) All required data files for visualisation should be available. Simply run the [generate_geojson] script to create them. **Please note**: To enhance the visualisation, a [amend_geojsons] script is provided to post-process the generated geojson files, i.e. ensures consistent plotting sequence of buildings between derivation layers and improved scaling of property value estimates.
 
 Once started successfully, the visualisation will be available at `http://localhost:80`.
 
@@ -252,3 +252,4 @@ Jiaru Bai (jb2197@cam.ac.uk), December 2022
 [docker-compose-agents.yml]: docker-compose-agents.yml
 [visualisation]: visualisation/
 [generate_geojson]: generate_geojson.py
+[amend_geojsons]: amend_geojsons.py

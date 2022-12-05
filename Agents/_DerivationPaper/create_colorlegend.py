@@ -15,8 +15,8 @@ from matplotlib.colors import LinearSegmentedColormap
 # 
 # Quantile cutoff value for values to be included in colorbar
 q = 0.05
-files = ['affected_buildings_first_round.geojson',
-         'affected_buildings_second_round.geojson']
+files = ['affected_buildings_first_round_adj.geojson',
+         'affected_buildings_second_round_adj.geojson']
 cb_min = []
 cb_max = []
 for f in files:
