@@ -118,8 +118,8 @@
             <div id="sidePanelInner">
                 <ul>
                     <li><a href="#sidePanelGeneral">General</a></li>
-                    <li><a href="#sidePanelLegend">Legend</a></li>
-                    <li><a href="#sidePanelLinks">Links</a></li>
+                    <!-- <li><a href="#sidePanelLegend">Legend</a></li> -->
+                    <!-- <li><a href="#sidePanelLinks">Links</a></li> -->
                 </ul>
                 <div id="sidePanelGeneral">
                     <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
@@ -170,10 +170,14 @@
                 manager.getPanelHandler().setContent(`
                     <p>The map on the left illustrates the automated flood impact assessment and its changes over time using the Derived Information Framework.
                         Use the layer controls to show/hide buildings under different scenarios. The nodes on the map can be selected to show more detailed information about each building.</p>
+                    <fieldset style="width:150px">
+                        <legend>Property Valuation Estimate (&#163;)</legend>
+                        <img src="data/colorbar.png" height="400px" width="100px" style="float: center; margin: 0px 0px 0px 10px;"/>
+                    </fieldset>
                 `);
                 
                 // Use the local.js file to build the legend
-                buildLegend();
+                // buildLegend();
 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
                 // ===== CUSTOMISABLE =====
