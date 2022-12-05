@@ -40,6 +40,7 @@ class ExcelParser {
      * This will check for a valid File path as well.
      *
      * @param excel_filepath Specifies the file path to the Excel workbook.
+     * @param timeHeader     Header name of the Time Column
      */
     protected ExcelParser(String excel_filepath, String timeHeader) throws IOException {
         this(excel_filepath, timeHeader, 0);
@@ -164,7 +165,8 @@ class ExcelParser {
     }
 
     /**
-     * Retrieves the cell value as a formatted String for data IRI.
+     * Retrieves the cell value as a formatted String for data IRI. Removes any characters after Brackets.
+     * For eg, an input of "Time Series (Unit)" will return "TimeSeries"
      *
      * @param cell Text cell to retrieved String from in Excel
      * @return String in format "CapitalisedFirstWordAfterSpace"

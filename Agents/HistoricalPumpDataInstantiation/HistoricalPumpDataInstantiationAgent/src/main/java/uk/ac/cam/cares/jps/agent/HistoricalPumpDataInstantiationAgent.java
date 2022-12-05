@@ -46,7 +46,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     private static final String KEY_STARTING_ROW = "startingRow";
 
     // Edit these fields per your requirements
-    public static final String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "45utility/"; // The prefix to use for generating IRI
+    public static final String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "pump/"; // The prefix to use for generating IRI
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -84,7 +84,6 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 // Ensure that the time header is of valid format
                 validate = requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("year");
             }
-
             if (requestParams.has(KEY_STARTING_ROW)) {
                 LOGGER.info("Detected " + KEY_STARTING_ROW + " parameter");
                 LOGGER.info("Validating parameter...");
