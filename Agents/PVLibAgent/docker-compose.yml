@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   example:
-    image: pv_lib_agent:1.0.0
+    image: pv_lib_agent:1.1.0
     build: .
     container_name: pv_lib_agent
     ports:
