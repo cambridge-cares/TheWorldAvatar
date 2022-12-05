@@ -25,15 +25,10 @@ class MapHandler_Cesium extends MapHandler {
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
+
         MapHandler.MAP_OPTIONS = mapOptions;
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
-
-            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
-            var tileURL = getDefaultImagery();
-            if(tileURL.endsWith("access_token=")) {
-                tileURL = tileURL + MapHandler.MAP_API;
-            }
 
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
@@ -62,9 +57,14 @@ class MapHandler_Cesium extends MapHandler {
                         new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
             }
 
-            // Include terrain in Z-index rendering (otherwise we'll be able
-            // to see other entities through it).
+            // Include terrain in Z-index rendering (otherwise we'll be able to see other entities through it).
             MapHandler.MAP.scene.globe.depthTestAgainstTerrain = true
+
+            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
+            var tileURL = getDefaultImagery();
+            if(tileURL.endsWith("access_token=")) {
+                tileURL = tileURL + MapHandler.MAP_API;
+            }
 
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
@@ -167,12 +167,8 @@ class MapHandler_Cesium extends MapHandler {
                         });
                     }
                 } else {
-                    console.log("here");
-                    let content = feature["content"];
-                    let tile = content["tile"];
-
-                    console.log("TILE");
-                    console.log(tile);
+                    // Unknown data type
+                    return;
                 }
                 
                 self.manager.showFeature(feature, properties);
@@ -449,12 +445,30 @@ class MapHandler_Cesium extends MapHandler {
             options["modelMatrix"] = position;
         }
 
-        // Add the tileset to the map
+        // If clipping is enabled, add a clipping plane
+        let clippingPlanes = null;
+
+        if(layer.definition.hasOwnProperty("clipPlane") && layer.definition["clipPlane"]) {
+            clippingPlanes = new Cesium.ClippingPlaneCollection({
+                planes: [
+                    new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 0.0, -1.0), 0.0)
+                ],
+                edgeWidth: 1.0
+            });
+            options["clippingPlanes"] = clippingPlanes;
+        }
+
+        // Create tileset object
         let tileset = new Cesium.Cesium3DTileset(options);
         tileset["layerID"] = layer.id;
+
+        // Setup clipping plane logic
+        if(clippingPlanes != null) CesiumUtils.prepareClippingPlane(tileset, clippingPlanes);
+
+        // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
-
+         
         // Cache knowledge of this source, keyed by layer id
         if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
             MapHandler_Cesium.DATA_SOURCES[layer.id] = [];

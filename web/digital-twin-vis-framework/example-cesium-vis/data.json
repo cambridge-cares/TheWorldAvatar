@@ -5,28 +5,16 @@
         {
             "id": "3d-tiles-source",
             "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
-        },
-        {
-            "id": "sample-2d-data",
-            "type": "wms",
-            "uri": "https://cugir.library.cornell.edu/geoserver/cugir/ows?SERVICE=WMS&",
-            "wmsLayer": "cugir007884",
-            "transparency": true,
-            "format": "image/png"
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/house45/tileset.json",
+            "position": [-74.00585519033135, 40.71312584065612, 0.0]
         }
 	], 
 	"layers": [
         {
             "id": "3d-tiles-layer",
 			"name": "Buildings of New York", 
-            "source": "3d-tiles-source"    
-        },
-        {
-            "id": "sample-2d-layer",
-			"name": "Hudson River Sediment", 
-            "source": "sample-2d-data",
-            "visibility": "none"
+            "source": "3d-tiles-source",
+            "clipPlane": true
         }
 	]
 }

@@ -114,8 +114,18 @@ class Manager {
 
                 if(self.searchHandler != null) self.searchHandler.toggle();
                 e.preventDefault();
+            } else if ((e.ctrlKey || e.metaKey) && e.altKey && e.key === "t") {
+                if(Manager.PROVIDER === MapProvider.CESIUM) {
+                    console.log("Camera Longitude: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.positionCartographic.longitude));
+                    console.log("Camera Latitude: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.positionCartographic.latitude));
+                    console.log("Camera Height: " + MapHandler.MAP.camera.positionCartographic.height);
+                    console.log("Camera Heading: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.heading));
+                    console.log("Camera Pitch: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.pitch));
+                    console.log("Camera Roll: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.roll));
+                }
             }
         });
+
     }
 
     private toggleFullscreen() {

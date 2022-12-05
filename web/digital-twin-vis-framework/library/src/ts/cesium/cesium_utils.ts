@@ -1,4 +1,4 @@
- /**
+/**
  * Utilities specific to Mapbox implementations
  */
 class CesiumUtils {
@@ -8,6 +8,16 @@ class CesiumUtils {
      */
     private static OUTLINE_BLUE;
     private static OUTLINE_GREEN;
+
+    /**
+     * Currently selected clipping plane.
+     */
+    private static SELECTED_PLANE;
+
+    /**
+     * Map of ClippingPlanes to their current heights
+     */
+    private static PLANE_HEIGHTS = {};
 
     /**
      * Returns the visibility state of the layer with the input ID.
@@ -417,5 +427,119 @@ class CesiumUtils {
         Cesium.Cartesian3.negate(offset, offset);
         Cesium.Cartesian3.multiplyByScalar(offset, range, offset);
         return offset;
+    }
+
+    /**
+     * Prepare the initial position of the clipping plane and setup
+     * movement logic for it.
+     */
+    public static prepareClippingPlane(tileset, clippingPlanes) {
+
+        // Once the tileset is ready...
+        tileset.readyPromise.then(function() {
+            let boundingSphere = tileset.boundingSphere;
+            let radius = boundingSphere.radius;
+
+            MapHandler.MAP.zoomTo(tileset, new Cesium.HeadingPitchRange(0.5, -0.2, radius * 4.0));
+
+            // The clipping plane is initially positioned at the tileset's root transform.
+            // Apply an additional matrix to center the clipping plane on the bounding sphere center.
+            if (!Cesium.Matrix4.equals(tileset.root.transform, Cesium.Matrix4.IDENTITY)) {
+                let transformCenter = Cesium.Matrix4.getTranslation(
+                    tileset.root.transform,
+                    new Cesium.Cartesian3()
+                );
+
+                let boundingCenter = boundingSphere.center;
+                let boundingSphereCartographic = Cesium.Cartographic.fromCartesian(boundingCenter);
+                let transformCartographic = Cesium.Cartographic.fromCartesian(transformCenter);
+
+                let height = boundingSphereCartographic.height - transformCartographic.height;
+                clippingPlanes.modelMatrix = Cesium.Matrix4.fromTranslation(
+                    new Cesium.Cartesian3(0.0, 0.0, height)
+                );
+            }
+
+            let tilesetPosition = Cesium.Matrix4.getTranslation(tileset.modelMatrix, new Cesium.Cartesian3()); 
+
+            for (let i = 0; i < clippingPlanes.length; ++i) {
+                let plane = clippingPlanes.get(i);
+
+                MapHandler.MAP.entities.add({
+                    position: tilesetPosition,
+                    plane: {
+                        dimensions: new Cesium.Cartesian2(
+                            radius,
+                            radius
+                        ),
+                        material: Cesium.Color.RED.withAlpha(0.1),
+                        outline: true,
+                        outlineColor: Cesium.Color.RED,
+                        plane: new Cesium.CallbackProperty(
+                            CesiumUtils.createPlaneUpdateFunction(plane),
+                            false
+                        )
+                    }
+                });
+                
+            }
+            return tileset;
+        });
+        
+        // Select plane when mouse down
+        let downHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
+        downHandler.setInputAction(function (movement) {
+            const pickedObject = MapHandler.MAP.scene.pick(movement.position);
+
+            if(Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id) && Cesium.defined(pickedObject.id.plane)) {
+                CesiumUtils.SELECTED_PLANE = pickedObject.id.plane;
+                CesiumUtils.SELECTED_PLANE.material = Cesium.Color.RED.withAlpha(0.05);
+                CesiumUtils.SELECTED_PLANE.outlineColor = Cesium.Color.RED;
+                MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = false;
+
+                if(!CesiumUtils.PLANE_HEIGHTS.hasOwnProperty(CesiumUtils.SELECTED_PLANE)) {
+                    CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE] = 0.0;
+                }
+            }
+        }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+        
+        // Release plane on mouse up
+        let upHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
+        upHandler.setInputAction(function () {
+            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
+                CesiumUtils.SELECTED_PLANE.material = Cesium.Color.RED.withAlpha(0.1);
+                CesiumUtils.SELECTED_PLANE.outlineColor = Cesium.Color.RED;
+                CesiumUtils.SELECTED_PLANE = undefined;
+            }
+            MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = true;
+        }, Cesium.ScreenSpaceEventType.LEFT_UP);
+  
+        // Update plane on mouse move
+        let moveHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
+        moveHandler.setInputAction(function (movement) {
+            if (CesiumUtils.SELECTED_PLANE != null && Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
+
+                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE];
+                let deltaY = movement.startPosition.y - movement.endPosition.y;
+                CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE] = height + (deltaY / 5);
+            }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+        return tileset;
+    }
+
+    /**
+     * 
+     * @param plane 
+     * @returns 
+     */
+    public static createPlaneUpdateFunction(plane) {
+        return function () {
+            if (CesiumUtils.SELECTED_PLANE != null) {
+                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE];
+                plane.distance = height;
+            }
+            return plane;
+        };
     }
 }
