@@ -80,7 +80,7 @@ StreetInletShaft,Class,ShaftType,IS-A,,,,It is a component of road drainage. It
 FictionalShaft,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Fictitious shaft 
 BuildingConnection,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Building connection
 InspectionOpening,Class,ShaftType,IS-A,,,,Inspection opening is important point in the sewerage infrastructure and is installed to enable access to underground sewer pipes in the event of a blockage.,https://www.theworldavatar.com/kg/ontosewage/,Inspection opening
-ShaftNodeType,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Shaft node type
+ShaftNode,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Shaft node
 StructureType,Class,,,,,,Type of the connected node to a manhole.,https://www.theworldavatar.com/kg/ontosewage/,Structure type
 StreetInletStructure,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Street inlet structure
 FictitiousStructure,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Fictitious structure
