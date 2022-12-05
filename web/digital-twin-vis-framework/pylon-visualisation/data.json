@@ -120,28 +120,35 @@
             "stack": "http://localhost:1234/ukpn-stack",
             "sources": [
                 {
-                    "id": "132kv-overhead-lines-source",
+                    "id": "high-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
                         "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
-                    "id": "33kv-overhead-lines-source",
+                    "id": "medium-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
                         "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
-                    "id": "132kv-poles-towers-source",
+                    "id": "low-overhead-lines-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_low&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "high-poles-towers-source",
                     "type": "raster",
                     "tiles": [
                         "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
-                },                
+                },
                 {
-                    "id": "33kv-poles-towers-source",
+                    "id": "medium-poles-towers-source",
                     "type": "raster",
                     "tiles": [
                         "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
@@ -150,10 +157,10 @@
             ],
             "layers": [
                 {
-                    "id": "132kv-overhead-lines-layer",
+                    "id": "high-overhead-lines-layer",
                     "type": "raster",
-                    "name": "132 kV Overhead Lines",
-                    "source": "132kv-overhead-lines-source",
+                    "name": "High Voltage Overhead Lines",
+                    "source": "high-overhead-lines-source",
                     "treeable": false,
                     "minzoom": 6,
                     "layout": {
@@ -161,10 +168,10 @@
                     }
                 },
                 {
-                    "id": "33kv-overhead-lines-layer",
+                    "id": "medium-overhead-lines-layer",
                     "type": "raster",
-                    "name": "33 kV Overhead Lines",
-                    "source": "33kv-overhead-lines-source",
+                    "name": "Medium Voltage Overhead Lines",
+                    "source": "medium-overhead-lines-source",
                     "treeable": false,
                     "minzoom": 7,
                     "layout": {
@@ -172,10 +179,21 @@
                     }
                 },
                 {
-                    "id": "132kv-poles-towers-layer",
+                    "id": "low-overhead-lines-layer",
                     "type": "raster",
-                    "name": "132 kV Pole Towers",
-                    "source": "132kv-poles-towers-source",
+                    "name": "Low Voltage Overhead Lines",
+                    "source": "low-overhead-lines-source",
+                    "treeable": false,
+                    "minzoom": 7,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "high-poles-towers-layer",
+                    "type": "raster",
+                    "name": "High Voltage Pole Towers",
+                    "source": "high-poles-towers-source",
                     "treeable": false,
                     "minzoom": 12,
                     "layout": {
@@ -183,10 +201,10 @@
                     }
                 },
                 {
-                    "id": "33kv-poles-towers-layer",
+                    "id": "medium-poles-towers-layer",
                     "type": "raster",
-                    "name": "33 kV Pole Towers",
-                    "source": "33kv-poles-towers-source",
+                    "name": "Medium Pole Towers",
+                    "source": "medium-poles-towers-source",
                     "minzoom": 13,
                     "layout": {
                         "visibility": "visible"
