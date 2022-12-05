@@ -42,7 +42,7 @@ f = 'colorbar.png'
 fp = os.path.join(Path(__file__).parent, 'visualisation','data', f)
 
 # Specify colors for colorbar (must match settings in data.json)
-colors = ["#0275C0", "#AD0709"]
+colors = ["#3887BE", "#E55E5E"]
 values = [cb_min, cb_max]
 ticks = range(values[0], values[1]+1, 20000)
 labels = [f'£ {t:,}' for t in ticks]

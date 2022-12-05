@@ -4,9 +4,9 @@ version: "3.8"
 services:
 
   # Example DTVF implementation
-  example-mapbox-vis:
-    image: example-mapbox-vis:latest
-    container_name: "example-mapbox-vis"
+  derived-information-framework-flood:
+    image: derived-information-framework-flood:latest
+    container_name: "derived-information-framework-flood"
     restart: "no"
     build:
       context: "../"
@@ -16,4 +16,3 @@ services:
         description: "Example implementation of the Digital Twin Visualisation Framework (Mapbox)."
     ports:
       - "80:80"
- 
