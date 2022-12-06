@@ -1,7 +1,10 @@
 {
     "start": {
-        "center": [60, 37],
-        "zoom": 2,
+        "center": [
+            0.3,
+            52
+        ],
+        "zoom": 7,
         "bearing": 0,
         "pitch": 45
     },
