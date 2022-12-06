@@ -10,9 +10,15 @@ For each of the building in the Solarkataster data, the 12 parameters are instan
 
 ## Post Request
 
-The agent is available at http://localhost:10101/solarkataster_agent/run
+The agent is reachable at "solarkataster_agent/run" on localhost port 10101.
 
-The agent accepts two parameters, `table` and `chunk`. `table` should be the table name of the Solarkataster data. `chunk` should be an integer, representing how many chunks to divide the SPARQL update in.
+The Solarkataster parameters instantiated by this agent have the same values for both the Photovoltaik and Solarthermie dataset, so the agent only needs to be run once, either for the Photovoltaik or for the Solarthermie datset. Do not run the agent for both datasets, this would cause the time series client used by the agent to raise error.
+
+Please note that due to the large volume of data from Solarkataster, the agent won't be able to run for the full Photovoltaik dataset nor for the full Solarthermie dataset. Therefore, it is recommended to upload the data files of the interested cities in one table, and run the agent for that table.
+
+The agent accepts two parameters, `table` and `chunk`. `table` should be the table name of the subset of either the Photovoltaik or the Solarthermie dataset. `chunk` should be an integer, representing how many chunks to divide the SPARQL update in.
+
+In the following examples, the data files for Pirmasens from the Photovoltaik dataset were uploaded to stack as a table named "stadt_pirmasens".
 
 Example request:
 ```
@@ -20,6 +26,11 @@ Example request:
     "table":"stadt_pirmasens",
     "chunk":50
 }
+```
+
+Example cURL command:
+```
+curl -X POST --header "Content-Type: application/json" -d "{'table':'stadt_pirmasens','chunk':50}" http://localhost:10101/solarkataster_agent/run
 ```
 
 ## Build Instructions
@@ -56,5 +67,3 @@ Alternatively, from the command line, and in the same directory as this README, 
 ```
 docker-compose up -d
 ```
-
-The agent is reachable at "solarkataster_agent/run" on localhost port 10101.
