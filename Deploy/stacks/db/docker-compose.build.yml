@@ -12,7 +12,7 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0-510-SNAPSHOT
     build:
       context: blazegraph
       labels:
