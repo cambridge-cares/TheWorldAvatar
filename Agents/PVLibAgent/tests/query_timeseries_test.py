@@ -9,7 +9,6 @@ from PVLibAgent.kg_utils.tsClientForQuery import TSClientForQuery
 from PVLibAgent.kg_utils.tsClientForUpdate import TSClientForUpdate
 from PVLibAgent.kg_utils.utils import DATACLASS, TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, \
     DB_UPDATE_USER, DB_UPDATE_PASSWORD, DB_QUERY_PASSWORD, DB_QUERY_URL, DB_QUERY_USER
-from PVLibAgent.kg_utils.utils import create_sparql_prefix
 from PVLibAgent.data_retrieval.query_timeseries import query_latest_timeseries
 
 
