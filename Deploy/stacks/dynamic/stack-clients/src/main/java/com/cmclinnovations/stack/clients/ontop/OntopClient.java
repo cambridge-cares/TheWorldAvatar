@@ -27,11 +27,13 @@ public class OntopClient extends ContainerClient implements ClientWithEndpoint {
     }
 
     private OntopClient() {
-        ontopEndpoint = readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
     }
 
     @Override
     public OntopEndpointConfig getEndpoint() {
+        if (null == ontopEndpoint) {
+            ontopEndpoint = readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
+        }
         return ontopEndpoint;
     }
 
