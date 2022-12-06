@@ -25,7 +25,7 @@ def init_asset_tiles():
             'description': "A metadata class for all individual assets",
             # Store all asset information here even if they are not used for specific assets
             'properties': {
-                "Asset Name": {
+                "name": {
                     "description": "Name of the asset",
                     "type": "STRING"
                 },
@@ -95,7 +95,7 @@ def gen_tileset_assets(hashmapping):
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                 'class': "AssetMetaData",
-                'properties': {"Asset Name": nested_dict.get("name").split(":")[0],
+                'properties': {"name": nested_dict.get("name").split(":")[0],
                                "UID": uid}
             }
         })
