@@ -8,18 +8,18 @@ setup(
     license='MIT',
     python_requires='>=3.8',
     description="The `propertyvalueestimation` agent calculates the latest market value estimation for a particular property and populates the result to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertyValueEstimationAgent/Agents/PropertyValueEstimationAgent",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     include_package_data=True,
     install_requires= [
-        'flask==2.1.0',
-        'JayDeBeApi==1.2.3',
-        'pandas==1.5.1',
-        'py4jps==1.0.29', 
-        'requests==2.28.1',
-        'pyderivationagent==1.4.1'
+        'flask~=2.1.0',
+        'JayDeBeApi~=1.2.3',
+        'pandas~=1.5.1',
+        'py4jps~=1.0.30',
+        'requests~=2.28.1',
+        'pyderivationagent~=1.4.1'
     ],
     extras_require={
         "dev": [

@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.tools.RenamingTool;
 
@@ -196,7 +196,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -246,7 +246,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -295,7 +295,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -344,7 +344,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
