@@ -60,7 +60,7 @@
                 <!-- Terrain controls -->
                 <div id="terrainContainer" class="controlBlock">
                     <div id="controlTitle" class="controlTitle">
-                        <p>Terrain</p>
+                        <p>Imagery</p>
                         <div class="tooltip">
                             <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
                             <span class="tooltiptext">Toggle 3D terrain</span>
@@ -83,6 +83,14 @@
                         <div id="layerTreeContainer">
                             <div class="hummingbird-treeview-converter"></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
                     </div>
                 </div>
 
@@ -172,27 +180,38 @@
             function start() {
                 // Initialise the map object
                 manager.initialiseMap();
-                
                
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
                 manager.getPanelHandler().setTitle("<h1>Visualisation of interoperable King's Lynn</h1>");
                 manager.getPanelHandler().setContent(`
-                    <p>This visualisation of King's Lynn, UK, is based on data instantiated in The World Avatar KG. <br><br>
-					It combines static building data, meta data about building properties, time series data of environmental
-                    observations as well as information about latest flood alerts and flood warnings.<br>
-                    Building data includes:
-                        Static building representation in LOD1, including base elevation as well as building height
-                        Unique Property Reference Numbers (UPRNs)
-                        Construction characteristics from Energy Performance Certificates
-                        Information about previous sales transactions
-                    Environmental observations include:
-                        Weather observations and forecasts from MetOffice
-                        Air quality observations
-                        River level data
-                    Flood warnings/alerts include:
-                        Daily raised official flood warnings from Environment Agency
-					.</p>
+                <p>This visualisation of King's Lynn, UK, is based on data instantiated in The World Avatar KG. <br><br>
+                    It combines static building data, meta data about building properties, time series data of environmental
+                    observations as well as information about latest flood alerts and flood warnings.
+                    <br><br> 
+                    <b>Building data includes:</b>
+                    <ul>
+                        <li>Static building representation in LOD1, including base elevation as well as building height</li>
+                        <li>Unique Property Reference Numbers (UPRNs)</li>
+                        <li>Construction characteristics from Energy Performance Certificates</li>
+                        <li>Information about previous sales transactions</li>
+                    </ul>
+                    <br>
+                    <b>Environmental observations include:</b>
+                    <ul>
+                        <li>Weather observations and forecasts from MetOffice</li>
+                        <li>Air quality observations</li>
+                        <li>River level data</li>
+                    </ul>
+                    <br>
+                    <b>Flood warnings/alerts include:</b>
+                    <ul>
+                        <li>Daily raised official flood warnings from Environment Agency</li>
+                    </ul>
+                    <br>
+                    Furthermore, the map on the left illustrates the automated flood impact assessment using the Derived Information Framework. <br><br>
+                    Use the layer controls to show/hide various layers. The nodes on the map can be selected to show more detailed information about each feature.
+                  </p>
                 `);
                 
                 // Use the local.js file to build the legend
@@ -206,7 +225,6 @@
 
                 // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
-
                     // Load registered images and linked files
                     manager.loadImagesAndLinks().then(() => {
 
