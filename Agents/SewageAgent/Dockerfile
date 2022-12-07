@@ -29,9 +29,9 @@ WORKDIR /app
 COPY ./config/. /root/
 
 # Set the required environment variables
-ENV HGDATA="/root/HGinstancesA.csv"
+ENV HGDATA="/root/HG_instances_0.csv"
 
-ENV KGDATA="/root/KGinstancesA.csv"
+ENV KGDATA="/root/KG_instances_0.csv"
 
 # ENV CLIENTPROPERTY="/root/client.properties"
 
