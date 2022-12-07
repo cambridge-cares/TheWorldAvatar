@@ -716,11 +716,11 @@ public class FileBasedStoreClientTest {
 	public void testInsertAndGet() {
 		
 		String content = 
-		"<rdf:RDF\r\n"+
-		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
-		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
-		"</rdf:RDF>\r\n";
+		"<rdf:RDF"+System.getProperty("line.separator")+
+		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""+System.getProperty("line.separator")+
+		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">"+System.getProperty("line.separator")+
+		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>"+System.getProperty("line.separator")+
+		"</rdf:RDF>"+System.getProperty("line.separator");
 		
 		kbClient = new FileBasedStoreClient();
 		kbClient.insert(null, content, null);

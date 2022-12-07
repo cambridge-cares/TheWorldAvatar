@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
  * <br>
  * The access agent host:port should be set using the environment variable ACCESSAGENT_HOST.
  * Otherwise, the default host from the jps.properties file is used. Note that if a url is 
- * supplied as the targetResourceID them the host in the url is used. 
+ * supplied as the targetResourceID then the host in the url is used.
  *  
  * @author csl37
  *

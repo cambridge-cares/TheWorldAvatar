@@ -32,11 +32,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `pyderivationagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency, therefore, in order to make the semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `pyderivationagent`. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `pyderivationagent` package.
 
 ```sh
 (<venv_name>) $ pip install pyderivationagent
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use #
@@ -362,7 +361,6 @@ MAX_THREAD_MONITOR_ASYNC_DERIVATIONS=1
 EMAIL_RECIPIENT=foo.1@bar.com;foo.2@bar.com
 EMAIL_SUBJECT_PREFIX=ExampleAgent
 EMAIL_USERNAME=my.gmail.address@gmail.com
-EMAIL_AUTH_JSON_PATH=/app/secret.json
 EMAIL_START_END_ASYNC_DERIVATIONS=false
 
 YOUR_STR_CONF=
@@ -385,6 +383,8 @@ services:
     container_name: your_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      # Add email auth json path that to be read by the yagmail service
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -414,6 +414,9 @@ services:
 secrets:
   blazegraph_password:
     file: tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth: # You may want to add below file name to your .gitignore
+    file: tests/dummy_services_secrets/email_auth.json
+
 ```
 
 You may refer to [DoEAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent) for a concrete implementation of the above suggested folder structure based on `pyderivationagent`. The design of `pyderivationagent` is continually evolving, and as the project grows, we hope to make it more accessible to developers and users.
@@ -423,7 +426,7 @@ The `DerivationAgent` class provides the feature to send email notifications to 
 
 
 ## Dockerised integration test
-The `pyderivationagent` package also provides two sets of dockerised integration tests, following the same context as [`DerivationAsynExample`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample). Interested developer may refer to the README of the Java example for more context, or `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/tests` for more technical details.
+The `pyderivationagent` package also provides dockerised integration tests, following the same context as [`DerivationAsynExample`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAsynExample). Interested developer may refer to the README of the Java example for more context, or `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/tests` for more technical details.
 
 One may execute below commands for each set of dockerised integration test:
 
@@ -441,6 +444,14 @@ One may execute below commands for each set of dockerised integration test:
     ```sh
     $ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
     $ pytest -s --docker-compose=./docker-compose.test.yml ./tests/test_docker_integration.py
+    ```
+
+- `ExceptionThrowAgent` and blazegraph deployed within the same docker stack and they communicate via internal port address
+
+    `(Linux)`
+    ```sh
+    $ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
+    $ pytest -s --docker-compose=./docker-compose.test.yml ./tests/test_exception_throw.py
     ```
 
 Ideally, we would like to provide this set of dockerised integration test to demo how one may develop integration test for derivation agents. Any ideas/discussions/issues/PRs on how to make this more standardised and accessible to developers are more than welcome.

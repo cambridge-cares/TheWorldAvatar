@@ -361,8 +361,6 @@ class CesiumUtils {
             positionCartographic
         );
 
-        console.log(position);
-
         let offset = CesiumUtils.offsetFromHeadingPitchRange(
             MapHandler.MAP.camera.heading,
             MapHandler.MAP.camera.pitch,

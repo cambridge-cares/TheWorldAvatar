@@ -78,6 +78,8 @@ class DataStore {
         }
 
         if(currentNode["stack"]) {
+            // Update the stack URL to replace localhost addresses with the
+            // current host location.
             currentStack = updateURL(currentNode["stack"]);
         }
 

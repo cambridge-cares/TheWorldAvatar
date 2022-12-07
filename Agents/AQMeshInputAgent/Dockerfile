@@ -24,17 +24,17 @@ RUN sed -i "s|USERNAME|$(sed -n 1p ../credentials/postgres_credentials.txt)|;s|P
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM openjdk:20-ea-11-jdk-slim as agent
+FROM openjdk:11-jdk-slim as agent
 
 WORKDIR /app
 
 # Copy configurations needed to run the agent from the builder
 COPY --from=builder /root/config/*.properties /app/config/
 # Copy the compiled jar from the builder
-COPY --from=builder /root/AQMeshInputAgent/target/aqmesh_inputAgent-1.1.0.jar /app
+COPY --from=builder /root/AQMeshInputAgent/target/aqmesh_inputAgent-1.3.0.jar /app
 # Copy the downloaded dependencies from the builder
-COPY --from=builder /root/AQMeshInputAgent/target/aqmesh_inputAgent-1.1.0.lib /app/aqmesh_inputAgent-1.1.0.lib
+COPY --from=builder /root/AQMeshInputAgent/target/aqmesh_inputAgent-1.3.0.lib /app/aqmesh_inputAgent-1.3.0.lib
 
 # Run the jar to start the agent
-ENTRYPOINT ["java", "-jar", "aqmesh_inputAgent-1.1.0.jar", "config/agent.properties", "config/client.properties", "config/api.properties"]
+ENTRYPOINT ["java", "-jar", "aqmesh_inputAgent-1.3.0.jar", "config/agent.properties", "config/client.properties", "config/api.properties"]
 #==================================================================================================

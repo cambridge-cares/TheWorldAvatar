@@ -111,6 +111,7 @@ class PanelHandler {
 		var sidePanel = document.getElementById("sidePanel");
 		var leftButton = document.getElementById("slideButton");
 		var rightButton = document.getElementById("expandButton");
+        var attributions = document.getElementById("attributionContainer");
 
 		if(sidePanel.classList.contains("small")) {
 			// Make large
@@ -119,12 +120,9 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "100%";
 			document.getElementById("controlsContainer").style.visibility = "hidden";
-
 			leftButton.style.visibility = "hidden";
-
-			// Stop keyboard events
-			// MapHandler.MAP["keyboard"].disable();
-			// MapHandler.MAP.resize();
+            
+            if(attributions != null) attributions.style.display = "none";
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -133,13 +131,14 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "calc(100% - 500px)";
 			document.getElementById("controlsContainer").style.visibility = "visible";
-
 			leftButton.style.visibility = "visible";
 
-			// Allow keyboard events
-			// MapHandler.MAP["keyboard"].enable();
-			// MapHandler.MAP.resize();
+            if(Manager.SETTINGS.getSetting("attribution") != null && attributions != null) {
+                attributions.style.display = "block";
+            }
 		}
+
+        MapHandler.MAP.resize();
 	}
 
     /**
@@ -150,6 +149,7 @@ class PanelHandler {
 		var sidePanelInner = document.getElementById("sidePanelInner");
 		var leftButton = document.getElementById("slideButton");
         var rightButton = document.getElementById("expandButton");
+
         var finderContainer = document.getElementById("finderContainer");
 
 		if(sidePanel.classList.contains("small")) {
@@ -164,7 +164,7 @@ class PanelHandler {
 				rightButton.style.visibility = "visible";
 				sidePanelInner.style.visibility = "visible";
 
-                //finderContainer.classList.replace("collapsed", "expanded");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 540px)";
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -176,7 +176,7 @@ class PanelHandler {
 				rightButton.style.visibility = "hidden";
 				sidePanelInner.style.visibility = "hidden";
 
-                //finderContainer.classList.replace("expanded", "collapsed");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 80px)";
 			}
 		} 
 
@@ -197,30 +197,41 @@ class PanelHandler {
 
         // Get required details
         let iri = properties["iri"];
+        let endpoint = properties["endpoint"];
+
         let stack = Manager.findStack(feature, properties);
+        console.log("Attempting to contact agent with stack at '" + stack + "'...");
+        console.log("   ...will submit IRI for query '" + iri + "'");
+        console.log("   ...will submit endpoint for query '" + endpoint + "'");
 
         if(iri == null || stack == null) {
-            console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
-
-            // Render metadata tree
+            console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
             this.prepareMetaContainers(true, false);
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            // @ts-ignore
-            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-            // @ts-ignore
-            JsonView.expandChildren(metaTree);
-            // @ts-ignore
-            JsonView.selectiveCollapse(metaTree);
+            if(Object.keys(properties).length > 0) {
+                // @ts-ignore
+                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+                // @ts-ignore
+                JsonView.expandChildren(metaTree);
+                // @ts-ignore
+                JsonView.selectiveCollapse(metaTree);
+            } else {
+                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+            }
             return;
         }
 
         // Proceed to contact agent for metadata and timeseries
         this.prepareMetaContainers(true, true);
-
+        document.getElementById("metaTreeContainer").innerHTML = "<i>Retrieving data...</i>";
+        
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        let params = { "iri": iri };
+        let params = { 
+            "iri": iri,
+            "endpoint": endpoint
+        };
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
@@ -252,6 +263,23 @@ class PanelHandler {
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
             }
+        })
+        .fail(function() {
+            console.warn("Could not contact the intended agent, will show any in-model content instead...");
+            self.prepareMetaContainers(true, false);
+            document.getElementById("metaTreeContainer").innerHTML = "";
+
+            if(Object.keys(properties).length > 0) {
+                // @ts-ignore
+                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+                // @ts-ignore
+                JsonView.expandChildren(metaTree);
+                // @ts-ignore
+                JsonView.selectiveCollapse(metaTree);
+            } else {
+                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+            }
+            return;
         });
         return promise;
     }
@@ -272,34 +300,41 @@ class PanelHandler {
             this.appendContent("<div id='metaContainer'></div>");
         }
 
+        let treeButton = document.getElementById("treeButton");
+        let timeButton = document.getElementById("timeButton");
+
         if(addMeta) {
-            if(document.getElementById("treeButton") === null) {
+            if(treeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>
                 `;
+                treeButton = document.getElementById("treeButton");
             }
             if(document.getElementById("metaTreeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTreeContainer' class='tabcontent'></div>"
             }
         }
-
         if(addTime) {
-            if(document.getElementById("timeButton") === null) {
+            if(timeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>
                 `;
+                timeButton = document.getElementById("timeButton");
             }
             if(document.getElementById("metaTimeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
         }
 
-        if(addMeta && !addTime) {
-            document.getElementById("treeButton").style.width = "100%";
-            document.getElementById("treeButton").style.borderRadius = "10px";
-        } else if(addMeta && addTime) {
-            document.getElementById("treeButton").style.width = "50%";
-            document.getElementById("treeButton").style.borderRadius = "10px 0 0 10px";
+        if(treeButton != null) treeButton.style.display = (addMeta) ? "block" : "none"; 
+        if(timeButton != null) timeButton.style.display = (addTime) ? "block" : "none"; 
+
+        if(addMeta && !addTime && treeButton != null) {
+            treeButton.style.width = "100%";
+            treeButton.style.borderRadius = "10px";
+        } else if(addMeta && addTime && treeButton != null) {
+            treeButton.style.width = "50%";
+            treeButton.style.borderRadius = "10px 0 0 10px";
         }
 
         let footerContent = document.getElementById("footerContainer");

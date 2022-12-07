@@ -178,15 +178,14 @@ class MapboxUtils {
      * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
      */
     public static  changeTerrain(mode) {
-        if(mode === "light") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
-        } else if(mode === "dark") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/dark-v10?optimize=true");
-        } else if(mode === "outdoors") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
-        } else if(mode === "satellite") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
-        }
+        let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+        if(imagerySettings == null) return;
+
+        let url = imagerySettings[mode];
+        if(url == null) return;
+        
+        if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+        MapHandler.MAP.setStyle(url);
 
         // Store the current terrain as a global variable
         window.terrain = mode;
@@ -204,7 +203,7 @@ class MapboxUtils {
 
         // Add possible imagery options
         imagerySettings["Light"] = "mapbox://styles/mapbox/light-v10?optimize=true";
-        imagerySettings["Dark"] = "mapbox://styles/mapbox/light-v10?optimize=true";
+        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v10?optimize=true";
         imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
         imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
 

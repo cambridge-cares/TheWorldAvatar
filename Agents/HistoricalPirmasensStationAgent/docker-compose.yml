@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   historical-pirmasens-station-agent:
-    image: historical-pirmasens-station-agent:1.1.0
+    image: historical-pirmasens-station-agent:1.3.0
     build: .
     container_name: historical-pirmasens-station-agent
     pull_policy: if_not_present

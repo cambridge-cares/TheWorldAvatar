@@ -52,7 +52,7 @@ public class DiffReverseAgent extends DerivationAgent {
 
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("DiffReverseAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("DiffReverseAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 		LOGGER.debug("DiffReverseAgent will sleep for (" + Config.delayAgentDiffReverse + ") seconds before it runs.");
 		try {
 			TimeUnit.SECONDS.sleep(Config.delayAgentDiffReverse);

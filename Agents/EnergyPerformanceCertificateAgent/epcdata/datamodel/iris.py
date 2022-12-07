@@ -15,7 +15,7 @@ XSD = 'http://www.w3.org/2001/XMLSchema#'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
-UOM = 'http://theworldavatar.com/resource/ontouom/'
+UOM = 'https://www.theworldavatar.com/kg/ontouom/'
 OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
 OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 # Knowledge base
@@ -148,6 +148,7 @@ OM_SYMBOL = OM + 'symbol'
 OM_M = OM + 'metre'
 OM_M2 = OM + 'squareMetre'
 OM_GBP = OM + 'poundSterling'
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
 
 # GeoSPARQL
 GEO_FEATURE = GEO + 'Feature'
