@@ -23,21 +23,30 @@ bash ./redeploy.sh
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following descriptions refers to commit `90cc2f056cf56479acd3ce3bc9b45c77304c4bc5` of the `dev-feature-info-agent` branch
+> The following descriptions refers to commit `cfba412cf8abdc029519da01710f4d822229eb57` of the `dev-feature-info-agent` branch
 
-The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building.
-
-The required `.sparql` files to be placed inside the agent before building the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository (as well as to be found in the `resource` folders of the respective input agents (i.e. MetOfficeAgent, EPCInstantiationAgent)).
-
-To build the Agent image and deploy it to the spun up stack, please run the following commands from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM):
+The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **Please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
 
 ```bash
 # Build the agent image
  bash ./stack.sh build
+```
+Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former **before** running the container should automatically make them available to the agent.
+
+The required `fia-config.json` and `.sparql` files to be placed inside the agent before building/deploying the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository (as well as to be found in the `resource` folders of the respective input agents (i.e. MetOfficeAgent, EPCInstantiationAgent)).
+```diff
+- Pending To Do: 
+    - Ensure this is true after verifying that the queries work
+```
+
+To deploy the agent to the spun up Stack, please run the following command from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM). :
+
+```bash
  # Deploy the agent
  bash ./stack.sh start <STACK_NAME>
 ```
 After deploying the agent, the NGINX routing configuration needs to be added. **Please note** that this is required after each agent startup, details are provided below.
+
 
 &nbsp;
 ## Important Pre-requisites
