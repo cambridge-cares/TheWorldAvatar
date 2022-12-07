@@ -23,7 +23,7 @@ public class EndpointConfig {
 
         BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
                     BlazegraphEndpointConfig.class);
-        this.kgurl = blazegraphEndpointConfig.getUrl("kb");
+        this.kgurl = blazegraphEndpointConfig.getUrl(EnvConfig.BLAZEGRAPH_NAMESPACE);
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
     }

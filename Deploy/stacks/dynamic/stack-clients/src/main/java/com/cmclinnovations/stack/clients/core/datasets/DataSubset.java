@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(Tabular.class), @Type(Vector.class), @Type(Raster.class) })
+@JsonSubTypes({ @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
+        @Type(value = Vector.class, names = { "Vector", "vector" }),
+        @Type(value = Raster.class, names = { "Raster", "raster" }) })
 public abstract class DataSubset {
 
     private String name;

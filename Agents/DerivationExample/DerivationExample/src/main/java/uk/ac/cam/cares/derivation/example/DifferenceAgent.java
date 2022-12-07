@@ -32,8 +32,8 @@ public class DifferenceAgent extends DerivationAgent {
 	private static final long serialVersionUID = 1L;
 
 	// ============================ Static variables ===========================
-    private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
-    public static final String URL_Difference = "/DifferenceAgent";
+	private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
+	public static final String URL_Difference = "/DifferenceAgent";
 
 	StoreClientInterface storeClient;
 	SparqlClient sparqlClient;
@@ -42,29 +42,29 @@ public class DifferenceAgent extends DerivationAgent {
 		LOGGER.info("DifferenceAgent is initialised.");
 	}
 
-    // ================================ Methods ================================
-    /**
-     * Processes HTTP requests.
-     *
-     * @param requestParams Request parameters in a JSONObject
-     * @param request HTTP Servlet Request
-     * @return
-     */
-    @Override
+	// ================================ Methods ================================
+	/**
+	 * Processes HTTP requests.
+	 *
+	 * @param requestParams Request parameters in a JSONObject
+	 * @param request HTTP Servlet Request
+	 * @return
+	 */
+	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
-        if (validateInput(derivationInputs,sparqlClient)) {
-        	LOGGER.info("Calculating difference");
+		if (validateInput(derivationInputs,sparqlClient)) {
+			LOGGER.info("Calculating difference");
 
 			// validate input should already ensure that both max and min value exist
 			String maxIri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);
 			String minIri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue)).get(0);
-    		Integer minvalue_input = null; Integer maxvalue_input = null;
+			Integer minvalue_input = null; Integer maxvalue_input = null;
 			maxvalue_input = sparqlClient.getValue(maxIri);
 			minvalue_input = sparqlClient.getValue(minIri);
-    		
+
 			// calculate a new value
-    		int difference = maxvalue_input - minvalue_input;
+			int difference = maxvalue_input - minvalue_input;
 
 			// write the output triples to derivationOutputs
 			String difference_iri = SparqlClient.namespace + UUID.randomUUID().toString();
@@ -75,16 +75,16 @@ public class DifferenceAgent extends DerivationAgent {
 			derivationOutputs.addTriple(sparqlClient.addValueInstance(difference_iri, value_iri, difference));
 			LOGGER.info("Created a new calculated difference instance <" + difference_iri
 					+ ">, and its value instance <" + value_iri + ">");
-	    } else {
+		} else {
 			LOGGER.error("Input validation failed.");
 			throw new BadRequestException("Input validation failed.");
 		}
-    }
+	}
 
-    private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) throws BadRequestException {
-        boolean valid = false;
+	private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) throws BadRequestException {
+		boolean valid = false;
 		LOGGER.info("Checking inputs for DifferenceAgent");
-		
+
 		// check if the two inputs are complete
 		List<String> max = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
 		List<String> min = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue));
@@ -106,9 +106,9 @@ public class DifferenceAgent extends DerivationAgent {
 			LOGGER.error("Incorrect number of inputs");
 			throw new BadRequestException("Incorrect number of inputs");
 		}
-        
-        return valid;
-    }
+
+		return valid;
+	}
 
 	@Override
 	public void init() throws ServletException {

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  avgsqmprice_agent:
+    image: ghcr.io/cambridge-cares/avgsqmprice_agent_debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
+    ports:
+      - "${DEBUG_PORT}:5678"
+    volumes:
+      - ./avgsqmpriceagent:/app/avgsqmpriceagent

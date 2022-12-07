@@ -16,7 +16,9 @@
 				"description": "The college includes the Master, the Fellows of the College, and about 450 undergraduate and 170 graduate students. The college was founded by William Byngham in 1437 as God's House. In 1505, the college was granted a new royal charter, was given a substantial endowment by Lady Margaret Beaufort, and changed its name to Christ's College, becoming the twelfth of the Cambridge colleges to be founded in its current form.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Christ%27s_College_Cambridge_Great_Gate.jpg/330px-Christ%27s_College_Cambridge_Great_Gate.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1505,
+				"undergraduates": true
 			},
 			"id": 1
 		},
@@ -35,7 +37,9 @@
 				"description": "Churchill College is a constituent college of the University of Cambridge, England. It has a primary focus on science, engineering and technology, but still retains a strong interest in the arts and humanities.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/8/83/Churchill_College_-_geograph.org.uk_-_38551.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1960,
+				"undergraduates": true
 			},
 			"id": 2
 		},
@@ -54,7 +58,9 @@
 				"description": "The college was founded in 1326 as University Hall, making it the second-oldest surviving college of the University after Peterhouse. It was refounded in 1338 as Clare Hall by an endowment from Elizabeth de Clare, and took on its current name in 1856. Clare is famous for its chapel choir and for its gardens on 'The Backs' (the back of the colleges that overlook the River Cam).",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Clare_college.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1326,
+				"undergraduates": true
 			},
 			"id": 3
 		},
@@ -73,7 +79,9 @@
 				"description": "Clare Hall is one of the smallest colleges with 200 graduate students, but around 125 Fellows, making it the highest Fellow to Student ratio at Cambridge University. Notwithstanding its small size, the college is also notable for its high number of Nobel Laureate affiliates. Clare Hall maintains many Cambridge traditions including formal hall and the tutorial system.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Elmside_House.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1966,
+				"undergraduates": false
 			},
 			"id": 4
 		},
@@ -92,7 +100,9 @@
 				"description": "The college is notable as the only one founded by Cambridge townspeople: it was established in 1352 by the Guild of Corpus Christi and the Guild of the Blessed Virgin Mary, making it the sixth-oldest college in Cambridge. With around 250 undergraduates and 200 postgraduates, it also has the second smallest student body of the traditional colleges of the University, after Peterhouse.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Corpus_Christi_College_New_Court%2C_Cambridge%2C_UK_-_Diliff.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1352,
+				"undergraduates": true
 			},
 			"id": 5
 		},
@@ -111,7 +121,9 @@
 				"description": "Founded on 28 July 1964, Darwin was Cambridge University's first graduate-only college, and also the first to admit both men and women. The college is named after one of the university's most famous families and alumni, that of Charles Darwin. The Darwin family previously owned some of the land, Newnham Grange, on which the college now stands.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Darwin_College_-_Silver_Street_-_geograph.org.uk_-_1131555.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1964,
+				"undergraduates": false 
 			},
 			"id": 6
 		},
@@ -130,7 +142,9 @@
 				"description": "Founded in 1800, it was the only college to be added to Cambridge University between 1596 and 1869, and is often described as the oldest of the new colleges and the newest of the old. Downing College was formed 'for the encouragement of the study of Law and Medicine and of the cognate subjects of Moral and Natural Science', and has developed a reputation amongst Cambridge colleges for Law and Medicine.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Maitland_Robinson_Library.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1800,
+				"undergraduates": true
 			},
 			"id": 7
 		},
@@ -149,7 +163,9 @@
 				"description": "The college was founded in 1584 by Sir Walter Mildmay, Chancellor of the Exchequer to Elizabeth I. The site on which the college sits was once a priory for Dominican monks, and the College Hall is built on the foundations of the monastery's nave. Emmanuel is one of the 16 'old colleges', which were founded before the 17th century.",
 				"thumbnail": "https://farm3.static.flickr.com/2905/32724856584_3e0128ba23_c.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1584, 
+				"undergraduates": true
 			},
 			"id": 8
 		},
@@ -168,7 +184,9 @@
 				"description": "The college traces its origins back to 1869 and the foundation of the Non-Collegiate Students Board, a venture intended to offer academically excellent students of all backgrounds a chance to study at the university. The institution was originally based at Fitzwilliam Hall (later renamed Fitzwilliam House), opposite the Fitzwilliam Museum in south-west Cambridge. ",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/1/11/The_Grove_at_Fitzwilliam_College%2C_Cambridge_2017.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1869,
+				"undergraduates": true
 			},
 			"id": 9
 		},
@@ -187,7 +205,9 @@
 				"description": "The college was established in 1869 by Emily Davies and Barbara Bodichon as the first women's college in Cambridge. In 1948, it was granted full college status by the university, marking the official admittance of women to the university. In 1976, it was the first Cambridge women's college to become coeducational.<br/><br/>The main college site, situated on the outskirts of the village of Girton, about 2.5 miles (4 kilometres) northwest of the university town, comprises 33 acres (13 hectares) of land. In a typical Victorian red brick design, most was built by architect Alfred Waterhouse between 1872 and 1887. It provides extensive sports facilities, an indoor swimming pool, an award-winning library and a chapel with two organs. There is an accommodation annexe, known as Swirles Court, situated in the Eddington neighborhood of the North West Cambridge development. Swirles opened in 2017 and provides up to 325 ensuite single rooms for graduates, and for second-year undergraduates and above.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Girton_College%2C_Cambridge%2C_England%2C_1890s.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1869,
+				"undergraduates": true
 			},
 			"id": 10
 		},
@@ -206,7 +226,9 @@
 				"description": "Originally founded in 1348, it is the fourth-oldest of the thirty-one colleges at the University of Cambridge and one of the wealthiest. The college has been attended by many students who have gone on to significant accomplishment, including fifteen Nobel Prize winners, the second-highest of any Oxbridge college (after Trinity College, Cambridge).",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/8/85/Cambridge_Gonville_and_Caius_College.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1348,
+				"undergraduates": true
 			},
 			"id": 11
 		},
@@ -225,7 +247,9 @@
 				"description": "Its first premises were acquired in Homerton, London in 1768, by an informal gathering of Protestant dissenters with origins in the seventeenth century. In 1894, the college moved from Homerton High Street, Hackney, London, to Cambridge. Homerton was admitted as an 'Approved Society' of the university in 1976, and received its Royal charter in 2010, affirming its status as a full college of the university.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/f/f4/The_Cavendish_Building_of_Homerton_College_Cambridge%2C_May_2011.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1768,
+				"undergraduates": true
 			},
 			"id": 12
 		},
@@ -244,7 +268,9 @@
 				"description": "It is the oldest of the University of Cambridge's postgraduate colleges. The college also admits undergraduates, though undergraduates admitted by the college must be aged 21 or over. There is no age requirement for postgraduate students.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Margaret_Wileman_Building%2C_Hughes_Hall.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1885,
+				"undergraduates": true
 			},
 			"id": 13
 		},
@@ -263,7 +289,9 @@
 				"description": "The college's full name is The College of the Blessed Virgin Mary, Saint John the Evangelist and the glorious Virgin Saint Radegund, near Cambridge. Its common name comes from the name of its chapel, Jesus Chapel.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Jesus_College_Entrance.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1496,
+				"undergraduates": true
 			},
 			"id": 14
 		},
@@ -282,7 +310,9 @@
 				"description": "Formally The King's College of Our Lady and Saint Nicholas in Cambridge, the college lies beside the River Cam and faces out onto King's Parade in the centre of the city. King's was founded in 1441 by Henry VI soon after he had founded its sister college in Eton. ",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Rear_of_the_King%27s_College_and_the_Gibbs%27_Building.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1441,
+				"undergraduates": true
 			},
 			"id": 15
 		},
@@ -301,7 +331,9 @@
 				"description": "The college is named in honour of Lucy Cavendish (1841–1925), who campaigned for the reform of women's education.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/7/74/Lucy_cavendish_college_library_with_marshall_house_in_the_background.JPG",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1965,
+				"undergraduates": true
 			},
 			"id": 16
 		},
@@ -320,7 +352,9 @@
 				"description": "The college was founded in 1428 as a Benedictine hostel, in time coming to be known as Buckingham College, before being refounded in 1542 as the College of St Mary Magdalene.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/e/e4/MagdaleneCollegeCam.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1428,
+				"undergraduates": true
 			},
 			"id": 17
 		},
@@ -339,7 +373,9 @@
 				"description": "Murray Edwards College is a women-only constituent college of the University of Cambridge. It was founded in 1954 as New Hall. In 2008, following a donation of £30 million by alumna Ros Edwards and her husband Steve, it was renamed Murray Edwards College, honouring its first President, Rosemary Murray and the donors.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Cmglee_Cambridge_New_Hall_Fountain_Court.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1954,
+				"undergraduates": true
 			},
 			"id": 18
 		},
@@ -358,7 +394,9 @@
 				"description": "The college was founded in 1871 by a group organising Lectures for Ladies, members of which included philosopher Henry Sidgwick and suffragist campaigner Millicent Garrett Fawcett. It was the second women's college to be founded at Cambridge, following Girton College. The College is celebrating its 150th anniversary[4] throughout 2021 and 2022.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/5/51/Cmglee_Cambridge_University_Newnham_College_dining_hall.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1871,
+				"undergraduates": true
 			},
 			"id": 19
 		},
@@ -377,7 +415,9 @@
 				"description": "Pembroke College (officially 'The Master, Fellows and Scholars of the College or Hall of Valence-Mary') is a constituent college of the University of Cambridge, England. The college is the third-oldest college of the university and has over 700 students and fellows.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Graduation_Day%2C_Pembroke_College%2C_Cambridge.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1347,
+				"undergraduates": true
 			},
 			"id": 20
 		},
@@ -396,7 +436,9 @@
 				"description": "Peterhouse is the oldest constituent college of the University of Cambridge in England, founded in 1284 by Hugh de Balsham, Bishop of Ely. Today, Peterhouse has 254 undergraduates, 116 full-time graduate students and 54 fellows. It is quite often erroneously referred to as Peterhouse College, although the correct name is simply Peterhouse.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Cambridge_Peterhouse_OldCourt.JPG",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1284,
+				"undergraduates": true
 			},
 			"id": 21
 		},
@@ -415,7 +457,9 @@
 				"description": "Queens' is one of the oldest colleges of the university, founded in 1448 by Margaret of Anjou, and has some of the most iconic and recognisable buildings in Cambridge. The college spans the river Cam, colloquially referred to as the 'light side' and the 'dark side', with the Mathematical Bridge connecting the two.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Cambridge_Queens%27_Gatehouse.JPG",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1448,
+				"undergraduates": true
 			},
 			"id": 22
 		},
@@ -434,7 +478,9 @@
 				"description": "Founded in 1977, Robinson is one of the newest Oxbridge colleges and is unique in having been intended, from its inception, for both undergraduate and graduate students of both sexes.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Robinson_College_Fascade.JPG",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1977,
+				"undergraduates": true
 			},
 			"id": 23
 		},
@@ -453,7 +499,9 @@
 				"description": "The College was founded in 1596 under the terms of the will of Frances Sidney, Countess of Sussex (1531 to 1589), wife of Thomas Radclyffe, 3rd Earl of Sussex, and named after its foundress. It was from its inception an avowedly Protestant foundation; 'some good and godlie moniment for the mainteynance of good learninge'.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Cloister_Court%2C_Sidney_Sussex_College.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1596,
+				"undergraduates": true
 			},
 			"id": 24
 		},
@@ -472,7 +520,9 @@
 				"description": "Founded in 1473 as Katharine Hall, it adopted its current name in 1860. The college is nicknamed 'Catz'. The college is located in the historic city-centre of Cambridge, and lies just south of King's College and across the street from Corpus Christi College. The college is notable for its open court (rather than closed quadrangle) that faces towards Trumpington Street.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d4/St_Catharine%27s_College_Main_Court_in_Sunshine.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1473,
+				"undergraduates": true
 			},
 			"id": 25
 		},
@@ -491,7 +541,9 @@
 				"description": "Founded in 1896, it is the second-oldest of the four Cambridge colleges oriented to mature students, which accept only students reading for postgraduate degrees or for undergraduate degrees if aged 21 years or older.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/b5/St_Edmund%27s_College_Chapel_and_Norfolk.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1896,
+				"undergraduates": true
 			},
 			"id": 26
 		},
@@ -510,7 +562,9 @@
 				"description": "The college was founded in 1882 by the Selwyn Memorial Committee in memory of George Augustus Selwyn (1809 to 1878), the first Bishop of New Zealand (1841 to 1868), and subsequently Bishop of Lichfield (1868 to 1878). It consists of three main courts built of stone and brick (Old Court, Ann's Court, and Cripps Court) along with several secondary buildings, including adjacent townhouses and lodges serving as student hostels on Grange Road, West Road and Sidgwick Avenue. The college has some 60 fellows and 110 non-academic staff.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Selwyn_College_Old_Court%2C_Cambridge%2C_UK_-_Diliff.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1882,
+				"undergraduates": true
 			},
 			"id": 27
 		},
@@ -529,7 +583,9 @@
 				"description": "In constitutional terms, the college is a charitable corporation established by a charter dated 9 April 1511. The aims of the college, as specified by its statutes, are the promotion of education, religion, learning and research.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Cambridge_-_St_John_College_-_New_Court.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1511,
+				"undergraduates": true
 			},
 			"id": 28
 		},
@@ -548,7 +604,9 @@
 				"description": "Trinity is one of the oldest and largest colleges in Cambridge, with the largest financial endowment of any college at either Cambridge or Oxford. Trinity has some of the most distinctive architecture within Cambridge, with its Great Court reputed to be the largest enclosed courtyard in Europe.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/9/94/Trinity_College_-_Great_Court_02.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1546,
+				"undergraduates": true
 			},
 			"id": 29
 		},
@@ -567,7 +625,9 @@
 				"description": "It is the fifth-oldest surviving college of the university, having been founded in 1350 by William Bateman, Bishop of Norwich, to train clergymen in Canon law following their decimation during the Black Death.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/9/95/TrinityHallFrontCourtHighRes.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1350,
+				"undergraduates": true
 			},
 			"id": 30
 		},
@@ -586,7 +646,9 @@
 				"description": "The majority of students at the college are postgraduates. The college also admits mature undergraduates (aged 21 and above), with around 15% of students studying undergraduate degree courses at the university. The college was founded in 1965 as 'University College', but was refounded as Wolfson College in 1973 in recognition of the benefaction of the Wolfson Foundation.",
 				"thumbnail": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Wolfson_College_Lee_Library.jpg",
 				"metadataURL": "./data/cambridge/metadata.json",
-				"timeseriesURL": "./data/cambridge/timeseries.json"
+				"timeseriesURL": "./data/cambridge/timeseries.json",
+				"founded": 1965,
+				"undergraduates": true
 			},
 			"id": 31
 		}

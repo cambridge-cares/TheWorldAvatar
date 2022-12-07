@@ -44,9 +44,9 @@ class Manager {
     private panelHandler: PanelHandler;
 
     /**
-     * Is the feature search bar currently up?
+     * Handles feature searching.
      */
-    private searchUp: boolean = false;
+    private searchHandler: SearchHandler;
 
     /**
      * Currently in full screen mode?
@@ -92,34 +92,30 @@ class Manager {
 
         // Show attributions if present
         showAttributions();
-        
-        // Override CTRL+F shortcut for feature searching (BETA)
-        // let searchBox = document.getElementById("finderContainer");
-        // if(searchBox !== null) {
 
-        //     let self = this;
-        //     document.addEventListener("keydown", function(e){
-        //         if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
-        //             if(self.searchUp) {
-        //                 self.hideSearch();
-        //             } else {
-        //                 self.showFeatureFinder();
-        //             }
-        //             e.preventDefault();
-        //         }
+        // Listen for CTRL+F 
+        let self = this;
+        document.addEventListener("keydown", function(e){
+            if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+                if(self.searchHandler === null || self.searchHandler === undefined) {
 
-        //         if(e.altKey && e.key === "Enter") {
-        //             self.toggleFullscreen();
-                    
-        //             var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
-        //             var cartographic = ellipsoid.cartesianToCartographic(MapHandler.MAP.camera.position);
-        //             // @ts-ignore
-        //             var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(10);
-        //             // @ts-ignore
-        //             var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(10);
-        //         }
-        //     });
-        // }
+
+                    // Initialise the seach handler instance
+                    switch(Manager.PROVIDER) {
+                        case MapProvider.MAPBOX:
+                            self.searchHandler = new SearchHandler_Mapbox();
+                        break;
+
+                        case MapProvider.CESIUM:
+                            // NOT YET IMPLEMENTED
+                        break;
+                    }
+                }
+
+                if(self.searchHandler != null) self.searchHandler.toggle();
+                e.preventDefault();
+            }
+        });
     }
 
     private toggleFullscreen() {
@@ -244,10 +240,18 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature, properties) {
-        let name = getName(properties);
+        // Bug out if no properties at all
+        if((properties === null || properties === undefined) && feature["properties"] != null) {
+            properties = feature["properties"];
+        } else if(properties === null) {
+            console.warn("Selected feature has no properties, cannot show any side panel content!");
+            return;
+        }
 
+        // Get the correct name for the feature
+        let name = getName(properties);
         if(name == null) {
-            if(feature.hasOwnProperty("id")) {
+            if(feature.hasOwnProperty("id") && typeof feature["id"] !== "object") {
                 name = "Feature " + feature["id"];
             } else {
                 name = "Selected Feature";
@@ -376,40 +380,6 @@ class Manager {
     }
 
     /**
-     * Show the feature finder panel (BETA).
-     */
-    public showFeatureFinder() {
-        let finderContainer = document.getElementById("finderContainer");
-        let sidePanel = document.getElementById("sidePanel");
-
-        // No feature if side panel in large mode
-        if(sidePanel.classList.contains("large")) return;
-
-        // Adjust for current width state
-        if(sidePanel.classList.contains("expanded")) {
-            finderContainer.classList.remove("collapsed");
-            finderContainer.classList.add("expanded");
-        } else {
-            finderContainer.classList.remove("expanded");
-            finderContainer.classList.add("collapsed");
-        }
-
-        finderContainer.style.display = "block";
-        this.searchUp = true;
-
-        document.getElementById("findInput").focus();
-    }
-
-    /**
-     * Hide the feature finder panel (BETA).
-     */
-    public hideSearch() {
-        let finderContainer = document.getElementById("finderContainer");
-        finderContainer.style.display = "none";
-        this.searchUp = false;
-    }
-
-    /**
      * Clear the current feature finder seach (BETA).
      */
     public cancelSearch() {
@@ -441,11 +411,6 @@ class Manager {
                 }
             });
         });
-
-        // Hide search bar
-        let finderContainer = document.getElementById("finderContainer");
-        finderContainer.style.display = "none";
-        this.searchUp = false;
     }
 
     /**
@@ -518,31 +483,109 @@ class Manager {
     }
 
     /**
+     * Given a selected feature, this function trys to determine the id of the layer
+     * containing it. If found, this is then used to find the original group housing
+     * the layer and then the stack URL attached to this group.
      * 
-     * @param feature 
-     * @returns 
+     * Note: this is bloated as Cesium does not have a common abstraction for feature
+     * objects, each has its own annoying structure.
+     * 
+     * @param feature selected geographical feature.
+     *  
+     * @returns stack URL (or null) 
      */
     public static findStack(feature, properties) {
-        // @ts-ignore
-        if(feature instanceof Cesium.Cesium3DTileFeature) {
-            // Feature within 3D tileset
-            let tileset = feature.tileset;
+        switch(Manager.PROVIDER) {
+            case MapProvider.CESIUM: {
 
-        } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
-            // WMS feature on cesium
-            return null;
+                if(feature instanceof Cesium.Cesium3DTileFeature) {
+                    // Feature within 3D tileset
+                    let tileset = feature.tileset;
 
-        } else {
-            // Mapbox or WMS feature?
-            let layer = feature["layer"]["id"];
+                    if(tileset.hasOwnProperty("layerID")) {
+                        let layerID = tileset["layerID"];
 
-            if(layer !== null && layer !== undefined) {
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
+                } else if(feature.hasOwnProperty("primitive") && feature["primitive"] instanceof Cesium.Cesium3DTileset) {
+                     // Feature within 3D tileset, for some reason using a different Cesium data object?
+                     let tileset = feature.primitive;
 
-                for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
-                    let layers = value as string[];
-                    if(layers.includes(layer)) return stack;
+                    if(tileset.hasOwnProperty("layerID")) {
+                        let layerID = tileset["layerID"];
+
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
+                } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+                    // WMS feature on cesium
+                    let layer = feature["imageryLayer"];
+                    let provider = layer["imageryProvider"];
+
+                    if(provider.hasOwnProperty("layerID")) {
+                        let layerID = provider["layerID"];
+
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
+
+                } else {
+                    // Something else, try to find the layerID
+                    let entity = feature["id"];
+
+                    if(entity !== null && entity !== undefined) {
+                        let collection = entity["entityCollection"];
+                        let owner = collection.owner;
+
+                        if(owner !== null && owner !== undefined && owner.hasOwnProperty("layerID")) {
+                            let layerID = owner["layerID"];
+
+                            for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                                let layers = value as string[];
+                                if(layers.includes(layerID)) {
+                                    return stack;
+                                } 
+                            }
+                        }
+                    }
                 }
             }
+            break;
+
+            case MapProvider.MAPBOX: {
+                // Mapbox
+                let layer = feature["layer"]["id"];
+
+                if(layer !== null && layer !== undefined) {
+                    for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                        let layers = value as string[];
+                        if(layers.includes(layer)) return stack;
+                    }
+                }
+            }
+            break;
         }
 
         return null;

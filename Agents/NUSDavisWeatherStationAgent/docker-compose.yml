@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nusDavisWeatherStation-agent:
-    image: nusdavisweatherstation-agent:1.1.0
+    image: nusdavisweatherstation-agent:1.3.0
     build: .
     container_name: nusDavisWeatherStation-agent
     pull_policy: if_not_present
