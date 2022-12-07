@@ -187,8 +187,13 @@ public class ConfigStore extends ContainerClient {
                 Path configFile = Paths.get(this.getConfigLocation());
                 filePath = configFile.getParent().resolve(fileName);
             } 
+
+            if(!Files.exists(filePath)) {
+                // Still does not exist, return null
+                return null;
+            }
             return Files.readString(filePath);
-            
+
         } else {
             LOGGER.warn("No 'metaFile' registered for class: {}.", clazz);
         }
@@ -216,6 +221,10 @@ public class ConfigStore extends ContainerClient {
                 filePath = configFile.getParent().resolve(fileName);
             }
 
+            if(!Files.exists(filePath)) {
+                // Still does not exist, return null
+                return null;
+            }
             return Files.readString(filePath);
         }
         return null;
