@@ -1,0 +1,11 @@
+{
+    'database_name' : 'solarsensor45',
+    'queries' : [
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ps/IlluminanceSensor',
+            'metaFile' : 'IlluminanceSensor.sparql',
+            'timeFile' : 'IlluminanceSensor_timeseries.sparql',
+            'timeLimit' : 8760
+        }
+    ]
+}

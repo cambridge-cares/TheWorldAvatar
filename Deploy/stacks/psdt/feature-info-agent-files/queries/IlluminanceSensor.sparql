@@ -1,0 +1,10 @@
+PREFIX ps: <https://www.theworldavatar.com/kg/ps/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?Property (GROUP_CONCAT(CONCAT(?l, " [", ?u, "]"); separator="; ") AS ?Value)
+WHERE {
+  [IRI] ps:hasQuantity ?q .
+  ?q rdfs:label ?l .
+  ?q ps:hasUnit ?u .
+  BIND("misst" AS ?Property)
+}
+GROUP BY ?Property
