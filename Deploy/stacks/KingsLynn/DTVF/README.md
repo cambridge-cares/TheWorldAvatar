@@ -23,7 +23,7 @@ bash ./redeploy.sh
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following descriptions refers to commit `cfba412cf8abdc029519da01710f4d822229eb57` of the `dev-feature-info-agent` branch
+> The following descriptions refers to commit `216b8a6ea8e35fb41ece61724c6d721e5d38c691` of the `dev-feature-info-agent` branch
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **Please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
 
@@ -31,7 +31,7 @@ The Feature Info Agent is used to retrieve meta data for visualisation(s). Detai
 # Build the agent image
  bash ./stack.sh build
 ```
-Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former **before** running the container should automatically make them available to the agent.
+Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former **before** running the container should automatically make them available to the agent. **Please note** that you need to redeploy the agent after adding new or updating files in the `queries` directory. 
 
 The required `fia-config.json` and `.sparql` files to be placed inside the agent before building/deploying the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository (as well as to be found in the `resource` folders of the respective input agents (i.e. MetOfficeAgent, EPCInstantiationAgent)).
 ```diff
