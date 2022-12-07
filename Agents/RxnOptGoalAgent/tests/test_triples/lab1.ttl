@@ -91,9 +91,10 @@
     # response factor
     OntoHPLC:hasResponseFactor :ResponseFactor_2;
     OntoHPLC:hasResponseFactor :ResponseFactor_4;
+    OntoHPLC:hasResponseFactor :ResponseFactor_5;
     # internal standard
     OntoHPLC:usesInternalStandard :PhaseComponent_InternalStandard;
-    OntoHPLC:retentionTimeMatchThreshold "0.15"^^xsd:double;
+    OntoHPLC:retentionTimeMatchThreshold "0.11"^^xsd:double;
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 
@@ -101,7 +102,7 @@
 # note that this should also be added to the ChemicalReaction and also the AutoSampler solution part
 :PhaseComponent_InternalStandard
     rdf:type OntoHPLC:InternalStandard;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     OntoCAPEUpp:hasProperty :PhaseComponent_InternalStandard_Property_1;
 .
 
@@ -126,7 +127,7 @@
 :RetentionTime_1_value
     a om:Measure;
     om:hasUnit om:minute-Time;
-    om:hasNumericalValue "4.542"^^xsd:double;
+    om:hasNumericalValue "4.404"^^xsd:double;
 .
 
 # product benzalacetone
@@ -139,7 +140,7 @@
 :ResponseFactor_2_value
     a om:Measure;
     om:hasUnit om:one;
-    om:hasNumericalValue "0.048296"^^xsd:double;
+    om:hasNumericalValue "0.342973"^^xsd:double;
 .
 
 # product benzalacetone
@@ -152,13 +153,13 @@
 :RetentionTime_2_value
     a om:Measure;
     om:hasUnit om:minute-Time;
-    om:hasNumericalValue "5.082"^^xsd:double;
+    om:hasNumericalValue "6.742"^^xsd:double;
 .
 
 # internal standard
 :ResponseFactor_4
     a OntoHPLC:ResponseFactor;
-    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     om:hasValue :ResponseFactor_4_value;
 .
 
@@ -171,14 +172,27 @@
 # internal standard
 :RetentionTime_4
     a OntoHPLC:RetentionTime;
-    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     om:hasValue :RetentionTime_4_value;
 .
 
 :RetentionTime_4_value
     a om:Measure;
     om:hasUnit om:minute-Time;
-    om:hasNumericalValue "6.150"^^xsd:double;
+    om:hasNumericalValue "13.369"^^xsd:double;
+.
+
+# impurity dibenzylideneacetone
+:ResponseFactor_5
+    a OntoHPLC:ResponseFactor;
+    OntoHPLC:refersToSpecies placeholder:Species_placeholder_pubchemcid_640180;
+    om:hasValue :ResponseFactor_5_value;
+.
+
+:ResponseFactor_5_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.358091"^^xsd:double;
 .
 
 # impurity dibenzylideneacetone
@@ -191,7 +205,7 @@
 :RetentionTime_5_value
     a om:Measure;
     om:hasUnit om:minute-Time;
-    om:hasNumericalValue "6.370"^^xsd:double;
+    om:hasNumericalValue "13.118"^^xsd:double;
 .
 
 #################
@@ -991,7 +1005,7 @@
 
 :PhaseComponent_IS_Input
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     OntoCAPEUpp:hasProperty :PhaseComponent_IS_Input_Property_1;
 .
 
