@@ -143,10 +143,10 @@ http://semanticscience.org/resource/SIO_000061,Object Property,,,https://schema.
 hasCoordinates,Object Property,,,https://schema.org/location,https://schema.org/GeoCoordinates,,A relationship between a location and Geo coordinates.,https://www.theworldavatar.com/kg/ontosewage/,has coordinates
 hasElevation,Object Property,,,https://schema.org/location,https://schema.org/Elevation,,A relationship between a location and elevation.,https://www.theworldavatar.com/kg/ontosewage/,has elevation
 hasElevationAboveSeaLevel,Object Property,,,https://schema.org/Elevation,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship which shows the elevation above see level of a location.,https://www.theworldavatar.com/kg/ontosewage/,has elevation above sea level
-feedsInTo,Object Property,,,SewerageComponent,SewagePlant,,A relationship between a sewerage component and sewage plant.,https://www.theworldavatar.com/kg/ontosewage/,feeds in to
+isConnectedTo ,Object Property,,,SewerageComponent,SewagePlant,,A relationship between a sewerage component and sewage plant.,https://www.theworldavatar.com/kg/ontosewage/,is connected to
 hasElevationReference,Data Property,,,https://schema.org/Elevation,String,,A relationship which shows the elevation reference.,https://www.theworldavatar.com/kg/ontosewage/,has elevation reference
 hasElevationAccuracy,Data Property,,,https://schema.org/Elevation,String,,A relationship which shows the elevation accuracy.,https://www.theworldavatar.com/kg/ontosewage/,has elevation accuracy
-hasSewagePlantID,Data Property,,,SewerageRecords,Integer,,Sewerage plant ID,https://www.theworldavatar.com/kg/ontosewage/,has sewage plant ID
+componentID,Data Property,,,SewerageComponent,String,,Sewerage component ID,https://www.theworldavatar.com/kg/ontosewage/,component ID
 constructionYear,Data Property,,,ConstructionProperties,Integer,,Construction year for sewerage component.,https://www.theworldavatar.com/kg/ontosewage/,construction year
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Float,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
 http://www.ontology-of-units-of-measure.org/resource/om-2/symbol,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,String,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
