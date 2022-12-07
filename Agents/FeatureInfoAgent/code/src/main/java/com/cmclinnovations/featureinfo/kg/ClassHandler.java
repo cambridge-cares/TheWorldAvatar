@@ -109,8 +109,14 @@ public class ClassHandler {
      */
     public String getClassMatch() throws Exception {
         List<String> classNames = this.getClasses();
-        if(classNames == null) return null;
-        if(classNames.isEmpty()) return "";
+        if(classNames == null) {
+            LOGGER.error("Discovered class names array is null.");
+            return null;
+        }
+        if(classNames.isEmpty()) {
+            LOGGER.error("Discovered class names array is empty.");
+            return "";
+        }
 
         Iterator<String> iter = classNames.iterator();
         while(iter.hasNext()) {

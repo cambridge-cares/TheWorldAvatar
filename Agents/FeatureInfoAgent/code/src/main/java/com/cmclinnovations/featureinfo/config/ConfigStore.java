@@ -186,9 +186,11 @@ public class ConfigStore extends ContainerClient {
                 // Try as an a relative path to the config file
                 Path configFile = Paths.get(this.getConfigLocation());
                 filePath = configFile.getParent().resolve(fileName);
-            }
-
+            } 
             return Files.readString(filePath);
+            
+        } else {
+            LOGGER.warn("No 'metaFile' registered for class: {}.", clazz);
         }
         return null;
     }
@@ -377,17 +379,28 @@ public class ConfigStore extends ContainerClient {
         JSONArray queries = jsonConfig.getJSONArray("queries");
         if(queries == null) throw new IllegalStateException("Could not find required 'queries' node in configuration.");
 
+        int classCount = 0;
+
         for(int i = 0; i < queries.length(); i++) {
             JSONObject entry = queries.getJSONObject(i);
 
             // Load in class to file mapping
             String className = entry.getString("class");
+            LOGGER.info("Registering queries for class: {}", className);
+
             String metaFile = entry.getString("metaFile");
-            if(!metaFile.isBlank()) metaQueries.put(className, metaFile);
+            if(!metaFile.isBlank()) {
+                classCount++;
+                metaQueries.put(className, metaFile);
+                LOGGER.info("Found linked 'metaFile' entry: {}", metaFile);
+            }
 
             if(entry.has("timeFile")){
                 String timeFile = entry.getString("timeFile");
-                if(!timeFile.isBlank()) timeQueries.put(className, timeFile);
+                if(!timeFile.isBlank()) {
+                    timeQueries.put(className, timeFile);
+                    LOGGER.info("Found linked 'timeFile' entry: {}", timeFile);
+                }
             } 
 
             if(entry.has("timeLimit")) {
@@ -404,6 +417,7 @@ public class ConfigStore extends ContainerClient {
         });
         
         LOGGER.info("Configuration settings have been loaded into memory.");
+        LOGGER.info("{} classes have been regisistered.", classCount);
     }
 
     /**
