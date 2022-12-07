@@ -95,7 +95,7 @@ class TimeSeriesClientDecorator {
      * @param iris A list of string containing IRIs that should be attached to the same time series.
      * @return False if any IRI have a time series attached, true otherwise.
      */
-    private boolean timeSeriesDoesNotExist(List<String> iris) {
+    private boolean timeSeriesDoesNotExist(List<String> iris) throws SQLException {
         // If any of the IRIs does not have a time series the time series does not exist
         for (String iri : iris) {
             try {
@@ -109,8 +109,9 @@ class TimeSeriesClientDecorator {
                 } else {
                     throw e;
                 }
-            } catch (SQLException e) {
-                throw new JPSRuntimeException(e);
+            } finally {
+                // Always close connection
+                rdbClient.getConnection().close();
             }
         }
         return false;
@@ -128,7 +129,16 @@ class TimeSeriesClientDecorator {
         try {
             tsClient.addTimeSeriesData(timeSeries, rdbClient.getConnection());
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new JPSRuntimeException(e);
+        } finally {
+            // Always close connection
+            try {
+                rdbClient.getConnection().close();
+            } catch (SQLException e) {
+                LOGGER.error(e);
+                throw new JPSRuntimeException(e);
+            }
         }
         LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", timeSeries.getDataIRIs())));
     }
