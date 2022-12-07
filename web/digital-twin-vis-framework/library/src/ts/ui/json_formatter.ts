@@ -65,6 +65,12 @@ class JSONFormatter {
         if(newValue.includes("^^")) {
             newValue = newValue.split("^^")[0];
         }
+
+        if(value.includes("[") && value.includes("]")) {
+            let pattern = new RegExp("(?<=\\[).*(?=\\])");
+            let unit = value.match(pattern);
+            newValue = newValue.trim() + " [" + unit + "]";
+        }
         return newValue;
     }
 
