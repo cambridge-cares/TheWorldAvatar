@@ -43,11 +43,10 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     private static final String DATA_UPDATE_ERROR_MSG = "Could not update time series!";
     // POST request keys
     private static final String KEY_TIMEHEADER = "timeHeader";
+    private static final String KEY_IRI_PREFIX = "iriPrefix";
     private static final String KEY_STARTING_ROW = "startingRow";
     private static final String KEY_MULTI_TS_COL_INDEX = "multiTSColIndex";
-
-    // Edit these fields per your requirements
-    public static final String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "pump/"; // The prefix to use for generating IRI
+    public static String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE; // The prefix to use for generating IRI
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -61,9 +60,17 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             LOGGER.info("Passing request to Historical Pump Data Instantiation Agent..");
             // Initialise required values
             String timeKey = requestParams.getString(KEY_TIMEHEADER);
+            String iriValue = requestParams.getString(KEY_IRI_PREFIX);
             String startingRow = requestParams.has(KEY_STARTING_ROW) ? requestParams.getString(KEY_STARTING_ROW) : "1";
             // If there is no grouping key, set an invalid value
             String bulkColIndex = requestParams.has(KEY_MULTI_TS_COL_INDEX) ? requestParams.getString(KEY_MULTI_TS_COL_INDEX) : "-1";
+            // Modify iriPrefix to new IRI if it is a new address
+            if (iriValue.startsWith("http")) {
+                iriPrefix = iriValue;
+            } else {
+                // If it is only a namespace, append it to the preset time series namespace
+                iriPrefix += iriValue;
+            }
             String[] parameters = new String[]{timeKey, startingRow, bulkColIndex};
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
@@ -86,7 +93,25 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             if (validate) {
                 // Ensure that the time header is of valid format
                 validate = requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("year");
+                LOGGER.debug(KEY_TIMEHEADER + " is " + validate);
             }
+
+            LOGGER.info("Validating " + KEY_IRI_PREFIX + " parameter");
+            validate = requestParams.has(KEY_IRI_PREFIX);
+            if (validate) {
+                // Ensure that the time header is of valid format
+                String iriValue = requestParams.getString(KEY_IRI_PREFIX);
+                // If it is a new IRI
+                if (iriValue.startsWith("http")) {
+                    validate = iriValue.startsWith("http://www.") || iriValue.startsWith("https://www.") && iriValue.endsWith("/");
+                } else {
+                    // If it is only a namespace, check if it does not start with http or /
+                    validate = !iriValue.startsWith("http") && !iriValue.startsWith("/") && iriValue.endsWith("/");
+                }
+            }
+            LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
+
+
             if (requestParams.has(KEY_STARTING_ROW)) {
                 LOGGER.info("Detected " + KEY_STARTING_ROW + " parameter");
                 LOGGER.info("Validating parameter...");
@@ -95,6 +120,8 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                     Integer.parseInt(requestParams.getString(KEY_STARTING_ROW));
                 } catch (NumberFormatException e) {
                     validate = false;
+                    LOGGER.debug(KEY_STARTING_ROW + " is false");
+
                 }
             }
             if (requestParams.has(KEY_MULTI_TS_COL_INDEX)) {
@@ -104,9 +131,10 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                     // Check that the index of the grouping column for multiple TS is an Integer that is at least 0
                     // Otherwise, parameter is invalid
                     int index = Integer.parseInt(requestParams.getString(KEY_MULTI_TS_COL_INDEX));
-                    validate = index>=0;
+                    validate = index >= 0;
                 } catch (NumberFormatException e) {
                     validate = false;
+                    LOGGER.debug(KEY_STARTING_ROW + " is false");
                 }
             }
         }
@@ -134,7 +162,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         // Parse Excel values into a hashmap
         Map<String, Map<String, List<?>>> excelReadings;
         try {
-            excelReadings = parser.parseToHashMap(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+            excelReadings = parser.parseToHashMap(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
@@ -152,7 +180,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         LOGGER.info("Properties handler initialized.");
 
         // Generate data IRI mappings to measures names and store in an external properties file
-        Map<String,Map<String, String>> iriMappings;
+        Map<String, Map<String, String>> iriMappings;
         try {
             iriMappings = handler.generateIRIMappings(FileManager.PROPERTIES);
         } catch (IOException e) {
@@ -180,7 +208,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         LOGGER.info("Time series client wrapper initialized.");
 
         // Initialize and update time series for each group
-        for (String group: excelReadings.keySet()) {
+        for (String group : excelReadings.keySet()) {
             LOGGER.debug("Initializing time series for " + group + "...");
             // Initialize the time series database if it doesn't exist
             try {

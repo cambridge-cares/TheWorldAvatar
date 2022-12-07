@@ -106,7 +106,7 @@ oilconsumption=
 // For group timeseries
 pump1_oilconsumption = http://example/pump1_oilconsumption_150252
 ```
-*Note that the `[prefix]` is hardcoded into the `HistoricalPumpDataInstantiationAgent` class as the `iriPrefix` field.
+*Note that the `[prefix]` is modifiable by the `iriPrefix` key in the POST Request.
 
 *If any mappings are modified from preceding builds, any data inputs are perceived as a *"new"* time series. This can result
 in inconsistencies in both KG and RDB. In such circumstances, please reset the namespaces and database to  a clean slate.
@@ -121,12 +121,21 @@ The agent currently accepts two parameters.
 This is the header name for the Time column for the Time Series. It can be invoked with the `timeHeader` key. 
 At the moment, there is only one acceptable parameter - `Year`. 
 
-2. Starting Value Row - Optional
+2. IRI Prefix - Mandatory
+
+By default, the base IRI prefix declared for all time series is `https://www.theworldavatar.com/kg/ontotimeseries/`.
+If you wish to append a namespace, pass a String of `namespace/` or `namespace/part2/` to the `iriPrefix` key. 
+Note that it must start with no `/` but end with a `/`.
+
+To change the base IRI for time series, pass in a String in `http://www.example.com/namespace/` format to the `iriPrefix` key.
+Both `http` and `https` is acceptable, but it must end with `/`.
+
+3. Starting Value Row - Optional
 
 This is the starting row for values, and should be an integer in String format. By default, it is set to 1. 
 If you wish to start at other values larger than 1, invoke the parameter with the `startingRow` key.
 
-3. Column Index for Multiple Time Series - Optional
+4. Column Index for Multiple Time Series - Optional
 
 This is the column containing the group for multiple time series. For eg, if an Excel contains data for "Pump 1" and "Pump 2",
 each pump should have their own distinct time series. Pump 1 and 2 will be indicated in this column. See [sample Excel](#1-excel-preprocessing) 
@@ -141,10 +150,10 @@ At least one parameter is required. A sample request is as follows:
 ```
 POST http://localhost:4050/historical-pump-data-instantiation-agent/run
 Content-Type: application/json
-{"timeHeader":"Year", "startingRow": "1", "multiTSColIndex": "0"}
+{"timeHeader":"Year", "iriPrefix":"pump/", startingRow": "1", "multiTSColIndex": "0"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'startingRow': '1', 'multiTSColIndex': '0'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
+curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'iriPrefix':'pump/', 'startingRow': '1', 'multiTSColIndex': '0'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
