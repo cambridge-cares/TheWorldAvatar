@@ -2,9 +2,9 @@
     "database_name": "postgres",
     "queries": [
         {
-            "class": "<https://www.theworldavatar.com/kg/ontoems/ReportingStation>",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
             "metaFile": "ReportingStations.sparql",
-            "timeFile": "classOneTime.sparql",
+            "timeFile": "ReportingStations_time.sparql",
             "timeLimit": 48
         },
         {
