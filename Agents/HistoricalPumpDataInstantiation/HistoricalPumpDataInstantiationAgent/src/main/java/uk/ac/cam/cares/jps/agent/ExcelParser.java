@@ -9,10 +9,7 @@ import java.io.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Parses the readings from the Excel workbook into a Java collection that can be read by the time series client.
@@ -33,6 +30,7 @@ class ExcelParser {
     private final String EXCEL_FILE_PATH;
     private final String instantTimeZone = "T00:00:00Z"; // UTC Time zone
     private Sheet dataSheet;
+    private Map<String, List<Integer>> groupingRowIndexMapping;
 
 
     /**
@@ -40,7 +38,7 @@ class ExcelParser {
      * This will check for a valid File path as well.
      *
      * @param excel_filepath Specifies the file path to the Excel workbook.
-     * @param timeHeader     Header name of the Time Column
+     * @param timeHeader     Header name of the Time Column.
      */
     protected ExcelParser(String excel_filepath, String timeHeader) throws IOException {
         this(excel_filepath, timeHeader, 0);
@@ -51,7 +49,7 @@ class ExcelParser {
      * By default, it has been set to the first sheet at index 0
      *
      * @param excel_filepath Specifies the file path to the Excel workbook.
-     * @param timeHeader     Header name of the Time Column
+     * @param timeHeader     Header name of the Time Column.
      * @param sheetIndex     Specifies the sheet index to read in the Excel file.
      */
     protected ExcelParser(String excel_filepath, String timeHeader, int sheetIndex) throws IOException {
@@ -75,53 +73,109 @@ class ExcelParser {
 
 
     /**
-     * Parses the values stored in Excel into a HashMap.
+     * Parses the Excel worksheet into the required Hashmap of hashmap format of {group: {dataIRI prefix: List of readings}}.
      *
-     * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1
-     * @return Excel values as a HashMap containing {dataIRI prefix: List of readings} key value pairs
+     * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1.
+     * @param multiTSColIndex  Column index containing different time series grouping. Indexing starts from 0, not 1.
+     * @return Excel values as a HashMap containing {group: {dataIRI prefix: List of readings}} key value pairs.
      */
-    protected Map<String, List<?>> parseToHashMap(int valueStartingRow) {
-        Map<String, List<?>> excelValues;
+    protected Map<String, Map<String, List<?>>> parseToHashMap(int valueStartingRow, int multiTSColIndex) {
+        Map<String, Map<String, List<?>>> groupedExcelValue;
         try (InputStream excelFile = new FileInputStream(this.EXCEL_FILE_PATH);
              Workbook workbook = WorkbookFactory.create(excelFile)) {
             LOGGER.debug("Opening Workbook...");
             this.dataSheet = workbook.getSheetAt(this.sheetIndex);
             LOGGER.debug("Processing Worksheet...");
-            excelValues = parseSheet(valueStartingRow);
+            retrieveTimeSeriesGroups(valueStartingRow, multiTSColIndex);
+            groupedExcelValue = parseSheet(valueStartingRow, multiTSColIndex);
         } catch (Exception e) {
             LOGGER.error(EXCEL_ERROR_MSG, e);
             throw new JPSRuntimeException(EXCEL_ERROR_MSG, e);
         }
-        return excelValues;
+        return groupedExcelValue;
     }
 
     /**
-     * Parses the Excel worksheet into a Hashmap
+     * Retrieve the unique time series grouping names in the column specified by the POST parameters.
+     * This will also extract and store each grouping and their row indices into a map.
      *
-     * @param valueStartingRow starting row number that contains values, not headings. Indexing starts from 0, not 1
-     * @return Excel values as a HashMap object
+     * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1.
+     * @param multiTSColIndex  Column index containing different time series grouping. Indexing starts from 0, not 1.
      */
-    private Map<String, List<?>> parseSheet(int valueStartingRow) {
-        List<?> columnValues;
-        Map<String, List<?>> excelValues = new HashMap<>();
+    private void retrieveTimeSeriesGroups(int valueStartingRow, int multiTSColIndex) {
+        groupingRowIndexMapping = new HashMap<>();
+        if (multiTSColIndex != -1) {
+            LOGGER.debug("Retrieving Time Series Groups...");
+            for (int i = valueStartingRow; i <= this.dataSheet.getLastRowNum(); i++) {
+                // Read the value of the grouping column
+                Row currentRow = this.dataSheet.getRow(i);
+                Cell currentCell = currentRow.getCell(multiTSColIndex);
+                String grouping = ExcelParserHelper.formatHeaderStringCell(currentCell);
+                // If the hashmap already contains this grouping key, add the row index to its List
+                if (groupingRowIndexMapping.containsKey(grouping)) {
+                    groupingRowIndexMapping.get(grouping).add(i);
+                } else {
+                    // Otherwise, create a new List and add the row index to this list
+                    List<Integer> rowIndexList = new ArrayList<>();
+                    rowIndexList.add(i);
+                    // Next, put the group and its list as a new Key Value pair
+                    groupingRowIndexMapping.put(grouping, rowIndexList);
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses the Excel worksheet into the required Hashmap of hashmap format of {group: {dataIRI prefix: List of readings}}.
+     *
+     * @param valueStartingRow starting row number that contains values, not headings. Indexing starts from 0, not 1.
+     * @param multiTSColIndex  Column index containing different time series grouping. Indexing starts from 0, not 1.
+     * @return Excel values as a HashMap containing key value pairs.
+     */
+    private Map<String, Map<String, List<?>>> parseSheet(int valueStartingRow, int multiTSColIndex) {
+        Map<String, Map<String, List<?>>> groupedExcelValues = new HashMap<>();
         LOGGER.debug("Parsing the headings...");
-        List<String> columnHeaders = parseHeadings(valueStartingRow - 1);
+        List<String> colHeaders = parseHeadings(valueStartingRow - 1);
         LOGGER.debug("Headings parsed...");
         // Iterate over each row and store all column values into a list
         // Index starts from 0 while size start from 1
-        for (int columnIndex = 0; columnIndex < columnHeaders.size(); columnIndex++) {
-            if (columnIndex == columnHeaders.indexOf(timeHeader)) {
-                LOGGER.debug("Parsing the values in time column " + columnIndex + "...");
-                // For time column, parse column differently
-                columnValues = parseColValuesToList(valueStartingRow, columnIndex, true);
-            } else {
-                LOGGER.debug("Parsing the values in column " + columnIndex + "...");
-                columnValues = parseColValuesToList(valueStartingRow, columnIndex);
+        for (int columnIndex = 0; columnIndex < colHeaders.size(); columnIndex++) {
+            List<?> columnValues;
+            // When it is not the Time Series Groupings column, run the script. Otherwise, ignore the column
+            if (columnIndex != multiTSColIndex) {
+                // Execute when there are only one time series
+                if (multiTSColIndex == -1) {
+                    LOGGER.debug("Parsing column " + columnIndex + " for single time series...");
+                    columnValues = parseColValues(valueStartingRow, this.dataSheet.getLastRowNum(), columnIndex, colHeaders);
+                    Map<String, List<?>> tempMap = new HashMap<>();
+                    tempMap.put(colHeaders.get(columnIndex), columnValues);
+                    groupedExcelValues.put(ExcelParserHelper.BASE_KEY_FOR_SINGLE_TIMESERIES, tempMap);
+                } else {
+                    LOGGER.debug("Parsing column " + columnIndex + " for multiple time series...");
+                    // Execute when there are multiple time series
+                    for (String group : groupingRowIndexMapping.keySet()) {
+                        LOGGER.debug("Parsing rows for " + group + "...");
+                        // Retrieve the list of row indices for each grouping
+                        List<Integer> groupRowIndex = groupingRowIndexMapping.get(group);
+                        // Parse only the rows related to the grouping
+                        columnValues = parseColValues(groupRowIndex.get(0), groupRowIndex.get(groupRowIndex.size() - 1), columnIndex, colHeaders);
+                        // If there is an existing group key, retrieve and put the new values into the nested hashmap
+                        if (groupedExcelValues.containsKey(group)) {
+                            // Store into the main map
+                            groupedExcelValues.get(group).put(colHeaders.get(columnIndex), columnValues);
+                        } else {
+                            // Otherwise, create a new nested hash map and add to the parent hashmap
+                            Map<String, List<?>> tempMap = new HashMap<>();
+                            tempMap.put(colHeaders.get(columnIndex), columnValues);
+                            // Store into the parent map
+                            groupedExcelValues.put(group, tempMap);
+                        }
+                    }
+                }
             }
-            excelValues.put(columnHeaders.get(columnIndex), columnValues);
         }
         LOGGER.debug("All column values have been parsed...");
-        return excelValues;
+        return groupedExcelValues;
     }
 
     /**
@@ -139,9 +193,8 @@ class ExcelParser {
             for (int j = 0; j < row.getLastCellNum(); j++) {
                 LOGGER.debug("Parsing cell " + j + "...");
                 Cell cell = row.getCell(j);
-
                 // When cell is null, cell.getStringCellValue will throw an exception and break compilation
-                headerContent = (cell != null) ? formatHeaderStringCell(cell) : "";
+                headerContent = (cell != null) ? ExcelParserHelper.formatHeaderStringCell(cell) : "";
                 LOGGER.debug("Header content is '" + headerContent + "'...");
                 // When current row is first row, add a new (empty or not) String to Array List
                 // Empty strings are vital as a placeholder to prevent skipping, which leads to inaccurate size
@@ -165,61 +218,57 @@ class ExcelParser {
     }
 
     /**
-     * Retrieves the cell value as a formatted String for data IRI. Removes any characters after Brackets.
-     * For eg, an input of "Time Series (Unit)" will return "TimeSeries"
+     * Intermediate method to parse column values depending on if they are the time column or not.
      *
-     * @param cell Text cell to retrieved String from in Excel
-     * @return String in format "CapitalisedFirstWordAfterSpace"
+     * @param startingRow Starting row number to start parsing into List. Indexing starts from 0, not 1.
+     * @param lastRow     Last row number to parse into List. Indexing starts from 0, not 1.
+     * @param columnIndex Index of column to parse. Indexing starts from 0, not 1.
+     * @param colHeaders  List of column headers to determine if they are time colum.
+     * @return A list object containing all the values in the column.
      */
-    private String formatHeaderStringCell(Cell cell) {
-        LOGGER.debug("Formatting header...");
-        // Retrieve cell and stores them in lowercase
-        String phrase = cell.getStringCellValue().toLowerCase();
-        // Remove description or information included as brackets () if they exist
-        int startingIndexToRemove = phrase.indexOf("(");
-        phrase = startingIndexToRemove == -1 ? phrase : phrase.substring(0, startingIndexToRemove);
-        // Remove leading and trailing spaces before converting the string to an array
-        char[] phraseChars = phrase.trim().toCharArray();
-        // Capitalise the first character of the string and after a white space
-        for (int i = 0; i < phraseChars.length - 1; i++) {
-            if (i == 0) {
-                phraseChars[i] = Character.toUpperCase(phraseChars[i]);
-            } else if (phraseChars[i] == ' ') {
-                phraseChars[i + 1] = Character.toUpperCase(phraseChars[i + 1]);
-            }
+    private List<?> parseColValues(int startingRow, int lastRow, int columnIndex, List<String> colHeaders) throws IllegalArgumentException {
+        List<?> colValues;
+        if (columnIndex == colHeaders.indexOf(timeHeader)) {
+            LOGGER.debug("Parsing the values in time column " + columnIndex + "...");
+            // For time column, parse column differently
+            colValues = parseColValuesToList(startingRow, lastRow, columnIndex, true);
+        } else {
+            LOGGER.debug("Parsing the values in column " + columnIndex + "...");
+            colValues = parseColValuesToList(startingRow, lastRow, columnIndex);
         }
-        // Remove white spaces
-        return String.valueOf(phraseChars).replaceAll("\\s+", "");
+        return colValues;
     }
 
     /**
      * Overloaded method that calls standard method with a default false parameter.
-     * Stores the values of one column into a list
+     * Stores the values of one column into a list.
      *
-     * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1
-     * @param columnIndex      Index of column to parse. Indexing starts from 0, not 1
-     * @return A list object containing all the values in the cell
+     * @param startingRow Starting row number to start parsing into List. Indexing starts from 0, not 1.
+     * @param lastRow     Last row number to parse into List. Indexing starts from 0, not 1.
+     * @param columnIndex Index of column to parse. Indexing starts from 0, not 1.
+     * @return A list object containing all the values in the column.
      */
-    private List<?> parseColValuesToList(int valueStartingRow, int columnIndex) throws IllegalArgumentException {
-        return parseColValuesToList(valueStartingRow, columnIndex, false);
+    private List<?> parseColValuesToList(int startingRow, int lastRow, int columnIndex) throws IllegalArgumentException {
+        return parseColValuesToList(startingRow, lastRow, columnIndex, false);
     }
 
     /**
-     * Stores the values of one column into a list
+     * Stores the values of one column into a list.
      *
-     * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1
-     * @param columnIndex      Index of column to parse. Indexing starts from 0, not 1
-     * @param isTimeColumn     A boolean indicating if current column is time
-     * @return A list object containing all the values in the cell
+     * @param startingRow  Starting row number to start parsing into List. Indexing starts from 0, not 1.
+     * @param lastRow      Last row number to parse into List. Indexing starts from 0, not 1.
+     * @param columnIndex  Index of column to parse. Indexing starts from 0, not 1.
+     * @param isTimeColumn A boolean indicating if current column is time.
+     * @return A list object containing all the values in the column.
      */
-    private List<?> parseColValuesToList(int valueStartingRow, int columnIndex, boolean isTimeColumn) throws IllegalArgumentException {
-        if (valueStartingRow < 1) {
+    private List<?> parseColValuesToList(int startingRow, int lastRow, int columnIndex, boolean isTimeColumn) throws IllegalArgumentException {
+        if (startingRow < 1) {
             LOGGER.error(INVALID_VALUE_STARTING_ROW_MSG);
             throw new IllegalArgumentException(INVALID_VALUE_STARTING_ROW_MSG);
         }
 
         List<Object> columnValues = new ArrayList<>();
-        for (int i = valueStartingRow; i <= this.dataSheet.getLastRowNum(); i++) {
+        for (int i = startingRow; i <= lastRow; i++) {
             LOGGER.debug("Parsing cell of row " + i + "...");
             Row currentRow = this.dataSheet.getRow(i);
             Cell currentCell = currentRow.getCell(columnIndex);
@@ -227,43 +276,19 @@ class ExcelParser {
             try {
                 if (isTimeColumn) {
                     if (timeHeader.equalsIgnoreCase("year")) {
-                        Double doubleValue = (Double) readCell(currentCell);
+                        Double doubleValue = (Double) ExcelParserHelper.readCell(currentCell);
                         Year year = Year.of(doubleValue.intValue());
                         LocalDate date = year.atDay(year.length());
                         String instantValue = date + instantTimeZone;
                         columnValues.add(Instant.parse(instantValue));
                     }
                 } else {
-                    columnValues.add(readCell(currentCell));
+                    columnValues.add(ExcelParserHelper.readCell(currentCell));
                 }
             } catch (IllegalStateException | NullPointerException e) {
                 columnValues.add("");
             }
         }
         return columnValues;
-    }
-
-    /**
-     * Read the cell content in the proper data type format
-     *
-     * @param cell Excel cell input
-     * @return Cell content as the right data type
-     */
-    private Object readCell(Cell cell) throws IllegalStateException, NullPointerException {
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getLocalDateTimeCellValue();
-                } else {
-                    // in Double.class format
-                    return cell.getNumericCellValue();
-                }
-            case BOOLEAN:
-                return cell.getBooleanCellValue();
-            default:
-                return "";
-        }
     }
 }

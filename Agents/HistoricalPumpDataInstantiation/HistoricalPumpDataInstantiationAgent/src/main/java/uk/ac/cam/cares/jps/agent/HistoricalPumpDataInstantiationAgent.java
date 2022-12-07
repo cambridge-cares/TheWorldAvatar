@@ -44,6 +44,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     // POST request keys
     private static final String KEY_TIMEHEADER = "timeHeader";
     private static final String KEY_STARTING_ROW = "startingRow";
+    private static final String KEY_MULTI_TS_COL_INDEX = "multiTSColIndex";
 
     // Edit these fields per your requirements
     public static final String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "pump/"; // The prefix to use for generating IRI
@@ -61,7 +62,9 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             // Initialise required values
             String timeKey = requestParams.getString(KEY_TIMEHEADER);
             String startingRow = requestParams.has(KEY_STARTING_ROW) ? requestParams.getString(KEY_STARTING_ROW) : "1";
-            String[] parameters = new String[]{timeKey, startingRow};
+            // If there is no grouping key, set an invalid value
+            String bulkColIndex = requestParams.has(KEY_MULTI_TS_COL_INDEX) ? requestParams.getString(KEY_MULTI_TS_COL_INDEX) : "-1";
+            String[] parameters = new String[]{timeKey, startingRow, bulkColIndex};
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -88,8 +91,20 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 LOGGER.info("Detected " + KEY_STARTING_ROW + " parameter");
                 LOGGER.info("Validating parameter...");
                 try {
-                    // Check that starting row key is an Integer otherwise, an exception is thrown
+                    // Check that starting row key is an Integer otherwise, parameter is invalid
                     Integer.parseInt(requestParams.getString(KEY_STARTING_ROW));
+                } catch (NumberFormatException e) {
+                    validate = false;
+                }
+            }
+            if (requestParams.has(KEY_MULTI_TS_COL_INDEX)) {
+                LOGGER.info("Detected " + KEY_MULTI_TS_COL_INDEX + " parameter");
+                LOGGER.info("Validating parameter...");
+                try {
+                    // Check that the index of the grouping column for multiple TS is an Integer that is at least 0
+                    // Otherwise, parameter is invalid
+                    int index = Integer.parseInt(requestParams.getString(KEY_MULTI_TS_COL_INDEX));
+                    validate = index>=0;
                 } catch (NumberFormatException e) {
                     validate = false;
                 }
@@ -100,8 +115,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
 
     public JSONObject initializeAgent(String[] args) {
         JSONObject jsonMessage = new JSONObject();
-        // Ensure that there are one time header key and one value starting row
-        if (args.length != 2) {
+        if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -118,10 +132,9 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         LOGGER.info("Excel parser initialized.");
 
         // Parse Excel values into a hashmap
-        Map<String, List<?>> excelReadings;
+        Map<String, Map<String, List<?>>> excelReadings;
         try {
-            // In this workbook, readings begin from the 2th row with an index of 1
-            excelReadings = parser.parseToHashMap(Integer.parseInt(args[1]));
+            excelReadings = parser.parseToHashMap(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
@@ -139,7 +152,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         LOGGER.info("Properties handler initialized.");
 
         // Generate data IRI mappings to measures names and store in an external properties file
-        Map<String, String> iriMappings;
+        Map<String,Map<String, String>> iriMappings;
         try {
             iriMappings = handler.generateIRIMappings(FileManager.PROPERTIES);
         } catch (IOException e) {
@@ -166,19 +179,24 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         }
         LOGGER.info("Time series client wrapper initialized.");
 
-        // Initialize the time series database if it doesn't exist
-        try {
-            agentTSClient.initializeTimeSeries(excelReadings, iriMappings);
-        } catch (Exception e) {
-            LOGGER.error(INITIALIZE_ERROR_MSG, e);
-            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
-        }
+        // Initialize and update time series for each group
+        for (String group: excelReadings.keySet()) {
+            LOGGER.debug("Initializing time series for " + group + "...");
+            // Initialize the time series database if it doesn't exist
+            try {
+                agentTSClient.initializeTimeSeries(excelReadings.get(group), iriMappings.get(group));
+            } catch (Exception e) {
+                LOGGER.error(INITIALIZE_ERROR_MSG, e);
+                throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
+            }
 
-        try {
-            agentTSClient.updateData(excelReadings, iriMappings);
-        } catch (Exception e) {
-            LOGGER.error(DATA_UPDATE_ERROR_MSG, e);
-            throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
+            LOGGER.debug("Updating time series for " + group + "...");
+            try {
+                agentTSClient.updateData(excelReadings.get(group), iriMappings.get(group));
+            } catch (Exception e) {
+                LOGGER.error(DATA_UPDATE_ERROR_MSG, e);
+                throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
+            }
         }
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");

@@ -9,25 +9,31 @@ More details on the classes, public methods, and documentation is available in t
 At present, this agent can only retrieve annual time series from the Excel, and convert them to Instant.
 
 ## Instructions
-### 1. Excel pre-processing
+### 1. Excel preprocessing
 This agent is designed to work with any Excel version in .xls or .xlsx format. An Excel workbook must be placed in the
-`data/` directory. Only one workbook will be processed at a time. Please do not put more than one workbook for processing. 
-Some pre-processing might be required in order to ensure that the Excel content are compatible with the agent.
+`data/` directory. Only one workbook will be processed at a time. Please do not put more than one workbook for processing.
 
-A snippet of an example Excel is as follows:
+A snippet of a sample Excel is as follows:
 
 ```
-| Element   | Year | Property  | Property 2 |
-----------------------------------------------
+| Group     | Year | Property  | Property 2 |
+--------------------------------------------
 | Pump 1    | 2000 | 10515     | 10256.10   |
 | Pump 1    | 2001 | 10425     | 82275.15   |
+| Pump 2    | 2000 | 7261      | 23456.70   |
+| Pump 2    | 2001 | 20425     | 52472.45   |
+| Pump 3    | 2000 | 10514     | 46258.10   |
+| Pump 3    | 2001 | 35192     | 33302.05   |
 ```
+
+Some pre-processing might be required in order to ensure that the Excel content are compatible with the agent. First, 
+change the time header to Year. At the moment, only `Year` is accepted as an input. Second, if there are any groups 
+of time series. Sort the column containing multiple time series groups ie `Group`.
 
 Notes:
 - .csv files are incompatible at this moment. An alternate solution is to copy and paste the .csv content into an Excel sheet.
 - All numeric data are return as `Double.class` or `Date.class` in Java at the moment.
 - Contents do not need to start at the first sheet or second row. This can be set in the `HistoricalPumpDataInstantiationAgent` class/ POST request.
-- Only Year is accepted as a time input at the moment.
 
 ### 2. Building the Agent
 This agent is designed to be an executable war and deployed as a web servlet on Tomcat. Then, a POST request would
@@ -92,10 +98,13 @@ directory to retain the relations. When the IRI is left empty, the agent will ge
 [prefix]/[columnName]_[UUID]
 
 // Sample line 
-oilconsumption=http:/example/oilconsumption_150252
+oilconsumption=http://example/oilconsumption_150252
 
-//Sample empty IRI
+// Sample empty IRI
 oilconsumption=
+
+// For group timeseries
+pump1_oilconsumption = http://example/pump1_oilconsumption_150252
 ```
 *Note that the `[prefix]` is hardcoded into the `HistoricalPumpDataInstantiationAgent` class as the `iriPrefix` field.
 
@@ -115,7 +124,16 @@ At the moment, there is only one acceptable parameter - `Year`.
 2. Starting Value Row - Optional
 
 This is the starting row for values, and should be an integer in String format. By default, it is set to 1. 
-For other values larger than 1, it can be invoked with the `startingRow` key.
+If you wish to start at other values larger than 1, invoke the parameter with the `startingRow` key.
+
+3. Column Index for Multiple Time Series - Optional
+
+This is the column containing the group for multiple time series. For eg, if an Excel contains data for "Pump 1" and "Pump 2",
+each pump should have their own distinct time series. Pump 1 and 2 will be indicated in this column. See [sample Excel](#1-excel-preprocessing) 
+for more details. 
+
+For data that does not contain multiple time series, do not invoke this parameter. 
+If required, pass an Integer (more than 0) in string format with the `multiTSColIndex` key. Note that the index starts from 0 for first column.
 
 #### 3.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to ` http://localhost:4050/historical-pump-data-instantiation-agent/run`.
@@ -123,10 +141,10 @@ At least one parameter is required. A sample request is as follows:
 ```
 POST http://localhost:4050/historical-pump-data-instantiation-agent/run
 Content-Type: application/json
-{"timeHeader":"Year", "startingRow": "1"}
+{"timeHeader":"Year", "startingRow": "1", "multiTSColIndex": "0"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'startingRow': '1'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
+curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'startingRow': '1', 'multiTSColIndex': '0'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
