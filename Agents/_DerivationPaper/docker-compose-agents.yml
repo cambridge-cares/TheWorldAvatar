@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   avgsqmprice_agent_deriv_mvp:
-    image: ghcr.io/cambridge-cares/avgsqmprice_agent_deriv_mvp:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/avgsqmprice_agent_deriv_mvp:1.0.0
     container_name: avgsqmprice_agent_deriv_mvp
     ports:
       - "5010:5000"
@@ -14,7 +14,7 @@ services:
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload", "--limit-request-line", "0"]
 
   propertyvalue_agent_deriv_mvp:
-    image: ghcr.io/cambridge-cares/propertyvalue_agent_deriv_mvp:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_deriv_mvp:1.0.0
     container_name: propertyvalue_agent_deriv_mvp
     ports:
       - "5011:5000"
@@ -26,7 +26,7 @@ services:
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload", "--limit-request-line", "0"]
 
   floodassessment_agent_deriv_mvp:
-    image: ghcr.io/cambridge-cares/floodassessment_agent_deriv_mvp:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/floodassessment_agent_deriv_mvp:1.0.0
     container_name: floodassessment_agent_deriv_mvp
     ports:
       - "5012:5000"
