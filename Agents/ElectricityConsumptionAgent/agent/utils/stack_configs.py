@@ -8,7 +8,7 @@
 
 import agentlogging
 
-from agent.kgutils.javagateway import stackClientsGw
+#from agent.kgutils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE
 
 # Initialise logger

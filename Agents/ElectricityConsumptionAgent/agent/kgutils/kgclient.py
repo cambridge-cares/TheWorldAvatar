@@ -8,7 +8,7 @@
 
 import json
 
-from py4jps import agentlogging
+import agentlogging
 from agent.errorhandling.exceptions import KGException
 from agent.kgutils.javagateway import jpsBaseLibGW
 
@@ -30,12 +30,17 @@ class KGClient:
         # # query operations enabled (True) and update operations disabled (False)
         # StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
 
+        print('query_endpoint:', query_endpoint)
+        print('update_endpoint:', update_endpoint)
         try:
             if kg_user is not None:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
+                print("kg_user is not None")
             else:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+                print("kg_user is None")
         except Exception as ex:
+            print("kg_clinet cannot be created")
             logger.error("Unable to initialise KG client")
             raise KGException("Unable to initialise KG client.") from ex
 
@@ -46,6 +51,7 @@ class KGClient:
             Arguments:
                 query - SPARQL Query string
         """
+        print('query1:', query)
         try:
             response = self.kg_client.execute(query)
         except Exception as ex:
@@ -60,8 +66,11 @@ class KGClient:
             Arguments:
                 update - SPARQL Update string
         """
+        print("Update1:", update)
         try:
             self.kg_client.executeUpdate(update)
+            print("Update query executed")
         except Exception as ex:
+            print("Update query failed")
             logger.error("SPARQL update not successful")
             raise KGException("SPARQL update not successful.") from ex

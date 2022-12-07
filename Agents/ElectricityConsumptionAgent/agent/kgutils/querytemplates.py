@@ -6,9 +6,10 @@
 # The purpose of this module is to provide templates for
 # required SPARQL queries
 
-from agent.datamodel import *
+from agent.datamodel.iris import *
+'''
 from agent.kgutils.stackclients import PostGISClient
-
+'''
 
 def input_query_template(
     mes_uuid,
@@ -24,10 +25,10 @@ def input_query_template(
 ) -> str:
 
     # Add prefix to strings
-    mes_uuid = COMPA + mes_uuid
-    used_uuid = COMPA + used_uuid
-    kw_uuid = COMPA + kw_uuid
-    met_uuid = COMPA + met_uuid
+    mes_uuid = COMPA + str(mes_uuid)
+    used_uuid = COMPA + str(used_uuid)
+    kw_uuid = COMPA + str(kw_uuid)
+    met_uuid = COMPA + str(met_uuid)
 
     region = ONS_ID + region
 
@@ -44,10 +45,10 @@ def input_query_template(
                         <{OM_HAS_PHENO}> <{used_uuid}> ;
                         <{OM_HAS_VALUE}> <{mes_uuid}>.
 
-                <{mes_uuid}> <{OM_HAS_NUMERICALVALUE}> <{cons}>.
+                <{mes_uuid}> <{OM_HAS_NUMERICALVALUE}>  {cons}.
                 <{met_uuid}> <{RDF_TYPE}> <{GAS_ELEC}>.
                 <{region}> <{GAS_HAS_ELECMETERS}> <{met_uuid}>.
-                <{met_uuid}> <{GAS_HAS_CONSUM_ELECMETERS}> <{meters}>;
+                <{met_uuid}> <{GAS_HAS_CONSUM_ELECMETERS}>  {meters};
                         <{COMPA_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
                         <{COMPA_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> . 
                 """

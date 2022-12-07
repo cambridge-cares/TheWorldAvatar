@@ -1,4 +1,3 @@
-from agent.datamodel.observation_types import *
 
 ###--- --- --- --- --- URLs to ontology .owl files --- --- --- --- ---###
 
