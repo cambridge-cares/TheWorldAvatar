@@ -4,9 +4,12 @@ services:
   forecasting_agent:
     image: ghcr.io/cambridge-cares/forecasting_agent:1.0.0-SNAPSHOT
     environment:
-      # Required environment variables (for Stack and "standalone deployment")
-      - NAMESPACE=stations          # Target Blazegraph namespace
+      # Required environment variables for Stack and "standalone" (i.e. outside stack) deployment
+      - NAMESPACE=readings          # Target Blazegraph namespace
       - DATABASE=postgres           # Target PostGIS/PostgreSQL database name
+      # Additional environment variables required for Stack deployment
+      # (to be left blank for "standalone" deployment)
+      - STACK_NAME=${STACK_NAME}
       # Additional environment variables required for "standalone deployment"
       # (to be left blank for Stack deployment)
       - DB_URL=

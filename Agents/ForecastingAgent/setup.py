@@ -4,6 +4,7 @@ setup(
     name='forecasting',
     version='0.0.1',
     author='Markus Hofmeister, Magnus Mueller',
+    author_email='mh807@cam.ac.uk',
     license='MIT',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
