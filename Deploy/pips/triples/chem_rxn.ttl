@@ -1,0 +1,356 @@
+# common namespaces
+@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:           <http://www.w3.org/2004/02/skos/core#> .
+@prefix saref:             <https://saref.etsi.org/core/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix dbo:             <https://dbpedia.org/ontology/> .
+@prefix dbr:             <https://dbpedia.org/resource/> .
+
+# ontocape namespaces
+@prefix ontocapecpsb:    <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> .
+@prefix OntoCAPERxn:    <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> .
+@prefix OntoCAPEMat:    <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> .
+@prefix OntoCAPEPha:    <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix OntoCAPEUpp:    <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+
+# twa namespaces
+@prefix OntoSpecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
+@prefix OntoKin:        <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> .
+@prefix OntoRxn:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix OntoDoE:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix OntoLab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
+@prefix OntoVapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
+@prefix OntoHPLC:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
+@prefix OntoBPR:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
+
+# specific namespaces for test cases
+@prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
+@prefix lab1:           <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix lab2:           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix doe_template:   <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
+@prefix :                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
+
+
+############################################################################
+## Subclass relationship between ReactionExperiment and ReactionVariation ##
+############################################################################
+# very important, otherwise the new suggested experiment will not be put back to the chain
+OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
+
+
+#################################
+## Chemical reaction instances ##
+#################################
+:ChemRxn_1
+    rdf:type OntoCAPERxn:ChemicalReaction;
+    OntoKin:hasEquation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
+    OntoCAPERxn:hasReactant :Species_1;
+    OntoCAPERxn:hasReactant :Species_2;
+    OntoCAPERxn:hasProduct :Species_3;
+    OntoCAPERxn:hasProduct :Species_4;
+    OntoCAPERxn:hasCatalyst :Species_5;
+    OntoRxn:hasSolvent :Species_6;
+    OntoRxn:hasSolvent :Species_7;
+    OntoDoE:hasDoETemplate doe_template:DoETemplate_1;
+.
+
+:Species_1
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+.
+
+# NOTE we hardcode the OntoSpecies instance IRIs here to simplify the implementation for the purpose of testing
+# NOTE for the production operations, one need to provide access to a real triple store of OntoSpecies
+# NOTE where the instance IRI of a real OntoSpecies:Species will be obtained/identified based on specific identifiers
+# NOTE i.e. OntoSpecies:inChI, OntoSpecies:pubChemCID, etc.
+<http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
+    OntoSpecies:pubChemCID "240"^^xsd:string;
+    rdfs:label "C7H6O"^^xsd:string;
+    skos:altLabel "benzaldehyde"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "106.124"^^xsd:decimal;
+.
+
+:Species_2
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
+    OntoSpecies:pubChemCID "180"^^xsd:string;
+    rdfs:label "C3H6O"^^xsd:string;
+    skos:altLabel "acetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "58.08"^^xsd:decimal;
+.
+
+:Species_3
+    rdf:type OntoRxn:TargetProduct;
+    OntoSpecies:hasUniqueSpecies placeholder:Species_placeholder_pubchemcid_637759;
+.
+
+placeholder:Species_placeholder_pubchemcid_637759
+    OntoSpecies:pubChemCID "637759"^^xsd:string;
+    rdfs:label "C10H10O"^^xsd:string;
+    skos:altLabel "benzalacetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight placeholder:Species_placeholder_pubchemcid_637759_MW;
+.
+
+placeholder:Species_placeholder_pubchemcid_637759_MW
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "146.19"^^xsd:decimal;
+.
+
+:Species_4
+    rdf:type OntoRxn:Impurity;
+    OntoSpecies:hasUniqueSpecies placeholder:Species_placeholder_pubchemcid_640180;
+.
+
+placeholder:Species_placeholder_pubchemcid_640180
+    OntoSpecies:pubChemCID "640180"^^xsd:string;
+    rdfs:label "C17H14O"^^xsd:string;
+    skos:altLabel "dibenzylideneacetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight placeholder:Species_placeholder_pubchemcid_640180_MW;
+.
+
+placeholder:Species_placeholder_pubchemcid_640180_MW
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "234.29"^^xsd:decimal;
+.
+
+:Species_5
+    rdf:type OntoRxn:Catalyst;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>
+    OntoSpecies:pubChemCID "14798"^^xsd:string;
+    rdfs:label "HNaO"^^xsd:string;
+    skos:altLabel "NaOH"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <https://www.example.com/triplestore/ontorxn/ChemRxn_1/MolecularWeight_Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+.
+
+<https://www.example.com/triplestore/ontorxn/ChemRxn_1/MolecularWeight_Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "39.997"^^xsd:decimal;
+.
+
+:Species_6
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
+    OntoSpecies:pubChemCID "6342"^^xsd:string;
+    rdfs:label "CH3CN"^^xsd:string;
+    skos:altLabel "acetonitrile"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "41.053"^^xsd:decimal;
+.
+
+:Species_7
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
+    OntoSpecies:pubChemCID "702"^^xsd:string;
+    rdfs:label "C2H6O"^^xsd:string;
+    skos:altLabel "ethanol"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "46.069"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+    OntoSpecies:pubChemCID "931"^^xsd:string;
+    rdfs:label "C10H8"^^xsd:string;
+    skos:altLabel "naphthalene"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "128.174"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
+    OntoSpecies:pubChemCID "7095"^^xsd:string;
+    rdfs:label "C12H10"^^xsd:string;
+    skos:altLabel "biphenyl"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:value "154.212"^^xsd:decimal;
+.
+
+##############################################################################
+## Placeholder Density data -- TODO to find a proper way of representing it ##
+##############################################################################
+# NOTE all the values are taken as its Specific Gravity at a temperature of 4 C if not otherwise noted
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/240#section=Density&fullscreen=true
+# 1.050 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasDensity placeholder:Density_Species_240.
+placeholder:Density_Species_240 a om:Density; om:hasValue placeholder:D_S_240_V;.
+placeholder:D_S_240_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.04"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/180#section=Density&fullscreen=true
+# 0.8 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasDensity placeholder:Density_Species_180.
+placeholder:Density_Species_180 a om:Density; om:hasValue placeholder:D_S_180_V;.
+placeholder:D_S_180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.784"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/637759
+# Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.21106584.html
+placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasDensity placeholder:Density_Species_637759.
+placeholder:Density_Species_637759 a om:Density; om:hasValue placeholder:D_S_637759_V;.
+placeholder:D_S_637759_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.0"^^xsd:double;.
+
+# NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/640180
+# Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.86113.html
+placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasDensity placeholder:Density_Species_640180.
+placeholder:Density_Species_640180 a om:Density; om:hasValue placeholder:D_S_640180_V;.
+placeholder:D_S_640180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.1"^^xsd:double;.
+
+# Value taken as the solid density of NaOH at 68 F (20 C) in https://pubchem.ncbi.nlm.nih.gov/compound/14798#section=Density&fullscreen=true
+# 2.13 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasDensity placeholder:Density_Species_14798.
+placeholder:Density_Species_14798 a om:Density; om:hasValue placeholder:D_S_14798_V;.
+placeholder:D_S_14798_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "2.13"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/6342#section=Density&fullscreen=true
+# 0.78745 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasDensity placeholder:Density_Species_6342.
+placeholder:Density_Species_6342 a om:Density; om:hasValue placeholder:D_S_6342_V;.
+placeholder:D_S_6342_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.786"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/702#section=Density&fullscreen=true
+# 0.79 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasDensity placeholder:Density_Species_702.
+placeholder:Density_Species_702 a om:Density; om:hasValue placeholder:D_S_702_V;.
+placeholder:D_S_702_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.789"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/931#section=Density&fullscreen=true
+# 1.162 kg/L
+<http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasDensity placeholder:Density_Species_931.
+placeholder:Density_Species_931 a om:Density; om:hasValue placeholder:D_S_931_V;.
+placeholder:D_S_931_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.14"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/7095#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22> placeholder:hasDensity placeholder:Density_Species_7095.
+placeholder:Density_Species_7095 a om:Density; om:hasValue placeholder:D_S_7095_V;.
+placeholder:D_S_7095_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.041"^^xsd:double;.
+
+####################################################################################
+## Placeholder Material Cost data -- TODO to find a proper way of representing it ##
+####################################################################################
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_240.
+placeholder:MaterialCost_Species_240 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_240_V;.
+placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "18.0024"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasMaterialCost placeholder:MaterialCost_Species_180.
+placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_180_V;.
+placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+
+# dummy data
+placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
+placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
+placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
+
+# dummy data
+placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
+placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
+placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
+placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
+placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasMaterialCost placeholder:MaterialCost_Species_6342.
+placeholder:MaterialCost_Species_6342 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_6342_V;.
+placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasMaterialCost placeholder:MaterialCost_Species_702.
+placeholder:MaterialCost_Species_702 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_702_V;.
+placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# dummy data
+<http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasMaterialCost placeholder:MaterialCost_Species_931.
+placeholder:MaterialCost_Species_931 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_931_V;.
+placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "400"^^xsd:double;.
+
+# https://www.sigmaaldrich.com/GB/en/product/usp/1073423
+# £316 for 500mg --> £632 for 1g --> £657.912 for 1L
+<http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22> placeholder:hasMaterialCost placeholder:MaterialCost_Species_7095.
+placeholder:MaterialCost_Species_7095 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_7095_V;.
+placeholder:M_C_S_7095_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "657.912"^^xsd:double;.
+
+###############################################################################
+## Placeholder EcoScore data -- TODO to find a proper way of representing it ##
+###############################################################################
+# NOTE all below eco-score data are dummy data
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasEcoScore placeholder:EcoScore_Species_240.
+placeholder:EcoScore_Species_240 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_240_V;.
+placeholder:E_S_S_240_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "20"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasEcoScore placeholder:EcoScore_Species_180.
+placeholder:EcoScore_Species_180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_180_V;.
+placeholder:E_S_S_180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "70"^^xsd:double;.
+
+placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasEcoScore placeholder:EcoScore_Species_637759.
+placeholder:EcoScore_Species_637759 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_637759_V;.
+placeholder:E_S_S_637759_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "50"^^xsd:double;.
+
+placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasEcoScore placeholder:EcoScore_Species_640180.
+placeholder:EcoScore_Species_640180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_640180_V;.
+placeholder:E_S_S_640180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "10"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasEcoScore placeholder:EcoScore_Species_14798.
+placeholder:EcoScore_Species_14798 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_14798_V;.
+placeholder:E_S_S_14798_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "20"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasEcoScore placeholder:EcoScore_Species_6342.
+placeholder:EcoScore_Species_6342 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_6342_V;.
+placeholder:E_S_S_6342_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "60"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasEcoScore placeholder:EcoScore_Species_702.
+placeholder:EcoScore_Species_702 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_702_V;.
+placeholder:E_S_S_702_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "30"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasEcoScore placeholder:EcoScore_Species_931.
+placeholder:EcoScore_Species_931 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_931_V;.
+placeholder:E_S_S_931_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "40"^^xsd:double;.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22> placeholder:hasEcoScore placeholder:EcoScore_Species_7095.
+placeholder:EcoScore_Species_7095 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_7095_V;.
+placeholder:E_S_S_7095_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "50"^^xsd:double;.
