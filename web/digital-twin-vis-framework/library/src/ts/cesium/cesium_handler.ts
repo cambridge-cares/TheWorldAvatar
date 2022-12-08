@@ -447,23 +447,30 @@ class MapHandler_Cesium extends MapHandler {
 
         // If clipping is enabled, add a clipping plane
         let clippingPlanes = null;
+        let clipHeight = 25.0;
 
         if(layer.definition.hasOwnProperty("clipPlane") && layer.definition["clipPlane"]) {
+            if(layer.definition.hasOwnProperty("clipHeight")) {
+                clipHeight = layer.definition["clipHeight"];
+            }
+
             clippingPlanes = new Cesium.ClippingPlaneCollection({
                 planes: [
-                    new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 0.0, -1.0), 0.0)
+                    new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 0.0, -1.0), clipHeight)
                 ],
                 edgeWidth: 1.0
             });
+            
+            clippingPlanes.get(0).id = layer.id;
             options["clippingPlanes"] = clippingPlanes;
         }
 
         // Create tileset object
         let tileset = new Cesium.Cesium3DTileset(options);
         tileset["layerID"] = layer.id;
-
+       
         // Setup clipping plane logic
-        if(clippingPlanes != null) CesiumUtils.prepareClippingPlane(tileset, clippingPlanes);
+        if(clippingPlanes != null) CesiumUtils.prepareClippingPlane(tileset, clipHeight, clippingPlanes);
 
         // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);

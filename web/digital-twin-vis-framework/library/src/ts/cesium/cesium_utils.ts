@@ -13,11 +13,19 @@ class CesiumUtils {
      * Currently selected clipping plane.
      */
     private static SELECTED_PLANE;
+    private static SELECTED_PLANE_ID;
 
     /**
-     * Map of ClippingPlanes to their current heights
+     * ???
      */
     private static PLANE_HEIGHTS = {};
+
+    private static PLANES_BY_TILESET = {};
+
+    /**
+     * Have the mouse handlers for clipping planes been initialised?
+     */
+    private static CLIPPING_INITIALISED = false;
 
     /**
      * Returns the visibility state of the layer with the input ID.
@@ -64,6 +72,15 @@ class CesiumUtils {
                 } else {
                     // 3D data
                     dataSource.show = visible;
+
+                    if(dataSource instanceof Cesium.Cesium3DTileset) {
+                        let clippingPlanes = dataSource["clippingPlanes"];
+                        if(clippingPlanes == null) return;
+
+                        clippingPlanes.enabled = visible;
+                        let planeEntity = CesiumUtils.PLANES_BY_TILESET[layerID];
+                        planeEntity.show = visible;
+                    }
                 }
             }
         } 
@@ -433,14 +450,13 @@ class CesiumUtils {
      * Prepare the initial position of the clipping plane and setup
      * movement logic for it.
      */
-    public static prepareClippingPlane(tileset, clippingPlanes) {
+    public static prepareClippingPlane(tileset, clipHeight, clippingPlanes) {
+        CesiumUtils.PLANE_HEIGHTS[tileset["layerID"]] = clipHeight;
 
         // Once the tileset is ready...
         tileset.readyPromise.then(function() {
             let boundingSphere = tileset.boundingSphere;
             let radius = boundingSphere.radius;
-
-            MapHandler.MAP.zoomTo(tileset, new Cesium.HeadingPitchRange(0.5, -0.2, radius * 4.0));
 
             // The clipping plane is initially positioned at the tileset's root transform.
             // Apply an additional matrix to center the clipping plane on the bounding sphere center.
@@ -460,31 +476,34 @@ class CesiumUtils {
                 );
             }
 
+            // Get the position of the tileset, so we can place the clipping plane there.
             let tilesetPosition = Cesium.Matrix4.getTranslation(tileset.modelMatrix, new Cesium.Cartesian3()); 
 
+            // Add visible 2D planes to represent the clipping planes
             for (let i = 0; i < clippingPlanes.length; ++i) {
-                let plane = clippingPlanes.get(i);
+                let clipPlane = clippingPlanes.get(i);
 
-                MapHandler.MAP.entities.add({
+                let planeEntity = MapHandler.MAP.entities.add({
                     position: tilesetPosition,
+                    id: tileset["layerID"],
                     plane: {
-                        dimensions: new Cesium.Cartesian2(
-                            radius,
-                            radius
-                        ),
-                        material: Cesium.Color.RED.withAlpha(0.1),
+                        dimensions: new Cesium.Cartesian2(radius, radius),
+                        material: Cesium.Color.WHITE.withAlpha(0.1),
+                        outlineColor: Cesium.Color.WHITE.withAlpha(0.5),
                         outline: true,
-                        outlineColor: Cesium.Color.RED,
                         plane: new Cesium.CallbackProperty(
-                            CesiumUtils.createPlaneUpdateFunction(plane),
+                            CesiumUtils.createPlaneUpdateFunction(clipPlane, tileset["layerID"]),
                             false
                         )
                     }
                 });
-                
+                CesiumUtils.PLANES_BY_TILESET[tileset["layerID"]] = planeEntity;
             }
             return tileset;
         });
+
+        // Bug out if handlers are already setup
+        if(CesiumUtils.CLIPPING_INITIALISED) return tileset;
         
         // Select plane when mouse down
         let downHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
@@ -492,14 +511,13 @@ class CesiumUtils {
             const pickedObject = MapHandler.MAP.scene.pick(movement.position);
 
             if(Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id) && Cesium.defined(pickedObject.id.plane)) {
-                CesiumUtils.SELECTED_PLANE = pickedObject.id.plane;
-                CesiumUtils.SELECTED_PLANE.material = Cesium.Color.RED.withAlpha(0.05);
-                CesiumUtils.SELECTED_PLANE.outlineColor = Cesium.Color.RED;
-                MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = false;
+                CesiumUtils.SELECTED_PLANE = pickedObject;
+                CesiumUtils.SELECTED_PLANE_ID = pickedObject.id._id;
 
-                if(!CesiumUtils.PLANE_HEIGHTS.hasOwnProperty(CesiumUtils.SELECTED_PLANE)) {
-                    CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE] = 0.0;
-                }
+                let plane =  CesiumUtils.SELECTED_PLANE.id.plane;
+                plane.material =  Cesium.Color.LIGHTBLUE.withAlpha(0.1);
+                plane.outlineColor = Cesium.Color.LIGHTBLUE.withAlpha(0.5);
+                MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = false;
             }
         }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
         
@@ -507,9 +525,12 @@ class CesiumUtils {
         let upHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
         upHandler.setInputAction(function () {
             if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
-                CesiumUtils.SELECTED_PLANE.material = Cesium.Color.RED.withAlpha(0.1);
-                CesiumUtils.SELECTED_PLANE.outlineColor = Cesium.Color.RED;
+                let plane = CesiumUtils.SELECTED_PLANE.id.plane;
+
+                plane.material = Cesium.Color.WHITE.withAlpha(0.1);
+                plane.outlineColor = Cesium.Color.LIGHTBLUE.withAlpha(0.5);
                 CesiumUtils.SELECTED_PLANE = undefined;
+                CesiumUtils.SELECTED_PLANE_ID = undefined;
             }
             MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = true;
         }, Cesium.ScreenSpaceEventType.LEFT_UP);
@@ -517,29 +538,37 @@ class CesiumUtils {
         // Update plane on mouse move
         let moveHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
         moveHandler.setInputAction(function (movement) {
-            if (CesiumUtils.SELECTED_PLANE != null && Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
-
-                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE];
+            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
+                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE_ID];
                 let deltaY = movement.startPosition.y - movement.endPosition.y;
-                CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE] = height + (deltaY / 5);
+                CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE_ID] = height + (deltaY / 5);
             }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
+        // Mark handlers as initialised and return
+        CesiumUtils.CLIPPING_INITIALISED = true;
         return tileset;
     }
 
     /**
+     * Handles the update of a plane's distance.
      * 
-     * @param plane 
-     * @returns 
+     * @param plane plane to update
+     * @param tileset ID of tileset plane is attached to
+     * 
+     * @returns updated plane 
      */
-    public static createPlaneUpdateFunction(plane) {
+    public static createPlaneUpdateFunction(plane, tilesetID) {
         return function () {
-            if (CesiumUtils.SELECTED_PLANE != null) {
-                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE];
+            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
+                let selectedID = CesiumUtils.SELECTED_PLANE.id._id;
+                if(tilesetID !== selectedID) return plane;
+
+                let height = CesiumUtils.PLANE_HEIGHTS[tilesetID];
                 plane.distance = height;
             }
             return plane;
         };
     }
 }
+// End of class.
