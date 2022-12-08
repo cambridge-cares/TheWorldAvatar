@@ -95,147 +95,78 @@ def test_prophet(query_dict, expected, test_client, initialise_clients):
     assert response['unit'] == expected['unit']
 
 
-@pytest.mark.parametrize("query_dict, expected_error_message", [
-    (cf.query_error1, cf.expected_error1),
-    (cf.query_error2, cf.expected_error2),
-    (cf.query_error3, cf.expected_error3),
-    (cf.query_error4, cf.expected_error4),
-    (cf.query_error5, cf.expected_error5),
-    (cf.query_error6, cf.expected_error6)
-])
+@pytest.mark.parametrize(
+    "query_dict, expected_error_message", 
+    [
+        (cf.query_error1, cf.expected_error1),
+        (cf.query_error2, cf.expected_error2),
+        (cf.query_error3, cf.expected_error3),
+        (cf.query_error4, cf.expected_error4),
+        (cf.query_error5, cf.expected_error5),
+        (cf.query_error6, cf.expected_error6)
+    ]
+)
 def test_prophet_error(query_dict, expected_error_message, test_client, initialise_clients):
 
     res = test_client.post('/api/forecastingAgent/forecast',
                            json={"headers": {'content_type': 'application/json'},
-                                 **query_dict
-                                 })
+                           **query_dict
+                           })
+
     assert res.status_code == 500
     assert expected_error_message in res.json['msg']
 
 
-# # test tft
-# update = ''
-# # test data heat supply
-# test_data = pd.DataFrame({
-#     'timestamp': timestamps,
-#     'heatDemand': np.random.rand(n),
-#     'airTemp': np.random.rand(n),
-#     'isHoliday': np.random.randint(0, 2, n),
-# })
+@pytest.mark.parametrize(
+    "query_dict, expected", 
+    [
+        (cf.query3, cf.expected3),
+    ]
+)
+def test_tft(query_dict, expected, test_client, initialise_clients):
 
-# # initialize the test data in the KG
-# # heatDemand
-# heatDemand_iri = KB + "HeatDemand_" + str(uuid.uuid4())
-# heatDemand_dataIRI = KB + 'Measure_' + str(uuid.uuid4())
-# update += get_properties_for_subj(subj=heatDemand_dataIRI, verb_obj={
-#     RDF_TYPE: OM_MEASURE,
-#     OM_HASUNIT: OM_MEGAWATTHOUR})
-# update += get_properties_for_subj(subj=heatDemand_iri, verb_obj={
-#     RDF_TYPE: OHN_HEATDEMAND,
-#     OM_HASVALUE: heatDemand_dataIRI})
+    # Get SPARQL client from fixture
+    kg_client, ts_client, rdb_url = initialise_clients
+    # Create clean slate for test and initialise data as required
+    cf.initialise_tft(kg_client, ts_client, rdb_url)
 
+    res = test_client.post('/api/forecastingAgent/forecast', 
+                           json={"headers": {'content_type': 'application/json'},
+                           **query_dict
+                           }).json
 
-# init_ts(heatDemand_dataIRI,
-#         test_data['timestamp'], test_data['heatDemand'],  tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-# # air temperature
-# airTemp_iri = KB + "AirTemperature_" + str(uuid.uuid4())
-# airTemp_dataIRI = airTemp_iri
-# update += get_properties_for_subj(subj=airTemp_dataIRI, verb_obj={
-#     RDF_TYPE: ONTOEMS_AIRTEMPERATURE,
-#     OM_HASVALUE: airTemp_dataIRI})
-
-# init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
-#         tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-# # is holiday
-# isHoliday_iri = KB + "IsHoliday_" + str(uuid.uuid4())
-# isHoliday_dataIRI = isHoliday_iri
-# update += get_properties_for_subj(subj=isHoliday_dataIRI, verb_obj={
-#     RDF_TYPE: OHN_ISPUBLICHOLIDAY,
-#     OM_HASVALUE: isHoliday_dataIRI})
-
-# init_ts(isHoliday_dataIRI, test_data['timestamp'],
-#         test_data['isHoliday'],  tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+    assert res['status'] == str(200)
+    # check that forecast is instantiated
+    dates, values = get_ts_data(
+        res['forecast_iri'], ts_client)
+    assert len(dates) == expected['horizon']
+    assert len(values) == expected['horizon']
+    assert dates[0] == expected['forecast_start_date']
+    for k, v in expected['fc_model'].items():
+        assert res['fc_model'][k] == v
+    assert len(res['fc_model']['covariates_iris']) == 2
+    assert res['data_length'] == expected['data_length']
+    assert res['model_configuration_name'] == expected['model_configuration_name']
+    assert res['iri'] == expected['iri']
+    assert res['horizon'] == expected['horizon']
+    assert res['model_input_interval'] == expected['model_input_interval']
+    assert res['model_output_interval'] == expected['model_output_interval']
+    assert res['unit'] == expected['unit']
 
 
-# kgClient.performUpdate(add_insert_data(update))
+@pytest.mark.parametrize(
+    "query_dict, expected_error_message", 
+    [
+        (cf.query_error7, cf.expected_error7),
+        (cf.query_error8, cf.expected_error8)
+    ]
+)
+def test_tft_error(query_dict, expected_error_message, test_client, initialise_clients):
 
-# forecast_start_date = (pd.to_datetime(
-#     timestamps[-1]) - 168 * pd.Timedelta('1 hour')).strftime(TIME_FORMAT)
-# query1 = {"query": {
-#     "forecast_start_date": forecast_start_date,
-#     "iri": heatDemand_iri,
-#     "data_length": 168,
-#     "horizon": 24,
-#     "use_model_configuration": "TFT_HEAT_SUPPLY"
-# }}
-# expected1 = {'fc_model': {'train_again': False, 'name': 'tft', 'scale_data': True, 'input_length': query1['query']['data_length'], 'model_path_ckpt_link': 'https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1',
-#                           'model_path_pth_link': 'https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1'},
-#              'data_length': query1['query']['data_length'],
-#              'model_configuration_name': query1['query']['use_model_configuration'],
-#              'iri': query1['query']['iri'],
-#              'horizon': query1['query']['horizon'],
-#              'forecast_start_date': query1['query']['forecast_start_date'],
-#              'model_input_interval': ['Thu, 08 Aug 2019 00:00:00 GMT', 'Wed, 14 Aug 2019 23:00:00 GMT'],
-#              'model_output_interval': ['Thu, 15 Aug 2019 00:00:00 GMT', 'Thu, 15 Aug 2019 23:00:00 GMT'],
-#              'unit': OM_MEGAWATTHOUR,
-#              }
+    res = test_client.post('/api/forecastingAgent/forecast', 
+                           json={"headers": {'content_type': 'application/json'},
+                           **query_dict
+                           })
 
-
-# @pytest.mark.parametrize("query_dict, expected", [
-#     (query1, expected1),
-
-# ])
-# def test_tft(query_dict, expected, test_client):
-
-#     res = test_client.post('/api/forecastingAgent/forecast', json={"headers": {'content_type': 'application/json'},
-#                                                                    **query_dict
-#                                                                    }).json
-#     assert res['status'] == str(200)
-#     # check that forecast is instantiated
-#     dates, values = get_ts_data(
-#         res['forecast_iri'], tsClient)
-#     assert len(dates) == expected['horizon']
-#     assert len(values) == expected['horizon']
-#     assert dates[0] == expected['forecast_start_date']
-#     for k, v in expected['fc_model'].items():
-#         assert res['fc_model'][k] == v
-#     assert len(res['fc_model']['covariates_iris']) == 2
-#     assert res['data_length'] == expected['data_length']
-#     assert res['model_configuration_name'] == expected['model_configuration_name']
-#     assert res['iri'] == expected['iri']
-#     assert res['horizon'] == expected['horizon']
-#     assert res['model_input_interval'] == expected['model_input_interval']
-#     assert res['model_output_interval'] == expected['model_output_interval']
-#     assert res['unit'] == expected['unit']
-
-
-# query_error1 = {"query": {
-#     "iri": heatDemand_iri,
-#     "use_model_configuration": "TFT_HEAT_SUPPLY",
-#     "data_length": 168,
-#     "horizon": 24}}
-# expected_error1 = 'Not enough covariates for complete future horizon. Covariates end at '
-
-# query_error2 = {"query": {
-#     "iri": heatDemand_iri,
-#     "forecast_start_date": forecast_start_date,
-#     "use_model_configuration": "TFT_HEAT_SUPPLY",
-#     "data_length": 168,
-#     "horizon": 3}}
-# expected_error2 = 'Specify a horizon bigger than the output_chunk_length of your model'
-
-
-# @pytest.mark.parametrize("query_dict, expected_error_message", [
-#     (query_error1, expected_error1),
-#     (query_error2, expected_error2),
-
-# ])
-# def test_tft_error(query_dict, expected_error_message, test_client):
-
-#     res = test_client.post('/api/forecastingAgent/forecast', json={"headers": {'content_type': 'application/json'},
-#                                                                    **query_dict
-#                                                                    })
-#     assert res.status_code == 500
-#     assert expected_error_message in res.json['msg']
+    assert res.status_code == 500
+    assert expected_error_message in res.json['msg']

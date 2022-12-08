@@ -51,18 +51,20 @@ PERIODS = 400
 #
 GENERATED_HEAT_IRI = KB + "GeneratedHeat_" + str(uuid.uuid4())
 GENERATED_HEAT_DATAIRI = KB + 'Measure_' + str(uuid.uuid4())
+HEAT_DEMAND_IRI = KB + "HeatDemand_" + str(uuid.uuid4())
+HEAT_DEMAND_DATA_IRI = KB + 'Measure_' + str(uuid.uuid4())
 TIMESTAMPS = pd.date_range(start='2019-08-05T09:00:00Z', periods=PERIODS,
                            freq='H').strftime(TIME_FORMAT)
-FORECAST_START = (pd.to_datetime(TIMESTAMPS[-1]) + pd.Timedelta('1 hour')).strftime(TIME_FORMAT)
-
+FORECAST_START_PROPHET = (pd.to_datetime(TIMESTAMPS[-1]) + pd.Timedelta('1 hour')).strftime(TIME_FORMAT)
+FORECAST_START_TFT = (pd.to_datetime(TIMESTAMPS[-1]) - 168 * pd.Timedelta('1 hour')).strftime(TIME_FORMAT)
 
 # ----------------------------------------------------------------------------------
 # Inputs and expected results for tests
 # ----------------------------------------------------------------------------------
-# test prophet
 
+# test prophet
 query1 = {"query": {
-          "forecast_start_date": FORECAST_START,
+          "forecast_start_date": FORECAST_START_PROPHET,
           "iri": GENERATED_HEAT_IRI,
           "data_length": 168,
           "horizon": 3,
@@ -73,7 +75,7 @@ expected1 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': 
              'model_configuration_name': query1['query']['use_model_configuration'],
              'iri': query1['query']['iri'],
              'horizon': query1['query']['horizon'],
-             'forecast_start_date': FORECAST_START,
+             'forecast_start_date': FORECAST_START_PROPHET,
              'model_input_interval': ['Thu, 15 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 00:00:00 GMT'],
              'model_output_interval': ['Thu, 22 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 03:00:00 GMT'],
              'unit': OM_MEGAWATTHOUR,
@@ -89,7 +91,7 @@ expected2 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': 
              'model_configuration_name': 'DEFAULT',
              'iri': query2['query']['iri'],
              'horizon': query2['query']['horizon'],
-             'forecast_start_date': FORECAST_START,
+             'forecast_start_date': FORECAST_START_PROPHET,
              'model_input_interval': ['Thu, 15 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 00:00:00 GMT'],
              'model_output_interval': ['Thu, 22 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 03:00:00 GMT'],
              'unit': OM_MEGAWATTHOUR,
@@ -134,8 +136,44 @@ query_error6 = {"query": {
 expected_error6 = f'Could not get time series for {GENERATED_HEAT_DATAIRI} with lowerbound'
 
 # test temporal fusion transformer (tft)
+query3 = {"query": {
+    "forecast_start_date": FORECAST_START_TFT,
+    "iri": HEAT_DEMAND_IRI,
+    "data_length": 168,
+    "horizon": 24,
+    "use_model_configuration": "TFT_HEAT_SUPPLY"
+}}
+expected3 = {'fc_model': {'train_again': False, 'name': 'tft', 'scale_data': True, 'input_length': query3['query']['data_length'],
+                          'model_path_ckpt_link': 'https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1',
+                          'model_path_pth_link': 'https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1'},
+             'data_length': query3['query']['data_length'],
+             'model_configuration_name': query3['query']['use_model_configuration'],
+             'iri': query3['query']['iri'],
+             'horizon': query3['query']['horizon'],
+             'forecast_start_date': query3['query']['forecast_start_date'],
+             'model_input_interval': ['Thu, 08 Aug 2019 00:00:00 GMT', 'Wed, 14 Aug 2019 23:00:00 GMT'],
+             'model_output_interval': ['Thu, 15 Aug 2019 00:00:00 GMT', 'Thu, 15 Aug 2019 23:00:00 GMT'],
+             'unit': OM_MEGAWATTHOUR,
+             }
 
 # test tft error
+query_error7 = {"query": {
+                "iri": HEAT_DEMAND_IRI,
+                "use_model_configuration": "TFT_HEAT_SUPPLY",
+                "data_length": 168,
+                "horizon": 24
+                }}
+expected_error7 = 'Not enough covariates for complete future horizon. Covariates end at '
+
+query_error8 = {"query": {
+                "iri": HEAT_DEMAND_IRI,
+                "forecast_start_date": FORECAST_START_TFT,
+                "use_model_configuration": "TFT_HEAT_SUPPLY",
+                "data_length": 168,
+                "horizon": 3
+                }}
+expected_error8 = 'Specify a horizon bigger than the output_chunk_length of your model'
+
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -234,7 +272,6 @@ def test_client():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
-
 def initialise_prophet(kgClient, tsClient, rdb_url):
     """
     Initialise Blazegrph and PostgreSQL with test data for Prophet test
@@ -251,6 +288,7 @@ def initialise_prophet(kgClient, tsClient, rdb_url):
     # Initialise SPARQL update
     update = ''
 
+    # Generate test data
     test_data = pd.DataFrame({
         'timestamp': TIMESTAMPS,
         'generatedHeat': np.random.rand(PERIODS)})
@@ -272,6 +310,65 @@ def initialise_prophet(kgClient, tsClient, rdb_url):
     # Initialise time series and add data
     init_ts(GENERATED_HEAT_DATAIRI, test_data['timestamp'], test_data['generatedHeat'], 
             tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+
+
+def initialise_tft(kgClient, tsClient, rdb_url):
+    """
+    Initialise Blazegrph and PostgreSQL with test data for TFT test
+    """
+
+    # Clear Blazegraph and PostgreSQL
+    clear_database(rdb_url)
+    clear_triplestore(kgClient)
+
+    # Verify that Triplestore and RDB are empty
+    assert get_number_of_rdb_tables(rdb_url) == 0
+    assert get_number_of_triples(kgClient) == 0
+
+    # Initialise SPARQL update
+    update = ''
+
+    # Generate test data
+    test_data = pd.DataFrame({
+        'timestamp': TIMESTAMPS,
+        'heatDemand': np.random.rand(PERIODS),
+        'airTemp': np.random.rand(PERIODS),
+        'isHoliday': np.random.randint(0, 2, PERIODS)})
+
+    update += get_properties_for_subj(subj=HEAT_DEMAND_DATA_IRI, 
+                                      verb_obj={RDF_TYPE: OM_MEASURE,
+                                                OM_HASUNIT: OM_MEGAWATTHOUR
+                                            })
+    update += get_properties_for_subj(subj=HEAT_DEMAND_IRI, 
+                                      verb_obj={RDF_TYPE: OHN_HEATDEMAND,
+                                                OM_HASVALUE: HEAT_DEMAND_DATA_IRI
+                                            })
+
+    # Initialise time series and add data
+    init_ts(HEAT_DEMAND_DATA_IRI, test_data['timestamp'], test_data['heatDemand'],  
+            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+
+    # Instantiate covariates
+    # air temperature
+    airTemp_dataIRI = KB + "AirTemperature_" + str(uuid.uuid4())
+    update += get_properties_for_subj(subj=airTemp_dataIRI, 
+                                      verb_obj={RDF_TYPE: ONTOEMS_AIRTEMPERATURE,
+                                                OM_HASVALUE: airTemp_dataIRI
+                                            })
+    init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
+            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+
+    # is holiday
+    isHoliday_dataIRI = KB + "IsHoliday_" + str(uuid.uuid4())
+    update += get_properties_for_subj(subj=isHoliday_dataIRI, 
+                                      verb_obj={RDF_TYPE: OHN_ISPUBLICHOLIDAY,
+                                                OM_HASVALUE: isHoliday_dataIRI
+                                            })
+    init_ts(isHoliday_dataIRI, test_data['timestamp'], test_data['isHoliday'],  
+            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+
+    # Execute SPARQL update
+    kgClient.performUpdate(add_insert_data(update))
 
 
 def clear_triplestore(kgClient):
