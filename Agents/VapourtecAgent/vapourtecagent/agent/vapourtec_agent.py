@@ -199,7 +199,9 @@ class VapourtecAgent(DerivationAgent):
         # TODO [nice-to-have, when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
         # TODO [nice-to-have, when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
         if not self.dry_run:
-            print("#######################")
+            print("##############################################################################################################")
+            print("###################################### Executing ReactionExperiment...  ######################################")
+            print("##############################################################################################################")
             # NOTE The fcexp file should be loaded before the optimisation campaign is started
             # # TODO [until further notice] should we load experiment everytime before we add and run new experiment?
             # template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
@@ -212,9 +214,30 @@ class VapourtecAgent(DerivationAgent):
             CSVParser.AddReactions(run_csv_file_container_path, self.fc)
             self.logger.info("Experiment recorded in the CSV file (%s) is added." % (run_csv_file_container_path))
 
+            # Pause the monitoring state until the run command is sent
+            self.scheduler.get_job('monitor_vapourtec_rs400_state').pause()
+            print("Monitoring vapourtec state is paused before sending reaction for execute.")
+
             # Run real reaction experiment
-            FlowCommander.Run(self.fc)
-            print("#######################")
+            try:
+                FlowCommander.Run(self.fc)
+            except Exception as e:
+                # If the pressure loss detection is disabled, the FlowCommander.Run() will pop up a window to ask for confirmation
+                #   this will throw an exception and drop the connection to FlowCommander, so we need to reconnect it
+                # If the pressure loss detection is enabled, the FlowCommander.Run() will just run the reaction
+                #   then this block will not be executed
+                self.logger.info(f"FlowCommander.Run() poped up window for disabled pressure loss detection, {e}")
+                self.fc_exe_connected = False
+                time.sleep(2)
+                self.connect_flowcommander_exe()
+
+            # Resume the monitoring state after the run command is sent
+            self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
+            print("Monitoring vapourtec state is resumed after sending reaction for execute.")
+
+            print("##############################################################################################################")
+            print("###################################### ReactionExperiment is running... ######################################")
+            print("##############################################################################################################")
 
             # NOTE now the liquid consumption is not updated in the KG after each reaction, this should be improved ASAP
             # !!!TODO [limitation of API for now] Update autosampler liquid amount immediately after send the experiment for execution
@@ -230,7 +253,7 @@ class VapourtecAgent(DerivationAgent):
 
     @DerivationAgent.send_email_when_exception(func_return_value=False)
     def monitor_vapourtec_rs400_state(self):
-        print("=======================")
+        print("==============================================================================================================")
         try:
             # Connect to FlowCommander instance opened at the given IP address if not already connected
             if not self.fc_exe_connected:
@@ -246,7 +269,7 @@ class VapourtecAgent(DerivationAgent):
             except Exception as e1:
                 self.logger.error(e1, stack_info=True, exc_info=True)
                 raise Exception(f"Failed to reconnect to FlowCommander instance opened at the given IP address: {self.vapourtec_ip_address}") from e1
-        print("=======================")
+        print("==============================================================================================================")
 
     def update_flowcommander_state(self):
         try:
