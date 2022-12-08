@@ -3,3 +3,5 @@ services:
   web:
     build: .
     image: marie:test
+    ports:
+      - "8080:80"

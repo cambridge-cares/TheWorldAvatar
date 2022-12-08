@@ -2,10 +2,9 @@ import json
 import os
 import pickle
 import traceback
-
 from transformers import BertTokenizer
 import torch
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.TransEScoreModel import TransEScoreModel
@@ -71,8 +70,9 @@ class QAEngine:
         input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
         return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
-    def find_answers(self, question: str, head_entity: str, k=5):
+    def find_answers(self, question: str, head_entity: str,  head_name: str, k=5):
         """
+        :param head_name: the standard name of the head entity
         :param k: number of results to return
         :param question: question in string format
         :param head_entity: the CID string for the head entity
@@ -88,7 +88,8 @@ class QAEngine:
             _, indices_top_k = torch.topk(scores, k=k, largest=False)
             labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
             scores_top_k = [scores[index].item() for index in indices_top_k]
-            return labels_top_k, scores_top_k
+            targets_top_k = [head_name] * len(scores)
+            return labels_top_k, scores_top_k, targets_top_k
         except:
             self.marie_logger.error('The attempt to find answer failed')
             self.marie_logger.error(traceback.format_exc())
@@ -135,10 +136,10 @@ class QAEngine:
             return {"Error": "No target can be recognised from this question"}
 
         question = self.remove_head_entity(question, mention_string)
-        answer_list, score_list = self.find_answers(question=question, head_entity=cid)
+        answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=name)
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
-        return answer_list, score_list
+        return answer_list, score_list, target_list
         # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
 
     def remove_head_entity(self, _question, _head_entity):

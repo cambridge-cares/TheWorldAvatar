@@ -1,7 +1,4 @@
-from KGToolbox.NHopExtractor import HopExtractor
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.QAEngine import QAEngine
-from Marie.Util.Models.TransEScoreModel import TransEScoreModel
 
 
 class OntoKinQAEngine(QAEngine):

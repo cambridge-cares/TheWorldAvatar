@@ -1,0 +1,27 @@
+domains:
+  - ontocompchem
+  - ontokin
+  - ontospecies
+  - pubchem
+paths:
+  domain_path: "CrossGraph"
+
+
+essential_files:
+  - three_hop_dict_index
+  - three_hop_dict_label
+  - idx2entity.pkl
+  - idx2relation.pkl
+  - ent_labels.tsv
+  - entity2idx.pkl
+  - relation2idx.pkl
+  - ent_embedding.tsv
+  - rel_embedding.tsv
+
+domain_specific_files:
+  - "%s-train.txt"
+  - "%s_value_dict.json"
+
+
+
+

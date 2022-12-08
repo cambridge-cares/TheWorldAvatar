@@ -1,12 +1,11 @@
 # Version 1 comes with only answer, score = (question, head)
 import json
-import os
+import os,sys
+sys.path.append("..")
 import pickle
-
 import pandas as pd
 import torch
-
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.ComplexScoreModel import ComplexScoreModel
@@ -51,7 +50,7 @@ class OntoCompChemEngine:
     def run(self, question):
         nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(question)
         question = self.remove_head_entity(_question=question, _head_entity=mention_string)
-        return self.find_answers(head_entity=cid, question=question)
+        return self.find_answers(head_entity=cid, question=question, head_name=name)
 
     def test(self):
         good_counter = 0
@@ -79,7 +78,7 @@ class OntoCompChemEngine:
         else:
             return "NODE HAS NO VALUE"
 
-    def find_answers(self, head_entity, question):
+    def find_answers(self, head_entity, question, head_name):
         head = self.entity2idx[head_entity]
         candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
         question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
@@ -89,7 +88,8 @@ class OntoCompChemEngine:
         _, indices_top_k = torch.topk(scores, k=k, largest=True)
         labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
         score_top_k = [scores[index].item() for index in indices_top_k]
-        return labels_top_k, score_top_k
+        target_top_k = [head_name] * k
+        return labels_top_k, score_top_k, target_top_k
 
     def tokenize_question(self, question, repeat_num):
         """

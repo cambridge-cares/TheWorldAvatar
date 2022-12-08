@@ -5,8 +5,7 @@ import time
 import sys
 import traceback
 from datetime import datetime as dt
-
-sys.path.append("..")
+sys.path.append("../..")
 import torch
 from transformers import BertTokenizer
 from Marie.SubgraphExtraction.SubgraphExtractor import SubgraphExtractor
@@ -111,8 +110,9 @@ class PubChemEngine:
         input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
         return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
-    def find_answers(self, question: str, head_entity: str, k=5):
+    def find_answers(self, question: str, head_entity: str, head_name : str, k=5):
         """
+        :param head_name:
         :param question: question in string format
         :param head_entity: the CID string for the head entity
         :return: score of all candidate answers
@@ -127,7 +127,8 @@ class PubChemEngine:
             _, indices_top_k = torch.topk(scores, k=k, largest=False)
             labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
             scores_top_k = [scores[index].item() for index in indices_top_k]
-            return labels_top_k, scores_top_k
+            targets_top_k = [head_name] * len(scores)
+            return labels_top_k, scores_top_k, targets_top_k
         except:
             self.marie_logger.error('The attempt to find answer failed')
             self.marie_logger.error(traceback.format_exc())
@@ -168,10 +169,10 @@ class PubChemEngine:
             return {"Error": "No target can be recognised from this question"}
 
         question = self.remove_head_entity(question, mention_string)
-        answer_list, score_list = self.find_answers(question=question, head_entity=cid)
+        answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=name)
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
-        return answer_list, score_list
+        return answer_list, score_list, target_list
         # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
 
     def remove_head_entity(self, _question, _head_entity):

@@ -21,6 +21,8 @@ RUN unzip DATA.zip -d ./DATA
 COPY static static
 COPY templates templates
 COPY ./main.py .
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Deployment.zip .
-RUN unzip Deployment.zip -d ./DATA/Deployment
+ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/CrossGraph.zip .
+RUN unzip CrossGraph.zip -d ./DATA/CrossGraph
+ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Dictionaries.zip .
+RUN unzip Dictionaries.zip -d ./DATA/Dictionaries
 COPY ./uwsgi.ini .

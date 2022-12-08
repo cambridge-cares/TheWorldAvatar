@@ -1,21 +1,14 @@
 import os
-import random
-import time
-
-import pandas as pd
 import torch
 from torch.nn.functional import one_hot
 from transformers import BertTokenizer
-
 from Marie.PubChem import PubChemEngine
 from Marie.OntoCompChem import OntoCompChemEngine
 from Marie.OntoSpecies import OntoSpeciesQAEngine
 from Marie.Ontokin import OntoKinQAEngine
-
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
-from Marie.iri_dictionary import IRIDictionary
 
 
 def normalize_scores(scores_list):
@@ -54,10 +47,11 @@ class CrossGraphQAEngine:
         self.max_length = 12
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
-        self.score_adjust_model = CrossGraphAlignmentModel(device=self.device)
+        self.score_adjust_model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
-                                                                        'cross_graph_model_new')))
-        self.iri_dict = IRIDictionary()
+                                                                        'cross_graph_model_new'),
+                                                           map_location=self.device))
+
 
     def create_triple_for_prediction(self, question, score_list, domain_list):
         # try:
@@ -76,7 +70,7 @@ class CrossGraphQAEngine:
     def adjust_scores(self, triple):
         return self.score_adjust_model.predict(triple=triple)
 
-    def re_rank_answers(self, domain_list, score_list, answer_list):
+    def re_rank_answers(self, domain_list, score_list, answer_list, target_list):
         values, indices = torch.topk(torch.FloatTensor(score_list), k=10, largest=True)
         re_ranked_labels = [answer_list[i] for i in indices]
         re_ranked_domain_list = [domain_list[i] for i in indices]
@@ -88,15 +82,12 @@ class CrossGraphQAEngine:
 
         result = []
 
-        for label, domain, score, value in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list, re_ranked_node_value_list):
-            row = {"node": label, "domain": domain, "score": score, "value": value}
+        for label, domain, score, value, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
+                                                       re_ranked_node_value_list, target_list):
+            row = {"node": label, "domain": domain, "score": score, "value": value, "target": target}
             result.append(row)
 
         return result
-        # print("re-ranked labels", re_ranked_labels)
-        # print("re-ranked domain", re_ranked_domain_list)
-        # print("re-ranked scores", re_ranked_score_list)
-        # print("re-ranked values", re_ranked_node_value_list)
 
     def run(self, question):
         """
@@ -110,12 +101,18 @@ class CrossGraphQAEngine:
         score_list = []
         label_list = []
         domain_list = []
+        target_list = []
         print("=========================")
         for domain, engine in zip(self.domain_list, self.engine_list):
-            labels, scores = engine.run(question=question)
+            labels, scores, targets = engine.run(question=question)
+            length_diff = 5 - len(labels)
+            scores = scores + [-999] * length_diff
+            labels = labels + ["EMPTY SLOT"] * length_diff
+            targets = targets + ["EMPTY SLOT"] * length_diff
             score_list.append(scores)
             label_list += labels
-            for i in range(len(labels)):
+            target_list += targets
+            for i in range(max(len(labels), 5)):
                 domain_list.append(int(self.domain_encoding[domain]))
         print("score length", len(score_list))
         print("label length", len(label_list))
@@ -128,7 +125,6 @@ class CrossGraphQAEngine:
                                                     domain_list=encoded_domain_list)
         print("triples length", len(triples))
 
-
         score_factors = self.adjust_scores(triples)
 
         adjusted_score_list = []
@@ -140,8 +136,8 @@ class CrossGraphQAEngine:
             print("------------------------")
             print("domain:", domain)
 
-
-        return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list, answer_list=label_list)
+        return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list, answer_list=label_list,
+                                    target_list=target_list)
 
 
 if __name__ == '__main__':
