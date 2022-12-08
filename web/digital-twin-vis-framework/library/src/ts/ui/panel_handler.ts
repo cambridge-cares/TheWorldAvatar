@@ -221,8 +221,9 @@ class PanelHandler {
         };
 
         let self = this;
-        
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
+            console.log("Incoming raw JSON from agent is...");
+            console.log(rawJSON);
 
             if(rawJSON === null || rawJSON === undefined) {
                 self.showBuiltInData(properties);
@@ -267,6 +268,8 @@ class PanelHandler {
                 // Auto-select the first option in the dropdown
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
+            } else {
+                console.warn("No 'time' node found, skipping timeseries visualisation.");
             }
         })
         .fail(function() {
