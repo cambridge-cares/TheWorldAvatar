@@ -25,7 +25,7 @@ class DoEAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTODOE_DESIGNOFEXPERIMENT]
+        return [ONTODOE_DESIGNOFEXPERIMENT, ONTOLAB_LABORATORY]
 
     def agent_output_concepts(self) -> list:
          return [ONTOREACTION_REACTIONEXPERIMENT]
@@ -40,8 +40,13 @@ class DoEAgent(DerivationAgent):
         except Exception as e:
             self.logger.error(e)
 
+        # Get the laboratory
+        # TODO currently only one laboratory is supported
+        list_lab_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else None
+        lab_iri = list_lab_iri[0] if list_lab_iri else None
+
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
-        new_rxn_exp = suggest(doe_instance, sparql_client=self.sparql_client)
+        new_rxn_exp = suggest(doe_instance, sparql_client=self.sparql_client, lab_iri=lab_iri)
 
         # Upload the created OntoRxn:ReactionVariation triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoRxn:ReactionVariation
@@ -53,7 +58,8 @@ class DoEAgent(DerivationAgent):
 
 def suggest(
     doe_instance: DesignOfExperiment,
-    sparql_client: ChemistryAndRobotsSparqlClient
+    sparql_client: ChemistryAndRobotsSparqlClient,
+    lab_iri: str = None,
 ) -> List[ReactionExperiment]:
     """
         This method suggests the new experiment given information provided for design of experiment exercise.
@@ -63,7 +69,7 @@ def suggest(
     """
 
     # TODO this method calls summit doe, can be expanded in the future
-    new_exp = proposeNewExperiment(doe_instance, sparql_client)
+    new_exp = proposeNewExperiment(doe_instance, sparql_client, lab_iri)
 
     return new_exp
 

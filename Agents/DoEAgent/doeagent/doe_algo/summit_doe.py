@@ -20,6 +20,7 @@ SYS_RES_UPPER_BOUND = TWO_POWER_31_MINUS_ONE
 def proposeNewExperiment(
     doe: dm.DesignOfExperiment,
     sparql_client: kg.ChemistryAndRobotsSparqlClient,
+    lab_iri: str = None,
 ) -> List[dm.ReactionExperiment]:
     """
         This method is a wrapper around the TSEMO algorithm as provided by python package `summit`. It suggests the new experiment given information about DesignOfExperiment.
@@ -71,7 +72,7 @@ def proposeNewExperiment(
     next_exp = strategy.suggest_experiments(doe.utilisesHistoricalData.numOfNewExp, prev_res=previous_results)
 
     # Extract the suggestion from Summit DataSet and populate that to dataclass ontorxn.ReactionExperiment/ReactionVariation
-    new_rxn_exp = formNewExperiment(doe, next_exp, sparql_client)
+    new_rxn_exp = formNewExperiment(doe, next_exp, sparql_client, lab_iri)
 
     # Return the new experiment
     # NOTE here we slice the list to only return the amount of experiments requested
@@ -82,6 +83,7 @@ def formNewExperiment(
     doe: dm.DesignOfExperiment,
     new_exp_ds: DataSet_summit,
     sparql_client: kg.ChemistryAndRobotsSparqlClient,
+    lab_iri: str = None,
 ) -> List[dm.ReactionExperiment]:
     """
         This method converts the Summit suggested experiment from DataSet format to an instance of dataclass ontodoe.NewExperiment.
@@ -208,6 +210,7 @@ def formNewExperiment(
                 solute=stoi.positionalID,
                 solvent_as_constraint=_solvent,
                 species_to_exclude=_product,
+                list_of_labs_as_constraint=[lab_iri] if lab_iri else None,
             ) for stoi in _stoi_ratio_list}
             logger.debug(f"Input chemical dict: {_input_chemical_dict}")
 

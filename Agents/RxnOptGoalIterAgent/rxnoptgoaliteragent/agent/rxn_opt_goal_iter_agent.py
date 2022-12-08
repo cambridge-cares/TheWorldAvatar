@@ -76,7 +76,8 @@ class RxnOptGoalIterAgent(DerivationAgent):
 
         # Create derivation instance for new information, the timestamp of this derivation is 0
         # TODO: [next iteration] implement a more generic way of deciding the agent to perform the derivation, here we took a shortcut to use the first agent (Step.canBePerformedBy[0])
-        doe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri])
+        # TODO: consider if the list_laboratory_iri contains two or more laboratories, then how would DoEAgent handle this situation when locating possible chemical reactions (input solution, if different internal standard)
+        doe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri] + list_laboratory_iri)
         self.logger.info(f"Initialised successfully, created asynchronous doe derivation instance: {doe_derivation_iri}")
         exe_derivation_iri = self.derivation_client.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri] + list_laboratory_iri)
         self.logger.info(f"Initialised successfully, created asynchronous exe derivation instance: {exe_derivation_iri}")
