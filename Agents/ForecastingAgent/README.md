@@ -8,6 +8,9 @@ The agent relies on [py4jps] to access the [JPS_BASE_LIB] (incl. the [TimeSeries
 
 ```diff
 - The agent is currently not Dockerised; however, this is planned for the near future.
+
+- add section about ghcr.io
+```
 ```
 
 # 1. Setup

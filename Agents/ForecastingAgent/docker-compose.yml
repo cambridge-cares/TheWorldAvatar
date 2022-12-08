@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  forecasting_agent:
+    image: ghcr.io/cambridge-cares/forecasting_agent:1.0.0-SNAPSHOT
+    environment:
+      # Required environment variables (for Stack and "standalone deployment")
+      - NAMESPACE=stations          # Target Blazegraph namespace
+      - DATABASE=postgres           # Target PostGIS/PostgreSQL database name
+      # Additional environment variables required for "standalone deployment"
+      # (to be left blank for Stack deployment)
+      - DB_URL=
+      - DB_USER=
+      - DB_PASSWORD=
+      - QUERY_ENDPOINT=
+      - UPDATE_ENDPOINT=
+    ports:
+      - "5000:5000"
+    volumes:
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - postgis
+    secrets:
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"
