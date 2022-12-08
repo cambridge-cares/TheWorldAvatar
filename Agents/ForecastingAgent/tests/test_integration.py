@@ -1,7 +1,8 @@
-################################################
-# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-# Date: 30 Nov 2022                            #
-################################################
+#################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk),   #
+#          Markus Hofmeister (mh807@cam.ac.uk)  #
+# Date: 30 Nov 2022                             #
+#################################################
 # purpose of this file is to test the flask app. Http requests are sent to the flask app and the response is checked.
 # First requests for the Prophet model are sent.
 # After that incorrect requests are sent to check if the right error messages are returned.
@@ -18,7 +19,7 @@ import pytest
 from forecasting.flaskapp import create_app
 from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
-from forecasting.utils.properties import *
+from forecasting.utils.env_configs import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient, init_ts
 from forecasting.utils.tools import *

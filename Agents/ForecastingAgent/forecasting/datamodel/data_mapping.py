@@ -46,7 +46,7 @@ Optional:
 """
 
 from forecasting.datamodel.iris import *
-from forecasting.kgutils.javagateway import jpsBaseLibGW
+from forecasting.utils.baselib_gateway import jpsBaseLibGW
 from forecasting.utils.tools import get_covs_heat_supply
 import datetime as dt
 

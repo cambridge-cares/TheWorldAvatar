@@ -8,13 +8,14 @@ from dateutil.parser import isoparse
 import os
 import urllib
 import uuid
+from pathlib import Path
 from darts.metrics import mape, mse, rmse, smape
 
 import pandas as pd
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
 from darts.models import Prophet, TFTModel
-from forecasting.utils.properties import *
+from forecasting.utils.env_configs import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
 from forecasting.errorhandling.exceptions import KGException
