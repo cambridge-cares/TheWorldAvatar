@@ -90,8 +90,8 @@ target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
                 bim:isPVPanelSuitable {eigngpvi}^^xsd:boolean ;
                 bim:hasArea iri:OntoBIM/SolarSuitableAreaQuantity_{mod_id} .
             iri:OntoUBEMMP/MonthlyAverageSolarIrradiationQuantity_{mod_id} a ub:SolarIrradiation ;
-                om:hasDimension om:powerDensity-Dimension;
-                om:has Value iri:OntoUBEMMP/MonthlyAverageSolarIrradiationValue_{mod_id} .
+                om:hasDimension om:powerDensity-Dimension ;
+                om:hasValue iri:OntoUBEMMP/MonthlyAverageSolarIrradiationValue_{mod_id} .
             iri:OntoUBEMMP/MonthlyAverageSolarIrradiationValue_{mod_id} a om:Measure ;
                 om:hasUnit oum:wattHourPerSquareMetrePerDay .
             iri:OntoUBEMMP/WinAnnualSolarIrradiationQuantity_{mod_id} a ub:AnnualSolarIrradiation ;
