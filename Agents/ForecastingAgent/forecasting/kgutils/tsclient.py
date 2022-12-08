@@ -6,14 +6,16 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-from forecasting.errorhandling.exceptions import TSException
-from forecasting.kgutils.javagateway import jpsBaseLibGW
-from forecasting.datamodel.data_mapping import TIMECLASS
-from forecasting.utils.properties import *
 from contextlib import contextmanager
 
-
 from py4jps import agentlogging
+
+from forecasting.errorhandling.exceptions import TSException
+from forecasting.utils.baselib_gateway import jpsBaseLibGW
+from forecasting.datamodel.data_mapping import TIMECLASS
+from forecasting.utils.env_configs import *
+
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 class TSClient:
@@ -84,7 +86,9 @@ class TSClient:
         
         return timeseries
 
+
 def init_ts(iri, dates, values, tsClient, ts_type, time_format):
+    #TODO: add docstring, rename, convert to instance method
     # call client
     with tsClient.connect() as conn:
         tsClient.tsclient.initTimeSeries([iri], [ts_type], time_format, conn)
@@ -92,6 +96,8 @@ def init_ts(iri, dates, values, tsClient, ts_type, time_format):
             dates.to_list(), [iri], [values.to_list()])
         tsClient.tsclient.addTimeSeriesData(ts, conn)
     logger.info(f"Time series initialised in KG: {iri}")
+
+
 """
 HOW TO USE:
 
