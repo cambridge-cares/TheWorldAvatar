@@ -56,40 +56,86 @@ TIMESTAMPS = pd.date_range(start='2019-08-05T09:00:00Z', periods=PERIODS,
 FORECAST_START = (pd.to_datetime(TIMESTAMPS[-1]) + pd.Timedelta('1 hour')).strftime(TIME_FORMAT)
 
 
-QUERY1 = {"query": {
+# ----------------------------------------------------------------------------------
+# Inputs and expected results for tests
+# ----------------------------------------------------------------------------------
+# test prophet
+
+query1 = {"query": {
           "forecast_start_date": FORECAST_START,
           "iri": GENERATED_HEAT_IRI,
           "data_length": 168,
           "horizon": 3,
           "use_model_configuration": "DEFAULT"
         }}
-EXPECTED1 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': False, 'input_length': QUERY1['query']['data_length']},
-             'data_length': QUERY1['query']['data_length'],
-             'model_configuration_name': QUERY1['query']['use_model_configuration'],
-             'iri': QUERY1['query']['iri'],
-             'horizon': QUERY1['query']['horizon'],
+expected1 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': False, 'input_length': query1['query']['data_length']},
+             'data_length': query1['query']['data_length'],
+             'model_configuration_name': query1['query']['use_model_configuration'],
+             'iri': query1['query']['iri'],
+             'horizon': query1['query']['horizon'],
              'forecast_start_date': FORECAST_START,
              'model_input_interval': ['Thu, 15 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 00:00:00 GMT'],
              'model_output_interval': ['Thu, 22 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 03:00:00 GMT'],
              'unit': OM_MEGAWATTHOUR,
             }
 
-QUERY2 = {"query": {
+query2 = {"query": {
           "iri": GENERATED_HEAT_IRI,
           "data_length": 168,
           "horizon": 3
         }}
-EXPECTED2 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': False, 'input_length': QUERY2['query']['data_length']},
-             'data_length': QUERY2['query']['data_length'],
+expected2 = {'fc_model': {'train_again': True, 'name': 'prophet', 'scale_data': False, 'input_length': query2['query']['data_length']},
+             'data_length': query2['query']['data_length'],
              'model_configuration_name': 'DEFAULT',
-             'iri': QUERY2['query']['iri'],
-             'horizon': QUERY2['query']['horizon'],
+             'iri': query2['query']['iri'],
+             'horizon': query2['query']['horizon'],
              'forecast_start_date': FORECAST_START,
              'model_input_interval': ['Thu, 15 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 00:00:00 GMT'],
              'model_output_interval': ['Thu, 22 Aug 2019 01:00:00 GMT', 'Thu, 22 Aug 2019 03:00:00 GMT'],
              'unit': OM_MEGAWATTHOUR,
              'time_format': TIME_FORMAT_TS
             }
+
+# test prophet error
+query_error1 = {"query": {
+                "iri": GENERATED_HEAT_IRI
+                }}
+expected_error1 = '"horizon" (how many steps to forecast) must be provided.'
+
+query_error2 = {"query": {
+                "horizon": 3
+                }}
+expected_error2 = '"iri" must be provided.'
+
+query_error3 = {}
+expected_error3 = 'No JSON "query" object could be identified.'
+
+query_error4 = {"query": {
+                "iri": 'blablabla',
+                "data_length": 168,
+                "horizon": 3
+                }}
+expected_error4 = 'No time series data could be retrieved for the given IRI: blablabla'
+
+query_error5 = {"query": {
+                "iri": GENERATED_HEAT_IRI,
+                "data_length": 168,
+                "horizon": 3,
+                "use_model_configuration": "blablabla"
+                }}
+expected_error5 = 'No model configuration found for the given key: blablabla'
+
+query_error6 = {"query": {
+                "iri": GENERATED_HEAT_IRI,
+                "data_length": 168,
+                "horizon": 24,
+                "forecast_start_date": "2049-08-15T01:00:00Z"
+                }}
+expected_error6 = f'Could not get time series for {GENERATED_HEAT_DATAIRI} with lowerbound'
+
+# test temporal fusion transformer (tft)
+
+# test tft error
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures

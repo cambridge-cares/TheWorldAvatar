@@ -60,8 +60,8 @@ def test_load_pretrained_model():
 @pytest.mark.parametrize(
     "query_dict, expected", 
     [
-        (cf.QUERY1, cf.EXPECTED1),
-        (cf.QUERY2, cf.EXPECTED2)
+        (cf.query1, cf.expected2),
+        (cf.query2, cf.expected2)
     ]
 )
 def test_prophet(query_dict, expected, test_client, initialise_clients):
@@ -95,57 +95,22 @@ def test_prophet(query_dict, expected, test_client, initialise_clients):
     assert response['unit'] == expected['unit']
 
 
-# # test error handling
-# query_error1 = {"query": {
-#     "iri": generatedHeat_iri
-# }}
-# expected_error1 = '"horizon" (how many steps to forecast) must be provided.'
-# query_error2 = {"query": {
-#     "horizon": 3
-# }}
-# expected_error2 = '"iri" must be provided.'
+@pytest.mark.parametrize("query_dict, expected_error_message", [
+    (cf.query_error1, cf.expected_error1),
+    (cf.query_error2, cf.expected_error2),
+    (cf.query_error3, cf.expected_error3),
+    (cf.query_error4, cf.expected_error4),
+    (cf.query_error5, cf.expected_error5),
+    (cf.query_error6, cf.expected_error6)
+])
+def test_prophet_error(query_dict, expected_error_message, test_client, initialise_clients):
 
-# query_error3 = {}
-# expected_error3 = 'No JSON "query" object could be identified.'
-
-# query_error4 = {"query": {
-#     "iri": 'blablabal',
-#     "data_length": 168,
-#     "horizon": 3
-# }}
-# expected_error4 = 'No time series data could be retrieved for the given IRI: blablabal'
-# query_error5 = {"query": {
-#     "iri": generatedHeat_iri,
-#     "data_length": 168,
-#     "horizon": 3,
-#     "use_model_configuration": "blablabla"}}
-
-# expected_error5 = 'No model configuration found for the given key: blablabla'
-# query_error6 = {"query": {
-#     "iri": generatedHeat_iri,
-#     "data_length": 168,
-#     "horizon": 24,
-#     "forecast_start_date": "2049-08-15T01:00:00Z"}}
-# #expected_error6 = f'Could not get time series for {generatedHeat_dataIRI} with lowerbound'
-# expected_error6 = 'no values for dataIRI '
-
-
-# @pytest.mark.parametrize("query_dict, expected_error_message", [
-#     (query_error1, expected_error1),
-#     (query_error2, expected_error2),
-#     (query_error3, expected_error3),
-#     (query_error4, expected_error4),
-#     (query_error5, expected_error5),
-#     (query_error6, expected_error6)
-# ])
-# def test_prophet_error(query_dict, expected_error_message, test_client):
-
-#     res = test_client.post('/api/forecastingAgent/forecast',
-#                            json={"headers": {'content_type': 'application/json'},
-#                                  **query_dict
-#                                  })
-#     assert res.status_code == 500
-#     assert expected_error_message in res.json['msg']
+    res = test_client.post('/api/forecastingAgent/forecast',
+                           json={"headers": {'content_type': 'application/json'},
+                                 **query_dict
+                                 })
+    assert res.status_code == 500
+    assert expected_error_message in res.json['msg']
 
 
 # # test tft

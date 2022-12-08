@@ -43,7 +43,7 @@ python -m pip install --upgrade pip
 python -m pip install -e . 
 
 ```
-Or  to enable running tests:
+Or to enable running tests:
 
 `(Windows)`
 ```
@@ -124,6 +124,7 @@ docker-compose -f "docker-compose.test.yml" up -d
 4. To start all tests run in your console:
 ```
 pytest tests/
+pytest -s --docker-compose=docker-compose.test.yml
 ```
 
 &nbsp;
