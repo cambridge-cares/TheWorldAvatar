@@ -8,7 +8,7 @@ This part of the README describes the usage of the sewerage network agent. The m
 The next section explains the requirements to run the agent.
 
 ### Requirements
-It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL.
+It is required to have access to a knowledge graph SPARQL endpoint. It can run on the same machine or need to be accessible from the host machine via a fixed URL.
 
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store.
 
@@ -49,3 +49,6 @@ If the agent runs successfully, you should see a returned JSON Object that is si
 ```
 {"Result":"Data has been instantiated."}
 ```
+
+#### Import the CSV data file into the agent
+The number of columns inside CSV data file should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder

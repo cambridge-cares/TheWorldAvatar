@@ -33,6 +33,10 @@ ENV HGDATA="/root/HG_instances_0.csv"
 
 ENV KGDATA="/root/KG_instances_0.csv"
 
+ENV KGMainNet="/root/KGMainNetwork.csv"
+
+ENV KGSubNet="/root/KGSubNetwork.csv"
+
 # ENV CLIENTPROPERTY="/root/client.properties"
 
 # ENV MAPPINGSPATH="/root/mappings"

@@ -89,6 +89,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 		
 		String HG_Path = System.getenv("HGDATA");
 		String KG_Path = System.getenv("KGDATA");
+		String KG_MainNet = System.getenv("KGMainNet");
+		String KG_SubNet = System.getenv("KGSubNet");
 
 		UpdateBuilder SewerageNetwork_ub = 
 				new UpdateBuilder()
@@ -96,8 +98,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 				.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"));
 		UpdateRequest SewerageNetwork_ur = SewerageNetwork_ub.buildRequest();
 		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", SewerageNetwork_ur.toString());
-
 		
+				
 		int HG_column_length = 0;
 		try {
 			HG_column_length = ColNum(HG_Path, ",");
@@ -257,8 +259,6 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "hasEndpointType" + HG010), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "EndpointType"));
 			UpdateRequest ConnectionPropertiesHG_ur = ConnectionPropertiesHG_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", ConnectionPropertiesHG_ur.toString());
-
-
 			
 			
 			UpdateBuilder LocationInletHG_ub = 
@@ -511,6 +511,25 @@ public class SewerageNetworkAgent extends JPSAgent {
 		}
 
 		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
+		
+		String[] KG_Main = ReadCol(0,KG_MainNet, ","); 
+		String[] KG_Sub = ReadCol(0,KG_SubNet, ","); 
+		
+		for (int i = 1; i < KG_Main.length; i++) { //KG_Main.length
+			UpdateBuilder KG_main_ub = 
+					new UpdateBuilder()
+					.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Main[i]));
+			UpdateRequest KG_main_ur = KG_main_ub.buildRequest();
+			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", KG_main_ur.toString());   
+		}
+		
+		for (int i = 1; i < KG_Sub.length; i++) { //KG_Sub.length
+			UpdateBuilder KG_sub_ub = 
+					new UpdateBuilder()
+					.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Sub[i]));
+			UpdateRequest KG_sub_ur = KG_sub_ub.buildRequest();
+			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", KG_sub_ur.toString());   
+		}
 
 	}
 
