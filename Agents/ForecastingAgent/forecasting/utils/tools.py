@@ -2,20 +2,22 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-# The purpose of this file is to provide helper functions to query and update the KG. Those functions are used in the forecasting agent.
 
-from forecasting.datamodel.iris import *
+# The purpose of this file is to provide helper functions to query and update the KG
 
-from darts import concatenate
 import numpy as np
-from darts import TimeSeries
-from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
-from darts.dataprocessing.transformers import Scaler
 import pandas as pd
+from darts import TimeSeries
 from darts import concatenate
-from forecasting.errorhandling.exceptions import KGException
+from darts.dataprocessing.transformers import Scaler
+from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
 
 from py4jps import agentlogging
+
+from forecasting.datamodel.iris import *
+from forecasting.errorhandling.exceptions import KGException
+
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 

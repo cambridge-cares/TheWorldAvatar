@@ -1,7 +1,8 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-# based on: Markus Hofmeister (mh807@cam.ac.uk)#
+#          Markus Hofmeister (mh807@cam.ac.uk) #
 ################################################
+
 # The purpose of this module is to print available HTTP requests (i.e. routes)
 
 from flask import Blueprint, jsonify

@@ -2,29 +2,35 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-# The this file is the main forecasting agent to forecast a time series using a trained model or Prophet. The forecast is then stored in the KG.
+
+# This module represents the main forecasting agent to forecast a time series using 
+# a trained model or Prophet (as default). The forecast is then stored in the KG.
+
+import os
+import uuid
+import urllib
+from pathlib import Path
+import pandas as pd
 
 from dateutil.parser import isoparse
-import os
-import urllib
-import uuid
-from pathlib import Path
+from darts import TimeSeries
+from darts.models import Prophet, TFTModel
+from darts.dataprocessing.transformers import Scaler
 from darts.metrics import mape, mse, rmse, smape
 
-import pandas as pd
-from darts import TimeSeries
-from darts.dataprocessing.transformers import Scaler
-from darts.models import Prophet, TFTModel
+from py4jps import agentlogging
+
+from forecasting.utils.tools import *
 from forecasting.utils.env_configs import *
-from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
-from forecasting.errorhandling.exceptions import KGException
+from forecasting.datamodel.data_mapping import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
-from forecasting.utils.tools import *
+from forecasting.errorhandling.exceptions import KGException
 
-from py4jps import agentlogging
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
 
 def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
     """
