@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.agent.sparql.SparqlAdapter;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -111,7 +112,6 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             }
             LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
 
-
             if (requestParams.has(KEY_STARTING_ROW)) {
                 LOGGER.info("Detected " + KEY_STARTING_ROW + " parameter");
                 LOGGER.info("Validating parameter...");
@@ -192,8 +192,9 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
 
         // Initialize and set the time series client for this agent
         TimeSeriesClientDecorator agentTSClient;
+        Map<String, String> clientConfig;
         try {
-            Map<String, String> clientConfig = FileManager.retrieveClientProperties();
+            clientConfig = FileManager.retrieveClientProperties();
             RemoteStoreClient kbClient = new RemoteStoreClient(
                     clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
                     clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY));
@@ -226,6 +227,11 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 throw new JPSRuntimeException(DATA_UPDATE_ERROR_MSG, e);
             }
         }
+        LOGGER.debug("Adding supplementary triples...");
+        SparqlAdapter.addSupplementaryTriples(clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
+                clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY),
+                iriMappings);
+
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");
         return jsonMessage;
