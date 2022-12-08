@@ -12,7 +12,7 @@ import re
 
 
 def rearrange_formula(mention):
-    formula_regex = r'[A-Z0-9\(\)+]+'
+    formula_regex = r"([A-Z]+[0-9]+)+"
     if re.fullmatch(formula_regex, mention):
         # the thing is a formula, rearrange it
         rst = ''.join([str(k) + '_' + str(int(v)) + '_' for k, v in sorted(chemparse.parse_formula(mention).items())])
@@ -48,7 +48,9 @@ class ChemicalNEL:
             mention_str = str(mentions[0])
             # TODO: rearrange the chemical formula
             rearranged_mention_str = rearrange_formula(mention_str)
+            print(rearranged_mention_str)
             confidence, key = self.fuzzy_search(rearranged_mention_str)[0]
+            print(f"the key is {key}")
             return confidence, self.name_dict[key], str(mention_str), key
 
         except IndexError:
@@ -64,13 +66,9 @@ class ChemicalNEL:
 
 
 if __name__ == '__main__':
-    cn = ChemicalNEL(dataset_name="ontocompchem")
+    cn = ChemicalNEL(dataset_name="pubchem")
     START_TIME = time.time()
-    rst = cn.find_cid('what is the molar mass of CH2H2')
-    print(rst)
-    rst = cn.find_cid('what is the molar mass of H4C')
-    print(rst)
-    rst = cn.find_cid('what is the molar mass of 2-Butyne')
+    rst = cn.find_cid('what is the molar mass of benzene')
     print(rst)
 
     print(time.time() - START_TIME)
