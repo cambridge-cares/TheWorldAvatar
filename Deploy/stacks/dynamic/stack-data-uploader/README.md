@@ -89,6 +89,7 @@ The following table provides a description of each example:
 | [population](../example_datasets/inputs/config/population.json)         | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | [treesAndHills](../example_datasets/inputs/config/treesAndHills.json)   | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | [rdf](../example_datasets/inputs/config/rdf.json)                       | A wrapper around a collection of examples of loading in [RDF](#rdf-data) data. This includes [quads](../example_datasets/inputs/config/quads.json), and triples [with](../example_datasets/inputs/config/triples.json) and [without](../example_datasets/inputs/config/triples_no_inference.json) inference.                                                                                                                                                                                                                                                                                                                                                                      |
+| [tboxcsv](../example_datasets/inputs/config/tboxcsv.json)                     | An example of loading a TBox from a CSV file into a custom Blazegraph namespace.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ## The Dataset Configuration File
 
@@ -231,7 +232,7 @@ The Ontop OBDA file format is also described in detail in the [OBDA mapping file
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data) and [`rdf`](#rdf-data).
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -405,6 +406,16 @@ The data loader does the following when uploading RDF data:
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
 
+### TBox CSV Data
+
+The `"tboxcsv"` data type should be used to load TBox triples from CSV files that adhear to the TBox Generator format, example files can be found [here][tbox-examples].
+The data loader does the following when uploading RDF data:
+
+1. It uses the [`TBoxGeneration::generateTBox`][tbox-generation] method to generate an OWL file from the contents of the CSV file.
+2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
+
+There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
 ## OBDA Mapping File
 
 The general layout of the file is as follows:
@@ -561,6 +572,8 @@ This way you can look at look at the user interfaces of the various services (se
 [Turtle]: https://www.w3.org/TR/2014/REC-turtle-20140225/
 
 [RSC-uploader]:   https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java#L875
+[tbox-generation]: ../../../../JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter/TBoxGeneration.java#L91
+[tbox-examples]:   ../../../../JPS_Ontology/KBTemplates/TBox/
 
 [gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
 [ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
