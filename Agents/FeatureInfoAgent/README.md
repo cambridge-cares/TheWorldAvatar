@@ -86,9 +86,18 @@ To properly parse the metadata and timeseries queries, the agent requires the re
 <a id="example"></a>
 ### Example queries
 
-
+The provided example `.sparql` queries refer to a reporting station instantiated using the [OntoEMS] ontology:
 
 ```
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+prefix : <https://www.example.com/>
+
+:ReportingStation_1 rdf:type ems:ReportingStation ; 
+                    rdfs:label "Reporting Station 1" ;
+                    ems:hasIdentifier "Example identifier" ;
+                    ems:hasObservationElevation "100"^^xsd:double .
 ```
 
 
@@ -115,3 +124,4 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 
 <!-- Links -->
 [queries]: queries
+[OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl

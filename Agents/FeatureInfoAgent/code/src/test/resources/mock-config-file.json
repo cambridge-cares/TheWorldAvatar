@@ -2,8 +2,8 @@
     "database_name": "flood_ontoems",
     "queries": [
         {
-            "class": "com.cmclinnovations.kg.ClassOne",
-            "metaFile": "classOneMeta.sparql",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "metaFile": "station_meta.sparql",
             "timeFile": "classOneTime.sparql",
             "timeLimit": 48
         },
