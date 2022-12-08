@@ -1,6 +1,5 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-#          Markus Hofmeister (mh807@cam.ac.uk) # 
 # Date: 30 Nov 2022                            #
 ################################################
 

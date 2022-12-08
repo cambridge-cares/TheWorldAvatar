@@ -16,17 +16,19 @@ setup(
     install_requires= [
         'flask~=2.2.2',
         'pandas~=1.5.1',
-        'py4jps~=1.0.29', 
+        'py4jps~=1.0.30', 
         'requests~=2.28.1',
         'darts~=0.21.0',
         'configobj~=5.0.6',
-        'fire~=0.4.0',
-        'docopt~=0.6.2',
-
+        'fire~=0.4.0'
     ],
     extras_require={
         "dev": [
+            "testcontainers~=3.7.0",
             "pytest~=7.2.0",
+            "pytest-docker-compose~=3.2.1",
+            "pytest-rerunfailures~=10.2",
+            "psycopg2~=2.9.5"
         ],
     }
 )
