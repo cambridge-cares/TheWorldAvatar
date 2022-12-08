@@ -91,13 +91,27 @@ The provided example `.sparql` queries refer to a reporting station instantiated
 ```
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix ts:  <https://www.theworldavatar.com/kg/ontotimeseries/>
 prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
 prefix : <https://www.example.com/>
 
 :ReportingStation_1 rdf:type ems:ReportingStation ; 
                     rdfs:label "Reporting Station 1" ;
                     ems:hasIdentifier "Example identifier" ;
-                    ems:hasObservationElevation "100"^^xsd:double .
+                    ems:hasObservationElevation "100"^^xsd:double ;
+                    ems:reports :Quantity_1 . 
+:Quantity_1 rdf:type ems:RelativeHumidity ; 
+            om:hasValue :Measure_1 ;  
+            ems:hasForecastedValue :Forecast_1 .
+:Measure_1 ts:hasTimeSeries :Timeseries_1 ; 
+           om:hasUnit om:kilometrePerHour .
+:Forecast_1 ts:hasTimeSeries :Timeseries_2 ; 
+            ems:createdOn "2021-01-01T00:00:00Z"^^xsd:dateTime ;
+            om:hasUnit om:kilometrePerHour .
+
+# Defined by ontology of units of measure
+om:kilometrePerHour om:symbol "km/h"^^xsd:string .
 ```
 
 

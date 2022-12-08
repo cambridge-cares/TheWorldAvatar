@@ -4,7 +4,7 @@
         {
             "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
             "metaFile": "station_meta.sparql",
-            "timeFile": "classOneTime.sparql",
+            "timeFile": "station_time.sparql",
             "timeLimit": 48
         },
         {
