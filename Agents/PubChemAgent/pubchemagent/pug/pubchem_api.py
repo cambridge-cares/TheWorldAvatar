@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 import json
 from unit_parse import parser
 from rdkit import Chem
+from periodictable import elements
 
 class pug_api():
     def __init__(self):
@@ -77,17 +78,23 @@ class pug_api():
                                 value = item.get('Value').get('StringWithMarkup')
                                 for i_value in value:
                                     ep_string = i_value.get('String')
+                                    ep_unit=''
+                                    description = ep_string
                                     if key in thermo_list:
                                         ep_string = pug_api.thermo_parser(ep_string)
                             else:
                                 value = item.get('Value')
+                                description = ''
                                 ep_string = value.get('Number')
+                                ep_unit = value.get('Unit')
                             reference_num = item.get('ReferenceNumber')
                             for r in Reference:
                                 if r.get('ReferenceNumber') == reference_num:
                                     reference=r.get('URL')     
-                            exp_prop[i]['key'] = key.replace(' ', '')                                      
+                            exp_prop[i]['key'] = key.replace(' ', '').replace('/','')                                      
                             exp_prop[i]['value'] = ep_string
+                            exp_prop[i]['unit'] = ep_unit
+                            exp_prop[i]['description'] = description
                             exp_prop[i]['provenance'] = reference
                             i=i+1
         else:
@@ -99,6 +106,9 @@ class pug_api():
         thermo_props = {}
         unit = ''
         q_type = ''
+        ref_quantity = ''
+        ref_unit = ''
+        qref_type = '' 
         try:
             result = parser(str)
             if hasattr(result, 'm'):
@@ -120,13 +130,13 @@ class pug_api():
                     else:
                         ref_quantity = result[a].m
                         ref_unit = result[a].u
-                        qref_type = result[a]._dimensionality._d 
-                        thermo_props ['ref_value'] = ref_quantity
-                        thermo_props ['ref_unit'] = ref_unit  
-                        thermo_props ['ref_type'] = qref_type             
+                        qref_type = result[a]._dimensionality._d              
             thermo_props ['value'] = quantity
             thermo_props ['unit'] = unit
             thermo_props ['type'] = q_type
+            thermo_props ['ref_value'] = ref_quantity
+            thermo_props ['ref_unit'] = ref_unit  
+            thermo_props ['ref_type'] = qref_type
         except Exception as exc:
             print(exc)
             print(str)
@@ -149,31 +159,30 @@ class pug_api():
         data = requests.get(link)
         data = json.loads(data.text)
         if 'Record' in data:
+                i=1
                 Reference=data.get('Record').get('Reference')
                 if 'Section' in data.get('Record').get('Section')[0].get('Section')[0]:
                     data = data.get('Record').get('Section')[0].get('Section')[0].get('Section')
                     for prop in data:
-                        i=1
                         if 'Information' in prop:
                             prop_list = prop.get('Information')
                             key = prop.get('TOCHeading')
-                            sh_prop[key]={}
                             for item in prop_list:
                                 if 'StringWithMarkup' in item.get('Value'):
                                     value = item.get('Value').get('StringWithMarkup')
                                     for i_value in value:
-                                        sh_prop[key][i]={}
                                         ep_string = i_value.get('String')
                                 else:
                                     value = item.get('Value')
-                                    sh_prop[key][i]={}
                                     ep_string = value.get('Number')
                                 reference_num = item.get('ReferenceNumber')
                                 for r in Reference:
                                     if r.get('ReferenceNumber') == reference_num:
-                                        reference=r.get('URL')                                      
-                                sh_prop[key][i]['value'] = ep_string
-                                sh_prop[key][i]['reference'] = reference
+                                        reference=r.get('URL')      
+                                sh_prop[i]={} 
+                                sh_prop[i]['key'] = key.replace(' ', '').replace('/','')                               
+                                sh_prop[i]['value'] = ep_string
+                                sh_prop[i]['reference'] = reference
                                 i=i+1
         else:
             print("\'Safety and Hazard Properties\' do not exist in record")
@@ -209,7 +218,7 @@ class pug_api():
                     key = i_key.replace('+',' ')
                     for i_value in value:
                         uses[i]={}
-                        uses[i]['key']=key.replace(' ', '')
+                        uses[i]['key']=key.replace(' ', '').replace('/','')
                         use_string = i_value.get('String')
                         uses[i]['value'] = use_string
                         uses[i]['provenance'] = reference
@@ -220,6 +229,75 @@ class pug_api():
                 print('\'' + i_key.replace('+',' ') + '\'' + " does not exist in record")
 
         return uses
+
+    def pug_request_element(self, el_num: int) -> dict:
+        
+        pubchem_domain_full = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/'
+        input_domain = 'element/'
+        input_identifier = str(el_num) + '/'
+        output= 'JSON'
+        
+        # request uses
+        el_props = {}
+        i=0
+        link = pubchem_domain_full+input_domain+input_identifier+output
+        data={}
+        data = requests.get(link)
+        data = json.loads(data.text)
+        if 'Record' in data:
+            Reference=data.get('Record').get('Reference')
+            if 'Section' in data.get('Record').get('Section')[0]:
+                identifiers = data.get('Record').get('Section')[0].get('Section')
+                i=1
+                for item in identifiers:
+                    if 'Information' in item:
+                        id_list = item.get('Information')
+                        key = item.get('TOCHeading')
+                        for item in id_list:
+                            el_props[i]={}
+                            value = item.get('Value').get('StringWithMarkup')
+                            for i_value in value:
+                                ep_string = i_value.get('String')
+                            reference_num = item.get('ReferenceNumber')
+                            for r in Reference:
+                                if r.get('ReferenceNumber') == reference_num:
+                                    reference=r.get('URL') 
+                            el_props[i]['key'] = key.replace(' ', '').replace('/','')                                     
+                            el_props[i]['value'] = ep_string
+                            el_props[i]['reference'] = reference
+                            i=i+1
+                            break
+            if 'Section' in data.get('Record').get('Section')[1]:
+                properties = data.get('Record').get('Section')[1].get('Section')
+                for item in properties:
+                    if 'Information' in item:
+                        prop_list = item.get('Information')
+                        key = item.get('TOCHeading')
+                        for item in prop_list:
+                            el_props[i]={}
+                            if 'StringWithMarkup' in item.get('Value'):
+                                value = item.get('Value').get('StringWithMarkup')
+                                for i_value in value:
+                                    ep_string = i_value.get('String')
+                                    ep_unit = ''
+                                    description = ep_string
+                                    ep_string = pug_api.thermo_parser(ep_string)
+                            else:
+                                value = item.get('Value')
+                                ep_string = value.get('Number')
+                                ep_unit = value.get('Unit')
+                            reference_num = item.get('ReferenceNumber')
+                            for r in Reference:
+                                if r.get('ReferenceNumber') == reference_num:
+                                    reference=r.get('URL')    
+                            el_props[i]['key'] = key.replace(' ', '').replace('/','')                                     
+                            el_props[i]['value'] = ep_string
+                            el_props[i]['unit'] = ep_unit
+                            el_props[i]['description'] = description
+                            el_props[i]['reference'] = reference
+                            i=i+1
+
+        return el_props
 
     # Method for retrieving PubChem properties
     def get_props(self, data : dict) -> dict:
@@ -241,7 +319,7 @@ class pug_api():
             if datatype == 1 and ('Mass' not in key) and ('Weight' not in key):
                 key = key.replace(key_type + ' ', '')
                 identifiers[i]={}
-                identifiers[i]['key'] = key.replace(' ', '')
+                identifiers[i]['key'] = key.replace(' ', '').replace('/','')
                 identifiers[i]['value'] = value
                 identifiers[i]['type'] = key_type
                 identifiers[i]['provenance'] = provenance
@@ -250,7 +328,7 @@ class pug_api():
                 if datatype == 7 and key_type != '':
                     key = key_type
                 comp_props[j]={}  
-                comp_props[j]['key'] = key.replace(' ', '')
+                comp_props[j]['key'] = key.replace(' ', '').replace('/','')
                 comp_props[j]['value'] = value
                 comp_props[j]['provenance'] = provenance
                 j = j+1
@@ -278,29 +356,47 @@ class pug_api():
 
     # Method for retrieving atom IDs
     def get_structure(self, data : dict) -> dict[str , list] :
-        atom_ids = data.get('PC_Compounds')[0].get('atoms')
+        atom_coords = data.get('PC_Compounds')[0].get('coords')[0].get('conformers')[0]
+        x=atom_coords.get('x')
+        y=atom_coords.get('y')
+        z=atom_coords.get('z')
+        elem = data.get('PC_Compounds')[0].get('atoms').get('element')
         atom_bonds = data.get('PC_Compounds')[0].get('bonds')
-        atom_coords = data.get('PC_Compounds')[0].get('coords')
-        i=0
-        for atoms in atom_ids.get('aid'):
-            pass
+        with open('mol.xyz', 'w') as f:
+            f.write(str(len(x)) + '\n')
+            f.write('\n')
+            i=0
+            for item in x:
+                for el in elements:
+                    if elem[i]==el.number:
+                        elem[i]=el.symbol
+                f.write(str(elem[i]) + '\t' + str(x[i]) + '\t' +  str(y[i]) + '\t' + str(z[i]) + '\n')
+                i=i+1
+        o=pug_api.CanonicalOrdering()
+#        for atoms in atom_ids.get('aid'):
+#            pass
 
         return atom_bonds 
 
-    def CanonicalOrdering(mol):
+    def CanonicalOrdering():
         # canonical ordering
-        m = Chem.MolFromXYZFile('pubchemagent/pug/ethanol.xyz')
+        m = Chem.MolFromXYZFile('mol.xyz')
         m.UpdatePropertyCache()
         order = Chem.CanonicalRankAtoms(m, includeChirality=True)
         #print(list(order))
         m_neworder = tuple(zip(*sorted([(j, i) for i, j in enumerate(Chem.CanonicalRankAtoms(m))])))[1]
         #m_renum = Chem.RenumberAtoms(m, m_neworder)
+        return m_neworder
 
 # Testing the module itself
 if __name__ == "__main__":
     pug_access = pug_api()
 
-    for inchi in ['InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',
+   # for el in range(1,118):
+   #     data = pug_access.pug_request_element(el)
+
+    for inchi in ['InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3',
+                    'InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',
                     "InChI=1S/C23H34BrN3O3/c1-22(2,27-21(29)13-24)16-7-10-23(3,11-8-16)26-14-17(28)15-30-20-6-4-5-19-18(20)9-12-25-19/h4-6,9,12,16-17,25-26,28H,7-8,10-11,13-15H2,1-3H3,(H,27,29)",
                     'InChI=1/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3', 
                     'InChI=1/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
@@ -309,11 +405,12 @@ if __name__ == "__main__":
         cid = pug_access.get_cid(data)
         charge = pug_access.get_charge(data)
         data_3d = pug_access.pug_request_prop_3d(cid)
+        atom_id = pug_access.get_structure(data_3d)
         #props_3d, v = pug_access.get_props(data_3d)
         exp_props = pug_access.pug_request_exp_prop(cid)
         uses = pug_access.pug_request_uses(cid)
         sh_props = pug_access.pug_request_sh_prop(cid)
-        atom_id = pug_access.get_structure(data)
+        aa=1;    
 
        # print(cid['cid'], props['Preferred IUPAC Name'], '\n', atom_id)
 
@@ -324,4 +421,3 @@ if __name__ == "__main__":
         cid = pug_access.get_cid(data)
         props = pug_access.get_props(data)
         print(props)
-        print(cid['cid'], props['Preferred IUPAC Name'])

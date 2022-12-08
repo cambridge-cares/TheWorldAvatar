@@ -19,6 +19,14 @@ def insert_ontospecies_props(uuid, props):
         # create a SPARQL object for performing the query
         kg_client = kg_operations(sparqlendpoint)
         kg_client.insertkg(insertStr=insert_str)
+
+def insert_ontospecies_elements(uuid, data):
+    for item in data:
+        insert_str = pubchem_elem_insert(uuid, data[item])
+        sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
+        # create a SPARQL object for performing the query
+        kg_client = kg_operations(sparqlendpoint)
+        kg_client.insertkg(insertStr=insert_str)
  
 # create a new UUID
 def create_uuid():

@@ -23,8 +23,9 @@ def spec_inchi_query(inchi_string):
     WHERE
     {
     ?speciesIRI rdf:type OntoSpecies:Species .
-    ?speciesIRI OntoSpecies:inChI ?Inchi .
-    FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
+    ?speciesIRI OntoSpecies:hasInChI ?Inchi .
+    ?InChi OntoSpecies:value ?Inchistr .
+    FILTER REGEX(str(?Inchistr), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
     }
     """
 
@@ -143,9 +144,9 @@ def pubchem_prop_insert(uuid, props):
     {
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> rdf:type os:#key# .
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:* <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:value #value# .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:hasProvenance #provenance# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:value \'#value#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:hasProvenance \'#provenance#\' .
     }    
     """.replace('#uuid#', uuid)
     for item in props.keys():
@@ -166,12 +167,36 @@ def pubchem_identifiers_insert(uuid, identifiers):
     {
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> rdf:type os:#key# .
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:* <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:value #value# .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:hasProvenance #provenance# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:value \'#value#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Species_#uuid#> os:hasProvenance \'#provenance#\' .
     }    
     """.replace('#uuid#', uuid)
     for item in identifiers.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(identifiers.get(item)))
+        
+    return insert_str
+
+def pubchem_elem_insert(uuid, data):
+    insert_str = """
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX otk: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
+    
+    INSERT DATA
+    {
+    <http://www.theworldavatar.com/kg/ontospecies/Element_#uuid#> rdf:type pt:Element .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Element_#uuid#> rdf:type os:#key# .
+    <http://www.theworldavatar.com/kg/ontospecies/Element_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_Element_#uuid#> .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Element_#uuid#> os:value \'#value#\' .
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_Element_#uuid#> os:hasProvenance \'#provenance#\' .
+    }    
+    """.replace('#uuid#', uuid)
+    for item in data.keys():
+        insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
         
     return insert_str

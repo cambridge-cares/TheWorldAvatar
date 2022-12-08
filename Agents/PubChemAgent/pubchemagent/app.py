@@ -20,14 +20,22 @@ def query_with_inchi(inchi):
         exp_props = pug_access.pug_request_exp_prop(CID)
         uses = pug_access.pug_request_uses(CID)
         sh_props = pug_access.pug_request_sh_prop(CID)
-        atom_id = pug_access.get_atoms(data)
+    #    atom_id = pug_access.get_atoms(data)
 
         cid = CID['cid']
         uuid = create_uuid()
+        insert_ontospecies_identifiers(uuid, identifiers)
         insert_ontospecies_props(uuid, props)
         insert_ontospecies_props(uuid, exp_props) 
         insert_ontospecies_props(uuid, sh_props)  
         insert_ontospecies_props(uuid, uses)     
         return (props, 'PubChem')
+
+def populate_elements():
+    pug_access = pug_api()
+    for el in range(1,118):
+        data = pug_access.pug_request_element(el)
+        uuid = create_uuid()
+        insert_ontospecies_element(uuid,data)
 
         
