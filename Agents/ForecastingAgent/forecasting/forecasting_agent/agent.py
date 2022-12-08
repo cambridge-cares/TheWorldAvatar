@@ -385,13 +385,13 @@ def get_ts_lower_upper_bound(cfg):
     return lowerbound.strftime(TIME_FORMAT), upperbound.strftime(TIME_FORMAT)
 
 
-def load_pretrained_model(cfg, ModelClass, forece_download=False):
+def load_pretrained_model(cfg, ModelClass, force_download=False):
     """
     It downloads a model from a link, and then loads it into a Darts model
 
     :param cfg: a dictionary containing the configuration of the model
     :param ModelClass: the class of the model
-    :param forece_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
+    :param force_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
     (optional)
     :return: The model is being returned.
     """
@@ -407,7 +407,7 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
     # TODO: until now we need to download both, checkpoint and model file
     # maybe you find a better way to just have one link
 
-    if os.path.exists(path_to_store) and not forece_download:
+    if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
         path_pth = ""

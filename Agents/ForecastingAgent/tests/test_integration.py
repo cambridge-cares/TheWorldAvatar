@@ -26,8 +26,39 @@ from forecasting.utils.tools import *
 import numpy as np
 import uuid
 
+from forecasting.utils.tools import *
+from darts.models import TFTModel
+
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
+
+
+def test_load_pretrained_model():
+     """
+     Test the function `load_pretrained_model` to load a pretrained model from a
+     checkpoint file or a PyTorch model file
+     NOTE: Test will fail if the model is not available at the given link
+     """
+     # Test if pretrained model is loaded correctly
+     cfg = {
+          'model_configuration_name': 'test_model',
+          'fc_model': {
+               'name': 'TFTModel_test',
+               'model_path_ckpt_link': "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
+               'model_path_pth_link': "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
+          },
+     }
+     model = load_pretrained_model(cfg, TFTModel, force_download=True)    
+     assert model.__class__.__name__ == 'TFTModel'
+     assert model.model.input_chunk_length == 168
+     assert model.model.output_chunk_length == 24
+     
+     # use previously downloaded model
+     model = load_pretrained_model(cfg, TFTModel, force_download=False)    
+     assert model.__class__.__name__ == 'TFTModel'
+     assert model.model.input_chunk_length == 168
+     assert model.model.output_chunk_length == 24
+
 
 # create flask app
 @pytest.fixture(scope='module')
