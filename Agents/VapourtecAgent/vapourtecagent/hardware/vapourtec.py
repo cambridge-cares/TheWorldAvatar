@@ -24,6 +24,10 @@ FC_COLLECTION_OPTION = "Collection Option"
 FC_START_VIAL_OVERRIDE = "Start Vial Override"
 FC_MANUAL_COLLECT = "Manual Collect"
 FC_MANUAL_DIVERT = "Manual Divert"
+FC_DO_NOT_COLLECT = "DO NOT COLLECT"
+FC_CLEANING_FLOW_RATE = "CLEANING FLOW RATE (ml/min)"
+FC_NUMBER_OF_COLLECTIONS = "NUMBER OF COLLECTIONS"
+FC_MANUAL_CLEAN = "MANUAL CLEAN (ml)"
 
 # Mapping int value returned by FlowCommander.GetState(fc) to the actual state
 # TODO double check if any other possible state
@@ -56,6 +60,7 @@ def create_exp_run_csv(
     list_equip_settings: List[EquipmentSettings],
     rs_400: VapourtecRS400,
     start_vial_override: int=None,
+    do_not_collect: bool=False,
 ) -> str:
     """
         This function creates the experiment run file to be digested by Vapourtec FlowCommander.
@@ -66,14 +71,20 @@ def create_exp_run_csv(
 
     # collection settings
     fc_header = np.array(([[FC_WHOLE_PEAK], ["FALSE"]]))
-    if start_vial_override is not None:
-        fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["FALSE"]]))))
-        fc_header = np.concatenate((fc_header, [[FC_START_VIAL_OVERRIDE], [start_vial_override]]))
-        # TODO [future work] add more options for manual collection/divert
-        # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_COLLECT], []]))))
-        # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_DIVERT], []]))))
+    if do_not_collect:
+        # TODO [future work] add more options for manual cleaning, currently relies on final cleaning by vapourtec itself
+        fc_header = np.hstack((fc_header, np.array(([[FC_DO_NOT_COLLECT], ["TRUE"]]))))
+        fc_header = np.hstack((fc_header, np.array(([[FC_CLEANING_FLOW_RATE], ["0.1"]]))))
+        fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_CLEAN], ["0"]]))))
     else:
-        fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["TRUE"]]))))
+        if start_vial_override is not None:
+            fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["FALSE"]]))))
+            fc_header = np.concatenate((fc_header, [[FC_START_VIAL_OVERRIDE], [start_vial_override]]))
+            # TODO [future work] add more options for manual collection/divert
+            # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_COLLECT], []]))))
+            # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_DIVERT], []]))))
+        else:
+            fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["TRUE"]]))))
 
     iterated_pump = []
     for equip_settings in list_equip_settings:

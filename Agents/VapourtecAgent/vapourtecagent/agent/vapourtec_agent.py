@@ -112,9 +112,11 @@ class VapourtecAgent(DerivationAgent):
         if vapourtec_rs400.collects_to_fraction_collector():
             # need to know the number of collection site
             col_site_iri, col_site_num, col_site_vial_iri = vapourtec_rs400.get_collection_site()
+            do_not_collect = False
         else:
             # no need to know the number of collection site, as it will go to waste bottle
             col_site_num = None
+            do_not_collect = True
             waste_bottle_iri = vapourtec_rs400.get_collection_receptacle()
 
         # Call function to create a list of ontolab.EquipmentSettings instances
@@ -141,6 +143,7 @@ class VapourtecAgent(DerivationAgent):
             list_equip_settings=list_equip_settings,
             rs_400=vapourtec_rs400,
             start_vial_override=col_site_num,
+            do_not_collect=do_not_collect,
         )
         self.logger.info(f"The CSV run file generated within container at: {local_run_csv_path}")
         # Upload the vapourtec input file to file server for record
