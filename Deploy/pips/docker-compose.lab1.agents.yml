@@ -1,0 +1,53 @@
+version: "3.8"
+name: pips-lab1
+
+services:
+
+  vapourtec_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_agent:1.1.0-200-SNAPSHOT
+    container_name: vapourtec_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7003:5000
+    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "host.docker.internal"
+      - host.docker.internal:host-gateway
+    env_file:
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
+      - ./env_files/agent.lab1.vapourtec.env.deploy
+    secrets:
+      - email_auth
+    volumes:
+      - ./FCRemote.dll:/app/FCRemote.dll
+      - ./FCRemoteCSV.dll:/app/FCRemoteCSV.dll
+      - type: bind
+        source: ./_vapourtec # NOTE change this to a folder location on your host machine
+        target: /app/vapourtec
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecagent:create_app()", "--preload"]
+
+  hplc_agent:
+    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    container_name: hplc_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7004:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
+      - ./env_files/agent.lab1.hplc.env.deploy
+    secrets:
+      - email_auth
+    volumes:
+      - type: bind
+        source: "C:\\..." # NOTE change this to a folder location on your host machine
+        target: /app/CHEM32
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcagent:create_app()", "--preload"]
+
+# Secrets used to set runtime passwords
+secrets:
+  email_auth:
+    file: ./secrets/email_auth.json

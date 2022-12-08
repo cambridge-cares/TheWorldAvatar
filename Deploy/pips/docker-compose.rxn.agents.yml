@@ -1,0 +1,88 @@
+version: "3.8"
+name: pips-rxn-opt
+
+services:
+  rxn_opt_goal_agent:
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_agent:1.0.0-SNAPSHOT
+    container_name: rxn_opt_goal_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7070:5000
+    env_file:
+      - ./env_files/agent.goal.env.deploy
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoalagent:create_app()", "--preload"]
+
+  rxn_opt_goal_iter_agent:
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.0.0-SNAPSHOT
+    container_name: rxn_opt_goal_iter_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7060:5000
+    env_file:
+      - ./env_files/agent.goal.iter.env.deploy
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoaliteragent:create_app()", "--preload"]
+
+  doe_agent:
+    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7000:5000
+    env_file:
+      - ./env_files/agent.doe.env.deploy
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "doeagent:create_app()", "--preload"]
+
+  vapourtec_schedule_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_schedule_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7001:5000
+    env_file:
+      - ./env_files/agent.vapourtec.schedule.env.deploy
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecscheduleagent:create_app()", "--preload"]
+
+  hplc_postpro_agent:
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    container_name: hplc_postpro_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7002:5000
+    env_file:
+      - ./env_files/agent.hplc.postpro.env.deploy
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcpostproagent:create_app()", "--preload"]
+
+# Secrets used to set runtime passwords
+secrets:
+  email_auth:
+    file: ./secrets/email_auth.json
