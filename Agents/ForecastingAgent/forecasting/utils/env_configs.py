@@ -4,7 +4,7 @@
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
-# from environment variables
+# from environment variables and the stack clients (if applicable)
 
 import os
 
@@ -13,6 +13,7 @@ from py4jps import agentlogging
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
+
 def retrieve_settings():
     """
         Reads settings from environment variables (as global variables).
@@ -20,14 +21,14 @@ def retrieve_settings():
 
     # Define global scope for global variables
     global NAMESPACE, DATABASE, STACK_NAME, \
-           db_url, db_user, db_password, query_endpoint, update_endpoint
+           DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
     
     # Initialise potentially not provided variables
-    db_url = None
-    db_user = None
-    db_password = None
-    query_endpoint = None
-    update_endpoint = None
+    DB_URL = None
+    DB_USER = None
+    DB_PASSWORD = None
+    QUERY_ENDPOINT = None
+    UPDATE_ENDPOINT = None
 
     # Retrieve target Blazegraph name for data to instantiate
     NAMESPACE = os.getenv('NAMESPACE')
@@ -54,28 +55,31 @@ def retrieve_settings():
     if STACK_NAME is None:
         logger.error('"STACK_NAME" is missing in environment variables.')
         raise ValueError('"STACK_NAME" is missing in environment variables.')
+
+    # Retrieve Blazegraph and PostgreSQL/PostGIS settings depending on deployment mode
     if STACK_NAME == '':
+        # Standalone: retrieve settings from docker compose env vars
         logger.info('No "STACK_NAME" value has been provided in environment variables. '
                     'Deploying agent in "standalone" mode.')
-
-        # Retrieve Blazegraph and PostgreSQL/PostGIS settings from docker compose env vars
-        # Otherwise they will be retrieved from Stack Clients
-        vars_names = { 
-            'db_url': 'DB_URL',
-            'db_user': 'DB_USER',
-            'db_password': 'DB_PASSWORD',
-            'query_endpoint': 'QUERY_ENDPOINT',
-            'update_endpoint': 'UPDATE_ENDPOINT'
-        }
-        # Retrieve as global variables
+        
+        # Retrieve global variables
+        vars_names = ['DB_URL', 'DB_USER', 'DB_PASSWORD', 'QUERY_ENDPOINT', 'UPDATE_ENDPOINT']
         for v in vars_names:
-            globals()[v] = os.getenv(vars_names[v])
+            globals()[v] = os.getenv(v)
             if globals()[v] is None:
-                logger.error(f'"{vars_names[v]}" is missing in environment variables.')
-                raise ValueError(f'"{vars_names[v]}" is missing in environment variables.')
+                logger.error(f'"{v}" is missing in environment variables.')
+                raise ValueError(f'"{v}" is missing in environment variables.')
             if globals()[v] == '':
-                logger.error(f'No "{vars_names[v]}" value has been provided in environment variables.')
-                raise ValueError(f'No "{vars_names[v]}" value has been provided in environment variables.')
+                logger.error(f'No "{v}" value has been provided in environment variables.')
+                raise ValueError(f'No "{v}" value has been provided in environment variables.')
+    else:
+        # Stack deployment: retrieve settings from Stack Clients
+        logger.info('Deploying agent to stack "{STACK_NAME}".')
+        
+        # Import stack_configs module only when needed to avoid import issues/
+        # potentially unnecessary installation of py4jps StackClients resource
+        from .stack_configs import retrieve_stack_settings
+        retrieve_stack_settings(database=DATABASE,namespace=NAMESPACE)
 
 
 # Run when module is imported
