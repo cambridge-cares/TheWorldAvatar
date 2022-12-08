@@ -65,43 +65,43 @@
                 },
                 {
                     "id": "hugo-ball-lod3-tiles-layer",
-                    "name": "Hugo-Ball-Gymnasium (3D, LoD3)",
+                    "name": "Hugo-Ball-Gymnasium (3D, BIM)",
                     "source": "hugo-ball-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "hugo-ball-solarpanel-lod3-tiles-layer",
-                    "name": "Hugo-Ball-Gymnasium, Solar (3D, LoD3)",
+                    "name": "Hugo-Ball-Gymnasium, Solar (3D, BIM)",
                     "source": "hugo-ball-solarpanel-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "leibniz-lod3-tiles-layer",
-                    "name": "Leibniz-Gymnasium (3D, LoD3)",
+                    "name": "Leibniz-Gymnasium (3D, BIM)",
                     "source": "leibniz-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "leibniz-solarpanel-lod3-tiles-layer",
-                    "name": "Leibniz-Gymnasium, Solar (3D, LoD3)",
+                    "name": "Leibniz-Gymnasium, Solar (3D, BIM)",
                     "source": "leibniz-solarpanel-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "erlenbrunnerstr45-lod3-tiles-layer",
-                    "name": "Erlenbrunnerstr. 45 (3D, LoD3)",
+                    "name": "Erlenbrunnerstr. 45 (3D, BIM)",
                     "source": "erlenbrunnerstr45-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "erlenbrunnerstr45-solarpanel-lod3-tiles-layer",
-                    "name": "Erlenbrunnerstr. 45, Solar (3D, LoD3)",
+                    "name": "Erlenbrunnerstr. 45, Solar (3D, BIM)",
                     "source": "erlenbrunnerstr45-solarpanel-lod3-tiles-source",
                     "visibility": "none"
                 },
                 {
                     "id": "measurementstation-tiles-layer",
-                    "name": "ZIMEN-Messstation (3D)",
+                    "name": "ZIMEN-Messstation (3D, BIM)",
                     "source": "measurementstation-tiles-source",
                     "visibility": "none"
                 }
@@ -146,13 +146,13 @@
                 },
                 {
                     "id": "main-network-kml-layer",
-                    "name": "Hauptnetz (3D)",
+                    "name": "Hauptnetz",
                     "source": "main-network-kml-source",
                     "visibility": "none"
                 },
                 {
                     "id": "sub-network-kml-layer",
-                    "name": "Nebennetz (3D)",
+                    "name": "Nebennetz",
                     "source": "sub-network-kml-source",
                     "visibility": "none"
                 },
