@@ -2,29 +2,31 @@ version: "3.8"
 
 services:
   forecasting_agent:
-    image: ghcr.io/cambridge-cares/forecasting_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/forecasting_agent_debug:1.0.0-SNAPSHOT
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-      - STACK_NAME=${STACK_NAME}    # to be left blank for "standalone" deployment
+      - STACK_NAME=
       # Additional environment variables required for Stack deployment
       # (can be left blank for "standalone" deployment)
-      - NAMESPACE=readings          # Target Blazegraph namespace
-      - DATABASE=postgres           # Target PostGIS/PostgreSQL database name
+      - NAMESPACE=
+      - DATABASE=
       # Additional environment variables required for "standalone deployment"
       # (can be left blank for Stack deployment)
-      - DB_URL=
-      - DB_USER=
-      - DB_PASSWORD=
-      - QUERY_ENDPOINT=
-      - UPDATE_ENDPOINT=
+      - DB_URL=jdbc:postgresql://localhost:9432/districtheating
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - QUERY_ENDPOINT=http://localhost:9999/blazegraph/namespace/districtheating/sparql
+      - UPDATE_ENDPOINT=http://localhost:9999/blazegraph/namespace/districtheating/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
-      target: prod
+      target: debug
     ports:
       - "5000:5000"
+      - "5678:5678"
     volumes:
       - logs:/root/.jps
+      - ./forecasting:/app/forecasting
 
 volumes:
   logs:

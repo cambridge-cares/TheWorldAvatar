@@ -1,0 +1,107 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "compose-build",
+            "command": "./stack.sh",
+            "args": [
+                "build",
+                "--debug-port",
+                "${input:debug.port}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
+                }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-internal",
+            "command": "./stack.sh",
+            "args": [
+                "start",
+                "${input:stackName}",
+                "--debug-port",
+                "${input:debug.port}"
+            ],
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
+                }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy",
+            "command": "sleep 1",
+            "dependsOn": [
+                "compose-deploy-internal"
+            ],
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-build-deploy",
+            "dependsOn": [
+                "compose-build",
+                "compose-deploy"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "type": "shell",
+            "label": "update-compose-build-deploy",
+            "dependsOn": [
+                "update-py4jps",
+                "compose-build",
+                "compose-deploy"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "type": "shell",
+            "label": "update-py4jps",
+            // TODO: Platform specific commands to be revisited at some point
+            // Linux (n/a option to be commented out):
+            "command": "bash ./build_py4jps_stackclients_resource.sh",   
+            // Windows (n/a option to be commented out): 
+            // "command": "build_py4jps_stackclients_resource.sh",      
+        }
+    ],
+    "inputs": [
+        {
+            "id": "stackName",
+            "type": "promptString",
+            "description": "Name your stack.",
+            "default": "KINGS-LYNN"
+        },
+        {
+            "id": "debug.port",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
+            }
+        }
+    ]
+}
