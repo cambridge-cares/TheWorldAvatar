@@ -1,0 +1,41 @@
+{
+    "ServiceSpec": {
+        "Name": "historical-pump-data-instantiation-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "historical-pump-data-instantiation-agent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/HistoricalPumpDataInstantiation/data",
+                        "Target": "/usr/local/tomcat/data"
+                    },
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/HistoricalPumpDataInstantiation/config",
+                        "Target": "/usr/local/tomcat/config"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/historical-pump-data-instantiation-agent/",
+            "externalPath": "/historical-pump-data-instantiation-agent/"
+        }
+    }
+}
