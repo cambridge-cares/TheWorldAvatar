@@ -59,6 +59,14 @@ Deploy the agent and its dependencies by running the following code in the comma
 docker-compose up -d
 ```
 
+#### 2.3 Stack Deployment
+
+If you want to spin up this agent as part of a stack, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mounts as required.
+- Start the stack manager as usual. This should start the container.
+
 ### 3. Running the Agent
 #### 3.1 Precursor
 In the `config` directory, please place the `client.properties` file containing the access details for the KG and RDB.
