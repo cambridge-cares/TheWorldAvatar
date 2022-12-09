@@ -19,7 +19,7 @@ from forecasting.datamodel.data_mapping import *
 from forecasting.flaskapp import create_app
 from forecasting.utils.tools import *
 from forecasting.kgutils.kgclient import KGClient
-from forecasting.kgutils.tsclient import TSClient, init_ts
+from forecasting.kgutils.tsclient import TSClient
 
 from forecasting.utils.env_configs import DB_USER, DB_PASSWORD
 
@@ -328,8 +328,8 @@ def initialise_prophet(kgClient, tsClient, rdb_url):
     kgClient.performUpdate(update)
 
     # Initialise time series and add data
-    init_ts(GENERATED_HEAT_DATAIRI, test_data['timestamp'], test_data['generatedHeat'], 
-            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+    tsClient.init_ts(GENERATED_HEAT_DATAIRI, test_data['timestamp'], test_data['generatedHeat'], 
+                     ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
 
 def initialise_tft(kgClient, tsClient, rdb_url):
@@ -365,8 +365,8 @@ def initialise_tft(kgClient, tsClient, rdb_url):
                                             })
 
     # Initialise time series and add data
-    init_ts(HEAT_DEMAND_DATA_IRI, test_data['timestamp'], test_data['heatDemand'],  
-            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+    tsClient.init_ts(HEAT_DEMAND_DATA_IRI, test_data['timestamp'], test_data['heatDemand'],  
+                     ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
     # Instantiate covariates
     # air temperature
@@ -375,8 +375,8 @@ def initialise_tft(kgClient, tsClient, rdb_url):
                                       verb_obj={RDF_TYPE: ONTOEMS_AIRTEMPERATURE,
                                                 OM_HASVALUE: airTemp_dataIRI
                                             })
-    init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
-            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+    tsClient.init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
+                     ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
     # is holiday
     isHoliday_dataIRI = KB + "IsHoliday_" + str(uuid.uuid4())
@@ -384,8 +384,8 @@ def initialise_tft(kgClient, tsClient, rdb_url):
                                       verb_obj={RDF_TYPE: OHN_ISPUBLICHOLIDAY,
                                                 OM_HASVALUE: isHoliday_dataIRI
                                             })
-    init_ts(isHoliday_dataIRI, test_data['timestamp'], test_data['isHoliday'],  
-            tsClient, ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
+    tsClient.init_ts(isHoliday_dataIRI, test_data['timestamp'], test_data['isHoliday'],  
+                     ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
 
     # Execute SPARQL update
     kgClient.performUpdate(add_insert_data(update))

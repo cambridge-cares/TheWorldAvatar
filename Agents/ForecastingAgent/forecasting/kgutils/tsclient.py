@@ -87,15 +87,25 @@ class TSClient:
         return timeseries
 
 
-def init_ts(iri, dates, values, tsClient, ts_type, time_format):
-    #TODO: add docstring, rename, convert to instance method
-    # call client
-    with tsClient.connect() as conn:
-        tsClient.tsclient.initTimeSeries([iri], [ts_type], time_format, conn)
-        ts = TSClient.create_timeseries(
-            dates.to_list(), [iri], [values.to_list()])
-        tsClient.tsclient.addTimeSeriesData(ts, conn)
-    logger.info(f"Time series initialised in KG: {iri}")
+    def init_ts(self, datairi, times, values, ts_type, time_format):
+        """
+        This method instantiates a new time series and immediately adds data to it.
+        
+        Arguments:
+            datairi (str): IRI of instance with hasTimeSeries relationship
+            times (list): List of times/dates
+            values (list): List of list of values per dataIRI   
+            tsClient (TSClient): TSClient object
+            ts_type (Java class): Java class of time series values
+            time_format (str): Time format (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
+        """
+
+        with self.connect() as conn:
+            self.tsclient.initTimeSeries([datairi], [ts_type], time_format, conn)
+            ts = TSClient.create_timeseries(
+                        times.to_list(), [datairi], [values.to_list()])
+            self.tsclient.addTimeSeriesData(ts, conn)
+        logger.info(f"Time series initialised in KG: {datairi}")
 
 
 """
