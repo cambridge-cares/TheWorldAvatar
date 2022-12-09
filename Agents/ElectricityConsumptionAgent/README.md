@@ -23,8 +23,8 @@ Run the `./agent/dataretrieval/readings.py` file
 
 &nbsp;
 # Authors
-Jieyang Xu (jx309@cam.ac.uk), Dec 2022
-Feroz Farazi (msff2@cam.ac.uk)
+Jieyang Xu (jx309@cam.ac.uk), Feroz Farazi (msff2@cam.ac.uk) Dec 2022
+
 
 (Parts of the agent leverage code initially developed by Daniel Nurkowski (danieln@cmclinnovations.com))
 <!-- Links -->
