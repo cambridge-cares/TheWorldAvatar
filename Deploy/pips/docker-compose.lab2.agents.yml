@@ -16,6 +16,7 @@ services:
     env_file:
       # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
       - ./env_files/agent.lab2.vapourtec.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     volumes:
@@ -39,6 +40,7 @@ services:
     env_file:
       # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
       - ./env_files/agent.lab2.hplc.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     volumes:

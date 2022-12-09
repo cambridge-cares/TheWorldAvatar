@@ -12,6 +12,7 @@ services:
       - 7070:5000
     env_file:
       - ./env_files/agent.goal.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     extra_hosts:
@@ -28,6 +29,7 @@ services:
       - 7060:5000
     env_file:
       - ./env_files/agent.goal.iter.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     extra_hosts:
@@ -44,6 +46,7 @@ services:
       - 7000:5000
     env_file:
       - ./env_files/agent.doe.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     extra_hosts:
@@ -60,6 +63,7 @@ services:
       - 7001:5000
     env_file:
       - ./env_files/agent.vapourtec.schedule.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     extra_hosts:
@@ -76,6 +80,7 @@ services:
       - 7002:5000
     env_file:
       - ./env_files/agent.hplc.postpro.env.deploy
+      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
     secrets:
       - email_auth
     extra_hosts:
