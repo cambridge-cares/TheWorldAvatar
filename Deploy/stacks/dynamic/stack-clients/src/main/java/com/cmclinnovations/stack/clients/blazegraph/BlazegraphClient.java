@@ -12,13 +12,14 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.bigdata.rdf.sail.webapp.client.HttpException;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
+import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class BlazegraphClient extends ContainerClient {
+public class BlazegraphClient extends ContainerClient implements ClientWithEndpoint {
 
     private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<([a-z]+)>",
             Pattern.CASE_INSENSITIVE);
@@ -36,6 +37,11 @@ public class BlazegraphClient extends ContainerClient {
 
     private BlazegraphClient() {
         blazegraphEndpoint = readEndpointConfig(EndpointNames.BLAZEGRAPH, BlazegraphEndpointConfig.class);
+    }
+
+    @Override
+    public BlazegraphEndpointConfig getEndpoint() {
+        return blazegraphEndpoint;
     }
 
     public void createNamespace(String namespace) {

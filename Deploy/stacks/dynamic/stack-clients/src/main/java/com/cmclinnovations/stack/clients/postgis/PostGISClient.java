@@ -5,10 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 
-public class PostGISClient extends ContainerClient {
+public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
@@ -23,6 +24,11 @@ public class PostGISClient extends ContainerClient {
 
     private PostGISClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
+    }
+
+    @Override
+    public PostGISEndpointConfig getEndpoint() {
+        return postgreSQLEndpoint;
     }
 
     private Connection getDefaultConnection() throws SQLException {

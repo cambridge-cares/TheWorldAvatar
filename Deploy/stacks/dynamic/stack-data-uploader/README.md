@@ -80,15 +80,16 @@ There are several example configuration files in the [`example_datasets`](../exa
 You can follow the instructions in the [README.md](../example_datasets/README.md) to load in one of the example datasets.
 The following table provides a description of each example:
 
-| Example                                                                 | Description |
+| Example                                                                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | - | - |
-| [cropmap-simple](../example_datasets/inputs/config/cropmap-simple.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. |
-| [cropmap](../example_datasets/inputs/config/cropmap.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../example_datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../example_datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. |
-| [elevation](../example_datasets/inputs/config/elevation.json) | Uploads a set of [GeoTiff files](../example_datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../example_datasets/inputs/config/elevation.sld)) is also provided for reference. |
-| [forestry](../example_datasets/inputs/config/forestry.json) | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer. |
-| [population](../example_datasets/inputs/config/population.json) | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer. |
-| [treesAndHills](../example_datasets/inputs/config/treesAndHills.json) | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.  |
-| [rdf](../example_datasets/inputs/config/rdf.json) | A wrapper around a collection of examples of loading in [RDF](#rdf-data) data. This includes [quads](../example_datasets/inputs/config/quads.json), and triples [with](../example_datasets/inputs/config/triples.json) and [without](../example_datasets/inputs/config/triples_no_inference.json) inference.  |
+| [cropmap-simple](../example_datasets/inputs/config/cropmap-simple.json) | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [cropmap](../example_datasets/inputs/config/cropmap.json)               | Uploads a [set of Shapefiles](../example_datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../example_datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../example_datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. |
+| [elevation](../example_datasets/inputs/config/elevation.json)           | Uploads a set of [GeoTiff files](../example_datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../example_datasets/inputs/config/elevation.sld)) is also provided for reference.                                                                                                                                                                                                                                                                                                                                                                  |
+| [forestry](../example_datasets/inputs/config/forestry.json)             | Uploads [a ShapeFile](../example_datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../example_datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../example_datasets/inputs/config/forestry.sld)) through GeoServer.                                                                                                                                                                                                                                                                   |
+| [population](../example_datasets/inputs/config/population.json)         | Uploads [a GeoTiff file](../example_datasets/inputs/data/population/README.md) into the stack as a raster layer, which is served using the default style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| [treesAndHills](../example_datasets/inputs/config/treesAndHills.json)   | An example of how to use the `"externalDatasets"` node to load multiple datasets by name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| [rdf](../example_datasets/inputs/config/rdf.json)                       | A wrapper around a collection of examples of loading in [RDF](#rdf-data) data. This includes [quads](../example_datasets/inputs/config/quads.json), and triples [with](../example_datasets/inputs/config/triples.json) and [without](../example_datasets/inputs/config/triples_no_inference.json) inference.                                                                                                                                                                                                                                                                                                                                                                      |
+| [tboxcsv](../example_datasets/inputs/config/tboxcsv.json)                     | An example of loading a TBox from a CSV file into a custom Blazegraph namespace.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ## The Dataset Configuration File
 
@@ -231,7 +232,7 @@ The Ontop OBDA file format is also described in detail in the [OBDA mapping file
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data) and [`rdf`](#rdf-data).
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -405,6 +406,16 @@ The data loader does the following when uploading RDF data:
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
 
+### TBox CSV Data
+
+The `"tboxcsv"` data type should be used to load TBox triples from CSV files that adhear to the TBox Generator format, example files can be found [here][tbox-examples].
+The data loader does the following when uploading RDF data:
+
+1. It uses the [`TBoxGeneration::generateTBox`][tbox-generation] method to generate an OWL file from the contents of the CSV file.
+2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
+
+There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
 ## OBDA Mapping File
 
 The general layout of the file is as follows:
@@ -561,6 +572,8 @@ This way you can look at look at the user interfaces of the various services (se
 [Turtle]: https://www.w3.org/TR/2014/REC-turtle-20140225/
 
 [RSC-uploader]:   https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java#L875
+[tbox-generation]: ../../../../JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter/TBoxGeneration.java#L91
+[tbox-examples]:   ../../../../JPS_Ontology/KBTemplates/TBox/
 
 [gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
 [ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
