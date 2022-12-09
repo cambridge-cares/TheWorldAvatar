@@ -17,8 +17,8 @@ class TSPropertiesHandler {
     private static final Logger LOGGER = LogManager.getLogger(HistoricalPumpDataInstantiationAgent.class);
     private String propertiesFile; // file path to properties file
     private boolean isMultiTimeSeries = false;
-    private final List<String> readingsKey;
     private Map<String, Map<String, String>> iriMappings;
+    private final List<String> readingsKey;
     private final String UNDERSCORE = "_";
 
     /**
@@ -36,7 +36,7 @@ class TSPropertiesHandler {
             colHeaders.remove(timeHeader);
 
             // When there is only one time series
-            if (readings.keySet().size() == 1) {
+            if (readings.size() == 1) {
                 this.readingsKey = colHeaders;
             } else {
                 // When there are multiple time series

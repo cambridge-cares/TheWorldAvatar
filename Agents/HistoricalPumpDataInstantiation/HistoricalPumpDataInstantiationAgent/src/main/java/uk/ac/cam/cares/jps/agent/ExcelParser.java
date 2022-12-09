@@ -71,12 +71,12 @@ class ExcelParser {
         LOGGER.debug("Sheet index has been set to: " + sheetIndex);
     }
 
-
     /**
      * Parses the Excel worksheet into the required Hashmap of hashmap format of {group: {dataIRI prefix: List of readings}}.
      *
      * @param valueStartingRow Starting row number that contains values, not headings. Indexing starts from 0, not 1.
      * @param multiTSColIndex  Column index containing different time series grouping. Indexing starts from 0, not 1.
+     *                         If no column index is present, pass -1.
      * @return Excel values as a HashMap containing {group: {dataIRI prefix: List of readings}} key value pairs.
      */
     protected Map<String, Map<String, List<?>>> parseToHashMap(int valueStartingRow, int multiTSColIndex) {
@@ -147,9 +147,8 @@ class ExcelParser {
                 if (multiTSColIndex == -1) {
                     LOGGER.debug("Parsing column " + columnIndex + " for single time series...");
                     columnValues = parseColValues(valueStartingRow, this.dataSheet.getLastRowNum(), columnIndex, colHeaders);
-                    Map<String, List<?>> tempMap = new HashMap<>();
-                    tempMap.put(colHeaders.get(columnIndex), columnValues);
-                    groupedExcelValues.put(ExcelParserHelper.BASE_KEY_FOR_SINGLE_TIMESERIES, tempMap);
+                    ExcelParserHelper.storeInParentMap(groupedExcelValues, ExcelParserHelper.BASE_KEY_FOR_SINGLE_TIMESERIES,
+                            colHeaders.get(columnIndex), columnValues);
                 } else {
                     LOGGER.debug("Parsing column " + columnIndex + " for multiple time series...");
                     // Execute when there are multiple time series
@@ -159,17 +158,7 @@ class ExcelParser {
                         List<Integer> groupRowIndex = groupingRowIndexMapping.get(group);
                         // Parse only the rows related to the grouping
                         columnValues = parseColValues(groupRowIndex.get(0), groupRowIndex.get(groupRowIndex.size() - 1), columnIndex, colHeaders);
-                        // If there is an existing group key, retrieve and put the new values into the nested hashmap
-                        if (groupedExcelValues.containsKey(group)) {
-                            // Store into the main map
-                            groupedExcelValues.get(group).put(colHeaders.get(columnIndex), columnValues);
-                        } else {
-                            // Otherwise, create a new nested hash map and add to the parent hashmap
-                            Map<String, List<?>> tempMap = new HashMap<>();
-                            tempMap.put(colHeaders.get(columnIndex), columnValues);
-                            // Store into the parent map
-                            groupedExcelValues.put(group, tempMap);
-                        }
+                        ExcelParserHelper.storeInParentMap(groupedExcelValues, group, colHeaders.get(columnIndex), columnValues);
                     }
                 }
             }

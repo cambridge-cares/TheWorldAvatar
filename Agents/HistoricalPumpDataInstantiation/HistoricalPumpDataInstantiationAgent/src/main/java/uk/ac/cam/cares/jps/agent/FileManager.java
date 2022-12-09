@@ -137,7 +137,7 @@ class FileManager {
      * @param propertyKey                   The mapping key to associate with the value.
      * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
      */
-    protected static String validateProperties(Properties prop, Map<String, String> clientConfig, String property, String propertyKey, String missingPropertiesErrorMessage) {
+    private static String validateProperties(Properties prop, Map<String, String> clientConfig, String property, String propertyKey, String missingPropertiesErrorMessage) {
         if (prop.getProperty(property) == null) {
             missingPropertiesErrorMessage += property + " is missing! Please add the input to client.properties.\n";
         } else {

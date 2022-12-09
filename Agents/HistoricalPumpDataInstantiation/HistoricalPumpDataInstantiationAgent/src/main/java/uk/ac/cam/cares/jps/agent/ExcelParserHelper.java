@@ -5,6 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Provide utility functions for the Excel parser.
  *
@@ -43,6 +47,27 @@ class ExcelParserHelper {
         }
         // Remove white spaces
         return String.valueOf(phraseChars).replaceAll("\\s+", "");
+    }
+
+    /**
+     * Stores the group, column header and values into a parent Map with a nested Map.
+     *
+     * @param groupedExcelValues The parent map to insert new values.
+     * @param group              Group name.
+     * @param colHeader          Column header name.
+     * @param colValues          List of values stored in column.
+     */
+    protected static void storeInParentMap(Map<String, Map<String, List<?>>> groupedExcelValues, String group, String colHeader, List<?> colValues) {
+        // If there is an existing group key, retrieve and put the new values into the nested hashmap
+        if (groupedExcelValues.containsKey(group)) {
+            groupedExcelValues.get(group).put(colHeader, colValues);
+        } else {
+            // Otherwise, create a new nested hash map and add to the parent hashmap
+            Map<String, List<?>> tempMap = new HashMap<>();
+            tempMap.put(colHeader, colValues);
+            // Store into the parent map
+            groupedExcelValues.put(group, tempMap);
+        }
     }
 
     /**

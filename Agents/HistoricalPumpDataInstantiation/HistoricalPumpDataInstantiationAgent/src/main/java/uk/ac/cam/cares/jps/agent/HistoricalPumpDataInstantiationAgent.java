@@ -33,8 +33,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Require 2 arguments! Please send only the file path to the Excel properties and workbook. " +
-            "Do note that the properties file need not exist and would be generated on the first build process.";
+    private static final String ARGUMENT_MISMATCH_MSG = "Require 3 arguments! Please send the time header, starting value row, and col index of the group time series.";
     private static final String PARSER_ERROR_MSG = "Could not construct the Excel parser needed to interact with the Excel Workbook!";
     private static final String GET_READINGS_ERROR_MSG = "Readings could not be retrieved!";
     private static final String HANDLER_ERROR_MSG = "Could not construct the time series Properties handler!";
@@ -95,23 +94,22 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 // Ensure that the time header is of valid format
                 validate = requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("year");
                 LOGGER.debug(KEY_TIMEHEADER + " is " + validate);
-            }
 
-            LOGGER.info("Validating " + KEY_IRI_PREFIX + " parameter");
-            validate = requestParams.has(KEY_IRI_PREFIX);
-            if (validate) {
-                // Ensure that the time header is of valid format
-                String iriValue = requestParams.getString(KEY_IRI_PREFIX);
-                // If it is a new IRI
-                if (iriValue.startsWith("http")) {
-                    validate = iriValue.startsWith("http://www.") || iriValue.startsWith("https://www.") && iriValue.endsWith("/");
-                } else {
-                    // If it is only a namespace, check if it does not start with http or /
-                    validate = !iriValue.startsWith("http") && !iriValue.startsWith("/") && iriValue.endsWith("/");
+                LOGGER.info("Validating " + KEY_IRI_PREFIX + " parameter");
+                validate = requestParams.has(KEY_IRI_PREFIX);
+                if (validate) {
+                    // Ensure that the IRI prefix is of valid format
+                    String iriValue = requestParams.getString(KEY_IRI_PREFIX);
+                    // If it is a new IRI
+                    if (iriValue.startsWith("http")) {
+                        validate = (iriValue.startsWith("http://www.") || iriValue.startsWith("https://www.")) && iriValue.endsWith("/");
+                    } else {
+                        // If it is only a namespace, check if it does not start with http or /
+                        validate = !iriValue.startsWith("/") && iriValue.indexOf("/")==iriValue.length()-1;
+                    }
                 }
+                LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
             }
-            LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
-
             if (requestParams.has(KEY_STARTING_ROW)) {
                 LOGGER.info("Detected " + KEY_STARTING_ROW + " parameter");
                 LOGGER.info("Validating parameter...");
