@@ -449,6 +449,43 @@ def get_measurementIRI(endpoint, instance_IRI):
         return response[0][var]
 
 
+def get_EIC(endpoint, instance_IRI):
+    """
+        Retrieves the Energy Identification Code (EIC) of an entity or instance related to
+        gas or electricity sector, e.g. power plant.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+            instance_IRI - full IRI of the provided instance.
+
+        Returns:
+            the EIC of the instance.
+    """
+
+    # Initialise SPARQL query variable
+    var = 'EIC'
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('ontoenergysystem') + \
+            '''SELECT ?%s \
+            WHERE { <%s> ontoenergysystem:hasEIC ?%s }''' % (var, instance_IRI, var)
+
+    response = KGClient.execute(query)
+    print("Query Line Print: ", query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    if len(response) == 0:
+        return None
+    elif len(response) > 1:
+        raise ValueError('AMBIGUITY ERROR: generator connected to several gas flow time series!')
+    else:
+        return response[0][var]
+
+
 def get_time_format(endpoint, generatorIRI):
     """
         Retrieves time format of gas flow time series entries stored in KG.

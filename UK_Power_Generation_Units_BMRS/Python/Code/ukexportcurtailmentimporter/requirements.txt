@@ -9,3 +9,4 @@ wget
 requests
 httplib2
 openpyxl
+validators
