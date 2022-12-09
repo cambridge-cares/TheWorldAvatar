@@ -27,6 +27,6 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: ./dummy_services_secrets/blazegraph_password.txt
+    file: ./secrets/blazegraph_password.txt
   file_server_password:
-    file: ./dummy_services_secrets/fileserver_password.txt
+    file: ./secrets/fileserver_password.txt
