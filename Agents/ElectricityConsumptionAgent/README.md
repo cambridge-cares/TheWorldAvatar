@@ -1,6 +1,6 @@
 # Description
 
-The `Electricityconsumption` agent is an input agent which read data from the `.xslx`, pickle and `.nc` files placed in the `./Data` folder, and instantiates it according to the [Ontogasgrid] ontology in the [TheWorldAvatar] knowledge graph. could instantiate the Electricity Consumption data, numbers of meters data into the Blazegraph
+The `Electricityconsumption` agent is an input agent which read data from the `.xslx`, pickle and `.nc` files placed in the `./Data` folder, and instantiates it according to the [Ontogasgrid](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/GasGrid) ontology in the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) knowledge graph. could instantiate the Electricity Consumption data, numbers of meters data into the Blazegraph
 
 &nbsp;
 # 1. Setup
@@ -29,5 +29,3 @@ Jieyang Xu (jx309@cam.ac.uk), Feroz Farazi (msff2@cam.ac.uk) Dec 2022
 (Parts of the agent leverage code initially developed by Daniel Nurkowski (danieln@cmclinnovations.com))
 <!-- Links -->
 <!-- websites -->
-[Ontogasgrid] : https://github.com/cambridge-cares/TheWorldAvatar/tree/main/GasGrid
-[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
