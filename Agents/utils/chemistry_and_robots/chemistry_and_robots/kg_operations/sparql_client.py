@@ -634,6 +634,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
                 ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
                 ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
                 ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution ?contains_unidentified_component
                 WHERE {{
                     {'VALUES ?autosampler { <%s> }' % trimIRI(given_autosampler_iri) if given_autosampler_iri is not None else ""}
@@ -651,7 +652,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?vial <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
                         ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
                         ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit;
-                                                <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
+                                             <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
+                    }}
+                    OPTIONAL {{
+                        ?vial <{ONTOVAPOURTEC_HASWARNINGLEVEL}> ?warn_level.
+                        ?warn_level <{OM_HASVALUE}> ?warn_level_om_value.
+                        ?warn_level_om_value <{OM_HASUNIT}> ?warn_level_unit;
+                                             <{OM_HASNUMERICALVALUE}> ?warn_level_num_val.
                     }}
                     OPTIONAL {{
                         ?vial <{ONTOVAPOURTEC_HASMAXLEVEL}> ?max_level.
@@ -754,6 +761,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             instance_iri=info_of_specific_site['fill_level_om_value'],
                             hasUnit=info_of_specific_site['fill_level_unit'],
                             hasNumericalValue=info_of_specific_site['fill_level_num_val']
+                        )
+                    ),
+                    hasWarningLevel=OM_Volume(
+                        instance_iri=info_of_specific_site['warn_level'],
+                        hasValue=OM_Measure(
+                            instance_iri=info_of_specific_site['warn_level_om_value'],
+                            hasUnit=info_of_specific_site['warn_level_unit'],
+                            hasNumericalValue=info_of_specific_site['warn_level_num_val']
                         )
                     ),
                     hasMaxLevel=OM_Volume(

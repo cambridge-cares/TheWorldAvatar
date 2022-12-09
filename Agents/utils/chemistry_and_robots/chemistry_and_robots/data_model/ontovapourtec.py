@@ -108,8 +108,7 @@ class Vial(BaseOntology):
     clz: str = ONTOVAPOURTEC_VIAL
     isFilledWith: Optional[ChemicalSolution] = None # NOTE ChemicalSolution is made optional to accommodate situation where vial is empty
     hasFillLevel: OM_Volume
-    # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
-    # TODO [when run in loop] bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
+    hasWarningLevel: OM_Volume # notify researchers to fill up if the fill level is below the warning level
     hasMaxLevel: OM_Volume
     isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 
@@ -150,7 +149,25 @@ class AutoSampler(LabEquipment):
 
     def get_autosampler_site_given_input_chemical(self, input_chem: InputChemical) -> Optional[AutoSamplerSite]:
         list_possible_site = [site for site in self.hasSite if site.holds.isFilledWith is not None and site.holds.isFilledWith.refersToMaterial is not None and site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour]
-        return list_possible_site[0] if len(list_possible_site) > 0 else None
+        list_site_enough_chemical = []
+        # check if the chemical in the site is enough for the reaction
+        # TODO [future work] for now it relies on the warning level to be greater than the required amount for one reaction
+        #     in the future, the fill level should be checked against the actual required amount for one reaction dynamically
+        for site in list_possible_site:
+            fill_level_dq = unit_conv.DimensionalQuantity(
+                hasUnit=site.holds.hasFillLevel.hasValue.hasUnit,
+                hasNumericalValue=site.holds.hasFillLevel.hasValue.hasNumericalValue,
+            )
+            fill_level_dq_in_ml = fill_level_dq.convert_to(OM_MILLILITRE)
+            warn_level_dq = unit_conv.DimensionalQuantity(
+                hasUnit=site.holds.hasWarningLevel.hasValue.hasUnit,
+                hasNumericalValue=site.holds.hasWarningLevel.hasValue.hasNumericalValue,
+            )
+            warn_level_dq_in_ml = warn_level_dq.convert_to(OM_MILLILITRE)
+            if fill_level_dq_in_ml.hasNumericalValue >= warn_level_dq_in_ml.hasNumericalValue:
+                list_site_enough_chemical.append(site)
+
+        return list_site_enough_chemical[0] if len(list_site_enough_chemical) > 0 else None
 
 class VapourtecR4Reactor(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECR4REACTOR

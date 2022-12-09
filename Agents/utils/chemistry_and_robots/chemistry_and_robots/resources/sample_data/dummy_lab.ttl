@@ -1268,7 +1268,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:isHeldIn :Site_1;
     ontovapourtec:isFilledWith :ChemicalSolution_1;
     ontovapourtec:hasMaxLevel :Vial_1_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_1_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_1_level_warning;
     ontovapourtec:hasFillLevel :Vial_1_level_fill;
 .
 
@@ -1283,17 +1283,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_1_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_1_level_warning_value;
-#.
+:Vial_1_level_warning
+   a om:Volume;
+   om:hasValue :Vial_1_level_warning_value;
+.
 
-#:Vial_1_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_1_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_1_level_fill
     a om:Volume;
@@ -1317,7 +1316,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:isHeldIn :Site_2;
     ontovapourtec:isFilledWith :ChemicalSolution_2;
     ontovapourtec:hasMaxLevel :Vial_2_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_2_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_2_level_warning;
     ontovapourtec:hasFillLevel :Vial_2_level_fill;
 .
 
@@ -1332,17 +1331,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_2_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_2_level_warning_value;
-#.
+:Vial_2_level_warning
+   a om:Volume;
+   om:hasValue :Vial_2_level_warning_value;
+.
 
-#:Vial_2_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_2_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_2_level_fill
     a om:Volume;
@@ -1366,7 +1364,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:isHeldIn :Site_3;
     ontovapourtec:isFilledWith :ChemicalSolution_3;
     ontovapourtec:hasMaxLevel :Vial_3_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_3_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_3_level_warning;
     ontovapourtec:hasFillLevel :Vial_3_level_fill;
 .
 
@@ -1381,17 +1379,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_3_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_3_level_warning_value;
-#.
+:Vial_3_level_warning
+   a om:Volume;
+   om:hasValue :Vial_3_level_warning_value;
+.
 
-#:Vial_3_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_3_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "3"^^xsd:int;
+.
 
 :Vial_3_level_fill
     a om:Volume;
@@ -1415,7 +1412,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:isHeldIn :Site_4;
     ontovapourtec:isFilledWith :ChemicalSolution_4;
     ontovapourtec:hasMaxLevel :Vial_4_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_4_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_4_level_warning;
     ontovapourtec:hasFillLevel :Vial_4_level_fill;
 .
 
@@ -1430,17 +1427,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_4_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_4_level_warning_value;
-#.
+:Vial_4_level_warning
+   a om:Volume;
+   om:hasValue :Vial_4_level_warning_value;
+.
 
-#:Vial_4_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_4_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "3"^^xsd:int;
+.
 
 :Vial_4_level_fill
     a om:Volume;
@@ -1464,7 +1460,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:isHeldIn :Site_5;
     ontovapourtec:isFilledWith :ChemicalSolution_For_Dummy_OutputChemical;
     ontovapourtec:hasMaxLevel :Vial_5_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_5_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_5_level_warning;
     ontovapourtec:hasFillLevel :Vial_5_level_fill;
 .
 
@@ -1479,17 +1475,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_5_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_5_level_warning_value;
-#.
+:Vial_5_level_warning
+   a om:Volume;
+   om:hasValue :Vial_5_level_warning_value;
+.
 
-#:Vial_5_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_5_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_5_level_fill
     a om:Volume;
@@ -1513,7 +1508,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_56;
     ontovapourtec:hasMaxLevel :Vial_56_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_56_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_56_level_warning;
     ontovapourtec:hasFillLevel :Vial_56_level_fill;
 .
 
@@ -1528,17 +1523,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_56_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_56_level_warning_value;
-#.
+:Vial_56_level_warning
+   a om:Volume;
+   om:hasValue :Vial_56_level_warning_value;
+.
 
-#:Vial_56_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_56_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_56_level_fill
     a om:Volume;
@@ -1562,7 +1556,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_153;
     ontovapourtec:hasMaxLevel :Vial_153_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_153_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_153_level_warning;
     ontovapourtec:hasFillLevel :Vial_153_level_fill;
 .
 
@@ -1577,17 +1571,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_153_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_153_level_warning_value;
-#.
+:Vial_153_level_warning
+   a om:Volume;
+   om:hasValue :Vial_153_level_warning_value;
+.
 
-#:Vial_153_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_153_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_153_level_fill
     a om:Volume;
@@ -1611,7 +1604,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_216;
     ontovapourtec:hasMaxLevel :Vial_216_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_216_level_warning; # TODO [when run in loop] bring this back
+    ontovapourtec:hasWarningLevel :Vial_216_level_warning;
     ontovapourtec:hasFillLevel :Vial_216_level_fill;
 .
 
@@ -1626,17 +1619,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_216_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_216_level_warning_value;
-#.
+:Vial_216_level_warning
+   a om:Volume;
+   om:hasValue :Vial_216_level_warning_value;
+.
 
-#:Vial_216_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_216_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_216_level_fill
     a om:Volume;
