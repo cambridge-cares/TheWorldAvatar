@@ -12,11 +12,11 @@ services:
       - DATABASE=
       # Additional environment variables required for "standalone deployment"
       # (can be left blank for Stack deployment)
-      - DB_URL=jdbc:postgresql://localhost:9432/districtheating
+      - DB_URL=jdbc:postgresql://host.docker.internal:9432/districtheating
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - QUERY_ENDPOINT=http://localhost:9999/blazegraph/namespace/districtheating/sparql
-      - UPDATE_ENDPOINT=http://localhost:9999/blazegraph/namespace/districtheating/sparql
+      - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/districtheating/sparql
+      - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/districtheating/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
