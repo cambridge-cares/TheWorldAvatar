@@ -68,6 +68,7 @@ class KGClient:
         """
         print("Update1:", update)
         try:
+            print('getUpdateEndpoint():', self.kg_client.getUpdateEndpoint())
             self.kg_client.executeUpdate(update)
             print("Update query executed")
         except Exception as ex:
