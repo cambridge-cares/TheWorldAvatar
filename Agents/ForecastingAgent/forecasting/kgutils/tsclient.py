@@ -1,5 +1,5 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
 # Date: 17 Oct 2022                            #
 ################################################
 
@@ -12,7 +12,7 @@ from py4jps import agentlogging
 
 from forecasting.errorhandling.exceptions import TSException
 from forecasting.utils.baselib_gateway import jpsBaseLibGW
-from forecasting.datamodel.data_mapping import TIMECLASS
+from forecasting.datamodel.data_mapping import INSTANT
 from forecasting.utils.env_configs import *
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -25,7 +25,7 @@ class TSClient:
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 
+    def __init__(self, kg_client, timeclass=INSTANT, rdb_url=DB_URL, 
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
