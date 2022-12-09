@@ -108,8 +108,7 @@ class Vial(BaseOntology):
     clz: str = ONTOVAPOURTEC_VIAL
     isFilledWith: Optional[ChemicalSolution] = None # NOTE ChemicalSolution is made optional to accommodate situation where vial is empty
     hasFillLevel: OM_Volume
-    # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
-    # TODO [when run in loop] bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
+    hasWarningLevel: OM_Volume # notify researchers to fill up if the fill level is below the warning level
     hasMaxLevel: OM_Volume
     isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 
@@ -150,7 +149,25 @@ class AutoSampler(LabEquipment):
 
     def get_autosampler_site_given_input_chemical(self, input_chem: InputChemical) -> Optional[AutoSamplerSite]:
         list_possible_site = [site for site in self.hasSite if site.holds.isFilledWith is not None and site.holds.isFilledWith.refersToMaterial is not None and site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour]
-        return list_possible_site[0] if len(list_possible_site) > 0 else None
+        list_site_enough_chemical = []
+        # check if the chemical in the site is enough for the reaction
+        # TODO [future work] for now it relies on the warning level to be greater than the required amount for one reaction
+        #     in the future, the fill level should be checked against the actual required amount for one reaction dynamically
+        for site in list_possible_site:
+            fill_level_dq = unit_conv.DimensionalQuantity(
+                hasUnit=site.holds.hasFillLevel.hasValue.hasUnit,
+                hasNumericalValue=site.holds.hasFillLevel.hasValue.hasNumericalValue,
+            )
+            fill_level_dq_in_ml = fill_level_dq.convert_to(OM_MILLILITRE)
+            warn_level_dq = unit_conv.DimensionalQuantity(
+                hasUnit=site.holds.hasWarningLevel.hasValue.hasUnit,
+                hasNumericalValue=site.holds.hasWarningLevel.hasValue.hasNumericalValue,
+            )
+            warn_level_dq_in_ml = warn_level_dq.convert_to(OM_MILLILITRE)
+            if fill_level_dq_in_ml.hasNumericalValue >= warn_level_dq_in_ml.hasNumericalValue:
+                list_site_enough_chemical.append(site)
+
+        return list_site_enough_chemical[0] if len(list_site_enough_chemical) > 0 else None
 
 class VapourtecR4Reactor(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECR4REACTOR
@@ -331,23 +348,33 @@ class VapourtecRS400(LabEquipment):
         self,
         input_chemical: InputChemical,
         assigned_pumps: List[str]=None,
-        exclude_pumps: List[str]=None
+        exclude_pumps: List[str]=None,
+        is_reactant: bool=True,
     ) -> Optional[VapourtecR2Pump]:
         # this function is used to locate the pump that can pump the input chemical
         # first it checks if the input chemical is in the reagent bottles, if yes, then return the pump that is connected to the reagent bottle
         # second, it returns the first pump that is not connected to the reagent bottle
         # NOTE that in the second case the returned pump is simply available for pumping liquid from the autosampler
         # it does not mean that the autosampler has the required input chemical
+        # TODO [future work] NOTE it is assumed that the input chemical contains reactant will be pumped from the first a few pumps
+        #     i.e. ideally, the reference pump pump the main reactant, the second pump pump the second reactant, etc. and the last pump pump the catalyst
+        #     however, this in theory depends on the physical connection and how the pipes are connected
+        #     in future work, this information should be provided in the knowledge graph and queried dynamically
         assigned_pumps = assigned_pumps if assigned_pumps is not None else []
         exclude_pumps = exclude_pumps if exclude_pumps is not None else []
         _not_to_select_pumps = assigned_pumps + exclude_pumps
         for pump in self.get_r2_pump_source_from_bottle():
             if pump.hasReagentSource.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chemical.thermodynamicBehaviour and pump.instance_iri not in _not_to_select_pumps:
                 return pump
-        for pump in self.get_r2_pump_source_from_autosampler():
-            if pump.instance_iri not in _not_to_select_pumps:
-                return pump
-        return None
+        lst_pumps_from_autosampler = {pump.locationID:pump for pump in self.get_r2_pump_source_from_autosampler() if pump.instance_iri not in _not_to_select_pumps}
+        # Return None if no pump is available
+        if len(lst_pumps_from_autosampler) == 0: return None
+        # Sort the pumps by location ID and return the first or last pump depends on if the input chemical is reactant or not
+        _sorted_lst = {key:lst_pumps_from_autosampler[key] for key in sorted(lst_pumps_from_autosampler.keys())}
+        if is_reactant:
+            return list(_sorted_lst.values())[0]
+        else:
+            return list(_sorted_lst.values())[-1]
 
     def get_autosampler(self) -> AutoSampler:
         # NOTE this method assumes there's only one AutoSampler associated with one VapourtecRS400 module
@@ -357,11 +384,21 @@ class VapourtecRS400(LabEquipment):
         return None
 
     def create_equip_settings_for_rs400_from_rxn_exp(self, rxn_exp: ReactionExperiment) -> List[EquipmentSettings]:
+        # Preparation
+        # 1. Get the list of reactant species
+        if rxn_exp.isOccurenceOf is None:
+            raise NotImplementedError(f"The constructed ReactionExperiment <{rxn_exp.instance_iri}> instance is not associated with any ChemicalReaction, please modify the query to include the reaction")
+        reactant_species_iris = rxn_exp.isOccurenceOf.get_list_of_reactant()
+        # 2. Create an empty list for equipment settings
         list_equip_setting = []
+        # 3. Get the residence time condition
         res_time_cond = rxn_exp.get_reaction_condition(ONTOREACTION_RESIDENCETIME)
+        # 4. Check if the reaction experiment is assigned to any reactor and get the preferred reactor
         if rxn_exp.isAssignedTo is None:
             raise Exception(f"The reaction experiment <{rxn_exp.instance_iri}> is not assigned to any reactor yet")
         preferred_r4_reactor = self.get_r4_reactor(rxn_exp.isAssignedTo)
+
+        # Start creating the equipment settings
         # I. Construct the reactor settings
         reactor_setting = ReactorSettings(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -470,7 +507,12 @@ class VapourtecRS400(LabEquipment):
             else:
                 # this means the input_chem is not the reference chemical
                 # locate the pump that can be used to provide the chemical
-                _pump = self.locate_r2_pump_given_input_chemical(input_chem, assigned_pumps, exclude_pumps=[reference_pump.instance_iri])
+                _pump = self.locate_r2_pump_given_input_chemical(
+                    input_chem,
+                    assigned_pumps,
+                    exclude_pumps=[reference_pump.instance_iri],
+                    is_reactant=input_chem.is_reactant_stream(reactant_species_iris=reactant_species_iris)
+                )
                 if _pump is None:
                     raise Exception(f"""No available pump found for InputChemical <{input_chem.instance_iri}> of ReactionExperiment <{rxn_exp.instance_iri}>,
                                     allocated pumps: { assignment }. Details about InputChemical: {input_chem.dict()}""")

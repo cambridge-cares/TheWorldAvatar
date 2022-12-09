@@ -248,6 +248,10 @@ class OntoCAPE_Material(BaseOntology):
 class InputChemical(OntoCAPE_Material):
     clz: str = ONTOREACTION_INPUTCHEMICAL
 
+    def is_reactant_stream(self, reactant_species_iris: List[str]) -> bool:
+        # It is a reactant stream if any of the species in the InputChemical appears in reactant_species_iris
+        return any([pc.representsOccurenceOf in reactant_species_iris for pc in self.thermodynamicBehaviour.isComposedOfSubsystem])
+
 class OutputChemical(OntoCAPE_Material):
     clz: str = ONTOREACTION_OUTPUTCHEMICAL
 
@@ -291,6 +295,9 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
             lst_of_species += self.hasCatalyst
         lst_of_species += self.hasSolvent
         return lst_of_species
+
+    def get_list_of_reactant(self) -> List[str]:
+        return [s.hasUniqueSpecies for s in self.hasReactant]
 
     def get_list_of_reactant_and_catalyst(self) -> List[str]:
         species = self.hasReactant + self.hasCatalyst if self.hasCatalyst is not None else self.hasReactant

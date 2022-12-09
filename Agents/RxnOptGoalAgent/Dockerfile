@@ -54,6 +54,10 @@ ADD ./$AGENTDIR ./$AGENTDIR
 # Also copy the templates folder for flask
 ADD ./templates ./templates
 
+# Install the agent package itself as editable version
+# This seems to be required for the sparql_client in the URL routes to be in the same gateway as __init__
+RUN python -m pip install -e .
+
 # Switch to a non-root user before running the server, for security reasons
 # (See https://code.visualstudio.com/docs/containers/python-user-rights)
 RUN useradd appuser && chown -R appuser /app
@@ -84,53 +88,5 @@ ENV FLASK_DEBUG=1
 # Start dockerised agent app
 WORKDIR /app
 CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000
-
-
-# #------------------------------------------------------
-# # Debug testing image reusing the base
-# #------------------------------------------------------
-# FROM base as test_dockerised_debug
-# # Install additional dependencies
-# RUN python -m pip install -e .[dev]
-# RUN pip install debugpy
-
-# # Set flask app and development environment to allow for hot-reloading
-# ENV FLASK_APP=app/${AGENTDIR}:create_app()
-# ENV FLASK_DEBUG=1
-# # Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
-# ENV DOCKERISED_TEST=true
-
-# # Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
-# COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
-
-# # Launch pytest in container (-s flag to enable more output/logging)
-# WORKDIR /app
-# # Start dockerised agent app as well as pytest
-# # (combining commands using & ensures they are started in parallel in background)
-# CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
-
-
-# #------------------------------------------------------
-# # Testing image reusing the base
-# #------------------------------------------------------
-# FROM base as test_dockerised
-
-# # Install agent package as editable
-# RUN python -m pip install -e .[dev]
-
-# # Set the default working directory, then copy the Python source code into it
-# # As here folder path is generic, it is not required to change the name
-# WORKDIR /app
-# COPY ./$AGENTDIR ./$AGENTDIR
-# COPY ./tests ./tests
-# # Copy docker-compose-file to spin up testcontainers
-# COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
-
-# # Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
-# ENV DOCKERISED_TEST=true
-
-# # Start dockerised agent app as well as pytest
-# # (combining commands using & ensures they are started in parallel in background)
-# CMD gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" & pytest
 
 #==================================================================================================

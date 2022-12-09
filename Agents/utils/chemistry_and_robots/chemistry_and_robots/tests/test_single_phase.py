@@ -361,6 +361,18 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                 hasNumericalValue=5.0
             )
         ),
+        hasWarningLevel=OM_Volume(
+            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_warning',
+            clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Volume',
+            namespace_for_init=None,
+            hasValue=OM_Measure(
+                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_warning_value',
+                clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Measure',
+                namespace_for_init=None,
+                hasUnit='http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre',
+                hasNumericalValue=3.0
+            ),
+        ),
         hasMaxLevel=OM_Volume(
             instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_max',
             clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Volume',
