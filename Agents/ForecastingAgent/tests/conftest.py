@@ -133,7 +133,10 @@ query_error6 = {"query": {
                 "horizon": 24,
                 "forecast_start_date": "2049-08-15T01:00:00Z"
                 }}
-expected_error6 = f'Could not get time series for {GENERATED_HEAT_DATAIRI} with lowerbound'
+#NOTE There seem to be issues in finding test results using parameterized fixtures
+# which contain forward slashes (details: https://github.com/microsoft/vscode-python/issues/17079)
+# Hence, only check for beginning of error message
+expected_error6 = 'Could not get time series for '
 
 # test temporal fusion transformer (tft)
 query3 = {"query": {

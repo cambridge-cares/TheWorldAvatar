@@ -24,11 +24,11 @@ setup(
     ],
     extras_require={
         "dev": [
-            "testcontainers~=3.7.0",
-            "pytest~=7.2.0",
-            "pytest-docker-compose~=3.2.1",
-            "pytest-rerunfailures~=10.2",
-            "psycopg2~=2.9.5"
+            "testcontainers==3.7.0",
+            "pytest==7.2.0",
+            "pytest-docker-compose==3.2.1",
+            "pytest-rerunfailures==10.2",
+            "psycopg2==2.9.5"
         ],
     }
 )
