@@ -54,6 +54,10 @@ ADD ./$AGENTDIR ./$AGENTDIR
 # Also copy the templates folder for flask
 ADD ./templates ./templates
 
+# Install the agent package itself as editable version
+# This seems to be required for the sparql_client in the URL routes to be in the same gateway as __init__
+RUN python -m pip install -e .
+
 # Switch to a non-root user before running the server, for security reasons
 # (See https://code.visualstudio.com/docs/containers/python-user-rights)
 RUN useradd appuser && chown -R appuser /app
