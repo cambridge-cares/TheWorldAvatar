@@ -2135,42 +2135,43 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return g
 
     def update_vapourtec_autosampler_liquid_level_millilitre(self, level_change_of_site: Dict[str, float], for_consumption: bool):
-        delete_clause = []
-        insert_clause = []
-        where_clause = []
-        i = 0
-        for site in level_change_of_site:
-            i += 1
-            site = trimIRI(site)
-            delete_clause.append("""?measure_%s <%s> ?liquid_level_%s .""" % (
-                str(i), OM_HASNUMERICALVALUE, str(i)
-            ))
-            insert_clause.append("""?measure_%s <%s> ?liquid_level_%s_updated .""" % (
-                str(i), OM_HASNUMERICALVALUE, str(i)
-            ))
-            where_clause.append("""<%s> <%s>/<%s>/<%s> ?measure_%s . ?measure_%s <%s> ?liquid_level_%s . BIND (?liquid_level_%s %s %f AS ?liquid_level_%s_updated).""" % (
-                site, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, str(i), str(i), OM_HASNUMERICALVALUE, str(i), str(i),
-                '-' if for_consumption else '+', level_change_of_site[site], str(i)
-            ))
+        if len(level_change_of_site) > 0:
+            delete_clause = []
+            insert_clause = []
+            where_clause = []
+            i = 0
+            for site in level_change_of_site:
+                i += 1
+                site = trimIRI(site)
+                delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
+                insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
+                where_clause.append(f"""<{site}> <{ONTOVAPOURTEC_HOLDS}>/<{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} .
+                        ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .
+                        BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_site[site]} AS ?liquid_level_{str(i)}_updated).""")
 
-        update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
-        self.performUpdate(update)
+            update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
+            self.performUpdate(update)
 
     # TODO add unit test
     def update_waste_bottle_liquid_level_millilitre(self, level_change_of_bottle: Dict[str, float], for_consumption: bool):
-        delete_clause = []
-        insert_clause = []
-        where_clause = []
-        i = 0
-        for bottle in level_change_of_bottle:
-            i += 1
-            bottle = trimIRI(bottle)
-            delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
-            insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
-            where_clause.append(f"""<{bottle}> <{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} . ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} . BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_bottle[bottle]} AS ?liquid_level_{str(i)}_updated).""")
+        self.update_reagent_bottle_liquid_level_millilitre(level_change_of_bottle, for_consumption)
 
-        update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
-        self.performUpdate(update)
+    # TODO add unit test
+    def update_reagent_bottle_liquid_level_millilitre(self, level_change_of_bottle: Dict[str, float], for_consumption: bool):
+        if len(level_change_of_bottle) > 0:
+            delete_clause = []
+            insert_clause = []
+            where_clause = []
+            i = 0
+            for bottle in level_change_of_bottle:
+                i += 1
+                bottle = trimIRI(bottle)
+                delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
+                insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
+                where_clause.append(f"""<{bottle}> <{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} . ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} . BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_bottle[bottle]} AS ?liquid_level_{str(i)}_updated).""")
+
+            update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
+            self.performUpdate(update)
 
     def create_chemical_solution_for_reaction_outlet(self, autosampler_site_iri: str, amount_of_chemical_solution: float):
         g = Graph()

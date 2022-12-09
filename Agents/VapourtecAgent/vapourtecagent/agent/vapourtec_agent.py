@@ -173,6 +173,39 @@ class VapourtecAgent(DerivationAgent):
                 time.sleep(30)
                 vapourtec_running_reaction = self.sparql_client.vapourtec_rs400_is_running_reaction(vapourtec_rs400.instance_iri)
 
+            print("##############################################################################################################")
+            print("###################################### ReactionExperiment is running... ######################################")
+            print("##############################################################################################################")
+
+        # Update autosampler and reagent bottle liquid amount immediately after send the experiment for execution
+        # Get pump setting for the reference pump
+        _ref_pump_setting = [setting for setting in list_equip_settings if isinstance(setting, PumpSettings) and setting.hasSampleLoopVolumeSetting is not None][0]
+        # Construct two dicts: {"autosampler_site_iri": sampler_loop_volume (of autosampler)} and {"reagent_bottle_iri": reagent_bottle_usage_volume}
+        # NOTE here "*1.2" for the ReagentBottle is a rough calculation to reflect what vapourtec normally takes more compared to the calculated volume
+        # For autosampler site, it should be the same as the sampleLoopVolume of the autosampler
+        # TODO [limitation of API for now] get the exact value from API, instead of manual calculation it here
+        dct_autosampler_site_volume = {}
+        dct_reagent_bottle_volume = {}
+        for setting in list_equip_settings:
+            if isinstance(setting, PumpSettings):
+                if setting.pumpsLiquidFrom is not None:
+                    dct_autosampler_site_volume[setting.pumpsLiquidFrom.instance_iri] = autosampler.sampleLoopVolume.hasValue.hasNumericalValue
+                else:
+                    dct_reagent_bottle_volume[setting.specifies.hasReagentSource.instance_iri] = \
+                        round(setting.hasFlowRateSetting.hasQuantity.hasValue.hasNumericalValue \
+                            / _ref_pump_setting.hasFlowRateSetting.hasQuantity.hasValue.hasNumericalValue \
+                                * _ref_pump_setting.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue * 1.2, 1) \
+                                    if setting.instance_iri != _ref_pump_setting.instance_iri else \
+                                        setting.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue
+        print("dct_autosampler_site_volume: ", dct_autosampler_site_volume)
+        print("dct_reagent_bottle_volume: ", dct_reagent_bottle_volume)
+        self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_autosampler_site_volume, True)
+        self.sparql_client.update_reagent_bottle_liquid_level_millilitre(dct_reagent_bottle_volume, True)
+
+        # TODO [nice-to-have, limitation of current API]
+        # Send warnings if the liquid level of any vials is lower than the warning level
+        # This can be done by checking the liquid level of all vials and reagent bottles via a periodic job
+
         # Create chemical solution instance for the reaction outlet stream
         # <chemical_solution> <fills> <vial>. <vial> <isFilledWith> <chemical_solution>. here we should write the vial location to the KG
         # update <vial> <hasFillLevel>/<hasValue>/<hasNumericalValue> <xxx>.
@@ -235,19 +268,6 @@ class VapourtecAgent(DerivationAgent):
             self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
             print("Monitoring vapourtec state is resumed after sending reaction for execute.")
 
-            print("##############################################################################################################")
-            print("###################################### ReactionExperiment is running... ######################################")
-            print("##############################################################################################################")
-
-            # NOTE now the liquid consumption is not updated in the KG after each reaction, this should be improved ASAP
-            # !!!TODO [limitation of API for now] Update autosampler liquid amount immediately after send the experiment for execution
-            # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
-            # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
-            # dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
-            #     setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
-            # self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
-
-            # TODO [nice-to-have, limitation of current API] send warnings if the liquid level of any vials is lower than the warning level
         else:
             self.update_vapourtec_state_for_dry_run(self.dry_run_duration)
 
