@@ -99,10 +99,10 @@ class KGClient(PySparqlClient):
         graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
         graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(property_value, datatype=XSD_INTEGER)))
         graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(OM_GBP)))
-        #TODO: Triple with symbol potentially to be removed once OntoUOM contains
-        #      all relevant units/symbols and is uploaded to the KB
-        graph.add((URIRef(OM_GBP), URIRef(OM_SYMBOL), Literal(GBP_SYMBOL, datatype=XSD_STRING)))
-
+        #NOTE: PoundSterling symbol '£' excluded from recurring updates 
+        #      There have been encoding issues within the KG with recurring instantiations; hence,
+        #      the agent requires the symbol to be instantiated with the KG beforehand, i.e.
+        #      when uploading the ontology initially (using the EnergyPerformanceCertificate agent)
         return graph
 
 

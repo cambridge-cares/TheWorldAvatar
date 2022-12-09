@@ -103,7 +103,7 @@ DATES = dates.strftime('%Y-%m').tolist()
 DATES = [d+'-01' for d in DATES]
 
 # Expected number of triples
-TBOX_TRIPLES = 23
+TBOX_TRIPLES = 25
 ABOX_TRIPLES = 48
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
@@ -111,7 +111,7 @@ DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
+MARKET_VALUE_TRIPLES = 6        # triples added by `instantiate_property_value`
 
 
 # ----------------------------------------------------------------------------------

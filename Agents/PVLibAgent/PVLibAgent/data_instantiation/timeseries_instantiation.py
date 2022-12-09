@@ -3,7 +3,6 @@ from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.tsClientForUpdate import TSClientForUpdate
 from PVLibAgent.error_handling.exceptions import TSException
 from PVLibAgent.kg_utils.utils import DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
-
 import logging
 
 class timeseries_instantiation:
@@ -24,7 +23,8 @@ class timeseries_instantiation:
         ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER, rdb_password=DB_UPDATE_PASSWORD)
         with ts_client.connect() as conn:
             try:
-                (ts_client.tsclient.initTimeSeries(dataIRIs, dataClass, timeUnit, conn))
+
+                (ts_client.tsclient.initTimeSeries(dataIRIs, dataClass, timeUnit, conn, TSClientForUpdate.jpsBaseLibView.TimeSeriesClient.Type.INSTANTANEOUS, None, None))
             except Exception as ex:
                 logging.error("Unable to initialise timeseries.")
                 raise TSException("Unable to initialise timeseries.") from ex

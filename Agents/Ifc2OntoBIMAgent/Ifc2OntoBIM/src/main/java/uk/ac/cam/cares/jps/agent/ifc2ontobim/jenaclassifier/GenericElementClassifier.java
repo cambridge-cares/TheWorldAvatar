@@ -89,6 +89,8 @@ public class GenericElementClassifier {
             classMapping.put(element, "WeatherStation");
         } else if (name.contains("solarpanel")) {
             classMapping.put(element, "SolarPanel");
+        } else {
+            classMapping.put(element, "Element");
         }
     }
 }

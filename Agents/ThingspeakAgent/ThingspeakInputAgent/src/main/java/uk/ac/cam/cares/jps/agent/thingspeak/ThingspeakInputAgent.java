@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.io.File;
@@ -52,7 +53,7 @@ public class ThingspeakInputAgent{
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "thingspeak";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "thingspeak";
     /**
      * The time unit used for all time series maintained by the Thingspeak agent
      */
@@ -160,7 +161,7 @@ public class ThingspeakInputAgent{
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 try (Connection conn = RDBClient.getConnection()) {
-                tsClient.initTimeSeries(iris, classes, timeUnit, conn);
+                tsClient.initTimeSeries(iris, classes, timeUnit, conn, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");

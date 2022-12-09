@@ -97,8 +97,9 @@ class AvgSqmPriceAgent(DerivationAgent):
         if inputs.get(LRPPI_TRANSACTION_RECORD):
             tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
         else:
-            self.logger.error(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
-            raise Exception(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
+            # Return empty list (instead of None) for non available previous transactions
+            tx_iris = []
+            self.logger.info(f"Derivation {derivationIRI}: No previous property sales transactions available for postcode.")
 
         return postcode_iri, ppi_iri, tx_iris
 
@@ -285,5 +286,5 @@ def default():
     """
     msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent<BR>"
     return msg
