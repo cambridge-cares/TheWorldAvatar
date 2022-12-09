@@ -136,7 +136,15 @@ query_error6 = {"query": {
 #NOTE There seem to be issues in finding test results using parameterized fixtures
 # which contain forward slashes (details: https://github.com/microsoft/vscode-python/issues/17079)
 # Hence, only check for beginning of error message
-expected_error6 = 'Could not get time series for '
+expected_error6 = 'no values for dataIRI '
+
+query_error7 = {"query": {
+                "iri": GENERATED_HEAT_IRI + 'blablabla',
+                "data_length": 168,
+                "horizon": 24,
+                "forecast_start_date": "2049-08-15T01:00:00Z"
+                }}
+expected_error7 = 'Could not get time series for '
 
 # test temporal fusion transformer (tft)
 query3 = {"query": {
@@ -160,22 +168,31 @@ expected3 = {'fc_model': {'train_again': False, 'name': 'tft', 'scale_data': Tru
              }
 
 # test tft error
-query_error7 = {"query": {
+query_error8 = {"query": {
                 "iri": HEAT_DEMAND_IRI,
                 "use_model_configuration": "TFT_HEAT_SUPPLY",
                 "data_length": 168,
                 "horizon": 24
                 }}
-expected_error7 = 'Not enough covariates for complete future horizon. Covariates end at '
+expected_error8 = 'Not enough covariates for complete future horizon. Covariates end at '
 
-query_error8 = {"query": {
+query_error9 = {"query": {
                 "iri": HEAT_DEMAND_IRI,
                 "forecast_start_date": FORECAST_START_TFT,
                 "use_model_configuration": "TFT_HEAT_SUPPLY",
                 "data_length": 168,
                 "horizon": 3
                 }}
-expected_error8 = 'Specify a horizon bigger than the output_chunk_length of your model'
+expected_error9 = 'Specify a horizon bigger than the output_chunk_length of your model'
+
+query_error10 = {"query": {
+                "iri": HEAT_DEMAND_IRI + 'blablabla',
+                "forecast_start_date": FORECAST_START_TFT,
+                "use_model_configuration": "TFT_HEAT_SUPPLY",
+                "data_length": 168,
+                "horizon": 3
+                }}
+expected_error10 = 'Could not get time series for '
 
 
 # ----------------------------------------------------------------------------------

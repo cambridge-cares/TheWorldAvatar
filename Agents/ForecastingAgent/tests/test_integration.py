@@ -3,16 +3,15 @@
 #          Magnus Mueller (mm2692@cam.ac.uk)    #
 # Date: 08 Dec 2022                             #
 #################################################
-# purpose of this file is to test the flask app. Http requests are sent to the flask app and the response is checked.
-# First requests for the Prophet model are sent.
-# After that incorrect requests are sent to check if the right error messages are returned.
-# Then requests for the TFT model are sent and checked.
-# Finally incorrect requests for the TFT model are sent to check if the right error messages are returned.
 
+# The purpose of this module is to test the Agent Flask App. HTTP requests are sent 
+# to the Flask App and the response is checked.
+
+# Each test follows the same structure:
 # 1. Instantiate test data
-# 2. Create app
-# 3. Forecast iri with app
-# 4. Check if forecast/ error is correct
+# 2. Create agent app
+# 3. Send request to forecast iri 
+# 4. Check if forecast/error is correct (via agent response)
 
 import pytest
 
@@ -103,10 +102,16 @@ def test_prophet(query_dict, expected, test_client, initialise_clients):
         (cf.query_error3, cf.expected_error3),
         (cf.query_error4, cf.expected_error4),
         (cf.query_error5, cf.expected_error5),
-        (cf.query_error6, cf.expected_error6)
+        (cf.query_error6, cf.expected_error6),
+        (cf.query_error7, cf.expected_error7)
     ]
 )
 def test_prophet_error(query_dict, expected_error_message, test_client, initialise_clients):
+
+    # Get SPARQL client from fixture
+    kg_client, ts_client, rdb_url = initialise_clients
+    # Create clean slate for test and initialise data as required
+    cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
     res = test_client.post('/api/forecastingAgent/forecast',
                            json={"headers": {'content_type': 'application/json'},
@@ -157,11 +162,17 @@ def test_tft(query_dict, expected, test_client, initialise_clients):
 @pytest.mark.parametrize(
     "query_dict, expected_error_message", 
     [
-        (cf.query_error7, cf.expected_error7),
-        (cf.query_error8, cf.expected_error8)
+        (cf.query_error8, cf.expected_error8),
+        (cf.query_error9, cf.expected_error9),
+        (cf.query_error10, cf.expected_error10)
     ]
 )
 def test_tft_error(query_dict, expected_error_message, test_client, initialise_clients):
+
+    # Get SPARQL client from fixture
+    kg_client, ts_client, rdb_url = initialise_clients
+    # Create clean slate for test and initialise data as required
+    cf.initialise_tft(kg_client, ts_client, rdb_url)
 
     res = test_client.post('/api/forecastingAgent/forecast', 
                            json={"headers": {'content_type': 'application/json'},
