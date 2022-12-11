@@ -35,7 +35,7 @@ PREFIXES = {
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts':    'https://www.theworldavatar.com/kg/ontotimeseries/',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
     'ontoeip':   'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#',
 }
@@ -274,6 +274,38 @@ def get_instantiated_generators(endpoint):
 
     return res
 
+def get_generic_instances(endpoint):
+    """
+        Retrieves names and IRIs of all instantiated powerplants in the knowledge graph.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+
+        Returns:
+            Dictionary of all instantiated gas generators (name as key, IRI as value)
+            (empty dictionary in case no generators are instantiated)
+    """
+
+    # Initialise SPARQL query variables for gas generator IRIs and names
+    var1 = 'iri'
+
+    # Initialise remote KG client with only query endpoint specified
+    print("Getting instantiated powerplants from SPARQL endpoint:", endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('ontoenergysystem') + \
+            create_sparql_prefix('rdf') + \
+            create_sparql_prefix('rdfs') + \
+            'SELECT distinct ?' + var1 + ' ' \
+            'WHERE { ?' + var1 + ' ?y ?z . } LIMIT 10'
+
+    print("Query:", query)
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    return response
 
 def get_instantiated_powerplants(endpoint):
     """
@@ -434,7 +466,7 @@ def get_measurementIRI(endpoint, instance_IRI):
             '''SELECT ?%s \
             WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
                     ?%s rdf:type ontopowsys:GeneratedActivePower ; \
-                        ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
+                        ts:hasTimeSeries ?ts } LIMIT 1''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
     print("Query Line Print: ", query)
