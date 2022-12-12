@@ -20,7 +20,7 @@ def isStringNumeric(check):
         if not i in "0987654321.":
             return False
     return True
-    
+
 
 ###Conversion###
 def excelToKG(excelPath, EIC):
@@ -31,7 +31,7 @@ def excelToKG(excelPath, EIC):
     
     times = []
     values = []
-    
+    print("len(excelData[EIC]):", len(excelData[EIC]))
     for i in range(7,len(excelData[EIC])):
     #for i in range(7,56): #Test
         if(str(excelData.iloc[i, excelData.columns.get_loc(EIC)])
@@ -47,4 +47,6 @@ def excelToKG(excelPath, EIC):
 
     return times, values
 
-
+if __name__=='__main__':
+    excelFile = "data/Template-Powerplant-Export.xlsx"    
+    excelToKG(excelFile, "48WSTN0000ABRBON")

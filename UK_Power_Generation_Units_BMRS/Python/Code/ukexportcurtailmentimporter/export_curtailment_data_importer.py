@@ -324,7 +324,7 @@ def get_power_data_from_api():
     return powerplant_df, generator_df
 
 
-def add_time_series_data(assetIRI, power_data, asset_name=''):
+def add_time_series_data(assetIRI, power_data, asset_name='', plantEIC=''):
     """
         Adds given gas power data (DataFrame) to time series of respective powerplant/generator (asset).
 
@@ -333,7 +333,7 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
             power_data - power data to add to time series (as DataFrame with columns ['time', 'power']).
             asset_name - asset name (optional).
     """
-    print("Adding time series data for: " + asset_name)
+    print("Adding time series data for: " + plantEIC)
 
     # Extract data to create Java TimeSeries object
     measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
@@ -341,7 +341,7 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     if variables is None:
         print('Time series could not be created for the following asset:', assetIRI)
         return
-    times, values = ExcelToTimeseries.excelToKG(power_data, assetIRI) #excelToKG takes a file containing export, curtailment (or any other data of the same format), and returns timestamps and values in lists. 
+    times, values = ExcelToTimeseries.excelToKG(power_data, plantEIC) #excelToKG takes a file containing export, curtailment (or any other data of the same format), and returns timestamps and values in lists. 
     #Reformat times. 
     #times = times.values.reshape(-1,).tolist()
     #New (not required)
@@ -487,10 +487,10 @@ def update_triple_store():
     #plants_with_data_checked_EIC = ["48WSTN0000ABRBON", "48WSTN0000ARCHW6", "48WSTN1000BABAWQ", "48WSTN0000BEATOG", "48WSTN0000BEINWN", "48WSTN0000BHLAWZ", "48WSTN0000BLKWWR", "48WSTN00000BLLAV", "48WSTN00000BLLXM", "48WSTN0000BOWLWY", "48WSTN0000BRBEOT", "48WSTN0000BRDUWV", "48WSTN0000BRYBW4", "48WSTN0000CGTHWI", "48WSTN0000CLDCWZ", "48WSTN0000CLDNW2", "48WSTN0000CLDSWO", "48WSTN0000CRYRBT", "48WSTN0000DDGNO3", "48WSTN0000DRSLWN", "48WSTN0000DUNGW6", "48WSTN00000EAAOS", "48WSTN0000FALGWS", "48WSTN0000GLWSWZ", "48WSTN0000GNFSWJ", "48WSTN0000GRGBW9", "48WSTN0000GRIFWQ", "48WSTN0000HADHW8", "48WSTN0000HMGTOR", "48WSTN0000HOWAOA", "48WSTN0000HRSTWC", "48WSTN0000KILBWA", "48WSTN0000KLGLWM", "48WSTN0000LCLTWH", "48WSTN0000MILWW9", "48WSTN0000MKHLWB", "48WSTN0000RCBKOV", "48WSTN0000RMPNON", "48WSTN00000RREWF", "48WSTN00000RRWWZ", "48WSTN0000STLGW3", "48WSTN0000STRNWW", "48WSTN1000WHILWQ", "48WSTN0000WLNYWV", "48WSTN0000WLNY3F", "48WSTN0000WLNY4D", "48WSTN0000WTMSOT"]
     #plants_with_data_checked_name = ["Aberdeen", "Arecleoch", "Baillie", "Beatrice", "Beinneun", "Bhlaraidh", "Blackcraig", "Black_Law", "Black_Law_II", "Barrow", "Burbo_Extension", "Braes_of_Doune", "Berry_Burn", "Corriegarth", "Clyde_(Central)", "Clyde_(North)", "Clyde_(South)", "Crystal_Rig_II", "Dudgeon_1", "Dersalloch", "Dunmaglass", "East_Anglia_One", "Fallago_Rig", "Galawhistle", "Gunfleet_Sands_1_2", "Greater_Gabbard", "Griffin", "Hadyard_Hill", "Humber_Gateway", "Hornsea_1", "Harestanes", "Kilbraur", "Kilgallioch", "Lochluichart", "Millennium", "Mark_Hill", "Race_Bank", "Rampion", "Robin_Rigg_East", "Robin_Rigg_West", "Stronelairg", "Strathy_North", "Whitelee", "Walney_1_2", "Walney_3", "Walney_4", "Westermost_Rough"]
 
-    plants_with_data_full_EIC = setup_df_to_list("plants_with_data_full_EIC", base_lists)
-    plants_with_data_full_name = setup_df_to_list("plants_with_data_full_name", base_lists)
-    plants_with_data_checked_EIC = setup_df_to_list("plants_with_data_checked_EIC", base_lists)
-    plants_with_data_checked_name = setup_df_to_list("plants_with_data_checked_name", base_lists)
+    # plants_with_data_full_EIC = setup_df_to_list("plants_with_data_full_EIC", base_lists)
+    # plants_with_data_full_name = setup_df_to_list("plants_with_data_full_name", base_lists)
+    # plants_with_data_checked_EIC = setup_df_to_list("plants_with_data_checked_EIC", base_lists)
+    # plants_with_data_checked_name = setup_df_to_list("plants_with_data_checked_name", base_lists)
     
     # Retrieve all instantiated powerplants in KG
     powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
@@ -516,6 +516,10 @@ def update_triple_store():
         powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
     # Assimilate power data for instantiated  powerplants
     
+    ##########################################
+    #Note: Read excel file here once for all and use the variable every time you call the add time series function
+    ##########################################
+
     for pp in powerplants_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[pp]) is None:
@@ -530,40 +534,52 @@ def update_triple_store():
         # Add time series data using Java TimeSeriesClient
         #add_time_series_data(powerplants_instantiated[pp], new_data, pp)
         #New (file name), also using the EIC as pp. 
-        add_time_series_data(powerplants_instantiated[pp], export_data, pp)
+        if "/" in powerplants_instantiated[pp]:
+            tokens = powerplants_instantiated[pp].split("/")
+            plantName = tokens[len(tokens)-1]
+            print("powerplants_instantiated[pp]:", powerplants_instantiated[pp])
+            print("plantName:", plantName)
+            if plantName in plants_with_data_checked_name:
+                print("plants_with_data_checked_name.index(plantName):", plants_with_data_checked_name.index(plantName))
+                plant_index = plants_with_data_checked_name.index(plantName)
+                print("plant_index:", plant_index)
+                plantEIC = plants_with_data_full_EIC[plant_index]
+                print("plantEIC:", plantEIC)
+                add_time_series_data(powerplants_instantiated[pp], export_data, pp, plantEIC)
+            else:
+                print("The following plant is not in the list being processed:", plantName)
+    # # Retrieve all generators with available power data (generator names are capitalised)
+    # generators_with_data = generator_power_data['generatoreic'].unique()
+    # # Retrieve all instantiated generators in KG
+    # generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
+    # generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
+    # # Potentially create new generator instances for generators with available power data,
+    # # which are not yet instantiated in KG (only create instance to enable data assimilation)
+    # new_generators = False
+    # for gt in generators_with_data:
+    #     if (gt not in generators_instantiated.keys()) and (gt != ""):
+    #         instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
+    #         new_generators = True
 
-    # Retrieve all generators with available power data (generator names are capitalised)
-    generators_with_data = generator_power_data['generatoreic'].unique()
-    # Retrieve all instantiated generators in KG
-    generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
-    generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
-    # Potentially create new generator instances for generators with available power data,
-    # which are not yet instantiated in KG (only create instance to enable data assimilation)
-    new_generators = False
-    for gt in generators_with_data:
-        if (gt not in generators_instantiated.keys()) and (gt != ""):
-            instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
-            new_generators = True
+    # # Retrieve update of instantiated generators in KG (in case any new generators were added)
+    # if new_generators:
+    #     generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
+    #     generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
 
-    # Retrieve update of instantiated generators in KG (in case any new generators were added)
-    if new_generators:
-        generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
-        generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
-
-    # Assimilate power data for instantiated generators
-    for gt in generators_instantiated:
-        # Potentially instantiate time series association (if not already instantiated)
-        if (kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None) and (gt != ""):
-            print("No instantiated timeseries detected for: ", gt)
-            print('gt:', gt)
-            print('generators_instantiated[gt]:', generators_instantiated[gt])
-            instantiate_generator_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, generators_instantiated[gt], gt)
-            # Retrieve power time series data for respective generator from overall DataFrame
-            new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
-            # Add time series data using Java TimeSeriesClient
-            add_time_series_data(generators_instantiated[gt], new_data, gt)
-        else:
-            print("Instantiated time series detected!")
+    # # Assimilate power data for instantiated generators
+    # for gt in generators_instantiated:
+    #     # Potentially instantiate time series association (if not already instantiated)
+    #     if (kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None) and (gt != ""):
+    #         print("No instantiated timeseries detected for: ", gt)
+    #         print('gt:', gt)
+    #         print('generators_instantiated[gt]:', generators_instantiated[gt])
+    #         instantiate_generator_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, generators_instantiated[gt], gt)
+    #         # Retrieve power time series data for respective generator from overall DataFrame
+    #         new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
+    #         # Add time series data using Java TimeSeriesClient
+    #         add_time_series_data(generators_instantiated[gt], new_data, gt)
+    #     else:
+    #         print("Instantiated time series detected!")
     print("Time series data successfully added.\n")
 
 def continuous_update():
