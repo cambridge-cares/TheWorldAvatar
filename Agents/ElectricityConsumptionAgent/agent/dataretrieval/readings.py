@@ -152,10 +152,6 @@ def upload_data_to_KG(year:str,
         query += "}"
 
         # Instantiate all non-time series triples
-        f = open("query.txt", "w")
-        f.write(query)
-        f.close()
-
         kg_client = KGClient(query_endpoint, update_endpoint)
         query_endpoint = kg_client.kg_client.setUpdateEndpoint(update_endpoint)
         kg_client.performUpdate(query)
