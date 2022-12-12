@@ -562,7 +562,7 @@ public class DockerClient extends BaseClient {
     }
 
     public boolean secretExists(String secretName) {
-        return getSecret(StackClient.prependStackName(secretName)).isPresent();
+        return getSecret(secretName).isPresent();
     }
 
     public Optional<Secret> getSecret(String secretName) {
