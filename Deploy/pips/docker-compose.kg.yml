@@ -5,7 +5,7 @@ services:
   # Blazegraph
   blazegraph:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    container_name: "blazegraph_test"
+    container_name: "blazegraph_pips"
     ports:
       - 48082:8080
     environment:
@@ -17,7 +17,7 @@ services:
   # File server
   fileserver:
     image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
-    container_name: "fileserver_test"
+    container_name: "fileserver_pips"
     ports:
       - 48086:8080
     # Add secret to set BASIC authentication password
