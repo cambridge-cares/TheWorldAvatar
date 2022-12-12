@@ -8,9 +8,9 @@ public class BlazegraphService extends ContainerService {
 
     public static final String TYPE = "blazegraph";
 
-    private static final String DEFAULT_USERNAME = "";
+    private static final String DEFAULT_USERNAME = "bg_user";
     private static final String DEFAULT_PORT = "8080";
-    private static final String DEFAULT_PASSWORD_FILE = null;
+    private static final String DEFAULT_PASSWORD_FILE = "/run/secrets/blazegraph_password";
 
     private final BlazegraphEndpointConfig endpointConfig;
 
@@ -23,6 +23,11 @@ public class BlazegraphService extends ContainerService {
         endpointConfig = new BlazegraphEndpointConfig(
                 EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable("BLAZEGRAPH_USER"), getEnvironmentVariable("BLAZEGRAPH_PASSWORD_FILE"));
+    }
+
+    @Override
+    public void doPreStartUpConfiguration() {
+        addOptionalSecret("blazegraph_password");
     }
 
     @Override
