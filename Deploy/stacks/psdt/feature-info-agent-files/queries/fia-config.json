@@ -24,6 +24,12 @@
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
             'timeLimit' : 175200
+        },
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ps/Pumpingstation',
+            'metaFile' : 'Sensor.sparql',
+            'timeFile' : 'Sensor_timeseries.sparql',
+            'timeLimit' : 175200
         }
     ]
 }
