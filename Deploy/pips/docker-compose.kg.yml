@@ -4,7 +4,7 @@ name: pips-kg
 services:
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0-510-SNAPSHOT
     container_name: "blazegraph_pips"
     ports:
       - 48082:8080
