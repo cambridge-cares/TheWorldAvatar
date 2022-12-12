@@ -26,7 +26,7 @@
 @prefix OntoBPR:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
 
 # specific namespaces for test cases
-@prefix placeholder:     <http://www.placeholder.com/for_species/> .
+@prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
 @prefix chem_rxn:                <https://www.example.com/triplestore/testlab/chem_rxn/> .
 @prefix rxn_data:             <https://www.example.com/triplestore/testlab/rxn_data/> .
 @prefix :                <http://example.com/blazegraph/namespace/testlab/doe/> .
