@@ -1,0 +1,47 @@
+[PrefixDeclaration]
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+foaf:		http://xmlns.com/foaf/0.1/
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+geo:		http://www.opengis.net/ont/geosparql#
+OntoRaster:     https://www.theworldavatar.com/kg/ontoraster/
+OM:             http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId	Raster-Data
+target		OntoRaster:RasterData_{FileName} a OntoRaster:RasterData ;
+    OntoRaster:hasScaleX {ScaleX}^^xsd:double ; 
+    OntoRaster:hasScaleY {ScaleY}^^xsd:double ; 
+    OntoRaster:hasSkewX {SkewX}^^xsd:double ; 
+    OntoRaster:hasSkewY {SkewY}^^xsd:double ; 
+    OntoRaster:hasPixelHeight {PixelHeight}^^xsd:double ; 
+    OntoRaster:hasPixelWidth {PixelWidth}^^xsd:double ; 
+    OntoRaster:hasSRID {SRID}^^xsd:integer ; 
+    OntoRaster:hasTileWidth {TileWidth}^^xsd:integer ; 
+    OntoRaster:hasTileHeight {TileHeight}^^xsd:integer ; 
+    OntoRaster:hasNumBands {NumBands}^^xsd:integer ; 
+    OntoRaster:hasFileName "{FileName}"^^xsd:string ;
+    OntoRaster:hasTile OntoRaster:Tile_{rid} .
+    OntoRaster:Tile_{rid} a OntoRaster:Tile ;
+    OntoRaster:hasRid {rid}^^xsd:integer ;
+    OntoRaster:hasUpperLeftX {UpperLeftX}^^xsd:double ;
+    OntoRaster:hasUpperLeftY {UpperLeftY}^^xsd:double ;
+    OntoRaster:hasPixel OntoRaster:Pixel_{rid}{x}{y} .
+    OntoRaster:Pixel_{rid}{x}{y} a OntoRaster:Pixel ;
+    OntoRaster:hasRowNumber {x}^^xsd:double ;
+    OntoRaster:hasColumnNumber {y}^^xsd:double ;
+    OntoRaster:hasValue OntoRaster:Value_{NumericalValue} .
+    OntoRaster:Value_{NumericalValue} a OntoRaster:Value ;
+    OM:hasNumericalValue {NumericalValue}^^xsd:double .
+source		SELECT FileName, rasterdata.rid as rid, rasterdata.x as x, rasterdata.y as y, rasterdata.val as NumericalValue, 
+            UpperLeftX, UpperLeftY, NumBands, SRID, TileHeight, PixelHeight, TileWidth, PixelWidth, ScaleX, ScaleY, SkewX, Skewy 
+    FROM (SELECT rid, ST_UpperleftX(rast) As UpperLeftX, ST_UpperLeftY(rast) As UpperLeftY,  
+	        ST_NumBands(rast) As NumBands, ST_SRID(rast) As SRID, 
+            ST_Height(rast) As TileHeight, ST_PixelHeight(rast) As PixelHeight, 
+            ST_Width(rast) As TileWidth, ST_PixelWidth(rast) As PixelWidth, 
+            ST_ScaleX(rast) As ScaleX, ST_ScaleY(rast) As ScaleY, ST_SkewX(rast) As SkewX,
+            ST_SkewY(rast) As SkewY, filename as FileName, (ST_PixelAsPoints(rast)).* FROM test) as rasterdata
+]]
