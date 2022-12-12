@@ -75,10 +75,10 @@ class FileManager {
         }
         if (result.size() == 0) {
             LOGGER.error(EMPTY_EXCEL_DIR_MSG + directory);
-            throw new JPSRuntimeException(EMPTY_EXCEL_DIR_MSG + directory);
+            throw new FileNotFoundException(EMPTY_EXCEL_DIR_MSG + directory);
         } else if (result.size() > 1) {
             LOGGER.error(MULTI_EXCEL_DIR_MSG);
-            throw new JPSRuntimeException(MULTI_EXCEL_DIR_MSG);
+            throw new IOException(MULTI_EXCEL_DIR_MSG);
         } else {
             return result.get(0);
         }

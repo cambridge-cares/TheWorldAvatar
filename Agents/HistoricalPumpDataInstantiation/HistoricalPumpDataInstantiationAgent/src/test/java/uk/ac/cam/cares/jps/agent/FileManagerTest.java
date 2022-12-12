@@ -8,6 +8,7 @@ import org.junit.jupiter.api.io.TempDir;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -53,13 +54,13 @@ class FileManagerTest {
 
     @Test
     void testRetrieveExcelPathFailNoWorkbook() {
-        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () -> FileManager.retrieveExcelPath(emptyTempDir.toString()), "JPSRuntimeException was expected");
+        FileNotFoundException thrown = assertThrows(FileNotFoundException.class, () -> FileManager.retrieveExcelPath(emptyTempDir.toString()), "FileNotFoundException was expected");
         assertTrue(thrown.getMessage().contains("No Excel workbook detected! Please place your file in the directory:"));
     }
 
     @Test
     void testRetrieveExcelPathFailWithTwoFiles() {
-        JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, () -> FileManager.retrieveExcelPath(multiFileTempDir.toString()), "JPSRuntimeException was expected");
+        IOException thrown = assertThrows(IOException.class, () -> FileManager.retrieveExcelPath(multiFileTempDir.toString()), "IOException was expected");
         assertEquals("Multiple Excel workbooks detected! This agent can only process one workbook at a time.", thrown.getMessage());
     }
 
@@ -72,7 +73,7 @@ class FileManagerTest {
             // Create an empty directory for the default directory
             Files.createDirectories(Paths.get(workingDir));
             // Test that the default directory for the overloaded method ends with the /data/
-            JPSRuntimeException thrown = assertThrows(JPSRuntimeException.class, FileManager::retrieveExcelPath, "JPSRuntimeException was expected");
+            FileNotFoundException thrown = assertThrows(FileNotFoundException.class, FileManager::retrieveExcelPath, "FileNotFoundException was expected");
             assertTrue(thrown.getMessage().contains("No Excel workbook detected! Please place your file in the directory:"));
             assertTrue(thrown.getMessage().endsWith("/data/"));
         } catch (IOException e) {
@@ -130,7 +131,7 @@ class FileManagerTest {
                 "db.password is missing! Please add the input to client.properties.\n", thrown.getMessage());
     }
 
-    private static void genSampleProperties(Path propertiesPath) throws IOException {
+    protected static void genSampleProperties(Path propertiesPath) throws IOException {
         Properties prop = new Properties();
         prop.setProperty(FileManager.QUERY_ENDPOINT_PROPERTY, queryEndpoint);
         prop.setProperty(FileManager.UPDATE_ENDPOINT_PROPERTY, updateEndpoint);
