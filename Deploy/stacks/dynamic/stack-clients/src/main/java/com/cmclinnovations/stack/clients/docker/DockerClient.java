@@ -483,9 +483,11 @@ public class DockerClient extends BaseClient {
     }
 
     private Map<String, List<String>> convertToConfigFilterMap(String configName, Map<String, String> labelMap) {
-        Map<String, List<String>> result = labelMap.entrySet().stream().collect(Collectors.toMap(
-                entry -> "label",
-                entry -> List.of(entry.getKey() + "=" + entry.getValue())));
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("label",
+                labelMap.entrySet().stream()
+                        .map(entry -> entry.getKey() + "=" + entry.getValue())
+                        .collect(Collectors.toList()));
         if (null != configName) {
             result.put("name", List.of(configName));
         }
