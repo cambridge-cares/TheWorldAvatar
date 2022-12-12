@@ -380,6 +380,7 @@ def add_time_series_data(assetIRI, power_data, asset_name='', plantEIC=''):
         print('The error message is:', str(err.java_exception))
     print("Time series data added successfully for: " + asset_name + ").\n")
 
+
 def check_df(df, periods):
     #Checks if there exists data in a dataframe. 
     #Does so at row = 0 and row = (periods - 1)
@@ -476,7 +477,7 @@ def update_triple_store():
     ##########################################
     export_data = pd.read_excel(export_path)
     curtailment_data = pd.read_excel(curtailment_path)
-    
+
     base_lists = "data/BaseLists.xlsx"
     
     #Now do the same for powerplants as will be done for generators. 
@@ -543,6 +544,9 @@ def update_triple_store():
                 plantEIC = plants_with_data_full_EIC[plant_index]
                 print("plantEIC:", plantEIC)
                 add_time_series_data(powerplants_instantiated[pp], export_data, pp, plantEIC)
+                ###
+                #REPEAT ABOVE LINE, BUT FOR CURTAILMENT (redoing functions / queries / have a setting as required). 
+                ###
             else:
                 print("The following plant is not in the list being processed:", plantName)
     # # Retrieve all generators with available power data (generator names are capitalised)
@@ -578,6 +582,7 @@ def update_triple_store():
     #     else:
     #         print("Instantiated time series detected!")
     print("Time series data successfully added.\n")
+
 
 def continuous_update():
     """
