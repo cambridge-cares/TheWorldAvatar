@@ -19,13 +19,15 @@ services:
     image: docker.cmclinnovations.com/blazegraph:1.1.0-510-SNAPSHOT
     container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Set these environment variables for BASIC authentication
+#      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+#      BLAZEGRAPH_USER: bg_user
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
-    secrets:
-      - blazegraph_password
+#    secrets:
+#      - blazegraph_password
     volumes:
       - blazegraph_data:/data
 
