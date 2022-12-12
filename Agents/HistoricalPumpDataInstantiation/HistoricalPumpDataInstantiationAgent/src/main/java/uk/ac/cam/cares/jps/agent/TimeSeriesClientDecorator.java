@@ -152,7 +152,7 @@ class TimeSeriesClientDecorator {
      * @return A time series object.
      */
     private TimeSeries<Instant> convertReadingsToTimeSeries(Map<String, List<?>> readings, Map<String, String> iriMappings) {
-        List<Instant> instantValues = timeKey.equalsIgnoreCase("year") ? (List<Instant>) readings.get(timeKey) : new ArrayList<>();
+        List<Instant> instantValues = (List<Instant>) readings.get(timeKey);
         LOGGER.debug("Time values have been processed...");
 
         List<String> iris = new ArrayList<>(iriMappings.values());

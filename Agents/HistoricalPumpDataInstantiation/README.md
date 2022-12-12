@@ -26,9 +26,12 @@ A snippet of a sample Excel is as follows:
 | Pump 3    | 2001 | 35192     | 33302.05   |
 ```
 
-Some pre-processing might be required in order to ensure that the Excel content are compatible with the agent. First, 
-change the time header to Year. At the moment, only `Year` is accepted as an input. Second, if there are any groups 
-of time series. Sort the column containing multiple time series groups ie `Group`.
+Some pre-processing might be required in order to ensure that the Excel content are compatible with the agent. 
+
+First, change the time header to Year. At the moment, only `Year` or `TimeStamp` are accepted as an input. 
+Time stamps should be in `YYYY-MM-DD HH:MM:SS` format.
+
+Second, if there are any groups of time series, sort the column containing multiple time series groups ie `Group`.
 
 Notes:
 - .csv files are incompatible at this moment. An alternate solution is to copy and paste the .csv content into an Excel sheet.
@@ -127,7 +130,7 @@ The agent currently accepts two parameters.
 1. Time Header - Mandatory
 
 This is the header name for the Time column for the Time Series. It can be invoked with the `timeHeader` key. 
-At the moment, there is only one acceptable parameter - `Year`. 
+At the moment, only `Year` and `TimeStamp` is accepted. 
 
 2. IRI Prefix - Mandatory
 

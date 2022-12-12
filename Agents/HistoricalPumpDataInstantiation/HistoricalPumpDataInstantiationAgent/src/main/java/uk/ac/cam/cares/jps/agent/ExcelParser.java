@@ -6,9 +6,8 @@ import org.apache.poi.ss.usermodel.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Year;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -270,6 +269,10 @@ class ExcelParser {
                         LocalDate date = year.atDay(year.length());
                         String instantValue = date + instantTimeZone;
                         columnValues.add(Instant.parse(instantValue));
+                    } else if (timeHeader.equalsIgnoreCase("timestamp")) {
+                        String cellDate = (String) ExcelParserHelper.readCell(currentCell);
+                        LocalDateTime timestamp = LocalDateTime.parse(cellDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US));
+                        columnValues.add(timestamp.toInstant(ZoneOffset.UTC));
                     }
                 } else {
                     columnValues.add(ExcelParserHelper.readCell(currentCell));

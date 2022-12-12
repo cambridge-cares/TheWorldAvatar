@@ -94,7 +94,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             validate = requestParams.has(KEY_TIMEHEADER);
             if (validate) {
                 // Ensure that the time header is of valid format
-                validate = requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("year");
+                validate = requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("year") || requestParams.getString(KEY_TIMEHEADER).equalsIgnoreCase("timestamp");
                 LOGGER.debug(KEY_TIMEHEADER + " is " + validate);
 
                 LOGGER.info("Validating " + KEY_IRI_PREFIX + " parameter");
@@ -109,14 +109,15 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                         // If it is only a namespace, check if it does not start with http or /
                         validate = !iriValue.startsWith("/") && iriValue.indexOf("/") == iriValue.length() - 1;
                     }
-
-                    LOGGER.info("Validating " + KEY_ADD_TRIPLE + " parameter");
-                    validate = requestParams.has(KEY_ADD_TRIPLE);
                     if (validate) {
-                        String addTripleBoolean = requestParams.getString(KEY_ADD_TRIPLE);
-                        // Ensure that the boolean parameter is of valid String format
-                        validate = addTripleBoolean.equalsIgnoreCase("False") || addTripleBoolean.equalsIgnoreCase("True");
-                        LOGGER.debug(KEY_ADD_TRIPLE + " is " + validate);
+                        LOGGER.info("Validating " + KEY_ADD_TRIPLE + " parameter");
+                        validate = requestParams.has(KEY_ADD_TRIPLE);
+                        if (validate) {
+                            String addTripleBoolean = requestParams.getString(KEY_ADD_TRIPLE);
+                            // Ensure that the boolean parameter is of valid String format
+                            validate = addTripleBoolean.equalsIgnoreCase("False") || addTripleBoolean.equalsIgnoreCase("True");
+                            LOGGER.debug(KEY_ADD_TRIPLE + " is " + validate);
+                        }
                     }
                 }
                 LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
