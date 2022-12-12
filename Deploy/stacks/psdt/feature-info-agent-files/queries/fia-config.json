@@ -1,11 +1,29 @@
 {
-    'database_name' : 'solarsensor45',
+    'database_name' : 'timeseries',
     'queries' : [
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/IlluminanceSensor',
-            'metaFile' : 'IlluminanceSensor.sparql',
-            'timeFile' : 'IlluminanceSensor_timeseries.sparql',
+            'metaFile' : 'Sensor.sparql',
+            'timeFile' : 'Sensor_timeseries.sparql',
             'timeLimit' : 8760
+        },
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ps/WaterMeter',
+            'metaFile' : 'Sensor.sparql',
+            'timeFile' : 'Sensor_timeseries.sparql',
+            'timeLimit' : 175200
+        },
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ps/OilMeter',
+            'metaFile' : 'Sensor.sparql',
+            'timeFile' : 'Sensor_timeseries.sparql',
+            'timeLimit' : 175200
+        },
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ps/ElectricityMeter',
+            'metaFile' : 'Sensor.sparql',
+            'timeFile' : 'Sensor_timeseries.sparql',
+            'timeLimit' : 175200
         }
     ]
 }

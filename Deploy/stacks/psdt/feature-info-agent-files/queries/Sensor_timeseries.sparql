@@ -1,8 +1,5 @@
 PREFIX ps: <https://www.theworldavatar.com/kg/ps/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
 SELECT ?Measurement ?Name ?Unit
 WHERE {
 [IRI] ps:hasQuantity ?Measurement .
