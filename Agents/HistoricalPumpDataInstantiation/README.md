@@ -138,12 +138,18 @@ Note that it must start with no `/` but end with a `/`.
 To change the base IRI for time series, pass in a String in `http://www.example.com/namespace/` format to the `iriPrefix` key.
 Both `http` and `https` is acceptable, but it must end with `/`.
 
-3. Starting Value Row - Optional
+3. Supplementary Triples - Mandatory
+
+This is a `boolean` parameter that determines if supplementary triples should be added. Please invoke this with
+the `addTriple` and a `False` value for most cases. This is only intended to supplement one specific Excel file,
+and in that case, parameter should be `True`.
+
+4. Starting Value Row - Optional
 
 This is the starting row for values, and should be an integer in String format. By default, it is set to 1. 
 If you wish to start at other values larger than 1, invoke the parameter with the `startingRow` key.
 
-4. Column Index for Multiple Time Series - Optional
+5. Column Index for Multiple Time Series - Optional
 
 This is the column containing the group for multiple time series. For eg, if an Excel contains data for "Pump 1" and "Pump 2",
 each pump should have their own distinct time series. Pump 1 and 2 will be indicated in this column. See [sample Excel](#1-excel-preprocessing) 
@@ -158,10 +164,10 @@ At least one parameter is required. A sample request is as follows:
 ```
 POST http://localhost:4050/historical-pump-data-instantiation-agent/run
 Content-Type: application/json
-{"timeHeader":"Year", "iriPrefix":"pump/", startingRow": "1", "multiTSColIndex": "0"}
+{"timeHeader":"Year", "iriPrefix":"pump/", "addTriple":"False", startingRow": "1", "multiTSColIndex": "0"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'iriPrefix':'pump/', 'startingRow': '1', 'multiTSColIndex': '0'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
+curl -X POST --header "Content-Type: application/json" -d "{'timeHeader':'Year', 'iriPrefix':'pump/', 'addTriple':'False', 'startingRow': '1', 'multiTSColIndex': '0'}" http://localhost:4050/historical-pump-data-instantiation-agent/run
 ```
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```

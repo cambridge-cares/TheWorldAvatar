@@ -44,6 +44,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     // POST request keys
     private static final String KEY_TIMEHEADER = "timeHeader";
     private static final String KEY_IRI_PREFIX = "iriPrefix";
+    private static final String KEY_ADD_TRIPLE = "addTriple";
     private static final String KEY_STARTING_ROW = "startingRow";
     private static final String KEY_MULTI_TS_COL_INDEX = "multiTSColIndex";
     public static String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE; // The prefix to use for generating IRI
@@ -61,6 +62,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             // Initialise required values
             String timeKey = requestParams.getString(KEY_TIMEHEADER);
             String iriValue = requestParams.getString(KEY_IRI_PREFIX);
+            String addTriple = requestParams.getString(KEY_ADD_TRIPLE);
             String startingRow = requestParams.has(KEY_STARTING_ROW) ? requestParams.getString(KEY_STARTING_ROW) : "1";
             // If there is no grouping key, set an invalid value
             String bulkColIndex = requestParams.has(KEY_MULTI_TS_COL_INDEX) ? requestParams.getString(KEY_MULTI_TS_COL_INDEX) : "-1";
@@ -71,7 +73,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 // If it is only a namespace, append it to the preset time series namespace
                 iriPrefix += iriValue;
             }
-            String[] parameters = new String[]{timeKey, startingRow, bulkColIndex};
+            String[] parameters = new String[]{timeKey, addTriple, startingRow, bulkColIndex};
             jsonMessage = this.initializeAgent(parameters);
             jsonMessage.accumulate("Result", "Time Series Data has been updated.");
         } else {
@@ -105,7 +107,16 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                         validate = (iriValue.startsWith("http://www.") || iriValue.startsWith("https://www.")) && iriValue.endsWith("/");
                     } else {
                         // If it is only a namespace, check if it does not start with http or /
-                        validate = !iriValue.startsWith("/") && iriValue.indexOf("/")==iriValue.length()-1;
+                        validate = !iriValue.startsWith("/") && iriValue.indexOf("/") == iriValue.length() - 1;
+                    }
+
+                    LOGGER.info("Validating " + KEY_ADD_TRIPLE + " parameter");
+                    validate = requestParams.has(KEY_ADD_TRIPLE);
+                    if (validate) {
+                        String addTripleBoolean = requestParams.getString(KEY_ADD_TRIPLE);
+                        // Ensure that the boolean parameter is of valid String format
+                        validate = addTripleBoolean.equalsIgnoreCase("False") || addTripleBoolean.equalsIgnoreCase("True");
+                        LOGGER.debug(KEY_ADD_TRIPLE + " is " + validate);
                     }
                 }
                 LOGGER.debug(KEY_IRI_PREFIX + " is " + validate);
@@ -141,7 +152,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
 
     public JSONObject initializeAgent(String[] args) {
         JSONObject jsonMessage = new JSONObject();
-        if (args.length != 3) {
+        if (args.length != 4) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -160,7 +171,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
         // Parse Excel values into a hashmap
         Map<String, Map<String, List<?>>> excelReadings;
         try {
-            excelReadings = parser.parseToHashMap(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            excelReadings = parser.parseToHashMap(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
@@ -226,10 +237,12 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
             }
         }
         LOGGER.debug("Adding supplementary triples...");
-        SparqlAdapter.addSupplementaryTriples(clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
-                clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY),
-                iriMappings);
-
+        boolean addTripleBoolean = args[1].equalsIgnoreCase("True");
+        if (addTripleBoolean) {
+            SparqlAdapter.addSupplementaryTriples(clientConfig.get(FileManager.QUERY_ENDPOINT_KEY),
+                    clientConfig.get(FileManager.UPDATE_ENDPOINT_KEY),
+                    iriMappings);
+        }
         LOGGER.info("Data updated with new readings from Excel Workbook.");
         jsonMessage.put("Result", "Data updated with new readings from Excel Workbook.");
         return jsonMessage;
