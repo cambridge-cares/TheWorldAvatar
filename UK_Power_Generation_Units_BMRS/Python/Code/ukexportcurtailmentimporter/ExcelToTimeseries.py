@@ -23,11 +23,12 @@ def isStringNumeric(check):
 
 
 ###Conversion###
-def excelToKG(excelPath, EIC):
+def excelToKG(excelData, EIC):
     #Takes the location of the excel and the identifier of a powerplant (wind farm), which is currently the EIC. 
-    
+    #excelData should already be opened, as it is no longer opened here. 
+
     #Open CSV (curtailment or export)
-    excelData = pd.read_excel(excelPath)
+    #excelData = pd.read_excel(excelPath)
     
     times = []
     values = []
