@@ -546,6 +546,8 @@ def update_triple_store():
                 add_time_series_data(powerplants_instantiated[pp], export_data, pp, plantEIC)
                 ###
                 #REPEAT ABOVE LINE, BUT FOR CURTAILMENT (redoing functions / queries / have a setting as required). 
+                #So something like the below line, but where the called code puts the data into curtailment rather than exports: 
+                #add_time_series_data(powerplants_instantiated[pp], curtailment_data, pp, plantEIC)
                 ###
             else:
                 print("The following plant is not in the list being processed:", plantName)
