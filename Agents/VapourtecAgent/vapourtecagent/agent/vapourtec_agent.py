@@ -181,15 +181,14 @@ class VapourtecAgent(DerivationAgent):
         # Get pump setting for the reference pump
         _ref_pump_setting = [setting for setting in list_equip_settings if isinstance(setting, PumpSettings) and setting.hasSampleLoopVolumeSetting is not None][0]
         # Construct two dicts: {"autosampler_site_iri": sampler_loop_volume (of autosampler)} and {"reagent_bottle_iri": reagent_bottle_usage_volume}
-        # NOTE here "*1.2" for the ReagentBottle is a rough calculation to reflect what vapourtec normally takes more compared to the calculated volume
-        # For autosampler site, it should be the same as the sampleLoopVolume of the autosampler
+        # NOTE here "*1.2" for ReagentBottle/AutoSamplerSite is a rough estimation to reflect what vapourtec normally takes more compared to the calculated volume
         # TODO [limitation of API for now] get the exact value from API, instead of manual calculation it here
         dct_autosampler_site_volume = {}
         dct_reagent_bottle_volume = {}
         for setting in list_equip_settings:
             if isinstance(setting, PumpSettings):
                 if setting.pumpsLiquidFrom is not None:
-                    dct_autosampler_site_volume[setting.pumpsLiquidFrom.instance_iri] = autosampler.sampleLoopVolume.hasValue.hasNumericalValue
+                    dct_autosampler_site_volume[setting.pumpsLiquidFrom.instance_iri] = round(autosampler.sampleLoopVolume.hasValue.hasNumericalValue * 1.2, 2)
                 else:
                     dct_reagent_bottle_volume[setting.specifies.hasReagentSource.instance_iri] = \
                         round(setting.hasFlowRateSetting.hasQuantity.hasValue.hasNumericalValue \
