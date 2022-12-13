@@ -18,10 +18,6 @@ def retrieve_stack_settings(database, namespace):
         Reads settings from Stack clients (as global variables).
     """
 
-    # Define global scope for global variables
-    global DB_URL, DB_USER, DB_PASSWORD, \
-           QUERY_ENDPOINT, UPDATE_ENDPOINT
-    
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
@@ -48,3 +44,5 @@ def retrieve_stack_settings(database, namespace):
     # (i.e. Query and Update endpoints are equivalent for Blazegraph)
     QUERY_ENDPOINT = bg_conf.getUrl(namespace)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
+
+    return DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT

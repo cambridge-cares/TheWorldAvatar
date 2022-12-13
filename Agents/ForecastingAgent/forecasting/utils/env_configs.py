@@ -81,7 +81,14 @@ def retrieve_settings():
             logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         
         # Retrieve settings from Stack Clients
+        DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT = \
         retrieve_stack_settings(database=DATABASE,namespace=NAMESPACE)
+
+        logger.info(f"DB_URL: {DB_URL}")
+        logger.info(f"DB_USER: {DB_USER}")
+        logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
+        logger.info(f"QUERY_ENDPOINT: {QUERY_ENDPOINT}")
+        logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
 
 
 # Run when module is imported
