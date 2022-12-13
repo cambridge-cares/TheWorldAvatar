@@ -24,10 +24,11 @@ TS = "https://www.theworldavatar.com/kg/ontotimeseries/"
 ###--- --- --- --- --- URLs to ontologies --- --- --- --- ---###
 
 # OntoGasgrid
-COMPA_HAS_CONSUMED = COMPA + "hasConsumed"
-COMPA_HAS_STARTUTC = COMPA + "hasStartUTC"
-COMPA_HAS_ENDUTC = COMPA + "hasEndUTC"
-COMPA_ELEC = COMPA + "Electricity"
+COMP_HASCONSUMED = COMP + 'hasConsumed'
+COMP_ELEC = COMP + "Electricity"
+COMP_HAS_STARTUTC = COMP + "hasStartUTC"
+COMP_HAS_ENDUTC = COMP + "hasEndUTC"
+
 
 GAS_ELEC = GAS + "ElecMeters"
 GAS_HAS_ELECMETERS = GAS + "hasElecMeters"

@@ -13,7 +13,6 @@ from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import input_query_template
 #from agent.kgutils.tsclient import TSClient
 from agent.errorhandling.exceptions import *
-from agent.kgutils.querytemplates import input_query_template
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -21,23 +20,19 @@ DEF_NAMESPACE = "ontogasgrid"
 LOCAL_KG = "http://localhost:8080/blazegraph"
 QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
 
-def read_from_excel(year:str,
-                    keyword:str):
- '''
-     Return list of readings from Excel
-     
-     Arguments:
-     year: the number of year of which the data you may want to read
-     keyword: 'Electricity'/'Gas'/'Fuel Poverty'
-             the content of the data of which you may want to read
- '''
- if keyword == 'Electricity':
+def read_from_excel(year:str):
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
     try:
-        #./Data/LSOA_domestic_elec_2010-20.xlsx
-        data = pd.read_excel('./Data/LSOA_domestic_elec_2010-20.xlsx', sheet_name=year, skiprows=4)
+            data = pd.read_excel('./Data/LSOA_domestic_elec_2010-20.xlsx', sheet_name=year, skiprows=4)
     except Exception as ex:
-        logger.error("Excel file can not be read")
-        raise InvalidInput("Excel file can not be read -- try fixing by using absolute path") from ex
+            logger.error("Excel file can not be read")
+            raise InvalidInput("Excel file can not be read -- try fixing by using absolute path") from ex
 
     logger.info('Retrieving Electricity consumption data from Excel ...')
     LSOA_codes = data["LSOA code"].values
@@ -45,13 +40,13 @@ def read_from_excel(year:str,
     consump = data["Total \nconsumption\n(kWh)"].values
     logger.info('Electricity consumption data succesfully retrieved')
 
-# Remove the 'null' data
+    # Remove the 'null' data
     for i in LSOA_codes, met_num, consump:
-     i[np.where(i=='')] = 0
+        i[np.where(i=='')] = 0
 
     logger.info('Create triples to instantiate Electrical Consumption data ...')
-    
- return LSOA_codes, met_num, consump
+
+    return LSOA_codes, met_num, consump
 
 def upload_data_to_KG(year:str,
                 keyword:str,
@@ -168,7 +163,7 @@ if __name__ == '__main__':
  logger.info("Uploading the Electricity consumption data...")
 
  t1= time.time()
- len_query=upload_data_to_KG("2020",'Electricity')
+ len_query=upload_data_to_KG("2020")
  print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
  t2= time.time()
  diff = t2 - t1

@@ -34,12 +34,12 @@ def input_query_template(
 
     triples = f""" <{mes_uuid}> <{RDF_TYPE}> <{OM_MEASURE}>.
                 <{mes_uuid}> <{OM_HAS_UNIT}> <{OM_KW}>.
-                <{used_uuid}> <{RDF_TYPE}> <{COMPA_ELEC}>;
-                        <{COMPA_HAS_STARTUTC}>  "{start_time}"^^<{XSD_DATETIME}> ;
-                        <{COMPA_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>  .
+                <{used_uuid}> <{RDF_TYPE}> <{COMP_ELEC}>;
+                        <{COMP_HAS_STARTUTC}>  "{start_time}"^^<{XSD_DATETIME}> ;
+                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>  .
                 
                 <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>.
-                <{region}> <{COMPA_HAS_CONSUMED}> <{used_uuid}> .
+                <{region}> <{COMP_HASCONSUMED}> <{used_uuid}> .
 
                 <{kw_uuid}> <{RDF_TYPE}> <{OM}>;
                         <{OM_HAS_PHENO}> <{used_uuid}> ;
@@ -49,8 +49,8 @@ def input_query_template(
                 <{met_uuid}> <{RDF_TYPE}> <{GAS_ELEC}>.
                 <{region}> <{GAS_HAS_ELECMETERS}> <{met_uuid}>.
                 <{met_uuid}> <{GAS_HAS_CONSUM_ELECMETERS}>  {meters};
-                        <{COMPA_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
-                        <{COMPA_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> . 
+                        <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
+                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> . 
                 """
 
     return triples
