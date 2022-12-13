@@ -881,7 +881,9 @@ def assert_rxn_iterations(
         assert len(lst_hplc_report_iri) == 1
         assert len(vapourtec_schedule_derivation_outputs) == 1
         assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
-
+        # (3) The assigned reactor should be contained in the lab which the Vapourtec Schedule Derivation isDerivedFrom
+        assigned_lab_iri = get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_derivation, sparql_client)
+        assert sparql_client.check_if_triple_exist(lst_done_rxn_exp_instance[0].isAssignedTo, ONTOLAB_ISCONTAINEDIN, assigned_lab_iri)
         print(f"Vapourtec Schedule Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
         ##################################
@@ -1036,6 +1038,16 @@ def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient
     response = sparql_client.performQuery(query)
     return [response[i]['hplc_report'] for i in range(len(response))]
 
+
+def get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?lab
+        WHERE {{
+            <{vapourtec_schedule_derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?lab.
+            ?lab a <{ONTOLAB_LABORATORY}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['lab'] if len(response) > 0 else None
 
 # ----------------------------------------------------------------------------------
 # Sample data
