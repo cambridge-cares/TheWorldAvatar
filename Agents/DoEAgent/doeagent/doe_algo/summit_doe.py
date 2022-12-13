@@ -91,6 +91,36 @@ def formNewExperiment(
     # Initialise a list to host the new suggested ReactionExperiment/ReactionVariation instances
     list_rxnvar = []
 
+    # Locate the possible input chemicals for each of the stoichiometric ratio and reaction scale
+    # This is done irrespective of whether the reaction is a ReactionExperiment or ReactionVariation
+    # So that this enables operation over multiple labs
+    # TODO [urgent] pass a list of chemical species IRI to the function
+    _stoi_ratio_list = [
+        var for var in doe.hasDomain.hasDesignVariable if var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
+    ] + [
+        param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
+    ]
+    # NOTE that here we assume the ReactionScale has the same positionalID as the StoichiometryRatio of the reference chemical
+    _rxn_scale_list = [
+        var for var in doe.hasDomain.hasDesignVariable if var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
+    ] + [
+        param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
+    ]
+    if not all([_rs.positionalID in [_sr.positionalID for _sr in _stoi_ratio_list] for _rs in _rxn_scale_list]):
+        raise Exception(f"The ReactionScale {_rxn_scale_list} is not identifying any of the chemicals pointed by StoichiometryRatio {_stoi_ratio_list}.")
+
+    chemical_reaction_instance = sparql_client.get_chemical_reaction_given_iri(doe.designsChemicalReaction)
+    _solvent = chemical_reaction_instance.get_list_of_solvent()
+    _product = chemical_reaction_instance.get_list_of_product()
+
+    _input_chemical_dict = {stoi.positionalID:sparql_client.locate_possible_input_chemical(
+        solute=stoi.positionalID,
+        solvent_as_constraint=_solvent,
+        species_to_exclude=_product,
+        list_of_labs_as_constraint=[lab_iri] if lab_iri else None,
+    ) for stoi in _stoi_ratio_list}
+    logger.debug(f"Input chemical dict: {_input_chemical_dict}")
+
     # Iterate over the new suggested experiments to create each of them
     # NOTE below design works for multiple (>1) experiments
     # NOTE however, for the time being, the DoE Agent will be used to generate 1 experiment to fit the derivation framework
@@ -160,8 +190,8 @@ def formNewExperiment(
                     objPropWithExp=_objPropWithExp,
                     hasValue=om_measure,
                     positionalID=first_rxn_exp_con.positionalID,
-                    indicatesMultiplicityOf=first_rxn_exp_con.indicatesMultiplicityOf,
-                    indicateUsageOf=first_rxn_exp_con.indicateUsageOf
+                    indicatesMultiplicityOf=_input_chemical_dict[first_rxn_exp_con.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
+                    indicateUsageOf=_input_chemical_dict[first_rxn_exp_con.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
 
                 # Add created instance to list
@@ -173,7 +203,7 @@ def formNewExperiment(
                 namespace_for_init=dm.getNameSpace(first_rxn_exp.instance_iri),
                 hasReactionCondition=list_con,
                 hasPerformanceIndicator=None,
-                hasInputChemical=first_rxn_exp.hasInputChemical,
+                hasInputChemical=[_input_chemical_dict[ic] for ic in _input_chemical_dict],# this should be decided for each reaction variation as well
                 # NOTE here the OutputChemical is set to be None as the OutputChemical will need to be generated after the physical experimentation
                 hasOutputChemical=None,
                 isVariationOf=first_rxn_exp
@@ -187,32 +217,6 @@ def formNewExperiment(
             # the list of ReactionCondition either from the suggested values for each DesignVariable
             # or from the fixed pamameters of DoE
             list_con = []
-
-            # locate the input chemicals for all stoi ratio and reaction scale
-            # TODO [urgent] pass a list of chemical species IRI to the function
-            _stoi_ratio_list = [
-                var for var in doe.hasDomain.hasDesignVariable if var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
-            ] + [
-                param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
-            ]
-            # NOTE that here we assume the ReactionScale has the same positionalID as the StoichiometryRatio of the reference chemical
-            _rxn_scale_list = [
-                var for var in doe.hasDomain.hasDesignVariable if var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
-            ] + [
-                param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
-            ]
-            if not all([_rs.positionalID in [_sr.positionalID for _sr in _stoi_ratio_list] for _rs in _rxn_scale_list]):
-                raise Exception(f"The ReactionScale {_rxn_scale_list} is not identifying any of the chemicals pointed by StoichiometryRatio {_stoi_ratio_list}.")
-            chemical_reaction_instance = sparql_client.get_chemical_reaction_given_iri(doe.designsChemicalReaction)
-            _solvent = chemical_reaction_instance.get_list_of_solvent()
-            _product = chemical_reaction_instance.get_list_of_product()
-            _input_chemical_dict = {stoi.positionalID:sparql_client.locate_possible_input_chemical(
-                solute=stoi.positionalID,
-                solvent_as_constraint=_solvent,
-                species_to_exclude=_product,
-                list_of_labs_as_constraint=[lab_iri] if lab_iri else None,
-            ) for stoi in _stoi_ratio_list}
-            logger.debug(f"Input chemical dict: {_input_chemical_dict}")
 
             # first, we iterate over the design variables
             for design_var in doe.hasDomain.hasDesignVariable:
