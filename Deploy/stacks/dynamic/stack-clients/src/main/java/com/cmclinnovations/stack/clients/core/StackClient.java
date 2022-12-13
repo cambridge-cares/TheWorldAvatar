@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -19,6 +18,7 @@ public final class StackClient {
 
     public static final String STACK_NAME_KEY = "STACK_NAME";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
+    public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
 
@@ -34,7 +34,7 @@ public final class StackClient {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
-        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName);
+        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
     }
 
     private StackClient() {
