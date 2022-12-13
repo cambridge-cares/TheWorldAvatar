@@ -270,9 +270,14 @@ class ExcelParser {
                         String instantValue = date + instantTimeZone;
                         columnValues.add(Instant.parse(instantValue));
                     } else if (timeHeader.equalsIgnoreCase("timestamp")) {
-                        String cellDate = (String) ExcelParserHelper.readCell(currentCell);
-                        LocalDateTime timestamp = LocalDateTime.parse(cellDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US));
-                        columnValues.add(timestamp.toInstant(ZoneOffset.UTC));
+                        if (ExcelParserHelper.readCell(currentCell).getClass().toString().contains("String")) {
+                            String cellDate = (String) ExcelParserHelper.readCell(currentCell);
+                            LocalDateTime timestamp = LocalDateTime.parse(cellDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US));
+                            columnValues.add(timestamp.toInstant(ZoneOffset.UTC));
+                        } else {
+                            LocalDateTime timestamp = (LocalDateTime) ExcelParserHelper.readCell(currentCell);
+                            columnValues.add(timestamp.toInstant(ZoneOffset.UTC));
+                        }
                     }
                 } else {
                     columnValues.add(ExcelParserHelper.readCell(currentCell));
