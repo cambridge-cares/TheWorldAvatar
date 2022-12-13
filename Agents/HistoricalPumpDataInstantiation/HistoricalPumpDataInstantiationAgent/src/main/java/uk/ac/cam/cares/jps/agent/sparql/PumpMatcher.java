@@ -26,13 +26,13 @@ class PumpMatcher {
         pumpMap.put("PwSwerlenteichRheinstr", pumpStationIRI + "1.47");
         pumpMap.put("PwMwamHollerstock", pumpStationIRI + "1.53");
         pumpMap.put("PwMwamStockwald", pumpStationIRI + "1.56");
-        pumpMap.put("PwMwadammullerstr", pumpStationIRI + "1.6");
+        pumpMap.put("PwMwadammullerstr", pumpStationIRI + "1.60");
         pumpMap.put("PwSwsteinigerBuhl", pumpStationIRI + "2.15");
         pumpMap.put("PwSwsommerweg", pumpStationIRI + "2.17");
         pumpMap.put("PwSwalteLandstrasse", pumpStationIRI + "2.18");
         pumpMap.put("PwMwsengelsberg", pumpStationIRI + "2.19");
         pumpMap.put("PwSwhorbacherWeg", pumpStationIRI + "2.29");
-        pumpMap.put("PwSwanDerSteige", pumpStationIRI + "2.3");
+        pumpMap.put("PwSwanDerSteige", pumpStationIRI + "2.30");
         pumpMap.put("RubBottenbacherstr", pumpStationIRI + "116_126_HEB");
         return pumpMap;
     }
