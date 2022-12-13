@@ -84,6 +84,9 @@ class TimeSeriesClientDecorator {
             try (Connection conn = rdbClient.getConnection()) {
                 tsClient.initTimeSeries(iris, classes, this.timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
                 LOGGER.debug(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } finally {
+                // Always close connection
+                rdbClient.getConnection().close();
             }
         }
     }
