@@ -143,12 +143,12 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     logger.info(f'Input interval: {cfg["model_input_interval"]}')
     cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
     
-    try:
-        # get unit from iri and add to forecast
-        cfg['unit'] = get_unit(cfg['iri'], kgClient)
-    except KGException as e:
-        # no measurement -> no unit
-        pass
+    # Get unit from IRI and add to forecast
+    unit = get_unit(cfg['iri'], kgClient)
+    if unit:
+        cfg['unit'] = unit
+
+    # Get time format from tsIRI
     cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
 
     update = get_forecast_update(cfg=cfg)
@@ -323,8 +323,11 @@ def load_ts_data(cfg, kgClient, tsClient):
                       cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
 
     # df to darts timeseries
-    series = TimeSeries.from_dataframe(
-        df, time_col='Date', value_cols="Series")  # , fill_missing_dates =True
+    #series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series") 
+    #NOTE Inlcude handling for irregularly spaced time series data (likely to
+    #     be refined in the future)
+    series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series",
+                                       fill_missing_dates=True, freq=None)
     # remove nan values at beginning and end
     series = series.strip()
 

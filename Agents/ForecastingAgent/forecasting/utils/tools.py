@@ -162,26 +162,30 @@ def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", d
 
 
 def get_unit(iri, kgClient):
-    # get unit of iri
+    # Get unit (potentially) associated with dataIRI
     query = f"""
     SELECT ?unit
     WHERE {{
         <{iri}> <{OM_HASVALUE}> ?measure . 
         ?measure <{OM_HASUNIT}> ?unit . 
         }}"""
-    unit = kgClient.performQuery(query)[0]["unit"]
+    unit = kgClient.performQuery(query)
+    if len(unit) == 1:
+        unit = unit[0]["unit"]
+    else:
+        unit = None
     return unit
 
 
 def get_time_format(iri, kgClient):
-    # get unit of iri
+    # Get time format of tsIRI
     query = f"""
     SELECT ?format
     WHERE {{
-        <{iri}> <{OM_HASVALUE}> ?measure . 
-        ?measure <{TS_HASTIMESERIES}> ?ts . 
+        <{iri}> <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts . 
         ?ts <{TS_HASTIMEUNIT}> ?format . 
         }}"""
+    #TODO: Revisit to check if time format is always required
     time_format = kgClient.performQuery(query)[0]["format"]
     return time_format
 
