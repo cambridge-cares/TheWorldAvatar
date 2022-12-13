@@ -62,8 +62,11 @@ public class SparqlAdapter {
                     timeSeriesList.set(1, timeSeriesIri);
                 }
             }
-            // Add the pump IRI and their time series into the map
-            timeSeriesMap.put(pumpMatcherMap.get(group), timeSeriesList);
+            // Add the pump IRI and their time series into the map if they exist
+            String pumpMatchedGroup = pumpMatcherMap.get(group);
+            if (pumpMatchedGroup != null) {
+                timeSeriesMap.put(pumpMatchedGroup, timeSeriesList);
+            }
         }
         return timeSeriesMap;
     }
