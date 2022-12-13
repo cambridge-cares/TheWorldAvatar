@@ -224,6 +224,24 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
 
 
 &nbsp;
+# 4. Derivation mvp mock
+Below are changes made to the agent for mocking the environment variables obtained from stack-clients for derivation mvp. The design was made to follow the `tests/mockutils` with minimum impact to the existing agent structure. Therefore, it should be straightforward to remove these files/changes when doing it properly for the King's Lynn use case.
+1. `_derivation_mvp_mock` folder: these files work in the same way as files in folder `tests/mockutils`
+2. Target `derivation_mvp` in `Dockerfile`: this image copies config from `_derivation_mvp_mock` and reset the logger level to `dev`
+3. `docker-compose-derivation-mvp.yml`: docker-compose file that builds `derivation_mvp` image as `ghcr.io/cambridge-cares/avgsqmprice_agent_deriv_mvp:1.0.0-SNAPSHOT`
+4. `derivation_mvp_docker_publish.sh`: sh script to publish the `ghcr.io/cambridge-cares/avgsqmprice_agent_deriv_mvp:1.0.0-SNAPSHOT` to GitHub
+
+To build and publish the docker image for derivation mvp, please execut below command:
+
+```bash
+# Once executed, it will ask for GitHub username and personal access token in prompt
+bash ./derivation_mvp_docker_publish.sh -v 1.0.0-SNAPSHOT
+```
+
+For more information about how this agent is used in the derivation mvp, please refer to `TheWorldAvatar/Agents/_DerivationPaper`.
+
+
+&nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), October 2022
 
