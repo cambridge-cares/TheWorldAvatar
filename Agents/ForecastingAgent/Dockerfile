@@ -17,6 +17,10 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+#TODO: Only include for Stack deployment
+# Copy Stack-Client resource required to update py4jps later
+COPY ./tmp_stack ./tmp_stack
+
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
@@ -27,12 +31,10 @@ COPY ./setup.py .
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
 
-# #TODO Only include for Stack deployment
-# # Copy Stack-Client resource required to update py4jps later
-# COPY ./tmp_stack ./tmp_stack
+#TODO: Only include for Stack deployment
 # Update py4jps resources
-# RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
-#     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
 # Expose port
 EXPOSE 5000
@@ -50,7 +52,8 @@ ENV FLASK_DEBUG=1
 
 # Launch application in container
 WORKDIR /app/forecasting/flaskapp/
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+#CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------
@@ -63,10 +66,9 @@ RUN pip install gunicorn
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./forecasting ./forecasting
-COPY ./app_entry_point.sh .
 
 # Set the entrypoint
 # timeout set to 30min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 forecasting.flaskapp.wsgi:app --timeout 1800
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecasting:create_app()" --timeout 1800
 
 #==================================================================================================
