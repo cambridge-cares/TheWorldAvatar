@@ -47,7 +47,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
     private static final String KEY_ADD_TRIPLE = "addTriple";
     private static final String KEY_STARTING_ROW = "startingRow";
     private static final String KEY_MULTI_TS_COL_INDEX = "multiTSColIndex";
-    public static String iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE; // The prefix to use for generating IRI
+    public static String iriPrefix; // The prefix to use for generating IRI
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -71,7 +71,7 @@ public class HistoricalPumpDataInstantiationAgent extends JPSAgent {
                 iriPrefix = iriValue;
             } else {
                 // If it is only a namespace, append it to the preset time series namespace
-                iriPrefix += iriValue;
+                iriPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + iriValue;
             }
             String[] parameters = new String[]{timeKey, addTriple, startingRow, bulkColIndex};
             jsonMessage = this.initializeAgent(parameters);
