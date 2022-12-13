@@ -62,6 +62,11 @@ Deploy the agent and its dependencies by running the following code in the comma
 docker-compose up -d
 ```
 
+*Integration tests (`TimeSeriesClientDecoratorIntegrationT`, `SparqlAdapterIntegrationT`, and `QueryHandlerIntegrationT`) 
+are ignored in the default Maven test settings and when building the agent in Docker. 
+They can be run in a CLI with `mvn clean integration-test`, and must not be included when creating the Docker image. 
+The test containers are unable to access the host Docker daemon from within the container.
+
 #### 2.3 Stack Deployment
 
 If you want to spin up this agent as part of a stack, do the following:
