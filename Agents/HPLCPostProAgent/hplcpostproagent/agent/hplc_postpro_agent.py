@@ -53,7 +53,7 @@ class HPLCPostProAgent(DerivationAgent):
         for perf_clz in [
             ONTOREACTION_YIELD,
             ONTOREACTION_CONVERSION,
-            ONTOREACTION_ECOSCORE,
+            # ONTOREACTION_ECOSCORE, # NOTE disabled as the data for this eco score is not properly available
             ONTOREACTION_ENVIRONMENTALFACTOR,
             ONTOREACTION_SPACETIMEYIELD,
             ONTOREACTION_RUNMATERIALCOST,
