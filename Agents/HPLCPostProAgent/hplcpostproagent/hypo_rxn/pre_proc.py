@@ -42,7 +42,7 @@ def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hpl
             # Third compute a list of information that derived from the "intrinsic" information
             _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
             _sp_run_mol = unit_conv.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
-                unit_conv.UNIFIED_CONCENTRATION_UNIT) / unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
+                unit_conv.UNIFIED_CONCENTRATION_UNIT) * unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
             # Fourth create the instance of HypoStreamSpecies based on the collected information
             end_stream_comp = HypoStreamSpecies(
                 species_iri=_species_iri,
