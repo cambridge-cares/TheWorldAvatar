@@ -73,9 +73,56 @@ public class SewerageNetworkAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {	
 
+		String HG_Path_0 = System.getenv("HGDATA0");
+		String HG_Path_1 = System.getenv("HGDATA1");
+		String HG_Path_2 = System.getenv("HGDATA2");
+		String HG_Path_3 = System.getenv("HGDATA3");
+		String HG_Path_4 = System.getenv("HGDATA4");
+		String HG_Path_5 = System.getenv("HGDATA5");
+		String HG_Path_6 = System.getenv("HGDATA6");	
+		String KG_Path_0 = System.getenv("KGDATA0");
+		String KG_Path_1 = System.getenv("KGDATA1");
+		String KG_Path_2 = System.getenv("KGDATA2");
+		String KG_Path_3 = System.getenv("KGDATA3");
+		String KG_Path_4 = System.getenv("KGDATA4");
+		String KG_Path_5 = System.getenv("KGDATA5");
+		String KG_Path_6 = System.getenv("KGDATA6");
+		String KG_Path_7 = System.getenv("KGDATA7");
+		String KG_Path_8 = System.getenv("KGDATA8");
+		String KG_Path_9 = System.getenv("KGDATA9");
+		String KG_Path_10 = System.getenv("KGDATA10");		
+		String KG_MainNet = System.getenv("KGMainNet");
+		String KG_SubNet = System.getenv("KGSubNet");
+		String BR_Path_0 = System.getenv("Branch0");
+		String BR_Path_1 = System.getenv("Branch1");
+		String BR_Path_2 = System.getenv("Branch2");
+		String BR_Path_3 = System.getenv("Branch3");
+
 		JSONObject jsonMessage = new JSONObject();
 		try {
-			dataInstantiation();
+			HGInstantiation(HG_Path_0);
+			HGInstantiation(HG_Path_1);
+			HGInstantiation(HG_Path_2);
+			HGInstantiation(HG_Path_3);
+			HGInstantiation(HG_Path_4);
+			HGInstantiation(HG_Path_5);
+			HGInstantiation(HG_Path_6);
+			KGInstantiation(KG_Path_0);
+			KGInstantiation(KG_Path_1);
+			KGInstantiation(KG_Path_2);
+			KGInstantiation(KG_Path_3);
+			KGInstantiation(KG_Path_4);
+			KGInstantiation(KG_Path_5);
+			KGInstantiation(KG_Path_6);
+			KGInstantiation(KG_Path_7);
+			KGInstantiation(KG_Path_8);
+			KGInstantiation(KG_Path_9);
+			KGInstantiation(KG_Path_10);
+			KGMainSubNetInstantiation(KG_MainNet, KG_SubNet);
+			BranchInstantiation(BR_Path_0);
+			BranchInstantiation(BR_Path_1);
+			BranchInstantiation(BR_Path_2);
+			BranchInstantiation(BR_Path_3);
 			jsonMessage.accumulate("Result", "Data has been instantiated.");
 		} catch (JPSRuntimeException e) {
 			LOGGER.error(DATAINSTANTIATION, e);
@@ -85,21 +132,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		return jsonMessage;
 	}
 
-	public static void dataInstantiation() {
-		
-		String HG_Path = System.getenv("HGDATA");
-		String KG_Path = System.getenv("KGDATA");
-		String KG_MainNet = System.getenv("KGMainNet");
-		String KG_SubNet = System.getenv("KGSubNet");
-
-		UpdateBuilder SewerageNetwork_ub = 
-				new UpdateBuilder()
-				.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"))
-				.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"));
-		UpdateRequest SewerageNetwork_ur = SewerageNetwork_ub.buildRequest();
-		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", SewerageNetwork_ur.toString());
-		
-				
+	public static void HGInstantiation(String HG_Path) {
 		int HG_column_length = 0;
 		try {
 			HG_column_length = ColNum(HG_Path, ",");
@@ -107,11 +140,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 			e.printStackTrace();
 		}
 
-
 		for (int i = 1; i < HG_column_length; i++) { //HG_column_length; i++) {
-			String[] HG_Instance = ReadCol(i, HG_Path, ","); //System.out.println(i);
-			
-			
+			String[] HG_Instance = ReadCol(i, HG_Path, ","); 
 
 			// Instantiation HG data	
 			String HG_Instance_Name = HG_Instance[0];
@@ -163,8 +193,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 			String HG_GP009B = HG_Instance[46]; 
 			String HG_GP010A = HG_Instance[47]; 
 			String HG_GP010B = HG_Instance[48];
-			
-			
+
+
 			UpdateBuilder SewerageComponentHG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Pipe"))
@@ -175,14 +205,13 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + HG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasSewerageRecords"), NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"))
-					
-					
+
+
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasOwnershipType"), NodeFactory.createURI(KB + "OwnershipType" + HG402))
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasFunctionalState"), NodeFactory.createURI(KB + "FunctionalState" + HG401))
 					.addInsert(NodeFactory.createURI(KB + "OwnershipType" + HG402), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "OwnershipType"))
 					.addInsert(NodeFactory.createURI(KB + "FunctionalState" + HG401), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "FunctionalState"));
 			UpdateRequest SewerageComponentHG_ur = SewerageComponentHG_ub.buildRequest();
-			//System.out.println(SewerageComponentHG_ur.toString());
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", SewerageComponentHG_ur.toString());
 
 
@@ -197,7 +226,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "ChannelType" + HG301), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ChannelType"));
 			UpdateRequest ConstructionPropertiesHG_ur = ConstructionPropertiesHG_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", ConstructionPropertiesHG_ur.toString());
-			
+
 
 			UpdateBuilder BranchConnectionHG_ub = 
 					new UpdateBuilder()
@@ -225,7 +254,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", CrossSectionHG_ur.toString());
 			omHasValue("Length" + HG_Instance_Name, "millimeter", HG307);		
 			omHasValue("Width"  + HG_Instance_Name, "millimeter", HG306);	
-			
+
 
 			UpdateBuilder SewerageFluidHG_ub = 
 					new UpdateBuilder()	
@@ -259,8 +288,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "hasEndpointType" + HG010), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "EndpointType"));
 			UpdateRequest ConnectionPropertiesHG_ur = ConnectionPropertiesHG_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", ConnectionPropertiesHG_ur.toString());
-			
-			
+
+
 			UpdateBuilder LocationInletHG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "InletLocation"), NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name))
@@ -281,7 +310,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009A)
 					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "InletElevationHeight" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "InletElevationHeight" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), NodeFactory.createURI(HG107))
+					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
 					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
@@ -293,8 +322,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest LocationInletHG_ur = LocationInletHG_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", LocationInletHG_ur.toString()); 
 			omHasValue("InletElevationHeight" + HG_Instance_Name, "meter", HG_GP007A);	
-			
-			
+
+
 			UpdateBuilder LocationOutletHG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "OutletLocation"), NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name))
@@ -315,7 +344,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009B)
 					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "OutletElevationHeight" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "OutletElevationHeight" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))	
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), NodeFactory.createURI(HG107))
+					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
 					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
@@ -327,8 +356,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest LocationOutletHG_ur = LocationOutletHG_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", LocationOutletHG_ur.toString());   
 			omHasValue("OutletElevationHeight" + HG_Instance_Name, "meter", HG_GP007B);
-			
-			
+
+
 			if (HG006.equals("None")) {
 				UpdateBuilder MainNetworkHG_ub = 
 						new UpdateBuilder()
@@ -344,7 +373,34 @@ public class SewerageNetworkAgent extends JPSAgent {
 			}
 		}
 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"} where {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"}");	
+	}
 
+
+	public static void KGInstantiation(String KG_Path) {
 		int KG_column_length = 0;
 		try {
 			KG_column_length = ColNum(KG_Path, ",");
@@ -353,7 +409,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		}
 
 		for (int i = 1; i < KG_column_length; i++) { //KG_column_length; i++) {
-			String[] KG_Instance = ReadCol(i, KG_Path, ","); //System.out.println(i);
+			String[] KG_Instance = ReadCol(i, KG_Path, ","); 
 
 			// Instantiation KG data
 			String KG_Instance_Name = KG_Instance[0];	
@@ -395,13 +451,11 @@ public class SewerageNetworkAgent extends JPSAgent {
 			String KG_GP009B = KG_Instance[36];
 
 
-
-
 			UpdateBuilder SewerageComponentKG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Manhole"))
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "componentID"), KG001)	
-	            	.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociateWith"), NodeFactory.createURI(KB + "SewagePlant" + KG108))	
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociateWith"), NodeFactory.createURI(KB + "SewagePlant" + KG108))	
 					.addInsert(NodeFactory.createURI(KB + "SewagePlant" + KG108), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"))	
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"), NodeFactory.createURI(KB + "SewerageUsage" + KG302))
 					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + KG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
@@ -511,10 +565,43 @@ public class SewerageNetworkAgent extends JPSAgent {
 		}
 
 		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
-		
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>}");
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"} where {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"}");
+	}
+
+
+	public static void KGMainSubNetInstantiation (String KG_MainNet, String KG_SubNet) {
 		String[] KG_Main = ReadCol(0,KG_MainNet, ","); 
 		String[] KG_Sub = ReadCol(0,KG_SubNet, ","); 
 		
+		UpdateBuilder SewerageNetwork_ub = 
+				new UpdateBuilder()
+				.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"))
+				.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"));
+		UpdateRequest SewerageNetwork_ur = SewerageNetwork_ub.buildRequest();
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", SewerageNetwork_ur.toString());
+
 		for (int i = 1; i < KG_Main.length; i++) { //KG_Main.length
 			UpdateBuilder KG_main_ub = 
 					new UpdateBuilder()
@@ -522,7 +609,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest KG_main_ur = KG_main_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", KG_main_ur.toString());   
 		}
-		
+
 		for (int i = 1; i < KG_Sub.length; i++) { //KG_Sub.length
 			UpdateBuilder KG_sub_ub = 
 					new UpdateBuilder()
@@ -530,7 +617,40 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest KG_sub_ur = KG_sub_ub.buildRequest();
 			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", KG_sub_ur.toString());   
 		}
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
+	}
 
+	
+	public static void BranchInstantiation (String HG_Branch) {
+		int HG_Branch_length = 0;
+		try {
+			HG_Branch_length = ColNum(HG_Branch, ",");
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < HG_Branch_length; i++) { //HG_Branch_length; i++) {
+			String[] BR_Instance = ReadCol(i, HG_Branch, ","); 
+			String BR_Instance_Name = BR_Instance[0];
+			
+			UpdateBuilder MainPipe_ub = 
+					new UpdateBuilder()
+					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name), NodeFactory.createURI(OS + "hasMainPipe"), NodeFactory.createURI(KB + BR_Instance_Name));		
+			UpdateRequest MainPipe_ur = MainPipe_ub.buildRequest();
+			AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", MainPipe_ur.toString());   
+			
+			for (int j = 1; j < BR_Instance.length; j++) {
+				UpdateBuilder BranchPipe_ub = 
+						new UpdateBuilder()
+						.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name), NodeFactory.createURI(OS + "hasBranchPipe"), NodeFactory.createURI(KB + BR_Instance[j]));	
+				UpdateRequest BranchPipe_ur = BranchPipe_ub.buildRequest();
+				AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", BranchPipe_ur.toString());   
+			}
+			
+		}
+		
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontosewage", "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/None>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/None>}"); 
 	}
 
 	public static void omHasValue(String Instance, String Unit, String NumericalValue) {

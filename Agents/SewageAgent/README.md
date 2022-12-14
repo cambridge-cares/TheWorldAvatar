@@ -42,7 +42,7 @@ Content-Type: application/json
 In curl syntax:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
-\"SewerageNetworkAgent\\":\"DataInstantiation\"}"  http://localhost:1080/seweragenetwork-agent/performsewageupdate
+\"SewerageNetworkAgent\":\"DataInstantiation\"}"  http://localhost:1080/seweragenetwork-agent/performsewageupdate
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
@@ -51,4 +51,4 @@ If the agent runs successfully, you should see a returned JSON Object that is si
 ```
 
 #### Import the CSV data file into the agent
-The number of columns inside CSV data file should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder
+The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder

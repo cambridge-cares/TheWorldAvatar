@@ -29,17 +29,30 @@ WORKDIR /app
 COPY ./config/. /root/
 
 # Set the required environment variables
-ENV HGDATA="/root/HG_instances_0.csv"
-
-ENV KGDATA="/root/KG_instances_0.csv"
-
+ENV HGDATA0="/root/HG_instances_0.csv"
+ENV HGDATA1="/root/HG_instances_1.csv"
+ENV HGDATA2="/root/HG_instances_2.csv"
+ENV HGDATA3="/root/HG_instances_3.csv"
+ENV HGDATA4="/root/HG_instances_4.csv"
+ENV HGDATA5="/root/HG_instances_5.csv"
+ENV HGDATA6="/root/HG_instances_6.csv"
+ENV KGDATA0="/root/KG_instances_0.csv"
+ENV KGDATA1="/root/KG_instances_1.csv"
+ENV KGDATA2="/root/KG_instances_2.csv"
+ENV KGDATA3="/root/KG_instances_3.csv"
+ENV KGDATA4="/root/KG_instances_4.csv"
+ENV KGDATA5="/root/KG_instances_5.csv"
+ENV KGDATA6="/root/KG_instances_6.csv"
+ENV KGDATA7="/root/KG_instances_7.csv"
+ENV KGDATA8="/root/KG_instances_8.csv"
+ENV KGDATA9="/root/KG_instances_9.csv"
+ENV KGDATA10="/root/KG_instances_10.csv"
 ENV KGMainNet="/root/KGMainNetwork.csv"
-
 ENV KGSubNet="/root/KGSubNetwork.csv"
-
-# ENV CLIENTPROPERTY="/root/client.properties"
-
-# ENV MAPPINGSPATH="/root/mappings"
+ENV Branch0="/root/HG_main_sub_instances_final_0.csv"
+ENV Branch1="/root/HG_main_sub_instances_final_1.csv"
+ENV Branch2="/root/HG_main_sub_instances_final_2.csv"
+ENV Branch3="/root/HG_main_sub_instances_final_3.csv"
 
 COPY --from=builder /root/SewerageNetworkAgent/output/seweragenetwork-agent##1.0.0.war $CATALINA_HOME/webapps/
 
