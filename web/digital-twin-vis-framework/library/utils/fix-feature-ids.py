@@ -1,5 +1,5 @@
 #
-# This script aims to update a GeoJSON file so that it better fits the format that MapBox
+# This script aims to update a GeoJSON file so that it better fits the format that Mapbox
 # expects. In particular, if an ID field is listed within the feature's properties, this
 # script will move it to the root of the feature and ensure it has a numerical value.
 #

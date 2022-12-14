@@ -238,7 +238,6 @@ test_release() {
     $PYTHON_EXEC -m pip install testcontainers
     $PYTHON_EXEC -m pip install pytest-docker-compose
     $PYTHON_EXEC -m pip install pytest-rerunfailures
-    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
     run_pyderivationagent_tests $PYTHON_EXEC
 

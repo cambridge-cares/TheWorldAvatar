@@ -28,7 +28,7 @@
 
   <!-- Mass of Substance Concentration Dimension Upper Ontology -->
 
-  <om:Dimension rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration-Dimension">
+  <om:Dimension rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration-Dimension">
     <rdfs:label xml:lang="en">mass of substance concentration dimension</rdfs:label>
     <om:hasSILengthDimensionExponent rdf:datatype="&xsd;integer">-3</om:hasSILengthDimensionExponent>
     <om:hasSIMassDimensionExponent rdf:datatype="&xsd;integer">1</om:hasSIMassDimensionExponent>

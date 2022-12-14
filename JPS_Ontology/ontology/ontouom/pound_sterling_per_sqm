@@ -26,7 +26,7 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
   
-  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm">
+  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm">
      <rdfs:label xml:lang="en">pound sterling per square metre</rdfs:label>
      <om:symbol>£/m2</om:symbol>
      <om:alternativeSymbol>£ m-2</om:alternativeSymbol>

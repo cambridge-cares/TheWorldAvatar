@@ -1,0 +1,17 @@
+// Example HTTP request to update transaction records for list of instantiated properties
+
+// property_iris: IRIs of instantiated buildings for which to instantiate/update property sales data,
+//                delimited by comma WITHOUT line breaks!
+//                (trailing '<' and '>' are optional/not required)
+// min_confidence: (optional) minimum confidence score for address matching when retrieveing property sales
+//                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
+//                 (default: 90)
+
+POST http://165.232.172.16:5002/api/landregistry/update
+Content-Type: application/json
+
+{ "query": {
+      "property_iris": "https://www.theworldavatar.com/kg/ontobuiltenv/Building_0f097c49-1019-4bd6-ae5e-5069db4fcccb, <https://www.theworldavatar.com/kg/ontobuiltenv/Building_52eecb1f-4787-4cc4-8085-73815cba76b6>,<https://www.theworldavatar.com/kg/ontobuiltenv/Building_94ccdd34-943e-4ecb-87ab-692334f0f564>,https://www.theworldavatar.com/kg/ontobuiltenv/Building_92ffff41-e591-45d7-867c-216576674ec5",
+      "min_confidence": 95
+    }
+}

@@ -38,8 +38,8 @@ class TreeHandler {
             // Update visibility
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    visible.forEach(layer => MapBoxUtils.toggleLayer(layer, true));
-                    hidden.forEach(layer => MapBoxUtils.toggleLayer(layer, false));
+                    visible.forEach(layer => MapboxUtils.toggleLayer(layer, true));
+                    hidden.forEach(layer => MapboxUtils.toggleLayer(layer, false));
                 break;
 
                 case MapProvider.CESIUM:
@@ -61,10 +61,11 @@ class TreeHandler {
 
         // Rebuild recursively
         var preCheck = [];
+        var collapse = [];
         var htmlBuilder = [];
 
         for(var i = 0; i < dataStore.dataGroups.length; i++) { 
-            this.buildRecurse(htmlBuilder, dataStore.dataGroups[i], 1, preCheck);
+            this.buildRecurse(htmlBuilder, dataStore.dataGroups[i], 1, preCheck, collapse);
         }
         element.innerHTML += htmlBuilder.join("");
 
@@ -85,6 +86,10 @@ class TreeHandler {
         // @ts-ignore
         $("#treeview").hummingbird("expandAll");
 
+        // Collapse some specific layers
+        // @ts-ignore
+        $("#treeview").hummingbird("collapseNode", {sel: "data-id", vals: collapse});
+
         this.registerEvents(dataStore);
         console.log("Finished rebuilding layer tree.");
     }
@@ -93,7 +98,7 @@ class TreeHandler {
     /**
      * Recursively build HTML elements.
      */
-    private buildRecurse(htmlBuilder: string[], currentGroup: DataGroup, depth: number, preCheck: string[]) {
+    private buildRecurse(htmlBuilder: string[], currentGroup: DataGroup, depth: number, preCheck: string[], collapse: string[]) {
         // Entry for group itself
         let groupHTML = "<li data-id='" + (depth - 1) + "'>";
         groupHTML += "<i class='fa fa-plus'></i>";
@@ -107,7 +112,12 @@ class TreeHandler {
         let needDeeper = (currentGroup.dataLayers.length > 0 || currentGroup.subGroups.length > 0);
         if(needDeeper) groupHTML += "<ul>";
 
-        // Sort layers in the gropu via name (there may be duplicates)
+        // Store if this needs to be collapsed by default
+        if(!currentGroup.defaultExpanded) {
+            collapse.push(currentGroup.id);
+        }
+
+        // Sort layers in the group via name (there may be duplicates)
         let sortedLayers = {};
         currentGroup.dataLayers.forEach(layer => {
             if(sortedLayers[layer.name] === null || sortedLayers[layer.name] === undefined) {
@@ -157,14 +167,20 @@ class TreeHandler {
             // Store if this needs to be prechecked
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    if(value[0] instanceof MapBoxLayer && (<MapBoxLayer> value[0]).isVisible()) {
-                        preCheck.push(dataID);
-                    }
+                    let mbLayer = <MapboxLayer> value[0];
+                    if(mbLayer.isVisible()) preCheck.push(dataID);
                 break;
 
                 case MapProvider.CESIUM:
-                    // Cesium layers always visible by default
-                    preCheck.push(dataID);
+                    let csLayer = <CesiumLayer> value[0];
+                    let dataSources = MapHandler_Cesium.DATA_SOURCES[csLayer.id];
+
+                    if(dataSources == null || dataSources.length === 0) {
+                        let visibility = csLayer.definition["visibility"];
+                        if(visibility == undefined || visibility === "visible") preCheck.push(dataID);
+                    } else {
+                        if(csLayer.isVisible()) preCheck.push(dataID);
+                    }
                 break;
             }
         }
@@ -175,7 +191,7 @@ class TreeHandler {
         // Recurse into sub groups?
         for(var i = 0; i < currentGroup.subGroups.length; i++) {
             let subNode = currentGroup.subGroups[i];
-            this.buildRecurse(htmlBuilder, subNode, depth + 1, preCheck);
+            this.buildRecurse(htmlBuilder, subNode, depth + 1, preCheck, collapse);
         }
 
         // Close

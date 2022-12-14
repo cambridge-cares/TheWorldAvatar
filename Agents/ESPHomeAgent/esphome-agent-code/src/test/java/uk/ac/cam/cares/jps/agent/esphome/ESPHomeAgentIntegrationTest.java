@@ -94,7 +94,7 @@ public class ESPHomeAgentIntegrationTest {
     private List<Class<?>> classes;
     
     //Prefixes
-    public static final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+    public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
  	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(ns_ontology));
  	private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
  	

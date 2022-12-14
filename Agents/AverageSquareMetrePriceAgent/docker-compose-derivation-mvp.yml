@@ -1,0 +1,12 @@
+# This file is provided in order to upload an image to the github Docker registry
+
+version: '3.8'
+services:
+  avgsqmprice_agent_deriv_mvp:
+    image: ghcr.io/cambridge-cares/avgsqmprice_agent_deriv_mvp:1.0.0
+    container_name: avgsqmprice_agent_deriv_mvp
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      target: derivation_mvp

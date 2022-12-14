@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  blazegraph_ocgml:
+    container_name: "blazegraph_ocgml"
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    restart: unless-stopped
+    pull_policy: if_not_present
+    ports:
+      - "4999:8080"
+    volumes:
+      - blazegraph_ocgml:/data
+
+volumes:
+  blazegraph_ocgml:
+    name: "blazegraph_ocgml"

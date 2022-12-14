@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -39,8 +39,8 @@ public class MinValueAgent extends DerivationAgent {
 	private static final long serialVersionUID = 1L;
 	public static final String URL_MINVALUE = "/MinValueAgent";
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);
-	
-	StoreClientInterface storeClient;
+
+	TripleStoreClientInterface storeClient;
 	SparqlClient sparqlClient;
 
 	public MinValueAgent() {
@@ -50,14 +50,14 @@ public class MinValueAgent extends DerivationAgent {
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		LOGGER.info("Received request: " + derivationInputs.toString());
-    	
-    	if (validateInput(derivationInputs, sparqlClient)) {
-    		String inputdata_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData)).get(0);
-    		
-    		// query from RDB using TimeSeries Client
-    		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-    		Integer minvalue = (int) tsClient.getMinValue(inputdata_iri);
-			
+
+		if (validateInput(derivationInputs, sparqlClient)) {
+			String inputdata_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData)).get(0);
+
+			// query from RDB using TimeSeries Client
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			Integer minvalue = (int) tsClient.getMinValue(inputdata_iri);
+
 			// write the output triples to derivationOutputs
 			String min_iri = SparqlClient.namespace + UUID.randomUUID().toString();
 			derivationOutputs.createNewEntity(min_iri, SparqlClient.getRdfTypeString(SparqlClient.MinValue));
@@ -67,15 +67,15 @@ public class MinValueAgent extends DerivationAgent {
 			derivationOutputs.addTriple(sparqlClient.addValueInstance(min_iri, value_iri, minvalue));
 			LOGGER.info(
 					"Created a new min value instance <" + min_iri + ">, and its value instance <" + value_iri + ">");
-    	} else {
+		} else {
 			throw new BadRequestException("Input validation failed.");
 		}
 	}
-	
+
 	private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) {
 		boolean valid = false;
 		LOGGER.debug("Checking input for MinValue agent");
-		
+
 		List<String> inputData = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData));
 		if (inputData.size() == 1) {
 			String inputDataIri = inputData.get(0);
@@ -87,7 +87,7 @@ public class MinValueAgent extends DerivationAgent {
 		} else {
 			throw new BadRequestException("Incorrect number of inputs");
 		}
-		
+
 		return valid;
 	}
 
