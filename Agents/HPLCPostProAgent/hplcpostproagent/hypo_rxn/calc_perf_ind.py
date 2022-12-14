@@ -104,9 +104,13 @@ def calculate_space_time_yield(rxn_exp_instance: ReactionExperiment, hypo_reacto
         residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
         reactor_volume = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, unit_conv.UNIFIED_VOLUME_UNIT)
 
-        _sty = round(prod_run_mass / residence_time / reactor_volume, 2) # Round the decimal place
+        _sty_at_unified_unit = prod_run_mass / residence_time / reactor_volume
+        # NOTE here we scale the unit from (kg per litre per minute) to (g per litre per hour) to increase the visual impact
+        # Otherwise it will become 0.00 after rounding the decimal place
+        _sty_at_scaled_unit = unit_conv.unit_conversion_return_value(_sty_at_unified_unit, unit_conv.UNIFIED_SPACETIMEYIELD_UNIT, unit_conv.SCALED_SPACETIMEYIELD_UNIT)
+        _sty = round(_sty_at_scaled_unit, 2) # Round the decimal place
 
-    pi_sty = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _sty, unit_conv.UNIFIED_SPACETIMEYIELD_UNIT)
+    pi_sty = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _sty, unit_conv.SCALED_SPACETIMEYIELD_UNIT)
 
     return pi_sty
 

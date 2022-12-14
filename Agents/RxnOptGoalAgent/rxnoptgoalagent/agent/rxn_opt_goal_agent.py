@@ -540,8 +540,8 @@ class RxnOptGoalAgent(ABC):
         fig, ax = plt.subplots(figsize=(10, 10))
         _legend_lst = []
         for key, value in _obj_dct.items():
-            ax.plot(_df['Goal Iteration (-)'], _df[key].apply(lambda x: unit_conv.unit_conversion_return_value(_result_val_dct[x]['value'], _result_val_dct[x]['unit'], UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])), 'o')
-            _legend_lst.append(key+f' ({getShortName(UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])})')
+            ax.plot(_df['Goal Iteration (-)'], _df[key].apply(lambda x: unit_conv.unit_conversion_return_value(_result_val_dct[x]['value'], _result_val_dct[x]['unit'], DISPLAY_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])), 'o')
+            _legend_lst.append(key+f' ({getShortName(DISPLAY_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])})')
         ax.set_xlabel('Goal Iteration (-)')
         ax.legend(_legend_lst)
         canvas = FigureCanvas(fig)
