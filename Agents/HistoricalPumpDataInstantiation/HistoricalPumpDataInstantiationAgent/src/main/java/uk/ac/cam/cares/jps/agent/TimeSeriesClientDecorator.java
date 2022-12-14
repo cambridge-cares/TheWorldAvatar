@@ -84,9 +84,6 @@ class TimeSeriesClientDecorator {
             try (Connection conn = rdbClient.getConnection()) {
                 tsClient.initTimeSeries(iris, classes, this.timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
                 LOGGER.debug(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-            } finally {
-                // Always close connection
-                rdbClient.getConnection().close();
             }
         }
     }
@@ -101,8 +98,8 @@ class TimeSeriesClientDecorator {
     private boolean timeSeriesDoesNotExist(List<String> iris) throws SQLException {
         // If any of the IRIs does not have a time series the time series does not exist
         for (String iri : iris) {
-            try {
-                if (!tsClient.checkDataHasTimeSeries(iri, rdbClient.getConnection())) {
+            try (Connection conn = rdbClient.getConnection()) {
+                if (!tsClient.checkDataHasTimeSeries(iri, conn)) {
                     return true;
                 }
                 // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
@@ -112,9 +109,6 @@ class TimeSeriesClientDecorator {
                 } else {
                     throw e;
                 }
-            } finally {
-                // Always close connection
-                rdbClient.getConnection().close();
             }
         }
         return false;
@@ -129,19 +123,11 @@ class TimeSeriesClientDecorator {
     protected void updateData(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
         TimeSeries<Instant> timeSeries = convertReadingsToTimeSeries(excelReadings, iriMappings);
         // Update each time series
-        try {
-            tsClient.addTimeSeriesData(timeSeries, rdbClient.getConnection());
+        try (Connection conn = rdbClient.getConnection()) {
+            tsClient.addTimeSeriesData(timeSeries, conn);
         } catch (SQLException e) {
             LOGGER.error(e);
             throw new JPSRuntimeException(e);
-        } finally {
-            // Always close connection
-            try {
-                rdbClient.getConnection().close();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-                throw new JPSRuntimeException(e);
-            }
         }
         LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", timeSeries.getDataIRIs())));
     }
