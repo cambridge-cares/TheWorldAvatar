@@ -90,7 +90,7 @@ MODEL_MAPPING['PIRMASENS'] = {
     },
     'resample_data': 'M',
     'frequency': dt.timedelta(days=31),
-    'data_length': 100,
+    'data_length': 1000,
     'ts_data_type': DOUBLE,
 }
 

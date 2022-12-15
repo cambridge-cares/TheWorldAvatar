@@ -5,7 +5,6 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.0.0",
                 "Env": [
-                    "STACK_NAME=TEST",
                     "NAMESPACE=excel",
                     "DATABASE=excel"
                 ],
