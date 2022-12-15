@@ -97,8 +97,9 @@ class AvgSqmPriceAgent(DerivationAgent):
         if inputs.get(LRPPI_TRANSACTION_RECORD):
             tx_iris = inputs.get(LRPPI_TRANSACTION_RECORD)
         else:
-            self.logger.error(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
-            raise Exception(f"Derivation {derivationIRI}: Previous property sales transactions are missing.")
+            # Return empty list (instead of None) for non available previous transactions
+            tx_iris = []
+            self.logger.info(f"Derivation {derivationIRI}: No previous property sales transactions available for postcode.")
 
         return postcode_iri, ppi_iri, tx_iris
 
@@ -203,9 +204,10 @@ class AvgSqmPriceAgent(DerivationAgent):
                 avg = round(df['avg_curr'].mean())
 
                 # Instantiate/update current average square metre price in KG
-                avgsm_price_iri = self.sparql_client.get_avgsm_price_iri(postcode_iri)
-                if not avgsm_price_iri:
-                    avgsm_price_iri = KB + 'AveragePricePerSqm_' + str(uuid.uuid4())
+                # NOTE Derivation Framework faces issues if instance IRI is already associated 
+                # with another derivation --> create new derivation instance IRI for each update;
+                # The framework ensures that the "outdated" IRI is replaced with this new one
+                avgsm_price_iri = KB + 'AveragePricePerSqm_' + str(uuid.uuid4())
                 
                 # Create instantiation/update triples
                 triples = self.sparql_client.instantiate_average_price(avg_price_iri=avgsm_price_iri,
@@ -284,5 +286,5 @@ def default():
     """
     msg  = "This is an asynchronous agent to calculate the average square metre price of properties per postcode.<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AverageSquareMetrePriceAgent/Agents/AverageSquareMetrePriceAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent<BR>"
     return msg
