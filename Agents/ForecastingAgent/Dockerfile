@@ -52,8 +52,7 @@ ENV FLASK_DEBUG=1
 
 # Launch application in container
 WORKDIR /app/forecasting/flaskapp/
-#CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
-CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------
