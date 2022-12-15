@@ -12,6 +12,12 @@ class ConfigKG(Config):
     SPARQL_UPDATE_ENDPOINT: str
     KG_USERNAME: str
     KG_PASSWORD: str
+    FILE_SERVER_ENDPOINT: str
+    FILE_SERVER_USERNAME: str
+    FILE_SERVER_PASSWORD: str
+    EMAIL_RECIPIENT: str
+    EMAIL_USERNAME: str
+
 
 # Folder paths
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
