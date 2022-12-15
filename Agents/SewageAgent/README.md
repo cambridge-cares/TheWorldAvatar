@@ -1,5 +1,4 @@
 # Sewerage Network Agent
-
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the sewerage network located in a midsize town in Germany. Its purpose is to instantiate instances of the sewerage network. 
 
 ## Usage 
@@ -8,9 +7,9 @@ This part of the README describes the usage of the sewerage network agent. The m
 The next section explains the requirements to run the agent.
 
 ### Requirements
-It is required to have access to a knowledge graph SPARQL endpoint. It can run on the same machine or need to be accessible from the host machine via a fixed URL.
+It is required to have access to a knowledge graph SPARQL endpoint. A namespace "ontosewage" is required to be set up in the blazegraph workbench. Access-agent-dev-stack is also required in the Docker container for uploading the data triples into the blazegraph.
 
-This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store.
+This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store. 
 
 #### Building the Sewerage Network Agent
 
@@ -51,4 +50,4 @@ If the agent runs successfully, you should see a returned JSON Object that is si
 ```
 
 #### Import the CSV data file into the agent
-The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder
+The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder. It is able to take in all the CSV files and instantiate them all at once.
