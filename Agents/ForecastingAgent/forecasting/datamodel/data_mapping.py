@@ -39,6 +39,9 @@ Required:
         'model_path_pth_link': The link to the darts pth file of the model
     
 Optional:
+'resample_data': String specifying the resampling frequency for irregularly spaced time series data, e.g. 'D', 'M',...
+                 For supported options see: 'resample_data': pandas.DataFrame.resample
+                 (This key is optional and helps to avoid issues with Darts TimeSeries handling with irregular frequencies)
 'load_covariates_func': The function which is used to load the covariates. If not provided, no covariates are loaded.
     Be aware, that the returned covariates must be available for the whole 'horizon'. 
     If the covariates are not long enough, Prophet is used, which does not require covariates.
@@ -78,6 +81,19 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 MODEL_MAPPING = {}
 
+# Tailored mapping for House 45 time series in Pirmasens
+MODEL_MAPPING['PIRMASENS'] = {
+    'fc_model': {
+        'train_again': True,
+        'name': 'prophet',
+        'scale_data': False,
+    },
+    'resample_data': 'M',
+    'frequency': dt.timedelta(days=31),
+    'data_length': 100,
+    'ts_data_type': DOUBLE,
+}
+
 # Default mapping which uses Prophet and loads just iri without covariates
 MODEL_MAPPING['DEFAULT'] = {
     'fc_model': {
@@ -90,6 +106,7 @@ MODEL_MAPPING['DEFAULT'] = {
     'ts_data_type': DOUBLE,
 }
 
+# Tailored mapping for district heating heat demand in Pirmasens
 MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
     'load_covariates_func': get_covs_heat_supply,
     'fc_model': {

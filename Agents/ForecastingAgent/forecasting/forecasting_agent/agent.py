@@ -1,5 +1,6 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+#          Markus Hofmeister (mh807@cam.ac.uk) # 
 # Date: 30 Nov 2022                            #
 ################################################
 
@@ -121,6 +122,11 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
                 f'horizon: {cfg["horizon"]} is smaller than output_chunk_length: {model.model_params["output_chunk_length"]}. Specify a horizon bigger than the output_chunk_length of your model.')
             
     elif 'DEFAULT' == cfg['model_configuration_name']:
+        logger.info('Using Prophet model.')
+        model = Prophet()
+        cfg['fc_model']['input_length'] = len(series)
+    #TODO: Potentially to be revisited / aligned with other configurations
+    elif 'PIRMASENS' == cfg['model_configuration_name']:
         logger.info('Using Prophet model.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
@@ -304,7 +310,6 @@ def load_ts_data(cfg, kgClient, tsClient):
     :return: the timeseries and covariates.
     """
 
-
     if 'load_covariates_func' in cfg:
         # load covariates
         logger.info('Loading covariates with function: ' + cfg['load_covariates_func'].__name__)
@@ -323,11 +328,25 @@ def load_ts_data(cfg, kgClient, tsClient):
                       cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
 
     # df to darts timeseries
-    #series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series") 
-    #NOTE Inlcude handling for irregularly spaced time series data (likely to
-    #     be refined in the future)
-    series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series",
-                                       fill_missing_dates=True, freq=None)
+    #NOTE Inlcuded resampling for irregularly spaced time series data to avoid issues
+    #     with Darts being unable to retrieve frequency of time series
+    #     (likely to be refined in the future)
+
+    if cfg.get('resample_data'):
+        df_resampled = df.set_index('Date').copy()
+        df_resampled = df_resampled.resample(cfg.get('resample_data')).mean()
+        df = df_resampled.reset_index()
+
+    try:
+        # Build a deterministic TimeSeries instance from DataFrame as is
+        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series")
+    except ValueError:
+        # Fill missing times with NaN values if processing DataFrame as is fails;
+        # requires possibility to infer the frequency from the provided timestamps
+        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series",
+                                           fill_missing_dates=True, 
+                                           freq=None)
+
     # remove nan values at beginning and end
     series = series.strip()
 
