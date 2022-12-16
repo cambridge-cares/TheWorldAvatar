@@ -91,8 +91,27 @@ public class HeatNetworkInputAgent {
 
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(HeatNetworkInputAgentLauncher.class);
+    
+    
+    // For TS IRI
+    public static String WaermeleistungKessel4 = "";
+    public static String WaermeleistungKessel5= "";
+    public static String WaermeleistungKessel6="";
+    public static String CO2Preis="";
+    public static String GTWaermeleistung="";
+    public static String GaspreisGT="";
+    public static String WaermemengeInnenstadt="";
+    public static String TempRuecklauf="";
+    public static String MHKWTempVorlauf="";
+    public static String TempVorlauf="";
+    public static String Spotpreis="";
+    public static String WaermemengeMHKW="";
+    public static String GaspreisKessel="";
+    public static String Aussentemperatur="";
+    public static String Waermeeinspeisung="";
+    public static String MHKWTempRuecklauf="";
 
-   // The instantiation of static data
+    // The instantiation of static data
     public void dataInstantiation() {
 
         String staticData = System.getenv("CSVPATH");
@@ -135,8 +154,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HeatDemand"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatDemand"));
         UpdateRequest Consumer_ur = Consumer_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", Consumer_ur.toString());
-        omHasValueTS("EnergyInTimeInterval" + "HeatDemand", "MegaWattHour");
-
+       
 
         // For the Heating Network part
         UpdateBuilder HeatingNetwork_ub =
@@ -155,7 +173,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HeatingNetwork"), NodeFactory.createURI(OHN + "hasMinFlowRate"), NodeFactory.createURI(KB + "VolumetricFlowRate"))
                         .addInsert(NodeFactory.createURI(KB + "VolumetricFlowRate"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_VFR));
         UpdateRequest HeatingNetwork_ur = HeatingNetwork_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", Consumer_ur.toString());
+        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", HeatingNetwork_ur.toString());
         omHasValueNonTS("VolumetricFlowRate", "CubicMeterPerHour", Value_VolumetricFlowRate);
 
 
@@ -196,22 +214,6 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "DownEfW" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE));
         UpdateRequest GridConnection_ur = GridConnection_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", GridConnection_ur.toString());
-        omHasValueTS("UPMunicipal" + "SHC", "JoulePerKelvinPerKilogram");
-        omHasValueTS("DownMunicipal" + "SHC", "JoulePerKelvinPerKilogram");
-        omHasValueTS("UPEfW" + "SHC", "JoulePerKelvinPerKilogram");
-        omHasValueTS("DownEfW" + "SHC", "JoulePerKelvinPerKilogram");
-        omHasValueTS("UPMunicipal" + "Density", "KilogramPerCubicMeter");
-        omHasValueTS("DownMunicipal" + "Density", "KilogramPerCubicMeter");
-        omHasValueTS("UPEfW" + "Density", "KilogramPerCubicMeter");
-        omHasValueTS("DownEfW" + "Density", "KilogramPerCubicMeter");
-        omHasValueTS("UPMunicipal" + "Pressure", "Bar");
-        omHasValueTS("DownMunicipal" + "Pressure", "Bar");
-        omHasValueTS("UPEfW" + "Pressure", "Bar");
-        omHasValueTS("DownEfW" + "Pressure", "Bar");
-        omHasValueTS("UPMunicipal" + "Temperature", "DegreeCelsius");
-        omHasValueTS("DownMunicipal" + "Temperature", "DegreeCelsius");
-        omHasValueTS("UPEfW" + "Temperature", "DegreeCelsius");
-        omHasValueTS("DownEfW" + "Temperature", "DegreeCelsius");
 
 
         // For the HeatProvider part
@@ -276,9 +278,6 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "MinPower" + "IncinerationPlant"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER));
         UpdateRequest IncinerationPlant_ur = IncinerationPlant_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", IncinerationPlant_ur.toString());
-        omHasValueTS("EnergyInTimeInterval" + "IncinerationPlant", "MegaWattHour");
-        omHasValueTS("MaxPower" + "IncinerationPlant", "MegaWattHour");
-        omHasValueTS("MinPower" + "IncinerationPlant", "MegaWattHour");
 
 
         // For GasTurbine part
@@ -299,8 +298,6 @@ public class HeatNetworkInputAgent {
         omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "MegaWatt", Value_RatedElectricalPower);
         omHasValueNonTS("ThermalLoad" + "HeatGeneratorGT", "MegaWatt", Value_MinimumThermalLoad);
         omHasValueNonTS("IdleTime" + "HeatGeneratorGT", "Hour", Value_MinimumIdleTime);
-        omHasValueTS("EnergyInTimeInterval" + "HeatGeneratorGT", "MegaWattHour");
-        omHasValueTS("CoGenRevenueInTimeInterval", "Euro");
 
 
         // For Contract part
@@ -348,7 +345,6 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsSchoolVacation"))
                         .addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(EMS + "AirTemperature"));
         UpdateRequest CalendarEffect_ur = CalendarEffect_ub.buildRequest();
-        omHasValueTS("AirTemperature", "DegreeCelsius");
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", CalendarEffect_ur.toString());
 
 
@@ -365,15 +361,73 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "DemandDrivenWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "emandDrivenWearCost"));
         UpdateRequest UnitRate_ur = UnitRate_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", UnitRate_ur.toString());
-        omHasValueTS("GridCharges", "EuroPerMegaWattHour");
-        omHasValueTS("ElectricitySpotPrice", "EuroPerMegaWattHour");
-        omHasValueTS("CHPBonus", "EuroPerMegaWattHour");
-        omHasValueTS("CO2CertificatePrice", "EuroPerTon");
-        omHasValueTS("GasUnitCost", "EuroPerMegaWattHour");
-        omHasValueTS("HourlyLabourCost", "EuroPerHour");
-        omHasValueTS("HourlyWearCost", "EuroPerHour");
-        omHasValueTS("DemandDrivenWearCost", "EuroPerMegaWattHour");
-    }
+
+        String mappingFolder = System.getenv("MAPPINGSPATH");
+        try {
+            readMappings(mappingFolder);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+
+        for (JSONKeyToIRIMapper mapping : mappings) {
+            List<String> iris = mapping.getAllIRIs();
+            WaermeleistungKessel4=iris.get(0);
+            WaermeleistungKessel5=iris.get(1);
+            WaermeleistungKessel6=iris.get(2);
+            CO2Preis=iris.get(3);
+            GTWaermeleistung=iris.get(4);
+            GaspreisGT=iris.get(5);
+            WaermemengeInnenstadt=iris.get(6);
+            TempRuecklauf=iris.get(7);
+            MHKWTempVorlauf=iris.get(8);
+            TempVorlauf=iris.get(9);
+            Spotpreis=iris.get(10);
+            WaermemengeMHKW=iris.get(11);
+            GaspreisKessel=iris.get(12);
+            Aussentemperatur=iris.get(13);
+            Waermeeinspeisung=iris.get(14);
+            MHKWTempRuecklauf=iris.get(15);
+        }
+    
+        
+        UpdateBuilder TSIRI_ub =
+        		new UpdateBuilder()
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorBoil4"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermeleistungKessel4))
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorBoil5"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermeleistungKessel5))
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorBoil6"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermeleistungKessel6))
+        		.addInsert(NodeFactory.createURI(KB + "CO2CertificatePrice"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(CO2Preis))
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorGT"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GTWaermeleistung))
+        		.addInsert(NodeFactory.createURI(KB + "GasUnitCost"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GaspreisGT))
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeInterval" + "HeatDemand"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermemengeInnenstadt))
+        		.addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(TempRuecklauf))
+        		.addInsert(NodeFactory.createURI(KB + "DownEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempVorlauf))
+        		.addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(TempVorlauf))
+        		.addInsert(NodeFactory.createURI(KB + "ElectricitySpotPrice"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Spotpreis))
+        		.addInsert(NodeFactory.createURI(KB + "ProvidedHeatAmount"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermemengeMHKW))
+        		.addInsert(NodeFactory.createURI(KB + "FuelCost" + "Boiler"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GaspreisKessel))
+        		.addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Aussentemperatur))
+        		.addInsert(NodeFactory.createURI(KB + "SumofEnergy"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Waermeeinspeisung))
+        		.addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempRuecklauf));
+        UpdateRequest TSIRI_ur = TSIRI_ub.buildRequest();
+        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", TSIRI_ur.toString());
+      
+        omHasValueTS("MegaWattHour", WaermeleistungKessel4);
+        omHasValueTS("MegaWattHour", WaermeleistungKessel5);
+        omHasValueTS("MegaWattHour", WaermeleistungKessel6);
+        omHasValueTS("EuroPerTon", CO2Preis);
+        omHasValueTS("MegaWattHour", GTWaermeleistung);
+        omHasValueTS("EuroPerMegaWattHour", GaspreisGT);
+        omHasValueTS("MegaWattHour",WaermemengeInnenstadt);
+        omHasValueTS("DegreeCelsius", TempRuecklauf);
+        omHasValueTS("DegreeCelsius", MHKWTempVorlauf);
+        omHasValueTS("DegreeCelsius", TempVorlauf);
+        omHasValueTS("EuroPerMegaWattHour", Spotpreis);
+        omHasValueTS("MegaWattHour", WaermemengeMHKW);
+        omHasValueTS("EuroPerMegaWattHour", GaspreisKessel); 
+        omHasValueTS("DegreeCelsius", Aussentemperatur);
+        omHasValueTS("MegaWatt", Waermeeinspeisung);
+        omHasValueTS("DegreeCelsius", MHKWTempRuecklauf);    
+    }    
 
     // For the instance of HeatGenerator part
     public void HeatGeneratorUpdate(String HeatGenerator_instance, float Value_ThermalLoad, float Value_HCV, float Value_LCV, float Value_CO2Factor) {
@@ -415,21 +469,10 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "LabourCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LabourCost"));
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
         AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", HeatGenerator_instance_ur.toString());
-        omHasValueTS("DurationInTimeInterval" + HeatGenerator_instance, "Hour");
-        omHasValueTS("EnergyInTimeIntervalGA" + HeatGenerator_instance, "MegaWattHour");
-        omHasValueTS("EnergyInTimeIntervalHA" + HeatGenerator_instance, "MegaWattHour");
-        omHasValueTS("CO2EmissionInTimeInterval" + HeatGenerator_instance, "Ton");
         omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
         omHasValueNonTS("HigherCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_HCV);
         omHasValueNonTS("LowerCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_LCV);
         omHasValueNonTS("NaturalGasCO2Factor" + HeatGenerator_instance, "TonPerMegaWattHour", Value_CO2Factor);
-        omHasValueTS("StartUpCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("ShutDownCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("VariableWearCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("FuelCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("EmissionCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("FixedWearCost" + HeatGenerator_instance, "Euro");
-        omHasValueTS("LabourCost" + HeatGenerator_instance, "Euro");
     }
 
 
@@ -449,12 +492,11 @@ public class HeatNetworkInputAgent {
 
 
     // Update the time-series triples part
-    public void omHasValueTS(String Instance, String Unit) {
+    public void omHasValueTS(String Unit, String TSIRI) {
         UpdateBuilder omHasValueTS_ub =
                 new UpdateBuilder()
-                        .addInsert(NodeFactory.createURI(KB + Instance), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(KB + "Measure" + Instance))
-                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
-                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
+                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
+                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit);
         UpdateRequest omHasValueTS_ur = omHasValueTS_ub.buildRequest();
