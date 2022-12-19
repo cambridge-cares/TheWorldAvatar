@@ -17,7 +17,6 @@ from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-
 class TSClient:
 
     # Create ONE JVM module view on class level and import all required java classes

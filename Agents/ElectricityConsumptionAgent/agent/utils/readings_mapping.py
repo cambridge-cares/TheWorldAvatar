@@ -21,10 +21,10 @@ Instant = jpsBaseLibView.java.time.Instant
 TIMECLASS = Instant.now().getClass()
 # Data class (i.e. all data as double)
 DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
-
 # Times are reported in ISO 8601 dateTime (UTC)
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
+'''
 # Mapping of observation variables to OntoEMS concepts
 READINGS_MAPPING = {
     'Temperature': AIR_TEMPERATURE,
@@ -89,3 +89,4 @@ VISIBILITY = {
     'VG': 40000.0,   # Very good - Between 20-40 km
     'EX': 60000.0    # Excellent - More than 40 km
 }
+'''

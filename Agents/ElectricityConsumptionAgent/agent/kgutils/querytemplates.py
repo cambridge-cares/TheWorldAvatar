@@ -19,13 +19,6 @@ def input_query_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,c
          variables to be imported as data to the knowledge graph.
          Specific definitions can be refered to the reference
     '''
-    # Add prefix to strings
-    mes_uuid = COMPA + str(mes_uuid)
-    used_uuid = COMPA + str(used_uuid)
-    kw_uuid = COMPA + str(kw_uuid)
-    met_uuid = COMPA + str(met_uuid)
-
-    region = ONS_ID + region
 
     triples = f""" <{mes_uuid}> <{RDF_TYPE}> <{OM_MEASURE}>.
                 <{mes_uuid}> <{OM_HAS_UNIT}> <{OM_KW}>.
