@@ -370,26 +370,24 @@ public class HeatNetworkInputAgent {
         }
 
         for (JSONKeyToIRIMapper mapping : mappings) {
-            List<String> iris = mapping.getAllIRIs();
-            WaermeleistungKessel4=iris.get(0);
-            WaermeleistungKessel5=iris.get(1);
-            WaermeleistungKessel6=iris.get(2);
-            CO2Preis=iris.get(3);
-            GTWaermeleistung=iris.get(4);
-            GaspreisGT=iris.get(5);
-            WaermemengeInnenstadt=iris.get(6);
-            TempRuecklauf=iris.get(7);
-            MHKWTempVorlauf=iris.get(8);
-            TempVorlauf=iris.get(9);
-            Spotpreis=iris.get(10);
-            WaermemengeMHKW=iris.get(11);
-            GaspreisKessel=iris.get(12);
-            Aussentemperatur=iris.get(13);
-            Waermeeinspeisung=iris.get(14);
-            MHKWTempRuecklauf=iris.get(15);
+        		WaermeleistungKessel4=mapping.getIRI("WaermeleistungKessel4");		
+        		WaermeleistungKessel5=mapping.getIRI("WaermeleistungKessel5");	
+        		WaermeleistungKessel6=mapping.getIRI("WaermeleistungKessel6");				
+        		CO2Preis=mapping.getIRI("CO2Preis");		
+        		GTWaermeleistung=mapping.getIRI("GTWaermeleistung");	
+        		GaspreisGT=mapping.getIRI("GaspreisGT");	
+        		WaermemengeInnenstadt=mapping.getIRI("WaermemengeInnenstadt");	
+        		TempRuecklauf=mapping.getIRI("TempRuecklauf");	
+        		MHKWTempVorlauf=mapping.getIRI("MHKWTempVorlauf");		
+        		TempVorlauf=mapping.getIRI("TempVorlauf");			
+        		Spotpreis=mapping.getIRI("Spotpreis");		
+        		WaermemengeMHKW=mapping.getIRI("WaermemengeMHKW");		
+        		GaspreisKessel=mapping.getIRI("GaspreisKessel");	
+        		Aussentemperatur=mapping.getIRI("Aussentemperatur");			
+        		Waermeeinspeisung=mapping.getIRI("Waermeeinspeisung");			
+        		MHKWTempRuecklauf=mapping.getIRI("MHKWTempRuecklauf");		
         }
-    
-        
+
         UpdateBuilder TSIRI_ub =
         		new UpdateBuilder()
         		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorBoil4"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermeleistungKessel4))
