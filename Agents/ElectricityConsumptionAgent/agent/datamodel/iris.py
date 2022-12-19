@@ -4,6 +4,8 @@
 GAS = "http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#"
 COMP = "http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#"
 COMPA = "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/"
+CLIMB =  "http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#"
+OFP = "http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#"
 
 ###--- --- --- --- --- Common Base URLs --- --- --- --- ---###
 
@@ -25,14 +27,25 @@ TS = "https://www.theworldavatar.com/kg/ontotimeseries/"
 
 # OntoGasgrid
 COMP_HASCONSUMED = COMP + 'hasConsumed'
+COMP_HASUSED = COMP + 'hasUsed'
 COMP_ELEC = COMP + "Electricity"
 COMP_HAS_STARTUTC = COMP + "hasStartUTC"
 COMP_HAS_ENDUTC = COMP + "hasEndUTC"
 
-
 GAS_ELEC = GAS + "ElecMeters"
 GAS_HAS_ELECMETERS = GAS + "hasElecMeters"
 GAS_HAS_CONSUM_ELECMETERS = GAS + "hasConsumingElecMeters"
+GAS_HAVE_GASMETERS = GAS + "hasGasMeters"
+GAS_HAVE_CONSUM_GASMETERS = GAS +"hasConsumingGasMeters"
+GAS_HAVE_NONCONSUM_GASMETERS = GAS +"hasNonConsumingGasMeters"
+
+# Ontofuelpoverty
+OFP_HASHOUSEHOLD = OFP + 'hasHouseholds'
+
+
+# OntoClimate
+CLIMB_HASMEASURE = CLIMB + "hasClimateMeasurement"
+CLIMB_HASVAR = CLIMB + "hasClimateVariable"
 
 # OntoTimeSeries
 TS_TIMESERIES = TS + "TimeSeries"

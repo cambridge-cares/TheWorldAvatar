@@ -10,7 +10,7 @@
 from math import nan
 
 from agent.datamodel.iris import *
-from agent.datamodel.observation_types import *
+#from agent.datamodel.observation_types import *
 from agent.kgutils.javagateway import jpsBaseLibGW
 
 

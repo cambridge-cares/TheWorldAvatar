@@ -11,19 +11,14 @@ from agent.datamodel.iris import *
 from agent.kgutils.stackclients import PostGISClient
 '''
 
-def input_query_template(
-    mes_uuid,
-    used_uuid,
-    start_time,
-    end_time,
-    region,
-    kw_uuid,
-    cons,
-    met_uuid,
-    meters,
-    non_meters: int = None,
-) -> str:
-
+def input_query_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters,non_meters: int = None) -> str:
+    '''
+        Return strings of SPARQL Update query regarding to each triple
+        
+        Arguments:
+         variables to be imported as data to the knowledge graph.
+         Specific definitions can be refered to the reference
+    '''
     # Add prefix to strings
     mes_uuid = COMPA + str(mes_uuid)
     used_uuid = COMPA + str(used_uuid)
@@ -55,6 +50,62 @@ def input_query_template(
 
     return triples
 
+def output_query_template(keyword, iris = True):
+    '''
+        Return the SPARQL query string for Electricity, Gas, Fuel poverty, Temperature, ONS output area.
+
+        Arguments:
+         Keyword: 'Electricity'/'Gas'/'Fuel poverty'/'Temperature'/'ONS output area'
+                   Each keyword will generate a specific query string to obtain the data from the KG
+
+    '''
+    query = f'''SELECT DISTINCT ?s'''
+    # 'Electricity' - return LOSA code, electricity usage, number of electricity meters
+    if keyword == 'Electricity' or 'Gas':
+        query+= ' ?usage ?con'
+    # 'Gas' - return LOSA code, gas usage, number of gas consuming meters, number of gas non consuming meters
+        if keyword == 'Gas':
+            query+= ' ?non'
+    if keyword == 'Temperature':
+    # 'Temperature' - return LOSA code, start time, end time, variable (min/mean/max), temperature value
+        query+=' ?start ?end ?var ?t'
+
+    # If the dataIRI is needed
+    if keyword == 'Electricity' and iris == True:
+        query+= ' ?coniri ?meteriri'
+
+    #--------------------------Main Query body----------------------------------------------------#
+    query+=   ' WHERE {'
+    query+=   f"""?s <{RDF_TYPE}> <{ONS_DEF_STAT}>;"""
+        
+
+    if keyword == 'Electricity':
+        query+= f"""<{COMP_HASCONSUMED}> ?elec;
+                    <{GAS_HAS_ELECMETERS}> ?meteriri.
+    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?con.
+    ?energy <{OM_HAS_PHENO}> ?elec;
+            <{OM_HAS_VALUE}> ?coniri.
+    ?coniri <{OM_HAS_NUMERICALVALUE}> ?usage. 
+    """
+
+
+    if keyword == 'Gas':
+        query+= f"""<{COMP_HASUSED}> ?gas;
+                    <{GAS_HAVE_GASMETERS}> ?met.
+        ?met <{GAS_HAVE_CONSUM_GASMETERS}> ?con;
+             <{GAS_HAVE_NONCONSUM_GASMETERS}> ?non.
+        ?energy <{OM_HAS_PHENO}> ?gas;
+                 <{OM_HAS_VALUE}> ?enval.
+        ?enval <{OM_HAS_NUMERICALVALUE}>  ?usage.
+        """
+
+
+    if keyword == 'Temperature':
+        query+= f"""
+        """
+
+    query+= "}"
+    return query
 
 '''
 def add_om_quantity(
