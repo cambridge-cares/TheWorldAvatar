@@ -35,7 +35,7 @@ public class LocalTempDir extends TempDir {
             try {
                 FileUtils.copyDirectory(sourcePath.toFile(), targetDir.toFile());
                 try (Stream<Path> paths = Files.walk(targetDir).parallel()) {
-                    paths.forEach(this::changeOwner);
+                    paths.forEach(this::changePermissions);
                 }
             } catch (IOException ex) {
                 throw new RuntimeException(
@@ -46,14 +46,14 @@ public class LocalTempDir extends TempDir {
             try {
                 Path targetFile = targetDir.resolve(sourcePath.getFileName());
                 Files.copy(sourcePath, targetFile);
-                changeOwner(targetFile);
+                changePermissions(targetFile);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to copy file '" + sourcePath + "' into '" + targetDir + "'.",
                         ex);
             }
         } else {
             throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
-                    + "' as the source was niether a file nor a directory.");
+                    + "' as the source was neither a file nor a directory.");
         }
     }
 }
