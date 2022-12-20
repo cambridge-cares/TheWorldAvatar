@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 import os
+import sys, os
 import numpy as np
 import torch
 import torch.nn as nn
@@ -20,10 +21,10 @@ from pytorch_transformers.modeling_bert import (
 
 #from pytorch_transformers.tokenization_bert import BertTokenizer
 from transformers import BertTokenizerFast
-from elq.common.ranker_base import BertEncoder, get_model_obj
-from blink.common.optimizer import get_bert_optimizer
-from elq.biencoder.allennlp_span_utils import batched_span_select, batched_index_select
-from elq.biencoder.utils import batch_reshape_mask_left
+from Marie.EntityLinking.elq.common.ranker_base import BertEncoder, get_model_obj
+from Marie.EntityLinking.blink.common.optimizer import get_bert_optimizer
+from Marie.EntityLinking.elq.biencoder.allennlp_span_utils import batched_span_select, batched_index_select
+from Marie.EntityLinking.elq.biencoder.utils import batch_reshape_mask_left
 
 
 def load_biencoder(params):

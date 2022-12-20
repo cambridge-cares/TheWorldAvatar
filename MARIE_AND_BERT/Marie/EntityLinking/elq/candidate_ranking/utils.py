@@ -17,7 +17,7 @@ from collections import OrderedDict
 from pytorch_transformers.modeling_utils import CONFIG_NAME, WEIGHTS_NAME
 from tqdm import tqdm
 
-from elq.biencoder.biencoder import BiEncoderRanker
+from Marie.EntityLinking.elq.biencoder.biencoder import BiEncoderRanker
 
 
 def read_dataset(dataset_name, preprocessed_json_data_parent_folder, debug=False):

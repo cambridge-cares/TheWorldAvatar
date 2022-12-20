@@ -17,8 +17,11 @@ All files needed for Entity linking go to "MARIE_AND_BERT/DATA/EntityLinking"
 '''
 
 
-class NELInfer():
-    def __init__(self, config_name='base500.yaml', one_pass = True):
+class BertNEL():
+    def __init__(self,
+                 config_name='base500.yaml',
+                 one_pass = True,
+                 use_translation = True):
         self.one_pass = one_pass
         if one_pass:
             # Basic config to load ELQ-NEL model
@@ -31,6 +34,7 @@ class NELInfer():
             self.params['entity_dict_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['entity_dict_path'])
             self.params['output_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['output_path'])
             self.nel = NEL_ELQ(self.params)
+            print('-Loading BERT NEL Model')
         else:
             # Basic config to load BLINK-NEL model
             parser = BlinkParser(add_model_args=True)
@@ -51,6 +55,7 @@ class NELInfer():
         self.params['smile_model_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['smile_model_path'])
         smile_translator = Translator(modelpath=self.params['smile_model_path'])
         self.translate = smile_translator.translate
+        self.use_translation = use_translation
 
 
     def readconf(self, config_name):
@@ -75,6 +80,24 @@ class NELInfer():
         return inferred
 
 
+    def find_cid(self, question):
+        question = self.process_data(question)
+        if self.use_translation:
+            question = self.translate(question)
+        #TODO: mark before translation bounds as actual bounds
+        if not self.one_pass:#Use separate NER instead
+            question = self.ner_tag(question)
+        # run main function
+        result_matrix = self.nel.infer(question)
+        # parse topk result to entity id&label
+        results = prase_inference(self.entity_dict, result_matrix, question, one_pass_format=self.one_pass)
+        #confidence, cid, mention_string, name
+        #If smiles, return orginal smile string!
+        if len(question) == 1:
+            results = results[0]
+        print(results)
+        return results
+
 
     def ner_tag(self, raw_data):
         """Tag out possible mention from raw data.
@@ -98,11 +121,14 @@ class NELInfer():
         return processed
 
     def process_data(self, raw_data):
+        if  type(raw_data) == str:
+            raw_data = [{"text": raw_data}]
         assert type(raw_data) == list
         assert len(raw_data) > 0
         assert 'text' in raw_data[0]
         if 'id' not in raw_data[0]:
             raw_data =  [{"text": entry['text'], "id":id }  for id, entry in enumerate(raw_data)]
+        print(raw_data)
         return raw_data
 
 
@@ -113,15 +139,15 @@ if __name__ == '__main__':
     # read a test file
 
     testdata = [{"mention": "urea", "context_left": "what is the chemical formula of", "context_right": ""}]
-    rawdata = [{"text": "what is the chemical formula of 4-methyl-2-oxopentanoic acid"}, {"text":"what is C9H18NO4+."}]
+    rawdata = [{"text": "what is the exact mass of C6H6"}, {"text":"what is C9H18NO4+."}]
     # rawdata = load_mention_entries("data/pubchem/test.jsonl")
     # rawdata = [{"text":l+' '+m+' '+r} for m,l,r in rawdata]
-    model = NELInfer('base500.yaml')
+    model = BertNEL('base500.yaml')
     # tagged = model.ner_tag(rawdata)
 
     import time
     start = time.time()
     print('start')
-    result = model.infer(rawdata)
+    result = model.find_cid("what is the exact mass of C6H6")
     print(result)
     print(time.time() - start)

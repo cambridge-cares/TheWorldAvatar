@@ -13,6 +13,7 @@ from Marie.Util.Models.TransEScoreModel import TransEScoreModel
 from Marie.Util.location import DATA_DIR
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.Logging import MarieLogger
+from Marie.EntityLinking.Inference import BertNEL
 
 
 class PubChemEngine:
@@ -20,7 +21,8 @@ class PubChemEngine:
     def __init__(self):
         self.dataset_dir = "CrossGraph/pubchem"
         self.subgraph_extractor = SubgraphExtractor(dataset_name='pubchem10000')
-        self.chemical_nel = ChemicalNEL(dataset_name="pubchem")
+        #self.chemical_nel = ChemicalNEL(dataset_name="pubchem")
+        self.chemical_nel = BertNEL()
         self.marie_logger = MarieLogger()
         self.marie_logger.info("6. Basic NEL test is running")
         if self.chemical_nel.find_cid("CO2")[1] == "CID280":

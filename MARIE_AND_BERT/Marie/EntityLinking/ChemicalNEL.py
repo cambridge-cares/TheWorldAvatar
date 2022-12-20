@@ -53,7 +53,7 @@ class ChemicalNEL:
             print(f"the key is {key}")
             return confidence, self.name_dict[key], str(mention_str), key
 
-        except IndexError:
+        except (IndexError,TypeError) :
             self.marie_logger.error(
                 f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
             return None

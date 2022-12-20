@@ -6,8 +6,9 @@
 #
 import argparse
 import json
-import sys
-from elq.index.faiss_indexer import DenseFlatIndexer, DenseHNSWFlatIndexer, DenseIVFFlatIndexer
+import sys, os
+sys.path.append(os.path.dirname(__file__))
+from Marie.EntityLinking.elq.index.faiss_indexer import DenseFlatIndexer, DenseHNSWFlatIndexer, DenseIVFFlatIndexer
 
 import logging
 import torch
@@ -16,19 +17,18 @@ from colorama import init
 from termcolor import colored
 import torch.nn.functional as F
 
-import blink.ner as NER
 from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
-from elq.biencoder.biencoder import BiEncoderRanker, load_biencoder, to_bert_input
-from elq.biencoder.data_process import (
+from Marie.EntityLinking.elq.biencoder.biencoder import BiEncoderRanker, load_biencoder, to_bert_input
+from Marie.EntityLinking.elq.biencoder.data_process import (
     process_mention_data,
     get_context_representation_single_mention,
     get_candidate_representation,
 )
-import elq.candidate_ranking.utils as utils
+import Marie.EntityLinking.elq.candidate_ranking.utils as utils
 import math
 
-from elq.vcg_utils.measures import entity_linking_tp_with_overlap
-from elq.biencoder.utils import batch_reshape_mask_left
+from Marie.EntityLinking.elq.vcg_utils.measures import entity_linking_tp_with_overlap
+#from elq.biencoder.utils import batch_reshape_mask_left
 
 import os
 import sys
@@ -460,6 +460,7 @@ def get_predictions(
             e_mention_bounds_pruned = []
             all_pred_entities_pruned = []
             chosen_distances_pruned = []
+            cand_scores = []
             mention_masked_utterance = np.zeros(len(input_context))
             # ensure well-formed-ness, prune overlaps
             # greedily pick highest scoring, then prune all overlapping
@@ -553,6 +554,7 @@ def get_predictions(
                     errors_f.write(json.dumps(entity_results) + "\n")
             else:
                 this_token_offset = token_offsets[i]
+
                 entity_results.update({
                     "pred_tuples_string": [
                         [id2title[triple[0]], tokenizer.decode(input_context[triple[1]:triple[2]]), (this_token_offset[triple[1]][0],this_token_offset[triple[2]-1][1])]
