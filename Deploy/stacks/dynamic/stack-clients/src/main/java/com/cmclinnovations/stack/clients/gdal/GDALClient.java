@@ -50,22 +50,22 @@ public class GDALClient extends ContainerClient {
                 + " password=" + postgreSQLEndpoint.getPassword();
     }
 
-    public void uploadVectorStringToPostGIS(String database, String layername, String fileContents,
+    public void uploadVectorStringToPostGIS(String database, String layerName, String fileContents,
             Ogr2OgrOptions options, boolean append) {
 
         try (TempDir tmpDir = makeLocalTempDir()) {
-            Path filePath = tmpDir.getPath().resolve(layername);
+            Path filePath = tmpDir.getPath().resolve(layerName);
             try {
                 Files.writeString(filePath, fileContents);
-                uploadVectorToPostGIS(database, layername, filePath.toString(), options, append);
+                uploadVectorToPostGIS(database, layerName, filePath.toString(), options, append);
             } catch (IOException ex) {
-                throw new RuntimeException("Failed to write string for vector '" + layername
+                throw new RuntimeException("Failed to write string for vector '" + layerName
                         + "' layer to a file in a temporary directory.", ex);
             }
         }
     }
 
-    public void uploadVectorFilesToPostGIS(String database, String layername, String dirPath, Ogr2OgrOptions options,
+    public void uploadVectorFilesToPostGIS(String database, String layerName, String dirPath, Ogr2OgrOptions options,
             boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(Path.of(dirPath));
@@ -73,10 +73,10 @@ public class GDALClient extends ContainerClient {
             Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
             for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
                 for (String filePath : filesOfType) {
-                    uploadVectorToPostGIS(database, layername, filePath, options, append);
+                    uploadVectorToPostGIS(database, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
                     // files are appended.
-                    if (null != layername) {
+                    if (null != layerName) {
                         append = true;
                     }
                 }
@@ -84,23 +84,23 @@ public class GDALClient extends ContainerClient {
         }
     }
 
-    public void uploadVectorFileToPostGIS(String database, String layername, String filePath, Ogr2OgrOptions options,
+    public void uploadVectorFileToPostGIS(String database, String layerName, String filePath, Ogr2OgrOptions options,
             boolean append) {
 
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path sourcePath = Path.of(filePath);
             tmpDir.copyFrom(sourcePath);
-            uploadVectorToPostGIS(database, layername, tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
+            uploadVectorToPostGIS(database, layerName, tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
                     options, append);
         }
     }
 
-    public void uploadVectorURLToPostGIS(String database, String layername, String url, Ogr2OgrOptions options,
+    public void uploadVectorURLToPostGIS(String database, String layerName, String url, Ogr2OgrOptions options,
             boolean append) {
-        uploadVectorToPostGIS(database, layername, url, options, append);
+        uploadVectorToPostGIS(database, layerName, url, options, append);
     }
 
-    private void uploadVectorToPostGIS(String database, String layername, String filePath, Ogr2OgrOptions options,
+    private void uploadVectorToPostGIS(String database, String layerName, String filePath, Ogr2OgrOptions options,
             boolean append) {
 
         String containerId = getContainerId("gdal");
@@ -108,7 +108,7 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        String execId = createComplexCommand(containerId, options.appendToArgs(layername, "ogr2ogr",
+        String execId = createComplexCommand(containerId, options.appendToArgs(layerName, "ogr2ogr",
                 "-f", "PostgreSQL",
                 computePGSQLSourceString(database),
                 filePath,
@@ -133,7 +133,7 @@ public class GDALClient extends ContainerClient {
         }
     }
 
-    public void uploadRasterFilesToPostGIS(String database, String layername,
+    public void uploadRasterFilesToPostGIS(String database, String layerName,
             String dirPath, GDALTranslateOptions options, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
@@ -143,11 +143,11 @@ public class GDALClient extends ContainerClient {
 
             tempDir.copyFrom(Path.of(dirPath));
 
-            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, layername, tempDir, options);
+            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, layerName, tempDir, options);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
 
-            uploadRasters(postGISContainerId, database, layername, geotiffFiles, append);
+            uploadRasters(postGISContainerId, database, layerName, geotiffFiles, append);
         }
     }
 
@@ -168,7 +168,7 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
-    private List<String> convertRastersToGeoTiffs(String gdalContainerId, String layername, TempDir tempDir,
+    private List<String> convertRastersToGeoTiffs(String gdalContainerId, String layerName, TempDir tempDir,
             GDALTranslateOptions options) {
 
         Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
@@ -184,7 +184,7 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                String outputPath = generateRasterOutPath(tempDir.toString(), filePath, layername);
+                String outputPath = generateRasterOutPath(tempDir.toString(), filePath, layerName);
                 geotiffFiles.add(outputPath);
 
                 Path directoryPath = Paths.get(outputPath).getParent();
@@ -224,7 +224,7 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId);
     }
 
-    private void uploadRasters(String postGISContainerId, String database, String layername,
+    private void uploadRasters(String postGISContainerId, String database, String layerName,
             List<String> geotiffFiles, boolean append) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -234,7 +234,7 @@ public class GDALClient extends ContainerClient {
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                 "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
-                        + layername
+                        + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
