@@ -43,6 +43,9 @@ WORKDIR /app
 # Copy the downloaded dependencies from the builder
 COPY --from=builder /root/code/target/lib /app/lib
 
+# Copy the main jar from the builder
+COPY --from=builder /root/code/target/stack-clients*.jar /app
+
 # Port for Java debugging
 EXPOSE 5005
 
