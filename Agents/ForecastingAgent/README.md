@@ -1,6 +1,6 @@
 # Forecasting Agent
 
-This `Forecasting Agent` can be used to read time series data from a knowledge graph (KG), create a time series forecast, and instantiate the forecast back into the KG using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient] and forecasts are created using either pre-trained models or Facebook's [Prophet] (default). 
+This `Forecasting Agent` can be used to read time series data from The World Avatar (TWA), create a time series forecast, and instantiate the forecast back into the knowledge graph (KG) using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient] and forecasts are created using either pre-trained models or Facebook's [Prophet] (default). 
 
 The Python library [Darts] is used to define, train, and store forecasting models as well as to create the forecasts. It contains a variety of models, from classics such as ARIMA to deep neural networks. 
 
@@ -15,7 +15,6 @@ This section specifies the minimum requirements to build and deploy the Docker i
 ## 1.1 Prerequisites
 
 The dockerised agent can be deployed as standalone version (i.e. outside a larger Docker stack) or deployed to an (existing) stack. Several key environment variables need to be set in the [Docker compose file]:
-
 
 ```bash
 # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
@@ -35,16 +34,16 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 
 The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
-**Please note:** A missing `STACK_NAME` variable will result in an error; however, when deploying  using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here, but if provided, it needs to match the stack name used by the stack-manager!
+**Please note:** A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
 
 &nbsp;
 ## 1.2 Miscellaneous
 
-Currently, the agent Docker image is not automatically pushed to the [Github container registry] upon building a new image (however, this shall be included in the future). To publish a new image, access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
-```
-docker login ghcr.io -u <github_username>
-<github_personal_access_token>
-```
+**Ensure access to CMCL Docker registry**:
+The required `stack-clients-*.jar` resource to be added to py4jps during building the Docker image is retrieved from the Stack-Clients docker image published on `docker.cmclinnovations.com`. Hence, access to the CMCL Docker registry is required from the machine building the agent image. For more information regarding the registry, see the [CMCL Docker registry wiki page].
+
+**Ensure access to Github container registry**:
+A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
 
 In order to avoid potential launching/debugging issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -71,16 +70,27 @@ Then, it loads the model. This is either a pre-trained model specified in the mo
 Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology.
 
 &nbsp;
-## 2.2 Deploying the Agent
+## 2.2 Build and Deploy the Agent
+
+To build and publish the agent Docker image please use the following commands. Please note that all of those commands are bundled in the  `publish_docker_image.sh` convenience script.
+
+```bash
+# Building the Docker image (production / debug)
+docker-compose -f <docker-compose file>  build
+
+# Publish the Docker image to the Github container registry
+docker image push ghcr.io/cambridge-cares/<image tag>:<version>
+```
+
+Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.1-dev-stack-client-container-SNAPSHOT`.
 
 ###  **Docker Deployment**
 
-Deploy the dockerised agent by running the following code in the command prompt from the same location where this README is located (ideally, use a bash terminal to avoid potential issues with inconsistent path separators):
+Deploy the dockerised agent by running the following code in the command prompt from the same location where this README is located (ideally, use a bash terminal to avoid potential issues with inconsistent path separators). 
+
 ```bash
-# Deploy the production version of the agent
-docker-compose up -d --build
-# Deploy the debug version of the agent
-docker-compose -f docker-compose.debug.yml up -d --build  
+# Deploy the Docker images (locally)
+docker-compose -f <docker-compose file> up
 ```
 
 To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5000` in your browser. 
@@ -88,7 +98,7 @@ To verify the correct startup of the agent, open the URL address the agent is ru
 ### **Stack Deployment**
 
 If you want to spin up this agent as part of a stack, do the following:
-1) Build the (production) image via `docker-compose build`. Do not start the container. (To deploy the debug version, use `docker-compose -f docker-compose.debug.yml build` instead.)
+1) Build the (production) image using the commands provided above (do not spin up the image)
 2) Copy the `forecasting-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mount as required.
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>`). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 
@@ -158,6 +168,8 @@ Markus Hofmeister (mh807@cam.ac.uk), December 2022
 
 <!-- Links -->
 <!-- websites -->
+[allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [py4jps]: https://pypi.org/project/py4jps/#description
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries

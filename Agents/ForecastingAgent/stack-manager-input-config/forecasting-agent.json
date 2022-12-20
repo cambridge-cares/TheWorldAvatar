@@ -3,7 +3,7 @@
         "Name": "forecasting_agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.0.1",
                 "Env": [
                     "NAMESPACE=excel",
                     "DATABASE=excel"

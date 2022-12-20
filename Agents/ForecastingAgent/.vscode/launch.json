@@ -68,20 +68,6 @@
         },
         {
             "type": "python",
-            "name": "Stack: Update JPSRM and Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "update-compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
-                }
-            ]
-        },
-        {
-            "type": "python",
             "name": "Stack: Reattach and Debug",
             "request": "attach",
             "host": "localhost",

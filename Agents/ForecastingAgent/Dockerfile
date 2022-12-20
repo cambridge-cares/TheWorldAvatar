@@ -1,5 +1,7 @@
 # Install the Forecasting Agent in Docker container
 #==================================================================================================
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.1-dev-stack-client-container-SNAPSHOT as stackclients
 
 #------------------------------------------------------
 # Base image to be reused
@@ -17,9 +19,9 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-#TODO: Only include for Stack deployment
-# Copy Stack-Client resource required to update py4jps later
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
@@ -31,7 +33,6 @@ COPY ./setup.py .
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
 
-#TODO: Only include for Stack deployment
 # Update py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
@@ -54,7 +55,6 @@ ENV FLASK_DEBUG=1
 WORKDIR /app/forecasting/flaskapp/
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
-
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
@@ -68,6 +68,6 @@ COPY ./forecasting ./forecasting
 
 # Set the entrypoint
 # timeout set to 30min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecasting:create_app()" --timeout 1800
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecasting:create_app()" -preload --timeout 1800
 
 #==================================================================================================
