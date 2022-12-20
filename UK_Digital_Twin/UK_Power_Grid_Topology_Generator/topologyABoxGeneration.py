@@ -69,23 +69,29 @@ ukec = UKec.UKEnergyConsumption()
 endpoint_label = endpointList.ukdigitaltwin['label']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
-"""T-Box URI"""
-ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-ontocape_network_system         = owlready2.get_ontology(t_box.ontocape_network_system).load()
-ontopowsys_PowSysFunction       = owlready2.get_ontology(t_box.ontopowsys_PowSysFunction).load()
-ontoecape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
-ontopowsys_PowSysRealization    = owlready2.get_ontology(t_box.ontopowsys_PowSysRealization).load()
-ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
-ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_and_time).load()
-ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical_dimension).load()
-ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
-ontocape_geometry               = owlready2.get_ontology(t_box.ontocape_geometry).load()
-meta_model_topology             = owlready2.get_ontology(t_box.meta_model_topology).load()
-ontopowsys_PowSysPerformance    = owlready2.get_ontology(t_box.ontopowsys_PowSysPerformance).load()
-ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load() 
-ontoenergysystem                = owlready2.get_ontology(t_box.ontoenergysystem).load()
+def loadTboxs(): 
+    """T-Box URI"""
+    global ontocape_upper_level_system, ontocape_derived_SI_units, ontoecape_space_and_time_extended, ontocape_network_system, \
+        ontopowsys_PowSysFunction, ontoecape_technical_system, ontopowsys_PowSysRealization, ontocape_coordinate_system, ontoecape_space_and_time, \
+        ontocape_physical_dimension, ontocape_SI_units, ontocape_geometry, meta_model_topology, ontopowsys_PowSysPerformance,ontoeip_powerplant, ontoenergysystem
+ 
+    ontocape_upper_level_system = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+    ontocape_network_system         = owlready2.get_ontology(t_box.ontocape_network_system).load()
+    ontopowsys_PowSysFunction       = owlready2.get_ontology(t_box.ontopowsys_PowSysFunction).load()
+    ontoecape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
+    ontopowsys_PowSysRealization    = owlready2.get_ontology(t_box.ontopowsys_PowSysRealization).load()
+    ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
+    ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_and_time).load()
+    ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical_dimension).load()
+    ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
+    ontocape_geometry               = owlready2.get_ontology(t_box.ontocape_geometry).load()
+    meta_model_topology             = owlready2.get_ontology(t_box.meta_model_topology).load()
+    ontopowsys_PowSysPerformance    = owlready2.get_ontology(t_box.ontopowsys_PowSysPerformance).load()
+    ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load() 
+    ontoenergysystem                = owlready2.get_ontology(t_box.ontoenergysystem).load()
+    return
 
 """Data Array"""
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
@@ -122,6 +128,9 @@ def createTopologicalInformationPropertyInstance(numOfBus, voltageLevel):
 
 """Main function: create the sub graph represents the Topology"""
 def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
+    ## Loading the T-boxes
+    loadTboxs()
+    
     ## The configration of the topology
     numOfBus = topoConfig['numOfBus']
     numOfBranch = topoConfig['numOfBranch']
