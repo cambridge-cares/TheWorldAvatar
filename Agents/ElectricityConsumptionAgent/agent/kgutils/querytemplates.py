@@ -19,6 +19,7 @@ def input_query_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,c
          variables to be imported as data to the knowledge graph.
          Specific definitions can be refered to the reference
     '''
+    region = ONS_ID + region
 
     triples = f""" <{mes_uuid}> <{RDF_TYPE}> <{OM_MEASURE}>.
                 <{mes_uuid}> <{OM_HAS_UNIT}> <{OM_KW}>.
@@ -51,34 +52,46 @@ def output_query_template(keyword, iris = True):
          Keyword: 'Electricity'/'Gas'/'Fuel poverty'/'Temperature'/'ONS output area'
                    Each keyword will generate a specific query string to obtain the data from the KG
 
+                   iris: 'True'/'False'
+                   If 'True' then return the data iri along with the query result
+
     '''
     query = f'''SELECT DISTINCT ?s'''
-    # 'Electricity' - return LOSA code, electricity usage, number of electricity meters
-    if keyword == 'Electricity' or 'Gas':
-        query+= ' ?usage ?con'
-    # 'Gas' - return LOSA code, gas usage, number of gas consuming meters, number of gas non consuming meters
-        if keyword == 'Gas':
-            query+= ' ?non'
+
+    #--------------------------Query heading------------------------------------------
+    # 'Electricity' - return LSOA code, electricity usage, number of electricity meters
+    if keyword == 'Electricity':
+        query+= ' ?usage ?meter'
+        if iris == True:
+            query+= ' ?usageiri ?meteriri'
+
+    # 'Gas' - return LSOA code, gas usage, number of gas consuming meters, number of gas non consuming meters
+    if keyword == 'Gas':
+        query+= ' ?usage ?con ?non'
+
+    # 'Temperature' - return LSOA code, start time, end time, variable (min/mean/max), temperature value
     if keyword == 'Temperature':
-    # 'Temperature' - return LOSA code, start time, end time, variable (min/mean/max), temperature value
         query+=' ?start ?end ?var ?t'
 
-    # If the dataIRI is needed
-    if keyword == 'Electricity' and iris == True:
-        query+= ' ?coniri ?meteriri'
+    # 'Fuel poverty' - return LSOA code, propotion of fuel poor, number of household
+        query+= ' ?s (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
+
+    # 'ONS output area' - return LSOA code, WKT form geometry data
+    if keyword == 'ONS output area':
+        query+=' ?s ?geom'
 
     #--------------------------Main Query body----------------------------------------------------#
     query+=   ' WHERE {'
     query+=   f"""?s <{RDF_TYPE}> <{ONS_DEF_STAT}>;"""
-        
+
 
     if keyword == 'Electricity':
         query+= f"""<{COMP_HASCONSUMED}> ?elec;
                     <{GAS_HAS_ELECMETERS}> ?meteriri.
-    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?con.
+    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter.
     ?energy <{OM_HAS_PHENO}> ?elec;
-            <{OM_HAS_VALUE}> ?coniri.
-    ?coniri <{OM_HAS_NUMERICALVALUE}> ?usage. 
+            <{OM_HAS_VALUE}> ?usageiri.
+    ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage. 
     """
 
 
@@ -94,9 +107,29 @@ def output_query_template(keyword, iris = True):
 
 
     if keyword == 'Temperature':
-        query+= f"""
+        query+= f"""    <{CLIMB_HASMEASURE}  ?m.
+    ?m <{COMP_HAS_STARTUTC}> ?start;
+        <{COMP_HAS_ENDUTC}> ?end.
+    ?m  <{CLIMB_HASVAR}> ?var.
+    ?p <{OM_HAS_PHENO}> ?m.
+    ?p <{OM_HAS_VALUE}> ?oval.
+    ?oval <{OM_HAS_NUMERICALVALUE}> ?t.
         """
 
+
+    if keyword == 'Fuel poverty':
+        query+= f"""  <{OFP_HASHOUSEHOLD}> ?houses.
+     ?houses <{OFP_FUELPOOR}> ?a.
+     ?houses <{OFP_NUMBEROFHOUSEHOLD}> ?num.
+        """
+
+
+    if keyword == 'ONS output area':
+        query+= f""" ?s <{GEO_HAS_GEOMETRY}> ?o.
+    OPTIONAL{{
+            ?o gsp:asWKT ?geom}}
+    """
+    #--------------------------Query end here----------------------------------
     query+= "}"
     return query
 

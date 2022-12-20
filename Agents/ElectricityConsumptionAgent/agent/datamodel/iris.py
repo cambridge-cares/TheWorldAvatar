@@ -1,3 +1,10 @@
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
+
+# The purpose of this module is to provide IRIS for
+# required SPARQL queries (Mainly used in 'querytemplates.py' module)
 
 ###--- --- --- --- --- URLs to ontology .owl files --- --- --- --- ---###
 
@@ -16,6 +23,7 @@ XSD = "http://www.w3.org/2001/XMLSchema#"
 GEO = "http://www.opengis.net/ont/geosparql#"
 OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
 OWL = "http://www.w3.org/2002/07/owl#"
+
 # ONS related
 ONS_ID = "http://statistics.data.gov.uk/id/statistical-geography/"
 ONS_DEF = "http://statistics.data.gov.uk/def/statistical-geography#"
@@ -41,7 +49,8 @@ GAS_HAVE_NONCONSUM_GASMETERS = GAS +"hasNonConsumingGasMeters"
 
 # Ontofuelpoverty
 OFP_HASHOUSEHOLD = OFP + 'hasHouseholds'
-
+OFP_FUELPOOR = OFP + 'fuelpoorhouseholds '
+OFP_NUMBEROFHOUSEHOLD = OFP + 'numberofhouseholds'
 
 # OntoClimate
 CLIMB_HASMEASURE = CLIMB + "hasClimateMeasurement"
@@ -81,10 +90,12 @@ RDFS_LABEL = RDFS + "label"
 XSD_STRING = XSD + "string"
 XSD_FLOAT = XSD + "float"
 XSD_DATETIME = XSD + "dateTime"
+
 # GeoSPARQL
 GEO_FEATURE = GEO + "Feature"
 GEO_HAS_GEOMETRY = GEO + "hasGeometry"
 GEO_ASWKT = GEO + "asWKT"
+
 # OWL
 OWL_VERSION = OWL + "versionInfo"
 OWL_SAMEAS = OWL + "sameAs"
