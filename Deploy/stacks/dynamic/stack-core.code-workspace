@@ -44,7 +44,8 @@
 			"Shapefiles",
 			"SPARQL",
 			"SRID"
-		]
+		],
+		"java.compile.nullAnalysis.mode": "automatic"
 	},
 	"extensions": {
 		"recommendations": [
