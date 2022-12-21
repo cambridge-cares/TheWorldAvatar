@@ -16,7 +16,7 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.1.0-510-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
     container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
     # Set these environment variables for BASIC authentication
