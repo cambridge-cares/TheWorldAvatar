@@ -142,8 +142,9 @@ public class ContainerService extends AbstractService {
      * 
      * @param secretName
      */
-    protected void addOptionalSecret(String secretName) {
-        if (dockerClient.secretExists(secretName)) {
+    protected boolean addOptionalSecret(String secretName) {
+        boolean secretExists = dockerClient.secretExists(secretName);
+        if (secretExists) {
             List<ContainerSpecSecret> secrets = getConfig().getContainerSpec().getSecrets();
             if (null == secrets) {
                 secrets = new ArrayList<>();
@@ -151,6 +152,7 @@ public class ContainerService extends AbstractService {
             }
             secrets.add(new ContainerSpecSecret().withSecretName(secretName));
         }
+        return secretExists;
     }
 
 }
