@@ -11,7 +11,7 @@ if [[ -n $BLAZEGRAPH_USER && -n $BLAZEGRAPH_PASSWORD_FILE && -f $BLAZEGRAPH_PASS
     sed -i -e "s/BLAZEGRAPH_USER/$BLAZEGRAPH_USER/" -e "s/BLAZEGRAPH_PASSWORD/$(cat $BLAZEGRAPH_PASSWORD_FILE)/" /usr/local/tomcat/conf/tomcat-users.xml
 else
     # Remove "security-constraint" related blocks
-    sed -i '6,24d' WEB-INF/web.xml
+    sed -i -e '/<security-constraint>/,/<\/security-constraint>/d' -e '/<login-config>/,/<\/login-config>/d' -e '/<security-role>/,/<\/security-role>/d' WEB-INF/web.xml
 fi
 
 #zip /usr/local/tomcat/webapps/blazegraph.war WEB-INF/web.xml
