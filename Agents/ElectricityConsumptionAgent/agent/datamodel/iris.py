@@ -93,14 +93,10 @@ XSD_DATETIME = XSD + "dateTime"
 
 # GeoSPARQL
 GEO_FEATURE = GEO + "Feature"
+GEO_GEOMETRY = GEO + 'Geometry'
 GEO_HAS_GEOMETRY = GEO + "hasGeometry"
 GEO_ASWKT = GEO + "asWKT"
 
 # OWL
 OWL_VERSION = OWL + "versionInfo"
 OWL_SAMEAS = OWL + "sameAs"
-
-# Blazegraph
-DEF_NAMESPACE = "ontogasgrid"
-LOCAL_KG = "http://localhost:8080/blazegraph"
-QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"

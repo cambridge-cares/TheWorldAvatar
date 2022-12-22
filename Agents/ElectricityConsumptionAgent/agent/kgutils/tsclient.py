@@ -12,7 +12,8 @@ import agentlogging
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.utils.readings_mapping import TIMECLASS
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+#from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from agent.datamodel.spec import *
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

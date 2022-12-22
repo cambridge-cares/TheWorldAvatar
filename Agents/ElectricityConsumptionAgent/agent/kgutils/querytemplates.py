@@ -4,14 +4,14 @@
 ################################################
 
 # The purpose of this module is to provide templates for
-# required SPARQL queries
+# required SPARQL queries/updates
 
 from agent.datamodel.iris import *
 '''
 from agent.kgutils.stackclients import PostGISClient
 '''
 
-def input_query_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters,non_meters: int = None) -> str:
+def electricity_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters,non_meters: int = None) -> str:
     '''
         Return strings of SPARQL Update query regarding to each triple
         
@@ -40,6 +40,30 @@ def input_query_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,c
                 <{met_uuid}> <{GAS_HAS_CONSUM_ELECMETERS}>  {meters};
                         <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
                         <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> . 
+                """
+
+    return triples
+
+def region_update_template(region,wkt):
+    '''
+        Return strings of SPARQL Update query regarding to each triple
+        
+        Arguments:
+         variables to be imported as data to the knowledge graph.
+         Specific definitions can be refered to the reference
+    ''' 
+
+    geo = COMPA + region + '_geometry'
+    region = ONS_ID + region
+    # geometry instance (regional code used for URI)
+    # associating region with geometry
+    # NOTE: the region iteself is not defined here as it's class (statistical geography) because it was already defined 
+    # adding WKT string property to geometry instance
+    triples = f"""
+        <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>; 
+                   <{GEO_HAS_GEOMETRY}> <{geo}>.
+        <{geo}> <{RDF_TYPE}> <{GEO_GEOMETRY}>;
+                 <{GEO_ASWKT}> "{wkt}".
                 """
 
     return triples
