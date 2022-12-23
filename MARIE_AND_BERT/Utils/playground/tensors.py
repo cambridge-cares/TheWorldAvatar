@@ -20,13 +20,31 @@ from torch.nn.functional import one_hot
 # y = torch.transpose(y, 0, 1)
 #
 # print(y)
+x = torch.Tensor([[0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0]])
 
-y = torch.rand(5, 2)
-x = torch.rand(5, 2)
-
-print(y)
 print(x)
 
-z = torch.cat([x, y], dim=1)
+x = torch.sum(x,dim=1)
+print(x)
 
-print(z)
+x = x.reshape(-1, 5)
+print(x)

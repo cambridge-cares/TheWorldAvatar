@@ -25,9 +25,9 @@ pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocomp
 
 
 python tune_model.py -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation
+pykg2vec-train -mn Complex -ds pubchem500c -dsp ./DATA/pubchem500c -l 500 -lr 1 -k 20 -ts 50 -device cuda -ngr 1
 
-
-
+python tune_model.py -mn Complex -ds pubchem500c -dsp ./DATA/pubchem500c -l 500 -k 20 -ts 50 -device cuda
 
         self.general_hyper_group = self.parser.add_argument_group('Generic Hyperparameters')
         self.general_hyper_group.add_argument('-lmda', dest='lmbda', default=0.1, type=float, help='The lmbda for regularization.')

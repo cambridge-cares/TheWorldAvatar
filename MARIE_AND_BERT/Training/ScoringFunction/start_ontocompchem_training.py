@@ -5,7 +5,7 @@ sys.path.append("../..")
 import pandas as pd
 import pickle
 from Marie.Util.location import DATA_DIR
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.NHopExtractor import HopExtractor
 
 # TODO: create question set, containing the question, the h and t
 
