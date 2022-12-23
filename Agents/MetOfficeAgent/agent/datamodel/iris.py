@@ -1,6 +1,8 @@
 from agent.datamodel.observation_types import *
 
 # URLs to ontology .owl files
+# TBOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl'
+# TWA URL for OntoEMS.owl file: 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl'
 TBOX_URL = 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl'
 ABOX_URL = 'http://www.theworldavatar.com/kb/ontoems/OntoEMS.owl'
 
