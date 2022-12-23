@@ -82,7 +82,7 @@ docker-compose -f <docker-compose file>  build
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
 ```
 
-Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.1-dev-stack-client-container-SNAPSHOT`.
+Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`.
 
 ###  **Docker Deployment**
 
