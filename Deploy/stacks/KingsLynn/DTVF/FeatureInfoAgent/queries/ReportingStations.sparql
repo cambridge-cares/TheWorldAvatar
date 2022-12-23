@@ -1,0 +1,24 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  { BIND ("Type" AS ?Property )
+    [IRI] rdf:type ?value_ini .
+    BIND (replace(str(?value_ini), str(ems:), '') as ?Value)
+  } UNION { 
+    BIND ("Name" AS ?Property )
+    [IRI] rdfs:label ?Value .
+  } UNION { 
+    BIND ("Data source" AS ?Property )
+    [IRI] ems:dataSource ?Value .
+  } UNION { 
+    BIND ("Identifier" AS ?Property )
+    [IRI] ems:hasIdentifier ?Value .
+  } UNION { 
+    BIND ("Elevation" AS ?Property )
+    BIND ("m" AS ?Unit )
+    [IRI] ems:hasObservationElevation ?Value .
+  }
+}

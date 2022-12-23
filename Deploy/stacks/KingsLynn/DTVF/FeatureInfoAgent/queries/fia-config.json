@@ -1,0 +1,19 @@
+{
+    "database_name": "postgres",
+    "queries": [
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "timeLimit": 48
+        },
+        {
+            "class": "<https://www.theworldavatar.com/kg/ontobuiltenv/Flat>",
+            "metaFile": "BuildingsFlats.sparql"
+        },
+        {
+            "class": "<http://www.purl.org/oema/infrastructure/Building>",
+            "metaFile": "BuildingsFlats.sparql"
+        }
+    ]
+}
