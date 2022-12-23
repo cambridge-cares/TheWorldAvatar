@@ -1,0 +1,69 @@
+@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
+@prefix saref:             <https://saref.etsi.org/core/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix ontorxn:         <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix ontogoal:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#> .
+@prefix :                <http://www.example.com/triplestore/ontogoal/rxnopt/> .
+
+@prefix rxnopt:          <http://www.theworldavatar.com/resource/plans/RxnOpt/> .
+
+:GoalSet_1
+    a ontogoal:GoalSet;
+    ontogoal:hasGoal :Goal_1;
+    ontogoal:hasGoal :Goal_2;
+    ontogoal:hasRestriction :Restriction_1;
+.
+
+:Goal_1
+    a ontogoal:Goal;
+    ontogoal:desiresGreaterThan :Desired_Quantity_1;
+    ontogoal:hasPlan rxnopt:rxnoptplan;
+    ontogoal:hasResult :Result_Quantity_1;
+.
+
+:Desired_Quantity_1
+    a ontorxn:Yield;
+    om:hasValue :Desired_Quantity_Measure_1;
+.
+
+:Desired_Quantity_Measure_1
+    a om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "99.9"^^xsd:double;
+.
+
+:Result_Quantity_1
+    a ontorxn:Yield;
+    om:hasValue :Result_Quantity_Measure_1;
+.
+
+:Result_Quantity_Measure_1
+    a om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "50.0"^^xsd:double;
+.
+
+:Goal_2
+    a ontogoal:Goal;
+    ontogoal:desiresLessThan :Desired_Quantity_2;
+    ontogoal:hasPlan rxnopt:rxnoptplan;
+.
+
+:Desired_Quantity_2
+    a ontorxn:RunMaterialCost;
+    om:hasValue :Desired_Quantity_Measure_2;
+.
+
+:Desired_Quantity_Measure_2
+    a om:Measure;
+    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasNumericalValue "0.01"^^xsd:double;
+.
+
+:Restriction_1
+    a ontogoal:Restriction;
+    ontogoal:cycleAllowance 5;
+    ontogoal:deadline "2100-01-01T00:00:00"^^xsd:dateTime;
+.
