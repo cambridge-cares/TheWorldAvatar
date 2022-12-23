@@ -1,6 +1,7 @@
 import json
 import os
 import pickle
+import re
 import traceback
 from transformers import BertTokenizer
 import torch
@@ -12,7 +13,7 @@ from Marie.Util.location import DATA_DIR
 
 
 class QAEngine:
-    def __init__(self, dataset_dir, dataset_name, embedding="transe"):
+    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json"):
         self.marie_logger = MarieLogger()
         self.model_name = f"bert_{dataset_name}"
         self.dataset_dir = dataset_dir
@@ -28,14 +29,19 @@ class QAEngine:
 
         if embedding == "transe":
             self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
-                                                dataset_dir=self.dataset_dir, dim=80)
+                                                dataset_dir=self.dataset_dir, dim=dim)
             self.score_model = self.score_model.to(self.device)
 
         '''Initialize tokenizer'''
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
         self.max_length = 12
-        self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir, f"{self.dataset_name}_value_dict.json")
-        self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
+        self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir,
+                                                  f"{self.dataset_name}_value_dict.{dict_type}")
+        if dict_type == 'json':
+            self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
+        else:
+            file = open(self.value_dictionary_path, 'rb')
+            self.value_dictionary = pickle.load(file)
 
     def prepare_prediction_batch(self, question, head_entity, candidate_entities):
         """
@@ -70,7 +76,7 @@ class QAEngine:
         input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
         return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
-    def find_answers(self, question: str, head_entity: str,  head_name: str, k=5):
+    def find_answers(self, question: str, head_entity: str, head_name: str, k=5):
         """
         :param head_name: the standard name of the head entity
         :param k: number of results to return
@@ -78,6 +84,8 @@ class QAEngine:
         :param head_entity: the CID string for the head entity
         :return: score of all candidate answers
         """
+        question = question.replace("'s ", " # ")
+
         try:
             self.marie_logger.info(f" received question: {question}")
             candidates = self.subgraph_extractor.extract_neighbour_from_idx(self.entity2idx[head_entity])
@@ -93,7 +101,8 @@ class QAEngine:
         except:
             self.marie_logger.error('The attempt to find answer failed')
             self.marie_logger.error(traceback.format_exc())
-            return traceback.format_exc()
+            # return traceback.format_exc()
+            return ["EMPTY"], [-999], ["EMPTY"]
 
     def extract_head_ent(self, _question):
         self.marie_logger.info("extracting head entity")
@@ -121,21 +130,34 @@ class QAEngine:
             result_list.append(row)
         return result_list
 
-    def run(self, question):
+    def run(self, question, head=None):
         """
+        :param head: directly give a head for testing and evaluation purpose.
         :param question:
         :return:
         """
         # get the mention,
+        question = question.replace("'s ", " # ")
+        # # only upper chemical formula
+        # formula_regex = r"([A-Za-z]+[0-9]+)+"
+        # formula = re.findall(formula_regex, question)
+        # if len(formula) > 0:
+        #     formula = formula[0]
+        #     question = question.replace(formula, formula.upper())
+
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(question)
+            if head is not None:
+                cid = head
         except TypeError:
             self.marie_logger.error(f"Error - Could not recognise any target from the question: "
                                     f"{question} from {__name__}.{self.run.__name__}")
 
-            return {"Error": "No target can be recognised from this question"}
+            # return {"Error": "No target can be recognised from this question"}
+            return ["EMPTY"], [-999], ["EMPTY"]
 
-        question = self.remove_head_entity(question, mention_string)
+        question = self.remove_head_entity(question, mention_string).lower()
+        self.marie_logger.info(f"Question with head entity ({mention_string}) removed {question}")
         answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=name)
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
@@ -143,4 +165,4 @@ class QAEngine:
         # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
 
     def remove_head_entity(self, _question, _head_entity):
-        return _question.replace(_head_entity, '').strip()
+        return _question.upper().replace(_head_entity.upper(), '').strip().lower()

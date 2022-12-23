@@ -4,7 +4,7 @@ from Marie.QAEngine import QAEngine
 class OntoSpeciesQAEngine(QAEngine):
 
     def __init__(self, dataset_dir="CrossGraph/ontospecies", dataset_name="ontospecies"):
-        super().__init__(dataset_dir, dataset_name)
+        super().__init__(dataset_dir, dataset_name, dim=80)
 
 
 if __name__ == "__main__":

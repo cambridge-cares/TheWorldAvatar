@@ -47,10 +47,20 @@ class OntoCompChemEngine:
     def remove_head_entity(self, _question, _head_entity):
         return _question.replace(_head_entity, '').strip()
 
-    def run(self, question):
-        nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(question)
-        question = self.remove_head_entity(_question=question, _head_entity=mention_string)
-        return self.find_answers(head_entity=cid, question=question, head_name=name)
+    def run(self, question, head=None):
+        question = question.replace("'s ", " ")
+        try:
+            nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(question)
+            question = self.remove_head_entity(_question=question, _head_entity=mention_string)
+            if head is not None:
+                cid = head
+            return self.find_answers(head_entity=cid, question=question, head_name=name)
+        except TypeError:
+            self.marie_logger.error(f"Error - Could not recognise any target from the question: "
+                                    f"{question} from {__name__}.{self.run.__name__}")
+            return ["EMPTY"], [-999], ["EMPTY"]
+            # return {"Error": "No target can be recognised from this question"}
+
 
     def test(self):
         good_counter = 0
@@ -130,5 +140,5 @@ class OntoCompChemEngine:
 # 3.
 if __name__ == '__main__':
     my_ontochemistry_engine = OntoCompChemEngine()
-    rst = my_ontochemistry_engine.run(question="what is the geometry of CO2")
+    rst = my_ontochemistry_engine.run(question="what is co2's geometry")
     print(rst)
