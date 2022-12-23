@@ -27,7 +27,7 @@ This section explains how to spin up the core stack and upload initial data sets
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
 <span style="color:red">
-The functionality has been tested based on commit `3723a574c6685279a70b814b43df6b4027d5c305` on branch `272-ability-to-upload-triples-through-the-stack-data-uploader`.
+The functionality has been tested based on commit `6bbc6dac87d45875fc172b633941465000cc2658` on branch `272-ability-to-upload-triples-through-the-stack-data-uploader`.
 </span>
 
 &nbsp;
@@ -93,9 +93,7 @@ The following steps explain how to upload the data to the stack:
 
     c) Copy all data sub-directories from the `inputs/datauploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
-2) Create a quad- and geospatially-enabled Blazegraph namespace `ocgml` via the Blazegraph GUI, i.e. http://165.232.172.16:3838/blazegraph/ui/#namespaces
-
-3) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
+2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
