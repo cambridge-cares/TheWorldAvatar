@@ -2,7 +2,7 @@ import os
 import torch
 from torch.nn.functional import one_hot
 from transformers import BertTokenizer
-from Marie.PubChem import PubChemEngine
+from Marie.PubchemEngine import PubChemQAEngine
 from Marie.OntoCompChem import OntoCompChemEngine
 from Marie.OntoSpecies import OntoSpeciesQAEngine
 from Marie.Ontokin import OntoKinQAEngine
@@ -32,7 +32,7 @@ class CrossGraphQAEngine:
 
     def __init__(self):
         self.marie_logger = MarieLogger()
-        self.pubchem_engine = PubChemEngine()
+        self.pubchem_engine = PubChemQAEngine()
         self.ontochemistry_engine = OntoCompChemEngine()
         self.ontospecies_engine = OntoSpeciesQAEngine()
         self.ontokin_engine = OntoKinQAEngine()
@@ -49,12 +49,15 @@ class CrossGraphQAEngine:
         self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
         self.score_adjust_model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
-                                                                        'cross_graph_model_new'),
+                                                                        'cross_graph_model_new_2'),
                                                            map_location=self.device))
 
-
-    def create_triple_for_prediction(self, question, score_list, domain_list):
+    def create_triple_for_prediction(self, question, score_list, domain_list, target_list):
         # try:
+        question = question.replace(" of ", " ")
+        question = question.replace("what is the ", " ").replace("what is ", " ")
+        target = target_list[0]
+        question = question.lower().replace(target.lower(), '')
         score_list = torch.FloatTensor(score_list).reshape(1, -1).squeeze(0)
         domain_list = torch.LongTensor(domain_list)
         tokenized_question = self.tokenizer(question,
@@ -89,7 +92,7 @@ class CrossGraphQAEngine:
 
         return result
 
-    def run(self, question):
+    def run(self, question, test=False, heads=None):
         """
         The main interface for the integrated QA engine
         :param head_entity_list:
@@ -97,23 +100,28 @@ class CrossGraphQAEngine:
         :param head_entity: IRI of the head entity before cross-ontology translation, always in the form of CID (pubchem ID)
         :return: the re-ranked list of answer labels according to the adjusted scores
         """
-        # question = question.replace(" of ", " ")
         score_list = []
         label_list = []
         domain_list = []
         target_list = []
         print("=========================")
         for domain, engine in zip(self.domain_list, self.engine_list):
-            labels, scores, targets = engine.run(question=question)
+            if domain in heads:
+                head = heads[domain]
+            else:
+                head = None
+            labels, scores, targets = engine.run(question=question, head=head)
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
             labels = labels + ["EMPTY SLOT"] * length_diff
             targets = targets + ["EMPTY SLOT"] * length_diff
+            # if labels[0] != "EMPTY":
             score_list.append(scores)
             label_list += labels
             target_list += targets
             for i in range(max(len(labels), 5)):
                 domain_list.append(int(self.domain_encoding[domain]))
+
         print("score length", len(score_list))
         print("label length", len(label_list))
         print("domain length", len(domain_list))
@@ -122,14 +130,16 @@ class CrossGraphQAEngine:
         encoded_domain_list = one_hot(encoded_domain_list, num_classes=4)
 
         triples = self.create_triple_for_prediction(question=question, score_list=score_list,
-                                                    domain_list=encoded_domain_list)
+                                                    domain_list=encoded_domain_list, target_list=target_list)
         print("triples length", len(triples))
-
         score_factors = self.adjust_scores(triples)
-
+        print("score factors", score_factors)
         adjusted_score_list = []
         for score, score_factor, domain in zip(score_list, score_factors, self.domain_list):
-            score = torch.FloatTensor(score)
+            if test:
+                score = torch.FloatTensor([1, 1, 1, 1, 1])
+            else:
+                score = torch.FloatTensor(score)
             adjusted_score = score + score_factor
             adjusted_score = adjusted_score.tolist()
             adjusted_score_list = adjusted_score_list + adjusted_score
@@ -142,7 +152,11 @@ class CrossGraphQAEngine:
 
 if __name__ == '__main__':
     my_qa_engine = CrossGraphQAEngine()
-    my_qa_engine.run(question="what is the geometry of C6H6")
+    # rst = my_qa_engine.run(question="molecular weight of c4h8o")
+    rst = my_qa_engine.run(question="what is co2's geometry", test=True,
+                           heads={"pubchem": 'CID10557', "ontospecies": 'Species_10f8db59-4d8e-4a43-89eb-5b1d9c7e9821'})
+    print(rst)
+
     # x = ""
     # while x != "exit":
     #     x = input("question:")
