@@ -13,8 +13,8 @@
             "preLaunchTask": "compose-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
@@ -27,8 +27,8 @@
             "preLaunchTask": "compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
@@ -41,8 +41,8 @@
             "preLaunchTask": "update-compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
@@ -54,8 +54,8 @@
             "port": "${input:debug.port.read}",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         }
