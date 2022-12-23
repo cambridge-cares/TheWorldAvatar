@@ -9,7 +9,7 @@ from tqdm import tqdm
 from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.Dataset.Complex_Dataset import ComplexDataset
 from Marie.Util.location import DATA_DIR
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.NHopExtractor import HopExtractor
 
 
 class Trainer:
@@ -17,7 +17,7 @@ class Trainer:
     def __init__(self, model, dataset_name: str, epochs: int = 100, learning_rate: float = 0.01, gamma: float = 0.9,
                  data_folder='ontocompchem_calculation', save_model: bool = False, complex: bool = True,
                  pointwise: bool = False,
-                 batch_size: int = 64, test_step: int = 20):
+                 batch_size: int = 64, test_step: int = 50):
         """
         :param model:
         :param dataset_name:
@@ -51,7 +51,7 @@ class Trainer:
             df_test = pd.read_csv(os.path.join(DATA_DIR,
                                                f'{data_folder}/{self.dataset_name}-test.txt'), sep="\t", header=None)
 
-            df_test = df_test.sample(frac=0.05)
+            # df_test = df_test.sample(frac=0.05)
 
             self.train_set = ComplexDataset(df_train, data_folder=data_folder, dataset_name=self.dataset_name)
             self.test_set = ComplexDataset(df_test, data_folder=data_folder, dataset_name=self.dataset_name)
@@ -68,6 +68,7 @@ class Trainer:
 
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.data_folder),
                                           dataset_name=self.dataset_name)
+        self.training_records = []
 
     def train(self):
         for epoch_num in tqdm(range(self.epochs)):
@@ -94,11 +95,14 @@ class Trainer:
 
             if epoch_num % self.test_step == 0:
                 if self.pointwise:
-                    self.evaluate_pointwise()
+                    self.evaluate_pointwise(epoch=epoch_num)
                 else:
                     self.evaluate_pairwise()
                 if self.save_model:
                     self.export_embeddings()
+
+            if self.pointwise:
+                self.evaluate_pointwise(epoch=epoch_num)
 
     def k_hit_evaluation(self, largest=False, global_compare=True):
         total_counter = 0
@@ -108,6 +112,10 @@ class Trainer:
         filtered_total_hit_1 = 0
         filtered_total_hit_5 = 0
         filtered_total_hit_10 = 0
+
+        true_rank = 0
+        f_true_rank = 0
+
         for positive_triplets, _ in tqdm(self.test_dataloader):
             ground_truth_triplets = torch.transpose(torch.stack(positive_triplets), 0, 1).type(torch.LongTensor)
             for i, triplet in enumerate(ground_truth_triplets):
@@ -118,63 +126,99 @@ class Trainer:
                 if global_compare:
                     head_tensor = head.repeat(self.e_num)
                     rel_tensor = rel.repeat(self.e_num)
-                    tail_all = torch.range(0, self.e_num - 1).type(torch.LongTensor)
+                    tail_all = torch.arange(0, self.e_num).type(torch.LongTensor)
                     true_idx = tail_true
+                    tail_true_idx = true_idx
                 else:
                     tail_all = self.hop_extractor.extract_neighbour_from_idx(head.item())
+                    if tail_true.item() not in tail_all:
+                        tail_all.append(tail_true.item())
                     tail_true_idx = tail_all.index(tail_true.item())
-                    tail_filtered = []
-                    for tail in tail_all:
-                        # find the
-                        triple_str = f"{head.item()}_{rel.item()}_{tail}"
-                        if not self.hop_extractor.check_triple_existence(triple_str):
-                            tail_filtered.append(tail)
-
-                    tail_filtered.append(tail_true.item())
-                    tail_true_idx_filterd = tail_filtered.index(tail_true.item())
-
-                    tail_all = torch.LongTensor(tail_all)
-                    head_filtered = head.repeat(len(tail_filtered))
-                    rel_filtered = rel.repeat(len(tail_filtered))
-                    tail_filtered = torch.LongTensor(tail_filtered)
-
+                    true_idx = tail_true_idx
                     head_tensor = head.repeat(len(tail_all))
                     rel_tensor = rel.repeat(len(tail_all))
 
-                    true_idx = tail_true_idx
-
                 new_triplets = torch.stack((head_tensor, rel_tensor, tail_all)).type(torch.LongTensor)
                 prediction = self.model.predict(new_triplets)
-
-                filtered_triplets = torch.stack((head_filtered, rel_filtered, tail_filtered)).type(torch.LongTensor)
-                prediction_filtered = self.model.predict(filtered_triplets)
-
                 total_counter += 1
-                total_hit_1 += self.hit_at_k(prediction, true_idx, k=1, largest=largest)
-                total_hit_5 += self.hit_at_k(prediction, true_idx, k=5, largest=largest)
-                total_hit_10 += self.hit_at_k(prediction, true_idx, k=10, largest=largest)
+                # TODO: use only one hit a k function, receiving a list of k
+                k_list = [1, 5, 10]
 
-                filtered_total_hit_1 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=1, largest=largest)
-                filtered_total_hit_5 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=5, largest=largest)
-                filtered_total_hit_10 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=10, largest=largest)
+                hit_1, hit_5, hit_10 = self.hit_at_k(prediction, true_idx, k_list, largest=largest)
+                total_hit_1 += hit_1
+                total_hit_5 += hit_5
+                total_hit_10 += hit_10
 
+                true_rank += self.get_rank(prediction, tail_true_idx, largest=largest)
+                if global_compare:
+                    f_hit_1, f_hit_5, f_hit_10 = self.hit_a_k_filtered(predictions=prediction,
+                                                                       ground_truth_idx=true_idx.item(), k_list=k_list,
+                                                                       head=head.item(), rel=rel.item(),
+                                                                       all_tails=tail_all, largest=largest)
+
+                    filtered_total_hit_1 += f_hit_1
+                    filtered_total_hit_5 += f_hit_5
+                    filtered_total_hit_10 += f_hit_10
+
+        mrr = true_rank / total_counter
+        f_mrr = f_true_rank / total_counter
         print('Current Hit 10 rate:', total_hit_10, ' out of ', total_counter, ' ratio is: ',
               total_hit_10 / total_counter)
         print('Current Hit 5 rate:', total_hit_5, ' out of ', total_counter, ' ratio is: ', total_hit_5 / total_counter)
         print('Current Hit 1 rate:', total_hit_1, ' out of ', total_counter, ' ratio is: ', total_hit_1 / total_counter)
-
         print('Current Filtered Hit 10 rate:', filtered_total_hit_10, ' out of ', total_counter, ' ratio is: ',
               filtered_total_hit_10 / total_counter)
-        print('Current Filtered Hit 5 rate:', filtered_total_hit_5, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_5 / total_counter)
-        print('Current Filtered Hit 1 rate:', filtered_total_hit_1, ' out of ', total_counter, ' ratio is: ', filtered_total_hit_1 / total_counter)
+        print('Current Filtered Hit 5 rate:', filtered_total_hit_5, ' out of ', total_counter, ' ratio is: ',
+              filtered_total_hit_5 / total_counter)
+        print('Current Filtered Hit 1 rate:', filtered_total_hit_1, ' out of ', total_counter, ' ratio is: ',
+              filtered_total_hit_1 / total_counter)
 
-    def hit_at_k(self, predictions, ground_truth_idx, k: int = 10, largest=False):
-        k = min(k, len(predictions))
+        hit_1 = total_hit_1 / total_counter
+        hit_5 = total_hit_5 / total_counter
+        hit_10 = total_hit_10 / total_counter
+        filtered_total_hit_1 = hit_1
+        filtered_total_hit_5 = hit_5
+        filtered_total_hit_10 = hit_10
+
+        print("mmr: ", mrr)
+        print("f_mmr: ", f_mrr)
+        return [hit_1, hit_5, hit_10, filtered_total_hit_1, filtered_total_hit_5, filtered_total_hit_10, mrr, f_mrr]
+
+    def get_rank(self, predictions, ground_truth_idx, largest=False):
+        k = len(predictions)
         _, indices_top_k = torch.topk(predictions, k=k, largest=largest)
-        if ground_truth_idx in indices_top_k:
-            return 1
-        else:
-            return 0
+        rank = 1 / (indices_top_k.tolist().index(ground_truth_idx) + 1)
+        return rank
+
+    def hit_a_k_filtered(self, predictions, ground_truth_idx, k_list, head, rel, all_tails, largest=False):
+        k = len(all_tails)
+        _, all_indices = torch.topk(predictions, k=k, largest=largest)
+        all_indices = all_indices.tolist()
+        for idx, tail in enumerate(all_tails):
+            triple_str = f"{head}_{rel}_{tail}"
+            exist = self.hop_extractor.check_triple_existence(triple_str=triple_str)
+            if exist and idx != ground_truth_idx:
+                all_indices.remove(idx)
+
+        rsts = []
+        pred_index = all_indices.index(ground_truth_idx)
+        for k in k_list:
+            if pred_index <= (k - 1):
+                rsts.append(1)
+            else:
+                rsts.append(0)
+        return rsts
+
+    def hit_at_k(self, predictions, ground_truth_idx, k_list, largest=False):
+        rsts = []
+        for k in k_list:
+            k = min(k, len(predictions))
+            _, indices_top_k = torch.topk(predictions, k=k, largest=largest)
+            if ground_truth_idx in indices_top_k:
+                rsts.append(1)
+            else:
+                rsts.append(0)
+        return rsts
 
     def export_embeddings(self):
         if self.complex:
@@ -197,7 +241,7 @@ class Trainer:
                 f.write(rel_content)
                 f.close()
 
-    def evaluate_pointwise(self):
+    def evaluate_pointwise(self, epoch):
         with torch.no_grad():
             total_pos_acc = 0
             total_neg_acc = 0
@@ -215,7 +259,12 @@ class Trainer:
             print(f'average prediction accuracy for positive {average_prediction_pos}')
             print(f'average prediction accuracy for negative {average_prediction_neg}')
 
-            self.k_hit_evaluation(largest=True, global_compare=False)
+            row = self.k_hit_evaluation(largest=True, global_compare=True)
+            row.append(epoch)
+            self.training_records.append(row)
+            df = pd.DataFrame(self.training_records)
+            df.columns = ['hit_1', 'hit_5', 'hit_10', 'f_hit_1', 'f_hit_5', 'f_hit_10', 'mrr', 'f_mrr', 'epoch']
+            df.to_csv(os.path.join(DATA_DIR, self.data_folder, 'training_records.csv'), sep=',')
 
     def evaluate_pairwise(self):
         total_loss_val = 0

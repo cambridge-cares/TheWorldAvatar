@@ -1,11 +1,9 @@
 import os
 import pickle
 import random
-import time
-from random import choice
 import torch
 from Marie.Util.location import DATA_DIR
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.NHopExtractor import HopExtractor
 import pandas as pd
 
 
