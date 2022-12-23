@@ -173,3 +173,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                         oc:hasRotationalSymmetryNumber ?sym_number .
             }} LIMIT 100
 """
+
+WIKIDATA_GET_RELATION_LABELS = """
+# find all properties of chemical compounds
+SELECT DISTINCT ?label (GROUP_CONCAT(?alt;SEPARATOR="$") AS ?alt_labels)
+WHERE 
+{
+  # Must be of a chemical component
+ wd:%s  <http://www.w3.org/2000/01/rdf-schema#label>   ?label FILTER( LANG(?label)="en" ) .
+ wd:%s  <http://www.w3.org/2004/02/skos/core#altLabel> ?alt FILTER( LANG(?alt_labels)="en" ) .
+  
+}
+GROUP BY ?label
+ORDER BY ?label
+"""
