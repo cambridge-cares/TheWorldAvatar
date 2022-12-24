@@ -1,3 +1,11 @@
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
+
+# The purpose of this module is to read the Electricity consumption data, 
+# and instantiate both the data along with timeseries
+# into the Knowledge graph
 
 from tqdm import tqdm
 import time
@@ -17,15 +25,6 @@ from agent.kgutils.tsclient import TSClient
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
-
-def parse_to_file(query):
-    #ONLY for testing purpose
-  f = open("demofile3.txt", "w")
-  f.write(query)
-  f.close()
-
-  #open and read the file after the appending:
-  f = open("demofile3.txt", "r")
 
 def read_from_excel(year:str):
     '''

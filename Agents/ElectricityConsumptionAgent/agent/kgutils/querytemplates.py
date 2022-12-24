@@ -68,7 +68,7 @@ def region_update_template(region,wkt):
 
     return triples
 
-def output_query_template(keyword, iris = True):
+def output_query_template(keyword, iris = False):
     '''
         Return the SPARQL query string for Electricity, Gas, Fuel poverty, Temperature, ONS output area.
 
@@ -98,11 +98,11 @@ def output_query_template(keyword, iris = True):
         query+=' ?start ?end ?var ?t'
 
     # 'Fuel poverty' - return LSOA code, propotion of fuel poor, number of household
-        query+= ' ?s (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
+        query+= ' (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
 
     # 'ONS output area' - return LSOA code, WKT form geometry data
     if keyword == 'ONS output area':
-        query+=' ?s ?geom'
+        query+=' ?geom'
 
     #--------------------------Main Query body----------------------------------------------------#
     query+=   ' WHERE {'
@@ -149,9 +149,9 @@ def output_query_template(keyword, iris = True):
 
 
     if keyword == 'ONS output area':
-        query+= f""" ?s <{GEO_HAS_GEOMETRY}> ?o.
+        query+= f"""   <{GEO_HAS_GEOMETRY}> ?o.
     OPTIONAL{{
-            ?o gsp:asWKT ?geom}}
+            ?o <{GEO_ASWKT}> ?geom}}
     """
     #--------------------------Query end here----------------------------------
     query+= "}"
