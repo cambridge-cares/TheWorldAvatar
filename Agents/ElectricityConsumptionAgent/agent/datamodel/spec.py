@@ -1,7 +1,11 @@
 import pickle
 import numpy as np
 import pandas as pd
+import shapely.speedups
+shapely.speedups.enable()
+from agent.datamodel.iris import *
 
+### --------------------------------- Spec Vars -------------------------------------------- ###
 DEF_NAMESPACE = "ontogasgrid"
 LOCAL_KG = "http://localhost:8080/blazegraph"
 QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
@@ -9,11 +13,14 @@ QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/s
 DB_URL = "jdbc:postgresql:ts_example"
 DB_USER = "postgres"
 DB_PASSWORD = "postgres"
+### ----------------------------------------------------------------------------------------------
 
+
+### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
 def parse_to_file(query):
     #ONLY for testing purpose
   f = open("demofile3.txt", "w")
-  f.write(query)
+  f.write(str(query))
   f.close()
 
   #open and read the file after the appending:
@@ -34,6 +41,37 @@ def save_pickle(module,pathname):
     pickle.dump(results,outfile)
     outfile.close()
     return results
+
+def save_pickle_variable(*vars):
+    outfile = open(f"./Data/pickle_files/remaining_temp", 'wb')
+    pickle.dump(vars, outfile)
+    outfile.close()
+
+def save_state():
+    data = globals()
+    # Remove the variables that are not pickleable
+    data = {k: v for k, v in data.items() if isinstance(v, (int, float, str, list, dict, np.ndarray, pd.DataFrame))}
+    # Save the data dictionary to a pickle file
+    with open('.\Data\pickle_files\progress.pkl', 'wb') as f:
+        pickle.dump(data, f)
+
+def resume_state():
+    # Load the data dictionary from the pickle file
+    with open('.\Data\pickle_files\progress.pkl', 'rb') as f:
+        data = pickle.load(f)
+    # Update the global namespace with the values in the data dictionary
+    globals().update(data)
+
+def resume_data(key, Test = False):
+  with open('.\Data\pickle_files\progress.pkl', 'rb') as f:
+    my_data = pickle.load(f)
+    value = my_data
+    #[key]
+  
+  if Test == True:
+    print(f'Value of {key} is,', value)  
+    
+  return value
 
 def get_all_data(limit):
     '''
@@ -124,6 +162,5 @@ def get_all_data(limit):
     convert_df(df)
     return df
 
-save_pickle(get_all_data,"./Data/pickle_files/df_all_results")
-a = call_pickle("./Data/pickle_files/df_all_results")
-print(a)
+#save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
+#get_all_data(limit = False)

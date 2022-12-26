@@ -13,7 +13,7 @@ COMP = "http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_component
 COMPA = "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/"
 CLIMB =  "http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#"
 OFP = "http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#"
-
+CLIMA =  "http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/"
 ###--- --- --- --- --- Common Base URLs --- --- --- --- ---###
 
 # External ontologies
