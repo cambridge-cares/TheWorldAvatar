@@ -66,7 +66,7 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
-def initialise_kb():
+def upload_ontology():
     """
         Uploads TBox and ABox from TWA to KG namespace
     """
