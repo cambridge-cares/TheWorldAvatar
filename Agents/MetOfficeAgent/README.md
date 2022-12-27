@@ -37,7 +37,11 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **3) Accessing CMCL docker registry**
+
+The agent requires building the [StackClients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+
+### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -62,19 +66,18 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
+This agent requires [JPS_BASE_LIB] to be wrapped by [py4jps]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
 
-Simply execute the following command in the same folder as this `README` to build the required [Stack-Clients] resource and spin up the *production version* of the agent (from a *bash* terminal). The stack `<STACK NAME>` is the name of an already running stack.
+Simply execute the following command in the same folder as this `README` to spin up the *production version* of the agent (from a *bash* terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest StackClient py4jps resource
-bash ./build_py4jps_stackclient_resource.sh
-
 # Buildings the agent Docker image and pushing it
 bash ./stack.sh build
 
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK_NAME>
 ```
+
+In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to [Github container registry]) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -102,7 +105,7 @@ $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine (also detailed and referenced above). In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-Before starting development or spinning up the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the [Stack-Clients] `.jar` file to be wrapped by [py4jps], it needs to be copied over manually to the respective folder as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build the resource, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
+Before starting development or spinning up the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*).
 
 ```bash
 # Ensure Java Development Kit version >=11 is available
@@ -178,14 +181,7 @@ To run the tests, please follow those instructions:
     # Install agentlogging (separate installation required, as not possible to include in setup.py)
     python -m pip install -r requirements.txt
     ```
-3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
-    ```bash
-    # Build latest Stack_Clients resource for py4jps
-    bash ./build_py4jps_stackclient_resource.sh
-    # Install Stack_Clients resource for py4jps
-    jpsrm install StackClients <tmp_stack> --jar <stack-clients-....jar>
-    ```
-4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
+3. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
     ```bash
     # Uncomment integration tests and start Docker services (if wanted)
     docker compose -f "tests\docker-compose.test.yml" up -d --build 
@@ -224,6 +220,8 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+[StackClients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
+[CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- files -->
 [Dockerfile]: Dockerfile
