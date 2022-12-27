@@ -94,6 +94,7 @@ def read_all_temperature(limit = False):
     df = call_pickle('./Data/pickle_files/df_all_results')
     already_there_LSOA = df['LSOA_code'].tolist()
 
+    #'''
     LSOA = get_treated_shape()
     lon,lat,tas = read_nc('tas',loc=True)
     tasmin = read_nc('tasmin',loc=False)
@@ -119,7 +120,9 @@ def read_all_temperature(limit = False):
     full_grid = MultiPoint(points=list(grid_loc))
 
     print('Computing associated points...')
-
+    save_pickle_variable(LSOA = LSOA, full_grid=full_grid, grid_loc = grid_loc,
+    months = months, nc_vars_full = nc_vars_full, clim_vars = clim_vars)
+    #'''
     temp_result_dict = {}
     for i in tqdm(range(int(len(LSOA)))):
         if LSOA[i,0] not in already_there_LSOA:
@@ -160,4 +163,4 @@ def read_all_temperature(limit = False):
 
     return temp_result_dict
 
-cProfile.runctx('read_all_temperature(limit = False)', globals(), locals(), '-')
+read_all_temperature(limit = False)

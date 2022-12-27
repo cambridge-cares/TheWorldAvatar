@@ -2,8 +2,10 @@ import pickle
 import numpy as np
 import pandas as pd
 import shapely.speedups
+import inspect
 shapely.speedups.enable()
 from agent.datamodel.iris import *
+from agent.errorhandling.exceptions import *
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
 DEF_NAMESPACE = "ontogasgrid"
@@ -18,7 +20,10 @@ DB_PASSWORD = "postgres"
 
 ### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
 def parse_to_file(query):
-    #ONLY for testing purpose
+  '''
+  This module is to parse the result into a file called demofile3.txt so you can visualise it
+  could be useful when the terminal contain too much annoying logging message
+  '''
   f = open("demofile3.txt", "w")
   f.write(str(query))
   f.close()
@@ -27,53 +32,150 @@ def parse_to_file(query):
   f = open("demofile3.txt", "r")
 
 def convert_df(df):
+  '''
+  This module is to parse the dataframe into a file called df.txt so you can visualise it
+  could be useful when the terminal contain too much annoying logging message
+  '''
   df.to_csv('C:/Users/jx309/Documents/TheWorldAvatar/Agents/ElectricityConsumptionAgent/df.txt', sep='\t', index=False)
 
 def call_pickle(pathname):
+    '''
+  This module is to retrieve the result of the a pickle file under the pathname you specified
+  could be useful to retrieve the result of a pickle file
+  '''
     infile = open(pathname,'rb')
     results = pickle.load(infile)
     infile.close()
     return results
 
 def save_pickle(module,pathname):
+    '''
+  This module is to parse the result of the module into a pickle file under the pathname you specified
+  could be useful to save the result of a module
+
+  Note: this function is specific to the use for module. if you want to save the result of 
+  a variable, try save_pickle_variable(**kwargs) module (see below)
+  '''
     results = module(limit = False)
     outfile = open(pathname,'wb')
     pickle.dump(results,outfile)
     outfile.close()
     return results
 
-def save_pickle_variable(*vars):
-    outfile = open(f"./Data/pickle_files/remaining_temp", 'wb')
-    pickle.dump(vars, outfile)
-    outfile.close()
+def save_pickle_variable(**kwargs):
+    '''
+    ****************** Use this module along with 'resume_variables' module***************************
 
-def save_state():
-    data = globals()
-    # Remove the variables that are not pickleable
-    data = {k: v for k, v in data.items() if isinstance(v, (int, float, str, list, dict, np.ndarray, pd.DataFrame))}
-    # Save the data dictionary to a pickle file
-    with open('.\Data\pickle_files\progress.pkl', 'wb') as f:
-        pickle.dump(data, f)
+      This two modules can save the variable you specified, to the pickle file 
+      under the "./Data/temp_Repo/{arg_name} in function {func_name}" filepath, and retrieve the 
+      value you want. 
+      This module will be particularly useful, when the program take a really long time to run,
+      but you are at the developping phase so you have to run the whole script for a lot of times. 
+      By saving the intermediate value of variables and retrieve the value by calling resume_variables(**kwargs) (see below), you can resume 
+      the value of those variable without the cost of time of running previous programme.
 
-def resume_state():
-    # Load the data dictionary from the pickle file
-    with open('.\Data\pickle_files\progress.pkl', 'rb') as f:
-        data = pickle.load(f)
-    # Update the global namespace with the values in the data dictionary
-    globals().update(data)
+      Here is how to use this module:
+      1. you should run this module within another module, i.e. do not run this module in global statue
+      2. you should identified which part of the script took too long time, and which you do not want to run again and again
+      3. you should know which variables you want to save, this can be easily known by disable the part of the module 
+      you do not want. Looking at the following part of the script, if the variable shown as 'undefined' 
+      (shown white in VScode), OR looking at the 'PROBLEMS' panel in VScode, then, that's it!
 
-def resume_data(key, Test = False):
-  with open('.\Data\pickle_files\progress.pkl', 'rb') as f:
-    my_data = pickle.load(f)
-    value = my_data
-    #[key]
-  
-  if Test == True:
-    print(f'Value of {key} is,', value)  
-    
-  return value
+      firstly, put this function just below the scripts you do not want to run again and again
+      specify the variable you want to save by putting arguments like var1=var1, var2=var2
+      e.g.:
 
-def get_all_data(limit):
+      # Scripts I do not want
+      { ... }
+      save_pickle_variable(var1=var1, var2=var2)
+      # Scripts I do want for testing purpose
+      { ... }
+
+      when this module is finished, you can now disable the previous part of script (such as using comma), 
+      and resume the value of the variables by calling resume_variables module. 
+      Remember that the resume_variables module need to specify the var as arguments as var=var
+      e.g.:
+
+      """
+      # Scripts I do not want
+      { ... }
+      
+      """
+      var1 = resume_variables(var1=var1)
+      var2 = resume_variables(var2=var2)
+      # Scripts I do want for testing purpose
+      { ... }
+
+    '''
+      # Get the name of the calling function
+    func_name = inspect.stack()[1][3]
+    # Iterate through the arguments
+    for arg_name, arg_value in kwargs.items():
+        # Save the argument to a pickle file with the name of the argument as the filename
+        filename = f"./Data/temp_Repo/{arg_name} in function {func_name}"
+        with open(filename, 'wb') as outfile:
+            pickle.dump(arg_value, outfile)
+        print(f'The values of the {arg_name} have been saved as pickle files "{arg_name} in function {func_name}"')
+
+def resume_variables(**kwargs):
+    '''
+    ****************** Use this module along with 'save_pickle_variable' module***************************
+
+      This two modules can save the variable you specified, to the pickle file 
+      under the "./Data/temp_Repo/{arg_name} in function {func_name}" filepath, and retrieve the 
+      value you want. 
+      This module will be particularly useful, when the program take a really long time to run,
+      but you are at the developping phase so you have to run the whole script for a lot of times. 
+      By calling the save_pickle_variable module (see above) to save the intermediate value of variables 
+      and retrieve the value by calling resume_variables, you can resume the value of those variable 
+      without the cost of time of running previous programme.
+
+      Here is how to use this module:
+      1. you should run this module within another module, i.e. do not run this module in global statue
+      2. you should identified which part of the script took too long time, and which you do not want to run again and again
+      3. you should know which variables you want to save, this can be easily known by disable the part of the module 
+      you do not want. Looking at the following part of the script, if the variable shown as 'undefined' 
+      (shown white in VScode), OR looking at the 'PROBLEMS' panel in VScode, then, that's it!
+
+      firstly, put this function just below the scripts you do not want to run again and again
+      specify the variable you want to save by putting arguments like var1=var1, var2=var2
+      e.g.:
+
+      # Scripts I do not want
+      { ... }
+      save_pickle_variable(var1=var1, var2=var2)
+      # Scripts I do want for testing purpose
+      { ... }
+
+      when this module is finished, you can now disable the previous part of script (such as using comma), 
+      and resume the value of the variables by calling resume_variables module. 
+      Remember that the resume_variables module need to specify the var as arguments as var=var
+      e.g.:
+
+      """
+      # Scripts I do not want
+      { ... }
+      
+      """
+      var1 = resume_variables(var1=var1)
+      var2 = resume_variables(var2=var2)
+      # Scripts I do want for testing purpose
+      { ... }
+
+    '''
+    func_name = inspect.stack()[1][3]
+    for arg_name, arg_value in kwargs.items():
+      # Load the data dictionary from the pickle file
+      try:
+        with open(f"./Data/temp_Repo/{arg_name} in function {func_name}",'rb') as f:
+            data = pickle.load(f)
+
+      except Exception as ex:
+        raise InvalidInput("filepath can not be read -- check if the file exist") from ex
+
+      return data
+
+def get_all_data(limit = False):
     '''
   This module provide a 'shortcut' method to retrieve all the data required 
   for the project. Which returns a DataFrame looks like this:
@@ -163,4 +265,4 @@ def get_all_data(limit):
     return df
 
 #save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
-#get_all_data(limit = False)
+get_all_data(limit = False)
