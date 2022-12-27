@@ -9,7 +9,7 @@ class NerSMILE():
     #read model
         model = transformers.BertForTokenClassification.from_pretrained('bert-base-uncased',  num_labels = 3)
         model = torch.nn.DataParallel(model)
-        model.load_state_dict(torch.load(config['model_path']))
+        model.load_state_dict(torch.load(config['model_path']),strict=False)
         self.model = model
         self.config = config
 
