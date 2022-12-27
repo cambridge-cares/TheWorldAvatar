@@ -43,7 +43,7 @@ class Translator():
                     if c:
                         t_c = self.translateSMILES(c)
                         if t_c:
-                            print(t_c)
+                            print('smile string detected'.format(t_c))
                             entry['text'] = entry['text'].replace(c, t_c)
         return raw_data
 
@@ -85,6 +85,6 @@ if __name__ == "__main__":
     #dummy = loadjsonl("C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\smile_test.jsonl")
 
     dummy = [{'text':'what is the chemical formula of What sort of molecule is CC=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCC1=C(C(=CC=C1)OC)O)C)C)C)C)C)C)C'}]
-    t = Translator(modelpath="C:/Users/Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER.bin")
+    t = Translator(modelpath="D:\work\Marie\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER.bin")
     out = t.translate(dummy)
     print([i['text'] for i in out])
