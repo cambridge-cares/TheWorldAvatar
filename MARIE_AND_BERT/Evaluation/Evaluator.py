@@ -103,8 +103,8 @@ class Evaluator:
                 _, question, heads, domains, answers, mention = row
                 heads = {}
                 for h, d in zip(heads, domains):
-                    heads[h] = d
-                answers = engine.run(question, test=True, heads=heads)
+                    heads[d] = h
+                answers = engine.run(question, test=False, heads=heads)
                 answer_dict[question] = answers
 
             with open(answer_dict_path, 'w') as f:
