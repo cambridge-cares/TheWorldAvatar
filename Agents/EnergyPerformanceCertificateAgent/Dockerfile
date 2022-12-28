@@ -1,6 +1,9 @@
 # Install the EPC Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,8 +20,10 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy Stack-Client resource required to update py4jps later
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
