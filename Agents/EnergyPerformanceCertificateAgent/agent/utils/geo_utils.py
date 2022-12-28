@@ -10,7 +10,7 @@ import re
 import pyproj
 import numpy as np
 
-import agentlogging
+from py4jps import agentlogging
 
 
 # Initialise logger

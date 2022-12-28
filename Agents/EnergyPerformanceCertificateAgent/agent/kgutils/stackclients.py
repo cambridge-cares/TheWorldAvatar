@@ -11,7 +11,7 @@ import jaydebeapi
 import json
 
 
-import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import StackException
 from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL

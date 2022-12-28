@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import requests
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import KGException

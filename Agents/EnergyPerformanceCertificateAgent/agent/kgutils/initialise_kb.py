@@ -9,7 +9,7 @@
 import os
 import requests
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import GBP, GBP_PER_SM, METRE, METRE_SQ
@@ -18,7 +18,6 @@ from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
 from agent.utils.env_configs import OCGML_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -67,7 +66,6 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
-
 def instantiate_all_units():
     """
         Return SPARQL update to instantiate required all (both ascii and non-ascii) units
@@ -88,6 +86,7 @@ def instantiate_all_units():
 
     return query
 
+
 def upload_ontology():
     """
         Uploads TBox and ABox from TWA to KG namespace
@@ -101,7 +100,7 @@ def upload_ontology():
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     # Create a JVM module view to create Java File object
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
     # Verify that TBox has not been initialized
     try:
@@ -135,7 +134,7 @@ def upload_ontology():
             except Exception as ex:
                 logger.error("Unable to initialise knowledge base with TBox and ABox.")
                 raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
-        
+
         # Upload all symbols to KG
         logger.info('Instantiating all symbols ...')
         query = instantiate_all_units()

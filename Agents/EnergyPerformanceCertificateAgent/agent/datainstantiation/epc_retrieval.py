@@ -10,7 +10,7 @@ import requests
 import pandas as pd
 from pathlib import Path
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.kgutils.querytemplates import *

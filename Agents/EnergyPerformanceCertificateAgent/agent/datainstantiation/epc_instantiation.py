@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from geojson_rewind import rewind
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import *

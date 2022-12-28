@@ -5,7 +5,7 @@
 
 from flask import Blueprint, request, jsonify
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.errorhandling.exceptions import InvalidInput
 from agent.utils.env_configs import OCGML_ENDPOINT

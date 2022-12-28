@@ -9,7 +9,7 @@
 import uuid
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import UNITS_MAPPING

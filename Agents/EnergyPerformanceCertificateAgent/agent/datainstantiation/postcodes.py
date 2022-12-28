@@ -14,7 +14,7 @@ import uuid
 import urllib.parse
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.utils.api_endpoints import *
