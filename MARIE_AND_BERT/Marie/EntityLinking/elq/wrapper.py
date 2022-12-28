@@ -20,8 +20,9 @@ class NEL_ELQ():
             "iddict_path": params["output_path"]
         }
         self.args = argparse.Namespace(**config)
+        self.models = main_dense.load_models(self.args, logger=None)
+
 
     def infer(self,  test_samples):
-        models = main_dense.load_models(self.args, logger=None)
-        predictions = main_dense.run(self.args, None, *models, test_data=test_samples)
+        predictions = main_dense.run(self.args, None, *self.models, test_data=test_samples)
         return predictions
