@@ -12,6 +12,7 @@ import requests
 import agentlogging
 
 from agent.datamodel.iris import *
+from agent.datamodel.data_mapping import GBP, GBP_PER_SM, METRE, METRE_SQ
 from agent.errorhandling.exceptions import KGException
 from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
@@ -66,6 +67,27 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
+
+def instantiate_all_units():
+    """
+        Return SPARQL update to instantiate required all (both ascii and non-ascii) units
+    """
+
+    # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
+    #       claiming to use utf-8 encoding while actually using iso-8859-1
+    #       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
+
+    query = f"""
+        INSERT DATA {{
+            <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
+            <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> .
+            <{OM_HEIGHT}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .
+            <{OM_AREA}> <{OM_SYMBOL}> \"{METRE_SQ}\"^^<{XSD_STRING}> .
+
+    }}"""
+
+    return query
+
 def upload_ontology():
     """
         Uploads TBox and ABox from TWA to KG namespace
@@ -113,3 +135,12 @@ def upload_ontology():
             except Exception as ex:
                 logger.error("Unable to initialise knowledge base with TBox and ABox.")
                 raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
+        
+        # Upload all symbols to KG
+        logger.info('Instantiating all symbols ...')
+        query = instantiate_all_units()
+        try:
+            kg_client.performUpdate(query)
+        except Exception as ex:
+            logger.error("Unable to initialise symbols in KG.")
+            raise KGException("Unable to initialise symbols in KG.") from ex

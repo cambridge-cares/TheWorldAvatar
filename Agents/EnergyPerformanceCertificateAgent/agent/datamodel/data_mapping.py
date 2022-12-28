@@ -10,6 +10,12 @@
 from agent.datamodel.iris import *
 
 
+# OM/UOM SYMBOLS
+GBP_PER_SM = '£ m-2'
+GBP = '£'
+METRE = 'm'
+METRE_SQ = 'm2'
+
 # Mapping of EPC data keys: {key from api : key mapping}
 EPC_KEYS = {
     ### Domestic EPC data

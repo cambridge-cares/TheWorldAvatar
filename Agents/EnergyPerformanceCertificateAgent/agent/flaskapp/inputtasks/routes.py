@@ -10,7 +10,7 @@ import agentlogging
 from agent.errorhandling.exceptions import InvalidInput
 from agent.utils.env_configs import OCGML_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.kgutils.initialise_kb import create_blazegraph_namespace, initialise_kb
+from agent.kgutils.initialise_kb import create_blazegraph_namespace, upload_ontology
 from agent.kgutils.initialise_ocgml import upload_ocgml_quads
 from agent.datainstantiation.postcodes import initialise_postcodes
 from agent.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
@@ -40,7 +40,7 @@ def api_initialise_kb():
         create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, 
                                     quads=False, geospatial=False)
         # Initialise KB
-        initialise_kb()
+        upload_ontology()
         return jsonify({'status': '200', 'msg': 'Initialisation successful'})
 
     except Exception as ex:
