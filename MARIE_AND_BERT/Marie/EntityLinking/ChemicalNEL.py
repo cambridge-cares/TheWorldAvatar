@@ -9,6 +9,7 @@ from Marie.Util.location import DICTIONARY_DIR
 import fuzzyset
 import chemparse
 import re
+from Marie.EntityLinking.Inference import BertNEL
 
 
 def rearrange_formula(mention):
@@ -38,11 +39,15 @@ class ChemicalNEL:
             self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {__name__}.__init__")
 
         self.fuzzyset = fuzzyset.FuzzySet(self.name_list)
+        self.ner = BertNEL()
 
     def find_cid(self, question):
         q_cap = question.upper()
-        doc = Document(q_cap)
-        mentions = doc.cems
+        # doc = Document(q_cap)
+        # mentions = doc.cems
+        mentions = [self.ner.find_cid(q_cap)[2]]
+
+
         self.marie_logger.info(f"mentions: {mentions} in question {question}")
         try:
             mention_str = str(mentions[0])
@@ -68,7 +73,7 @@ class ChemicalNEL:
 if __name__ == '__main__':
     cn = ChemicalNEL(dataset_name="pubchem")
     START_TIME = time.time()
-    rst = cn.find_cid('what is the molar mass of benzene')
+    rst = cn.find_cid('what is the molar mass of carbon dioxide')
     print(rst)
 
     print(time.time() - START_TIME)

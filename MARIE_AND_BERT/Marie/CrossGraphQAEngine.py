@@ -106,6 +106,7 @@ class CrossGraphQAEngine:
         target_list = []
         print("=========================")
         for domain, engine in zip(self.domain_list, self.engine_list):
+
             if domain in heads:
                 head = heads[domain]
             else:

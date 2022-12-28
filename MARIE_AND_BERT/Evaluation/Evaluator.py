@@ -67,7 +67,7 @@ class Evaluator:
     def test_cross_graph(self):
         total_hit_1, total_hit_5, total_hit_10, total_counter = 0, 0, 0, 0
         df_test = self.cross_graph_test
-        answer_dict_path = os.path.join(self.dataset_dir, "answer_dict_ablation.json")
+        answer_dict_path = os.path.join(self.dataset_dir, "answer_dict.json")
         if os.path.exists(os.path.join(answer_dict_path)):
             answer_dict = json.loads(open(answer_dict_path).read())
             for question, answers in answer_dict.items():
@@ -104,7 +104,7 @@ class Evaluator:
                 heads = {}
                 for h, d in zip(heads, domains):
                     heads[d] = h
-                answers = engine.run(question, test=False, heads=heads)
+                answers = engine.run(question, test=False, heads={})
                 answer_dict[question] = answers
 
             with open(answer_dict_path, 'w') as f:
