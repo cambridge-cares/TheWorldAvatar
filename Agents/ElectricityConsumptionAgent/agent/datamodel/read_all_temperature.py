@@ -94,7 +94,7 @@ def read_all_temperature(limit = False):
     df = call_pickle('./Data/pickle_files/df_all_results')
     already_there_LSOA = df['LSOA_code'].tolist()
 
-    #'''
+    '''
     LSOA = get_treated_shape()
     lon,lat,tas = read_nc('tas',loc=True)
     tasmin = read_nc('tasmin',loc=False)
@@ -122,8 +122,22 @@ def read_all_temperature(limit = False):
     print('Computing associated points...')
     save_pickle_variable(LSOA = LSOA, full_grid=full_grid, grid_loc = grid_loc,
     months = months, nc_vars_full = nc_vars_full, clim_vars = clim_vars)
-    #'''
+    '''
+    LSOA = resume_variables(LSOA = 'LSOA')
+    full_grid = resume_variables(full_grid = 'full_grid')
+    grid_loc = resume_variables(grid_loc = 'grid_loc')
+    months = resume_variables(months = 'months')
+    nc_vars_full = resume_variables(nc_vars_full = 'nc_vars_full')
+    clim_vars = resume_variables(clim_vars = 'clim_vars')
+    unique_LSOA = call_pickle("./Data/temp_Repo/unique_LSOA in function valid_LSOA_list")
+
+    mask = [LSOA[i,0] not in unique_LSOA for i in range(LSOA.shape[0])]
+    # Delete the rows since which data is not neccesary
+    LSOA = np.delete(LSOA, np.where(mask), axis=0)
+    print(len(LSOA))
+
     temp_result_dict = {}
+    df = pd.DataFrame(columns=['LSOA_IRI', 'startUTC', 'clim_var', 'value'])
     for i in tqdm(range(int(len(LSOA)))):
         if LSOA[i,0] not in already_there_LSOA:
             assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
@@ -157,10 +171,21 @@ def read_all_temperature(limit = False):
                 startUTC = '2020-'+month_str+'-01T12:00:00'
                 for var in range(len(LSOA_vars)):
                     clim_var = clim_vars[var]
-                    temp_result_dict.setdefault(LSOA_IRI, {}).setdefault(startUTC, {})[clim_var] = round(LSOA_vars[var], 3)
-                    parse_to_file(temp_result_dict)
-                    save_pickle_variable(temp_result_dict)
+                    
+                    if LSOA_IRI not in temp_result_dict:
+                        temp_result_dict[LSOA_IRI] = {}
+                    if startUTC not in temp_result_dict[LSOA_IRI]:
+                        temp_result_dict[LSOA_IRI][startUTC] = {}
+                    temp_result_dict[LSOA_IRI][startUTC][clim_var] = round(LSOA_vars[var], 3)
+                    '''
+                    df = df.append({'LSOA_IRI': LSOA_IRI, 'startUTC': startUTC, 'clim_var': clim_var, 'value': round(LSOA_vars[var], 3)}, ignore_index=True)
+                    convert_df(df)
+                    '''
 
+    
+    save_pickle_variable(temp_result_dict = temp_result_dict)
     return temp_result_dict
 
-read_all_temperature(limit = False)
+a = read_all_temperature(limit = False)
+#a = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature')
+print(a)

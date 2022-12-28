@@ -19,17 +19,107 @@ DB_PASSWORD = "postgres"
 
 
 ### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
-def parse_to_file(query):
+def parse_to_file(query, filepath = "demofile"):
   '''
-  This module is to parse the result into a file called demofile3.txt so you can visualise it
+  This module is to parse the result into a file, (default as called demofile.txt) so you can visualise it
   could be useful when the terminal contain too much annoying logging message
   '''
-  f = open("demofile3.txt", "w")
+  f = open(f'{filepath}.txt', "w")
   f.write(str(query))
   f.close()
 
   #open and read the file after the appending:
-  f = open("demofile3.txt", "r")
+  f = open(f"{filepath}.txt", "r")
+
+def read_from_excel_elec(year:str = '2020'):
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
+    try:
+            data = pd.read_excel('./Data/LSOA_domestic_elec_2010-20.xlsx', sheet_name=year, skiprows=4)
+    except Exception as ex:
+            raise InvalidInput("Excel file can not be read -- try fixing by using absolute path") from ex
+
+    LSOA_codes = data["LSOA code"].values
+    met_num = data["Number\nof meters\n"].values
+    consump = data["Total \nconsumption\n(kWh)"].values
+
+    elec_consump = []
+    elec_meter = []
+    
+    # Replace nan values with zeros using a list comprehension
+    met_num =  [0 if np.isnan(met_num) else met_num for met_num in met_num]  
+    consump =  [0 if np.isnan(consump) else consump for consump in consump]  
+    
+    elec_consump.append([[LSOA_codes[i],consump[i]] for i in range(len(LSOA_codes))])
+    elec_meter.append([[LSOA_codes[i],met_num[i]] for i in range(len(LSOA_codes))])
+
+    print(f'Electricity consumption for year {year} successfully retrieved from Excel')
+    return elec_consump, elec_meter
+
+def read_from_excel_gas(year:str = '2020'):
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
+    try:
+            data = pd.read_excel('./Data/LSOA_domestic_gas_2010-20.xlsx', sheet_name=year, skiprows=4)
+    except Exception as ex:
+            raise InvalidInput("Excel file can not be read -- try fixing by using absolute path") from ex
+
+    LSOA_codes = data["LSOA code"].values
+    met_num = data["Number\nof meters\n"].values
+    non_met_num = data['Number of\nnon-consuming meters'].values
+    consump = data["Total \nconsumption\n(kWh)"].values
+    'Number of\nnon-consuming meters'
+
+    gas_consump = []
+    gas_meter = []
+    gas_non_meter = []
+    
+
+    # Replace the 'null' data to zero
+    met_num =  [0 if np.isnan(met_num) else met_num for met_num in met_num]  
+    non_met_num =  [0 if np.isnan(non_met_num) else non_met_num for non_met_num in non_met_num]  
+    consump =  [0 if np.isnan(consump) else consump for consump in consump]  
+    
+    gas_consump.append([[LSOA_codes[i],consump[i]] for i in range(len(LSOA_codes))])
+    gas_meter.append([[LSOA_codes[i],met_num[i]] for i in range(len(LSOA_codes))])
+    gas_non_meter.append([[LSOA_codes[i],non_met_num[i]] for i in range(len(LSOA_codes))])
+
+    print(f'Gas consumption for year {year} successfully retrieved from Excel')
+    return gas_consump, gas_meter, gas_non_meter
+
+def read_from_excel_fuel_poor():
+  data = pd.read_excel(
+    "./Data/sub-regional-fuel-poverty-2022-tables.xlsx",
+    sheet_name="Table 3",
+    skiprows=2,
+    skipfooter=9)
+
+  LSOA_codes = data["LSOA Code"].values
+  house_num = data["Number of households"].values
+  poor_num = data["Number of households in fuel poverty"].values
+
+    # Replace the 'null' data to zero
+  house_num =  [0 if np.isnan(house_num) else house_num for house_num in house_num]  
+  poor_num =  [0 if np.isnan(poor_num) else poor_num for poor_num in poor_num]  
+
+  house_num_list = []
+  fuel_poor = []
+
+  house_num_list.append([[LSOA_codes[i],house_num[i]] for i in range(len(LSOA_codes))])
+  fuel_poor.append([[LSOA_codes[i],poor_num[i] / house_num[i]] for i in range(len(LSOA_codes))])
+
+  print(f'Fuel poverty for year 2020 successfully retrieved from Excel')
+  return house_num_list, fuel_poor
 
 def convert_df(df):
   '''
@@ -43,9 +133,13 @@ def call_pickle(pathname):
   This module is to retrieve the result of the a pickle file under the pathname you specified
   could be useful to retrieve the result of a pickle file
   '''
-    infile = open(pathname,'rb')
-    results = pickle.load(infile)
-    infile.close()
+    try:
+        infile = open(pathname,'rb')
+        results = pickle.load(infile)
+        infile.close()
+    except Exception as ex:
+        raise InvalidInput("filepath can not be read -- check if the file exist") from ex
+        
     return results
 
 def save_pickle(module,pathname):
@@ -93,7 +187,7 @@ def save_pickle_variable(**kwargs):
 
       when this module is finished, you can now disable the previous part of script (such as using comma), 
       and resume the value of the variables by calling resume_variables module. 
-      Remember that the resume_variables module need to specify the var as arguments as var=var
+      Remember that the resume_variables module need to specify the var as arguments as var='var'
       e.g.:
 
       """
@@ -101,8 +195,8 @@ def save_pickle_variable(**kwargs):
       { ... }
       
       """
-      var1 = resume_variables(var1=var1)
-      var2 = resume_variables(var2=var2)
+      var1 = resume_variables(var1='var1')
+      var2 = resume_variables(var2='var2')
       # Scripts I do want for testing purpose
       { ... }
 
@@ -149,7 +243,7 @@ def resume_variables(**kwargs):
 
       when this module is finished, you can now disable the previous part of script (such as using comma), 
       and resume the value of the variables by calling resume_variables module. 
-      Remember that the resume_variables module need to specify the var as arguments as var=var
+      Remember that the resume_variables module need to specify the var as arguments as var='var'
       e.g.:
 
       """
@@ -157,8 +251,8 @@ def resume_variables(**kwargs):
       { ... }
       
       """
-      var1 = resume_variables(var1=var1)
-      var2 = resume_variables(var2=var2)
+      var1 = resume_variables(var1='var1')
+      var2 = resume_variables(var2='var2')
       # Scripts I do want for testing purpose
       { ... }
 
@@ -174,6 +268,40 @@ def resume_variables(**kwargs):
         raise InvalidInput("filepath can not be read -- check if the file exist") from ex
 
       return data
+
+def valid_LSOA_list():
+
+    def process_list(data):
+      # Remove the first bracket using indexing
+      data = data[0]
+      # Convert the list to a numpy array
+      data = np.array(data)
+      return data
+
+    gas_results, meters_results, non_meters_results = read_from_excel_gas()
+    elec_results, elec_meters_results = read_from_excel_elec()
+    house_num_result, fuel_poor_result = read_from_excel_fuel_poor()
+    shape_result = call_pickle('./Data/pickle_files/shapes_array')
+
+    elec_results = process_list(elec_results)
+    gas_results = process_list(gas_results)
+    house_num_result = process_list(house_num_result)
+    
+
+    unique_LSOA_1 = np.unique(gas_results[:, 0])
+    unique_LSOA_2 = np.unique(elec_results[:, 0])
+    unique_LSOA_3 = np.unique(house_num_result[:, 0])
+    unique_LSOA_4 = np.unique(shape_result[:, 0])
+
+    unique_LSOA = set(unique_LSOA_1).union(unique_LSOA_2, unique_LSOA_3, unique_LSOA_4)
+    unique_LSOA = list(unique_LSOA)
+
+    print(len(unique_LSOA))
+    print(len(unique_LSOA_1))
+    print(len(unique_LSOA_2))
+    print(len(unique_LSOA_3))
+    print(len(unique_LSOA_4))
+    save_pickle_variable(unique_LSOA = unique_LSOA)
 
 def get_all_data(limit = False):
     '''
@@ -265,4 +393,5 @@ def get_all_data(limit = False):
     return df
 
 #save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
-get_all_data(limit = False)
+#get_all_data(limit = False)
+valid_LSOA_list()

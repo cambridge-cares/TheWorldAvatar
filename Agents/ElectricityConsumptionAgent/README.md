@@ -14,12 +14,12 @@ tbc...
 
 - The `LSOA_domestic_elec_2010-20.xlsx` file will be read by this agent, which should be placed under `./Data` folder.
 - (Provisional) The query and update endpoint, db_url, db_username and db_password are specified at the  `./agent/datamodel/spec.py`. The default setting is as follows:
-> DEF_NAMESPACE = "ontogasgrid" \\
-> LOCAL_KG = "http://localhost:8080/blazegraph"\\
-> QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"\\
-> db.url = jdbc:postgresql:ts_example\\
-> db.user = postgres\\
-> db.password = postgres\\
+> DEF_NAMESPACE = "ontogasgrid"   \
+> LOCAL_KG = "http://localhost:8080/blazegraph"  \
+> QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"  \
+> db.url = jdbc:postgresql:ts_example  \
+> db.user = postgres  \
+> db.password = postgres  \
 
 ## Run the agent
 Run the `./agent/dataretrieval/readings.py` file
