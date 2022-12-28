@@ -17,7 +17,7 @@ logger = agentlogging.get_logger("prod")
 
 # Initialise global variables to be read from Docker compose file
 global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-       OCGML_ENDPOINT
+       OCGML_ENDPOINT, NAMESPACE
 
 
 def retrieve_settings():
@@ -87,6 +87,14 @@ def retrieve_settings():
         logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
 
+    # Retrieve target Blazegraph name for data to instantiate
+    NAMESPACE = os.getenv('NAMESPACE')
+    if NAMESPACE is None:
+        logger.error('"NAMESPACE" name is missing in environment variables.')
+        raise ValueError('"NAMESPACE" name is missing in environment variables.')
+    if NAMESPACE == '':
+        logger.error('No "NAMESPACE" value has been provided in environment variables.')
+        raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
 # Run when module is imported
 retrieve_settings()

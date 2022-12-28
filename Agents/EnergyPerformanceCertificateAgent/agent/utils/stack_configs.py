@@ -7,7 +7,7 @@
 # (i.e. for the Time Series Client) from Stack clients
 
 from agent.kgutils.javagateway import stackClientsGw
-from agent.utils.env_configs import DATABASE
+from agent.utils.env_configs import DATABASE, NAMESPACE
 
 
 # Initialise global variables to be read from properties file
@@ -52,7 +52,7 @@ def retrieve_settings():
 
     # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
     # for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl("buildings")
+    QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
     # Extract ONTOP endpoint
