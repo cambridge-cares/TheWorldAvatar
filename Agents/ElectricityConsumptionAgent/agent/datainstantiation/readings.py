@@ -26,7 +26,7 @@ from agent.kgutils.tsclient import TSClient
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-def read_from_excel(year:str):
+def read_from_excel(year:str) -> list:
     '''
         Return lists of readings from Excel
         
@@ -50,13 +50,11 @@ def read_from_excel(year:str):
     for i in LSOA_codes, met_num, consump:
         i[np.where(i=='')] = 0
 
-    logger.info('Create triples to instantiate Electrical Consumption data ...')
-
     return LSOA_codes, met_num, consump
 
 def upload_data_to_KG(year:str,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT):
+                update_endpoint: str = UPDATE_ENDPOINT) -> int:
     '''
         perform SPARQL update to upload the data into Blazegraph
         
@@ -86,6 +84,7 @@ def upload_data_to_KG(year:str,
     n_compile = int(n_compile)
     len_query = np.zeros(n_compile + 2)
 
+    logger.info('Create triples to instantiate Electrical Consumption data ...')
     for i in range(1, len(len_query) - 1):
         len_query[i] = len_query[i - 1] + 10
         len_query[-1] = len_query[-2] + remainder
@@ -167,7 +166,7 @@ def upload_data_to_KG(year:str,
     logger.info('Insert query for Electricity Consumption successfully performed.')
     return len(len_query) - 1
 
-def retrieve_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+def retrieve_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> pd.DataFrame:
     '''
         perform SPARQL query to get the data from Blazegraph, return a DataFrame looks like:
               's'  'usage'  'meter'  'usageiri'  'meteriri'
@@ -194,7 +193,7 @@ def retrieve_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
 
     return df
 
-def upload_timeseries_to_KG(year:str, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+def upload_timeseries_to_KG(year:str, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> int:
 
     logger.info('Retrieving available electricity consumption/meters per LSOA from Knowledge Graph ...')
     df = retrieve_data_from_KG(query_endpoint, update_endpoint)
@@ -248,17 +247,18 @@ if __name__ == '__main__':
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
- '''
- print("\nUploading the Electricity consumption data")
+ 
+ #print("\nUploading the Electricity consumption data")
  logger.info("Uploading the Electricity consumption data...")
 
- t1= time.time()
- len_query=upload_data_to_KG("2020",QUERY_ENDPOINT,UPDATE_ENDPOINT)
- print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
+ t1 = time.time()
+ len_query = upload_data_to_KG("2020",QUERY_ENDPOINT,UPDATE_ENDPOINT)
+ #print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
  t2= time.time()
  diff = t2 - t1
- print(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+ #print(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
  logger.info(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-'''
 
-upload_timeseries_to_KG("2020", QUERY_ENDPOINT,UPDATE_ENDPOINT)
+ added_ts = upload_timeseries_to_KG("2020", QUERY_ENDPOINT,UPDATE_ENDPOINT)
+ #print((f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG'))
+ logger.info(f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG')

@@ -39,8 +39,10 @@ COMP_HASUSED = COMP + 'hasUsed'
 COMP_ELEC = COMP + "Electricity"
 COMP_HAS_STARTUTC = COMP + "hasStartUTC"
 COMP_HAS_ENDUTC = COMP + "hasEndUTC"
+COMP_OFFTAKENGAS = COMP + "OfftakenGas"
 
 GAS_ELEC = GAS + "ElecMeters"
+GAS_GASMETER = GAS + "GasMeters"
 GAS_HAS_ELECMETERS = GAS + "hasElecMeters"
 GAS_HAS_CONSUM_ELECMETERS = GAS + "hasConsumingElecMeters"
 GAS_HAVE_GASMETERS = GAS + "hasGasMeters"
@@ -51,10 +53,14 @@ GAS_HAVE_NONCONSUM_GASMETERS = GAS +"hasNonConsumingGasMeters"
 OFP_HASHOUSEHOLD = OFP + 'hasHouseholds'
 OFP_FUELPOOR = OFP + 'fuelpoorhouseholds '
 OFP_NUMBEROFHOUSEHOLD = OFP + 'numberofhouseholds'
+OFP_VALIDFROM = OFP + "validFrom"
+OFP_VALIDTO = OFP + "validTo"
 
 # OntoClimate
 CLIMB_HASMEASURE = CLIMB + "hasClimateMeasurement"
 CLIMB_HASVAR = CLIMB + "hasClimateVariable"
+CLIMB_CLIMATEMEASUREMENT = CLIMB + "ClimateMeasurement"
+CLIMB_CLIMBVARIABLE = CLIMB + "ClimateVariable"
 
 # OntoTimeSeries
 TS_TIMESERIES = TS + "TimeSeries"
@@ -67,6 +73,7 @@ OM_QUANTITY = OM + "Quantity"
 OM_ENERGY = OM + "Energy"
 OM_MEASURE = OM + "Measure"
 OM_UNIT = OM + "Unit"
+OM_TEMPERATURE = OM + "Temperature"
 
 OM_HAS_VALUE = OM + "hasValue"
 OM_HAS_NUMERICALVALUE = OM +"hasNumericalValue"

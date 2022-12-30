@@ -11,7 +11,7 @@ from agent.datamodel.iris import *
 from agent.kgutils.stackclients import PostGISClient
 '''
 
-def electricity_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters,non_meters: int = None) -> str:
+def electricity_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters) -> str:
     '''
         Return strings of SPARQL Update query regarding to each triple
         
@@ -25,12 +25,12 @@ def electricity_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw
                 <{mes_uuid}> <{OM_HAS_UNIT}> <{OM_KW}>.
                 <{used_uuid}> <{RDF_TYPE}> <{COMP_ELEC}>;
                         <{COMP_HAS_STARTUTC}>  "{start_time}"^^<{XSD_DATETIME}> ;
-                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>  .
+                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> .
                 
-                <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>.
-                <{region}> <{COMP_HASCONSUMED}> <{used_uuid}> .
+                <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>;
+                           <{COMP_HASCONSUMED}> <{used_uuid}> .
 
-                <{kw_uuid}> <{RDF_TYPE}> <{OM}>;
+                <{kw_uuid}> <{RDF_TYPE}> <{OM_ENERGY}>;
                         <{OM_HAS_PHENO}> <{used_uuid}> ;
                         <{OM_HAS_VALUE}> <{mes_uuid}>.
 
@@ -68,7 +68,89 @@ def region_update_template(region,wkt):
 
     return triples
 
-def output_query_template(keyword, iris = False):
+def gas_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,cons,met_uuid,meters,non_meters):
+    '''
+        Return strings of SPARQL Update query regarding to each triple
+        
+        Arguments:
+         variables to be imported as data to the knowledge graph.
+         Specific definitions can be refered to the reference
+    ''' 
+    region = ONS_ID + region
+    triples = f""" 
+            <{mes_uuid}> <{RDF_TYPE}> <{OM_MEASURE}>.
+            <{mes_uuid}> <{OM_HAS_UNIT}> <{OM_KW}>.
+            <{used_uuid}> <{RDF_TYPE}> <{COMP_OFFTAKENGAS}>;
+                    <{COMP_HAS_STARTUTC}>  "{start_time}"^^<{XSD_DATETIME}> ;
+                    <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> .
+        
+            <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>;
+                        <{COMP_HASCONSUMED}> <{used_uuid}> .
+        
+            <{kw_uuid}> <{RDF_TYPE}> <{OM_ENERGY}>;
+                            <{OM_HAS_PHENO}> <{used_uuid}> ;
+                            <{OM_HAS_VALUE}> <{mes_uuid}>.
+            
+            <{mes_uuid}> <{OM_HAS_NUMERICALVALUE}>  {cons}.
+            <{met_uuid}> <{RDF_TYPE}> <{GAS_GASMETER}>.
+
+            <{region}> <{GAS_HAVE_GASMETERS}> <{met_uuid}>.
+            <{met_uuid}> <{GAS_HAVE_CONSUM_GASMETERS}>  {meters};
+                         <{GAS_HAVE_NONCONSUM_GASMETERS}>  {non_meters};
+                    <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
+                    <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> 
+        """
+
+    return triples
+
+def fuel_poor_update_template(region,house_uuid,start_time,end_time,houses,poor):
+    '''
+        Return strings of SPARQL Update query regarding to each triple
+        
+        Arguments:
+         variables to be imported as data to the knowledge graph.
+         Specific definitions can be refered to the reference
+    ''' 
+    region = ONS_ID + region
+    triples = f""" 
+    <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>;
+               <{OFP_HASHOUSEHOLD}> <{house_uuid}>.
+
+    <{house_uuid}> <{OFP_VALIDFROM}> "{start_time}"^^<{XSD_DATETIME}> ;
+                   <{OFP_VALIDTO}>   "{end_time}"^^<{XSD_DATETIME}> ;
+                   <{OFP_NUMBEROFHOUSEHOLD} <{houses}> ;
+                   <{OFP_FUELPOOR}> <{poor}> .
+    """
+
+    return triples
+
+def climate_temperature_update_template(region,meas_uuid,clim_var,start_time,end_time,temp_uuid,val_uuid,value):
+    '''
+        Return strings of SPARQL Update query regarding to each triple
+        
+        Arguments:
+         variables to be imported as data to the knowledge graph.
+         Specific definitions can be refered to the reference
+    ''' 
+    region = ONS_ID + region
+    triples = f""" 
+    <{meas_uuid}> <{RDF_TYPE}>  <{CLIMB_CLIMATEMEASUREMENT}> .
+            <{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
+            <{clim_var}> <{RDF_TYPE}>  <{CLIMB_CLIMBVARIABLE}> .
+            <{meas_uuid}>  <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
+                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>
+                        <{CLIMB_HASVAR}>   <{clim_var}>  .
+            <{temp_uuid}>  <{RDF_TYPE}>  <{OM_TEMPERATURE}> ;
+                           <{OM_HAS_PHENO}>  <{meas_uuid}> ;
+                           <{OM_HAS_VALUE}>  <{val_uuid}> .
+            <{val_uuid}> <{RDF_TYPE}>  <{OM_MEASURE}> ;
+                         <{OM_HAS_UNIT}>  <{OM_DEGREE_C}> ;
+                         <{OM_HAS_NUMERICALVALUE}> <{value}> .
+        """
+
+    return triples
+
+def output_query_template(keyword: str, year: str = '2020', iris = False):
     '''
         Return the SPARQL query string for Electricity, Gas, Fuel poverty, Temperature, ONS output area.
 
@@ -91,14 +173,21 @@ def output_query_template(keyword, iris = False):
 
     # 'Gas' - return LSOA code, gas usage, number of gas consuming meters, number of gas non consuming meters
     if keyword == 'Gas':
-        query+= ' ?usage ?con ?non'
+        query+= ' ?usage ?meter ?nonmeter'
+        if iris == True:
+            query+= ' ?usageiri ?metiri'
 
     # 'Temperature' - return LSOA code, start time, end time, variable (min/mean/max), temperature value
     if keyword == 'Temperature':
-        query+=' ?start ?end ?var ?t'
+        query+=' ?start ?var ?t'
+        if iris == True:
+            query+= ' ?t_iri'
 
     # 'Fuel poverty' - return LSOA code, propotion of fuel poor, number of household
+    if keyword == 'Fuel poverty':
         query+= ' (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
+        if iris == True:
+            query+= ' ?housesiri'
 
     # 'ONS output area' - return LSOA code, WKT form geometry data
     if keyword == 'ONS output area':
@@ -108,27 +197,29 @@ def output_query_template(keyword, iris = False):
     query+=   ' WHERE {'
     query+=   f"""?s <{RDF_TYPE}> <{ONS_DEF_STAT}>;"""
 
-
     if keyword == 'Electricity':
         query+= f"""<{COMP_HASCONSUMED}> ?elec;
                     <{GAS_HAS_ELECMETERS}> ?meteriri.
-    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter.
+    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter.      
     ?energy <{OM_HAS_PHENO}> ?elec;
             <{OM_HAS_VALUE}> ?usageiri.
-    ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage. 
+    ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage;
+            <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
+    ?elec <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
     """
-
 
     if keyword == 'Gas':
         query+= f"""<{COMP_HASUSED}> ?gas;
-                    <{GAS_HAVE_GASMETERS}> ?met.
-        ?met <{GAS_HAVE_CONSUM_GASMETERS}> ?con;
-             <{GAS_HAVE_NONCONSUM_GASMETERS}> ?non.
+                    <{GAS_HAVE_GASMETERS}> ?metiri.
+        ?metiri <{GAS_HAVE_CONSUM_GASMETERS}> ?meter;
+                <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>; 
+                <{GAS_HAVE_NONCONSUM_GASMETERS}> ?nonmeter.
         ?energy <{OM_HAS_PHENO}> ?gas;
-                 <{OM_HAS_VALUE}> ?enval.
-        ?enval <{OM_HAS_NUMERICALVALUE}>  ?usage.
-        """
+                 <{OM_HAS_VALUE}> ?usageiri.
+        ?usageiri <{OM_HAS_NUMERICALVALUE}>  ?usage;
+                  <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
 
+        """
 
     if keyword == 'Temperature':
         query+= f"""    <{CLIMB_HASMEASURE}  ?m.
@@ -136,17 +227,18 @@ def output_query_template(keyword, iris = False):
         <{COMP_HAS_ENDUTC}> ?end.
     ?m  <{CLIMB_HASVAR}> ?var.
     ?p <{OM_HAS_PHENO}> ?m.
-    ?p <{OM_HAS_VALUE}> ?oval.
-    ?oval <{OM_HAS_NUMERICALVALUE}> ?t.
-        """
+    ?p <{OM_HAS_VALUE}> ?t_iri.
+    ?t_iri <{OM_HAS_NUMERICALVALUE}> ?t.
 
+    FILTER (regex(str(?start), "{year}-\\d\\d-01T12:00:00") && datatype(?start) = xsd:dateTime)
+        """
 
     if keyword == 'Fuel poverty':
-        query+= f"""  <{OFP_HASHOUSEHOLD}> ?houses.
-     ?houses <{OFP_FUELPOOR}> ?a.
-     ?houses <{OFP_NUMBEROFHOUSEHOLD}> ?num.
+        query+= f"""  <{OFP_HASHOUSEHOLD}> ?housesiri.
+     ?housesiri <{OFP_FUELPOOR}> ?a;
+             <{OFP_VALIDFROM}> "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>;
+             <{OFP_NUMBEROFHOUSEHOLD}> ?num.
         """
-
 
     if keyword == 'ONS output area':
         query+= f"""   <{GEO_HAS_GEOMETRY}> ?o.
@@ -156,193 +248,3 @@ def output_query_template(keyword, iris = False):
     #--------------------------Query end here----------------------------------
     query+= "}"
     return query
-
-'''
-def add_om_quantity(
-    station_iri,
-    quantity_iri,
-    quantity_type,
-    data_iri,
-    data_iri_type,
-    unit,
-    symbol,
-    is_observation: bool,
-    creation_time=None,
-    comment=None,
-):
-    """
-    Create triples to instantiate station measurements
-    """
-    # Create triple for measure vs. forecast
-    if is_observation:
-        triple = f"""<{quantity_iri}> <{OM_HAS_VALUE}> <{data_iri}> . """
-
-    else:
-        triple = f"<{quantity_iri}> <{EMS_HAS_FORECASTED_VALUE}> <{data_iri}> . "
-        if creation_time:
-            triple += f'<{data_iri}> <{EMS_CREATED_ON}> "{creation_time}"^^<{XSD_DATETIME}> . '
-
-    # Create triples to instantiate station measurement according to OntoEMS
-    triples = f"""
-        <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
-        <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
-        <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
-        <{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
-        <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-        <{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . 
-    """
-    triples += triple
-
-    # Create optional comment to quantity
-    if comment:
-        triples += (
-            f"""<{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . """
-        )
-
-    return triples
-
-
-def instantiated_observations(station_iris: list = None):
-    # Returns query to retrieve (all) instantiated observation types per station
-    if station_iris:
-        iris = ", ".join(["<" + iri + ">" for iri in station_iris])
-        substring = f"""FILTER (?station IN ({iris}) ) """
-    else:
-        substring = f"""
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-    query = f"""
-        SELECT ?station ?stationID ?quantityType
-        WHERE {{
-            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-                     <{EMS_REPORTS}> ?quantity .
-            {substring}                     
-            ?quantity <{OM_HAS_VALUE}> ?measure ;
-                      <{RDF_TYPE}> ?quantityType .
-        }}
-        ORDER BY ?station
-    """
-    return query
-
-
-def instantiated_forecasts(station_iris: list = None):
-    # Returns query to retrieve (all) instantiated forecast types per station
-    if station_iris:
-        iris = ", ".join(["<" + iri + ">" for iri in station_iris])
-        substring = f"""FILTER (?station IN ({iris}) ) """
-    else:
-        substring = f"""
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-    query = f"""
-        SELECT ?station ?stationID ?quantityType
-        WHERE {{
-            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-                     <{EMS_REPORTS}> ?quantity .
-            {substring} 
-            ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?forecast ;
-                      <{RDF_TYPE}> ?quantityType .
-        }}
-        ORDER BY ?station
-    """
-    return query
-
-
-def instantiated_observation_timeseries(station_iris: list = None):
-    # Returns query to retrieve (all) instantiated observation time series per station
-    if station_iris:
-        iris = ", ".join(["<" + iri + ">" for iri in station_iris])
-        substring = f"""FILTER (?station IN ({iris}) ) """
-    else:
-        substring = f"""
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-    query = f"""
-        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI 
-        WHERE {{
-            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-                     <{EMS_REPORTS}> ?quantity .
-            {substring} 
-            ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
-                      <{RDF_TYPE}> ?quantityType .
-            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;   
-                     <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-        }}
-        ORDER BY ?tsIRI
-    """
-    return query
-
-
-def instantiated_forecast_timeseries(station_iris: list = None):
-    # Returns query to retrieve (all) instantiated forecast time series per station
-    if station_iris:
-        iris = ", ".join(["<" + iri + ">" for iri in station_iris])
-        substring = f"""FILTER (?station IN ({iris}) ) """
-    else:
-        substring = f"""
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-    query = f"""
-        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI
-        WHERE {{
-            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-                     <{EMS_REPORTS}> ?quantity .
-            {substring} 
-            ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?dataIRI ;
-                      <{RDF_TYPE}> ?quantityType .
-            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;
-                     <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-        }}
-        ORDER BY ?tsIRI
-    """
-    return query
-
-
-def split_insert_query(triples: str, max: int):
-    """ "
-    Split large SPARQL insert query into list of smaller chunks (primarily
-    to avoid heap size/memory issues when executing large SPARQL updated)
-
-    Arguments
-        triples - original SPARQL update string with individual triples
-                  separated by " . ", i.e. in the form
-                  <s1> <p1> <o1> .
-                  <s2> <p2> <o2> .
-                  ...
-        max - maximum number of triples per SPARQL update
-
-    """
-
-    # Initialise list of return queries
-    queries = []
-
-    # Split original query every max'th occurrence of " . " and append queries list
-    splits = triples.split(" . ")
-    cutoffs = list(range(0, len(splits), max))
-    cutoffs.append(len(splits))
-    for i in range(len(cutoffs) - 1):
-        start = cutoffs[i]
-        end = cutoffs[i + 1]
-        query = " . ".join([t for t in splits[start:end]])
-        query = " INSERT DATA { " + query + " } "
-        queries.append(query)
-
-    return queries
-
-
-def update_forecast_creation_datetime(issue_time: str):
-    # Returns beginning of update query to update forecast creation times
-    query = f"""
-        DELETE {{
-	        ?forecast <{EMS_CREATED_ON}> ?old }}
-        INSERT {{
-	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
-        WHERE {{
-	        ?forecast <{EMS_CREATED_ON}> ?old .
-            FILTER ( ?forecast IN (
-    """
-
-    return query
-'''

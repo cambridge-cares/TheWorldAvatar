@@ -12,5 +12,7 @@ geopandas
 shapely
 netCDF4
 matplotlib
+mpl_toolkits
+scipy
 # define agent logging dependency here as there are issues including it in install_requires in setup.py
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
