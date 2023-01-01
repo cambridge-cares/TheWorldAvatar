@@ -253,7 +253,7 @@ def read_all_temperature_2021(limit = False):
         LSOA = np.delete(LSOA,del_index,axis=0)
 
         return LSOA
-    
+    '''
     LSOA = get_treated_shape()
     lon,lat,tas = read_nc('tas',loc=True)
     tasmin = read_nc('tasmin',loc=False)
@@ -267,13 +267,15 @@ def read_all_temperature_2021(limit = False):
         month,month_end = month_num(month_str)
         if i == 0:
             grid_loc,nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=True)
-            '''
+        '''
+    '''
         if i == 8:
             nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
             for j in range(6):
                 nc_vars_add=np.append(nc_vars_add,[[12,14,16]],axis=0)
                 j = j +1
         '''
+    '''
         else:
             nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
         nc_vars_full.append(nc_vars_add)
@@ -290,7 +292,7 @@ def read_all_temperature_2021(limit = False):
     months = resume_variables(months = 'months')
     nc_vars_full = resume_variables(nc_vars_full = 'nc_vars_full')
     clim_vars = resume_variables(clim_vars = 'clim_vars')
-    '''
+    
     temp_result_dict = {}
     for i in tqdm(range(int(len(LSOA)))):
             assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
@@ -330,12 +332,10 @@ def read_all_temperature_2021(limit = False):
                     if startUTC not in temp_result_dict[LSOA_IRI]:
                         temp_result_dict[LSOA_IRI][startUTC] = {}
                     temp_result_dict[LSOA_IRI][startUTC][clim_var] = round(LSOA_vars[var], 3)
-                    parse_to_file(temp_result_dict)
 
-    
     save_pickle_variable(temp_result_dict = temp_result_dict)
     return temp_result_dict
 
 a = read_all_temperature_2021(limit = False)
 #a = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature')
-print(a)
+

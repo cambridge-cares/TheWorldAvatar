@@ -150,7 +150,7 @@ def climate_temperature_update_template(region,meas_uuid,clim_var,start_time,end
 
     return triples
 
-def output_query_template(keyword: str, year: str = '2020', iris = False):
+def output_query_template(keyword: str, year: str = '2020'):
     '''
         Return the SPARQL query string for Electricity, Gas, Fuel poverty, Temperature, ONS output area.
 
@@ -158,8 +158,6 @@ def output_query_template(keyword: str, year: str = '2020', iris = False):
          Keyword: 'Electricity'/'Gas'/'Fuel poverty'/'Temperature'/'ONS output area'
                    Each keyword will generate a specific query string to obtain the data from the KG
 
-                   iris: 'True'/'False'
-                   If 'True' then return the data iri along with the query result
 
     '''
     query = f'''SELECT DISTINCT ?s'''
@@ -168,26 +166,18 @@ def output_query_template(keyword: str, year: str = '2020', iris = False):
     # 'Electricity' - return LSOA code, electricity usage, number of electricity meters
     if keyword == 'Electricity':
         query+= ' ?usage ?meter'
-        if iris == True:
-            query+= ' ?usageiri ?meteriri'
 
     # 'Gas' - return LSOA code, gas usage, number of gas consuming meters, number of gas non consuming meters
     if keyword == 'Gas':
         query+= ' ?usage ?meter ?nonmeter'
-        if iris == True:
-            query+= ' ?usageiri ?metiri'
 
     # 'Temperature' - return LSOA code, start time, end time, variable (min/mean/max), temperature value
     if keyword == 'Temperature':
         query+=' ?start ?var ?t'
-        if iris == True:
-            query+= ' ?t_iri'
 
     # 'Fuel poverty' - return LSOA code, propotion of fuel poor, number of household
     if keyword == 'Fuel poverty':
         query+= ' (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
-        if iris == True:
-            query+= ' ?housesiri'
 
     # 'ONS output area' - return LSOA code, WKT form geometry data
     if keyword == 'ONS output area':
@@ -200,11 +190,11 @@ def output_query_template(keyword: str, year: str = '2020', iris = False):
     if keyword == 'Electricity':
         query+= f"""<{COMP_HASCONSUMED}> ?elec;
                     <{GAS_HAS_ELECMETERS}> ?meteriri.
-    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter.      
+    ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter;
+              <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
     ?energy <{OM_HAS_PHENO}> ?elec;
             <{OM_HAS_VALUE}> ?usageiri.
-    ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage;
-            <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
+    ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage.
     ?elec <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
     """
 

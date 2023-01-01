@@ -45,16 +45,16 @@ def read_from_excel(year:str) -> list:
     met_num = data["Number\nof meters\n"].values
     consump = data["Total \nconsumption\n(kWh)"].values
     logger.info('Electricity consumption data succesfully retrieved')
-
-    # Replace the 'null' data to zero
-    for i in LSOA_codes, met_num, consump:
-        i[np.where(i=='')] = 0
+    
+    # Replace the 'null' data to 'NaN'
+    met_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(met_num) else met_num for met_num in met_num]  
+    consump =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(consump) else consump for consump in consump]   
 
     return LSOA_codes, met_num, consump
 
 def upload_data_to_KG(year:str,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT) -> int:
+                update_endpoint: str = UPDATE_ENDPOINT):
     '''
         perform SPARQL update to upload the data into Blazegraph
         
@@ -68,6 +68,9 @@ def upload_data_to_KG(year:str,
     LSOA_codes = []
     met_num = []
     consump = []
+    datairi = []
+    value = []
+
 
 # Read the Excel and extract relavent data
     LSOA_codes, met_num, consump = read_from_excel(year)
@@ -83,6 +86,8 @@ def upload_data_to_KG(year:str,
     remainder = total % 10
     n_compile = int(n_compile)
     len_query = np.zeros(n_compile + 2)
+    if remainder == 0:
+        len_query = np.zeros(n_compile + 1)
 
     logger.info('Create triples to instantiate Electrical Consumption data ...')
     for i in range(1, len(len_query) - 1):
@@ -102,7 +107,11 @@ def upload_data_to_KG(year:str,
         met_uuid = COMPA + 'ElectricityMeter_' + str(uuid.uuid4())
         kw_uuid = COMPA + 'KW_' + str(uuid.uuid4())
         mes_uuid = COMPA + 'Measure_' + str(uuid.uuid4())
-        
+        datairi.append(mes_uuid)
+        value.append(cons)
+        datairi.append(met_uuid)
+        value.append(meters)
+
         triples = electricity_update_template(
                 mes_uuid,
                 used_uuid,
@@ -120,21 +129,25 @@ def upload_data_to_KG(year:str,
             meters = met_num[i + j + 1]
             cons = consump[i + j + 1]
 
-        used_uuid = COMPA + 'hasConsumed_' + str(uuid.uuid4())
-        met_uuid = COMPA + 'ElectricityMeter_' + str(uuid.uuid4())
-        kw_uuid = COMPA + 'KW_' + str(uuid.uuid4())
-        mes_uuid = COMPA + 'Measure_' + str(uuid.uuid4())
-        
-        triples += electricity_update_template(
-                mes_uuid,
-                used_uuid,
-                start_time,
-                end_time,
-                region,
-                kw_uuid,
-                cons,
-                met_uuid,
-                meters) 
+            used_uuid = COMPA + 'hasConsumed_' + str(uuid.uuid4())
+            met_uuid = COMPA + 'ElectricityMeter_' + str(uuid.uuid4())
+            kw_uuid = COMPA + 'KW_' + str(uuid.uuid4())
+            mes_uuid = COMPA + 'Measure_' + str(uuid.uuid4())
+            datairi.append(mes_uuid)
+            value.append(cons)
+            datairi.append(met_uuid)
+            value.append(meters)
+
+            triples += electricity_update_template(
+                    mes_uuid,
+                    used_uuid,
+                    start_time,
+                    end_time,
+                    region,
+                    kw_uuid,
+                    cons,
+                    met_uuid,
+                    meters) 
 
         region = LSOA_codes[int(len_query[g + 1]) - 1]
         meters = met_num[int(len_query[g + 1]) - 1]
@@ -144,6 +157,10 @@ def upload_data_to_KG(year:str,
         met_uuid = COMPA + 'ElectricityMeter_' + str(uuid.uuid4())
         kw_uuid = COMPA + 'KW_' + str(uuid.uuid4())
         mes_uuid = COMPA + 'Measure_' + str(uuid.uuid4())
+        datairi.append(mes_uuid)
+        value.append(cons)
+        datairi.append(met_uuid)
+        value.append(meters)
 
         triples += electricity_update_template(
                 mes_uuid,
@@ -164,69 +181,28 @@ def upload_data_to_KG(year:str,
 
     #print('Observations/forecasts successfully instantiated/updated.')
     logger.info('Insert query for Electricity Consumption successfully performed.')
-    return len(len_query) - 1
+    return total, datairi, value
 
-def retrieve_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> pd.DataFrame:
+def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> int:
     '''
-        perform SPARQL query to get the data from Blazegraph, return a DataFrame looks like:
-              's'  'usage'  'meter'  'usageiri'  'meteriri'
-        0
-        1
-        2
-        ...
-
+            Adds time series data to instantiated time series IRIs
+        
         Arguments:
-        year: the number of year of which the data you may want to read
-        query_endpoint: str = QUERY_ENDPOINT,
-        update_endpoint: str = UPDATE_ENDPOINT
-    '''
-    # Get query string
-    query = output_query_template('Electricity',iris= True)
+            datairi - list of IRIs of instantiated time series data
+            value - respective value of instantiated time series data
+            year - specify the year of time
+            query_endpoint: str = QUERY_ENDPOINT,
+            update_endpoint: str = UPDATE_ENDPOINT
+            '''
+    # Initialise time list for TimeSeriesClient's bulkInit function
+    times = [f"{year}-01-01T12:00:00" for _ in datairi]
 
-    # Construct kg client
-    kg_client = KGClient(query_endpoint, update_endpoint)
-    result = kg_client.performQuery(query)
-
-    # Parse the result into DataFrame
-    df = pd.DataFrame(columns=['s','usage','meter','usageiri','meteriri'])
-    df = df.append(result)
-
-    return df
-
-def upload_timeseries_to_KG(year:str, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> int:
-
-    logger.info('Retrieving available electricity consumption/meters per LSOA from Knowledge Graph ...')
-    df = retrieve_data_from_KG(query_endpoint, update_endpoint)
-    logger.info('Available electricity consumption/meters per LSOA successfully retrieved.')
-
-    # Initialise lists for TimeSeriesClient's bulkInit function
-    dataIRIs = []
-    times = []
-    values = []
-    time = year + "-01-01T12:00:00"
-
-    for lsoa in list(df['s'].unique()):
-        # Extract relevant datairi to consumption      
-        dataIRI = df[df['s'] == lsoa]['usageiri'].to_string(index=False)
-        value = df[df['s'] == lsoa]['usage'].values[0]
-        dataIRIs.append(dataIRI)
-        times.append(time)
-        values.append(value)
-    
-    for lsoa in list(df['s'].unique()):
-        # Extract relevant datairi to meters      
-        dataIRI = df[df['s'] == lsoa]['meteriri'].to_string(index=False)
-        value = df[df['s'] == lsoa]['meter'].values[0]
-        dataIRIs.append(dataIRI)
-        times.append(time)
-        values.append(value)
-    
     # Initialise TimeSeries Clients
-    kg_client = KGClient(QUERY_ENDPOINT,UPDATE_ENDPOINT)
+    kg_client = KGClient(query_endpoint,update_endpoint)
     ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
                          rdb_password=DB_PASSWORD)
     with ts_client.connect() as conn:
-            ts_client.tsclient.bulkInitTimeSeries(dataIRIs, [DATACLASS]*len(dataIRIs), TIME_FORMAT, conn)
+            ts_client.tsclient.bulkInitTimeSeries(datairi, [DATACLASS]*len(datairi), TIME_FORMAT, conn)
     logger.info('Time series triples for electricity consumption/meters per LSOA via Java TimeSeriesClient successfully instantiated.')
 
     # Upload TimeSeries data
@@ -234,7 +210,7 @@ def upload_timeseries_to_KG(year:str, query_endpoint: str = QUERY_ENDPOINT, upda
     ts_list = []
     for i in range(len(times)):
         added_ts += 1
-        ts = TSClient.create_timeseries(times[i],dataIRIs[i],values[i])
+        ts = TSClient.create_timeseries(times[i],datairi[i],value[i])
         ts_list.appened(ts)
 
     with ts_client.connect() as conn:
@@ -252,13 +228,13 @@ if __name__ == '__main__':
  logger.info("Uploading the Electricity consumption data...")
 
  t1 = time.time()
- len_query = upload_data_to_KG("2020",QUERY_ENDPOINT,UPDATE_ENDPOINT)
+ len_query,  datairi, value = upload_data_to_KG("2020",QUERY_ENDPOINT,UPDATE_ENDPOINT)
  #print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
  t2= time.time()
  diff = t2 - t1
  #print(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
  logger.info(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
- added_ts = upload_timeseries_to_KG("2020", QUERY_ENDPOINT,UPDATE_ENDPOINT)
+ added_ts = upload_timeseries_to_KG(datairi, value, "2020", QUERY_ENDPOINT,UPDATE_ENDPOINT)
  #print((f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG'))
  logger.info(f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG')

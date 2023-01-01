@@ -6,6 +6,22 @@ from agent.kgutils.kgclient import KGClient
 import pandas as pd
 import json
 #from agent.datainstantiation.readings import *
+from tqdm import tqdm
+import time
+import numpy as np
+import pandas as pd
+import uuid
+
+import agentlogging
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import *
+from agent.utils.readings_mapping import DATACLASS, TIME_FORMAT
+from agent.errorhandling.exceptions import *
+from agent.datamodel.spec import *
+from agent.datainstantiation.readings import *
+
+#from agent.kgutils.tsclient import jpsBaseLibView
+from agent.kgutils.tsclient import TSClient
 
 def parse_to_file(query):
   f = open("demofile3.txt", "w")
@@ -52,9 +68,61 @@ def create_geojson_for_postgis(station_iri: str, station_name: str, station_type
     print(json.dumps(geojson))
     return json.dumps(geojson)
 
+# create_geojson_for_postgis(station_iri = 'station_iri', station_name= 'name', station_type= 'type', station_subtype= 'subtype', lat = 6 , long = 66 , kg_endpoint= 'kg_endpoin')
 
-create_geojson_for_postgis(station_iri = 'station_iri', station_name= 'name', station_type= 'type',
-                               station_subtype= 'subtype', lat = 6 , long = 66 , kg_endpoint= 'kg_endpoin')
+def test_loop():
+# Read the Excel and extract relavent data
+    year = '2020'
+    LSOA_codes, met_num, consump = read_from_excel(year)
+
+# Define the reference time
+    LSOA_codes=np.append(LSOA_codes, 0)
+    met_num=np.append(met_num, 0)
+    consump=np.append(consump, 0)
+    LSOA_codes=np.append(LSOA_codes, 0)
+    met_num=np.append(met_num, 0)
+    consump=np.append(consump, 0)
+    LSOA_codes=np.append(LSOA_codes, 0)
+    met_num=np.append(met_num, 0)
+    consump=np.append(consump, 0)
+
+# Split the queries into Batches
+# Perform SPARQL update query in chunks to avoid heap size/memory issues
+    total = len(LSOA_codes)
+    n_compile = total / 10
+    remainder = total % 10
+    n_compile = int(n_compile)
+    len_query = np.zeros(n_compile + 2)
+    if remainder == 0:
+        len_query = np.zeros(n_compile + 1)
+
+    for i in range(1, len(len_query) - 1):
+        len_query[i] = len_query[i - 1] + 10
+        len_query[-1] = len_query[-2] + remainder
+
+    for g in tqdm(range(len(len_query) - 1)):
+        i = int(len_query[g])
+        region = LSOA_codes[i]
+        meters = met_num[i]
+        cons = consump[i]
+
+        # Initialise update query
+        print(f'Region No.{i} has been loaded!')
+
+        middle_num = int(len_query[g + 1] - len_query[g]) - 2
+        for j in range(middle_num):
+            region = LSOA_codes[i + j + 1]
+            meters = met_num[i + j + 1]
+            cons = consump[i + j + 1]
+            print(f'Region No.{i + j + 1} has been loaded!')
+
+        region = LSOA_codes[int(len_query[g + 1]) - 1]
+        meters = met_num[int(len_query[g + 1]) - 1]
+        cons = consump[int(len_query[g + 1]) - 1]
+    
+        print(f'Region No.{int(len_query[g + 1]) - 1} has been loaded!')
+
+test_loop()
 '''
 df.to_csv('C:/Users/jx309/Documents/TheWorldAvatar/Agents/ElectricityConsumptionAgent/df.txt', sep='\t', index=False)
 
