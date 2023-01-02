@@ -78,8 +78,8 @@ def read_from_excel_elec(year:str = '2020', dict = False):
       elec_meter = []
       
       # Replace nan values with zeros using a list comprehension
-      met_num =  [0 if np.isnan(met_num) else met_num for met_num in met_num]  
-      consump =  [0 if np.isnan(consump) else consump for consump in consump]   
+      met_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(met_num) else met_num for met_num in met_num]  
+      consump =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(consump) else consump for consump in consump]   
       
       elec_consump.append([[LSOA_codes[i],consump[i]] for i in range(len(LSOA_codes))])
       elec_meter.append([[LSOA_codes[i],met_num[i]] for i in range(len(LSOA_codes))])
@@ -131,9 +131,9 @@ def read_from_excel_gas(year:str = '2020', dict = False):
       
 
       # Replace the 'null' data to zero
-      met_num =  [0 if np.isnan(met_num) else met_num for met_num in met_num]  
-      non_met_num =  [0 if np.isnan(non_met_num) else non_met_num for non_met_num in non_met_num]   
-      consump =  [0 if np.isnan(consump) else consump for consump in consump]  
+      met_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(met_num) else met_num for met_num in met_num]  
+      non_met_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(non_met_num) else non_met_num for non_met_num in non_met_num]   
+      consump =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(consump) else consump for consump in consump]  
       
       gas_consump.append([[LSOA_codes[i],consump[i]] for i in range(len(LSOA_codes))])
       gas_meter.append([[LSOA_codes[i],met_num[i]] for i in range(len(LSOA_codes))])
@@ -176,8 +176,8 @@ def read_from_excel_fuel_poor(dict = False):
     poor_num = data["Number of households in fuel poverty"].values
 
       # Replace the 'null' data to zero
-    house_num =  [0 if np.isnan(house_num) else house_num for house_num in house_num]   
-    poor_num =  [0 if np.isnan(poor_num) else poor_num for poor_num in poor_num]  
+    house_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(house_num) else house_num for house_num in house_num]   
+    poor_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(poor_num) else poor_num for poor_num in poor_num]  
 
     house_num_list = []
     fuel_poor = []
@@ -397,7 +397,7 @@ def get_all_data(limit = False):
     '''
   This module provide a 'shortcut' method to retrieve all the data required 
   for the project. Which returns a DataFrame looks like this:
-    LSOA_code  ons_shape   Electricity_consump   Electricity_meter   Gas_consump   Gas_meter   Gas_nonmeter   FuelPoor_%   Household_num   temp
+    LSOA_code  ons_shape   Electricity_consump   Electricity_meter  Electricty_cosumption_per_household  Gas_consump   Gas_meter   Gas_nonmeter  Gas_consumption_per_household   FuelPoor_%   Household_num   temp
   0
   1
   2
@@ -483,6 +483,7 @@ def get_all_data(limit = False):
 
 ######################################################################################################
     '''
+    valid_LSOA_list()
     temp_dict = call_pickle('./Data/temp_Repo/temp_dict in function get_all_data')
     gas_results = call_pickle('./Data/temp_Repo/gas_consump in function read_from_excel_gas')
     meters_results = call_pickle('./Data/temp_Repo/gas_meter in function read_from_excel_gas')
@@ -504,9 +505,11 @@ def get_all_data(limit = False):
     df['ons_shape'] = df['LSOA_code'].apply(lambda x: LSOA_shapes.get(x, np.nan))
     df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_results.get(x, np.nan)),3))
     df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meters_results.get(x, np.nan)))
+    df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
     df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_results.get(x, np.nan)),3))
     df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(meters_results.get(x, np.nan)))
     df['Gas_nonmeter'] = df['LSOA_code'].apply(lambda x: float(non_meters_results.get(x, np.nan)))
+    df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
     df['FuelPoor_%'] = df['LSOA_code'].apply(lambda x: round(float(fuel_poor_propotion_result.get(x, np.nan)),3))
     df['Household_num'] = df['LSOA_code'].apply(lambda x: float(num_household_result.get(x, np.nan)))
     df['temp'] = df['LSOA_code'].apply(lambda x: temp_dict.get(x, np.nan))
