@@ -1,6 +1,7 @@
 Prerequisites
 1) Set Mapbox user and API key in DispersionVis/index.html
 2) Ship data needs to be present in ShipInputAgent/data
+3) Set API key in ../Agents/WeatherAgent, more details in that folder
 
 Stack needs to be up and running:
 1) Navigate to Deploy/stacks/dynamic/stack-manager and execute ./stack.sh start ship-stack
