@@ -2,9 +2,9 @@ version: "3.8"
 
 services:
   HeatNetwork-agent:
-    image: heatnetwork-agent:1.0.0
+    image: district-heating-agent:1.0.0
     build: .
-    container_name: HeatNetwork-agent
+    container_name: district-heating-agent
     pull_policy: if_not_present
     ports:
       - "1080:8080"
