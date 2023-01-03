@@ -49,7 +49,6 @@ class JSONFormatter {
 
     private static formatValue(value) {
         let newValue = value;
-        console.log("VALUE IN = " + value);
 
         // If JSON in string form, parse as JSON
         if(newValue.startsWith("{") || newValue.startsWith("[")) {
@@ -75,7 +74,6 @@ class JSONFormatter {
             newValue = newValue.trim() + " [" + unit + "]";
         }
 
-        console.log("VALUE OUT = " + newValue);
         return newValue;
     }
 

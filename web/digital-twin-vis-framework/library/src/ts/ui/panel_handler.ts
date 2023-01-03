@@ -222,9 +222,6 @@ class PanelHandler {
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
-            console.log("Incoming raw JSON from agent is...");
-            console.log(rawJSON);
-
             if(rawJSON === null || rawJSON === undefined) {
                 self.showBuiltInData(properties);
                 return;
@@ -255,6 +252,8 @@ class PanelHandler {
                 JsonView.expandChildren(metaTree);
                 // @ts-ignore
                 JsonView.selectiveCollapse(metaTree);
+            } else {
+                self.showBuiltInData(properties);
             }
 
             // Render timeseries
