@@ -541,7 +541,6 @@ public class HeatNetworkInputAgent {
         List<OffsetDateTime> HeatingNetworkTimestamps = HeatingNetworkReadings.get(HeatNetworkInputAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
-        //String mappingFolder = "/Users/HXUE01/Documents/GitHub/TheWorldAvatar/Agents/DistrictHeatingNetworkAgent/config/mappings";
         String mappingFolder = System.getenv("MAPPINGSPATH");
         try {
             readMappings(mappingFolder);
