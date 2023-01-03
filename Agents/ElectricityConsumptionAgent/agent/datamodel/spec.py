@@ -4,6 +4,7 @@ import pandas as pd
 import inspect
 from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import *
+import datetime
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
 DEF_NAMESPACE = "ontogasgrid"
@@ -34,6 +35,14 @@ cost_elec_2020 = 0.172
 cost_gas_2020 = 0.0355
 cost_elec_2021 = 0.189
 cost_gas_2021 = 0.0342
+
+# COP = hp_efficiency * T_H / (T_H - T_C)
+hp_efficiency = 0.35
+T_H = 45 +273.15
+
+# delta_elec = boiler_efficiency * propotion_heating * delta_gas / COP
+boiler_efficiency = 0.8
+propotion_heating = 0.9
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
@@ -206,13 +215,13 @@ def read_from_excel_fuel_poor(dict = False):
   print(f'Fuel poverty for year 2020 successfully retrieved from Excel')
   return house_num_list, fuel_poor
 
-def convert_df(df):
+def convert_df(df, filename: str = 'df'):
   '''
   This module is to parse the dataframe into a file called df.txt so you can visualise it
   could be useful when the terminal contain too much annoying logging message
   '''
-  df.to_csv('./Data/df.txt', sep='\t', index=False)
-  print('Dataframe successfully printed at ./Data/df.txt')
+  df.to_csv(f'./Data/{filename}.txt', sep='\t', index=False)
+  print(f'Dataframe successfully printed at ./Data/{filename}.txt')
 
 def call_pickle(pathname):
     '''
@@ -393,6 +402,23 @@ def valid_LSOA_list():
     print(len(unique_LSOA_5))
     save_pickle_variable(unique_LSOA = unique_LSOA)
 
+def reformat_dates(input_dict):
+    # Create a new dictionary to store the reformatted dates
+    output_dict = {}
+    
+    # Iterate over the keys and values in the input dictionary
+    for key, value in input_dict.items():
+        # Check if the key is in the 'YYYY-MM-DDTHH:MM:SS' format
+        if len(key) == 19:
+            # Parse the date and time
+            dt = datetime.datetime.strptime(key, '%Y-%m-%dT%H:%M:%S')
+            # Reformat the date and time as 'YYYY-MM-DDTHH:MM:SS.000Z'
+            key = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        # Add the key-value pair to the output dictionary
+        output_dict[key] = value
+
+    return output_dict
+
 def get_all_data(limit = False):
     '''
   This module provide a 'shortcut' method to retrieve all the data required 
@@ -499,7 +525,9 @@ def get_all_data(limit = False):
     # Remove some irrelavent data
     LSOA_shapes = {key.replace('http://statistics.data.gov.uk/id/statistical-geography/', ''): value for key, value in LSOA_shapes.items()}
     temp_dict = {key.replace('http://statistics.data.gov.uk/id/statistical-geography/', ''): value for key, value in  temp_dict.items()}
-
+    # Get correct format of the datetime
+    for key_1, value_1 in temp_dict.items():
+        temp_dict[key_1] = reformat_dates(value_1)
     # Making the DataFrame
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
     df['ons_shape'] = df['LSOA_code'].apply(lambda x: LSOA_shapes.get(x, np.nan))
@@ -522,4 +550,4 @@ def get_all_data(limit = False):
 #save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
 #get_all_data(limit = False)
 #valid_LSOA_list()
-#get_all_data(limit=False)
+get_all_data(limit=False)

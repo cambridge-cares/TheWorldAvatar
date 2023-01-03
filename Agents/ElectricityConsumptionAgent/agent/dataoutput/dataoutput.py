@@ -1,3 +1,13 @@
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
+
+# The purpose of this module is to perform data output to generate figures
+# in various format
+# NOTE: pd.DataFrame is used frequently in this module, where for all the dataframe, the column[0]
+# should all be LSOA code used as identifier
+
 import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
@@ -14,6 +24,7 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import scipy.stats as st
 import matplotlib.colors as cl 
 import matplotlib.cm as cm
+import seaborn as sb 
 
 #from agent.kgutils.tsclient import jpsBaseLibView
 
@@ -52,7 +63,7 @@ def save_figures(arg_name):
 
 def data_treatment(df,arg_name,arg_value):
         '''
-    This function is created to append a new column in the existing dataframe
+    This function is created to append a new column in the existing dataframe (at last position)
     and creat a np.darray contain all the new data, excluded nan data, to be used
     to set the scale of colorbar
 
@@ -68,7 +79,7 @@ def data_treatment(df,arg_name,arg_value):
         
         # Create a dict, which will make the data matching soooooo fast 
         dictionary = {row[arg_value.columns[0]]: row[arg_value.columns[1]] for _, row in arg_value.iterrows()}
-        df[f"{arg_name}"] = df['s'].apply(lambda x: dictionary.get(x, np.nan))
+        df[f"{arg_name}"] = df[df.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
         
         # ------------ This val_values is normally used for colorbar plot ------------------- #
         # Specify the value to plot
@@ -116,6 +127,18 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
     # Set the label for the colorbar
     colorbar.set_label(label)
+
+def remove_NaN(df:pd.DataFrame):
+    '''
+    Remove all the row which contain the value 'NaN' 
+    iteration start from second column and above, as the first column is always LSOA code for identification
+    i.e., can't be NaN
+    
+    Note: This function is only used for data processing as this will delete the row
+    '''
+    df = df[df.iloc[:, 1:].notnull().all(axis=1)]
+    
+    return df
 
 # ------------------------ Data retrieval ---------------------------------- #
 def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = '2020', per_household: bool = False) -> pd.DataFrame:
@@ -306,7 +329,7 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     return df
 
 # ------------------------- Calculation ------------------------------------ #
-def monthly_disaggregation(df: pd.DataFrame, monthly_ref: list):
+def monthly_disaggregation(df: pd.DataFrame, monthly_ref: list, annual: bool = False):
     '''
     To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
     from monthly_ref
@@ -314,16 +337,23 @@ def monthly_disaggregation(df: pd.DataFrame, monthly_ref: list):
     df: two-column data frame which MUST have the data to disaggregate placed at the second column
     (i.e. at position [1])
     monthly_ref: reference monthly distribution.
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
     '''
+    global months
     months = ['January','February','March','April','May','June','July','August','September','October','November','December']
     total = sum(monthly_ref)
     for i in range(12):
         df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
+    if annual == False:
+        df = df.drop(columns=df.columns[1])
     return df
 
-def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec, price_gas):
+def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec: float, price_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
     '''
     To calculate the fuel cost per LSOA, normally on per household basis
+    Returns three dataframe which have first column as LSOA code, and the following 12
+    columns for each month of df_cost_total, df_cost_elec, df_cost_gas
     Arguments:
     df_elec: two-column data frame which MUST have the electricity data placed at the second column
     (i.e. at position [1])
@@ -331,12 +361,104 @@ def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec, price_gas):
     (i.e. at position [1])
     price_elec: price of electricity
     price_gas: price of gas
+    monthly_ref_elec: monthly consumption of electricity consumption, to be used in monthly_disaggregation 
+    monthly_ref_gas: monthly consumption of gas consumption, to be used in monthly_disaggregation 
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
     '''
-    df_cost, _ = data_treatment(df_elec,'gas_consump',df_gas)
-    df_cost['Fuel cost'] = df_cost[df_cost.columns[1]]*price_elec + df_cost[df_cost.columns[2]]*price_gas
-    df_cost = df_cost[['s','Fuel cost']]
+    
+    # Replace the first column from consumption into cost
+    df_elec[df_elec.columns[1]] *= price_elec
+    df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual cost'}, inplace=False)
+    df_cost_elec = df_elec.copy()
+    
+    df_gas[df_gas.columns[1]] *= price_gas
+    df_gas = df_gas.rename(columns={df_gas.columns[1]: 'Annual cost'}, inplace=False)
+    df_cost_gas = df_gas.copy()
 
-    return df_cost
+    # Disaggrate into monthly dataframe
+    df_cost_elec = monthly_disaggregation(df_cost_elec, monthly_ref_elec,annual)
+    df_cost_gas = monthly_disaggregation(df_cost_gas,monthly_ref_gas,annual)
+    
+    # Merge to total cost
+    df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0], how='outer')
+    # Iterate through the columns of the merged dataframe and add the values
+    for col in df_cost_gas.columns[1:]:
+        df_cost_total[col] = df_cost_total[col + '_x'] + df_cost_total[col + '_y']
+
+    # Drop the original columns from the merged dataframe
+    df_cost_total.drop(columns=[col + '_x' for col in df_cost_elec.columns[1:]], inplace=True)
+    df_cost_total.drop(columns=[col + '_y' for col in df_cost_gas.columns[1:]], inplace=True)
+    
+    return df_cost_total, df_cost_elec, df_cost_gas
+
+def fuel_emission(df_elec:pd.DataFrame, df_gas:pd.DataFrame, carbon_intensity_elec: float, carbon_intensity_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
+    '''
+    To calculate the fuel emission per LSOA, normally on per household basis
+    Returns three dataframe which have first column as LSOA code, and the following 12
+    columns for each month of df_emission_total, df_emission_elec, df_emission_gas
+    Arguments:
+    df_elec: two-column data frame which MUST have the electricity data placed at the second column
+    (i.e. at position [1])
+    df_gas: two-column data frame which MUST have the gas data placed at the second column
+    (i.e. at position [1])
+    carbon_intensity_elec: carbon intensity of electricity
+    carbon_intensity_gas: carbon intensity of gas
+    monthly_ref_elec: monthly consumption of electricity consumption, to be used in monthly_disaggregation 
+    monthly_ref_gas: monthly consumption of gas consumption, to be used in monthly_disaggregation 
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
+    '''
+    df_elec[df_elec.columns[1]] *= carbon_intensity_elec
+    df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual emission'}, inplace=False)
+    df_emission_elec = df_elec.copy()
+    
+    df_gas[df_gas.columns[1]] *= carbon_intensity_gas
+    df_gas = df_gas.rename(columns={df_gas.columns[1]: 'Annual emission'}, inplace=False)
+    df_emission_gas = df_gas.copy()
+
+    # Disaggrate into monthly dataframe
+    df_emission_elec = monthly_disaggregation(df_emission_elec, monthly_ref_elec,annual)
+    df_emission_gas = monthly_disaggregation(df_emission_gas,monthly_ref_gas,annual)
+    
+    # Merge to total cost
+    df_emission_total = df_emission_elec.merge(df_emission_gas, left_on=df_emission_elec.columns[0], right_on=df_emission_gas.columns[0], how='outer')
+    # Iterate through the columns of the merged dataframe and add the values
+    for col in df_emission_gas.columns[1:]:
+        df_emission_total[col] = df_emission_total[col + '_x'] + df_emission_total[col + '_y']
+
+    # Drop the original columns from the merged dataframe
+    df_emission_total.drop(columns=[col + '_x' for col in df_emission_elec.columns[1:]], inplace=True)
+    df_emission_total.drop(columns=[col + '_y' for col in df_emission_gas.columns[1:]], inplace=True)
+    
+    return df_emission_total, df_emission_elec, df_emission_gas
+
+def get_median(df:pd.DataFrame, row_name: str = '0'):
+    '''
+    for given dataframes, calculate the median value of each column, and return one dataframe
+    which contain only one row data of the median value result. The row name can be customised 
+    and the column name remain unchanged.
+    Arguments:
+    df: dataframe to be calculated
+    row_name: row name you may want to customise, default as 'o' 
+    '''
+    medians = df.median()
+    median_df = medians.to_frame().transpose()
+    median_df.index = [row_name]
+
+    return median_df
+
+def COP(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
+    '''
+    Based on a given temperature to calculate the COP
+    NOTE: COP = hp_efficiency * T_H / (T_H - T_C), where the input temperature is represented as T_C
+    T_H, hp_efficiency are hypothesd as constant, which have default value as 318.15 and 0.35
+    respectfully. I suggest to check if that default value is up to date or if that hypothesis is 
+    valid in your case
+    '''
+    COP = hp_efficiency * T_H / (T_H -273.15 - temp)
+    COP = round(COP,3)
+    return COP
 
 # ------------------------ GeoSpatial Plot --------------------------------- #
 def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: float = 0):
@@ -520,39 +642,120 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
     save_figures(title)
 
 # ------------------------ Line chart Plot --------------------------------- #
-def plot_temproal_line_chart():
-    return
+def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
+    '''
+    To create a line chart to represent the monthly data
+    Note: the input dataframe should be looks like:
+# -------------------------------------------------------------#
+#                Jan Feb Mar .... Nov Dec                      #
+# [index_name]                                                 #
+# [index_name]                                                 #
+#    ...                                                       #
+# -------------------------------------------------------------#
+    so for how many rows were in this df, how many line will be plotted. noted that the column names 
+    don't matter as it default the sequence as Jan to Dec. However, the [index_name] will be used as 
+    the label of this line
+
+    If in some case you may want fill_between feature to represent a range, please provide several rows with same 
+    [index_name], for those rows have same [index_name], the function will automatically fill between the row have
+    max average value and the row have min average value, while for rows in the middle will still be plotted.
+    i.e., sequence don't matter as long as they have the same [index_name]
+
+    Arguments:
+    filename: str, name of the figure file you may want to store
+    y_label: str, name of the y-axis legend
+    df: pd.DataFrame, dataframe to be processd
+    '''
+    # Group the rows by index name
+    groups = df.groupby(df.index)
+
+    # Initialize the plot
+    fig, axs = plt.subplots(1,1,figsize=(5,3))
+    plt.tight_layout()
+    
+    i = 0
+    for index_name, group in groups:
+        if len(group) == 1:
+            # Plot the line for the single-data row
+            sb.lineplot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+            i+=1
+
+        else:
+            # Sort the group by the mean value of the rows
+            group = group.sort_values(by=group.mean(axis=1))
+            
+            # Get the minimum and maximum rows
+            y1 = group.iloc[0]
+            y2 = group.iloc[-1]
+            # Plot the fill between the minimum and maximum rows
+            sb.fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
+            # Plot the remaining rows
+            for _, row in group.iloc[1:-1].iterrows():
+                sb.lineplot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+                i+=1
+    axs.legend(frameon=False)
+
+    plt.subplots_adjust(left=0.175)
+    axs.set_xticklabels(labels = ['J','F','M','A','M','J','J','A','S','O','N','D'])
+    axs.set_xlabel('')
+    axs.set_ylabel(y_label)
+
+    save_figures(filename)
+    print(f'{i} number of lines have been plotted')
 
 
 
-
-
-
+df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 '''
-# Test for plot_geodistribution ##########################
+     LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
+'''
+df_elec = df_full[['LSOA_code', 'Electricty_cosumption_per_household']]
+df_gas = df_full[['LSOA_code', 'Gas_consumption_per_household']]
+df_temp = df_full[['LSOA_code', 'temp']]
+
+############### Test for plot_geodistribution ############
+'''
 df = retrieve_elec_data_from_KG()
 df['Electricty cosumption per household'] = df['usage'].to_numpy() /df['meter'].to_numpy() 
 df = df.drop(columns=['meter'])
 df = df.drop(columns=['usage'])
 plot_geodistribution_with_cities(label = 'kWh/year/household', title = 'Electricity Consumption', df =df, cb_scale = 1.5)
+'''
 ##########################################################
+
+############### Test for temproal_line_chart #############
+# Test for fuel cost ---------------------------------------------
 '''
-# Test for temproal_line_chart ###########################
-df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
+# Calculate fuel cost
+df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec_2020,cost_gas_2020,monthly_electricity_consumption_2020,monthly_gas_consumption_2020, annual=False)
 
-df_elec = df_full[['LSOA_code', 'Electricty_cosumption_per_household']]
-df_elec.rename(columns = {'LSOA_code': 's'}, inplace = True)
-df_elec = monthly_disaggregation(df_elec, monthly_elec_consumption_2021)
+# Calculate median value
+df_cost_total = get_median(df_cost_total, 'Total cost')
+df_cost_elec = get_median(df_cost_elec, 'Electricity cost')
+df_cost_gas = get_median(df_cost_gas, 'Gas cost')
 
-df_gas = df_full[['LSOA_code', 'Gas_consumption_per_household']]
-df_gas.rename(columns = {'LSOA_code': 's'}, inplace = True)
-df_gas = monthly_disaggregation(df_gas, monthly_elec_consumption_2021)
-
-df_cost = fuel_cost(df_elec,df_gas,cost_elec_2020,cost_gas_2020)
+# Construct df to plot
+df_to_plot = pd.concat([df_cost_total, df_cost_elec, df_cost_gas], axis=0)
+plot_temproal_line_chart(filename='household_cost', y_label = 'Fuel Cost \n (£/month/household)',df = df_to_plot)
 '''
-     LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
-  0
-  1
-  2
+# ----------------------------------------------------------------
 
+# Test for emission ----------------------------------------------
 '''
+# Calculate fuel emission
+df_emission_total, df_emission_elec, df_emission_gas = fuel_emission(df_elec,df_gas,carbon_intensity_CO2e_elec_2020,carbon_intensity_CO2e_gas_2020,monthly_electricity_consumption_2020,monthly_gas_consumption_2020, annual=False)
+# Calculate median value
+df_emission_total = get_median(df_emission_total, 'Total emissions')
+df_emission_elec = get_median(df_emission_elec, 'Electricity emissions')
+df_emission_gas = get_median(df_emission_gas, 'Gas emissions')
+
+# Construct df to plot
+df_to_plot = pd.concat([df_emission_total, df_emission_elec, df_emission_gas], axis=0)
+plot_temproal_line_chart(filename='household_emissions', y_label = 'Emissions \n (kgCO$_2$eq/month/household)',df = df_to_plot)
+'''
+# ----------------------------------------------------------------
+##########################################################
+
+# Exclude NaN data
+df_temp = remove_NaN(df_temp)
+convert_df(df_temp)
