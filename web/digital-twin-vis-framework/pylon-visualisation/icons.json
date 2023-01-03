@@ -1,0 +1,22 @@
+{
+	"pylon_super_high": "data/pylons/icons/pylon_superhigh_icon.png",
+	"pylon_high": "data/pylons/icons/pylon_high_icon.png",
+	"pylon_medium": "data/pylons/icons/pylon_medium_icon.png",
+	"cable": "data/pylons/icons/cable_ng.png",
+	"line_ng_medium": "data/pylons/icons/line_ng_medium_icon.png",
+	"line_ng_high": "data/pylons/icons/line_ng_high_icon.png",
+	"line_ng_super_high": "data/pylons/icons/line_ng_superhigh_icon.png",
+	"line_ukpn_medium": "data/pylons/icons/line_ukpn_medium_icon.png",
+	"line_ukpn_high": "data/pylons/icons/line_ukpn_high_icon.png",
+	"line_ukpn_low": "data/pylons/icons/line_ukpn_low_icon.png",
+	"NG_logo": "data/ukpn/icons/NG_logo.png",
+	"trees_woody_plants_hedgerows": "data/vegetation/icons/trees-woody-plants-hedgerows.png",
+	"perennial_crops_and_isolated_trees": "data/vegetation/icons/perennial-crops-and-isolated-trees.png",
+	"heathland_and_bracken": "data/vegetation/icons/heathland-and-bracken.png",
+	"short_rotation_coppice": "data/vegetation/icons/short-rotation-coppice.png",
+	"unknown_or_mixed_vegetation": "data/vegetation/icons/unknown-or-mixed-vegetation.png",
+	"woodland": "data/woodland/icons/woodland.png",
+	"light_woodland": "data/woodland/icons/light_woodland.png",
+	"young_woodland": "data/woodland/icons/young_woodland.png",
+	"uncertain": "data/woodland/icons/uncertain.png"
+}
