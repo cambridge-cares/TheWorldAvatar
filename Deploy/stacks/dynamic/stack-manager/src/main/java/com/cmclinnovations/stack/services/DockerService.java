@@ -57,6 +57,8 @@ import com.github.dockerjava.api.model.VolumeOptions;
 
 public final class DockerService extends AbstractService {
 
+    private static final String DOCKER_SOCKET_PATH = "/var/run/docker.sock";
+
     public static final String TYPE = "docker";
 
     private final DockerClient dockerClient;
@@ -343,6 +345,14 @@ public final class DockerService extends AbstractService {
                 .withType(MountType.VOLUME)
                 .withSource("scratch")
                 .withTarget(StackClient.SCRATCH_DIR));
+
+        Mount dockerSocketMount = new Mount()
+                .withType(MountType.BIND)
+                .withSource(DOCKER_SOCKET_PATH)
+                .withTarget(DOCKER_SOCKET_PATH);
+        if (!mounts.contains(dockerSocketMount)) {
+            mounts.add(dockerSocketMount);
+        }
 
         for (Mount mount : mounts) {
             if (MountType.VOLUME == mount.getType()) {

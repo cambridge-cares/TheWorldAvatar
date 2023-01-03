@@ -28,8 +28,10 @@ def test_monitor_derivation(
     sparql_client.assign_rxn_exp_to_r4_reactor(new_rxn_exp_iri, vapourtec_r4_reactor_iri)
 
     # Save a local variable of vapourtec_rs_400
-    old_rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri)
-    old_autosampler = sparql_client.get_autosampler_from_vapourtec_rs400(old_rs400)
+    old_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
+    assert len(old_rs400_list) == 1
+    old_rs400 = old_rs400_list[0]
+    old_autosampler = old_rs400.get_autosampler()
     old_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in old_autosampler.hasSite if site.holds.isFilledWith is not None]}
 
     # Create instance of agent and start monitor derivations
@@ -42,12 +44,8 @@ def test_monitor_derivation(
     )
     vapourtec_agent._start_monitoring_derivations()
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivation update is finished
     currentTimestamp_derivation = 0
@@ -74,16 +72,20 @@ def test_monitor_derivation(
     # Third, check there is chemical solution instance
     chemical_solution_iri = utils.get_chemical_solution_iri(derivation_iri, sparql_client)
     assert chemical_solution_iri is not None
-    new_rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri)
-    new_autosampler = sparql_client.get_autosampler_from_vapourtec_rs400(new_rs400)
+    new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
+    assert len(new_rs400_list) == 1
+    new_rs400 = new_rs400_list[0]
+    new_autosampler = new_rs400.get_autosampler()
     new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
-    assert chemical_solution_iri in new_autosampler_liquid_level
-    assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+    # NOTE below is commented out as the reactor outlet is now send to the waste tank
+    # assert chemical_solution_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
 
     # Forth, check if the autosampler liquid level is changed
     for chem_sol in old_autosampler_liquid_level:
-        if chem_sol == chemical_solution_iri:
-            assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
+        # NOTE below is commented out as the reactor outlet is now send to the waste tank
+        # if chem_sol == chemical_solution_iri:
+        #     assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
         assert new_autosampler_liquid_level[chem_sol] <= old_autosampler_liquid_level[chem_sol]
 
     # Shutdown the scheduler to clean up before the next test
@@ -113,8 +115,10 @@ def test_docker_integration(
     sparql_client.assign_rxn_exp_to_r4_reactor(new_rxn_exp_iri, vapourtec_r4_reactor_iri)
 
     # Save a local variable of vapourtec_rs_400
-    old_rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri)
-    old_autosampler = sparql_client.get_autosampler_from_vapourtec_rs400(old_rs400)
+    old_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
+    assert len(old_rs400_list) == 1
+    old_rs400 = old_rs400_list[0]
+    old_autosampler = old_rs400.get_autosampler()
     old_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in old_autosampler.hasSite if site.holds.isFilledWith is not None]}
 
     # Create instance of agent and start monitor derivations
@@ -125,12 +129,8 @@ def test_docker_integration(
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
 
-    # Add timestamp to new_rxn_exp_iri (pure inputs)
-    vapourtec_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)
-    vapourtec_agent.derivationClient.updateTimestamp(new_rxn_exp_iri)
-
     # Instantiate derivation instance
-    derivation_iri = vapourtec_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
+    derivation_iri = vapourtec_agent.derivation_client.createAsyncDerivationForNewInfo(vapourtec_agent.agentIRI, [new_rxn_exp_iri])
 
     # Wait until derivation update is finished
     currentTimestamp_derivation = 0
@@ -144,7 +144,7 @@ def test_docker_integration(
     vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri)
     container_file_path = vapourtec_input_file.localFilePath
     local_file_path = container_file_path.replace(vapourtec_agent.fcexp_file_container_folder, fcexp_file_host_folder)
-    remote_file_path = vapourtec_input_file.remoteFilePath
+    remote_file_path = utils.cf.host_docker_internal_to_localhost(vapourtec_input_file.remoteFilePath)
     # Genereate random download path
     full_downloaded_path = generate_random_download_path('csv')
     # Download the file and make sure all the content are the same
@@ -158,16 +158,20 @@ def test_docker_integration(
     # Third, check there is chemical solution instance
     chemical_solution_iri = utils.get_chemical_solution_iri(derivation_iri, sparql_client)
     assert chemical_solution_iri is not None
-    new_rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri)
-    new_autosampler = sparql_client.get_autosampler_from_vapourtec_rs400(new_rs400)
+    new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
+    assert len(new_rs400_list) == 1
+    new_rs400 = new_rs400_list[0]
+    new_autosampler = new_rs400.get_autosampler()
     new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
-    assert chemical_solution_iri in new_autosampler_liquid_level
-    assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+    # NOTE below is commented out as the reactor outlet is now send to the waste tank
+    # assert chemical_solution_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
 
     # Forth, check if the autosampler liquid level is changed
     for chem_sol in old_autosampler_liquid_level:
-        if chem_sol == chemical_solution_iri:
-            assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
+        # NOTE below is commented out as the reactor outlet is now send to the waste tank
+        # if chem_sol == chemical_solution_iri:
+        #     assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
         assert new_autosampler_liquid_level[chem_sol] <= old_autosampler_liquid_level[chem_sol]
 
     # NOTE additional check in docker integration

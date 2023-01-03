@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.TaskSpec;
 
@@ -132,6 +135,24 @@ public class ContainerService extends AbstractService {
 
     public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
+    }
+
+    /**
+     * If the named secret exists then add it to this service.
+     * 
+     * @param secretName
+     */
+    protected boolean addOptionalSecret(String secretName) {
+        boolean secretExists = dockerClient.secretExists(secretName);
+        if (secretExists) {
+            List<ContainerSpecSecret> secrets = getConfig().getContainerSpec().getSecrets();
+            if (null == secrets) {
+                secrets = new ArrayList<>();
+                getConfig().getContainerSpec().withSecrets(secrets);
+            }
+            secrets.add(new ContainerSpecSecret().withSecretName(secretName));
+        }
+        return secretExists;
     }
 
 }
