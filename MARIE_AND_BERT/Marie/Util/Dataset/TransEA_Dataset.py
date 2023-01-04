@@ -45,7 +45,7 @@ class Dataset(torch.utils.data.Dataset):
         fake_triple = (head, rel, fake_entity)
         # for the neg set, just replace the tail with something starting with the same prefix
         if self.is_numerical:
-            numerical_value = self.hash_numerical_dict[triplet[2]]
+            numerical_value = self.hash_numerical_dict[triplet[2]] / 2000
         else:
             numerical_value = []
         return (head, rel, tail), fake_triple, numerical_value

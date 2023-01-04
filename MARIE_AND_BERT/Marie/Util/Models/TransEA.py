@@ -69,14 +69,14 @@ class TransEA(nn.Module):
 
     def _init_ent_embedding(self):
         ent_embedding = nn.Embedding(embedding_dim=self.dim, num_embeddings=self.ent_num + 1, padding_idx=self.ent_num)
-        # ent_embedding.weight.data.uniform_(-1, 1)
-        xavier_uniform_(ent_embedding.weight.data)
+        ent_embedding.weight.data.uniform_(-1, 1)
+        # xavier_uniform_(ent_embedding.weight.data)
         return ent_embedding
 
     def _init_attr_embedding(self):
         attr_embedding = nn.Embedding(embedding_dim=self.dim, num_embeddings=self.rel_num + 1, padding_idx=self.rel_num)
-        # attr_embedding.weight.data.uniform_(-1, 1)
-        xavier_uniform_(attr_embedding.weight.data)
+        attr_embedding.weight.data.uniform_(-1, 1)
+        # xavier_uniform_(attr_embedding.weight.data)
 
         return attr_embedding
 
@@ -105,11 +105,11 @@ class TransEA(nn.Module):
         x1, as small as possible
         """
 
-        self.ent_embedding.weight.data[:-1, :].div_(
-            self.ent_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
-
-        self.attr_embedding.weight.data[:-1, :].div_(
-            self.attr_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
+        # self.ent_embedding.weight.data[:-1, :].div_(
+        #     self.ent_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
+        #
+        # self.attr_embedding.weight.data[:-1, :].div_(
+        #     self.attr_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
 
         dist_positive = self.distance(positive_triplets).to(self.device)
         # x2, as big as possible
@@ -124,17 +124,19 @@ class TransEA(nn.Module):
 
     def numerical_loss(self, triples, numerical_list):
         # lookup the embedding of heads
-        heads = self.ent_embedding(triples[2]).to(self.device)
+        heads = self.ent_embedding(triples[0]).to(self.device)
         # lookup the embedding of attributes
         attrs = self.attr_embedding(triples[1]).to(self.device)
-        bias = self.bias(triples[1]).to(self.device)
+        # bias = self.bias(triples[1]).to(self.device)
+        aV = torch.sum(heads * attrs, dim=1)
+        target = aV - numerical_list
+        attr_loss = torch.sum(torch.abs(target))
 
-        p = torch.sum(heads * attrs + bias, dim=1)
         # print(p)
         # print("----")
-        # print(numerical_list)
+        # print(torch.abs(p - numerical_list).shape)
 
-        return torch.abs(p - numerical_list).to(self.device).mean()
+        return  attr_loss
 
     def distance(self, triplet):
         head = self.ent_embedding(triplet[0]).to(self.device)

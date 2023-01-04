@@ -16,7 +16,7 @@ class TransEATrainer:
     for certain batches of positive sets,
     """
 
-    def __init__(self, dataset_path, dataset_name, dim, epoch_num, learning_rate=1, gamma=1, batch_size = 128):
+    def __init__(self, dataset_path, dataset_name, dim, epoch_num, learning_rate=1.0, gamma=1, batch_size = 128):
         self.dataset_path = dataset_path
         self.dataset_name = dataset_name
         self.dim = dim
@@ -86,19 +86,23 @@ class TransEATrainer:
 
         # train numerical datasets first
 
-        for epoch in tqdm(range(self.epoch_num)):
+        for epoch in range(self.epoch_num):
             total_loss_train = 0
+            self.model.train()
+
             for pos_triples, neg_triples, numerical_list in train_numerical_dataloader:
+                self.optimizer.zero_grad()
                 loss = self.model(positive_triplets=pos_triples, negative_triplets=neg_triples,
                                   numerical_list=numerical_list, is_numerical=True)
                 loss.backward()
                 total_loss_train += loss.mean().item()
                 self.optimizer.step()
                 self.step += 1
-            print(total_loss_train)
+            print(f"Epoch {epoch} -  loss: {total_loss_train}")
 
 
 if __name__ == "__main__":
     trainer = TransEATrainer(dataset_path="CrossGraph/wikidata_single",
-                             dataset_name="wikidata_single", dim=10, epoch_num=5000)
+                             dataset_name="wikidata_single", dim=40, epoch_num=20000,
+                             learning_rate=0.0001, batch_size=32)
     trainer.run()
