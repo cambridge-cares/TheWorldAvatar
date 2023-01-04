@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-data-uploader</artifactId>
-  <version>1.6.1-dev-stack-container-grouping-SNAPSHOT</version>
+  <version>1.6.4-dev-stack-container-grouping-SNAPSHOT</version>
 
   <name>Stack Data Uploader</name>
   <url>https://www.cmclinnovations.com</url>
@@ -27,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.6.1-dev-stack-container-grouping-SNAPSHOT</version>
+      <version>1.6.4-dev-stack-container-grouping-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -58,7 +60,8 @@
         <configuration>
           <archive>
             <manifest>
-              <!-- These properties add the copied dependencies to the classpath so the .jar can find them at runtime. -->
+              <!-- These properties add the copied dependencies to the classpath so the .jar can
+              find them at runtime. -->
               <addClasspath>true</addClasspath>
               <classpathPrefix>.</classpathPrefix>
               <classpathLayoutType>repository</classpathLayoutType>
@@ -70,7 +73,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target directory. -->
+        <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
+        directory. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>

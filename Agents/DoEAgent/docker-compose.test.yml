@@ -6,15 +6,19 @@ services:
     container_name: doe_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - 7000:5000
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     env_file:
       - ./doeagent/tests/agent.doe.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "doeagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:
@@ -32,3 +36,5 @@ services:
 secrets:
   blazegraph_password:
     file: doeagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth:
+    file: doeagent/tests/dummy_services_secrets/email_auth.json
