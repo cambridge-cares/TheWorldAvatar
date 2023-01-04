@@ -20,7 +20,7 @@
         },
         {
             "class": "com.cmclinnovations.kg.ClassFour",
-            "metaFile": "classFourMeta.sparql"
+            "timeFile": "classFourTime.sparql"
         }
     ]
 }

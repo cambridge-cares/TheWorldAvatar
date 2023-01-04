@@ -397,11 +397,13 @@ public class ConfigStore extends ContainerClient {
             String className = entry.getString("class");
             LOGGER.info("Registering queries for class: {}", className);
 
-            String metaFile = entry.getString("metaFile");
-            if(!metaFile.isBlank()) {
-                classCount++;
-                metaQueries.put(className, metaFile);
-                LOGGER.info("Found linked 'metaFile' entry: {}", metaFile);
+            if(entry.has("metaFile")) {
+                String metaFile = entry.getString("metaFile");
+                if(!metaFile.isBlank()) {
+                    classCount++;
+                    metaQueries.put(className, metaFile);
+                    LOGGER.info("Found linked 'metaFile' entry: {}", metaFile);
+                }
             }
 
             if(entry.has("timeFile")){

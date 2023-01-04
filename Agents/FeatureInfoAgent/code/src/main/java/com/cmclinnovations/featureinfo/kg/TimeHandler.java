@@ -193,7 +193,7 @@ public class TimeHandler {
             LOGGER.warn("Query to get measurement details has caused an exception!");
 
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine a valid Blazegraph endpoint.\"}");
+            response.getWriter().write("{\"description\":\"intCould not determine a valid Blazegraph endpo.\"}");
             return null;
         }
     }

@@ -265,7 +265,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
                 // Combine into single response
                 JSONObject result = new JSONObject();
-                result.put("meta", metaArray);
+                if(metaArray != null) result.put("meta", metaArray);
                 if(timeArray != null) result.put("time", timeArray);
 
                 // Return result

@@ -44,7 +44,6 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.EndpointType;
 import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
-import net.bytebuddy.asm.Advice.Argument;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -111,6 +110,7 @@ public class FeatureInfoAgentTest {
             CONFIG.addMetaQueryForClass("SAMPLE-CLASS", tempMeta.toString());
             CONFIG.addTimeQueryForClass("SAMPLE-CLASS", tempTime.toString());
             CONFIG.addMetaQueryForClass("FORCED-ENDPOINT", tempForced.toString());
+            CONFIG.addTimeQueryForClass("TIME-ONLY-CLASS", tempTime.toString());
 
             FeatureInfoAgent.CONFIG = CONFIG;
 
@@ -301,7 +301,7 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
         // Mock clients
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, null);
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, true, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
@@ -347,6 +347,68 @@ public class FeatureInfoAgentTest {
     }
 
     /**
+     * Tests that the agent can run using a class that has an associated 
+     * timeseries query, but no meta query.
+     */
+    @Test
+    public void testQueryNoMeta() throws Exception {
+        FeatureInfoAgent agent = new FeatureInfoAgent();
+        FeatureInfoAgent.RDB_CONN = mock(Connection.class);
+
+        // Mock the RemoteStoreClient 
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, true, null);
+
+        // Mock result when querying for class
+        when(rsClient.executeFederatedQuery(
+            ArgumentMatchers.anyList(),
+            ArgumentMatchers.contains("?class")))
+            .thenReturn(
+                new org.json.JSONArray("[{\"class\": \"TIME-ONLY-CLASS\"}]")
+            );
+
+        FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
+        FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
+
+        // Mock timeseries client
+        TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
+        FeatureInfoAgent.TS_CLIENT_OVER = tsClient;
+
+        // Mock request
+        HttpServletRequest request = spy(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+        when(request.getRequestURI()).thenReturn("http://fake-website.com/feature-info-agent/get");
+
+        // Mock response with mocked writer
+        HttpServletResponse response = spy(MockHttpServletResponse.class);
+        StringWriter strWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(strWriter);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // Mock AgentCaller.readJsonParameter() method
+        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+            caller.when(() -> {
+                AgentCaller.readJsonParameter(ArgumentMatchers.any());
+            }).thenReturn(
+                new JSONObject("{\"iri\":\"http://fake-iri.com\"}")
+            );
+
+            // Run the agent
+            agent.doGet(request, response);
+
+            // Check the response code
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
+            
+            // Check against expected result
+            JSONObject jsonResult = new JSONObject(strWriter.toString());
+            JSONObject expected = new JSONObject("""
+                {\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":1,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
+            """);
+
+            Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
+        } 
+    }
+
+    /**
      * Test the agent with a mock query that does not return any timeseries data.
      */
     @Test
@@ -355,7 +417,7 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
         // Mock the RemoteStoreClient 
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, null);
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, false, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
 
@@ -447,7 +509,7 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock clients
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, "http://fake-website.com/blazegraph/namespace/test/sparql");
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, true, "http://fake-website.com/blazegraph/namespace/test/sparql");
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
@@ -485,7 +547,6 @@ public class FeatureInfoAgentTest {
         } 
     }
 
-    
     /**
      * 
      * @return
@@ -505,7 +566,7 @@ public class FeatureInfoAgentTest {
      * @param endpoint enforced endpoint URL
      * @return
      */
-    private RemoteStoreClient mockRemoteStoreClient(boolean mockTime, String endpoint) throws Exception {
+    private RemoteStoreClient mockRemoteStoreClient(boolean mockMeta, boolean mockTime, String endpoint) throws Exception {
         // Mock the RemoteStoreClient
         RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
         
@@ -525,16 +586,18 @@ public class FeatureInfoAgentTest {
                 .thenReturn(
                     new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]")
                 );
-            }
+        }
       
 
         // Mock result when querying for metadata
-        when(rsClient.executeFederatedQuery(
-            ArgumentMatchers.anyList(),
-            eq("SAMPLE-META-QUERY")))
-            .thenReturn(
-                new org.json.JSONArray("[{\"Property\":\"propertyOne\",\"Value\":\"1.0\",\"Unit\":\"s\"}]")
-            );
+        if(mockMeta) {
+            when(rsClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                eq("SAMPLE-META-QUERY")))
+                .thenReturn(
+                    new org.json.JSONArray("[{\"Property\":\"propertyOne\",\"Value\":\"1.0\",\"Unit\":\"s\"}]")
+                );
+        }
 
         // Mock result when querying for measurements
         if(mockTime) {
