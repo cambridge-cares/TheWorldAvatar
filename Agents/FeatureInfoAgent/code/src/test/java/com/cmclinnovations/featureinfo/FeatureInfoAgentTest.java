@@ -336,7 +336,7 @@ public class FeatureInfoAgentTest {
             JSONObject jsonResult = new JSONObject(strWriter.toString());
             JSONObject expected = new JSONObject("""
                 {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}],\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],
-                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":1,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",
+                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",
                 \"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
             """);
 
@@ -401,7 +401,8 @@ public class FeatureInfoAgentTest {
             // Check against expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
             JSONObject expected = new JSONObject("""
-                {\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":1,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
+                {\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,
+                \"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
             """);
 
             Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");

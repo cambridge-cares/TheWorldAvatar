@@ -192,7 +192,7 @@ public class TimeHandlerTest {
             // Build the expected response
             JSONArray expected = new JSONArray("""
                 [{\"data\":[\"MeasurementOne\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],
-                \"id\":1,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",
+                \"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",
                 \"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{\"PropertyTwo\":\"ValueTwo\",\"PropertyOne\":\"ValueOne\"}]}]
             """);
 
