@@ -31,7 +31,8 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 2. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-manager` subdirectory within it in a `bash` terminal).
 
-3. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
+3. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
+    It is also possible to add a `blazegraph_password` file to initialise the Blazegraph container with authentication enabled but this is currently incompatible with most agents, a future update to the `stack-client` library will help resolve this issue.
 
 4. From a terminal in the `stack-manager` directory, start the `stack-manager` container by running the following:
     ```console
