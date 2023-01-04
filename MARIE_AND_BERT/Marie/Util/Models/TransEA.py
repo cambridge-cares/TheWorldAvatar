@@ -3,6 +3,7 @@ import os
 import pandas
 import torch
 from torch import nn
+from torch.nn.init import xavier_uniform_
 
 from Marie.Util.Dataset.TransE_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
@@ -38,6 +39,9 @@ class TransEA(nn.Module):
         self.device = device
         self.criterion = nn.MarginRankingLoss(margin=5, reduction='none').to(device)
         self.norm = 1
+        # A = torch.empty(self.dim, device='cpu')
+        # self.bias = nn.Parameter(A)
+        self.bias = nn.Embedding(embedding_dim=1, num_embeddings=self.rel_num + 1, padding_idx=self.rel_num)
 
     def load_attr_embedding(self):
         print(f"loading embedding from {os.path.join(DATA_DIR, self.dataset_path, 'attr_embedding.tsv')}")
@@ -65,13 +69,14 @@ class TransEA(nn.Module):
 
     def _init_ent_embedding(self):
         ent_embedding = nn.Embedding(embedding_dim=self.dim, num_embeddings=self.ent_num + 1, padding_idx=self.ent_num)
-        ent_embedding.weight.data.uniform_(-1, 1)
-
+        # ent_embedding.weight.data.uniform_(-1, 1)
+        xavier_uniform_(ent_embedding.weight.data)
         return ent_embedding
 
     def _init_attr_embedding(self):
-        attr_embedding = nn.Embedding(embedding_dim=self.dim, num_embeddings=self.ent_num + 1, padding_idx=self.ent_num)
-        attr_embedding.weight.data.uniform_(-1, 1)
+        attr_embedding = nn.Embedding(embedding_dim=self.dim, num_embeddings=self.rel_num + 1, padding_idx=self.rel_num)
+        # attr_embedding.weight.data.uniform_(-1, 1)
+        xavier_uniform_(attr_embedding.weight.data)
 
         return attr_embedding
 
@@ -86,7 +91,7 @@ class TransEA(nn.Module):
         target = torch.tensor([-1], dtype=torch.long, device=self.device)
         return self.criterion(positive_distances, negative_distances, target).to(self.device)
 
-    def forward(self, positive_triplets, negative_triplets, is_numerical=False):
+    def forward(self, positive_triplets, negative_triplets, numerical_list=None, is_numerical=False):
         """
         max(0, - p * (x1 - x2))
 
@@ -101,21 +106,35 @@ class TransEA(nn.Module):
         """
 
         self.ent_embedding.weight.data[:-1, :].div_(
-            self.ent_embedding.weight.data[:-1, :].norm(p=2, dim=1, keepdim=True))
+            self.ent_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
+
+        self.attr_embedding.weight.data[:-1, :].div_(
+            self.attr_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
 
         dist_positive = self.distance(positive_triplets).to(self.device)
         # x2, as big as possible
         dist_negative = self.distance(negative_triplets).to(self.device)
         if is_numerical:
-            return self.loss(dist_positive, dist_negative).to(self.device) + self.numerical_loss(positive_triplets, )
+            # return self.loss(dist_positive, dist_negative).to(self.device) \
+            #        + self.numerical_loss(positive_triplets, numerical_list)
+            return self.numerical_loss(positive_triplets, numerical_list)
+
         else:
             return self.loss(dist_positive, dist_negative).to(self.device)
 
     def numerical_loss(self, triples, numerical_list):
-        heads = self.ent_embedding(triples[0]).to(self.device)
+        # lookup the embedding of heads
+        heads = self.ent_embedding(triples[2]).to(self.device)
+        # lookup the embedding of attributes
         attrs = self.attr_embedding(triples[1]).to(self.device)
-        # repeat the attributes tensor to the length of heads
-        return - (heads * attrs - numerical_list).norm(p=self.norm, dim=1).to(self.device)
+        bias = self.bias(triples[1]).to(self.device)
+
+        p = torch.sum(heads * attrs + bias, dim=1)
+        # print(p)
+        # print("----")
+        # print(numerical_list)
+
+        return torch.abs(p - numerical_list).to(self.device).mean()
 
     def distance(self, triplet):
         head = self.ent_embedding(triplet[0]).to(self.device)
