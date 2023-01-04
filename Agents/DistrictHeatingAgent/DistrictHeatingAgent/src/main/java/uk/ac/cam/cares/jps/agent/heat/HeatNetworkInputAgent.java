@@ -84,7 +84,7 @@ public class HeatNetworkInputAgent {
     public static final String timestampKey = "obsTimeUtc";
 
     // The prefix to use when no IRI exists for a JSON key originally
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "heat";
+    public static final String generatedIRIPrefix = "http://www.theworldavatar.com/kb/ontotimeseries/" + "heat";
 
     // The time unit used for all time series maintained by the heating network input agent
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
@@ -523,9 +523,7 @@ public class HeatNetworkInputAgent {
                     } catch (Exception e) {
                         e.getMessage();
                        throw new JPSRuntimeException("Cannot not add timeseries!");
-                    } finally {
-                        tsClient.disconnectRDB();
-                    }
+                    } 
                 }
             }
         } else {
@@ -619,9 +617,7 @@ public class HeatNetworkInputAgent {
                     LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
                 } catch (Exception e) {
                     throw new JPSRuntimeException("Could not initialize timeseries!");
-                } finally {
-                    tsClient.disconnectRDB();
-                }
+                } 
             }
         }
     }
@@ -643,9 +639,7 @@ public class HeatNetworkInputAgent {
                 } else {
                     throw e;
                 }
-            } finally {
-                tsClient.disconnectRDB();
-            }
+            } 
         }
         return true;
     }
