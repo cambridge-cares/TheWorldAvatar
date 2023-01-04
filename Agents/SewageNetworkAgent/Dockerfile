@@ -7,14 +7,13 @@ ADD . /root
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
-# (Note that | rather than / is used as the sed delimiter, since encrypted passwords can contain the former, but not the latter
+# (Note that | rather than / is used as the sed delimiter, since encrypted passwords can contain the latter, but not the former
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
 WORKDIR /root/SewerageNetworkAgent/
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
-# RUN mvn package
 
 
 #==================================================================================================
@@ -27,6 +26,7 @@ WORKDIR /app
 
 # Copies all files in config directory to destination
 COPY ./config/. /root/
+COPY ./SewageNetworkAgent/src/test/resources. /root/
 
 # Set the required environment variables
 ENV HGDATA0="/root/HG_instances_0.csv"
