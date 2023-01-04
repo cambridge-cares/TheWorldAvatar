@@ -11,7 +11,7 @@ import os
 import pytest
 
 # Self import
-from utils import retrieve_abs_filepath, read_ifc_file, find_dictindex, find_word
+from agent.utils import retrieve_abs_filepath, read_ifc_file, find_dictindex, find_word
 
 
 def test_retrieve_abs_filepath():

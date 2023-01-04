@@ -10,7 +10,7 @@ import json
 
 
 # Self import
-from ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
+from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
 
 
 def retrieve_tileset_contents(json_filepath):

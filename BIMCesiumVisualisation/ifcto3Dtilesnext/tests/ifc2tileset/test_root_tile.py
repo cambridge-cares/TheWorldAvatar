@@ -8,7 +8,7 @@ A test suite for the agent.ifc2tileset.root_tile submodule.
 import os
 
 # Self import
-from ifc2tileset.root_tile import bbox_root, bbox_child, root_tile, gen_root_content
+from agent.ifc2tileset.root_tile import bbox_root, bbox_child, root_tile, gen_root_content
 
 
 def test_bbox_root():

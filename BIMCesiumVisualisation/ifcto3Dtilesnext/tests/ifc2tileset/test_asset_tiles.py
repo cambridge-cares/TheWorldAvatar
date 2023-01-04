@@ -5,7 +5,7 @@ A test suite for the agent.ifc2tileset.asset_tiles submodule.
 """
 
 # Self import
-from ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
+from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
 
 
 def test_init_asset_tiles():

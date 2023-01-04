@@ -59,7 +59,7 @@ A brief description of its workflow can be found below:
 1. Open `cmd` terminal and navigate into the `<root>` containing this README
 2. Please run the following commands in the `cmd` terminal (from within the `<root>` directory and with **activated** virtual environment <venv_name>)
     ```
-    python pytest
+    pytest
     ```
 ### 2. Running tool
 1. Place the IFC file in `<root>\data\ifc`

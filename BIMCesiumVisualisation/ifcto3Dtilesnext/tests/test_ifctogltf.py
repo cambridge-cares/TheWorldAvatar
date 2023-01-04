@@ -13,7 +13,7 @@ import ifcopenshell
 from ifcopenshell.api import run
 
 # Self import
-from ifc2gltf import verify_feature_exists, gendict4split, append_ifcconvert_command, conv2gltf
+from agent.ifc2gltf import verify_feature_exists, gendict4split, append_ifcconvert_command, conv2gltf
 
 
 def gen_sample_ifc_file(ifc_path, is_simplified=True):
