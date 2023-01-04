@@ -5,7 +5,7 @@ This module provides methods to generate tilesets related to assets.
 """
 
 # Self imports
-from ifc2tileset.root_tile import gen_root_content, bbox_child
+from agent.ifc2tileset.root_tile import gen_root_content, bbox_child
 
 
 def init_asset_tiles():

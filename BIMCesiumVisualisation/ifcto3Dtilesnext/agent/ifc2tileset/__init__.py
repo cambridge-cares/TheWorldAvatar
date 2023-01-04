@@ -6,9 +6,9 @@ generate the tilesets for the IFC file and its glTF models.
 """
 
 # Self imports
-from ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
-from ifc2tileset.root_tile import gen_root_content
-from ifc2tileset.asset_tiles import gen_tileset_assets
+from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
+from agent.ifc2tileset.root_tile import gen_root_content
+from agent.ifc2tileset.asset_tiles import gen_tileset_assets
 
 
 def gen_tilesets(hashmapping):

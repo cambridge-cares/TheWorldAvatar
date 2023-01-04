@@ -8,7 +8,7 @@ This module generates glTF models from the IFC file.
 from ifcopenshell.util.selector import Selector
 
 # Self imports
-from utils import find_word, run_shellcommand, retrieve_abs_filepath
+from agent.utils import find_word, run_shellcommand, retrieve_abs_filepath
 
 
 def verify_feature_exists(featurelist, ifc):

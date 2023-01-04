@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 # Self imports
-from ifc2tileset.root_tile import root_tile
+from agent.ifc2tileset.root_tile import root_tile
 
 
 def gen_solarpanel_tileset():

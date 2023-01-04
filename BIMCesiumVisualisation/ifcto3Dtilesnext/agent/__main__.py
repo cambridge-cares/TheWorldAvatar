@@ -8,9 +8,9 @@ This module is the program's entry point.
 import ifcopenshell
 
 # Self imports
-from utils import read_ifc_file
-from ifc2gltf import conv2gltf
-from ifc2tileset import gen_tilesets
+from agent.utils import read_ifc_file
+from agent.ifc2gltf import conv2gltf
+from agent.ifc2tileset import gen_tilesets
 
 # Set the IFC model
 ifc_filepath = read_ifc_file(['data', 'ifc'])
