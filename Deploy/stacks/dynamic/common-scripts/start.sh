@@ -8,7 +8,7 @@ init_swarm
 
 # Pull these images here because the "--with-registry-auth" argument
 # used below only seems to add credentials for Docker Hub
-${EXECUTABLE} pull -q docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+${EXECUTABLE} pull -q docker.cmclinnovations.com/blazegraph:1.1.0
 ${EXECUTABLE} pull -q docker.cmclinnovations.com/geoserver:2.20.4
 
 # Remove existing services started from this directory
