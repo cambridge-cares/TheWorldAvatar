@@ -19,8 +19,10 @@ class TransEA(nn.Module):
     10, similar to benzene on molar mass ...
     """
 
-    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cuda', dataset_path="ontospecies"):
+    def __init__(self, dim, ent_num, rel_num, resume_training=False, device='cuda', dataset_path="ontospecies",
+                 alpha=0.1):
         super(TransEA, self).__init__()
+        self.alpha = alpha
         self.dim = dim
         self.ent_num = ent_num
         self.rel_num = rel_num
@@ -42,6 +44,7 @@ class TransEA(nn.Module):
         # A = torch.empty(self.dim, device='cpu')
         # self.bias = nn.Parameter(A)
         self.bias = nn.Embedding(embedding_dim=1, num_embeddings=self.rel_num + 1, padding_idx=self.rel_num)
+        self.bias.weight.data.uniform_(-1, 1)
 
     def load_attr_embedding(self):
         print(f"loading embedding from {os.path.join(DATA_DIR, self.dataset_path, 'attr_embedding.tsv')}")
@@ -115,28 +118,29 @@ class TransEA(nn.Module):
         # x2, as big as possible
         dist_negative = self.distance(negative_triplets).to(self.device)
         if is_numerical:
-            # return self.loss(dist_positive, dist_negative).to(self.device) \
-            #        + self.numerical_loss(positive_triplets, numerical_list)
-            return self.numerical_loss(positive_triplets, numerical_list)
-
+            return (1 - self.alpha) * torch.mean(self.loss(dist_positive, dist_negative).to(self.device) \
+                                     + self.alpha * self.numerical_loss(positive_triplets, numerical_list))
+            # return self.numerical_loss(positive_triplets, numerical_list)
+        #  return torch.mean(self.loss(dist_positive, dist_negative).to(self.device))
         else:
-            return self.loss(dist_positive, dist_negative).to(self.device)
+            # return self.loss(dist_positive, dist_negative).to(self.device)
+            return torch.mean(self.loss(dist_positive, dist_negative).to(self.device))
 
     def numerical_loss(self, triples, numerical_list):
         # lookup the embedding of heads
         heads = self.ent_embedding(triples[0]).to(self.device)
         # lookup the embedding of attributes
         attrs = self.attr_embedding(triples[1]).to(self.device)
-        # bias = self.bias(triples[1]).to(self.device)
-        aV = torch.sum(heads * attrs, dim=1)
-        target = aV - numerical_list
-        attr_loss = torch.sum(torch.abs(target))
+        bias = self.bias(triples[1]).to(self.device)
+        aV = torch.sum(heads * attrs, dim=1).to(self.device)
+        target = aV + bias - numerical_list.to(self.device)
+        attr_loss = torch.sum(torch.abs(target)).to(self.device)
 
         # print(p)
         # print("----")
         # print(torch.abs(p - numerical_list).shape)
 
-        return  attr_loss
+        return attr_loss
 
     def distance(self, triplet):
         head = self.ent_embedding(triplet[0]).to(self.device)
@@ -162,8 +166,11 @@ class TransEA(nn.Module):
         """
         return self.distance(triplets).to(self.device)
 
-    def predict_numeric(self, heads, attribute):
-        heads_length = len(heads)
-        attributes = attribute.repeat(heads_length, 1)
-        numerical_list = torch.sum(heads * attributes)
-        return numerical_list
+    def predict_numeric(self, triples):
+        # lookup the embedding of heads
+        heads = self.ent_embedding(triples[0]).to(self.device)
+        # lookup the embedding of attributes
+        attrs = self.attr_embedding(triples[1]).to(self.device)
+        bias = self.bias(triples[1]).to(self.device)
+        aV = torch.sum(heads * attrs, dim=1).to(self.device)
+        return aV + bias
