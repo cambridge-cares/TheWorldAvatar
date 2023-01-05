@@ -57,7 +57,7 @@ public abstract class PostgresDataSubset extends DataSubset {
                 }
             }
 
-            PostGISClient.getInstance().executeUpdate(database, sql);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sql);
         }
     }
 }

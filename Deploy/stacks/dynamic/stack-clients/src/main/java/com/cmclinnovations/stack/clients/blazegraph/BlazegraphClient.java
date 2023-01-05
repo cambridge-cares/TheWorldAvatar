@@ -69,7 +69,7 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
             } catch (URISyntaxException | RuntimeException ex) {
                 if (ex instanceof URISyntaxException) {
                     firstException = new RuntimeException(
-                        "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
+                            "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
                 } else if (ex instanceof RuntimeException) {
                     firstException = (RuntimeException) ex;
                 }
@@ -121,10 +121,7 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
     }
 
     public void uploadRDFFiles(Path dirPath, String namespace) {
-        String url = blazegraphEndpoint.getUrl(namespace);
-        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(url, url,
-                blazegraphEndpoint.getUsername(),
-                blazegraphEndpoint.getPassword());
+        RemoteStoreClient remoteStoreClient = getRemoteStoreClient(namespace);
         try (Stream<Path> files = Files.list(dirPath)) {
             files.filter(Files::isRegularFile)
                     .filter(file -> null != remoteStoreClient
@@ -133,6 +130,13 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
         } catch (IOException ex) {
             throw new RuntimeException("Failed to load RDF files stored in the directory '" + dirPath + "'.", ex);
         }
+    }
+
+    public RemoteStoreClient getRemoteStoreClient(String namespace) {
+        String url = blazegraphEndpoint.getUrl(namespace);
+        return new RemoteStoreClient(url, url,
+                blazegraphEndpoint.getUsername(),
+                blazegraphEndpoint.getPassword());
     }
 
     /**

@@ -24,8 +24,8 @@ public class TBoxCSV extends DataSubset {
 
         TBoxGeneration tBoxGenerator = new TBoxGeneration();
 
-        String endpointURL = BlazegraphClient.getInstance().getEndpoint().getUrl(dataset.getNamespace());
-        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(endpointURL, endpointURL);
+        RemoteStoreClient remoteStoreClient = BlazegraphClient.getInstance()
+                .getRemoteStoreClient(dataset.getNamespace());
 
         Path datasubsetDir = dataset.getDirectory().resolve(getSubdirectory());
         if (!Files.exists(datasubsetDir)) {
@@ -52,7 +52,8 @@ public class TBoxCSV extends DataSubset {
                     remoteStoreClient.uploadFile(owlFile.toFile());
                 } catch (Exception ex) {
                     throw new RuntimeException(
-                            "Failed to upload ontology file '" + owlFile + "' to the endpoint at '" + endpointURL
+                            "Failed to upload ontology file '" + owlFile + "' to the endpoint at '" +
+                                    BlazegraphClient.getInstance().getEndpoint().getUrl(dataset.getNamespace())
                                     + "'.",
                             ex);
                 }

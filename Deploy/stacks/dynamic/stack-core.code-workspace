@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "../../../Agents/utils/parent-pom"
+		},
+		{
+			"path": "../../../JPS_BASE_LIB"
 		}
 	],
 	"settings": {
@@ -26,19 +29,25 @@
 			"Adminer",
 			"Blazegraph",
 			"CMCL",
+			"cmclinnovations",
 			"crome",
 			"cropmap",
 			"datasubset",
 			"EPSG",
 			"freelist",
+			"gdal",
 			"gdbindexes",
 			"gdbtable",
 			"gdbtablx",
 			"Geodatabase",
+			"geotiff",
+			"GEOTIFFS",
 			"LINESTRING",
 			"MULTILINESTRING",
+			"Multimap",
 			"OBDA",
 			"pgsql",
+			"POSTGIS",
 			"Shapefile",
 			"Shapefiles",
 			"SPARQL",
