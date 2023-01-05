@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -48,6 +49,11 @@ public class ConfigStore extends ContainerClient {
      * Limits (in hours) for time data per class.
      */
     protected final Map<String, Integer> timeLimits = new HashMap<>();
+
+    /**
+     * Names of databases for each class.
+     */
+    protected final Map<String, String> dbNames = new HashMap<>();
 
     /**
      * Any other settings specified in the config file.
@@ -244,6 +250,18 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
+     * If present, returns the database name associated with the input class.
+     * 
+     * @param clazz fully qualified class name.
+     * 
+     * @return SQL database name
+     */
+    public String getDatabaseName(String clazz) throws IOException {
+       return dbNames.get(clazz);
+    }
+
+
+    /**
      * Registers a metadata query file for the input class name.
      * 
      * @param clazz class name.
@@ -274,6 +292,15 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
+     * 
+     * @param clazz
+     * @param dbName
+     */
+    public void addDatabaseForClass(String clazz, String dbName) {
+        this.dbNames.put(clazz, dbName);
+    }
+
+    /**
      * If running within a stack, use the stack client library to 
      * determine, and store, the location of the ONTOP container.
      */
@@ -296,13 +323,17 @@ public class ConfigStore extends ContainerClient {
     /**
      * If running within a stack, use the stack client library to 
      * determine, and store, the location of the POSTGRES container.
+     * 
+     * Note that this only stores the driver URL of the POSTGRES container, as
+     * each registered class can have its own database name, the URL will
+     * change for each class.
      */
     private void determinePostgres() {
         PostGISEndpointConfig postConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
         
         ConfigEndpoint endpoint = new ConfigEndpoint(
             "POSTGRES",
-            postConfig.getJdbcURL(getSetting("database_name").toString()),
+            postConfig.getJdbcDriverURL(),
             postConfig.getUsername(),
             postConfig.getPassword(),
             EndpointType.POSTGRES
@@ -310,7 +341,7 @@ public class ConfigStore extends ContainerClient {
         endpoints.add(endpoint);
 
         String url = endpoint.url();
-        LOGGER.info("Have determined PostgreSQL endpoint as: {}", url);
+        LOGGER.info("Have determined PostgreSQL driver URL as: {}", url);
     }
 
     /**
@@ -335,6 +366,21 @@ public class ConfigStore extends ContainerClient {
             endpoints.add(endpoint);
             String url = endpoint.url();
             LOGGER.info("Have found a Blazegraph endpoint at: {}", url);
+        }
+    }
+
+    /**
+     * Given a database name, this generates and returns the correct URL for it.
+     * 
+     * @param dbName database name
+     */
+    public String generatePostgresURL(String dbName) {
+        try {
+            PostGISEndpointConfig postConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
+            return postConfig.getJdbcURL(dbName);
+        } catch(RuntimeException exception) {
+            // Probably not running within a stack
+            return "";
         }
     }
 
@@ -419,6 +465,10 @@ public class ConfigStore extends ContainerClient {
                 timeLimits.put(className, timeLimit);
             } else {
                 timeLimits.put(className, 24);
+            }
+
+            if(entry.has("databaseName")) {
+                dbNames.put(className, entry.getString("databaseName"));
             }
         }
 

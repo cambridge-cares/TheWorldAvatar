@@ -397,12 +397,20 @@ public class FeatureInfoAgent extends JPSAgent {
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build RBD client
+        String dbName = CONFIG.getDatabaseName(classMatch);
+        if(dbName == null) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"No database name registered for matching class.\"}");
+            return null;
+        }
+
+        String dbURL = CONFIG.generatePostgresURL(dbName);
         LOGGER.info("Establishing connection to RBD for timeseries...");
-        LOGGER.info("     Using URL: {}", postEndpoint.get().url());
+        LOGGER.info("     Using URL: {}", dbURL);
         LOGGER.info("     Using Username: {}", postEndpoint.get().username());
 
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
-            postEndpoint.get().url(),
+            dbURL,
             postEndpoint.get().username(),
             postEndpoint.get().password()
         );

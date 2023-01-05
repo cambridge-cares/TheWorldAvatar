@@ -112,6 +112,10 @@ public class FeatureInfoAgentTest {
             CONFIG.addMetaQueryForClass("FORCED-ENDPOINT", tempForced.toString());
             CONFIG.addTimeQueryForClass("TIME-ONLY-CLASS", tempTime.toString());
 
+            CONFIG.addDatabaseForClass("SAMPLE-CLASS", "test-database");
+            CONFIG.addDatabaseForClass("FORCED-ENDPOINT", "test-database");
+            CONFIG.addDatabaseForClass("TIME-ONLY-CLASS", "test-database");
+
             FeatureInfoAgent.CONFIG = CONFIG;
 
         } catch(IOException exception) {
