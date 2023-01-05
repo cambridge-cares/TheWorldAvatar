@@ -74,22 +74,26 @@ def data_treatment(df,arg_name,arg_value):
     arg_value: two column pd.DataFrame, which MUST have a column with name 's' which contain LSOA code for data identification
                and another column for data
     '''
+        df_copy = df.copy()
         # Appended the variable data to the df_geo
-        df = df.assign(**{f"{arg_name}": np.nan})
+        df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
         
         # Create a dict, which will make the data matching soooooo fast 
         dictionary = {row[arg_value.columns[0]]: row[arg_value.columns[1]] for _, row in arg_value.iterrows()}
-        df[f"{arg_name}"] = df[df.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+        df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
         
         # ------------ This val_values is normally used for colorbar plot ------------------- #
-        # Specify the value to plot
-        val_values = df[f"{arg_name}"].values
-        # Create a boolean mask indicating which elements are NaN values
-        mask = np.isnan(val_values)
-        # Select only the non-NaN values from the array
-        val_values = val_values[~mask]
+        try:
+            # Specify the value to plot
+            val_values = df_copy[f"{arg_name}"].values
+            # Create a boolean mask indicating which elements are NaN values
+            mask = np.isnan(val_values)
+            # Select only the non-NaN values from the array
+            val_values = val_values[~mask]
+        except:
+            pass
 
-        return df, val_values
+        return df_copy, val_values
 
 def normalization(val_values, cb_scale):
     '''
@@ -128,7 +132,7 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     # Set the label for the colorbar
     colorbar.set_label(label)
 
-def remove_NaN(df:pd.DataFrame):
+def remove_NaN(df: pd.DataFrame):
     '''
     Remove all the row which contain the value 'NaN' 
     iteration start from second column and above, as the first column is always LSOA code for identification
@@ -137,7 +141,171 @@ def remove_NaN(df:pd.DataFrame):
     Note: This function is only used for data processing as this will delete the row
     '''
     df = df[df.iloc[:, 1:].notnull().all(axis=1)]
+    df = df.reset_index(drop=True)
+    return df
+
+def drop_column(df,index):
+    '''
+    drop a column using index, can using index number or name
+    '''
+    if type(index) == int:
+        df = df.drop(columns=df.columns[index])
+    else:
+        df = df.drop(columns=[index])
+    return df
+
+def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None):
+    '''
+    This module is to create tensor, specific for the type of data like:
+ [LSOA_1:[Jan: [tasmin: ,  tas:   , tasmax:  ],
+          Feb: [tasmin: ,  tas:   , tasmax:  ],
+          Mar: [tasmin: ,  tas:   , tasmax:  ],
+                .........
+          Dec: [tasmin: ,  tas:   , tasmax:  ]],
+
+  LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
+          Feb: [tasmin: ,  tas:   , tasmax:  ],
+          Mar: [tasmin: ,  tas:   , tasmax:  ],
+                .........
+          Dec: [tasmin: ,  tas:   , tasmax:  ]],
+                .........
+          ]]] 
+    i.e. for all data relating to temperature, such as COP, change of gas, electricity etc
+    convert into tensor will make it faster to calculate
+    Beside the tensor, this function will return an LSOA_index as well, which using row index as 
+    key, LSOA code as value, for the later match up.
+    Arguments:
+    input: can be dict or df. If it's a dict, which should have structure like:
+    dict = { LSOA_1: 
+                {'2020-01-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                {'2020-02-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
+                    .......
+              LSOA_2: 
+                {'2020-01-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                {'2020-02-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
+                    .......
+             }
+    if it is a df, should have a structure like:
+        LSOA_code   temp
+     0   LSOA_1    {'2020-01-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    '2020-02-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    .......}
+              
+     1   LSOA_2    {'2020-01-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    '2020-02-01T12:00:00.000Z':
+                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    .......}       
+
+    or df can be this shape:
+                LSOA_code   elec_consump
+        0       LSOA_1      100
+        1       LSOA_2      100
+        2       LSOA_3      100
+        ....
+    or:
+                LSOA_code   Jan   Feb   March ...
+        0       LSOA_1      100   ...
+        1       LSOA_2      100   ...
+        2       LSOA_3      100   ...
+        ....
+    if the input df is in first shape, it will firstly disaggrate the value into monthly distribution (like the second shape), 
+    and then parse the result having the same shape as np.zeros((3, len(df), 12)). 
+    Note that in this senario, the monthly data will be distributed into the Axis-2 as which have 12 positions, 
+    data for each LSOA will be distributed into Axis-1 based on LSOA_index (and need to be provided in this case)
+    however, the Axis-0 will have the same value, i.e. result_tensor[0][:][:] = result_tensor[1][:][:] = result_tensor[2][:][:]. 
+    As this senario only apply to those data are not temperature related, making them into this shape is just for the sake of calculation.
     
+    monthly_ref: ONLY NEED when input is a df and have only two column, and this monthly_ref is been used 
+    to disaggregate into monthly data
+    LSOA_index_id: ONLY NEED when input is a df, and are not-temperature related (such as consumption/usage)
+    ** The logic is, for those data are not temperature related to perform this operation, they ultimately 
+    are used to serve data that DO is temperature related, for example, convert electricity consumption into tensor,
+    to serve delta_electricity_consumption_tensor, to get remaining_electricity_consumption_tensor. so they need
+    to know which index is located in which LSOA area, so, this LSOA_index_id is needed for match up the date **
+    '''
+    
+    if type(input) == pd.DataFrame:
+        df = input
+        if type(df.iloc[1,1]) == dict:
+            # initialize a results_tensor= np.zeros((3, length of row,12))
+            results_tensor = np.zeros((3, len(df), 12))
+            # loop all the rows, and
+            LSOA_index = {}
+            for i, row in df.iterrows():
+                # Make a dict called LSOA_index, using row index as key and data in the first column as value
+                LSOA_index[row[0]] = i
+            
+            # The data in the second column is a dict contain 12 pairs, for each pair, the value are dicts as well.
+            # The second level dict have 3 pairs, each key have it's value
+            for i, data in df[df.columns[1]].items():
+                # Parse the values in second column into results_tensor to fit in the shape
+                for j, value in data.items():
+                    for k, v in value.items():
+                        t_index = t_dict[k]
+                        date_index = date_dict[j]
+                        results_tensor[t_index][i][date_index] = v
+        else:
+            # initialize a results_tensor= np.zeros((3, length of row,12))
+            results_tensor = np.zeros((3, len(LSOA_index_id), 12))
+            if df.shape[1] == 2:
+                df = monthly_disaggregation(df, monthly_ref)
+            # Select all rows and columns starting from the second column of the DataFrame
+            values = df.iloc[:, 1:].values
+            # Flatten the 2D array into a 1D array
+            values = values.flatten()
+            # Iterate over the indices and LSOA codes in the dictionary
+            for i, (lsoa, index) in enumerate(LSOA_index_id.items()):
+                # Use the at method to assign the values to the array
+                results_tensor[:, index, :] = values[i * 12: (i + 1) * 12]
+            # No LSOA_index in this case
+            LSOA_index = None
+
+    elif type(input) == dict:
+        inputdict = input
+        LSOA_index = {key:i for i, key in enumerate(inputdict)}
+        # initialize a results_tensor= np.zeros((3, length of row,12))
+        results_tensor = np.zeros((3, len(inputdict), 12))
+        for h, data in inputdict.items():
+            for j, value in data.items():
+                for k, v in value.items():
+                    lsoa_index = LSOA_index.get(h)
+                    t_index = t_dict[k]
+                    date_index = date_dict[j]
+                    results_tensor[t_index][lsoa_index][date_index] = v
+
+    return LSOA_index, results_tensor
+
+def remove_unlocated_data(df):
+    # Create a boolean mask indicating which rows contain 'Unallocated' in the first column
+    mask = df[df.columns[0]].str.contains('Unallocated')
+    # Use the mask to index the DataFrame and drop the rows
+    df = df[~mask]
+    # Reset the indices of the DataFrame
+    df = df.reset_index(drop=True)
+
     return df
 
 # ------------------------ Data retrieval ---------------------------------- #
@@ -174,6 +342,8 @@ def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     if per_household == True:
         df['elec_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
     
+    df = remove_unlocated_data(df)
+
     return df 
 
 def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = '2020', per_household: bool = False) -> pd.DataFrame:
@@ -209,6 +379,9 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
 
     if per_household == True:
         df['gas_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
+    
+    df = remove_unlocated_data(df)
+
     return df
 
 def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = '2020') -> pd.DataFrame:
@@ -239,6 +412,8 @@ def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     # Adjust the format, get rid of 'NaN' variables
     df["result"] = df["result"].apply(convert_to_float)
     df["num"] = df["num"].apply(convert_to_int)
+
+    df = remove_unlocated_data(df)
 
     return df
 
@@ -289,7 +464,7 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     
     # specifying geodata frame
     df['geometry'] = gpd.GeoSeries.from_wkt(df['geom'])
-    df = df.drop(columns=['geom'])
+    df = drop_column(df,'geom')
 
     df = gpd.GeoDataFrame(df, geometry='geometry')
     df = df.set_crs("EPSG:4326")
@@ -297,6 +472,8 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     df = df.to_crs("EPSG:3395")
     # Enable it to save the df to pickle file, save the time for querying and processing :)
     #save_pickle_variable(df_geo = df)
+
+    df = remove_unlocated_data(df)
 
     return df
 
@@ -326,13 +503,18 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     df = pd.DataFrame(columns=['s', 'start', 'var', 't' ])
     df = df.append(result)
 
+    df = remove_unlocated_data(df)
+
     return df
 
 # ------------------------- Calculation ------------------------------------ #
-def monthly_disaggregation(df: pd.DataFrame, monthly_ref: list, annual: bool = False):
+def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
     '''
     To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
     from monthly_ref
+    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
+    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
+    that won't affect the result
     Arguments:
     df: two-column data frame which MUST have the data to disaggregate placed at the second column
     (i.e. at position [1])
@@ -341,15 +523,16 @@ def monthly_disaggregation(df: pd.DataFrame, monthly_ref: list, annual: bool = F
             if False, only monthly value will be returned
     '''
     global months
+    df = df_in.copy()
     months = ['January','February','March','April','May','June','July','August','September','October','November','December']
     total = sum(monthly_ref)
     for i in range(12):
         df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
     if annual == False:
-        df = df.drop(columns=df.columns[1])
+        df = drop_column(df,1)
     return df
 
-def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec: float, price_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
+def fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, price_elec: float, price_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
     '''
     To calculate the fuel cost per LSOA, normally on per household basis
     Returns three dataframe which have first column as LSOA code, and the following 12
@@ -366,7 +549,8 @@ def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec: float, pric
     annual: if True, the second column will include the annual value
             if False, only monthly value will be returned
     '''
-    
+    df_elec = df_elec_in.copy()
+    df_gas = df_gas_in.copy()
     # Replace the first column from consumption into cost
     df_elec[df_elec.columns[1]] *= price_elec
     df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual cost'}, inplace=False)
@@ -392,7 +576,7 @@ def fuel_cost(df_elec:pd.DataFrame, df_gas:pd.DataFrame, price_elec: float, pric
     
     return df_cost_total, df_cost_elec, df_cost_gas
 
-def fuel_emission(df_elec:pd.DataFrame, df_gas:pd.DataFrame, carbon_intensity_elec: float, carbon_intensity_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
+def fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, carbon_intensity_elec: float, carbon_intensity_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
     '''
     To calculate the fuel emission per LSOA, normally on per household basis
     Returns three dataframe which have first column as LSOA code, and the following 12
@@ -409,6 +593,8 @@ def fuel_emission(df_elec:pd.DataFrame, df_gas:pd.DataFrame, carbon_intensity_el
     annual: if True, the second column will include the annual value
             if False, only monthly value will be returned
     '''
+    df_elec = df_elec_in.copy()
+    df_gas = df_gas_in.copy()
     df_elec[df_elec.columns[1]] *= carbon_intensity_elec
     df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual emission'}, inplace=False)
     df_emission_elec = df_elec.copy()
@@ -433,15 +619,19 @@ def fuel_emission(df_elec:pd.DataFrame, df_gas:pd.DataFrame, carbon_intensity_el
     
     return df_emission_total, df_emission_elec, df_emission_gas
 
-def get_median(df:pd.DataFrame, row_name: str = '0'):
+def get_median(df_in:pd.DataFrame, row_name: str = '0'):
     '''
     for given dataframes, calculate the median value of each column, and return one dataframe
     which contain only one row data of the median value result. The row name can be customised 
     and the column name remain unchanged.
     Arguments:
     df: dataframe to be calculated
+        Note that for a column in df that contain strings, i.e. this column is not median-able, therefore 
+        this column will be automatically excluded in the return df
+        (This is a bonus! No need to remove the 'LSOA_code' column in advance! :)
     row_name: row name you may want to customise, default as 'o' 
     '''
+    df = df_in.copy()
     medians = df.median()
     median_df = medians.to_frame().transpose()
     median_df.index = [row_name]
@@ -451,14 +641,37 @@ def get_median(df:pd.DataFrame, row_name: str = '0'):
 def COP(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
     '''
     Based on a given temperature to calculate the COP
-    NOTE: COP = hp_efficiency * T_H / (T_H - T_C), where the input temperature is represented as T_C
+    Note: COP = hp_efficiency * T_H / (T_H - T_C), where the input temperature is represented as T_C
     T_H, hp_efficiency are hypothesd as constant, which have default value as 318.15 and 0.35
     respectfully. I suggest to check if that default value is up to date or if that hypothesis is 
     valid in your case
     '''
     COP = hp_efficiency * T_H / (T_H -273.15 - temp)
-    COP = round(COP,3)
+    COP = np.round(COP,3)
     return COP
+
+def delta_gas(uptake: float, total_gas_consumption, propotion_heating: float = 0.9):
+    '''
+    Based on a given uptake, and gas consumption, calculate how many gas will be converted to electricity, which is delta_gas
+    Note: the definition of uptake is (delta_gas / gas_for_heating) = (delta_gas / (Total_gas_consumption * propotion_heating))
+        Therefore, delta_gas = uptake * Total_gas_consumption * propotion_heating
+        propotion_heating is hypothesd as constant, which have default value as 0.9 I suggest to check if that default value is 
+        up to date or if that hypothesis is valid in your case
+    '''
+    delta_gas = uptake * total_gas_consumption * propotion_heating
+
+    return delta_gas
+
+def delta_elec(delta_gas, COP, boiler_efficiency: float = 0.8):
+    '''
+    Based on given COP, delta_gas to calculate how much electricity has been converted based on delta_gas
+    Note: delta_elec = boiler_efficiency * delta_gas / COP. where boiler_efficiency is hypothesd as constant, 
+    which have default value as 0.8. I suggest to check if that default value 
+    is up to date or if that hypothesis is valid in your case
+    '''
+    delta_elec = boiler_efficiency * delta_gas / COP
+
+    return delta_elec
 
 # ------------------------ GeoSpatial Plot --------------------------------- #
 def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: float = 0):
@@ -681,14 +894,18 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
             i+=1
 
         else:
-            # Sort the group by the mean value of the rows
-            group = group.sort_values(by=group.mean(axis=1))
+            row_means = group.mean(axis=1)
+            # Reset the index of the group
+            group = group.reset_index(drop=True)
+            group.index = row_means
+            # Sort the group by the index
+            group = group.sort_index()
             
             # Get the minimum and maximum rows
             y1 = group.iloc[0]
             y2 = group.iloc[-1]
             # Plot the fill between the minimum and maximum rows
-            sb.fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
+            plt.fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
             # Plot the remaining rows
             for _, row in group.iloc[1:-1].iterrows():
                 sb.lineplot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
@@ -696,6 +913,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
     axs.legend(frameon=False)
 
     plt.subplots_adjust(left=0.175)
+    axs.set_xticks([0,1,2,3,4,5,6,7,8,9,10,11])
     axs.set_xticklabels(labels = ['J','F','M','A','M','J','J','A','S','O','N','D'])
     axs.set_xlabel('')
     axs.set_ylabel(y_label)
@@ -703,7 +921,45 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
     save_figures(filename)
     print(f'{i} number of lines have been plotted')
 
-
+def plot_box_and_whisker(df: pd.DataFrame, y_label: str):
+    flierprops = dict(markerfacecolor="k", markersize=0.05, linestyle="none", markeredgecolor="k")
+    # Initialize the plot
+    fig, axs = plt.subplots(1,1,figsize=(5,3))
+    plt.tight_layout()
+    y_data = df.iloc[:, 1:]
+    x_axis = y_data.columns
+    ax_box = sb.boxplot(
+        data=y_data, 
+        x=df.columns[1:13],
+        fliersize=0.05,
+        whis=2,
+        linewidth=1.2,
+        ax=axs,
+        color="w",
+        flierprops=flierprops,
+    )
+    sb.pointplot(
+        x=list(df.columns[1:13]),
+        y=df[df.columns[1:13]],
+        data=get_median(df_in=df),
+        ax=axs,
+        color="r",
+        markers=".",
+    )
+    for i, box in enumerate(ax_box.artists):
+        box.set_edgecolor("black")
+        box.set_facecolor("white")
+        # iterate over whiskers and median lines
+        for j in range(6 * i, 6 * (i + 1)):
+            ax_box.lines[j].set_color("black")
+    plt.subplots_adjust(
+        left=0.175, bottom=0.092, right=0.967, top=0.949, wspace=0.2, hspace=0.14
+    )
+    axs.set_xlabel("")
+    axs.set_ylabel(y_label)
+    axs.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    plt.legend()
+    save_figures('box & whisker')
 
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 '''
@@ -717,8 +973,8 @@ df_temp = df_full[['LSOA_code', 'temp']]
 '''
 df = retrieve_elec_data_from_KG()
 df['Electricty cosumption per household'] = df['usage'].to_numpy() /df['meter'].to_numpy() 
-df = df.drop(columns=['meter'])
-df = df.drop(columns=['usage'])
+df = drop_column(df,'meter')
+df = drop_column(df,'usage')
 plot_geodistribution_with_cities(label = 'kWh/year/household', title = 'Electricity Consumption', df =df, cb_scale = 1.5)
 '''
 ##########################################################
@@ -754,8 +1010,53 @@ df_to_plot = pd.concat([df_emission_total, df_emission_elec, df_emission_gas], a
 plot_temproal_line_chart(filename='household_emissions', y_label = 'Emissions \n (kgCO$_2$eq/month/household)',df = df_to_plot)
 '''
 # ----------------------------------------------------------------
-##########################################################
 
+# Test for resulting_elec ----------------------------------------
+'''
 # Exclude NaN data
 df_temp = remove_NaN(df_temp)
-convert_df(df_temp)
+LSOA_index, results_tensor = convert_to_tensor(df_temp)
+LSOA_index = {key.replace('http://statistics.data.gov.uk/id/statistical-geography/', ''): value for key, value in LSOA_index.items()}
+
+uptake_list = [0,0.5,1]
+array = np.empty((0, 12))
+df_toplot_final = pd.DataFrame(array)
+for uptake in uptake_list:
+    # Calculate COP
+    cop_tensor = COP(results_tensor)
+
+    # Calculate delta_gas
+    _ , gassonsump_tensor = convert_to_tensor(df_gas, monthly_gas_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_gas_tensor = delta_gas(uptake, gassonsump_tensor)
+
+    # Calculate delta_electricity
+    _ , elecconsump_tensor = convert_to_tensor(df_elec, monthly_electricity_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_elec_tensor = delta_elec(delta_gas_tensor, cop_tensor)
+
+    # Calculate remaning_elec_tensor
+    remaning_elec_tensor = elecconsump_tensor + delta_elec_tensor
+
+    # Convert tensor back to array
+    remaning_elec_arrays = np.nansum(remaning_elec_tensor, axis=1)
+
+    # Create df to plot
+    df_toplot = pd.DataFrame(remaning_elec_arrays)
+    df_toplot.index = [f"uptake = {uptake}"] * len(df_toplot)
+    df_toplot_final = df_toplot_final.append(df_toplot)
+
+plot_temproal_line_chart('remaining electricity','Electricity Consumption (kWh/month)',df_toplot_final)
+'''
+# ----------------------------------------------------------------
+
+# Test for box & whisker -----------------------------------------
+df_elec_monthly = monthly_disaggregation(df_elec,monthly_electricity_consumption_2020)
+#df_elec_monthly = drop_column(df_elec_monthly,0)
+plot_box_and_whisker(df_elec_monthly,'test')
+# ----------------------------------------------------------------
+##########################################################
+'''
+#convert 2021 temp data to tensor
+dict_temp_2021 = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')
+LSOA_index, results_tensor = convert_to_tensor(dict_temp_2021)
+print(results_tensor)
+'''

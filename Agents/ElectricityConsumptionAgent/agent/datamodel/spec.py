@@ -14,6 +14,40 @@ QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/s
 DB_URL = "jdbc:postgresql:ts_example"
 DB_USER = "postgres"
 DB_PASSWORD = "postgres"
+# Dictionary to convert climate var type to index in tensor
+
+t_dict = {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\
+          'tasmin':0,\
+          'tas':1,\
+          'tasmax':2}
+
+# Dictionary to convert datetime (month) to index in tensor
+date_dict = {'2020-01-01T12:00:00.000Z':0,\
+             '2020-02-01T12:00:00.000Z':1,\
+             '2020-03-01T12:00:00.000Z':2,\
+             '2020-04-01T12:00:00.000Z':3,\
+             '2020-05-01T12:00:00.000Z':4,\
+             '2020-06-01T12:00:00.000Z':5,\
+             '2020-07-01T12:00:00.000Z':6,\
+             '2020-08-01T12:00:00.000Z':7,\
+             '2020-09-01T12:00:00.000Z':8,\
+             '2020-10-01T12:00:00.000Z':9,\
+             '2020-11-01T12:00:00.000Z':10,\
+             '2020-12-01T12:00:00.000Z':11,\
+             '2021-01-01T12:00:00.000Z':0,\
+             '2021-02-01T12:00:00.000Z':1,\
+             '2021-03-01T12:00:00.000Z':2,\
+             '2021-04-01T12:00:00.000Z':3,\
+             '2021-05-01T12:00:00.000Z':4,\
+             '2021-06-01T12:00:00.000Z':5,\
+             '2021-07-01T12:00:00.000Z':6,\
+             '2021-08-01T12:00:00.000Z':7,\
+             '2021-09-01T12:00:00.000Z':8,\
+             '2021-10-01T12:00:00.000Z':9,\
+             '2021-11-01T12:00:00.000Z':10,\
+             '2021-12-01T12:00:00.000Z':11}
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------------------- Index ------------------------------------------------- ###
@@ -43,6 +77,7 @@ T_H = 45 +273.15
 # delta_elec = boiler_efficiency * propotion_heating * delta_gas / COP
 boiler_efficiency = 0.8
 propotion_heating = 0.9
+
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
@@ -240,12 +275,13 @@ def call_pickle(pathname):
 def save_pickle(module,pathname):
     '''
   This module is to parse the result of the module into a pickle file under the pathname you specified
-  could be useful to save the result of a module
+  could be useful to save the result of a module (or a variable)
 
-  Note: this function is specific to the use for module. if you want to save the result of 
-  a variable, try save_pickle_variable(**kwargs) module (see below)
   '''
-    results = module(limit = False)
+    try:
+      results = module(limit = False)
+    except:
+      results = module
     outfile = open(pathname,'wb')
     pickle.dump(results,outfile)
     outfile.close()
@@ -394,15 +430,19 @@ def valid_LSOA_list():
     unique_LSOA = set(unique_LSOA_1).union(unique_LSOA_2, unique_LSOA_3, unique_LSOA_4, unique_LSOA_5)
     unique_LSOA = list(unique_LSOA)
 
-    print(len(unique_LSOA))
-    print(len(unique_LSOA_1))
-    print(len(unique_LSOA_2))
-    print(len(unique_LSOA_3))
-    print(len(unique_LSOA_4))
-    print(len(unique_LSOA_5))
+    print(f'length of unique LSOA is:{len(unique_LSOA)}')
+    print(f'length of LSOA have available gas data is:{len(unique_LSOA_1)}')
+    print(f'length of LSOA have available electricity data is:{len(unique_LSOA_2)}')
+    print(f'length of LSOA have available fuel poor data is:{len(unique_LSOA_3)}')
+    print(f'length of LSOA have available ONS shape data is:{len(unique_LSOA_4)}')
+    print(f'length of LSOA have available climate (temperature) data is:{len(unique_LSOA_5)}')
     save_pickle_variable(unique_LSOA = unique_LSOA)
 
 def reformat_dates(input_dict):
+    '''
+    For some unknown reason, some of the date time are stored unstandardly
+    This function is used to reformat the datetime
+    '''
     # Create a new dictionary to store the reformatted dates
     output_dict = {}
     
@@ -498,6 +538,7 @@ def get_all_data(limit = False):
             temp_dict[a][b] = {}
       temp_dict[a][b][c] = float(d)
 
+    # Get the temperature data round up 
     # Iterate over the top-level keys in the dictionary
     for key_1, value_1 in temp_dict.items():
       # Iterate over the second-level keys in the dictionary
@@ -506,7 +547,10 @@ def get_all_data(limit = False):
         for key_3, value_3 in value_2.items():
           # Round the value to one decimal place and assign it back to the dictionary
           temp_dict[key_1][key_2][key_3] = round(value_3, 3)
-
+    
+    # Get correct format of the datetime
+    for key_1, value_1 in temp_dict.items():
+        temp_dict[key_1] = reformat_dates(value_1)
 ######################################################################################################
     '''
     valid_LSOA_list()
@@ -542,6 +586,13 @@ def get_all_data(limit = False):
     df['Household_num'] = df['LSOA_code'].apply(lambda x: float(num_household_result.get(x, np.nan)))
     df['temp'] = df['LSOA_code'].apply(lambda x: temp_dict.get(x, np.nan))
 
+    # Create a boolean mask indicating which rows contain 'Unallocated' in the first column
+    mask = df[df.columns[0]].str.contains('Unallocated')
+    # Use the mask to index the DataFrame and drop the rows
+    df = df[~mask]
+    # Reset the indices of the DataFrame
+    df = df.reset_index(drop=True)
+
     save_pickle_variable(df = df)
     print(f"All the data for {len(df)} LSOA areas has been stored to pickle file")
     convert_df(df)
@@ -550,4 +601,4 @@ def get_all_data(limit = False):
 #save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
 #get_all_data(limit = False)
 #valid_LSOA_list()
-get_all_data(limit=False)
+#get_all_data(limit=False)
