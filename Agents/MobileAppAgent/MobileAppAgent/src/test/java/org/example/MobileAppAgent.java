@@ -23,29 +23,22 @@ public class MobileAppAgent extends JPSAgent {
     String password = "postgres";
     RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
     RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/sensor/sparql", "http://127.0.0.1:9999/blazegraph/namespace/sensor/sparql");
-    List<String> dataIRI = Arrays.asList("https://www.theworldavatar.com/kg/ontotimeseries/MobileAppAgent_Light_"+UUID.randomUUID());
+    List<String> dataIRI = Arrays.asList("https://www.theworldavatar.com/kg/ontotimeseries/MobileAppAgent_Light_" + UUID.randomUUID());
     List<Class> dataClass = Arrays.asList(Double.class);
     String timeUnit = OffsetDateTime.class.getSimpleName();
-
     TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-
     String tableName = "Light";
     ArrayList<List> dataArrayList;
     JSONArray dataArray;
-
-    String Query="SELECT timestamp,light_value FROM public.light";
-
+    String Query = "SELECT timestamp,light_value FROM public.light";
 
 
     @Test
-    public void main()
-    {
-        try (Connection conn = rdbStoreClient.getConnection()){
+    public void main() {
+        try (Connection conn = rdbStoreClient.getConnection()) {
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
             tsClient.initTimeSeries(dataIRI, dataClass, timeUnit, conn);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Something went wrong.");
         }
 
@@ -54,11 +47,11 @@ public class MobileAppAgent extends JPSAgent {
         JSONObject temp;
         List<String> timesList = new ArrayList<>();
         List<Double> lightValueList = new ArrayList<>();
-        List<List<Double>> values =new ArrayList<>();
+        List<List<Double>> values = new ArrayList<>();
         Double lightValue;
         String timestamp;
 
-        for (int i = 0; i < dataArray.length(); i++){
+        for (int i = 0; i < dataArray.length(); i++) {
             lightValue = dataArray.getJSONObject(i).getDouble("light_value");
             timestamp = dataArray.getJSONObject(i).get("timestamp").toString();
 
@@ -69,12 +62,21 @@ public class MobileAppAgent extends JPSAgent {
 
         TimeSeries ts = new TimeSeries(timesList, dataIRI, values);
 
-        try (Connection conn = rdbStoreClient.getConnection()){
+        try (Connection conn = rdbStoreClient.getConnection()) {
             tsClient.addTimeSeriesData(ts, conn);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
 
     }
+
+
+}
+
+// accelerometer - timestamp, accel_x,accel_y,accel_z
+// gravity - timestamp, gravity_x, gravity_y, gravity_z
+// light - timestamp, light_value
+// location - timestamp, bearing, speed, altitude, longitude, latitude
+// magnetometer - timestamp, magnetometer_x, magnetometer_y, magnetometer_z
+// microphone - timestamp, dbfs
