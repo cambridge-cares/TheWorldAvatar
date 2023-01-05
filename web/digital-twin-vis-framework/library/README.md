@@ -30,7 +30,7 @@ A number of configuration files are also present that allow the generation of a 
 
 To spin up the container and use it as a development environment via VSCode...
 
-- Run the `docker-compose up develop` command from within this directory.
+- Run the `docker-compose -f docker/docker-compose.yml up develop` command from within this directory.
 - Select the `Remote Explorer` menu within VSCode.
   - You many need to install the `Docker` extension if you haven't done so already.
 - Select the `Attach to Container` button for the `dtvf-devel` container.
@@ -41,7 +41,7 @@ To spin up the container and use it as a development environment via VSCode...
 
 To compile and combine the DTVF library into deployable JS files...
 
-- Run the `docker-compose up compile` command from within this directory.
+- Run the `docker-compose -f docker/docker-compose.yml up compile` command from within this directory.
 - The container will compile and process the typescript files for deployment, then shutdown.
   - If successful, single JS and CSS files will be generated within the `output` directory.
   - These can then be uploaded to a web server to make them publicly available.
@@ -52,7 +52,7 @@ To compile and combine the DTVF library into deployable JS files...
 
 To build and deploy the base DTVF image, so that others can use it to create visualisations...
 
-- Run the `docker-compose build deploy` command from within this directory.
+- Run the `docker-compose -f docker/docker-compose.yml build deploy` command from within this directory.
 - The image should then be built and tagged as `ghcr.io/cambridge-cares/dtvf-base-image:latest`
 - Use the `docker push ghcr.io/cambridge-cares/dtvf-base-image:latest` command to upload the image.
   - This requires having set up a GitHub token and storing it using the `docker login` command. 
