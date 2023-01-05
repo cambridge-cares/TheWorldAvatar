@@ -144,7 +144,7 @@ def instantiate_powerplant_timeseries(query_endpoint, update_endpoint, powerplan
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
             <%s> ontopowsys:hasActivePowerGenerated <%s> . \
-            <%s> rdf:type ontopowsys:GeneratedActivePower ; \
+            <%s> rdf:type ontoenergysystem:ExportedActivePower ; \
                  om:hasUnit <%s> . }''' % (powerplantIRI, measurement_iri, measurement_iri, units)
 
     KGClient.executeUpdate(query)

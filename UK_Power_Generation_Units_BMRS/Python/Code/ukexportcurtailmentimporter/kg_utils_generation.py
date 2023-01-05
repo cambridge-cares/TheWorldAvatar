@@ -465,7 +465,7 @@ def get_measurementIRI(endpoint, instance_IRI):
             create_sparql_prefix('rdf') + \
             '''SELECT ?%s \
             WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
-                    ?%s rdf:type ontopowsys:GeneratedActivePower ; \
+                    ?%s rdf:type ontoenergysystem:ExportedActivePower ; \
                         ts:hasTimeSeries ?ts } LIMIT 1''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
