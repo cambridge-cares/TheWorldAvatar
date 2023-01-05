@@ -481,6 +481,48 @@ def get_measurementIRI(endpoint, instance_IRI):
         return response[0][var]
 
 
+def get_curtailment_measurementIRI(endpoint, instance_IRI):
+    """
+        Retrieves power MeasurementIRI for generator, which is actually connected to time series.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+            generatorIRI - full generator IRI incl. namespace (without trailing '<' or '>').
+
+        Returns:
+            Full power MeasurementIRI incl. namespace (without trailing '<' or '>').
+    """
+
+    # Initialise SPARQL query variable
+    var = 'iri'
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('ontopowsys') + \
+            create_sparql_prefix('ontoenergysystem') + \
+            create_sparql_prefix('om') + \
+            create_sparql_prefix('ts') + \
+            create_sparql_prefix('rdf') + \
+            '''SELECT ?%s \
+            WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
+                    ?%s rdf:type ontoenergysystem:CurtailedActiveEnergy ; \
+                        ts:hasTimeSeries ?ts } LIMIT 1''' % (var, instance_IRI, var, var)
+
+    response = KGClient.execute(query)
+    print("Query Line Print: ", query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    if len(response) == 0:
+        return None
+    elif len(response) > 1:
+        raise ValueError('AMBIGUITY ERROR: generator connected to several gas flow time series!')
+    else:
+        return response[0][var]
+
+
 def get_EIC(endpoint, instance_IRI):
     """
         Retrieves the Energy Identification Code (EIC) of an entity or instance related to

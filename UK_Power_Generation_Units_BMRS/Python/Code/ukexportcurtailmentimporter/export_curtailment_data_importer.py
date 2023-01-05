@@ -164,6 +164,60 @@ def instantiate_powerplant_timeseries(query_endpoint, update_endpoint, powerplan
     print("Time series triples via Java TimeSeriesClient successfully instantiated.")
 
 
+def instantiate_powerplant_curtailment_timeseries(query_endpoint, update_endpoint, powerplantIRI, powerplant_name=''):
+    """
+        Instantiates all relevant triples for time series storage in KG and initialises RDB tables for generator.
+        (raises exception if time series association is already initialised)
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+            generatorIRI - full gas generator IRI incl. namespace (without trailing '<' or '>').
+            generator_name - gas generator name (optional).
+    """
+    if powerplant_name != '':
+        print("Instantiate time series association for: " + powerplant_name)
+    else:
+        print("Instantiate time series association.")
+
+    # Create UUIDs for IntakenGas, VolumetricpowerRate, and Measure instances
+    powerplant = "PowerPlant" + "_" + powerplant_name
+
+    # quantity = 'Quantity_' + str(uuid.uuid4())
+    measurement = 'Measurement_' + str(uuid.uuid4())
+    # Derive MeasurementIRI to which time series is actually connected to
+    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
+    print("Measurement IRI for actual time series: ", measurement_iri)
+    
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
+
+    query = kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('rdf') + \
+            '''INSERT DATA { \
+            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontoenergysystem:CurtailedActiveEnergy ; \
+                 om:hasUnit <%s> . }''' % (powerplantIRI, measurement_iri, measurement_iri, units)
+
+    KGClient.executeUpdate(query)
+    print("Time series curtailment triples independent of Java TimeSeriesClient successfully instantiated.")
+
+    # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
+    # ".class" does not work as this command also exists in Python
+    Instant = jpsBaseLibView.java.time.Instant
+    instant_class = Instant.now().getClass()
+    double_class = jpsBaseLibView.java.lang.Double.TYPE
+
+    # Initialise time series in both KG and RDB using TimeSeriesClass
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
+
+    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
+
+
 def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorIRI, generator_name=''):
     """
         Instantiates all relevant triples for time series storage in KG and initialises RDB tables for generator.
@@ -324,7 +378,7 @@ def get_power_data_from_api():
     return powerplant_df, generator_df
 
 
-def add_time_series_data(assetIRI, power_data, asset_name='', plantEIC=''):
+def add_time_series_data(assetIRI, power_data, asset_name='', plantEIC='', curtailment_bool=False):
     """
         Adds given gas power data (DataFrame) to time series of respective powerplant/generator (asset).
 
@@ -336,7 +390,10 @@ def add_time_series_data(assetIRI, power_data, asset_name='', plantEIC=''):
     print("Adding time series data for: " + plantEIC)
 
     # Extract data to create Java TimeSeries object
-    measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
+    if curtailment_bool:
+         measurementIRI = kg.get_curtailment_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
+    else:
+        measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
     variables = measurementIRI
     if variables is None:
         print('Time series could not be created for the following asset:', assetIRI)
@@ -525,6 +582,11 @@ def update_triple_store():
             instantiate_powerplant_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[pp], pp)
         else:
             print("Instantiated time series detected!")
+        if kg.get_curtailment_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[pp]) is None:
+            print("No instantiated curtailment timeseries detected for: ", pp)
+            instantiate_powerplant_curtailment_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[pp], pp)
+        else:
+            print("Instantiated curtailment time series detected!")
         # Retrieve power time series data for respective powerplant from overall DataFrame
         #new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == pp][['time', 'power']]
         #New (not required)
@@ -543,7 +605,8 @@ def update_triple_store():
                 print("plant_index:", plant_index)
                 plantEIC = plants_with_data_full_EIC[plant_index]
                 print("plantEIC:", plantEIC)
-                add_time_series_data(powerplants_instantiated[pp], export_data, pp, plantEIC)
+                add_time_series_data(powerplants_instantiated[pp], export_data, pp, plantEIC, False)
+                add_time_series_data(powerplants_instantiated[pp], curtailment_data, pp, plantEIC, True)
                 ###
                 #REPEAT ABOVE LINE, BUT FOR CURTAILMENT (redoing functions / queries / have a setting as required). 
                 #So something like the below line, but where the called code puts the data into curtailment rather than exports: 
