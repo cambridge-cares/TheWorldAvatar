@@ -38,8 +38,7 @@ h6 {
 .mapboxgl-popup-content {
     text-align: left;
     font-size: 8pt;
-    width: auto;
-    max-width: 400px;
+    width: min-content;
     pointer-events: none;
     background: linear-gradient(180deg,
             rgba(245, 245, 255, 1) 80%,
