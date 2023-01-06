@@ -46,11 +46,11 @@ class Evaluator:
         :return:
         """
         counter = 0
-        hit_1, hit_5, hit_10 = 0, 0, 0
+        hit_1, hit_5, hit_10, mrr = 0, 0, 0, 0
         # Calculate the hit-k rate of the true answers
         for true_ans in true_answers:
             # remove other true answers from pred_answers
-            other_true_answers = [t_a for t_a in true_ans if t_a != true_ans]
+            other_true_answers = [t_a for t_a in true_answers if t_a != true_ans]
             filtered_predicted_answer = [p_a for p_a in pred_answers if p_a not in other_true_answers]
             counter += 1
             one_hit_1, one_hit_5, one_hit_10 = hit_k_rate(true_answer=true_ans, pred_answers=filtered_predicted_answer)
@@ -61,13 +61,18 @@ class Evaluator:
             hit_1 += one_hit_1
             hit_5 += one_hit_5
             hit_10 += one_hit_10
+            if true_ans in filtered_predicted_answer:
+                rr = 1 / (filtered_predicted_answer.index(true_ans) + 1)
+            else:
+                rr = 0
+            mrr += rr
 
-        return hit_1, hit_5, hit_10, 3
+        return hit_1, hit_5, hit_10, counter, mrr
 
     def test_cross_graph(self):
-        total_hit_1, total_hit_5, total_hit_10, total_counter = 0, 0, 0, 0
+        total_hit_1, total_hit_5, total_hit_10, total_counter, total_mrr = 0, 0, 0, 0, 0
         df_test = self.cross_graph_test
-        answer_dict_path = os.path.join(self.dataset_dir, "answer_dict.json")
+        answer_dict_path = os.path.join(self.dataset_dir, "answer_dict_nel_ablation.json")
         if os.path.exists(os.path.join(answer_dict_path)):
             answer_dict = json.loads(open(answer_dict_path).read())
             for question, answers in answer_dict.items():
@@ -84,17 +89,19 @@ class Evaluator:
                     print(question)
                     print(predicted_answers)
                     print(true_answers)
-                    hit_1, hit_5, hit_10, counter = \
+                    hit_1, hit_5, hit_10, counter, mrr = \
                         self.calculate_accuracy(pred_answers=predicted_answers, true_answers=true_answers)
                     total_hit_1 += hit_1
                     total_hit_5 += hit_5
                     total_hit_10 += hit_10
+                    total_mrr += mrr
                     total_counter += counter
                     print("-=====================")
 
             print("total hit 1 rate ", total_hit_1 / total_counter)
             print("total hit 5 rate", total_hit_5 / total_counter)
             print("total hit 10 rate ", total_hit_10 / total_counter)
+            print("mrr ", total_mrr / total_counter)
             print("=====================")
         else:
             answer_dict = {}
@@ -104,7 +111,7 @@ class Evaluator:
                 heads = {}
                 for h, d in zip(heads, domains):
                     heads[d] = h
-                answers = engine.run(question, test=False, heads={})
+                answers = engine.run(question, test=True, heads={})
                 answer_dict[question] = answers
 
             with open(answer_dict_path, 'w') as f:

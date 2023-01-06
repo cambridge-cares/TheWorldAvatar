@@ -1,4 +1,4 @@
-from stout import translate_forward, translate_reverse
+from STOUT import translate_forward, translate_reverse
 import re
 import transformers
 import torch

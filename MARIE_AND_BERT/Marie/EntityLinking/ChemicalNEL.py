@@ -35,22 +35,29 @@ class ChemicalNEL:
             self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json')).read())
             self.name_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_dict.json')).read())
             self.marie_logger.info("5. Done loading the dictionaries for entity linking")
+            self.fuzzyset = fuzzyset.FuzzySet(self.name_list)
         except:
             self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {__name__}.__init__")
 
-        self.fuzzyset = fuzzyset.FuzzySet(self.name_list)
         self.ner = BertNEL()
 
-    def find_cid(self, question):
-        q_cap = question.upper()
+    def get_mention(self, question):
+        try:
+            return self.ner.find_cid(question)[2]
+        except:
+            self.marie_logger.error(
+                f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
+
+    def find_cid(self, mention):
+        # q_cap = question.upper()
+        # q_cap = question
         # doc = Document(q_cap)
         # mentions = doc.cems
-        mentions = [self.ner.find_cid(q_cap)[2]]
+        # mentions = [self.ner.find_cid(q_cap)[2]]
 
-
-        self.marie_logger.info(f"mentions: {mentions} in question {question}")
+        # self.marie_logger.info(f"mentions: {mentions} in question {question}")
         try:
-            mention_str = str(mentions[0])
+            mention_str = mention
             # TODO: rearrange the chemical formula
             rearranged_mention_str = rearrange_formula(mention_str)
             print(rearranged_mention_str)
@@ -58,9 +65,7 @@ class ChemicalNEL:
             print(f"the key is {key}")
             return confidence, self.name_dict[key], str(mention_str), key
 
-        except (IndexError,TypeError) :
-            self.marie_logger.error(
-                f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
+        except (IndexError, TypeError):
             return None
 
     def cid_lookup(self, mention):
@@ -73,7 +78,8 @@ class ChemicalNEL:
 if __name__ == '__main__':
     cn = ChemicalNEL(dataset_name="pubchem")
     START_TIME = time.time()
-    rst = cn.find_cid('what is the molar mass of carbon dioxide')
+    mention = cn.get_mention("What is CO2's molecular weight")
+    rst = cn.find_cid(mention=mention)
     print(rst)
 
     print(time.time() - START_TIME)

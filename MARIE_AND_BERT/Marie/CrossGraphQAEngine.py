@@ -9,6 +9,7 @@ from Marie.Ontokin import OntoKinQAEngine
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
+from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 
 
 def normalize_scores(scores_list):
@@ -36,6 +37,7 @@ class CrossGraphQAEngine:
         self.ontochemistry_engine = OntoCompChemEngine()
         self.ontospecies_engine = OntoSpeciesQAEngine()
         self.ontokin_engine = OntoKinQAEngine()
+        self.nel = ChemicalNEL()
 
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2, "ontokin": 3}
         self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
@@ -105,13 +107,14 @@ class CrossGraphQAEngine:
         domain_list = []
         target_list = []
         print("=========================")
+        mention = self.nel.get_mention(question)
         for domain, engine in zip(self.domain_list, self.engine_list):
 
             if domain in heads:
                 head = heads[domain]
             else:
                 head = None
-            labels, scores, targets = engine.run(question=question, head=head)
+            labels, scores, targets = engine.run(question=question, head=head, mention=mention )
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
             labels = labels + ["EMPTY SLOT"] * length_diff

@@ -83,7 +83,8 @@ class BertNEL():
     def find_cid(self, question):
         question = self.process_data(question)
         if self.use_translation:
-            question = self.translate(question)
+            # question = self.translate(question)
+            pass
         #TODO: mark before translation bounds as actual bounds
         if not self.one_pass:#Use separate NER instead
             question = self.ner_tag(question)
@@ -147,7 +148,18 @@ if __name__ == '__main__':
 
     import time
     start = time.time()
+
     print('start')
-    result = model.find_cid("what is the exact mass of C6H6")
+    result = model.find_cid("what is the exact mass of C=C=C=C")
+    print(result)
+    print(time.time() - start)
+
+    print('start')
+    result = model.find_cid("what is the exact mass of CO2")
+    print(result)
+    print(time.time() - start)
+
+    print('start')
+    result = model.find_cid("what is the exact mass of benzene")
     print(result)
     print(time.time() - start)

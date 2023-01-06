@@ -2,11 +2,13 @@ import json
 import os
 import pickle
 import re
+import sys
 import traceback
 from transformers import BertTokenizer
 import torch
 from Marie.Util.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
+from Marie.EntityLinking.Inference import BertNEL
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.TransEScoreModel import TransEScoreModel
 from Marie.Util.location import DATA_DIR
@@ -19,7 +21,8 @@ class QAEngine:
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name=self.dataset_name)
-        self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
+        # self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
+        self.chemical_nel = BertNEL()
         self.device = torch.device("cpu")
         '''Load pickles for idx - label and label - idx transformation '''
         i2e_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'idx2entity.pkl'), 'rb')
@@ -84,7 +87,7 @@ class QAEngine:
         :param head_entity: the CID string for the head entity
         :return: score of all candidate answers
         """
-        question = question.replace("'s ", " # ")
+        # question = question.replace("'s ", " # ")
 
         try:
             self.marie_logger.info(f" received question: {question}")
@@ -104,9 +107,9 @@ class QAEngine:
             # return traceback.format_exc()
             return ["EMPTY"], [-999], ["EMPTY"]
 
-    def extract_head_ent(self, _question):
+    def extract_head_ent(self, mention):
         self.marie_logger.info("extracting head entity")
-        return self.chemical_nel.find_cid(question=_question)
+        return self.chemical_nel.find_cid(mention=mention)
 
     def value_lookup(self, node):
         if node in self.value_dictionary:
@@ -130,7 +133,7 @@ class QAEngine:
             result_list.append(row)
         return result_list
 
-    def run(self, question, head=None):
+    def run(self, question, head=None, mention=None):
         """
         :param head: directly give a head for testing and evaluation purpose.
         :param question:
@@ -146,7 +149,7 @@ class QAEngine:
         #     question = question.replace(formula, formula.upper())
 
         try:
-            nel_confidence, cid, mention_string, name = self.extract_head_ent(question)
+            nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
             if head is not None:
                 cid = head
         except TypeError:

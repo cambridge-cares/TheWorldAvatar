@@ -47,10 +47,10 @@ class OntoCompChemEngine:
     def remove_head_entity(self, _question, _head_entity):
         return _question.replace(_head_entity, '').strip()
 
-    def run(self, question, head=None):
+    def run(self, question, head=None, mention=None):
         question = question.replace("'s ", " ")
         try:
-            nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(question)
+            nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(mention=mention)
             question = self.remove_head_entity(_question=question, _head_entity=mention_string)
             if head is not None:
                 cid = head
