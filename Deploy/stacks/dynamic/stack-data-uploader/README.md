@@ -131,18 +131,18 @@ Setting the `"skip"` value of a dataset to `true` will cause the data uploader t
 
 #### `"database"`
 The name of the database within Postgres to which appropriate data will be uploaded.
-> :memo: **Note:** The database will be created if it doesn't already exist.
+> :memo: **Note:** The database will be created if it does not already exist.
 
 > :warning: **Warning:** Ontop can only access the default 'postgres' database so it is usually best not to change this value.
 
 #### `"workspace"`
 The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added.
-> :memo: **Note:** The workspace will be created if it doesn't already exist.
+> :memo: **Note:** The workspace will be created if it does not already exist.
 
 #### `"namespace"`
 The Blazegraph namespace into which RDF data will be added.
 
-> :memo: **Note:** The namespace will be created if it doesn't already exist.
+> :memo: **Note:** The namespace will be created if it does not already exist.
 ##### short syntax
 Just the name of the namespace.
 This is the recommend form when refering to an exiting namespace.
@@ -167,14 +167,20 @@ To specify properties directly under a ```"properties"``` key, for example:
   "name": "quads",
   "properties": {
     "com.bigdata.journal.AbstractJournal.bufferMode": "DiskRW",
-    "com.bigdata/rdf/store/AbstractTripleStore.quadsMode": true
+    "com.bigdata.rdf.store.AbstractTripleStore.quadsMode": true
   }
 }
 ```
 
-Information about the different properties is quite distributed and hard to find but some basics are mentioned in the [Blazegraph documentation](https://github.com/blazegraph/database/wiki/Configuring_Blazegraph) and also in the comments in the code for the [AbstractTripleStore](https://github.com/blazegraph/database/blob/BLAZEGRAPH_2_1_6_RC/bigdata-core/bigdata-rdf/src/java/com/bigdata/rdf/store/AbstractTripleStore.java) class.
+Information about the different properties is distributed throughout the Blazegraph code repository.
+Some basic configurations are mentioned in the Blazegraph wiki in the[Configuring_Blazegraph](https://github.com/blazegraph/database/wiki/Configuring_Blazegraph) and [InferenceAndTruthMaintenance](https://github.com/blazegraph/database/wiki/InferenceAndTruthMaintenance#configuring-inference) sections.
+
+The most comprehensive documentation of the avaliable properties is located in the Javadocs/comments for the various `Options` interfaces.
+Most (if not all) of the `Options` classes can be found by looking at the list of interfaces that the [BigdataSail.Options](https://blazegraph.com/database/apidocs/com/bigdata/rdf/sail/BigdataSail.Options.html) interface extends (Superinterfaces).
+The source code for the most commonly used options can be found in in the following files: [AbstractTripleStore Options](https://github.com/blazegraph/database/blob/6b0c935523f5064b80279b30a5175a858cddd2a1/bigdata-core/bigdata-rdf/src/java/com/bigdata/rdf/store/AbstractTripleStore.java#L524), [BigdataSail Options](https://github.com/blazegraph/database/blob/3127706f0b6504838daae226b9158840d2df1744/bigdata-core/bigdata-sails/src/java/com/bigdata/rdf/sail/BigdataSail.java#L270) and [Journal Options](https://github.com/blazegraph/database/blob/3127706f0b6504838daae226b9158840d2df1744/bigdata-core/bigdata/src/java/com/bigdata/journal/Options.java#L85).
+
 It is also possible to create namespaces, with a small selction of options, through the Blazegraph web interface and then inspect the properties.
-Be aware that some of the property keys contain the namespace's name so can't just be copied for a different namespace.
+Be aware though that some of the property keys contain the namespace's name so can not just be copied for a different namespace.
 
 > :warning: **Warning:** The properties will be ignored if the namespace already exists.
 
@@ -492,7 +498,7 @@ The [cropmap](../example_datasets/inputs/data/cropmap/ontop_with_comments.obda) 
 
 ## Using Specific Data Sets
 
-If you don't want the use every config file you can either use `"skip"=true` or name your stack so that the relevant config file is named `<STACK NAME>.json`.
+If you do not want the use every config file you can either use `"skip"=true` or name your stack so that the relevant config file is named `<STACK NAME>.json`.
 If you want to use a few config files you can create one master config file named `<STACK NAME>.json` with the following.
     ```json
     {
