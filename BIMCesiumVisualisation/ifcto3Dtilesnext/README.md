@@ -1,4 +1,4 @@
-# IFC Conversion to 3D Tiles Next
+# IFC2Tileset Agent
 
 ## Description
 This agent processes an IFC file into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium. It assumes that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets will be generated in the output `data` directory.
@@ -50,7 +50,14 @@ A brief explanation of the initial steps for local deployment has been included 
         - Install the library globally using `npm install -g gltf-pipeline`
 
 ### 1.2 Docker Deployment:
-Deploy the agent and its dependencies by running the following code in the command prompt at the <root> directory:
+**TEST ENVIRONMENT**
+- Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the `<root>` directory:
+```
+docker compose -f "./config/docker-compose.test.yml" up -d --build 
+```
+
+**PRODUCTION ENVIRONMENT**
+- Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
 ```
 docker-compose up -d 
 ```

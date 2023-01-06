@@ -1,7 +1,7 @@
-# Set up the Docker environment to run the agent
+# First stage: Download dependencies and build python code
 #==================================================================================================
-# Base image is a lightweight version of Python
-FROM python:3.9
+# Base image is the full Python version
+FROM python:3.9 as builder
 
 # Install required software
 RUN apt update && apt install -y git curl unzip
@@ -39,13 +39,34 @@ RUN npm install -g gltf-pipeline
 WORKDIR /app
 # Copy the Python source code
 COPY ./agent ./agent
+
+#==================================================================================================
+
+# Second stage: Build test image for running unit and integration tests
+#==================================================================================================
+FROM builder as test
+
+# Copy the Python test source code
 COPY ./tests ./tests
+
+# Install testing frameworks
+RUN python -m pip install pytest
+
+# Make the required directories for testing
+RUN mkdir -p data/ifc data/glb data/gltf && \  
+# Execute unit test
+    pytest
+
+#==================================================================================================
+
+# Third stage: Build production image
+#==================================================================================================
+FROM builder as prod
 
 # Creates a non-root user and adds permission to access the /app folder
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 # Added timeout of 600s to prevent silent worker killing due to large memory usage
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5105", "agent:app","--timeout", "600"]
 #==================================================================================================
