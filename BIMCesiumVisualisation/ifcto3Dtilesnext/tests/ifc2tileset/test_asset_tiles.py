@@ -24,8 +24,8 @@ def test_init_asset_tiles():
     assert metadata["name"] == "Asset metadata"
     assert metadata["properties"]["name"]["description"] == "Name of the asset"
     assert metadata["properties"]["name"]["type"] == "STRING"
-    assert metadata["properties"]["UID"]["description"] == "Unique identifier generated in IFC"
-    assert metadata["properties"]["UID"]["type"] == "STRING"
+    assert metadata["properties"]["uid"]["description"] == "Unique identifier generated in IFC"
+    assert metadata["properties"]["uid"]["type"] == "STRING"
     # Test that root -> children link exists
     assert output["root"]["children"][0]["geometricError"] == 50
     assert "contents" in output["root"]["children"][0]
@@ -112,7 +112,7 @@ def assert_nested_node_content(nested_node_list, test_range, current_asset_num=6
                 assert metadata["class"] == "AssetMetaData"
                 assert metadata["properties"]["name"] == "element" + \
                     str(asset_no)
-                assert metadata["properties"]["UID"] == "uid"+str(asset_no)
+                assert metadata["properties"]["uid"] == "uid"+str(asset_no)
 
             else:
                 assert nested_dict["contents"][i]["asset" +
