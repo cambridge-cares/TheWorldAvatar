@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee/ http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+		metadata-complete="false" 
+		version="3.1">
+
+	<display-name>email-sending-agent</display-name>
+	<description>Servlet to accept incoming request, query for latest timeseries RFID status from the knowledge graph, check whether the status is In or Out, if the status is Out, check how long ago was it taken out. </description>
+
+	<servlet>
+		<servlet-name>EmailSendingAgentServlet</servlet-name>
+		<servlet-class>uk.ac.cam.cares.jps.agent.emailsending.EmailSendingAgent</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>EmailSendingAgentServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>
