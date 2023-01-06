@@ -29,7 +29,7 @@ def init_asset_tiles():
                     "description": "Name of the asset",
                     "type": "STRING"
                 },
-                "UID": {
+                "uid": {
                     "description": "Unique identifier generated in IFC",
                     "type": "STRING"
                 }
@@ -96,7 +96,7 @@ def gen_tileset_assets(hashmapping):
             'metadata': {
                 'class': "AssetMetaData",
                 'properties': {"name": nested_dict.get("name").split(":")[0],
-                               "UID": uid}
+                               "uid": uid}
             }
         })
 
