@@ -52,7 +52,7 @@ def read_from_excel(year:str) -> list:
 
     return LSOA_codes, met_num, consump
 
-def upload_data_to_KG(year:str,
+def upload_data_to_KG(year:str = '2020',
                 query_endpoint: str = QUERY_ENDPOINT,
                 update_endpoint: str = UPDATE_ENDPOINT):
     '''
@@ -219,22 +219,35 @@ def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: 
 
     return added_ts
 
+def upload_all(year: str = '2020',query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    
+    # instantiate the consumption data
+    print("\nUploading the Electricity consumption data:")
+    logger.info("Uploading the Electricity consumption data...")
+    t1 = time.time()
+    len_query,  datairi, value = upload_data_to_KG(year, query_endpoint, update_endpoint)
+    print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
+    t2= time.time()
+    diff = t2 - t1
+    print(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+
+    # upload the timeseries data
+    print("\nUploading the Electricity consumption time series data:")
+    logger.info("Uploading the Electricity consumption time series data...")
+    t1 = time.time()
+    added_ts = upload_timeseries_to_KG(datairi, value, year, query_endpoint, update_endpoint)
+    t2= time.time()
+    diff = t2 - t1
+    print(f'Electricity consumption timeseries data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Electricity consumption timeseries data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    
+    return len_query, added_ts
+
 if __name__ == '__main__':
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
- 
- #print("\nUploading the Electricity consumption data")
- logger.info("Uploading the Electricity consumption data...")
-
- t1 = time.time()
- len_query,  datairi, value = upload_data_to_KG("2020",QUERY_ENDPOINT,UPDATE_ENDPOINT)
- #print(f"Number of instantiated Electricity consumption data per LOSA output area :{len_query}")
- t2= time.time()
- diff = t2 - t1
- #print(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
- logger.info(f'Electricity consumption - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-
- added_ts = upload_timeseries_to_KG(datairi, value, "2020", QUERY_ENDPOINT,UPDATE_ENDPOINT)
- #print((f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG'))
- logger.info(f'Time series data for {added_ts} Electricity consumption/meters successfully added to KG')
+    len_query, added_ts = upload_all()
+    print(f'Number of instantiated LSOA area:{len_query}')
+    print(f'Number of updated time series readings (i.e. dataIRIs):{added_ts}')

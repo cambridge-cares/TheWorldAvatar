@@ -921,16 +921,31 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
     save_figures(filename)
     print(f'{i} number of lines have been plotted')
 
-def plot_box_and_whisker(df: pd.DataFrame, y_label: str):
+def plot_box_and_whisker(filename: str, y_label: str,df: pd.DataFrame) :
+    '''
+    This function is dedecated to plot the monthly distribution in a box_and_whisker form
+    Note: the input dataframe should be looks like:
+# -------------------------------------------------------------#
+#                LSOA_code Jan Feb Mar .... Nov Dec            #
+# 0                                                            #
+# 1                                                            #
+#    ...                                                       #
+# -------------------------------------------------------------#
+    what is in the first column or first column's label don't matter because that will be ignored
+    what is important is the following 2nd to 13th columns shall follow the data sequence from Jan to Dec
+    Arguments:
+    filename: str, name of the figure file you may want to store
+    y_label: str, name of the y-axis legend
+    df: pd.DataFrame, dataframe to be processd
+    '''
     flierprops = dict(markerfacecolor="k", markersize=0.05, linestyle="none", markeredgecolor="k")
+
     # Initialize the plot
-    fig, axs = plt.subplots(1,1,figsize=(5,3))
+    fig, axs = plt.subplots(1,1,figsize=(5,2.5))
     plt.tight_layout()
     y_data = df.iloc[:, 1:]
-    x_axis = y_data.columns
     ax_box = sb.boxplot(
-        data=y_data, 
-        x=df.columns[1:13],
+        x="variable", y="value", data=pd.melt(y_data),
         fliersize=0.05,
         whis=2,
         linewidth=1.2,
@@ -939,9 +954,7 @@ def plot_box_and_whisker(df: pd.DataFrame, y_label: str):
         flierprops=flierprops,
     )
     sb.pointplot(
-        x=list(df.columns[1:13]),
-        y=df[df.columns[1:13]],
-        data=get_median(df_in=df),
+        x="variable", y="value", data=pd.melt(get_median(df_in=df)),
         ax=axs,
         color="r",
         markers=".",
@@ -958,15 +971,88 @@ def plot_box_and_whisker(df: pd.DataFrame, y_label: str):
     axs.set_xlabel("")
     axs.set_ylabel(y_label)
     axs.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    axs.set_xticks([0,1,2,3,4,5,6,7,8,9,10,11])
+    axs.set_xticklabels(labels = ['J','F','M','A','M','J','J','A','S','O','N','D'])
     plt.legend()
-    save_figures('box & whisker')
+    save_figures(filename)
+
+def plot_var_versus_result(filename: str, y_label: str, x_label:str, df: pd.DataFrame, independent_var: list):
+    '''
+    This function is dedicated to plot a line chart, using one independent variable as x-axis, while the result (dependent variable) as y-axis
+    for example:
+    emission = f (uptake)    The plot in this case then be plotting emission changing along with change of uptake.
+    Note: 
+    continue on this example, for a given list of uptake value, say [0,0.1,... 0.9,1], we need to calculate the emission and 
+    arrange the result into a dataframe looks like:
+# ----------------------------------------------------------------------------#
+#                f (uptake[0])   f (uptake[1])  f (uptake[2])          ...    #
+# [index_name]                                                                #
+# [index_name]                                                                #
+#    ...                                                                      #
+# ----------------------------------------------------------------------------#
+    where this emission may vary in different senario, such as tmin tas tmax, in that case, the calculation 
+    result can be appended to the df using the SAME index name
+
+    so for how many rows were in this df, how many line will be plotted. noted that the column names 
+    don't matter as it default the sequence as independent_var. However, the [index_name] will be used as 
+    the label of this line
+
+    If in some case you may want fill_between feature to represent a range, please provide several rows with same 
+    [index_name], for those rows have same [index_name], the function will automatically fill between the row have
+    max average value and the row have min average value, while for rows in the middle will still be plotted.
+    i.e., sequence don't matter as long as they have the same [index_name]
+
+    Arguments:
+    filename: str, name of the figure file you may want to store
+    y_label: str, name of the y-axis legend
+    x_label: str, name of the x-axis legend
+    df: pd.DataFrame, dataframe to be processd
+    independent_var: list, the independent variable
+    '''
+    # Initialize the plot
+    plt.figure(figsize=(5,3.5))
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.tight_layout()
+
+    # Group the rows by index name
+    groups = df.groupby(df.index)
+
+    i = 0
+    for index_name, group in groups:
+        if len(group) == 1:
+            # Plot the line for the single-data row
+            plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+            i+=1
+
+        else:
+            row_means = group.mean(axis=1)
+            # Reset the index of the group
+            group = group.reset_index(drop=True)
+            group.index = row_means
+            # Sort the group by the index
+            group = group.sort_index()
+            
+            # Get the minimum and maximum rows
+            y1 = group.iloc[0]
+            y2 = group.iloc[-1]
+            # Plot the fill between the minimum and maximum rows
+            plt.fill_between(x=independent_var, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
+            # Plot the remaining rows
+            for _, row in group.iloc[1:-1].iterrows():
+                plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+                i+=1
+    plt.ylim(bottom=0)
+    plt.legend(frameon=False)
+    plt.subplots_adjust(left = 0.127)
+    save_figures(filename)
 
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 '''
      LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
 '''
-df_elec = df_full[['LSOA_code', 'Electricty_cosumption_per_household']]
-df_gas = df_full[['LSOA_code', 'Gas_consumption_per_household']]
+df_elec = df_full[['LSOA_code', 'Electricity_consump']]
+df_gas = df_full[['LSOA_code', 'Gas_consump']]
 df_temp = df_full[['LSOA_code', 'temp']]
 
 ############### Test for plot_geodistribution ############
@@ -1049,9 +1135,50 @@ plot_temproal_line_chart('remaining electricity','Electricity Consumption (kWh/m
 # ----------------------------------------------------------------
 
 # Test for box & whisker -----------------------------------------
+'''
 df_elec_monthly = monthly_disaggregation(df_elec,monthly_electricity_consumption_2020)
-#df_elec_monthly = drop_column(df_elec_monthly,0)
-plot_box_and_whisker(df_elec_monthly,'test')
+plot_box_and_whisker('box_and_whisker','Electricity Consumption \n (kWh/month/household)',df_elec_monthly)
+'''
+# ----------------------------------------------------------------
+
+# Test for plot_var_versus_result(Energy) ------------------------
+'''
+# Exclude NaN data
+df_temp = remove_NaN(df_temp)
+LSOA_index, results_tensor = convert_to_tensor(df_temp)
+LSOA_index = {key.replace('http://statistics.data.gov.uk/id/statistical-geography/', ''): value for key, value in LSOA_index.items()}
+uptake_list = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+array = np.empty((6, 0))
+df_toplot_final = pd.DataFrame(array, index=['Elec', 'Elec','Elec','Gas','Gas','Gas'])
+# Calculate COP
+cop_tensor = COP(results_tensor)
+
+for uptake in uptake_list:
+    # Calculate delta_gas
+    _ , gassonsump_tensor = convert_to_tensor(df_gas, monthly_gas_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_gas_tensor = delta_gas(uptake, gassonsump_tensor)
+
+    # Calculate delta_electricity
+    _ , elecconsump_tensor = convert_to_tensor(df_elec, monthly_electricity_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_elec_tensor = delta_elec(delta_gas_tensor, cop_tensor)
+
+    # Calculate remaning_elec_tensor
+    remaning_elec_tensor = elecconsump_tensor + delta_elec_tensor
+
+    # Calculate remaining_gas_tenosr
+    remaning_gas_tensor = gassonsump_tensor - delta_gas_tensor
+
+    # Convert tensor back to array
+    remaning_elec_arrays = np.nansum(remaning_elec_tensor, axis=1)
+    remaning_elec_arrays = remaning_elec_arrays.sum(axis=1)
+    remaning_gas_arrays = np.nansum(remaning_gas_tensor, axis=1)
+    remaning_gas_arrays = remaning_gas_arrays.sum(axis=1)
+    result = np.concatenate((remaning_elec_arrays, remaning_gas_arrays), axis=0)
+
+    df_toplot_final[f'Uptake_is_{uptake}'] = result
+
+plot_var_versus_result('Energy uptake','Energy Consumption (kWh/year)','% Uptake',df_toplot_final,uptake_list)
+'''
 # ----------------------------------------------------------------
 ##########################################################
 '''
