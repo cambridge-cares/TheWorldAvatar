@@ -132,8 +132,7 @@ def conv2gltf(ifc, input_ifc):
         gltfpath = retrieve_abs_filepath(gltfpath)
 
         # Initialise the commands and append accordingly
-        ifcconvert_command = [
-            "./agent/resources/IfcConvert", input_ifc, glbpath]
+        ifcconvert_command = [ "./IfcConvert", input_ifc, glbpath]
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
         glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
