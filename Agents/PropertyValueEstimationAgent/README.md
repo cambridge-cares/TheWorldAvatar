@@ -212,11 +212,18 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
     (prop_venv) $
     ```
 2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
+    > **NOTE** The design of separating `setup.py` and `requirements.txt` in this agent is an effort to avoid version collision. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
+
+    > **NOTE** By design, requirements files and setup script are for different purposes. The former tends to be as specific as possible for reproducibility and production, whereas the latter normally gives a wide range to not limit the choice of packages in development. If you let the pip decide the version of packages, there's a chance it pulls a version of a package that potentially breaks the other packages. For more information, see https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+
+    > **NOTE** With that said, if the agent is not intended to be installed with other agents in the same virtual environment it is also valid to pin all the version numbers in the `setup.py` directly and delete the `requirements.txt`.
 
     `(Windows)`
     ```bash
     (prop_venv) $ python -m pip install --upgrade pip
-    # Install all required packages from setup.py, incl. pytest etc.
+    # Install pinned version of required packages, these are tested working version
+    (prop_venv) $ python -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
     (prop_venv) $ python -m pip install -e .[dev]
     ```
 
@@ -227,7 +234,9 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
     (prop_venv) $ python3 -m pip install --upgrade pip
     # Install prerequsisites for building psycopg2
     (prop_venv) $ sudo apt install libpq-dev python3-dev
-    # Install all required packages from setup.py, incl. pytest etc.
+    # Install pinned version of required packages, these are tested working version
+    (prop_venv) $ python3 -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
     (prop_venv) $ python3 -m pip install -e .[dev]
     ```
 
@@ -256,6 +265,24 @@ docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
 To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. However, some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. Running the debug tests, furthermore, requires all occurrences of `localhost` to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files as well as placing the updated content into the respective files in the `propertyvalueestimation\utils\` repository. This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container.
+
+
+&nbsp;
+# 4. Derivation mvp mock
+Below are changes made to the agent for mocking the environment variables obtained from stack-clients for derivation mvp. The design was made to follow the `tests/mockutils` with minimum impact to the existing agent structure. Therefore, it should be straightforward to remove these files/changes when doing it properly for the King's Lynn use case.
+1. `_derivation_mvp_mock` folder: these files work in the same way as files in folder `tests/mockutils`
+2. Target `derivation_mvp` in `Dockerfile`: this image copies config from `_derivation_mvp_mock` and reset the logger level to `dev`
+3. `docker-compose-derivation-mvp.yml`: docker-compose file that builds `derivation_mvp` image as `ghcr.io/cambridge-cares/propertyvalue_agent_deriv_mvp:1.0.0-SNAPSHOT`
+4. `derivation_mvp_docker_publish.sh`: sh script to publish the `ghcr.io/cambridge-cares/propertyvalue_agent_deriv_mvp:1.0.0-SNAPSHOT` to GitHub
+
+To build and publish the docker image for derivation mvp, please execut below command:
+
+```bash
+# Once executed, it will ask for GitHub username and personal access token in prompt
+bash ./derivation_mvp_docker_publish.sh -v 1.0.0-SNAPSHOT
+```
+
+For more information about how this agent is used in the derivation mvp, please refer to `TheWorldAvatar/Agents/_DerivationPaper`.
 
 
 &nbsp;

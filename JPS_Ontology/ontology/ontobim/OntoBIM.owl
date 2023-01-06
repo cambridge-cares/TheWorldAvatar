@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 November 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 December 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -58,6 +58,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the roof of a building and the area it covers.</rdfs:comment>
@@ -72,6 +73,8 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasAxisDirection">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -158,6 +161,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasContext">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that references the project to their geometric representation context.</rdfs:comment>
@@ -208,6 +213,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links any entity to a direction vector. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
@@ -340,6 +346,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasNextVertex">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LineVertex"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that linked the current vertex to the next vertex in a line.</rdfs:comment>
@@ -354,6 +361,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasOrientation">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its angle/position relative to the Sun.</rdfs:comment>
@@ -367,6 +375,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasParentContext">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationSubContext"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the parent and child context to share their contextual attributes.</rdfs:comment>
@@ -406,6 +415,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links any entity to a specific quantity defined in the OM ontology. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
@@ -420,6 +430,8 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefDirection">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirection"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -494,6 +506,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRelativePositionTo">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#LocalPlacement"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component or spatial zone&amp;apos;s placement position to their parent zone&amp;apos;s placement position within the model.</rdfs:comment>
@@ -507,6 +521,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRepresentationItem">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ModelRepresentation3D"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the representation items that constitutes the 3D geometric model representation of an element.</rdfs:comment>
@@ -520,6 +535,8 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRootZone">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Project"/>
         <rdfs:range>
             <owl:Class>
@@ -554,6 +571,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSlope">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasQuantity"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its slope angle.</rdfs:comment>
@@ -816,6 +834,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasSubElement">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation between two building elements, either one element hosting another (e.g. a wall hosts a window) or a subcomposition of a building element into smaller parts (e.g. an air handling unit has as a part a fan).</rdfs:comment>
@@ -917,6 +936,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the x-,y-, and z-coordinates for a Cartesian Point as a double value. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
@@ -957,6 +977,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the x,y, and z direction ratio for a Direction Vector as a double value. This relationship is not intended to be stated explicitly, but inferred from its sub-properties. For application, only the sub-properties are used.</rdfs:comment>
@@ -970,6 +991,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasExtrusionDepth">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#ExtrudedAreaSolid"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the distance that the solid is extruded.</rdfs:comment>
@@ -1070,6 +1092,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasPrecision">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the geometric representation context and their model precision value, that indicates tolerance level for which two given points are still identical.</rdfs:comment>
@@ -1083,6 +1106,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasRefElevation">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -1157,6 +1181,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasSpaceDimension">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#GeometricRepresentationContext"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining a geometric representation context and their integer dimension count of the coordinate space modeled. It is usually 2 or 3.</rdfs:comment>
@@ -1210,6 +1235,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXCoordinate">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Cartesian Point X-coordinates as a double value.</rdfs:comment>
@@ -1223,6 +1249,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDimensionExtent">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the X-extents for the rectangle profile.</rdfs:comment>
@@ -1237,6 +1264,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasXDirectionRatio">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Direction Vector&amp;apos;s X-direction ratio as a double value.</rdfs:comment>
@@ -1251,6 +1279,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasYCoordinate">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Cartesian Point Y-coordinates as a double value.</rdfs:comment>
@@ -1264,6 +1293,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasYDimensionExtent">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the Y-extents for the rectangle profile.</rdfs:comment>
@@ -1278,6 +1308,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasYDirectionRatio">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Direction Vector&amp;apos;s Y-direction ratio as a double value.</rdfs:comment>
@@ -1292,6 +1323,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasZCoordinate">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasCoordinate"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#CartesianPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Cartesian Point Z-coordinates as a double value.</rdfs:comment>
@@ -1305,6 +1337,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasZDimensionExtent">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RectangleProfileDefinition"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the Z-extents for the rectangle profile.</rdfs:comment>
@@ -1319,6 +1352,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasZDirectionRatio">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasDirectionRatio"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#DirectionVector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the Direction Vector&amp;apos;s Z-direction ratio as a double value.</rdfs:comment>
@@ -1345,6 +1379,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#isLoopNonInversedOrientation">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#FaceOuterBound"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A boolean property that indicates whether the loop has the same sense when used to bound the face as when first defined. When false, the senses of all its component oriented edges are implicitly reversed when used in the face.</rdfs:comment>

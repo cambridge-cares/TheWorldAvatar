@@ -3,10 +3,6 @@ from pyderivationagent.conf import config_derivation_agent
 from hplcpostproagent.agent import HPLCPostProAgent
 from hplcpostproagent.agent import default
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     agent_config = config_derivation_agent()
@@ -24,7 +20,13 @@ def create_app():
         fs_user=agent_config.FILE_SERVER_USERNAME,
         fs_password=agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        logger_name='prod'
+        logger_name='prod',
+        max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        email_recipient=agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=agent_config.EMAIL_USERNAME,
+        email_auth_json_path=agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
