@@ -1,8 +1,7 @@
 {
     "datasetDirectory": "rdf",
     "namespace": {
-        "name": "triples",
-        "propertiesFile": "rdfonly.properties",
+        "name": "triples_with_inference",
         "properties": {
             "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true
         }
