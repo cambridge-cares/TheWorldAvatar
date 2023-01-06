@@ -24,6 +24,9 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Set the required environment variable
+# If your email agent instance is running on the local host, follow the instructions below:
+#  172.17.0.1 is the default host IP seen from the container and can be used to access services running on the host (Linux).
+#  On Docker for Mac or Windows host.docker.internal should work instead.
 ENV EMAIL_AGENT_URL="http://host.docker.internal:8099/email_agent"
 COPY --from=builder /root/email-sending-agent-code/output/email-sending-agent##1.0.0.war $CATALINA_HOME/webapps/
 
