@@ -6,7 +6,7 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       # Authentication token for EPC API
-      - API_AUTH=
+      - API_AUTH=7375ac1676759419098cd0ae0de5fe44c79360ce
       # Layer name in geoserver, also table name in PostGIS
       - LAYERNAME=buildings
       # Target Blazegraph namespace
@@ -16,7 +16,7 @@ services:
       - DATABASE=postgres
       - GEOSERVER_WORKSPACE=buildings
       - ONTOP_FILE=/app/resources/ontop.obda
-      - OCGML_ENDPOINT=
+      - OCGML_ENDPOINT=http://165.232.172.16:3840/blazegraph/ui/sparql
     ports:
       - "5001:5000"
     volumes:

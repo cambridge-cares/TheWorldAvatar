@@ -19,6 +19,7 @@ from agent.kgutils.kgclient import KGClient
 from agent.utils.env_configs import OCGML_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
+
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -81,11 +82,9 @@ def instantiate_all_units():
             <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> .
             <{OM_HEIGHT}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .
             <{OM_AREA}> <{OM_SYMBOL}> \"{METRE_SQ}\"^^<{XSD_STRING}> .
-
     }}"""
 
     return query
-
 
 def upload_ontology():
     """
@@ -93,6 +92,7 @@ def upload_ontology():
     """
 
     # URLs to .owl files
+    #TODO: Potentially to be replaced with better maintained Github Links
     tbox = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
     abox = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
 
@@ -100,7 +100,7 @@ def upload_ontology():
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     # Create a JVM module view to create Java File object
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
     # Verify that TBox has not been initialized
     try:
@@ -134,12 +134,15 @@ def upload_ontology():
             except Exception as ex:
                 logger.error("Unable to initialise knowledge base with TBox and ABox.")
                 raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
-
-        # Upload all symbols to KG
-        logger.info('Instantiating all symbols ...')
+        
+        # Upload GBP symbols to KG (not directly part of OntoBuiltEnv ontology TBox or ABox,
+        # but required within KG for proper agent execution later on (i.e. derivation agents,
+        # and visualisation purposes)
+        logger.info('Instantiating all units ...')
         query = instantiate_all_units()
         try:
             kg_client.performUpdate(query)
         except Exception as ex:
-            logger.error("Unable to initialise symbols in KG.")
-            raise KGException("Unable to initialise symbols in KG.") from ex
+            logger.error("Unable to initialise all units in KG.")
+            raise KGException("Unable to initialise all units in KG.") from ex
+

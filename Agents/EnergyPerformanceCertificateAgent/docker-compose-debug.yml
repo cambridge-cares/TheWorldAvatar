@@ -8,4 +8,4 @@ services:
     ports:
       - "${DEBUG_PORT}:5678"
     volumes:
-      - ./epcdata:/app/epcdata
+      - ./agent:/app/agent

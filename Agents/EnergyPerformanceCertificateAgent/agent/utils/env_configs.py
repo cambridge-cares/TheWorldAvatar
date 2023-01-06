@@ -27,7 +27,7 @@ def retrieve_settings():
 
     # Define global scope for global variables
     global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           OCGML_ENDPOINT
+           OCGML_ENDPOINT, NAMESPACE
 
     # Retrieve MetOffice API key
     API_TOKEN = os.getenv('API_AUTH')    
@@ -95,6 +95,7 @@ def retrieve_settings():
     if NAMESPACE == '':
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+
 
 # Run when module is imported
 retrieve_settings()

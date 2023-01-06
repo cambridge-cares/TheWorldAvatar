@@ -81,7 +81,7 @@ EPC_DATA = {
 UNITS_MAPPING = {
      OM_AREA: (OM_M2, 'm2'),
      OM_HEIGHT: (OM_M, 'm'),
-     OM_AMOUNT_MONEY: (OM_GBP, '£')
+     OM_AMOUNT_MONEY: (OM_GBP, GBP)
 }
 
 # Define full coordinate reference systems (CRS) for pyproj
@@ -98,3 +98,4 @@ NAMES_BLDGS = ['house', 'bungalow', 'farm', 'lodge', 'cottage', 'villa',
 NAMES_STREET = ['road', 'street', 'avenue', 'lane', 'close', 'way', 'court',
                 'drive', 'drove', 'walk', 'square', 'place', 'lane', 'bank',
                 'highway']
+
