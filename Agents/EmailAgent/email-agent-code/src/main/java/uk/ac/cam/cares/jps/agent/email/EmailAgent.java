@@ -96,6 +96,20 @@ public class EmailAgent extends JPSAgent {
         LOGGER.info("Request received at: " + datetime);
         LOGGER.info("Request contents are: " + requestParams);
         
+        if (requestParams.has("ping")){
+            int status = 200;
+            String description = "Ready and available for requests.";
+            // Send response
+            JSONObject response = new JSONObject();
+            response.put("status", Integer.toString(status));
+            response.put("description", description);
+            return response;
+        }
+
+        if (requestParams.has("subject") && requestParams.has("message")){
+            return processEmailRequest(requestParams, request);
+        }
+        
         // Get the URL path
         String url = request.getRequestURI();
         url = url.substring(url.lastIndexOf("/"), url.length());
@@ -117,6 +131,8 @@ public class EmailAgent extends JPSAgent {
 
             case "/status":
                 return getStatus(request);
+
+
         }
 
         throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
