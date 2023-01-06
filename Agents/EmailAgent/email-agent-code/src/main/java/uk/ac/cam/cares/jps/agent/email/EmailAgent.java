@@ -96,6 +96,7 @@ public class EmailAgent extends JPSAgent {
         LOGGER.info("Request received at: " + datetime);
         LOGGER.info("Request contents are: " + requestParams);
         
+        // Handle ping request send via EmailSender class in the JPS Base Lib
         if (requestParams.has("ping")){
             int status = 200;
             String description = "Ready and available for requests.";
@@ -106,6 +107,7 @@ public class EmailAgent extends JPSAgent {
             return response;
         }
 
+        // Handle sendEmail request from EmailSender class in the JPS Base Lib
         if (requestParams.has("subject") && requestParams.has("message")){
             return processEmailRequest(requestParams, request);
         }
