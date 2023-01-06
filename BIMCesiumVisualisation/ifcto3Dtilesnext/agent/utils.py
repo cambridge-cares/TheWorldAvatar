@@ -20,17 +20,7 @@ def run_shellcommand(command, require_shell=False):
     command - Command arguments in the form ["command","command2"] or "command command2"
     require_shell - Boolean indicating if shell is required. Must be True for npm operations
     """
-    subprocess.check_call(command, shell=require_shell,
-                          stdout=subprocess.DEVNULL)
-
-
-def install_glbconverter():
-    """
-    Installs the glb converter tool "gltf-pipeline" from npm through package.json
-    """
-    print("Checking for gltf-pipeline package from npm...")
-    run_shellcommand("npm install -g gltf-pipeline", True)
-    print("gltf-pipeline package is available!")
+    subprocess.run(command, shell=require_shell)
 
 
 def retrieve_abs_filepath(filepath):
@@ -99,7 +89,7 @@ def cleandir():
         for filename in filelist:
             try:
                 filepath = os.path.join(root_dir, filename)
-                if "./data/ifc" not in filepath or filepath.endswith('.ttl'):
+                if  not (filepath.startswith("./data/ifc") or filepath.endswith('.gitignore')):
                     os.remove(filepath)
             except OSError:
                 print("Error while deleting file")
@@ -126,8 +116,3 @@ def find_word(wordlist, string):
         if word_found:
             return True
     return False
-
-
-# Run when module is imported
-cleandir()
-install_glbconverter()
