@@ -1371,8 +1371,8 @@ def test_get_all_laboratories(initialise_triples):
 @pytest.mark.parametrize(
     "rxn_con_list,expected_rxn",
     [
-        (onto.ONTOREACTION_YIELD, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
-        ([onto.ONTOREACTION_YIELD], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        (onto.ONTOREACTION_YIELD, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value),
         ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
         ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD], []),
         ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD, onto.ONTOREACTION_RUNMATERIALCOST], []),

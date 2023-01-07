@@ -142,6 +142,22 @@ class Domain(BaseOntology):
         filtered_rxn_exp_list = []
         for rxn_exp in rxn_exp_list:
             _skip = False
+            # TODO [next iteration] add more thourough check for the performance indicator
+            # check if the performance indicator of the reaction experiment is within a reasonable range
+            # for this iteration, we only check if the yield is within 0% and 100%, skip if not
+            _yield = rxn_exp.get_performance_indicator(ONTOREACTION_YIELD)
+            if _yield is None:
+                _skip = True
+            else:
+                _percent_yield = unit_conv.unit_conversion_return_value(
+                    value=_yield.hasValue.hasNumericalValue,
+                    current_unit=_yield.hasValue.hasUnit,
+                    target_unit=OM_PERCENT
+                )
+                if _percent_yield < 0 or _percent_yield > 100:
+                    _skip = True
+
+            # check for the design variables if they are within the range for this doe campaign
             for var in self.hasDesignVariable:
                 if isinstance(var, ContinuousVariable):
                     _con = rxn_exp.get_reaction_condition(var.refersTo.clz, var.positionalID)
