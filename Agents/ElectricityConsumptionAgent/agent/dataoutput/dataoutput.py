@@ -140,9 +140,6 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
     # Set the label for the colorbar
     colorbar.set_label(label)
-    # Set the formatter for the colorbar tick labels
-    colorbar.formatter = ticker.FormatStrFormatter('$10^{%d}$')
-    colorbar.update_ticks()
 
 def remove_NaN(df: pd.DataFrame):
     '''
@@ -826,6 +823,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
 
     # Create a colorbar for the plot
     create_color_bar(color_theme, divnorm, label, axs, cax, df_geo[f"{title}"])
+    cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
 
     axs['A'].set_xticks([])
     axs['A'].set_yticks([])
@@ -935,6 +933,7 @@ def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_sca
                     cax=cax)
             # Create a colorbar for the plot
             create_color_bar(color_theme, divnorm, label, axs, cax, df_geo.iloc[:, -1])
+            cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
         else:
             tl  = df_geo.plot(df_geo.iloc[:, it + 2],\
                 cmap=color_theme,\
@@ -1153,6 +1152,7 @@ df_gas = df_full[['LSOA_code', 'Gas_consump']]
 df_temp = df_full[['LSOA_code', 'temp']]
 
 ############### Test for plot_geodistribution ############
+# Test for geodistribution_with_cities --------------------------
 '''
 df = retrieve_elec_data_from_KG()
 df['Electricty cosumption per household'] = df['usage'].to_numpy() /df['meter'].to_numpy() 
@@ -1160,8 +1160,10 @@ df = drop_column(df,'meter')
 df = drop_column(df,'usage')
 plot_geodistribution_with_cities(label = 'kWh/year/household', title = 'Electricity Consumption', df =df, cb_scale = 1.5)
 '''
-# Test for multiple geospatial plot (using uptake%) -------------
+# ----------------------------------------------------------------
 
+# Test for multiple geospatial plot (using uptake%) -------------
+'''
 # Exclude NaN data
 df_temp = remove_NaN(df_temp)
 LSOA_index, results_tensor = convert_to_tensor(df_temp)
@@ -1198,7 +1200,9 @@ for uptake in uptake_list:
     df_toplot_final = df_toplot_final.rename(columns={'new_column_name': 'uptake as {}'.format(uptake)})
 
 plot_multiple_geodistribution('Monthly Electrical Power Consumption (kWh/month)','peak_power_nationwide',df_toplot_final,1.5)
+'''
 # ----------------------------------------------------------------
+
 ##########################################################
 
 ############### Test for temproal_line_chart #############
