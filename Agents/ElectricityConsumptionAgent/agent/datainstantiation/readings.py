@@ -71,7 +71,6 @@ def upload_data_to_KG(year:str = '2020',
     datairi = []
     value = []
 
-
 # Read the Excel and extract relavent data
     LSOA_codes, met_num, consump = read_from_excel(year)
 

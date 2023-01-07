@@ -24,6 +24,7 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 import scipy.stats as st
 import matplotlib.colors as cl 
 import matplotlib.cm as cm
+import matplotlib.ticker as ticker
 import seaborn as sb 
 
 #from agent.kgutils.tsclient import jpsBaseLibView
@@ -61,7 +62,7 @@ def save_figures(arg_name):
     plt.savefig('figure_output/'+f"{arg_name}".lower()+'.png',dpi=200) 
     plt.savefig('figure_output/'+f"{arg_name}".lower()+'.pdf')
 
-def data_treatment(df,arg_name,arg_value):
+def data_treatment(df, arg_name, arg_value_in):
         '''
     This function is created to append a new column in the existing dataframe (at last position)
     and creat a np.darray contain all the new data, excluded nan data, to be used
@@ -75,23 +76,31 @@ def data_treatment(df,arg_name,arg_value):
                and another column for data
     '''
         df_copy = df.copy()
-        # Appended the variable data to the df_geo
-        df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
-        
-        # Create a dict, which will make the data matching soooooo fast 
-        dictionary = {row[arg_value.columns[0]]: row[arg_value.columns[1]] for _, row in arg_value.iterrows()}
-        df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
-        
+        arg_value = arg_value_in.copy()
+        for col in arg_value.columns[1:]: 
+            # Create a dict, which will make the data matching soooooo fast 
+            dictionary = {row[arg_value.columns[0]]: row[col] for _, row in arg_value.iterrows()}
+
+            if arg_name == False:
+                # Appended the variable data to the df_geo
+                df_copy = df_copy.assign(**{f"{col}": np.nan})
+                df_copy[f"{col}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+            else:
+                df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
+                df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+            
         # ------------ This val_values is normally used for colorbar plot ------------------- #
         try:
             # Specify the value to plot
             val_values = df_copy[f"{arg_name}"].values
-            # Create a boolean mask indicating which elements are NaN values
-            mask = np.isnan(val_values)
-            # Select only the non-NaN values from the array
-            val_values = val_values[~mask]
         except:
-            pass
+            # If can not found, default as the last column
+            val_values = df_copy.iloc[:, -1].values
+
+        # Create a boolean mask indicating which elements are NaN values
+        mask = np.isnan(val_values)
+        # Select only the non-NaN values from the array
+        val_values = val_values[~mask]
 
         return df_copy, val_values
 
@@ -131,6 +140,9 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
     # Set the label for the colorbar
     colorbar.set_label(label)
+    # Set the formatter for the colorbar tick labels
+    colorbar.formatter = ticker.FormatStrFormatter('$10^{%d}$')
+    colorbar.update_ticks()
 
 def remove_NaN(df: pd.DataFrame):
     '''
@@ -684,7 +696,7 @@ def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: floa
        label: the legend label for colorbar
        title: title of the figure (be stored as file name as well)
        cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot/ can accept multiple
+       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
                  in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
                  I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
     '''
@@ -760,7 +772,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
        label: the legend label for colorbar
        title: title of the figure (be stored as file name as well)
        cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot/ can accept multiple
+       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
                  in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
                  I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
     '''
@@ -796,7 +808,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
     axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
     # Revising the data
-    df_geo, val_values =data_treatment(df_geo, title,df)
+    df_geo, val_values =data_treatment(df_geo, title, df)
     
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
     divnorm = normalization(val_values, cb_scale)
@@ -852,6 +864,91 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
         mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
     
     # Store the figures
+    save_figures(title)
+
+def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_scale: float = 0):
+    '''
+    This module is aim to produce multiple geospatial scale figures in one plot
+    Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
+          column of LSOA code, and other columns for the variable to plot
+
+    Arguments:
+       label: the legend label for colorbar
+       title: title of the figure (be stored as file name as well)
+       cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+                 in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                 I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+       The df should looks like this 
+                LSOA_code  var1  var2  var3 ....
+            0
+            1
+            2
+            ...
+    Note that except the first column (which is LSOA code using for identifier) How many columns are in the df
+    how many figures will be generated in the plot. The column name (var1, var2, var3 in this example) will be used
+    as the label for this figure
+
+    '''
+    # Get Geospatial shapes:
+    #df_geo = retrieve_ONS_shape_from_KG()
+    ################### TBD
+    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    ###########################
+    print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
+    
+    # Revising the data
+    df_geo, val_values =data_treatment(df_geo, arg_name=False, arg_value_in=df)
+
+    # Count how many figures need to be plotted based on df
+    num_plot = df.shape[1] - 1
+
+    # Initialize the plot
+    mosaic = 'ABCDEFGHIJKLMNOPQRST'[:num_plot]
+    color_theme = 'coolwarm'
+    fig = plt.figure(figsize=(11,5))
+    axs = fig.subplot_mosaic(mosaic)    
+    UK_gdf = gpd.read_file("GB_shapefile/GBR_adm2.shp")
+    UK_gdf = UK_gdf.to_crs("EPSG:3395")
+    plot_names = mosaic 
+    
+    # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
+    divnorm = normalization(val_values, cb_scale)
+    
+    for it in range(num_plot):  # iterate over the number of subplots
+        axs[plot_names[it]].set_title(df.columns[it + 1], loc='left')
+        UK_gdf.boundary.plot(ax=axs[plot_names[it]],color='k',linewidth=0.5)
+        boundary = df_geo.bounds
+        boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
+        axs[plot_names[it]].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
+        axs[plot_names[it]].set_xlim(([boundary[0]-5E4,boundary[2]]))
+        plt.subplots_adjust(left=0.075,right=0.836)
+        
+        if plot_names[it] == mosaic[-1]:
+            cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
+            tl = df_geo.plot(column=df_geo.iloc[:, -1],
+                    cmap=color_theme,
+                    antialiased=False,
+                    ax=axs[plot_names[it]],
+                    legend=True,
+                    norm=divnorm,
+                    cax=cax)
+            # Create a colorbar for the plot
+            create_color_bar(color_theme, divnorm, label, axs, cax, df_geo.iloc[:, -1])
+        else:
+            tl  = df_geo.plot(df_geo.iloc[:, it + 2],\
+                cmap=color_theme,\
+                antialiased=False,\
+                ax = axs[plot_names[it]],\
+                norm = divnorm)
+
+        axs[plot_names[it]].set_xticks([])
+        axs[plot_names[it]].set_yticks([])
+        axs[plot_names[it]].spines["top"].set_visible(False)
+        axs[plot_names[it]].spines["right"].set_visible(False)
+        axs[plot_names[it]].spines["left"].set_visible(False)
+        axs[plot_names[it]].spines["bottom"].set_visible(False)
+    
     save_figures(title)
 
 # ------------------------ Line chart Plot --------------------------------- #
@@ -1063,6 +1160,45 @@ df = drop_column(df,'meter')
 df = drop_column(df,'usage')
 plot_geodistribution_with_cities(label = 'kWh/year/household', title = 'Electricity Consumption', df =df, cb_scale = 1.5)
 '''
+# Test for multiple geospatial plot (using uptake%) -------------
+
+# Exclude NaN data
+df_temp = remove_NaN(df_temp)
+LSOA_index, results_tensor = convert_to_tensor(df_temp)
+LSOA_index = {'http://statistics.data.gov.uk/id/statistical-geography/' + key: value for key, value in LSOA_index.items()}
+
+uptake_list = [0,0.2,0.4,0.8,1]
+array = np.empty((41726, 0))
+df_toplot_final = pd.DataFrame(array)
+df_toplot_final['LSOA_index'] = LSOA_index.keys()
+
+for uptake in uptake_list:
+    # Calculate COP
+    cop_tensor = COP(results_tensor)
+
+    # Calculate delta_gas
+    _ , gassonsump_tensor = convert_to_tensor(df_gas, monthly_gas_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_gas_tensor = delta_gas(uptake, gassonsump_tensor)
+
+    # Calculate delta_electricity
+    _ , elecconsump_tensor = convert_to_tensor(df_elec, monthly_electricity_consumption_2020, LSOA_index_id = LSOA_index)
+    delta_elec_tensor = delta_elec(delta_gas_tensor, cop_tensor)
+
+    # Calculate remaning_elec_tensor
+    remaning_elec_tensor = elecconsump_tensor + delta_elec_tensor
+    
+    # Get elec_array based on T_mean
+    remaning_elec_arrays = remaning_elec_tensor[1]
+
+    peak_power_values = np.zeros(len(remaning_elec_arrays[:,1]))
+    for i in range(len(remaning_elec_arrays)):
+        peak_power_values[i] = max(remaning_elec_arrays[i,:])
+    
+    df_toplot_final['new_column_name'] = peak_power_values
+    df_toplot_final = df_toplot_final.rename(columns={'new_column_name': 'uptake as {}'.format(uptake)})
+
+plot_multiple_geodistribution('Monthly Electrical Power Consumption (kWh/month)','peak_power_nationwide',df_toplot_final,1.5)
+# ----------------------------------------------------------------
 ##########################################################
 
 ############### Test for temproal_line_chart #############
