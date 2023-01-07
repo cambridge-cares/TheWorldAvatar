@@ -2,22 +2,23 @@ version: "3.8"
 name: pips-rxn-opt
 
 services:
-  rxn_opt_goal_agent:
-    image: ghcr.io/cambridge-cares/rxn_opt_goal_agent:1.0.0-SNAPSHOT
-    container_name: rxn_opt_goal_agent
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
-    ports:
-      - 7070:5000
-    env_file:
-      - ./env_files/agent.goal.env.deploy
-      - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
-    secrets:
-      - email_auth
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoalagent:create_app()", "--preload"]
+  # NOTE: below rxn_opt_goal_agent is commented out for now - please see rxn_opt_goal_agent.py
+  # rxn_opt_goal_agent:
+  #   image: ghcr.io/cambridge-cares/rxn_opt_goal_agent:1.0.0-SNAPSHOT
+  #   container_name: rxn_opt_goal_agent
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+  #     EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+  #   ports:
+  #     - 7070:5000
+  #   env_file:
+  #     - ./env_files/agent.goal.env.deploy
+  #     - ./env_files/agent.credentials.env.deploy # NOTE provide this env file
+  #   secrets:
+  #     - email_auth
+  #   extra_hosts:
+  #     - host.docker.internal:host-gateway
+  #   entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoalagent:create_app()", "--preload"]
 
   rxn_opt_goal_iter_agent:
     image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.0.0-SNAPSHOT
