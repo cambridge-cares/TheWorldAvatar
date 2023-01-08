@@ -25,6 +25,7 @@ import scipy.stats as st
 import matplotlib.colors as cl 
 import matplotlib.cm as cm
 import matplotlib.ticker as ticker
+import matplotlib.patches
 import seaborn as sb 
 
 #from agent.kgutils.tsclient import jpsBaseLibView
@@ -69,11 +70,11 @@ def data_treatment(df, arg_name, arg_value_in):
     to set the scale of colorbar
 
     Arguments:
-                  *** Please use this function with plot_geodistribution***
+                *** Please use this function with plot_geodistribution***
     df: dataframe to be appended
     arg_name: the name you want to give to this new column
     arg_value: two column pd.DataFrame, which MUST have a column with name 's' which contain LSOA code for data identification
-               and another column for data
+            and another column for data
     '''
         df_copy = df.copy()
         arg_value = arg_value_in.copy()
@@ -88,7 +89,7 @@ def data_treatment(df, arg_name, arg_value_in):
             else:
                 df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
                 df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
-            
+                
         # ------------ This val_values is normally used for colorbar plot ------------------- #
         try:
             # Specify the value to plot
@@ -96,11 +97,18 @@ def data_treatment(df, arg_name, arg_value_in):
         except:
             # If can not found, default as the last column
             val_values = df_copy.iloc[:, -1].values
+            
+        if type(val_values[0]) == int  or float:
+            # Create a boolean mask indicating which elements are NaN values
+            mask = np.isnan(val_values)
+            # Select only the non-NaN values from the array
+            val_values = val_values[~mask]
+        else:
+            # if still can't find (or data type not applicable) then give a none
+            val_values = np.empty(df_copy.shape[0])
+            val_values[:] = 0
+            print('val_values not applicable to generate an non-nan array, return zero array instead')
 
-        # Create a boolean mask indicating which elements are NaN values
-        mask = np.isnan(val_values)
-        # Select only the non-NaN values from the array
-        val_values = val_values[~mask]
 
         return df_copy, val_values
 
@@ -108,11 +116,11 @@ def normalization(val_values, cb_scale):
     '''
     Provide normalization for color bar
     Arguments:
-                  *** Please use this function with plot_geodistribution***
+                *** Please use this function with plot_geodistribution***
     val_values: NDArray which have NO nan data
     cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-                 in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
-                 I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
     '''
     iqr = st.iqr(val_values)
     q1,q3 = st.mstats.idealfourths(val_values)
@@ -126,7 +134,7 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     '''
     Provide color bar
     Arguments:
-                  *** Please use this function with plot_geodistribution***
+                *** Please use this function with plot_geodistribution***
     color_theme: color theme of the map
     divnorm: normalization result returned from function normalization(val_values, cb_scale)
     label: the label of the color bar (or say legend)
@@ -166,19 +174,19 @@ def drop_column(df,index):
 def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None):
     '''
     This module is to create tensor, specific for the type of data like:
- [LSOA_1:[Jan: [tasmin: ,  tas:   , tasmax:  ],
-          Feb: [tasmin: ,  tas:   , tasmax:  ],
-          Mar: [tasmin: ,  tas:   , tasmax:  ],
+[LSOA_1:[Jan: [tasmin: ,  tas:   , tasmax:  ],
+        Feb: [tasmin: ,  tas:   , tasmax:  ],
+        Mar: [tasmin: ,  tas:   , tasmax:  ],
                 .........
-          Dec: [tasmin: ,  tas:   , tasmax:  ]],
+        Dec: [tasmin: ,  tas:   , tasmax:  ]],
 
-  LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
-          Feb: [tasmin: ,  tas:   , tasmax:  ],
-          Mar: [tasmin: ,  tas:   , tasmax:  ],
+LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
+        Feb: [tasmin: ,  tas:   , tasmax:  ],
+        Mar: [tasmin: ,  tas:   , tasmax:  ],
                 .........
-          Dec: [tasmin: ,  tas:   , tasmax:  ]],
+        Dec: [tasmin: ,  tas:   , tasmax:  ]],
                 .........
-          ]]] 
+        ]]] 
     i.e. for all data relating to temperature, such as COP, change of gas, electricity etc
     convert into tensor will make it faster to calculate
     Beside the tensor, this function will return an LSOA_index as well, which using row index as 
@@ -187,43 +195,43 @@ def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None):
     input: can be dict or df. If it's a dict, which should have structure like:
     dict = { LSOA_1: 
                 {'2020-01-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                 {'2020-02-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
                     .......
-              LSOA_2: 
+            LSOA_2: 
                 {'2020-01-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                 {'2020-02-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
                     .......
-             }
+            }
     if it is a df, should have a structure like:
         LSOA_code   temp
-     0   LSOA_1    {'2020-01-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+    0   LSOA_1    {'2020-01-01T12:00:00.000Z':
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                     '2020-02-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                     .......}
-              
-     1   LSOA_2    {'2020-01-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+            
+    1   LSOA_2    {'2020-01-01T12:00:00.000Z':
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                     '2020-02-01T12:00:00.000Z':
-                   {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
                     .......}       
@@ -321,7 +329,7 @@ def remove_unlocated_data(df):
 def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = '2020', per_household: bool = False) -> pd.DataFrame:
     '''
         perform SPARQL query to get the data from Blazegraph, return a DataFrame looks like:
-              's'  'usage'  'meter' ('elec_consump_perhousehold')
+            's'  'usage'  'meter' ('elec_consump_perhousehold')
         0
         1
         2
@@ -656,8 +664,18 @@ def COP(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
     valid in your case
     '''
     COP = hp_efficiency * T_H / (T_H -273.15 - temp)
+    
     COP = np.round(COP,3)
+    
     return COP
+
+def T_from_COP(COP):
+    '''
+    Return temperature based on a given COP
+    '''
+    T = 45 - ((45+273.15)/(COP/0.35))
+
+    return T
 
 def delta_gas(uptake: float, total_gas_consumption, propotion_heating: float = 0.9):
     '''
@@ -683,19 +701,19 @@ def delta_elec(delta_gas, COP, boiler_efficiency: float = 0.8):
     return delta_elec
 
 # ------------------------ GeoSpatial Plot --------------------------------- #
-def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: float = 0):
+def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
     '''
     This module is aim to plot the input variable as geospatial scale (and do NOT have specifiy city view)
     Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
-          column of LSOA code, and another column for the variable to plot
+        column of LSOA code, and another column for the variable to plot
 
     Arguments:
-       label: the legend label for colorbar
-       title: title of the figure (be stored as file name as well)
-       cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
-                 in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
-                 I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    label: the legend label for colorbar
+    title: title of the figure (be stored as file name as well)
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+    df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
     '''
     def basic_settings(df_geo):
         # Set the plot
@@ -724,6 +742,7 @@ def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: floa
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    df = df_in.copy()
     ###########################
 
     print(f'Beginning plot for geodistribution of {title}...')
@@ -759,19 +778,19 @@ def plot_geodistribution(label: str, title:str, df: pd.DataFrame, cb_scale: floa
     # Store the figures
     save_figures(title)
 
-def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb_scale: float = 0):
+def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
     '''
     This module is aim to plot the input variable as geospatial scale (and DO have specifiy city view)
     Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
-          column of LSOA code, and another column for the variable to plot
+        column of LSOA code, and another column for the variable to plot
 
     Arguments:
-       label: the legend label for colorbar
-       title: title of the figure (be stored as file name as well)
-       cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
-                 in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
-                 I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    label: the legend label for colorbar
+    title: title of the figure (be stored as file name as well)
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+    df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
     '''
     def basic_settings(df_geo):
         # Set the plot
@@ -800,7 +819,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
     ###########################
     print(f'Beginning plot for geodistribution (with city view) of {title}...')
-    
+    df = df_in.copy()
     # Initilize the graph
     axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
@@ -864,20 +883,20 @@ def plot_geodistribution_with_cities(label: str, title:str, df: pd.DataFrame, cb
     # Store the figures
     save_figures(title)
 
-def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_scale: float = 0):
+def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_scale: float = 0):
     '''
     This module is aim to produce multiple geospatial scale figures in one plot
     Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
-          column of LSOA code, and other columns for the variable to plot
+        column of LSOA code, and other columns for the variable to plot
 
     Arguments:
-       label: the legend label for colorbar
-       title: title of the figure (be stored as file name as well)
-       cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-                 in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
-                 I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
-       df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
-       The df should looks like this 
+    label: the legend label for colorbar
+    title: title of the figure (be stored as file name as well)
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    df: df should be  pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+    The df should looks like this 
                 LSOA_code  var1  var2  var3 ....
             0
             1
@@ -892,6 +911,7 @@ def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_sca
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    df = df_in.copy()
     ###########################
     print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
     
@@ -922,6 +942,7 @@ def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_sca
         axs[plot_names[it]].set_xlim(([boundary[0]-5E4,boundary[2]]))
         plt.subplots_adjust(left=0.075,right=0.836)
         
+        # for the last plot adding a colorbar
         if plot_names[it] == mosaic[-1]:
             cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
             tl = df_geo.plot(column=df_geo.iloc[:, -1],
@@ -950,8 +971,209 @@ def plot_multiple_geodistribution(label: str, title:str, df: pd.DataFrame,cb_sca
     
     save_figures(title)
 
+def plot_temperature_versus_var(label: str, title:str, df_dict: pd.DataFrame, month: int, df_temproal: pd.DataFrame = None, cb_scale: float = 0):
+    '''
+This function aims to produce geospatial distribution for a month for max, mean and min temperature with reference for a var that is 
+directly relating to temperature, for example, COP = f(temperature)
+
+If the second df_temproal is provided, the function will also produce two line plots refering to specific LSOA's monthly distribution of var, 
+for t_max, mean and min senarios
+
+    Arguments:
+    label: the legend label for colorbar
+    title: title of the figure (be stored as file name as well)
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    df_dict: df_dict should be pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+            The df should looks like this 
+                        LSOA_code  temp  var
+                    0
+                    1
+                    2
+                    ...
+            df_dict represent the value with respect to one month only, therefore:
+            the value in temp and var columns should be dict using {tas: , tmax: ,tmin: } 
+            or {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':, 
+                'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':,
+                'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':}
+            Note that the name of column 'var' will be used as label of corresponding colorbar and line figures
+            and sequence DO matter, first column is LSOA code, second is temp, third is var
+    month: a int to represent which month df_fict is refering to, 0 is Jan, 1 is Feb, etc etc...
+    df_temproal: should contain two different row labels only, with 12 columns refering to monthly data for var
+            for the same row label, the row data will be plotted at the same figure
+            df_temproal: should looks like:
+                        Jan  Feb  Mar  Apr ....   Dec
+                LSOA_1
+                LSOA_1
+                LSOA_1
+                LSOA_2
+                LSOA_2
+                LSOA_2
+            Note that the row label will be used as label of the line plot. so for how many same row labels were in this df, 
+            how many line will be plotted. noted that the column names don't matter as it default the sequence as Jan to Dec.
+
+            If in some case you may want fill_between feature to represent a range, please provide several rows with same 
+            [row_label], for those rows have same [row_label], the function will automatically fill between the row have
+            max average value and the row have min average value, while for rows in the middle will still be plotted.
+            i.e., sequence don't matter as long as they have the same [row_label]
+    '''
+    # Get Geospatial shapes:
+    #df_geo = retrieve_ONS_shape_from_KG()
+    ################### TBD
+    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    ###########################
+    print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
+    
+    # Revising the data
+    df = df_dict.copy()
+    df_t = df_temproal.copy()
+    extended_df = pd.DataFrame()
+    # Extend the original dataframe
+    for i in ['tasmin','tas','tasmax']:
+        extended_df[f'temp_{i}'] = df.apply(lambda x: x.iloc[1][i] if i in x.iloc[1] else np.nan, axis=1)
+        extended_df[f'var_{i}'] = df.apply(lambda x: x.iloc[2][i] if i in x.iloc[2] else np.nan, axis=1)
+    # Yea you don't know if the key have a prefix :)
+    for i in ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin',
+              'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas',
+              'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax']:
+        extended_df[f'temp_{i}'] = df.apply(lambda x: x.iloc[1][i] if i in x.iloc[1] else np.nan, axis=1)
+        extended_df[f'var_{i}'] = df.apply(lambda x: x.iloc[2][i] if i in x.iloc[2] else np.nan, axis=1)
+    
+    df_geo, val_value =data_treatment(df_geo, arg_name=False, arg_value_in=extended_df)
+    divnorm = normalization(val_value, cb_scale)
+    
+    # Initialize the plot
+    color_theme = 'coolwarm'
+    mosaic = """
+    EEEAAAA
+    EEEAAAA
+    EEEAAAA
+    GGGAAAA
+    FFFAAAA
+    FFFBBCC
+    FFFBBCC
+    """
+    fig = plt.figure(figsize=(7.5,7))
+    axs = fig.subplot_mosaic(mosaic)    
+    #plt.subplots_adjust(left=0)
+    cax = fig.add_axes([0.75, 0.1, 0.03, 0.8])
+    cax2 = fig.add_axes([0.875, 0.1, 0.03, 0.8])
+    plt.subplots_adjust(right=0.736,left=0.098)
+    keys = ['A','B','C']
+
+    # Plotting the geospatial distribution
+    for i in range(3):
+        tl  = df_geo.plot(df_geo.iloc[:, i + 2],\
+                cmap=color_theme,\
+                antialiased=False,\
+                ax = axs[keys[i]],\
+                norm = divnorm)
+        if i ==0:
+            # color bar for var
+            create_color_bar(color_theme,divnorm,label,axs['A'],cax,val_value)
+            # color bar for temperature
+            create_color_bar(color_theme,divnorm,'Air Temperature (°C)',axs['A'],cax2,val_value)
+        
+        UK_gdf = gpd.read_file("GB_shapefile/GBR_adm2.shp")
+        UK_gdf = UK_gdf.to_crs("EPSG:3395")
+        UK_gdf.boundary.plot(ax=axs[keys[i]],color='k',linewidth=0.5)
+        boundary = df_geo.bounds
+        boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
+        axs[keys[i]].set_ylim([boundary[1],boundary[3]])
+        axs[keys[i]].set_xticks([])
+        axs[keys[i]].set_yticks([])
+        axs[keys[i]].spines["top"].set_visible(False)
+        axs[keys[i]].spines["right"].set_visible(False)
+        axs[keys[i]].spines["left"].set_visible(False)
+        axs[keys[i]].spines["bottom"].set_visible(False)
+        axs[keys[i]].set_title(['Minimum','Mean','Maximum'][i])
+    ticks = cax2.get_yticks()
+    temp = np.round(np.array(T_from_COP(ticks)),1).astype(str)
+    cax2.set_yticklabels(temp)
+    axs['G'].set_xticks([])
+    axs['G'].set_yticks([])
+    axs['G'].spines["top"].set_visible(False)
+    axs['G'].spines["right"].set_visible(False)
+    axs['G'].spines["left"].set_visible(False)
+    axs['G'].spines["bottom"].set_visible(False)
+
+    # Plotting the line figure
+    months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
+    axs['E'].set_xlabel('Month')
+    axs['E'].set_ylabel(df_dict.columns[2]+' (-)')
+    axs['E'].set_title('LSOA: '+df_t.index[0].split('/')[-1])
+    axs['E'].set_ylim(1,df_t.apply(lambda x: x.max()))
+    
+
+    axs['F'].set_xlabel('Month')
+    axs['F'].set_ylabel(df_dict.columns[2]+' (-)')
+    axs['F'].set_title('LSOA: '+df_t.index[1].split('/')[-1])
+    axs['F'].set_ylim(1,df_t.apply(lambda x: x.max()))
+
+    groups = df_t.groupby(df_t.index)
+    i =0 
+    month_avg = 0
+    for index_name, group in groups:
+        if len(group) == 1:
+            # Plot the line for the single-data row
+            axs[['E','F'][i]].plot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle='solid')
+            axs[['E','F'][i]].scatter([month],[group.iloc[month]],c='r')
+            axs[['E','F'][i]].text(0.5,1.25,f'Avg {df_dict.columns[2]}: {str(np.round(group.mean(),2))}')
+            month_avg = group.iloc[month]
+            i+=1
+
+        else:
+            row_means = group.mean(axis=1)
+            
+            # Reset the index of the group
+            group = group.reset_index(drop=True)
+            group.index = row_means
+            
+            # Sort the group by the index
+            group = group.sort_index()
+            
+            # Get the minimum and maximum rows
+            y1 = group.iloc[0]
+            y2 = group.iloc[-1]
+            # Plot the fill between the minimum and maximum rows
+            axs[['E','F'][i]].fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle='solid',alpha=0.1)
+            axs[['E','F'][i]].scatter([month, month],[y1.iloc[month],y2.iloc[month]],c='r')
+            axs[['E','F'][i]].vlines(month,y1.iloc[month],y2.iloc[month],color='r',alpha=0.4)
+            # Plot the remaining rows
+            for _, row in group.iloc[1:-1].iterrows():
+                axs[['E','F'][i]].plot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle='solid')
+                axs[['E','F'][i]].scatter([month],[row.iloc[month]],c='r')
+                axs[['E','F'][i]].text(0.5,1.25,f'Avg {df_dict.columns[2]}: {str(np.round(row.mean(),2))}')
+                month_avg = row.iloc[month]
+            i +=1
+    
+    plt.sca(axs['E'])
+    plt.xticks(range(len(months_letter)), [], color='k')
+    plt.sca(axs['F'])
+    plt.xticks(range(len(months_letter)), months_letter, color='k')
+    figtr = fig.transFigure.inverted() # Display -> Figure
+    ax0tr = axs['E'].transData # Axis 0 -> Display
+    ax1tr = axs['A'].transData
+    ptB = figtr.transform(ax0tr.transform((month,month_avg)))
+    ptE = figtr.transform(ax1tr.transform((-1.45E5,7.021E6)))
+    arrow = matplotlib.patches.FancyArrowPatch(ptB,ptE,transform=fig.transFigure,\
+        connectionstyle="arc3,rad=0.2",arrowstyle='->')
+    fig.patches.append(arrow)
+    ax0tr = axs['F'].transData # Axis 0 -> Display
+    ax1tr = axs['A'].transData
+    ptB = figtr.transform(ax0tr.transform((month,month_avg)))
+    ptE = figtr.transform(ax1tr.transform((-2.1E3,6.74E6)))
+    arrow = matplotlib.patches.FancyArrowPatch(ptB,ptE,transform=fig.transFigure,\
+        connectionstyle="arc3,rad=-0.2",arrowstyle='->')
+    fig.patches.append(arrow)
+
+    save_figures(title)
+    print(f'{i} number of lines have been plotted')
+
+
 # ------------------------ Line chart Plot --------------------------------- #
-def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
+def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
     '''
     To create a line chart to represent the monthly data
     Note: the input dataframe should be looks like:
@@ -975,6 +1197,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
     y_label: str, name of the y-axis legend
     df: pd.DataFrame, dataframe to be processd
     '''
+    df = df_in.copy()
     # Group the rows by index name
     groups = df.groupby(df.index)
 
@@ -1017,7 +1240,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df: pd.DataFrame):
     save_figures(filename)
     print(f'{i} number of lines have been plotted')
 
-def plot_box_and_whisker(filename: str, y_label: str,df: pd.DataFrame) :
+def plot_box_and_whisker(filename: str, y_label: str, df_in: pd.DataFrame) :
     '''
     This function is dedecated to plot the monthly distribution in a box_and_whisker form
     Note: the input dataframe should be looks like:
@@ -1035,7 +1258,7 @@ def plot_box_and_whisker(filename: str, y_label: str,df: pd.DataFrame) :
     df: pd.DataFrame, dataframe to be processd
     '''
     flierprops = dict(markerfacecolor="k", markersize=0.05, linestyle="none", markeredgecolor="k")
-
+    df = df_in.copy()
     # Initialize the plot
     fig, axs = plt.subplots(1,1,figsize=(5,2.5))
     plt.tight_layout()
@@ -1072,7 +1295,7 @@ def plot_box_and_whisker(filename: str, y_label: str,df: pd.DataFrame) :
     plt.legend()
     save_figures(filename)
 
-def plot_var_versus_result(filename: str, y_label: str, x_label:str, df: pd.DataFrame, independent_var: list):
+def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.DataFrame, independent_var: list):
     '''
     This function is dedicated to plot a line chart, using one independent variable as x-axis, while the result (dependent variable) as y-axis
     for example:
@@ -1112,6 +1335,7 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df: pd.Data
     plt.tight_layout()
 
     # Group the rows by index name
+    df = df_in.copy()
     groups = df.groupby(df.index)
 
     i = 0
@@ -1145,14 +1369,14 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df: pd.Data
 
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 '''
-     LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
+    LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
 '''
 df_elec = df_full[['LSOA_code', 'Electricity_consump']]
 df_gas = df_full[['LSOA_code', 'Gas_consump']]
 df_temp = df_full[['LSOA_code', 'temp']]
 
 ############### Test for plot_geodistribution ############
-# Test for geodistribution_with_cities --------------------------
+# Test for geodistribution_with_cities ---------------------------
 '''
 df = retrieve_elec_data_from_KG()
 df['Electricty cosumption per household'] = df['usage'].to_numpy() /df['meter'].to_numpy() 
@@ -1162,7 +1386,7 @@ plot_geodistribution_with_cities(label = 'kWh/year/household', title = 'Electric
 '''
 # ----------------------------------------------------------------
 
-# Test for multiple geospatial plot (using uptake%) -------------
+# Test for multiple geospatial plot (using uptake%) --------------
 '''
 # Exclude NaN data
 df_temp = remove_NaN(df_temp)
@@ -1203,7 +1427,32 @@ plot_multiple_geodistribution('Monthly Electrical Power Consumption (kWh/month)'
 '''
 # ----------------------------------------------------------------
 
+# Test for plot_temperature_versus_var (COP as var) --------------
+
+# Prepare df_dict
+df_temp = remove_NaN(df_temp)
+values = []
+for key, val in df_temp['temp'].items():
+    for key2, val2 in val.items():
+        if key2 == '2020-02-01T12:00:00.000Z':
+                values.append(val2)
+df_temp['temp'] = values
+df_temp_copy = df_temp.copy()
+
+for key, val in df_temp_copy['temp'].items():
+    for key2, val2 in val.items():
+        df_temp_copy['temp'][key][key2] = COP(val2)
+
+df_cop = df_temp_copy.rename(columns = {'temp':'COP'})
+df_dict, _ = data_treatment(df_temp,arg_name=False,arg_value_in = df_cop)
+
+convert_df(df_dict)
+
+# ----------------------------------------------------------------
 ##########################################################
+
+
+
 
 ############### Test for temproal_line_chart #############
 # Test for fuel cost ---------------------------------------------
@@ -1322,8 +1571,8 @@ plot_var_versus_result('Energy uptake','Energy Consumption (kWh/year)','% Uptake
 # ----------------------------------------------------------------
 ##########################################################
 '''
-#convert 2021 temp data to tensor
-dict_temp_2021 = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')
-LSOA_index, results_tensor = convert_to_tensor(dict_temp_2021)
-print(results_tensor)
-'''
+    #convert 2021 temp data to tensor
+    dict_temp_2021 = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')
+    LSOA_index, results_tensor = convert_to_tensor(dict_temp_2021)
+    print(results_tensor)
+    '''
