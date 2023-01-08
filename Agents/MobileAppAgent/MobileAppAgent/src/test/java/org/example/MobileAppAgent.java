@@ -72,7 +72,30 @@ public class MobileAppAgent extends JPSAgent {
     }
 
 
+    private ArrayList<List> parseDataToLists(JSONArray dataArray) {
+        ArrayList<List> output = new ArrayList<>();
+
+        JSONObject temp;
+        List<TimeSeries<Double>> tsList = new ArrayList<>();
+        List<List<String>> dataIRI = new ArrayList<>();
+        List<?> times = Collections.nCopies(TIME_SERIES.size(), null);
+
+        for (int i = 0; i < dataArray.length(); i++){
+            temp = dataArray.getJSONObject(i);
+            dataIRI.add(Arrays.asList(ubemSolar + "_" + temp.getString(KEY_MOD)));
+            tsList.add(new TimeSeries(times, dataIRI.get(i), Arrays.asList(getDoubleList(temp))));
+        }
+
+        output.add(dataIRI);
+        output.add(tsList);
+
+        return output;
+    }
+
+
+
 }
+
 
 // accelerometer - timestamp, accel_x,accel_y,accel_z
 // gravity - timestamp, gravity_x, gravity_y, gravity_z
