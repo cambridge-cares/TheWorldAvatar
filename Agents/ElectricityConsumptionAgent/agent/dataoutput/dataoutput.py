@@ -27,6 +27,7 @@ import matplotlib.cm as cm
 import matplotlib.ticker as ticker
 import matplotlib.patches
 import seaborn as sb 
+import copy
 
 #from agent.kgutils.tsclient import jpsBaseLibView
 
@@ -76,8 +77,8 @@ def data_treatment(df, arg_name, arg_value_in):
     arg_value: two column pd.DataFrame, which MUST have a column with name 's' which contain LSOA code for data identification
             and another column for data
     '''
-        df_copy = df.copy()
-        arg_value = arg_value_in.copy()
+        df_copy = copy.deepcopy(df)
+        arg_value = copy.deepcopy(arg_value_in)
         for col in arg_value.columns[1:]: 
             # Create a dict, which will make the data matching soooooo fast 
             dictionary = {row[arg_value.columns[0]]: row[col] for _, row in arg_value.iterrows()}
@@ -98,7 +99,7 @@ def data_treatment(df, arg_name, arg_value_in):
             # If can not found, default as the last column
             val_values = df_copy.iloc[:, -1].values
             
-        if type(val_values[0]) == int  or float:
+        if (type(val_values[0]) == int)  or (type(val_values[0]) == float):
             # Create a boolean mask indicating which elements are NaN values
             mask = np.isnan(val_values)
             # Select only the non-NaN values from the array
@@ -325,6 +326,9 @@ def remove_unlocated_data(df):
 
     return df
 
+def add_prefix(x, prefix):
+    return prefix + str(x)
+
 # ------------------------ Data retrieval ---------------------------------- #
 def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = '2020', per_household: bool = False) -> pd.DataFrame:
     '''
@@ -540,7 +544,7 @@ def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool 
             if False, only monthly value will be returned
     '''
     global months
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     months = ['January','February','March','April','May','June','July','August','September','October','November','December']
     total = sum(monthly_ref)
     for i in range(12):
@@ -566,8 +570,8 @@ def fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, price_elec: float
     annual: if True, the second column will include the annual value
             if False, only monthly value will be returned
     '''
-    df_elec = df_elec_in.copy()
-    df_gas = df_gas_in.copy()
+    df_elec = copy.deepcopy(df_elec_in)
+    df_gas = copy.deepcopy(df_gas_in)
     # Replace the first column from consumption into cost
     df_elec[df_elec.columns[1]] *= price_elec
     df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual cost'}, inplace=False)
@@ -610,8 +614,8 @@ def fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, carbon_intens
     annual: if True, the second column will include the annual value
             if False, only monthly value will be returned
     '''
-    df_elec = df_elec_in.copy()
-    df_gas = df_gas_in.copy()
+    df_elec = copy.deepcopy(df_elec_in)
+    df_gas = copy.deepcopy(df_gas_in)
     df_elec[df_elec.columns[1]] *= carbon_intensity_elec
     df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual emission'}, inplace=False)
     df_emission_elec = df_elec.copy()
@@ -648,7 +652,7 @@ def get_median(df_in:pd.DataFrame, row_name: str = '0'):
         (This is a bonus! No need to remove the 'LSOA_code' column in advance! :)
     row_name: row name you may want to customise, default as 'o' 
     '''
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     medians = df.median()
     median_df = medians.to_frame().transpose()
     median_df.index = [row_name]
@@ -742,7 +746,7 @@ def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: f
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     ###########################
 
     print(f'Beginning plot for geodistribution of {title}...')
@@ -819,7 +823,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
     ###########################
     print(f'Beginning plot for geodistribution (with city view) of {title}...')
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     # Initilize the graph
     axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
@@ -911,7 +915,7 @@ def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
     df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     ###########################
     print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
     
@@ -1026,21 +1030,16 @@ for t_max, mean and min senarios
     print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
     
     # Revising the data
-    df = df_dict.copy()
-    df_t = df_temproal.copy()
+    df = copy.deepcopy(df_dict)
+    df_t = copy.deepcopy(df_temproal)
     extended_df = pd.DataFrame()
     # Extend the original dataframe
+    extended_df['LSOA_code'] = df['LSOA_code']
     for i in ['tasmin','tas','tasmax']:
         extended_df[f'temp_{i}'] = df.apply(lambda x: x.iloc[1][i] if i in x.iloc[1] else np.nan, axis=1)
         extended_df[f'var_{i}'] = df.apply(lambda x: x.iloc[2][i] if i in x.iloc[2] else np.nan, axis=1)
-    # Yea you don't know if the key have a prefix :)
-    for i in ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin',
-              'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas',
-              'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax']:
-        extended_df[f'temp_{i}'] = df.apply(lambda x: x.iloc[1][i] if i in x.iloc[1] else np.nan, axis=1)
-        extended_df[f'var_{i}'] = df.apply(lambda x: x.iloc[2][i] if i in x.iloc[2] else np.nan, axis=1)
     
-    df_geo, val_value =data_treatment(df_geo, arg_name=False, arg_value_in=extended_df)
+    df_geo, val_value = data_treatment(df_geo, arg_name=False, arg_value_in = extended_df)
     divnorm = normalization(val_value, cb_scale)
     
     # Initialize the plot
@@ -1057,8 +1056,8 @@ for t_max, mean and min senarios
     fig = plt.figure(figsize=(7.5,7))
     axs = fig.subplot_mosaic(mosaic)    
     #plt.subplots_adjust(left=0)
-    cax = fig.add_axes([0.75, 0.1, 0.03, 0.8])
-    cax2 = fig.add_axes([0.875, 0.1, 0.03, 0.8])
+    cax = fig.add_axes([0.7, 0.1, 0.03, 0.8])
+    cax2 = fig.add_axes([0.85, 0.1, 0.03, 0.8])
     plt.subplots_adjust(right=0.736,left=0.098)
     keys = ['A','B','C']
 
@@ -1097,35 +1096,33 @@ for t_max, mean and min senarios
     axs['G'].spines["right"].set_visible(False)
     axs['G'].spines["left"].set_visible(False)
     axs['G'].spines["bottom"].set_visible(False)
-
+    
     # Plotting the line figure
     months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
     axs['E'].set_xlabel('Month')
     axs['E'].set_ylabel(df_dict.columns[2]+' (-)')
-    axs['E'].set_title('LSOA: '+df_t.index[0].split('/')[-1])
-    axs['E'].set_ylim(1,df_t.apply(lambda x: x.max()))
-    
-
     axs['F'].set_xlabel('Month')
     axs['F'].set_ylabel(df_dict.columns[2]+' (-)')
-    axs['F'].set_title('LSOA: '+df_t.index[1].split('/')[-1])
-    axs['F'].set_ylim(1,df_t.apply(lambda x: x.max()))
 
     groups = df_t.groupby(df_t.index)
     i =0 
     month_avg = 0
     for index_name, group in groups:
+        
+        group_max = group.max().max()
         if len(group) == 1:
             # Plot the line for the single-data row
             axs[['E','F'][i]].plot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle='solid')
             axs[['E','F'][i]].scatter([month],[group.iloc[month]],c='r')
             axs[['E','F'][i]].text(0.5,1.25,f'Avg {df_dict.columns[2]}: {str(np.round(group.mean(),2))}')
+            axs[['E','F'][i]].set_title('LSOA: '+ index_name)
+            axs[['E','F'][i]].set_ylim(1,group_max)
             month_avg = group.iloc[month]
             i+=1
 
         else:
             row_means = group.mean(axis=1)
-            
+
             # Reset the index of the group
             group = group.reset_index(drop=True)
             group.index = row_means
@@ -1137,12 +1134,14 @@ for t_max, mean and min senarios
             y1 = group.iloc[0]
             y2 = group.iloc[-1]
             # Plot the fill between the minimum and maximum rows
-            axs[['E','F'][i]].fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle='solid',alpha=0.1)
+            axs[['E','F'][i]].fill_between(x=df_t.columns, y1=y1, y2=y2, color='black',linestyle='solid',alpha=0.1)
             axs[['E','F'][i]].scatter([month, month],[y1.iloc[month],y2.iloc[month]],c='r')
             axs[['E','F'][i]].vlines(month,y1.iloc[month],y2.iloc[month],color='r',alpha=0.4)
+            axs[['E','F'][i]].set_title('LSOA: '+ index_name)
+            axs[['E','F'][i]].set_ylim(1,group_max)
             # Plot the remaining rows
             for _, row in group.iloc[1:-1].iterrows():
-                axs[['E','F'][i]].plot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle='solid')
+                axs[['E','F'][i]].plot(df_t.columns, row, label=index_name, color='black', linewidth=2, linestyle='solid')
                 axs[['E','F'][i]].scatter([month],[row.iloc[month]],c='r')
                 axs[['E','F'][i]].text(0.5,1.25,f'Avg {df_dict.columns[2]}: {str(np.round(row.mean(),2))}')
                 month_avg = row.iloc[month]
@@ -1171,7 +1170,6 @@ for t_max, mean and min senarios
     save_figures(title)
     print(f'{i} number of lines have been plotted')
 
-
 # ------------------------ Line chart Plot --------------------------------- #
 def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
     '''
@@ -1197,7 +1195,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
     y_label: str, name of the y-axis legend
     df: pd.DataFrame, dataframe to be processd
     '''
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     # Group the rows by index name
     groups = df.groupby(df.index)
 
@@ -1258,7 +1256,7 @@ def plot_box_and_whisker(filename: str, y_label: str, df_in: pd.DataFrame) :
     df: pd.DataFrame, dataframe to be processd
     '''
     flierprops = dict(markerfacecolor="k", markersize=0.05, linestyle="none", markeredgecolor="k")
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     # Initialize the plot
     fig, axs = plt.subplots(1,1,figsize=(5,2.5))
     plt.tight_layout()
@@ -1335,7 +1333,7 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     plt.tight_layout()
 
     # Group the rows by index name
-    df = df_in.copy()
+    df = copy.deepcopy(df_in)
     groups = df.groupby(df.index)
 
     i = 0
@@ -1368,6 +1366,7 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     save_figures(filename)
 
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
+df_full['LSOA_code'] = df_full['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
 '''
     LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
 '''
@@ -1429,24 +1428,64 @@ plot_multiple_geodistribution('Monthly Electrical Power Consumption (kWh/month)'
 
 # Test for plot_temperature_versus_var (COP as var) --------------
 
-# Prepare df_dict
+# Prepare df_temproal
 df_temp = remove_NaN(df_temp)
+df_temproal = pd.DataFrame()
+row1 = df_temp.loc[df_temp.iloc[:, 0] == ONS_ID + 'E01004731', :]
+row1.index = [0]
+row2 = df_temp.loc[df_temp.iloc[:, 0] == ONS_ID + 'E01019806', :]
+row2.index = [0]
+
+for i in range(12):
+    for key, value in date_dict.items():
+        if value == i:
+            date_key = key
+            df_temproal = df_temproal.assign(**{f'{date_key}': np.nan})
+            for j in range(3):
+                for key2, value2 in t_dict.items():
+                    if value2 ==j:
+                        temp_key = key2
+                        df_temproal.loc[j,f'{date_key}'] = row1.at[0,'temp'][key][temp_key]
+for i in range(12):
+    for key, value in date_dict.items():
+        if value == i:
+            date_key = key
+            for j in range(3):
+                for key2, value2 in t_dict.items():
+                    if value2 ==j:
+                        temp_key = key2
+                        df_temproal.loc[j+3,f'{date_key}'] = row2.at[0,'temp'][key][temp_key]
+
+df_temproal.index = [ONS_ID + 'E01004731', ONS_ID + 'E01004731', ONS_ID + 'E01004731',
+                     ONS_ID + 'E01019806', ONS_ID + 'E01019806', ONS_ID + 'E01019806']
+df_temproal = df_temproal.applymap(COP)
+# Prepare df_dict
 values = []
 for key, val in df_temp['temp'].items():
     for key2, val2 in val.items():
         if key2 == '2020-02-01T12:00:00.000Z':
                 values.append(val2)
-df_temp['temp'] = values
-df_temp_copy = df_temp.copy()
 
-for key, val in df_temp_copy['temp'].items():
+# Reserve temp reading, as values
+values_copy = copy.deepcopy(values)
+
+# Calculate COP
+df_temp['temp'] = values_copy
+for key, val in df_temp['temp'].items():
     for key2, val2 in val.items():
-        df_temp_copy['temp'][key][key2] = COP(val2)
+        df_temp['temp'][key][key2] = COP(val2)
+df_cop = df_temp.rename(columns = {'temp':'COP'})
 
-df_cop = df_temp_copy.rename(columns = {'temp':'COP'})
+# Assign temperature value back
+df_temp['temp'] = values
 df_dict, _ = data_treatment(df_temp,arg_name=False,arg_value_in = df_cop)
 
-convert_df(df_dict)
+plot_temperature_versus_var(label = 'Coefficient of Performance (-)',
+                            title='cop',
+                            df_dict = df_dict, 
+                            month = 2, 
+                            df_temproal = df_temproal, 
+                            cb_scale = 2)
 
 # ----------------------------------------------------------------
 ##########################################################

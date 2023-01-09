@@ -16,10 +16,7 @@ DB_USER = "postgres"
 DB_PASSWORD = "postgres"
 # Dictionary to convert climate var type to index in tensor
 
-t_dict = {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\
-          'tasmin':0,\
+t_dict = {'tasmin':0,\
           'tas':1,\
           'tasmax':2}
 
@@ -35,8 +32,9 @@ date_dict = {'2020-01-01T12:00:00.000Z':0,\
              '2020-09-01T12:00:00.000Z':8,\
              '2020-10-01T12:00:00.000Z':9,\
              '2020-11-01T12:00:00.000Z':10,\
-             '2020-12-01T12:00:00.000Z':11,\
-             '2021-01-01T12:00:00.000Z':0,\
+             '2020-12-01T12:00:00.000Z':11}
+
+date_dict_2021 =  {'2021-01-01T12:00:00.000Z':0,\
              '2021-02-01T12:00:00.000Z':1,\
              '2021-03-01T12:00:00.000Z':2,\
              '2021-04-01T12:00:00.000Z':3,\
@@ -572,6 +570,8 @@ def get_all_data(limit = False):
     # Get correct format of the datetime
     for key_1, value_1 in temp_dict.items():
         temp_dict[key_1] = reformat_dates(value_1)
+        for key, value in temp_dict[key_1].items():
+          temp_dict[key_1][key] = {key_2.replace('http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/', ''): value_2 for key_2, value_2 in temp_dict[key_1][key].items()}
     # Making the DataFrame
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
     df['ons_shape'] = df['LSOA_code'].apply(lambda x: LSOA_shapes.get(x, np.nan))
