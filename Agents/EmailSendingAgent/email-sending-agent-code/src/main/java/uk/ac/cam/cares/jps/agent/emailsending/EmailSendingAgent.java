@@ -36,12 +36,13 @@ public class EmailSendingAgent extends JPSAgent{
 
     	try {
 			email.sendEmail("testing", "The email was sent successfully.");
+            JSONObject result = new JSONObject();
+            result.put("message", "The email was sent successfully.");
+            return result;
 		} catch (Exception e) {
             throw new JPSRuntimeException(SENDEMAIL_ERROR_MSG);
 		}
 		
-    	JSONObject result = new JSONObject();
-    	result.put("message", "The email was sent successfully.");
-		return result;
+
     }
 }
