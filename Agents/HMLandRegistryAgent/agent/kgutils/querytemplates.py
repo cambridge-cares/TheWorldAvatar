@@ -10,7 +10,7 @@ import uuid
 
 import agentlogging
 
-from landregistry.datamodel.iris import *
+from agent.datamodel.iris import *
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

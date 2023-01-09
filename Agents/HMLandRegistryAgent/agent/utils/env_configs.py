@@ -21,7 +21,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE
+    global DATABASE, NAMESPACE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -34,6 +34,15 @@ def retrieve_settings():
     if DATABASE != 'postgres':
         logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         warnings.warn(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
+
+    # Retrieve target Blazegraph name for data to instantiate
+    NAMESPACE = os.getenv('NAMESPACE')
+    if NAMESPACE is None:
+        logger.error('"NAMESPACE" name is missing in environment variables.')
+        raise ValueError('"NAMESPACE" name is missing in environment variables.')
+    if NAMESPACE == '':
+        logger.error('No "NAMESPACE" value has been provided in environment variables.')
+        raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
 
 # Run when module is imported

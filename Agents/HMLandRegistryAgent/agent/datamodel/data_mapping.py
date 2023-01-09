@@ -10,10 +10,13 @@
 # For details on PPD data, see:
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
-from landregistry.datamodel.iris import *
+from agent.datamodel.iris import *
 
-from landregistry.kgutils.javagateway import jpsBaseLibGW
+from agent.kgutils.javagateway import jpsBaseLibGW
 
+# OM/UOM SYMBOLS
+GBP_PER_SM = '£ m-2'
+GBP = '£'
 
 OTHER_PROPERTY_TYPE = 'OTHER'
 PPD_PROPERTY_TYPES = {

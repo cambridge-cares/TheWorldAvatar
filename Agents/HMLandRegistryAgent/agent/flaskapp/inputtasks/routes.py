@@ -7,8 +7,8 @@ from flask import Blueprint, request, jsonify
 
 import agentlogging
 
-from landregistry.errorhandling.exceptions import InvalidInput
-from landregistry.datainstantiation.sales_instantiation import update_transaction_records, \
+from agent.errorhandling.exceptions import InvalidInput
+from agent.datainstantiation.sales_instantiation import update_transaction_records, \
                                                                update_all_transaction_records
 
 

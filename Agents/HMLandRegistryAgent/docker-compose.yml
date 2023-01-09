@@ -7,6 +7,7 @@ services:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
+      - NAMESPACE=buildings
     ports:
       - "5002:5000"
     volumes:

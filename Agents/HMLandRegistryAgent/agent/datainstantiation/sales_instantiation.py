@@ -15,15 +15,15 @@ from fuzzywuzzy import fuzz, process
 
 import agentlogging
 
-from landregistry.datamodel.iris import *
-from landregistry.datamodel.data_mapping import *
-from landregistry.datamodel.data_mapping import TIME_FORMAT, DATACLASS
-from landregistry.errorhandling.exceptions import KGException
-from landregistry.kgutils.kgclient import KGClient
-from landregistry.kgutils.tsclient import TSClient
-from landregistry.utils.api_endpoints import HM_SPARQL_ENDPOINT
-from landregistry.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from landregistry.kgutils.querytemplates import *
+from agent.datamodel.iris import *
+from agent.datamodel.data_mapping import *
+from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
+from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.kgutils.querytemplates import *
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

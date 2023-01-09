@@ -1,3 +1,7 @@
+###--- TBox and ABox URL ---###
+TBOX_URL = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+ABOX_URL = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -96,3 +100,21 @@ ICONTACT_HAS_BUILDING = ICONTACT + 'hasBuilding'
 ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
 ONS_NAME = ONS1 + 'officialname'
 ONS_BEST_LOCAL_AUTHORITY = ONS2 + 'localauthoritydistrict'
+
+# OWL
+OWL_VERSION = OWL + 'versionInfo'
+
+# Ontology of units of measure
+OM_AREA = OM + 'Area'
+OM_HEIGHT = OM + 'Height'
+OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
+OM_HAS_VALUE = OM + 'hasValue'
+OM_MEASURE = OM + 'Measure'
+OM_NUM_VALUE = OM + 'hasNumericalValue'
+OM_HAS_UNIT = OM + 'hasUnit'
+OM_UNIT = OM + 'Unit'
+OM_SYMBOL = OM + 'symbol'
+OM_M = OM + 'metre'
+OM_M2 = OM + 'squareMetre'
+OM_GBP = OM + 'poundSterling'
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
