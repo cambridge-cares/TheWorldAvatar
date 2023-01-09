@@ -8,9 +8,14 @@ This module provides helper methods to generate separate tilesets and write to a
 import json
 from pathlib import Path
 
+# Third party imports
+from py4jps import agentlogging
+
 # Self imports
 from agent.ifc2tileset.root_tile import root_tile
 
+# Retrieve logger
+logger = agentlogging.get_logger("dev")
 
 def gen_solarpanel_tileset():
     """
@@ -47,4 +52,4 @@ def jsonwriter(tileset, tileset_string):
     json_string = json.dumps(tileset)
     with open('data/'+tileset_string+'.json', 'w', encoding="utf-8") as outfile:
         outfile.write(json_string)
-    print(tileset_string+".json have been generated")
+    logger.info(tileset_string+".json have been generated")

@@ -10,6 +10,11 @@ import os
 import re
 import subprocess
 
+# Third party imports
+from py4jps import agentlogging
+
+# Retrieve logger
+logger = agentlogging.get_logger("dev")
 
 def run_shellcommand(command, require_shell=False):
     """
@@ -69,14 +74,17 @@ def read_ifc_file(ifc_dir):
                 if os.path.isfile(os.path.join(ifcpath, file)) and not file == ".gitignore"]
     ifc_input = ""
     if not filelist:
-        raise FileNotFoundError(
-            'No ifc file is available at the ./data/ifc folder')
+        errormsg = 'No ifc file is available at the ./data/ifc folder'
+        logger.error(errormsg)
+        raise FileNotFoundError(errormsg)
     elif len(filelist) == 1:
         ifc_input = os.path.join(ifcpath, filelist[0])
+        logger.debug("One IFC file detected: " + ifc_input)
     else:
-        raise RuntimeError(
-            'More than one IFC file is located at the ./data/ifc folder. ' +
-            'Please place only ONE IFC file')
+        errormsg = 'More than one IFC file is located at the ./data/ifc folder. '
+        errormsg += 'Please place only ONE IFC file'
+        logger.error(errormsg)
+        raise RuntimeError(errormsg)
     return ifc_input
 
 
@@ -92,7 +100,7 @@ def cleandir():
                 if  not (filepath.startswith("./data/ifc") or filepath.endswith('.gitignore')):
                     os.remove(filepath)
             except OSError:
-                print("Error while deleting file")
+                logger.error("Error while deleting file")
 
 
 def find_dictindex(lst, key, value):

@@ -1,3 +1,10 @@
+"""
+# Author: qhouyee #
+
+This module is the entrypoint to the agent, which accepts and
+validates POST request before running the agent.
+"""
+
 # Third party imports
 import ifcopenshell
 from flask import Flask, jsonify, request
@@ -20,7 +27,7 @@ def default():
     msg = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
     msg += "<BR>"
     msg += "(GET) request to convert IFC models to Cesium's 3D tilesets:<BR>"
-    msg += "&nbsp&nbsp [this_url]/api<BR><BR>"
+    msg += "&nbsp&nbsp [this_url]/api<BR>"
     msg += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
     return msg
 
@@ -35,19 +42,22 @@ def api():
         if data["run"].strip() != "yes":
             logger.error(errormsg)
             return errormsg
-    else: 
+    else:
+        logger.error(errormsg)
         return "Invalid Request Method. Only POST request is accepted."
 
+    logger.info("Cleaning the data directory...")
     cleandir()
-    # Set the IFC model
+
+    logger.info("Reading the IFC model...")
     ifc_filepath = read_ifc_file(['data', 'ifc'])
-    
     ifc = ifcopenshell.open(ifc_filepath)
-    # Convert and split the ifc model into gltf files
+
+    logger.info("Converting the model into glTF files...")
     hashmapping = conv2gltf(ifc, ifc_filepath)
 
-    # Generate tilesets
+    logger.info("Generating the tilesets...")
     gen_tilesets(hashmapping)
     # Return the result in JSON format
-    return jsonify({"result": "IFC model has successfully been converted. Please visit the 'data' directory for the outputs"})
-
+    return jsonify({"result": "IFC model has successfully been converted." +
+    "Please visit the 'data' directory for the outputs"})

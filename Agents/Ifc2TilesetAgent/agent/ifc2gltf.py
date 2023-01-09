@@ -6,10 +6,13 @@ This module generates glTF models from the IFC file.
 
 # Third party imports
 from ifcopenshell.util.selector import Selector
+from py4jps import agentlogging
 
 # Self imports
 from agent.utils import find_word, run_shellcommand, retrieve_abs_filepath
 
+# Retrieve logger
+logger = agentlogging.get_logger("dev")
 
 def verify_feature_exists(featurelist, ifc):
     """
@@ -123,6 +126,7 @@ def conv2gltf(ifc, input_ifc):
     Returns:
         A hashtable linking each IFC id with their glTF file name
     """
+    logger.debug("Generating dictionary for splitting IFC assets.")
     dict_for_split, hashmapping = gendict4split(ifc)
 
     for key, value_list in dict_for_split.items():
@@ -132,13 +136,15 @@ def conv2gltf(ifc, input_ifc):
         gltfpath = retrieve_abs_filepath(gltfpath)
 
         # Initialise the commands and append accordingly
-        ifcconvert_command = [ "./IfcConvert", input_ifc, glbpath]
+        ifcconvert_command = [ "./IfcConvert", "-q", input_ifc, glbpath]
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
         glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
         # Convert from IFC -> glb -> glTF
-        print("Converting " + key + " to glTF...")
+        logger.info("Converting " + key + " to glTF...")
         run_shellcommand(ifcconvert_command)
+        logger.debug("IfcConvert command executed: " + " ".join(ifcconvert_command))
         run_shellcommand(glb2gltf_command, True)
-    print("Conversion to gltf completed...")
+        logger.debug("gltf-pipieline Command executed: " + " ".join(glb2gltf_command))
+    logger.info("Conversion to gltf completed...")
     return hashmapping
