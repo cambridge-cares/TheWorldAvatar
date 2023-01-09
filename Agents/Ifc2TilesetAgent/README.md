@@ -68,8 +68,10 @@ Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked
 
 ### 2.2 API
 Instructions for the agent and its various API endpoints can be found at the API root `http://localhost:5105/`. A brief overview is as follows:
-- **POST** request to convert an IFC model to 3D Tileset, and output tileset.json files
-    - Currently, only `{"run" : "yes"}` is accepted as a parameter for this endpoint.
+- **POST** request to convert an IFC model to 3D Tileset, and output tileset.json files. Accepted parameters:
+    1. `assetUrl`  
+    - Sets the file path to directory or url holding the glTF assets in the tilesets generated.
+    - Valid formats include `"."`, `"./file/path"`, `"../../file/path"`, and `"http://www.example.com"`. Please do not add an ending `/`, which will be generated in the code itself.
 ```
 /api
 ```
@@ -77,7 +79,7 @@ Instructions for the agent and its various API endpoints can be found at the API
 ### 2.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
-curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"run\":\"yes\"}'  
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./gltf\"}'  
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:

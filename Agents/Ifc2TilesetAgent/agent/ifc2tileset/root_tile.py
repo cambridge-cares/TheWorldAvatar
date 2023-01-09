@@ -7,6 +7,8 @@ This module provides the root tile and its bounding boxes for all tilesets.
 # Standard library imports
 from pathlib import Path
 
+# Self imports
+import agent.app as state
 
 def bbox_root():
     """
@@ -78,13 +80,13 @@ def gen_root_content():
     if bpath.is_file():
         rootlist = []
         if fpath.is_file():
-            rootlist += [{"uri": "./gltf/furniture.gltf"}]
+            rootlist += [{"uri": state.asset_url + "furniture.gltf"}]
         # If there are furniture, use the multiple nomenclature
         if rootlist:
-            rootlist += [{"uri": "./gltf/building.gltf"}]
+            rootlist += [{"uri": state.asset_url + "building.gltf"}]
             # Tileset Nomenclature for multiple geometry files = contents:[{}]
             tileset["root"]["contents"] = rootlist
         else:
             # Tileset Nomenclature for 1 geometry file = content:{}
-            tileset["root"]["content"] = {"uri": "./gltf/building.gltf"}
+            tileset["root"]["content"] = {"uri": state.asset_url + "building.gltf"}
     return tileset

@@ -11,7 +11,7 @@ from flask import Flask, jsonify, request
 from py4jps import agentlogging
 
 # Self imports
-from agent.utils import read_ifc_file, cleandir
+from agent.utils import read_ifc_file, cleandir, validate_asset_url
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
 from agent.exceptions import InvalidInputError
@@ -21,6 +21,9 @@ app = Flask(__name__)
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")
+
+# Shared fields
+asset_url = "default"
 
 # Show an instructional message at the app's home page
 @app.route('/')
@@ -38,13 +41,14 @@ def api():
     # Check arguments (query parameters)
     logger.info("Checking parameters...")
     if request.method == 'POST':
-        errormsg = "Invalid 'run' parameter. Only yes is accepted!"
         data = request.get_json(force=True)
-        if data["run"].strip() != "yes":
-            logger.error(errormsg)
-            raise InvalidInputError(errormsg)
+        if "assetUrl" in data:
+            global asset_url
+            asset_url = validate_asset_url(data["assetUrl"])
+            logger.debug("assetURL is valid!")
+        else:
+            raise InvalidInputError("Missing `assetUrl` parameter in request!")
     else:
-        logger.error(errormsg)
         return "Invalid Request Method. Only POST request is accepted."
 
     logger.info("Cleaning the data directory...")

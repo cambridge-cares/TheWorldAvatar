@@ -5,8 +5,8 @@ This module provides methods to generate tilesets related to assets.
 """
 
 # Self imports
+import agent.app as state
 from agent.ifc2tileset.root_tile import gen_root_content, bbox_child
-
 
 def init_asset_tiles():
     """
@@ -91,7 +91,7 @@ def gen_tileset_assets(hashmapping):
     # Add geometry and uid for each asset
     for uid, nested_dict in hashmapping.items():
         assetlist.append({
-            'uri': "./gltf/"+nested_dict.get("file")+".gltf",
+            'uri': state.asset_url +nested_dict.get("file")+".gltf",
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                 'class': "AssetMetaData",

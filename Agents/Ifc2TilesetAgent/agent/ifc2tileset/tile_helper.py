@@ -12,6 +12,7 @@ from pathlib import Path
 from py4jps import agentlogging
 
 # Self imports
+import agent.app as state
 from agent.ifc2tileset.root_tile import root_tile
 
 # Retrieve logger
@@ -25,7 +26,7 @@ def gen_solarpanel_tileset():
     solarpath = Path(solarpanel_file_path)
     if solarpath.is_file():
         tileset = root_tile()
-        tileset["root"]["content"] = {"uri": "./gltf/solarpanel.gltf"}
+        tileset["root"]["content"] = {"uri": state.asset_url + "solarpanel.gltf"}
         jsonwriter(tileset, "tileset_solarpanel")
 
 
@@ -37,7 +38,7 @@ def gen_sewagenetwork_tileset():
     sewagepath = Path(sewage_file_path)
     if sewagepath.is_file():
         tileset = root_tile()
-        tileset["root"]["content"] = {"uri": "./gltf/sewagenetwork.gltf"}
+        tileset["root"]["content"] = {"uri": state.asset_url + "sewagenetwork.gltf"}
         jsonwriter(tileset, "tileset_sewage")
 
 
