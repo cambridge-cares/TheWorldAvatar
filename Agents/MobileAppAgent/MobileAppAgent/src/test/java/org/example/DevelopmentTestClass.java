@@ -1,4 +1,7 @@
+package org.example;
+
 import org.json.JSONArray;
+import org.testng.annotations.Test;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -13,9 +16,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 
-public class MobileAppAgent extends JPSAgent {
+@Test
+public class DevelopmentTestClass extends JPSAgent {
 
-    //Declare tables
     public static final String accelerometer = "accelerometer";
     public static final String gravity = "gravity";
     public static final String light = "light";
@@ -57,9 +60,15 @@ public class MobileAppAgent extends JPSAgent {
     String password = "postgres";
     RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
     RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/sensor/sparql", "http://127.0.0.1:9999/blazegraph/namespace/sensor/sparql");
+
+    List<Class> dataClass = Arrays.asList(Double.class);
+    String timeUnit = OffsetDateTime.class.getSimpleName();
     TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
+    ArrayList<List> dataArrayList;
     JSONArray dataArray;
+    //    String Query = "SELECT timestamp, accel_x, accel_y, accel_z FROM public.accelerometer";
     String Query;
+
 
     public void main() {
         //Loop through each table
@@ -87,12 +96,6 @@ public class MobileAppAgent extends JPSAgent {
 
     }
 
-    /**
-     * @param tableNumber
-     * @param dataArray
-     * @param dataIRIList
-     * @return
-     */
 
     private TimeSeries parseDataToLists(int tableNumber, JSONArray dataArray, List<String> dataIRIList) {
         List<TimeSeries<Double>> tsList = new ArrayList<>();
@@ -125,12 +128,9 @@ public class MobileAppAgent extends JPSAgent {
         }
         //Pass time list, dataIRI List - just one, lolvalues, add timeseries to output
         return new TimeSeries(timesList, dataIRIList, lolvalues);
+
     }
 
-    /**
-     * @param tableNumber
-     * @return
-     */
     private List<String> createTimeSeries(int tableNumber) {
         List tableHeader= tableHeaderList.get(tableNumber);
         List<String> dataIRIList = new ArrayList<>();;
@@ -144,6 +144,9 @@ public class MobileAppAgent extends JPSAgent {
 
         List<Class> dataClass = (Collections.nCopies(tableHeader.size()-1,Double.class));
         String timeUnit = OffsetDateTime.class.getSimpleName();
+        TimeSeriesClient.Type type = TimeSeriesClient.Type.GENERAL;
+        Duration durations = null;
+        ChronoUnit units = null;
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
@@ -155,11 +158,6 @@ public class MobileAppAgent extends JPSAgent {
 
         return dataIRIList;
     }
-
-    /**
-     * @param i
-     * @return
-     */
 
     private static String getQueryString(int i){
         String query;
