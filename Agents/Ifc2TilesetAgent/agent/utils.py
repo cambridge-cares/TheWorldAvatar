@@ -13,6 +13,9 @@ import subprocess
 # Third party imports
 from py4jps import agentlogging
 
+# Self imports
+from agent.exceptions import InvalidInputError
+
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
@@ -84,7 +87,7 @@ def read_ifc_file(ifc_dir):
         errormsg = 'More than one IFC file is located at the ./data/ifc folder. '
         errormsg += 'Please place only ONE IFC file'
         logger.error(errormsg)
-        raise RuntimeError(errormsg)
+        raise InvalidInputError(errormsg)
     return ifc_input
 
 

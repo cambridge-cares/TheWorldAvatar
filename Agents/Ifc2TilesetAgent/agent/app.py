@@ -14,6 +14,7 @@ from py4jps import agentlogging
 from agent.utils import read_ifc_file, cleandir
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
+from agent.exceptions import InvalidInputError
 
 # Create the Flask app object
 app = Flask(__name__)
@@ -41,7 +42,7 @@ def api():
         data = request.get_json(force=True)
         if data["run"].strip() != "yes":
             logger.error(errormsg)
-            return errormsg
+            raise InvalidInputError(errormsg)
     else:
         logger.error(errormsg)
         return "Invalid Request Method. Only POST request is accepted."
