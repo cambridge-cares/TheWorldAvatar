@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.mobileappagent;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -8,6 +9,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -61,39 +64,71 @@ public class MobileAppAgent extends JPSAgent {
     JSONArray dataArray;
     String Query;
 
-    public void main() {
-        //Loop through each table
-        for (int i=0; i<tableList.size(); i++){
-            Query=getQueryString(i);
 
-            dataArray = rdbStoreClient.executeQuery(Query);
-
-            //Create Timeseries
-            List<String> dataIRIList = createTimeSeries(i);
-
-            //GetTimeSeries
-            TimeSeries getTimeSeries =parseDataToLists(i, dataArray, dataIRIList);
-
-            //Add timeseries data with tsList
-            try (Connection conn = rdbStoreClient.getConnection()){
-                tsClient.addTimeSeriesData(getTimeSeries, conn);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-                throw new JPSRuntimeException(e);
-            }
-
-        }
-
+    /**
+     * Processes HTTP requests with originating details.
+     * @param requestParams Request parameters in a JSONObject.
+     * @param request HTTP Servlet Request.
+     * @return response in JSON format.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        return processRequestParameters(requestParams);
     }
 
     /**
-     * @param tableNumber
-     * @param dataArray
-     * @param dataIRIList
-     * @return
+     *
+     * Processes HTTP requests.
+     * @param requestParams Request parameters as a JSONObject.
+     * @return response in JSON format.
      */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+        if (validateInput(requestParams)) {
+            //Loop through each table
+            for (int i = 0; i < tableList.size(); i++) {
+                Query = getQueryString(i);
 
+                dataArray = rdbStoreClient.executeQuery(Query);
+
+                //Create Timeseries
+                List<String> dataIRIList = createTimeSeries(i);
+
+                //GetTimeSeries
+                TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
+
+                //Add timeseries data with tsList
+                try (Connection conn = rdbStoreClient.getConnection()) {
+                    tsClient.addTimeSeriesData(getTimeSeries, conn);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
+
+            }
+
+        }
+        return requestParams;
+    }
+
+        /**
+         * Checks the incoming JSON request for validity.
+         * @param requestParams JSON request parameters.
+         * @return request validity
+         */
+        @Override
+        public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+            boolean valid = true;
+            return valid;
+        }
+
+
+        /**
+         * @param tableNumber
+         * @param dataArray
+         * @param dataIRIList
+         * @return
+         */
     private TimeSeries parseDataToLists(int tableNumber, JSONArray dataArray, List<String> dataIRIList) {
         List<TimeSeries<Double>> tsList = new ArrayList<>();
         List<String> timesList = new ArrayList<>();
