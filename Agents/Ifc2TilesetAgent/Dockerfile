@@ -46,16 +46,16 @@ COPY ./agent ./agent
 #==================================================================================================
 FROM builder as test
 
-# Copy the Python test source code
-COPY ./tests ./tests
-
 # Install testing frameworks
 RUN python -m pip install pytest
+
+# Copy the Python test source code
+COPY ./tests ./tests
 
 # Make the required directories for testing
 RUN mkdir -p data/ifc data/glb data/gltf && \  
 # Execute unit test
-    pytest
+pytest
 
 #==================================================================================================
 

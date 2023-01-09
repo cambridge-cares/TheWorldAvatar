@@ -1,9 +1,9 @@
 version: '3.9'
 
 services:
-  ifc2tileset-agent:
-    container_name: ifc2tileset-agent
-    image: ifc2tileset-agent:1.1.0
+  ifc2tileset-agent-test:
+    container_name: ifc2tileset-agent-test
+    image: ifc2tileset-agent:test
     build:
       context: ..
       target: test
