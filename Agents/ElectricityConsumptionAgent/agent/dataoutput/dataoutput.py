@@ -5,8 +5,8 @@
 
 # The purpose of this module is to perform data output to generate figures
 # in various format
-# NOTE: pd.DataFrame is used frequently in this module, where for all the dataframe, the column[0]
-# should all be LSOA code used as identifier
+# NOTE: pd.DataFrame is used frequently in this module, where for all the dataframe
+# without special notice, the column[0] should all be LSOA code used as identifier
 
 import agentlogging
 from agent.kgutils.kgclient import KGClient
@@ -99,7 +99,8 @@ def data_treatment(df, arg_name, arg_value_in):
             # If can not found, default as the last column
             val_values = df_copy.iloc[:, -1].values
             
-        if (type(val_values[0]) == int)  or (type(val_values[0]) == float):
+        # Check if this array is applicable for normalization
+        if isinstance(val_values[0], (int, float)):
             # Create a boolean mask indicating which elements are NaN values
             mask = np.isnan(val_values)
             # Select only the non-NaN values from the array
@@ -1049,21 +1050,21 @@ for t_max, mean and min senarios
     EEEAAAA
     EEEAAAA
     GGGAAAA
-    FFFAAAA
+    FFFBBCC
     FFFBBCC
     FFFBBCC
     """
     fig = plt.figure(figsize=(7.5,7))
     axs = fig.subplot_mosaic(mosaic)    
     #plt.subplots_adjust(left=0)
-    cax = fig.add_axes([0.7, 0.1, 0.03, 0.8])
-    cax2 = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+    cax = fig.add_axes([0.75, 0.1, 0.03, 0.8])
+    cax2 = fig.add_axes([0.87, 0.1, 0.03, 0.8])
     plt.subplots_adjust(right=0.736,left=0.098)
-    keys = ['A','B','C']
+    keys = ['B','A','C']
 
     # Plotting the geospatial distribution
     for i in range(3):
-        tl  = df_geo.plot(df_geo.iloc[:, i + 2],\
+        tl  = df_geo.plot(df_geo.iloc[:, 2* i + 3],\
                 cmap=color_theme,\
                 antialiased=False,\
                 ax = axs[keys[i]],\
@@ -1115,7 +1116,7 @@ for t_max, mean and min senarios
             axs[['E','F'][i]].plot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle='solid')
             axs[['E','F'][i]].scatter([month],[group.iloc[month]],c='r')
             axs[['E','F'][i]].text(0.5,1.25,f'Avg {df_dict.columns[2]}: {str(np.round(group.mean(),2))}')
-            axs[['E','F'][i]].set_title('LSOA: '+ index_name)
+            axs[['E','F'][i]].set_title('LSOA: '+ index_name.split('/')[-1])
             axs[['E','F'][i]].set_ylim(1,group_max)
             month_avg = group.iloc[month]
             i+=1
@@ -1134,11 +1135,11 @@ for t_max, mean and min senarios
             y1 = group.iloc[0]
             y2 = group.iloc[-1]
             # Plot the fill between the minimum and maximum rows
-            axs[['E','F'][i]].fill_between(x=df_t.columns, y1=y1, y2=y2, color='black',linestyle='solid',alpha=0.1)
-            axs[['E','F'][i]].scatter([month, month],[y1.iloc[month],y2.iloc[month]],c='r')
-            axs[['E','F'][i]].vlines(month,y1.iloc[month],y2.iloc[month],color='r',alpha=0.4)
-            axs[['E','F'][i]].set_title('LSOA: '+ index_name)
-            axs[['E','F'][i]].set_ylim(1,group_max)
+            axs[['F','E'][i]].fill_between(x=df_t.columns, y1=y1, y2=y2, color='black',linestyle='solid',alpha=0.1)
+            axs[['F','E'][i]].scatter([month, month],[y1.iloc[month],y2.iloc[month]],c='r')
+            axs[['F','E'][i]].vlines(month,y1.iloc[month],y2.iloc[month],color='r',alpha=0.4)
+            axs[['F','E'][i]].set_title('LSOA: '+ index_name.split('/')[-1])
+            axs[['F','E'][i]].set_ylim(1,group_max)
             # Plot the remaining rows
             for _, row in group.iloc[1:-1].iterrows():
                 axs[['E','F'][i]].plot(df_t.columns, row, label=index_name, color='black', linewidth=2, linestyle='solid')
@@ -1427,7 +1428,7 @@ plot_multiple_geodistribution('Monthly Electrical Power Consumption (kWh/month)'
 # ----------------------------------------------------------------
 
 # Test for plot_temperature_versus_var (COP as var) --------------
-
+'''
 # Prepare df_temproal
 df_temp = remove_NaN(df_temp)
 df_temproal = pd.DataFrame()
@@ -1485,8 +1486,8 @@ plot_temperature_versus_var(label = 'Coefficient of Performance (-)',
                             df_dict = df_dict, 
                             month = 2, 
                             df_temproal = df_temproal, 
-                            cb_scale = 2)
-
+                            cb_scale = 0.5)
+'''
 # ----------------------------------------------------------------
 ##########################################################
 
