@@ -1,41 +1,41 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Properties;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
 
+    public static final String NAME_KEY = "name";
+
     private String name;
-    private Path datasetDirectory;
-    private String workspaceName;
 
-    private String database;
+    private final Path datasetDirectory;
 
-    private List<String> externalDatasets;
+    private final String database;
+    private final Namespace namespace;
+    private final String workspaceName;
 
-    private List<DataSubset> dataSubsets;
+    private final List<String> externalDatasets;
+    private final List<DataSubset> dataSubsets;
+    private final List<GeoServerStyle> geoserverStyles;
+    private final List<String> ontopMappings;
 
-    private List<GeoServerStyle> geoserverStyles;
-
-    private List<String> ontopMappings;
-
-    private boolean skip;
+    private final boolean skip;
 
     @JsonCreator
-    public Dataset(@JsonProperty(value = "name") String name,
+    public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
             @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
-            @JsonProperty(value = "workspace") String workspaceName,
             @JsonProperty(value = "database") String database,
+            @JsonProperty(value = "namespace") Namespace namespace,
+            @JsonProperty(value = "workspace") String workspaceName,
             @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
@@ -43,12 +43,13 @@ public class Dataset {
             @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
-        this.workspaceName = (null != workspaceName) ? workspaceName : name;
         this.database = database;
-        this.externalDatasets = (null != externalDatasets) ? externalDatasets : new ArrayList<>();
-        this.dataSubsets = (null != dataSubsets) ? dataSubsets : new ArrayList<>();
-        this.geoserverStyles = (null != geoserverStyles) ? geoserverStyles : new ArrayList<>();
-        this.ontopMappings = (null != ontopMappings) ? ontopMappings : new ArrayList<>();
+        this.namespace = namespace;
+        this.workspaceName = workspaceName;
+        this.externalDatasets = externalDatasets;
+        this.dataSubsets = dataSubsets;
+        this.geoserverStyles = geoserverStyles;
+        this.ontopMappings = ontopMappings;
         this.skip = skip;
     }
 
@@ -60,48 +61,52 @@ public class Dataset {
         this.name = name;
     }
 
-    private Path getDatasetDirectory() {
-        return (null != datasetDirectory) ? datasetDirectory : Path.of(name);
+    public Path getDirectory() {
+        return Path.of("/inputs", "data").resolve((null != datasetDirectory) ? datasetDirectory : Path.of(name));
+    }
+
+    public String getDatabase() {
+        return (null != database) ? database : "postgres";
+    }
+
+    public String getNamespace() {
+        if (null != namespace && null != namespace.getName()) {
+            return namespace.getName();
+        } else {
+            return name;
+        }
+    }
+
+    public Properties getNamespaceProperties() {
+        if (null != namespace && null != namespace.getProperties()) {
+            return namespace.getProperties();
+        } else {
+            return new Properties();
+        }
+    }
+
+    public String getWorkspaceName() {
+        return (null != workspaceName) ? workspaceName : name;
     }
 
     public List<String> getExternalDatasets() {
-        return externalDatasets;
+        return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
+    }
+
+    public List<DataSubset> getDataSubsets() {
+        return (null != dataSubsets) ? dataSubsets : Collections.emptyList();
+    }
+
+    public List<GeoServerStyle> getGeoserverStyles() {
+        return (null != geoserverStyles) ? geoserverStyles : Collections.emptyList();
+    }
+
+    public List<String> getOntopMappings() {
+        return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
     }
 
     public boolean isSkip() {
         return skip;
-    }
-
-    public void loadData() {
-        if (!skip) {
-            PostGISClient postGISClient = new PostGISClient();
-            GDALClient gdalClient = new GDALClient();
-            GeoServerClient geoServerClient = new GeoServerClient();
-            OntopClient ontopClient = new OntopClient();
-
-            Path fullDatasetDir = Path.of("/inputs", "data").resolve(getDatasetDirectory());
-            String fullDatasetDirStr = fullDatasetDir.toString();
-
-            if (null != database) {
-                postGISClient.createDatabase(database);
-            }
-
-            if (dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).count() > 0
-                    || !geoserverStyles.isEmpty()) {
-                geoServerClient.createWorkspace(workspaceName);
-
-                geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
-            }
-
-            dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
-                    subset -> {
-                        subset.loadData(gdalClient, fullDatasetDirStr, database);
-                        subset.runSQLPostProcess(postGISClient, database);
-                        subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
-                    });
-
-            ontopMappings.forEach(mapping -> ontopClient.updateOBDA(fullDatasetDir.resolve(mapping)));
-        }
     }
 
 }
