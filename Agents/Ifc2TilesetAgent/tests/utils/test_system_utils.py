@@ -1,7 +1,7 @@
 """
 # Author: qhouyee #
 
-A test suite for the agent.utils submodule.
+A test suite for the agent.utils.system_utils submodule.
 """
 
 # Standard library imports
@@ -11,7 +11,8 @@ import os
 import pytest
 
 # Self import
-from agent.utils import retrieve_abs_filepath, read_ifc_file, find_dictindex, find_word
+from agent.utils import retrieve_abs_filepath, read_ifc_file
+from agent.exceptions import InvalidInputError
 
 
 def test_retrieve_abs_filepath():
@@ -65,7 +66,7 @@ def test_read_ifc_file_multiple_ifc_fails():
     open(ifcfile, "x", encoding="utf-8")
     open(ifcfile2, "x", encoding="utf-8")
     # Raises error for directory with more than 1 IFC file
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(InvalidInputError) as exc_info:
         read_ifc_file(["data"])
 
     # Remove these files before assertion
@@ -73,34 +74,3 @@ def test_read_ifc_file_multiple_ifc_fails():
     os.remove(ifcfile2)
     assert exc_info.match(
         r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file$")
-
-
-def test_find_dictindex():
-    """
-    Tests find_dictindex()
-    """
-    # Generate sample list containing duplicate keys and unique values
-    sample_key = "testkey"
-    sample_value = "testvalue"
-    sample_list = [{sample_key: "value1"}]
-    sample_list.append({sample_key: "value2"})
-    sample_list.append({sample_key: sample_value})
-    # Test that key and value index are correct
-    index_result = find_dictindex(sample_list, sample_key, sample_value)
-    assert index_result == 2
-
-
-def test_find_word():
-    """
-    Tests find_word()
-    """
-    # Generate sample words and string
-    sample_words = ["test", "monday", "tuesday", "wednesday"]
-    sample_string1 = "starting a long test"
-    sample_string2 = "this is a monday"
-    sample_string3 = "wrong answer only"
-    # Test method, which returns True if found
-    assert find_word(sample_words, sample_string1)
-    assert find_word(sample_words, sample_string2)
-    # Incorrect answer should return False
-    assert not find_word(sample_words, sample_string3)

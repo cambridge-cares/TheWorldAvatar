@@ -1,13 +1,12 @@
 """
 # Author: qhouyee #
 
-This module provides utility functions for running shell command
-and file operations, or performing list and regex searching operations.
+This module provides utility functions for running operations on system,
+such as shell command and file operations.
 """
 
 # Standard library imports
 import os
-import re
 import subprocess
 
 # Third party imports
@@ -104,26 +103,3 @@ def cleandir():
                     os.remove(filepath)
             except OSError:
                 logger.error("Error while deleting file")
-
-
-def find_dictindex(lst, key, value):
-    """
-    Find the list index containing a specific key value pair
-    """
-    for i, dic in enumerate(lst):
-        if dic[key] == value:
-            return i
-    return None
-
-
-def find_word(wordlist, string):
-    """
-    Check if a word from a list exists in a string. Return true if found, and false otherwise
-    """
-    for word in wordlist:
-        # Search for the word in the string and store the boolean result
-        word_found = re.compile(r'\b({0})\b'.format(
-            word), flags=re.IGNORECASE).search(string)
-        if word_found:
-            return True
-    return False
