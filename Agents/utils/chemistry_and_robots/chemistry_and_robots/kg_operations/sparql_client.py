@@ -1778,7 +1778,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     hasPeakArea=pt.get(ONTOHPLC_PEAKAREA),
                     atRetentionTime=pt.get(ONTOHPLC_RETENTIONTIME),
                     unidentified=True,
-                    rdfs_comment = f"Species unidentified due to unknown peak information not provided in HPLCMethod {hplc_method.instance_iri}.",
+                    rdfs_comment = f"Species unidentified due to peak information not provided in HPLCMethod {hplc_method.instance_iri}.",
                 )
                 list_chrom_pts.append(_unidentified_chrom_pt)
             else:
@@ -1786,24 +1786,28 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 if _identified_species not in dct_points:
                     dct_points[_identified_species] = pt
                 else:
-                    # if multiple records identified for the same species, pick the one that is closest to the reference retention time of the identified species
+                    # if multiple records identified for the same species, pick the one that has larger peak area
                     # all the rest will be marked as unidentified
+                    # TODO [next iteration] also consider the height of the peak
                     logger.warning(f"Multiple records of ChromatogramPoint were identified for the same Species <{_identified_species}>: {str([dct_points[_identified_species], pt])}")
                     _rt_ref = hplc_method.get_retention_time_for_species(_identified_species)
                     _previous_pt = dct_points[_identified_species]
-                    # TODO [next iteration] add unit check
-                    # TODO [next iteration] revise this design
-                    if abs(_rt_ref.hasValue.hasNumericalValue - pt[ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue) < abs(_rt_ref.hasValue.hasNumericalValue - _previous_pt[ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue):
-                        # if the current point is closer to the reference retention time, then the previous one is to be marked as unidentified
+                    _pt_peak_area_unit_converted = unit_conv.unit_conversion_return_value(
+                       pt[ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue,
+                       pt[ONTOHPLC_PEAKAREA].hasValue.hasUnit,
+                       _previous_pt[ONTOHPLC_PEAKAREA].hasValue.hasUnit,
+                    )
+                    if _pt_peak_area_unit_converted >= _previous_pt[ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue:
+                        # if the current point has a larger peak area, then the previous one is to be marked as unidentified
                         _mark_as_unidentified = _previous_pt
                         # then repalce the previous one in dct_points with the new one for potentially later concentration calculation
                         dct_points[_identified_species] = pt
                     else:
-                        # if the previous point is closer to the reference retention time, then the current one is to be marked as unidentified
+                        # if the previous point has a larger peak area, then the current one is to be marked as unidentified
                         _mark_as_unidentified = pt
                         # and we don't need to replace it in dct_points
 
-                    # first mark the previous one as unidentified
+                    # mark the peak that is determined as unidentified
                     _unidentified_chrom_pt = ChromatogramPoint(
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                         namespace_for_init=getNameSpace(hplc_report_iri),
@@ -1811,16 +1815,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         hasPeakArea=_mark_as_unidentified.get(ONTOHPLC_PEAKAREA),
                         atRetentionTime=_mark_as_unidentified.get(ONTOHPLC_RETENTIONTIME),
                         unidentified=True,
-                        rdfs_comment = f"""Species unidentified due to multiple peaks identified within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc_method.retentionTimeMatchThreshold} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies}, and there exist other peaks closer to the reference retention time compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
+                        rdfs_comment = f"""Species unidentified due to multiple peaks present within range of {_rt_ref.hasValue.hasNumericalValue} +/- {hplc_method.retentionTimeMatchThreshold} {_rt_ref.hasValue.hasUnit} for species {_rt_ref.refersToSpecies}, and there exist other peaks that have a larger peak area compared to this one. The HPLCMethod used was {hplc_method.instance_iri}.""",
                     )
                     list_chrom_pts.append(_unidentified_chrom_pt)
-
 
         try:
             internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue
         except KeyError:
+            # TODO maybe instead of throwing an exception, we make a flag to set all performance indicator to be NaN
+            # TODO check how to represent NaN in python, if that works for all the rest of the codes
             raise Exception(f"InternalStandard {internal_standard_species} is NOT identified in the end stream associated with HPLCReport {hplc_report_iri}, all ChromatogramPoint: {list_chrom_pts}")
 
+        # iterate through the dct_points which now should only contain the list of peaks that are identified as the species
         for pt in dct_points:
             # calculate concentration based on the peak area and response factor
             if pt not in dct_response_factor:

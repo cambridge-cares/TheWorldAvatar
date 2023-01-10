@@ -1238,7 +1238,7 @@ SinglePhase:PhaseComponent_IS_Input_Property_1
 SinglePhase:PhaseComponent_IS_Input_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
 .
 
 SinglePhase:Phase_1

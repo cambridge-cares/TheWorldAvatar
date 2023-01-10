@@ -468,7 +468,7 @@ class TargetIRIs(Enum):
     HPLCMETHOD_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCMethod_Dummy'
     PHASECOMPONENT_INTERNAL_STANDARD_IRI = 'https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_InternalStandard'
     ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
-    MOLARITY_INTERNAL_STANDARD = 0.02
+    MOLARITY_INTERNAL_STANDARD = 0.05
     HPLCREPORT_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
     HPLCJOB_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCJob_Dummy'
     HPLC_LOCAL_FOLDER_PATH = '/home/jb2197/CHEM32/**/'
