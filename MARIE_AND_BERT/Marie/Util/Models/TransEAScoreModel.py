@@ -38,6 +38,7 @@ class TransEAScoreModel(nn.Module):
         self.dropout = nn.Dropout(0)
         self.linear_R = nn.Linear(768, self.dim)  # keep this model ...
         self.linear_A = nn.Linear(768, self.dim)  # keep this model ...
+        self.linear_B = nn.Linear(768, 1)  # keep this model ...
         self.linear_O_1 = nn.Linear(768, 512)
         self.linear_O_2 = nn.Linear(512, 256)
         self.linear_O_3 = nn.Linear(256, 4)
@@ -54,6 +55,13 @@ class TransEAScoreModel(nn.Module):
 
         self.ent_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'ent_embedding.tsv'), sep='\t',
                                          header=None)
+
+        self.attr_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'attr_embedding.tsv'), sep='\t',
+                                          header=None)
+
+        self.bias_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'bias_embedding.tsv'), sep='\t',
+                                          header=None)
+        self.cosine_similarity = torch.nn.CosineSimilarity(dim=1, eps=1e-08)
 
     def load_model(self, model_name):
         print(" - Loading pretrained BERT Mapping model")
@@ -79,20 +87,22 @@ class TransEAScoreModel(nn.Module):
         return (head + projected_rel - tail).norm(p=self.norm, dim=1).to(self.device)
 
     def get_scores(self, triplets):
-        e_h_idx = triplets['e_h'].reshape(-1, 1).squeeze(1).cpu()
-        e_t_idx = triplets['e_t'].reshape(-1, 1).squeeze(1).cpu()
-        question_single = triplets['single_question']
-        question_single = self.get_question_embedding(question=question_single)
-        question = question_single.repeat(len(e_h_idx), 1).to(self.device)
+        with no_grad():
+            e_h_idx = triplets['e_h'].reshape(-1, 1).squeeze(1).cpu()
+            e_t_idx = triplets['e_t'].reshape(-1, 1).squeeze(1).cpu()
+            question_single = triplets['single_question']
+            question_single = self.get_question_embedding(question=question_single)
+            question = question_single.repeat(len(e_h_idx), 1).to(self.device)
 
-        head = torch.tensor(self.ent_embedding.iloc[e_h_idx].values).to(self.device)
-        tail = torch.tensor(self.ent_embedding.iloc[e_t_idx].values).to(self.device)
-        projected_rel = self.get_relation_prediction(question_embedding=question)
-        projected_attr = self.get_attribute_prediction(question_embedding=question)
-        triple_score = self.triple_distance(head=head, tail=tail, projected_rel=projected_rel)
-        numerical_prediction = self.get_numerical_prediction(head=head, attr=projected_attr)
-        operator_prediction = self.get_numerical_operator(question_embedding=question_single)
-        return triple_score, numerical_prediction, operator_prediction
+            head = torch.tensor(self.ent_embedding.iloc[e_h_idx].values).to(self.device)
+            tail = torch.tensor(self.ent_embedding.iloc[e_t_idx].values).to(self.device)
+            projected_rel = self.get_relation_prediction(question_embedding=question)
+            projected_attr = self.get_attribute_prediction(question_embedding=question)
+            projected_bias = self.get_bias_prediction(question_embedding=question)
+            triple_score = self.triple_distance(head=head, tail=tail, projected_rel=projected_rel)
+            numerical_prediction = self.get_numerical_prediction(head=head, attr=projected_attr, bias=projected_bias)
+            operator_prediction = self.get_numerical_operator(question_embedding=question_single)
+            return triple_score, numerical_prediction, operator_prediction
 
     def get_numerical_operator(self, question_embedding):
         numerical_operator_output = self.linear_O_1(question_embedding).to(self.device)
@@ -113,14 +123,25 @@ class TransEAScoreModel(nn.Module):
         print(f"Time used for question embedding {time.time() - START_TIME}")
         return question_embedding
 
-    def get_numerical_prediction(self, head, attr):
+    def get_bias_prediction(self, question_embedding):
+        linear_output_B = self.linear_B(question_embedding.to(self.device)).to(self.device)
+        return linear_output_B
+
+    def get_numerical_prediction(self, head, attr, bias):
         """
             with heads and predicted attributes, predicts the numerical value
         """
         # find the closest embedding among all attr and get its bias ...
         #
+        all_attr = torch.tensor(self.attr_embedding.values).to(self.device)
+        all_bias = torch.tensor(self.bias_embedding.values).to(self.device)
+        pred_attr = attr[0].repeat(len(all_attr), 1)
+        cos_similarity = self.cosine_similarity(pred_attr, all_attr)
+        best_match_idx = torch.argmax(cos_similarity).item()
+        best_match_attr = all_attr[best_match_idx]
+        best_match_bias = all_bias[best_match_idx]
 
-        return torch.sum(head * attr, dim=1)
+        return torch.sum(head * best_match_attr, dim=1) + best_match_bias
 
     def get_attribute_prediction(self, question_embedding):
         """
@@ -158,9 +179,9 @@ class TransEAScoreModel(nn.Module):
             numerical_operator_output = self.linear_O_3(numerical_operator_output).to(self.device)
             numerical_operator_output = self.sigmoid(numerical_operator_output).to(self.device)
 
-            return linear_output_R, linear_output_A, numerical_operator_output,
+            return linear_output_R, linear_output_A, numerical_operator_output
 
-    def forward(self, question, y_r, y_a, y_o):
+    def forward(self, question, y_r, y_a, y_o, y_b):
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))
         attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
         pooled_output = self.bert(input_ids=input_ids.to(self.device),
@@ -170,16 +191,23 @@ class TransEAScoreModel(nn.Module):
         dropout_output = self.dropout(pooled_output)
         linear_output_R = self.linear_R(dropout_output)
         linear_output_A = self.linear_A(dropout_output)
+        linear_output_B = self.linear_B(dropout_output)
+
         numerical_operator_output = self.linear_O_1(dropout_output)
         numerical_operator_output = self.linear_O_2(numerical_operator_output)
+        numerical_operator_output = self.linear_O_3(numerical_operator_output)
         numerical_operator_output = self.sigmoid(numerical_operator_output)
+
+
         operator_loss = numerical_operator_loss(numerical_operator_output, y_o)
 
         distance_R, distance_A = self.distance(linear_output_R, y_r, linear_output_A, y_a)
-        distance = (1 - self.alpha) * distance_R + self.alpha * distance_A + self.alpha * operator_loss
+        distance_B = torch.abs(y_b - linear_output_B)
+        distance = self.alpha * distance_R + self.alpha * distance_A + 8 * operator_loss + 0.4 * distance_B
+        # distance = (1 - self.alpha) * distance_R + self.alpha * distance_A + self.alpha * operator_loss
         '''
         Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
         If the fine-tuning of the current thing fails 
         '''
 
-        return distance, normalize(linear_output_R), normalize(linear_output_A), numerical_operator_output
+        return distance, linear_output_R, linear_output_A, numerical_operator_output, linear_output_B

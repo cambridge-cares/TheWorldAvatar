@@ -72,8 +72,6 @@ class QAEngineNumerical:
         tails = torch.Tensor(self.subgraph_extractor.extract_neighbour_from_idx(head_idx))
         repeat_num = len(tails)
         heads = heads.repeat(repeat_num, 1).to(self.device)
-        # heads = torch.randint(test_num, (test_num, 1))
-        # tails = torch.randint(test_num, (test_num, 1))
 
         self.marie_logger.info(f" - Preparing prediction batch")
         tokenized_question_batch, tokenized_question = self.tokenize_question(question, repeat_num)
@@ -124,8 +122,10 @@ class QAEngineNumerical:
         repeat_num = len(tails)
         heads = head.repeat(repeat_num, 1).to(self.device)
         rels = rel.repeat(repeat_num, 1).to(self.device)
-        # ae7b1072382624c77c75c9cb516cc29969680ad1
-        numerical_prediction = (self.score_model.get_numerical_prediction(head=head, attr=attr) + bias) * 100
+        # ae7b1072382624c77c75c9cb516cc29969680ad1 / 33.98
+        aV = self.score_model.get_numerical_prediction(head=head, attr=attr, bias=bias)
+        numerical_prediction = aV
+        # numerical_prediction =  (aV + bias) * 100
         print("numerical_prediction", numerical_prediction)
 
         scores = self.score_model.triple_distance(heads, tails, rels)
@@ -143,25 +143,23 @@ class QAEngineNumerical:
         """
         question = question.replace("'s ", " # ")
 
-        try:
+        # try:
 
-            pred_batch = self.prepare_prediction_batch_numerical(question)
-            tails = pred_batch['e_t']
-            START_TIME = time.time()
-            print("=============== starting the prediction ==============")
-            with no_grad():
-                triple_scores, numerical_predictions, numerical_operators = self.score_model.get_scores(pred_batch)
-                _, indices_top_k = torch.topk(triple_scores, k=len(triple_scores), largest=self.largest)
-                labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
-                print(labels_top_k)
-                print(_)
-
-                print(triple_scores)
-                print("=============")
-                pprint(numerical_predictions * 200)
-                print("=============")
-                print(numerical_operators)
-            print(time.time() - START_TIME)
+        pred_batch = self.prepare_prediction_batch_numerical(question)
+        tails = pred_batch['e_t']
+        START_TIME = time.time()
+        print("=============== starting the prediction ==============")
+        with no_grad():
+            triple_scores, numerical_predictions, numerical_operators = self.score_model.get_scores(pred_batch)
+            _, indices_top_k = torch.topk(triple_scores, k=10, largest=self.largest)
+            labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
+            print("====== Labels =======")
+            print(labels_top_k)
+            print("====== Numerical Prediction =======")
+            print(numerical_predictions[0] * 100)
+            print("====== Numerical operator prediction =======")
+            print(numerical_operators)
+        print(time.time() - START_TIME)
 
             # self.marie_logger.info(f" prediction scores {scores}")
             # k = min(k, len(scores))
@@ -170,11 +168,11 @@ class QAEngineNumerical:
             # scores_top_k = [scores[index].item() for index in indices_top_k]
             # targets_top_k = [head_name] * len(scores)
             # return labels_top_k, scores_top_k, targets_top_k
-        except:
-            self.marie_logger.error('The attempt to find answer failed')
-            self.marie_logger.error(traceback.format_exc())
-            # return traceback.format_exc()
-            return ["EMPTY"], [-999], ["EMPTY"]
+        # except:
+        #     self.marie_logger.error('The attempt to find answer failed')
+        #     self.marie_logger.error(traceback.format_exc())
+        #     # return traceback.format_exc()
+        #     return ["EMPTY"], [-999], ["EMPTY"]
 
     def extract_head_ent(self, _question):
         self.marie_logger.info("extracting head entity")
@@ -221,6 +219,8 @@ if __name__ == "__main__":
     my_engine = QAEngineNumerical(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical",
                                   embedding="transe",
                                   dict_type="json", dim=40)
-    rst = my_engine.find_answers("molecular mass")
-    print(rst)
-    my_engine.test_triple_distance()
+    rst = my_engine.find_answers("vapour pressure more than")
+    rst = my_engine.find_answers("vapour pressure less than")
+    rst = my_engine.find_answers("vapour pressure about")
+    # print(rst)
+    # my_engine.test_triple_distance()
