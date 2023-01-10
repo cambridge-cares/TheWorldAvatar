@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  emissions-agent:
+    image: docker.cmclinnovations.com/emissions-agent:1.0.0-SNAPSHOT
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - DATABASE=postgres
+    configs:
+      - postgis
+      - blazegraph
+    secrets:
+      - postgis_password
+    ports:
+      - "8083:8080"
+    volumes:
+      - logs:/root/.jps
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  misc:
+    name: "misc"
