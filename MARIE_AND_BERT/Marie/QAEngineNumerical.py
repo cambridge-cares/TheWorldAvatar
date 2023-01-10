@@ -18,7 +18,18 @@ from Marie.Util.location import DATA_DIR
 from Marie.EntityLinking.Inference import BertNEL
 
 
+
+
 class QAEngineNumerical:
+
+    @staticmethod
+    def numerical_value_extractor(question):
+        numerical_values = re.findall(r"[0-9.]+", question)
+        if len(numerical_values) > 0:
+            return numerical_values[0]
+        else:
+            return None
+
     def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", largest=False):
         self.marie_logger = MarieLogger()
         self.largest = largest
@@ -66,6 +77,11 @@ class QAEngineNumerical:
         question = question.replace("#", "")
         test_num = 10000
         test_entity = "Q170591"
+
+        relation_idx = 110
+        print("relation label: ", self.idx2rel[relation_idx])
+
+
         head_idx = self.entity2idx[test_entity]
         heads = torch.Tensor([head_idx])
 
@@ -108,10 +124,12 @@ class QAEngineNumerical:
 
         bias_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'bias_embedding.tsv'), sep='\t',
                                      header=None)
-        print("relation label: ", self.idx2rel[60])
-        rel = torch.tensor(rel_embedding.iloc[60].values).to(self.device)
-        attr = torch.tensor(attr_embedding.iloc[60].values).to(self.device)
-        bias = torch.tensor(bias_embedding.iloc[60].values).to(self.device)
+
+        relation_idx = 110
+        print("relation label: ", self.idx2rel[relation_idx])
+        rel = torch.tensor(rel_embedding.iloc[relation_idx].values).to(self.device)
+        attr = torch.tensor(attr_embedding.iloc[relation_idx].values).to(self.device)
+        bias = torch.tensor(bias_embedding.iloc[relation_idx].values).to(self.device)
         head_idx = self.entity2idx[test_entity]
         heads_idx = torch.Tensor([head_idx])
         tails_idx = torch.Tensor(self.subgraph_extractor.extract_neighbour_from_idx(head_idx))
@@ -142,9 +160,6 @@ class QAEngineNumerical:
         :return: score of all candidate answers
         """
         question = question.replace("'s ", " # ")
-
-        # try:
-
         pred_batch = self.prepare_prediction_batch_numerical(question)
         tails = pred_batch['e_t']
         START_TIME = time.time()
@@ -219,8 +234,14 @@ if __name__ == "__main__":
     my_engine = QAEngineNumerical(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical",
                                   embedding="transe",
                                   dict_type="json", dim=40)
-    rst = my_engine.find_answers("vapour pressure more than")
-    rst = my_engine.find_answers("vapour pressure less than")
-    rst = my_engine.find_answers("vapour pressure about")
-    # print(rst)
+    rst = my_engine.find_answers("chemical formula more than 300")
+    print(rst)
+    rst = my_engine.find_answers("chemical formula less than 100")
+    print(rst)
+    rst = my_engine.find_answers("chemical formula about 50")
+    print(rst)
+    rst = my_engine.find_answers("chemical formula")
+    print(rst)
+
+    # printQAEngineNumerical
     # my_engine.test_triple_distance()

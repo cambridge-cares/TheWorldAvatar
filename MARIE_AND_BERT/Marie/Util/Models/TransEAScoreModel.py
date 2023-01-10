@@ -56,6 +56,9 @@ class TransEAScoreModel(nn.Module):
         self.ent_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'ent_embedding.tsv'), sep='\t',
                                          header=None)
 
+        self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'rel_embedding.tsv'), sep='\t',
+                                         header=None)
+
         self.attr_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'attr_embedding.tsv'), sep='\t',
                                           header=None)
 
@@ -155,7 +158,13 @@ class TransEAScoreModel(nn.Module):
         Tokenized question, get the relation embedding
         """
         linear_output_R = self.linear_R(question_embedding.to(self.device)).to(self.device)
-        return linear_output_R
+
+        all_rels = torch.tensor(self.rel_embedding.values).to(self.device)
+        pred_rel = linear_output_R[0].repeat(len(all_rels), 1)
+        cos_similarity = self.cosine_similarity(pred_rel, all_rels)
+        best_match_idx = torch.argmax(cos_similarity).item()
+        best_match_rel = all_rels[best_match_idx]
+        return best_match_rel
 
     def predict(self, question):
         """
