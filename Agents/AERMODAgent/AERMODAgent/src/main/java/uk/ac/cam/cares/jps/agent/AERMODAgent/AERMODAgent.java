@@ -56,14 +56,14 @@ public class AERMODAgent extends JPSAgent {
 
     String[] locations = {"Jurong Island"};
     String[] StackQueryEndpoint = {"http://theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql/"} ;
-    String[] GeospatialQueryEndpoint = {"http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500"} ;
+    String[] GeospatialQueryEndpoint = {"http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry"} ;
 
     private static int locindex = -1;
     public static String StackQueryIRI;
     public static String GeospatialQueryIRI;
 
     /* Latitude and longitudes of locations where pollutant concentrations will be calculated are specified as strings
-    where numbers are separated by commas */.
+    where numbers are separated by commas */
     public static String Latitude;
 
     public static String Longitude;
@@ -74,12 +74,22 @@ public class AERMODAgent extends JPSAgent {
     public static ArrayList<Double> ReceptorLat, ReceptorLong;
     public static ArrayList<Double> ReceptorEastEPSG24500, ReceptorNorthEPSG24500;
 
-    public static ArrayList<String> StackProperties, BuildingProperties ;
+    public static ArrayList<String> StackProperties  ;
+
+    /* BuildingProperties contains array lists of strings. Each string contains the coordinates of
+    the vertices of one polygon. BuildingHeights contains the height of each building.
+     */
+    public static ArrayList<ArrayList<String>> BuildingVertices ;
+    public static ArrayList<String> BuildingProperties ;
+
 
     /* Variables for grid. x and y variables correspond to Easting and Northing respectively. Units
     *  of gridSpacing is meters */
 
     public static ArrayList<Integer> cellmap, stackHead, stackList, buildingHead,buildingList ;
+
+    // Boolean arrays to check if stacks and buildings have been used previously
+    public static ArrayList<Boolean> stackUsed, buildingUsed ;
     public static Integer numberGridsX, numberGridsY, numberTotalGrids ;
 
     public static Double xlo, ylo, xhi, yhi ;
@@ -90,6 +100,15 @@ public class AERMODAgent extends JPSAgent {
     public static Double[] MaxX = {249115.69};
     public static Double[] MinY = {12573.67};
     public static Double[] MaxY = {753645.03};
+
+    public static StringBuffer BPIPPRMBuildingInput = new StringBuffer();
+    public static StringBuffer BPIPPRMStackInput = new StringBuffer() ;
+
+    /* Maximum distance between stack and receptor for which AERMOD computes pollutant concentrations
+    in meters. */
+    public static double cutoffRadius = 100.0;
+
+
 
 
     @Override
@@ -110,6 +129,7 @@ public class AERMODAgent extends JPSAgent {
                 ReceptorNorthEPSG24500 = outputCoordinates.get(1);
 
                 initGrid();
+                buildings();
                 dispersionCalculation();
 
 
@@ -178,7 +198,13 @@ public class AERMODAgent extends JPSAgent {
         return inputcoordinates;
     }
 
+    /* Initialize grid and query geospatial endpoint for corners of stacks and buildings.
+    Average the x and y coordinates for all corners corresponding to the minimum z value.
+    Use the average coordinates to assign stacks and buildings to grid cells and populate
+    the linked lists for each of these types of structures.
+     */
     public static void initGrid () {
+
         xlo = gridSpacing*Math.floor(MinX[locindex]/gridSpacing) ;
         xhi = gridSpacing*Math.ceil(MaxX[locindex]/gridSpacing) ;
         ylo = gridSpacing*Math.floor(MinY[locindex]/gridSpacing) ;
@@ -189,34 +215,49 @@ public class AERMODAgent extends JPSAgent {
         numberGridsY = 1 + Math.round(numberIntervalsY);
         numberTotalGrids = numberGridsX*numberGridsY ;
         cellmap.ensureCapacity(8*numberTotalGrids);
+        for (int i = 0; i < numberGridsX; i++) {
+            for (int j = 0; j < numberGridsY; j++) {
+                int icell = i + j*numberGridsX ;
+                int cellmapindex0 = 8*icell;
+                cellmap.set(cellmapindex0,(i + 1 + j*numberGridsX));
+                cellmap.set(cellmapindex0 + 1,(i - 1 + j*numberGridsX));
+                cellmap.set(cellmapindex0 + 2,(i + (j-1)*numberGridsX));
+                cellmap.set(cellmapindex0 + 3,(i + (j+1)*numberGridsX));
+                cellmap.set(cellmapindex0 + 4,(i - 1 + (j-1)*numberGridsX));
+                cellmap.set(cellmapindex0 + 5,(i - 1 + (j+1)*numberGridsX));
+                cellmap.set(cellmapindex0 + 6,(i + 1 + (j-1)*numberGridsX));
+                cellmap.set(cellmapindex0 + 7,(i + 1 + (j+1)*numberGridsX));
+            }
+        }
+
         stackHead.ensureCapacity(numberTotalGrids);
         buildingHead.ensureCapacity(numberTotalGrids);
         for (int i = 0; i < numberTotalGrids; i++){
-            stackHead.add(-1);
-            buildingHead.add(-1);
+            stackHead.set(i,-1);
+            buildingHead.set(i,-1);
         }
-
-    }
-
-    public static void dispersionCalculation() {
 
         JSONArray StackOCGMLIRI = StackQuery(StackQueryIRI) ;
         JSONArray BuildingOCGMLIRI = BuildingQuery(StackQueryIRI) ;
         stackList.ensureCapacity(StackOCGMLIRI.length());
         buildingList.ensureCapacity(BuildingOCGMLIRI.length());
+        stackUsed.ensureCapacity(StackOCGMLIRI.length());
+        buildingUsed.ensureCapacity(BuildingOCGMLIRI.length());
+
         for (int i = 0; i < StackOCGMLIRI.length(); i++){
-            stackList.add(-1);
+            stackList.set(i,-1);
+            stackUsed.set(i,false);
         }
         for (int i = 0; i < BuildingOCGMLIRI.length(); i++){
-            buildingList.add(-1);
+            buildingList.set(i,-1);
+            buildingUsed.set(i,false);
         }
         for (int i = 0; i < StackOCGMLIRI.length(); i++) {
             String IRI = StackOCGMLIRI.getJSONObject(i).getString("IRI");
             StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
             coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
-            String queryString = "GRAPH " + GeospatialQueryIRI + " {?geometricIRI ocgml:GeometryType ?polygonData.\n" ;
-            coordinateQuery.append(queryString);
-            coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(IRI).append(">.}}");
+            coordinateQuery.append("?geometricIRI ocgml:GeometryType ?polygonData.\n") ;
+            coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(IRI).append(">.}");
             JSONArray coordinateQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI, coordinateQuery.toString());
             String StackX = "0";
             String StackY = "0";
@@ -260,6 +301,212 @@ public class AERMODAgent extends JPSAgent {
             stackList.set(i, stackHead.get(icell));
             stackHead.set(icell,i);
 
+        }
+
+        for (int i = 0; i < BuildingOCGMLIRI.length(); i++) {
+
+            String IRI = BuildingOCGMLIRI.getJSONObject(i).getString("IRI");
+            StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
+            coordinateQuery.append("SELECT ?polygonData WHERE {\n");
+            coordinateQuery.append("?surfaceIRI ocgml:GeometryType ?polygondata.");
+            coordinateQuery.append("?geometricIRI ocgml:lod2MultiSurfaceId ?surfaceIRI.");
+            coordinateQuery.append("?geometricIRI ocgml:buildingId <").append(IRI).append(">.}");
+            JSONArray coordinateQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI, coordinateQuery.toString());
+            String BuildingX = "0";
+            String BuildingY = "0";
+            String BuildingZ = "0";
+            ArrayList<String> buildvert = new ArrayList<>();
+
+            for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
+                JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
+                String coordiData = coordiS.getString("polygonData");
+                ArrayList<String> z_values = new ArrayList<>();
+                String[] coordinates = coordiData.split("#");
+                double sum_x = 0; double sum_y = 0;
+                double sum_z = 0; double min_z = 0;
+
+                for (int j = 1; j <= coordinates.length; j++) {
+                    if( j%3==0 ){
+                        z_values.add(coordinates[j-1]);
+                        sum_x = sum_x + Double.parseDouble(coordinates[j-3]);
+                        sum_y = sum_y + Double.parseDouble(coordinates[j-2]);
+                        sum_z = sum_z + Double.parseDouble(coordinates[j-1]);
+                        min_z = Math.min(min_z,Double.parseDouble(coordinates[j-1]));
+                    }
+                }
+                if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
+                    BuildingX = String.valueOf(sum_x/(coordinates.length/3));
+                    BuildingY = String.valueOf(sum_y/(coordinates.length/3));
+                    buildvert.set(0,coordiData);
+                }
+                if (!z_values.isEmpty() && Double.parseDouble(BuildingZ) < Double.parseDouble(Collections.max(z_values))) {
+                    BuildingZ = Collections.max(z_values);
+                }
+            }
+
+            BuildingVertices.add(buildprop);
+            StringBuffer averageCoordinate = new StringBuffer();
+            averageCoordinate.append(BuildingX).append("#").append(BuildingY).append("#").append(BuildingZ);
+            BuildingProperties.add(averageCoordinate.toString());
+
+
+            int ix = (int) (Math.floor((Double.parseDouble(BuildingX) - xlo)/gridSpacing));
+            int iy = (int) (Math.floor((Double.parseDouble(BuildingY) - ylo)/gridSpacing));
+            int icell = ix + iy*numberGridsX ;
+            buildingList.set(i, buildingHead.get(icell));
+            buildingHead.set(icell,i);
+
+        }
+
+
+    }
+
+
+    /* Identify stacks close enough to each receptor to be able to influence local pollutant concentrations
+    at that receptor. Identify buildings close enough to each stack to cause downwash effects. Write all the data to
+    the BPIPPRMBuildingInput and BPIPPRMStackInput string buffers. The string buffers are then written to bpipprm.inp, which is the input
+    for AERMOD's building pre-processsor BPIPPRM.
+
+     Stack input format (one line per stack): Name, base elevation, height, coordinates.
+
+     */
+    public static void buildings() {
+
+        int numberStacks = 0;
+        ArrayList<Integer> usedstacks = new ArrayList<Integer>() ;
+        /* Loop over receptors to identify stacks within cutoff distance */
+        for (int i = 0; i < ReceptorEastEPSG24500.size(); i++) {
+            double ReceptorX = ReceptorEastEPSG24500.get(i);
+            double ReceptorY = ReceptorNorthEPSG24500.get(i);
+            int ix = (int) (Math.floor((ReceptorX - xlo)/gridSpacing));
+            int iy = (int) (Math.floor((ReceptorY - ylo)/gridSpacing));
+            int icell = ix + iy*numberGridsX ;
+            int stackIndex = stackHead.get(icell);
+
+            while (stackIndex > -1) {
+                if (!stackUsed.get(stackIndex)) {
+                    String StackAttribute = StackProperties.get(stackIndex);
+                    String[] StackCoords = StackAttribute.split("#");
+                    // Check if stack is close enough to receptor
+                    Double StackX = Double.parseDouble(StackCoords[0]);
+                    Double StackY = Double.parseDouble(StackCoords[1]);
+                    Double StackHeight = Double.parseDouble(StackCoords[2]);
+                    Double dist2 = (StackX - ReceptorX)*(StackX - ReceptorX) + (StackY - ReceptorY)*(StackY - ReceptorY) ;
+                    if (dist2 < cutoffRadius*cutoffRadius) {
+                        numberStacks++;
+                        ArrayList<Double> inputcoords =
+                                new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
+                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                        // convert coordinates from EPSG24500 to UTM
+                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+
+                        Double StackEastUTM = outputCoordinates.get(0).get(0);
+                        Double StackNorthUTM = outputCoordinates.get(0).get(1);
+                        String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
+                                StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                        BPIPPRMStackInput.append(InputLine);
+                        stackUsed.set(stackIndex,false);
+                        usedstacks.add(stackIndex);
+                    }
+                }
+
+                stackIndex = stackList.get(stackIndex);
+            }
+
+            int jcell0 = 8*icell;
+
+            for (int nabor = 0; nabor < 8; nabor++) {
+                int jcell = cellmap.get(jcell0 + nabor);
+                stackIndex = stackHead.get(jcell);
+                while (stackIndex > -1) {
+                    if (!stackUsed.get(stackIndex)) {
+                        String StackAttribute = StackProperties.get(stackIndex);
+                        String[] StackCoords = StackAttribute.split("#");
+                        // Check if stack is close enough to receptor
+                        Double StackX = Double.parseDouble(StackCoords[0]);
+                        Double StackY = Double.parseDouble(StackCoords[1]);
+                        Double StackHeight = Double.parseDouble(StackCoords[2]);
+                        Double dist2 = (StackX - ReceptorX)*(StackX - ReceptorX) + (StackY - ReceptorY)*(StackY - ReceptorY) ;
+                        if (dist2 < cutoffRadius*cutoffRadius) {
+                            numberStacks++;
+                            ArrayList<Double> inputcoords =
+                                    new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
+                            ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                            // convert coordinates from EPSG24500 to UTM
+                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+
+                            Double StackEastUTM = outputCoordinates.get(0).get(0);
+                            Double StackNorthUTM = outputCoordinates.get(0).get(1);
+                            String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
+                                    StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                            BPIPPRMStackInput.append(InputLine);
+                            stackUsed.set(stackIndex,false);
+                            usedstacks.add(stackIndex);
+                        }
+                    }
+
+                    stackIndex = stackList.get(stackIndex);
+                }
+            }
+
+        }
+
+        /* Loop over stacks to identify buildings close enough to cause downwash effects */
+        int numberBuildings = 0;
+        ArrayList<Integer> usedbuildings = new ArrayList<Integer>() ;
+        for (int i = 0; i < usedstacks.size(); i++) {
+            int stackIndex = usedstacks.get(i) ;
+            String StackAttribute = StackProperties.get(stackIndex);
+            String[] StackCoords = StackAttribute.split("#");
+            Double StackX = Double.parseDouble(StackCoords[0]);
+            Double StackY = Double.parseDouble(StackCoords[1]);
+            Double StackHeight = Double.parseDouble(StackCoords[2]);
+            int ix = (int) (Math.floor((StackX - xlo)/gridSpacing));
+            int iy = (int) (Math.floor((StackY - ylo)/gridSpacing));
+            int icell = ix + iy*numberGridsX ;
+            int buildingIndex = buildingHead.get(icell);
+
+            while (buildingIndex > -1) {
+                if (!buildingUsed.get(buildingIndex)) {
+                    String BuildingAttribute = BuildingProperties.get(buildingIndex);
+
+                    String[] BuildCoords = StackAttribute.split("#");
+                    // Check if stack is close enough to receptor
+                    Double BuildingX = Double.parseDouble(StackCoords[0]);
+                    Double BuildingY = Double.parseDouble(StackCoords[1]);
+                    Double BuildingHeight = Double.parseDouble(StackCoords[2]);
+                    Double dist2 = (BuildingX - StackX)*(BuildingX - StackX) + (BuildingY - StackY)*(BuildingY - StackY) ;
+                    Double gepHeight = 2.5*BuildingHeight;
+                    Double criticalDistance = 5.0*BuildingHeight;
+                    Double criticalDistanceSquared = criticalDistance*criticalDistance;
+
+
+                    if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
+                        numberBuildings++;
+                        ArrayList<Double> inputcoords =
+                                new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
+                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                        // convert coordinates from EPSG24500 to UTM
+                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+
+                        Double StackEastUTM = outputCoordinates.get(0).get(0);
+                        Double StackNorthUTM = outputCoordinates.get(0).get(1);
+                        String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
+                                StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                        BPIPPRMStackInput.append(InputLine);
+                        stackUsed.set(stackIndex,false);
+                        usedstacks.add(stackIndex);
+                    }
+                }
+
+                stackIndex = stackList.get(stackIndex);
+            }
+
+
+ 
+
+
+
 
 
         }
@@ -267,6 +514,12 @@ public class AERMODAgent extends JPSAgent {
 
 
 
+
+
+    }
+
+
+    public static void dispersionCalculation() {
 
 
 
