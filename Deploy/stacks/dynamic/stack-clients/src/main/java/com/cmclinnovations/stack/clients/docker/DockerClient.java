@@ -62,7 +62,16 @@ public class DockerClient extends BaseClient {
 
     private final com.github.dockerjava.api.DockerClient internalClient;
 
-    public DockerClient() {
+    private static DockerClient instance = null;
+
+    public static DockerClient getInstance() {
+        if (null == instance) {
+            instance = new DockerClient();
+        }
+        return instance;
+    }
+
+    private DockerClient() {
         this(null);
     }
 
@@ -71,10 +80,6 @@ public class DockerClient extends BaseClient {
 
         if (null != endpoint) {
             dockerConfigBuilder.withDockerHost(endpoint.toString());
-            // TODO need to set up TLS so that the unsecured Docker port "2375" doesn't need
-            // to be opened.
-            // dockerConfigBuilder.withDockerTlsVerify(true);
-            // dockerConfigBuilder.withDockerCertPath("dockerCertPath");
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder

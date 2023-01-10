@@ -38,3 +38,5 @@ if [[ -z "$NO_STACK_NAME" ]]; then
         shift
     fi
 fi
+
+export IMAGE_SUFFIX=

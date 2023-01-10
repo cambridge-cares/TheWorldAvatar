@@ -18,7 +18,7 @@ public class ContainerClient extends BaseClient {
     private final DockerClient dockerClient;
 
     public ContainerClient() {
-        this.dockerClient = new DockerClient();
+        this.dockerClient = DockerClient.getInstance();
     }
 
     public ContainerClient(DockerClient dockerClient) {
