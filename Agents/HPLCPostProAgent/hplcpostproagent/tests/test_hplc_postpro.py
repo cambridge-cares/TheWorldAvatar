@@ -121,7 +121,7 @@ def test_hplc_postpro_agent(
         if report_path_in_pkg in [conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG]:
             if pi.clz in [conftest.ONTOREACTION_YIELD, conftest.ONTOREACTION_CONVERSION]:
                 assert pi.hasValue.hasNumericalValue == 0
-            elif pi.clz in [conftest.ONTOREACTION_ENVIRONMENTALFACTOR, conftest.ONTOREACTION_RUNMATERIALCOST]:
+            elif pi.clz in [conftest.ONTOREACTION_ENVIRONMENTALFACTOR, conftest.ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT]:
                 assert pi.hasValue.hasNumericalValue == float("inf")
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
     for oc in reload_output_chemical_lst:

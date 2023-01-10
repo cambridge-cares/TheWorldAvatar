@@ -46,7 +46,7 @@
 
 :Desired_Quantity_Measure_2
     a om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "0.01"^^xsd:double;
 .
 

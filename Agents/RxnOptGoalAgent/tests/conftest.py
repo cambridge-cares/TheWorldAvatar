@@ -102,7 +102,7 @@ class IRIs(Enum):
     DESIRED_QUANTITY_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_2'
     DESIRED_QUANTITY_2_TYPE = ONTOREACTION_RUNMATERIALCOST
     DESIRED_QUANTITY_MEASURE_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_2'
-    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERKILOGRAM
+    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERLITRE
     DESIRED_QUANTITY_MEASURE_2_NUMVAL = 0.01
 
     RESTRICTION_1 = GOAL_ITER_BASE_IRI + 'Restriction_1'
@@ -118,15 +118,14 @@ class IRIs(Enum):
     STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
     STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
 
-    CHEMICAL_REACTION_IRI = 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1'
-    RXN_EXP_1 = 'https://www.example.com/triplestore/testlab/rxn_data/RxnExp_1'
+    CHEMICAL_REACTION_IRI = 'http://www.theworldavatar.com/kg/lab_auto/chem_rxn/ChemRxn_1'
 
-    DERIVATION_INPUTS = [GOALSET_1, RXN_EXP_1, CHEMICAL_REACTION_IRI]
+    DERIVATION_INPUTS = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
     DERIVATION_INPUTS_NO_PRIOR_DATA = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
-    LAB1_IRI = 'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy'
-    LAB2_IRI = 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+    LAB1_IRI = 'http://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy'
+    LAB2_IRI = 'http://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
     VAPOURTEC_ENV_FILE_DICT = {LAB1_IRI: LAB1_VAPOURTEC_AGENT_ENV, LAB2_IRI: LAB2_VAPOURTEC_AGENT_ENV}
     HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
 
@@ -1053,7 +1052,7 @@ def get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_de
 # Sample data
 # ----------------------------------------------------------------------------------
 sample_goal_request = {
-    "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
+    "chem_rxn": "http://www.theworldavatar.com/kg/lab_auto/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
     "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
     "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
@@ -1064,9 +1063,9 @@ sample_goal_request = {
     "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
     "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
     "second_goal_num_val": 0.001,
-    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
+    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre",
     "labs": [
-        'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy',
-        'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+        'http://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
+        'http://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
     ]
 }

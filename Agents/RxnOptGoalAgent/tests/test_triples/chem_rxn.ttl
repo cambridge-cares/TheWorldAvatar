@@ -27,10 +27,10 @@
 
 # specific namespaces for test cases
 @prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
-@prefix lab1:           <http://example.com/blazegraph/namespace/testlab/lab1/> .
-@prefix lab2:           <http://example.com/blazegraph/namespace/testlab/lab2/> .
-@prefix doe_template:   <http://example.com/blazegraph/namespace/testlab/doe_template/> .
-@prefix :                <https://www.example.com/triplestore/testlab/chem_rxn/> .
+@prefix lab1:           <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix lab2:           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix doe_template:   <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
+@prefix :                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
 
 
 ############################################################################

@@ -37,6 +37,7 @@ OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator .
 OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator .
 OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator .
 OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:RunMaterialCostPerKilogramProduct rdfs:subClassOf OntoRxn:PerformanceIndicator .
 
 OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition .
 OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition .
@@ -50,6 +51,7 @@ OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasRunMaterialCostPerKilogramProduct rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 
 ##############################################################################
 ## Placeholder Density data -- TODO to find a proper way of representing it ##
@@ -249,7 +251,7 @@ exp1:RunMaterialCost_1
 
 exp1:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "6.83"^^xsd:double;
 .
 
@@ -406,7 +408,7 @@ exp2:RunMaterialCost_1
 
 exp2:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "8.10"^^xsd:double;
 .
 
@@ -563,7 +565,7 @@ exp3:RunMaterialCost_1
 
 exp3:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "6.96"^^xsd:double;
 .
 
@@ -720,7 +722,7 @@ exp4:RunMaterialCost_1
 
 exp4:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "7.74"^^xsd:double;
 .
 
@@ -877,7 +879,7 @@ exp5:RunMaterialCost_1
 
 exp5:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "7.44"^^xsd:double;
 .
 

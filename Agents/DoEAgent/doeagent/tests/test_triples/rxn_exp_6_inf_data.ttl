@@ -107,9 +107,11 @@ exp6:RunMaterialCost_1
     om:hasValue exp6:RunMaterialCost_1_Measure_1;
 .
 
+# In theory this performance indicator CANNOT by INF as the RunMaterialCost is now scaled based on the volumetric amount of inlet chemicals
+# which cannot be 0, but we just put it as INF to test the ability of DoE Agent to handle INF values
 exp6:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "INF"^^xsd:double;
 .
 

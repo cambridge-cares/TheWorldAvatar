@@ -27,11 +27,11 @@
 
 # specific namespaces for test cases
 @prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
-@prefix lab1:           <http://example.com/blazegraph/namespace/testlab/lab1/> .
-@prefix lab2:           <http://example.com/blazegraph/namespace/testlab/lab2/> .
-@prefix chem_rxn:                <https://www.example.com/triplestore/testlab/chem_rxn/> .
+@prefix lab1:           <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix lab2:           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix chem_rxn:                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
 
-@prefix :               <http://example.com/blazegraph/namespace/testlab/doe_template/> .
+@prefix :               <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
 
 
 ###################################
@@ -73,7 +73,6 @@ OntoDoE:TSEMO
     # NOTE as there's no prior experiment data, below fixed parameters are required for DoEAgent to read the default settings
     OntoDoE:hasFixedParameter :FixedParameter_1;
     OntoDoE:hasFixedParameter :FixedParameter_2;
-    OntoDoE:hasFixedParameter :FixedParameter_3;
 .
 
 # continuous variables
@@ -81,8 +80,8 @@ OntoDoE:TSEMO
     rdf:type OntoDoE:ContinuousVariable;
     OntoDoE:refersTo :StoiRatio;
     OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
-    OntoDoE:upperLimit "10"^^xsd:double;
-    OntoDoE:lowerLimit "1"^^xsd:double;
+    OntoDoE:upperLimit "40"^^xsd:double;
+    OntoDoE:lowerLimit "5"^^xsd:double;
 .
 
 :ContinuousVariable_2
@@ -90,7 +89,7 @@ OntoDoE:TSEMO
     OntoDoE:refersTo :StoiRatio;
     OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d"^^xsd:string;
     OntoDoE:upperLimit "0.2"^^xsd:double;
-    OntoDoE:lowerLimit "0.02"^^xsd:double;
+    OntoDoE:lowerLimit "0.05"^^xsd:double;
 .
 
 :StoiRatio
@@ -154,23 +153,7 @@ OntoDoE:TSEMO
 :RxnScale_1_Measure_1
     rdf:type om:Measure;
     om:hasUnit om:millilitre;
-    om:hasNumericalValue "5"^^xsd:double;
-.
-
-:FixedParameter_3
-    rdf:type OntoDoE:FixedParameter;
-    OntoDoE:refersTo :RxnPressure_1;
-.
-
-:RxnPressure_1
-    rdf:type OntoRxn:ReactionPressure;
-    om:hasValue :RxnPressure_1_Measure_1;
-.
-
-:RxnPressure_1_Measure_1
-    rdf:type om:Measure;
-    om:hasUnit om:bar;
-    om:hasNumericalValue "6"^^xsd:double;
+    om:hasNumericalValue "2"^^xsd:double;
 .
 
 # historical data

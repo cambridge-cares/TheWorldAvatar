@@ -38,6 +38,8 @@ def calculate_performance_indicator(
         return [calculate_space_time_yield(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
     elif target_clz == ONTOREACTION_RUNMATERIALCOST:
         return [calculate_run_material_cost(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
+    elif target_clz == ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT:
+        return [calculate_run_material_cost_per_kg_product(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
     else:
         raise NotImplementedError("Requested target clz <%s> as PerformanceIndicator is NOT yet supported when post-processing ReactionExperiment: %s." % (
             target_clz, str(rxn_exp_instance)))
@@ -148,11 +150,32 @@ def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_rea
     return pi_e_factor
 
 def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
-    """This method calculates the reaction material cost for a single run, which commonly has (pound sterling) as its unit."""
+    """This method calculates the reaction material cost for a single run, which commonly has (pound sterling per litre) as its unit."""
+
+    # Calculate the total cost of all the reactants and solvents
+    all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
+    all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
+    reactant_and_solvent = all_reactant + all_solvent
+    # NOTE here the unit of the _run_volume and def_cost should already be standardised at creation of each HypoStreamSpecies instance
+    # NOTE therefore the unit conversion is omitted
+    _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent])
+
+    # Obtain the total run volume of all the reactants and solvents
+    _total_run_volume = sum([s._run_volume.hasNumericalValue for s in reactant_and_solvent])
+
+    # Calculate the cost per unit volume of the inlet stream
+    _run_material_cost = round(_total_material_cost / _total_run_volume, 2) # Round the decimal place
+
+    pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost, unit_conv.UNIFIED_RUN_MATERIAL_COST_UNIT)
+
+    return pi_run_material_cost
+
+def calculate_run_material_cost_per_kg_product(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction material cost per kg product for a single run, which commonly has (pound sterling per kilogram) as its unit."""
     target_product_species = retrieve_product_species(hypo_end_stream)
     if target_product_species is None:
         # The run material cost becomes infinity (float("inf")) as there is no product produced (div by zero)
-        _run_material_cost = float("inf")
+        _run_material_cost_per_kg_product = float("inf")
     else:
         # Calculate the total cost of all the reactants and solvents
         all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
@@ -166,9 +189,9 @@ def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_react
         prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
 
         # Calculate the cost per unit mass of the product
-        _run_material_cost = round(_total_material_cost / prod_run_mass, 2) # Round the decimal place
+        _run_material_cost_per_kg_product = round(_total_material_cost / prod_run_mass, 2) # Round the decimal place
 
-    pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost, unit_conv.UNIFIED_RUN_MATERIAL_COST_UNIT)
+    pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost_per_kg_product, unit_conv.UNIFIED_RUN_MATERIAL_COST_PER_KILOGRAM_PRODUCT_UNIT)
 
     return pi_run_material_cost
 

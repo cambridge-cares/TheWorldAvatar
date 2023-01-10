@@ -57,6 +57,7 @@ class HPLCPostProAgent(DerivationAgent):
             ONTOREACTION_ENVIRONMENTALFACTOR,
             ONTOREACTION_SPACETIMEYIELD,
             ONTOREACTION_RUNMATERIALCOST,
+            ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT,
         ]:
             pi = hypo.calculate_performance_indicator(
                 hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,

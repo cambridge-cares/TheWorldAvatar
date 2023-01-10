@@ -67,7 +67,7 @@ Once all the inputs are filled, the user can click the `Submit` button to fire t
     "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
     "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
     "second_goal_num_val": 0.001,
-    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
+    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre",
     "labs": [
         "http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy",
         "http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy"

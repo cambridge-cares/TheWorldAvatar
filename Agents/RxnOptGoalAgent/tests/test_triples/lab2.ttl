@@ -27,11 +27,10 @@
 
 # specific namespaces for test cases
 @prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
-@prefix lab1:                <http://example.com/blazegraph/namespace/testlab/lab1/> .
-@prefix :           <http://example.com/blazegraph/namespace/testlab/lab2/> .
-@prefix chem_rxn:                <https://www.example.com/triplestore/testlab/chem_rxn/> .
-@prefix doe_template:               <http://example.com/blazegraph/namespace/testlab/doe_template/> .
-@prefix rxn_data:                <https://www.example.com/triplestore/testlab/rxn_data/> .
+@prefix lab1:                <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix :           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix chem_rxn:                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
+@prefix doe_template:               <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
 
 
 ########################
@@ -98,8 +97,8 @@
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 
-## Internal Standard instances TODO: move these triples to rxn_data.ttl
-# note that this should also be added to the ChemicalReaction and also the AutoSampler solution part
+## Internal Standard instances
+# note that this should also be included in the AutoSampler solution part
 :PhaseComponent_InternalStandard
     rdf:type OntoHPLC:InternalStandard;
     OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
@@ -114,7 +113,7 @@
 :PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
 .
 
 # reactant benzaldehyde
@@ -791,6 +790,8 @@
 #################################################
 ## Create a few sites that does NOT hold any vial
 #################################################
+# NOTE these are placeholder sites that are only used to get the code working as it requires a site to be defined to let the autosampler queryable
+# TODO the code should be updated so that it copes with the case where autosampler is not in use or not available
 :Site_1
     a OntoVapourtec:AutoSamplerSite;
     OntoVapourtec:locationID "1"^^xsd:string;
@@ -1050,7 +1051,7 @@
 :PhaseComponent_IS_Input_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
 .
 
 :PhaseComponent_6_Property_1
