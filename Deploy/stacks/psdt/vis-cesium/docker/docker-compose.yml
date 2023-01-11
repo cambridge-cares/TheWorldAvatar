@@ -5,15 +5,10 @@ services:
 
   # Pirmasens Digital Twin visualisation
   psdt-visualisation-cesium:
-    image: psdt-visualisation-cesium:latest
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
     container_name: "psdt-visualisation-cesium"
-    restart: "no"
-    build:
-      context: "../"
-      dockerfile: "./docker/Dockerfile"
-      labels:
-        authors: "support@cmclinnovations"
-        description: "Pirmasens Digitaler Zwilling Cesium-Visualisierung."
     ports:
       - "42070:80"
+    volumes:
+      - ../webspace:/var/www/html
  
