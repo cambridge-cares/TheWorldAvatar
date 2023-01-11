@@ -68,34 +68,25 @@ h6 {
     min-height: 20px;
     pointer-events: none;
 
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif!important;
+    font-size: 10pt;
+    padding: 5px;
+        
     position: absolute;
     bottom: 100px;
     left: 100px;
-    display: none;
 
-    font-family: "Inter", sans-serif !important;
-    font-size: 10pt;
-    text-align: left;
-    color: black;
-    
     border-radius: 3px;
     box-shadow: 3px 3px 3px gray;
-    background: linear-gradient(180deg,
-        rgba(245, 245, 255, 1) 80%,
-        rgba(230, 230, 240, 1) 100%);
-
-    padding: 5px;
 }
 #cesiumMetaBox h3 {
-    width: calc(100% - 10px);
-    padding: 5px !important;
-    margin: 0px !important; 
-   
-    position: absolute;
-    top: 0;
-    left: 0;
-
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    padding: 5px!important;
+    margin: 0!important;
     white-space: nowrap;
+    display: inline-block;
 }
 #cesiumMetaBox .desc-popup {
     margin-top: 20px;
