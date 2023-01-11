@@ -18,17 +18,15 @@ from Marie.Util.location import DATA_DIR
 from Marie.EntityLinking.Inference import BertNEL
 
 
-
-
 class QAEngineNumerical:
 
     @staticmethod
     def numerical_value_extractor(question):
         numerical_values = re.findall(r"[0-9.]+", question)
         if len(numerical_values) > 0:
-            return numerical_values[0]
+            return float(numerical_values[0]), numerical_values[0]
         else:
-            return None
+            return None, None
 
     def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", largest=False):
         self.marie_logger = MarieLogger()
@@ -48,6 +46,11 @@ class QAEngineNumerical:
         i2r_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'idx2relation.pkl'), 'rb')
         self.idx2rel = pickle.load(i2r_file)
 
+        all_species_indices_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'all_species.pkl'), 'rb')
+        self.all_species_indices = pickle.load(all_species_indices_file)
+
+        self.operator_dict = {0: "smaller", 1: "larger", 2: "near", 3: "none"}
+
         if embedding == "transe":
             self.score_model = TransEAScoreModel(device=self.device,
                                                  dataset_dir=self.dataset_dir, dim=dim)
@@ -59,44 +62,43 @@ class QAEngineNumerical:
         self.max_length = 12
         self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir,
                                                   f"{self.dataset_name}_value_dict.{dict_type}")
-        # if dict_type == 'json':
-        #     self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
-        # else:
-        #     file = open(self.value_dictionary_path, 'rb')
-        #     self.value_dictionary = pickle.load(file)
+        if dict_type == 'json':
+            self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
+        else:
+            file = open(self.value_dictionary_path, 'rb')
+            self.value_dictionary = pickle.load(file)
 
-    def prepare_prediction_batch_numerical(self, question):
+    def value_lookup(self, node):
+        if node in self.value_dictionary:
+            return self.value_dictionary[node]
+        else:
+            return "NODE HAS NO VALUE"
+
+    def prepare_prediction_batch_numerical(self, heads, question):
         """
+        :param heads:
         :param question: question in text
-        :param head_entity: head entity index
-        :param candidate_entities: list of candidate entity index
         :return: the rel embedding predicted, the attr embedding predicted, the numerical operator
         """
         # TODO: cache all the possible triples ...
-        #
-        question = question.replace("#", "")
-        test_num = 10000
-        test_entity = "Q170591"
 
-        relation_idx = 110
-        print("relation label: ", self.idx2rel[relation_idx])
+        heads_batch = []
+        tails_batch = []
+        split_indices = []
 
-
-        head_idx = self.entity2idx[test_entity]
-        heads = torch.Tensor([head_idx])
-
-        tails = torch.Tensor(self.subgraph_extractor.extract_neighbour_from_idx(head_idx))
-        repeat_num = len(tails)
-        heads = heads.repeat(repeat_num, 1).to(self.device)
+        for head in heads:
+            # find the neighbours of this head
+            # append the neighbours to tail_batch
+            neighbours = self.subgraph_extractor.extract_neighbour_from_idx(head)
+            heads_batch += [head] * len(neighbours)
+            tails_batch += neighbours
+            split_indices.append(len(tails_batch))
 
         self.marie_logger.info(f" - Preparing prediction batch")
-        tokenized_question_batch, tokenized_question = self.tokenize_question(question, repeat_num)
-        self.marie_logger.info(f" - Question tokenized {question}")
-        head_entity_batch = heads.to(self.device)
-        prediction_batch = {'question': tokenized_question_batch, 'e_h': head_entity_batch,
-                            'e_t': tails, 'single_question': tokenized_question}
+        prediction_batch = {'e_h': torch.LongTensor(heads_batch),
+                            'e_t': torch.LongTensor(tails_batch), 'single_question': question}
         self.marie_logger.info(f" - Prediction batch is prepared")
-        return prediction_batch
+        return prediction_batch, torch.LongTensor(tails_batch), split_indices[:-1], torch.LongTensor(heads_batch)
 
     def tokenize_question(self, question, repeat_num):
         """
@@ -113,7 +115,7 @@ class QAEngineNumerical:
         return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}, tokenized_question
 
     def test_triple_distance(self):
-        test_entity = "Q170591"
+        test_entity = ""
         rel_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'rel_embedding.tsv'), sep='\t',
                                     header=None)
         ent_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'ent_embedding.tsv'), sep='\t',
@@ -151,6 +153,26 @@ class QAEngineNumerical:
         labels_top_k = [self.idx2entity[tails_idx[index].item()] for index in indices_top_k]
         print(labels_top_k)
 
+    def filter_heads_by_numerical(self, numerical_operator, question_embedding, numerical_value):
+        heads = self.all_species_indices
+        predicted_attr = self.score_model.get_attribute_prediction(question_embedding)
+        attr_batch = predicted_attr.repeat(len(heads), 1)
+        numerical_values = self.score_model.get_numerical_prediction(heads, attr_batch)
+        if numerical_operator == "larger":
+            indices = (numerical_values > numerical_value)
+            indices = indices.nonzero().squeeze(1)
+        elif numerical_operator == "smaller":
+            indices = (numerical_values < numerical_value)
+            indices = indices.nonzero().squeeze(1)
+        elif numerical_operator == "near":
+            indices = torch.abs(numerical_values - numerical_value)
+            _, indices = torch.topk(indices, k=10, largest=False)
+        else:
+            return heads.tolist()
+
+        heads = heads[indices]
+        return heads.tolist()
+
     def find_answers(self, question: str):
         """
         :param head_name: the standard name of the head entity
@@ -160,44 +182,48 @@ class QAEngineNumerical:
         :return: score of all candidate answers
         """
         question = question.replace("'s ", " # ")
-        pred_batch = self.prepare_prediction_batch_numerical(question)
-        tails = pred_batch['e_t']
-        START_TIME = time.time()
-        print("=============== starting the prediction ==============")
-        with no_grad():
-            triple_scores, numerical_predictions, numerical_operators = self.score_model.get_scores(pred_batch)
-            _, indices_top_k = torch.topk(triple_scores, k=10, largest=self.largest)
-            labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
-            print("====== Labels =======")
-            print(labels_top_k)
-            print("====== Numerical Prediction =======")
-            print(numerical_predictions[0] * 100)
-            print("====== Numerical operator prediction =======")
-            print(numerical_operators)
-        print(time.time() - START_TIME)
+        numerical_value, numerical_string = self.numerical_value_extractor(question=question)
+        question = question.replace(numerical_string, "")
 
-            # self.marie_logger.info(f" prediction scores {scores}")
-            # k = min(k, len(scores))
-            # _, indices_top_k = torch.topk(scores, k=k, largest=self.largest)
-            # labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
-            # scores_top_k = [scores[index].item() for index in indices_top_k]
-            # targets_top_k = [head_name] * len(scores)
-            # return labels_top_k, scores_top_k, targets_top_k
-        # except:
-        #     self.marie_logger.error('The attempt to find answer failed')
-        #     self.marie_logger.error(traceback.format_exc())
-        #     # return traceback.format_exc()
-        #     return ["EMPTY"], [-999], ["EMPTY"]
+        # 1. predict the numerical operators, if none, don't do numerical prediction, use normal <h,r,t> prediction
+        _, tokenized_question = self.tokenize_question(question=question, repeat_num=1)
+        single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        predicted_numerical_operator = self.score_model.get_numerical_operator(single_question_embedding)
+        predicted_operator_idx = torch.argmax(predicted_numerical_operator).item()
+        numerical_operator = self.operator_dict[predicted_operator_idx]
 
-    def extract_head_ent(self, _question):
-        self.marie_logger.info("extracting head entity")
-        return self.chemical_nel.find_cid(question=_question)
-
-    def value_lookup(self, node):
-        if node in self.value_dictionary:
-            return self.value_dictionary[node]
+        if numerical_operator == "none":
+            # TODO: do normal <h,r,t> prediction
+            pass
         else:
-            return "NODE HAS NO VALUE"
+            # TODO: filter heads by numerical values and operator
+            START_TIME = time.time()
+            filtered_heads = self.filter_heads_by_numerical(numerical_operator=numerical_operator,
+                                                            question_embedding=single_question_embedding,
+                                                            numerical_value=numerical_value)
+
+            # TODO: prepare the batch for <h,r,t> prediction
+            prediction_batch, tails, split_indices, filtered_heads_tensor = self.prepare_prediction_batch_numerical(
+                heads=filtered_heads,
+                question=single_question_embedding)
+
+            with no_grad():
+                triple_scores = self.score_model.get_scores(prediction_batch)
+                for sub_score_list, sub_tail_list, head in zip(torch.tensor_split(triple_scores, split_indices),
+                                                               torch.tensor_split(tails, split_indices),
+                                                               filtered_heads):
+                    top_scores, indices_top_k = torch.topk(sub_score_list, k=2, largest=self.largest)
+                    labels_top_k = [self.idx2entity[sub_tail_list[index.item()].item()] for index in indices_top_k][0]
+                    numerical_value = self.value_lookup(labels_top_k)
+                    if numerical_value != "NODE HAS NO VALUE":
+                        print("====== Labels =======")
+                        print(labels_top_k)
+                        print(numerical_value)
+                        print(top_scores)
+                        print("from head: ", self.idx2entity[head])
+
+            print("Time used: ", time.time() - START_TIME)
+            print("=========================================")
 
     def process_answer(self, answer_list, nel_confidence, mention_string, name, score_list):
         result_list = []
@@ -234,14 +260,5 @@ if __name__ == "__main__":
     my_engine = QAEngineNumerical(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical",
                                   embedding="transe",
                                   dict_type="json", dim=40)
-    rst = my_engine.find_answers("chemical formula more than 300")
-    print(rst)
-    rst = my_engine.find_answers("chemical formula less than 100")
-    print(rst)
-    rst = my_engine.find_answers("chemical formula about 50")
-    print(rst)
-    rst = my_engine.find_answers("chemical formula")
-    print(rst)
 
-    # printQAEngineNumerical
-    # my_engine.test_triple_distance()
+    my_engine.find_answers("vapour pressure around 0.1")
