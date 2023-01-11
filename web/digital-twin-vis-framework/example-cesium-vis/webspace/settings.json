@@ -1,8 +1,12 @@
 {
     "start": {
-        "center": [-74.03847455978394, 40.69933253480097, 2500],
+        "center": [-74.02208684116992, 40.69885291708034, 400],
         "heading": 50,
-        "pitch": -40,
+        "pitch": -30,
         "roll": 0.0
+    },
+    "fields": {
+        "name": "Name",
+        "description": "Description"
     }
 }
