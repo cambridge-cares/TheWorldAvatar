@@ -24,7 +24,7 @@ app = Flask(__name__)
 logger = agentlogging.get_logger("dev")
 
 # Shared fields
-asset_url = "default"
+asset_url = "./gltf/"
 
 # Show an instructional message at the app's home page
 @app.route('/')

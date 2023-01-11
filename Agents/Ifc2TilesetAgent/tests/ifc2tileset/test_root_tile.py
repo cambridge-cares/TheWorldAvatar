@@ -8,35 +8,20 @@ A test suite for the agent.ifc2tileset.root_tile submodule.
 import os
 
 # Self import
-from agent.ifc2tileset.root_tile import bbox_root, bbox_child, root_tile, gen_root_content
-
-
-def test_bbox_root():
-    """
-    Tests bbox_root()
-    """
-    expected_box = [40, 0, 16, 100, 0, 0, 0, 100, 0, 0, 0, 20]
-    assert expected_box == bbox_root()
-
-
-def test_bbox_child():
-    """
-    Tests bbox_child()
-    """
-    expected_box = [0, 25, 25, 50, 0, 0, 0, 25, 0, 0, 0, 5]
-    assert expected_box == bbox_child()
+import agent.config.config as properties
+from agent.ifc2tileset.root_tile import root_tile, gen_root_content
 
 
 def test_root_tile():
     """
     Tests root_tile()
     """
+    properties.bbox_root = []
     expected_tileset = {
         'asset': {'version': '1.1'},
         'geometricError': 1024,
         'root': {
-            "boundingVolume": {
-                "box": [40, 0, 16, 100, 0, 0, 0, 100, 0, 0, 0, 20]},
+            "boundingVolume": {"box": []},
             "geometricError": 512,
             "refine": "ADD",
         }

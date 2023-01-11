@@ -5,6 +5,7 @@ A test suite for the agent.ifc2tileset.asset_tiles submodule.
 """
 
 # Self import
+import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
 
 
@@ -12,6 +13,8 @@ def test_init_asset_tiles():
     """
     Tests init_asset_tiles()
     """
+    expected_bbox = []
+    properties.bbox_child = expected_bbox
     output = init_asset_tiles()
     # Test that root tile is generated with no glTF content
     assert output["asset"]["version"] == "1.1"
@@ -28,6 +31,7 @@ def test_init_asset_tiles():
     assert metadata["properties"]["uid"]["type"] == "STRING"
     # Test that root -> children link exists
     assert output["root"]["children"][0]["geometricError"] == 50
+    assert output["root"]["children"][0]["boundingVolume"]["box"] == expected_bbox
     assert "contents" in output["root"]["children"][0]
 
 
