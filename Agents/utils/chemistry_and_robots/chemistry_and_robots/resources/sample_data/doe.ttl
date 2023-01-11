@@ -47,6 +47,10 @@ OntoDoE:TSEMO
     OntoDoE:hasDesignVariable :ContinuousVariable_2;
     OntoDoE:hasDesignVariable :ContinuousVariable_3;
     OntoDoE:hasDesignVariable :ContinuousVariable_4;
+    # below fixed parameters are added to reflect the latest design of DoEAgent
+    OntoDoE:hasFixedParameter :FixedParameter_1;
+    OntoDoE:hasFixedParameter :FixedParameter_2;
+    OntoDoE:hasFixedParameter :FixedParameter_3;
 .
 
 :ContinuousVariable_1
@@ -92,6 +96,57 @@ OntoDoE:TSEMO
 :RxnTemp
     rdf:type OntoRxn:ReactionTemperature;
     om:hasUnit om:degreeCelsius;
+.
+
+# fixed parameters
+:FixedParameter_1
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersTo :StoiRatio_1;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+.
+
+:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasValue :StoiRatio_1_Measure_1;
+.
+
+:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+:FixedParameter_2
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersTo :RxnScale_1;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+.
+
+:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasValue :RxnScale_1_Measure_1;
+.
+
+:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+:FixedParameter_3
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersTo :RxnPressure_1;
+.
+
+:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasValue :RxnPressure_1_Measure_1;
+.
+
+:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
 .
 
 :SystemResponse_1

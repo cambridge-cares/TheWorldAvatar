@@ -8,7 +8,7 @@ import chemistry_and_robots.kg_operations.dict_and_list as dal
     [
         (TargetIRIs.DOE_DOMAIN_IRI.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
         (TargetIRIs.DOE_DOMAIN_IRI.value, TargetIRIs.LIST_NEW_RXN_EXP.value, []), # No performance indicator so all will be filtered out
-        (TargetIRIs.DOE_DOMAIN_IRI.value, TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value, [TargetIRIs.OUT_OF_RANGE_RXN_EXP_2_IRI.value]),
+        (TargetIRIs.DOE_DOMAIN_IRI.value, TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value, []),
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_NEW_RXN_EXP.value, []), # No performance indicator so all will be filtered out
         (TargetIRIs.DOE_TEMPLATE_DOMAIN_IRI.value, TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value, []),
