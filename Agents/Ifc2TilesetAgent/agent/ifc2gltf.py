@@ -60,7 +60,9 @@ def gendict4split(ifc):
     for feature in ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal"]:
         for element in ifc.by_type(feature):
             # If the name contains these key words,generate individual models for them
-            wordlist = ["Sensor", "Weather Station", "Fridge", "Meter"]
+            wordlist = ["Sensor", "Weather Station", "Meter",
+                "Fume Hood", "Explosive Precursor", "Chemistry Robot",
+                "Fridge"]
             if find_word(wordlist, element.Name):
                 # Simplify the name of asset files, as
                 # Cesium cannot load complicated or long file names
