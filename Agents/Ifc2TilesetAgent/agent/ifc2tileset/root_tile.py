@@ -9,36 +9,7 @@ from pathlib import Path
 
 # Self imports
 import agent.app as state
-
-def bbox_root():
-    """
-    Defines the bounding boxes required in generating the root tile for tilesets
-
-    Returns:
-    The bounding box coordinates for the root tile
-    """
-    # WIP: Difficulty in creating suitable bounding boxes automatically
-    bbox = [40, 0, 16,  # x,y,z for center of model
-            100, 0, 0,  # half-length for x
-            0, 100, 0,  # half-length for y
-            0, 0, 20]  # half-length for z
-    return bbox
-
-
-def bbox_child():
-    """
-    Defines the bounding boxes required in generating the children tiles for tilesets
-
-    Returns:
-    The bounding box coordinates for children tiles
-    """
-    # Theoretically, the x and y half lengths can remain the same to
-    # cover the entire floor, but z requires some reduction
-    bbox = [0, 25, 25,  # x,y,z for center of model
-            50, 0, 0,  # half-length for x
-            0, 25, 0,  # half-length for y
-            0, 0, 5]  # half-length for z
-    return bbox
+import agent.config.config as properties
 
 
 def root_tile():
@@ -51,7 +22,7 @@ def root_tile():
     """
     tileset = {'asset': {'version': '1.1'},
                'geometricError': 1024,
-               'root': {"boundingVolume": {"box": bbox_root()},
+               'root': {"boundingVolume": {"box": properties.bbox_root},
                         "geometricError": 512,
                         "refine": "ADD",
                         }

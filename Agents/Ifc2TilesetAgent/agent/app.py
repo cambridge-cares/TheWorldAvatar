@@ -15,6 +15,7 @@ from agent.utils import read_ifc_file, cleandir, validate_asset_url
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
 from agent.exceptions import InvalidInputError
+from agent.config import set_properties
 
 # Create the Flask app object
 app = Flask(__name__)
@@ -51,6 +52,7 @@ def api():
     else:
         return "Invalid Request Method. Only POST request is accepted."
 
+    set_properties('./config/properties.yaml')
     logger.info("Cleaning the data directory...")
     cleandir()
 

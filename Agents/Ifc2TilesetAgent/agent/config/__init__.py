@@ -1,0 +1,1 @@
+from agent.config.config import set_properties

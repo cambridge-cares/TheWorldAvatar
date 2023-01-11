@@ -5,3 +5,4 @@ requests~=2.28.0
 lark~=1.1.2
 numpy==1.23.5
 py4jps==1.0.30
+PyYAML==6.0

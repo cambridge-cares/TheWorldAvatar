@@ -6,7 +6,9 @@ This module provides methods to generate tilesets related to assets.
 
 # Self imports
 import agent.app as state
-from agent.ifc2tileset.root_tile import gen_root_content, bbox_child
+import agent.config.config as properties
+from agent.ifc2tileset.root_tile import gen_root_content
+
 
 def init_asset_tiles():
     """
@@ -38,7 +40,7 @@ def init_asset_tiles():
     }}
 
     tileset["root"]["children"] = [{
-        "boundingVolume": {"box": bbox_child()},
+        "boundingVolume": {"box": properties.bbox_child},
         "geometricError": 50,
         # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
         "contents": [{}]
@@ -67,7 +69,7 @@ def appenddict_rec(tileset_root, assetlist, i=6):
     """
     if len(assetlist) > i:
         tileset_root['children'][0]['children'] = [{
-            "boundingVolume": {"box": bbox_child()},
+            "boundingVolume": {"box": properties.bbox_child},
             "geometricError": 50,
             "contents": assetlist[i:i+6]
         }]
