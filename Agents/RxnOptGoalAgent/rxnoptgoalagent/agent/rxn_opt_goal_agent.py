@@ -346,7 +346,7 @@ class RxnOptGoalAgent(ABC):
                     format_current_time(),
                     f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} is scheduled.",
                     f"Goal Iteration will be monitored every {self.goal_monitor_time_interval} seconds.",
-                    f"The reaction to be optimised is {chem_rxn_iri}."
+                    f"The reaction to be optimised is {chem_rxn_iri}.",
                     f"The laboratories taking part of this optimisation campaign are {available_labs}."
                 ]
             )
@@ -466,6 +466,8 @@ class RxnOptGoalAgent(ABC):
                                 f"Restriction (cycleAllowance) is updated to {goal_set_instance.hasRestriction.cycleAllowance - len(rogi_derivation_lst_up_to_date)}.",
                                 f"Restriction (deadline) is {datetime.fromtimestamp(goal_set_instance.hasRestriction.deadline)}.",
                                 f"Current best results are:",
+                                f"(NOTE: If the yield is slightly above 100%, it is most likely due to rounding errors, so don't worry.",
+                                f"       However, please report to the developers if it is significantly above 100%, which is not expected.)",
                             ] + [
                                 f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
                             ]
