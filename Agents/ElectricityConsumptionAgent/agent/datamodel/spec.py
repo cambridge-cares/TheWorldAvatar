@@ -2,9 +2,13 @@ import pickle
 import numpy as np
 import pandas as pd
 import inspect
+import requests
+from bs4 import BeautifulSoup
 from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import *
 import datetime
+import os
+import urllib.request
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
 DEF_NAMESPACE = "ontogasgrid"
@@ -79,6 +83,23 @@ propotion_heating = 0.9
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------- Some useful 'shortcut' functions ----------------------------------- ###
+def generate_time_dict(year: str):
+
+      time_dict = {f'{year}-01-01T12:00:00.000Z':0,\
+             f'{year}-02-01T12:00:00.000Z':1,\
+             f'{year}-03-01T12:00:00.000Z':2,\
+             f'{year}-04-01T12:00:00.000Z':3,\
+             f'{year}-05-01T12:00:00.000Z':4,\
+             f'{year}-06-01T12:00:00.000Z':5,\
+             f'{year}-07-01T12:00:00.000Z':6,\
+             f'{year}-08-01T12:00:00.000Z':7,\
+             f'{year}-09-01T12:00:00.000Z':8,\
+             f'{year}-10-01T12:00:00.000Z':9,\
+             f'{year}-11-01T12:00:00.000Z':10,\
+             f'{year}-12-01T12:00:00.000Z':11}
+            
+      return time_dict
+
 def process_list(data):
       # Remove the first bracket using indexing
       data = data[0]
@@ -598,7 +619,179 @@ def get_all_data(limit = False):
     convert_df(df)
     return df
 
+def read_from_web_elec(year: str):
+  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption'
+
+  # Use requests to get the HTML of the website
+  response = requests.get(url)
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the link to the xlsx file on the website
+  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
+  link = download_div[4].find('a', href=True)['href']
+
+  # Download the xlsx file
+  file_name = os.path.basename(link)
+  response = requests.get(link)
+  open(file_name, 'wb').write(response.content)
+  if not 'LSOA' in file_name:
+    if 'not' in file_name:
+      raise InvalidInput('...')
+
+  # Parse the data from the xlsx file into a pandas DataFrame
+  df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
+  
+  return df
+
+def read_from_web_gas(year: str):
+  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption'
+
+  # Use requests to get the HTML of the website
+  response = requests.get(url)
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the link to the xlsx file on the website
+  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
+  link = download_div[4].find('a', href=True)['href']
+
+  # Download the xlsx file
+  file_name = os.path.basename(link)
+  response = requests.get(link)
+  open(file_name, 'wb').write(response.content)
+
+  # Parse the data from the xlsx file into a pandas DataFrame
+  df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
+  
+  return df
+
+def read_from_web_fuel_poverty(year: str):
+
+  # There is a lag between data published time and data time, e.g. the data for 2020 is published on 2022. 
+  # And the published date is always 2 years after the data date
+  year_published = str(int(year) + 2)
+  
+  url = 'https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-' + year_published
+
+  # Use requests to get the HTML of the website
+  response = requests.get(url)
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the link to the xlsx file on the website
+  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
+  link = download_div[0].find('a', href=True)['href']
+
+  # Download the xlsx file
+  file_name = os.path.basename(link)
+  response = requests.get(link)
+  open(file_name, 'wb').write(response.content)
+
+  # Parse the data from the xlsx file into a pandas DataFrame
+  df = pd.read_excel(file_name, sheet_name="Table 3", skiprows=2, skipfooter=8)
+  
+  return df
+
+def read_from_web_temp(year:str, var_name:str):
+  url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
+
+  # Use requests to get the HTML of the website
+  response = requests.get(url)
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the link to the xlsx file on the website
+  download_div = soup.find_all('table', {'class': 'table table-sm'})
+  inner_url = download_div[0].find_all('a', href=True)
+  
+  for year_link in inner_url:
+        if year in year_link['href']:
+            link = year_link['href']
+
+  try: 
+      # Download the xlsx file
+      file_name = os.path.basename(link).split('?')[0]
+
+  except Exception as ex:
+      print(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
+      raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
+  response = requests.get(link)
+  open(file_name, 'wb').write(response.content)
+
+# ------------------------------ Repo ---------------------------------------------------------- #
+def read_from_excel(year:str) -> list:
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
+    try:
+            data = pd.read_excel('./Data/LSOA_domestic_elec_2010-20.xlsx', sheet_name=year, skiprows=4)
+    except Exception as ex:
+            logger.error("Excel file can not be read")
+            raise InvalidInput("Excel file can not be read -- try fixing by using absolute path") from ex
+
+    logger.info('Retrieving Electricity consumption data from Excel ...')
+    LSOA_codes = data["LSOA code"].values
+    met_num = data["Number\nof meters\n"].values
+    consump = data["Total \nconsumption\n(kWh)"].values
+    logger.info('Electricity consumption data succesfully retrieved')
+    
+    # Replace the 'null' data to 'NaN'
+    met_num =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(met_num) else met_num for met_num in met_num]  
+    consump =  [f"'NaN'^^<{XSD_STRING}>" if np.isnan(consump) else consump for consump in consump]   
+
+    return LSOA_codes, met_num, consump
+
+def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    '''
+            Adds time series data to instantiated time series IRIs
+        
+        Arguments:
+            datairi - list of IRIs of instantiated time series data
+            value - respective value of instantiated time series data
+            year - specify the year of time
+            query_endpoint: str = QUERY_ENDPOINT,
+            update_endpoint: str = UPDATE_ENDPOINT
+            '''
+    # Initialise time list for TimeSeriesClient's bulkInit function
+    times = [f"{year}-01-01T12:00:00" for _ in datairi]
+
+    # Initialise TimeSeries Clients
+    kg_client = KGClient(query_endpoint,update_endpoint)
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
+    with ts_client.connect() as conn:
+            ts_client.tsclient.bulkInitTimeSeries(datairi, [DATACLASS]*len(datairi), TIME_FORMAT, conn)
+    logger.info('Time series triples for electricity consumption/meters per LSOA via Java TimeSeriesClient successfully instantiated.')
+
+    # Upload TimeSeries data
+    added_ts = 0
+    ts_list = []
+    for i in range(len(times)):
+        added_ts += 1
+        ts = TSClient.create_timeseries(times[i],datairi[i],value[i])
+        ts_list.appened(ts)
+
+    with ts_client.connect() as conn:
+        ts_client.tsclient.bulkaddTimeSeriesData(ts_list, conn)
+    logger.info(f'Time series data for electricity consumption for {added_ts} LSOA area successfully added.')
+
+    return added_ts
+
+'''
+    # upload the timeseries data
+    print("\nUploading the Electricity consumption time series data:")
+    logger.info("Uploading the Electricity consumption time series data...")
+    t1 = time.time()
+    added_ts = upload_timeseries_to_KG(datairi, value, year, query_endpoint, update_endpoint)
+    t2= time.time()
+    diff = t2 - t1
+    print(f'Electricity consumption timeseries data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'Electricity consumption timeseries data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    '''
 #save_pickle(read_the_temperature,"./Data/pickle_files/temp_all_results")
 #get_all_data(limit = False)
 #valid_LSOA_list()
 #get_all_data(limit=False)
+read_from_web_temp('2020','tas')
+#read_from_web_fuel_poverty('2016')
