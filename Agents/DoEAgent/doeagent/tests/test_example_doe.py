@@ -11,6 +11,8 @@ import doeagent.tests.utils as utils
         (utils.cf.DOE_IRI, utils.cf.DERIVATION_INPUTS, False), # deployed docker agent test
         (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], True), # local agent instance test
         (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], False), # deployed docker agent test
+        (utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI], True), # local agent instance test
+        (utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI], False), # deployed docker agent test
     ],
 )
 def test_example_doe(

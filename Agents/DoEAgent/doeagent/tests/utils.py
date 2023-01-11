@@ -25,7 +25,8 @@ def initialise_triples(sparql_client):
         'sample_data/doe.ttl', # for normal DoE test
         'sample_data/rxn_data.ttl', # historical data for DoE test
         'sample_data/dummy_lab.ttl', # lab information
-        'sample_data/doe_no_prior_data.ttl' # for DoE test without prior experiment data
+        'sample_data/doe_no_prior_data.ttl', # for DoE test without prior experiment data
+        'sample_data/doe_template.ttl', # another DoE test without prior experiment data
     ]:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
