@@ -3,8 +3,11 @@ package uk.ac.cam.cares.jps.agent.AERMODAgent;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.opengis.referencing.FactoryException;
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -15,6 +18,17 @@ import javax.ws.rs.BadRequestException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.FileWriter;
+import java.io.IOException;
+
+
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Coordinate;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * Example JPS Agent that receives a request with two numbers, adds them together, then returns the
@@ -76,10 +90,11 @@ public class AERMODAgent extends JPSAgent {
 
     public static ArrayList<String> StackProperties  ;
 
-    /* BuildingProperties contains array lists of strings. Each string contains the coordinates of
-    the vertices of one polygon. BuildingHeights contains the height of each building.
+    /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
+    Each element of BuildingVertices contains the coordinates of
+    the vertices of the base polygon.
      */
-    public static ArrayList<ArrayList<String>> BuildingVertices ;
+    public static ArrayList<String> BuildingVertices ;
     public static ArrayList<String> BuildingProperties ;
 
 
@@ -101,14 +116,16 @@ public class AERMODAgent extends JPSAgent {
     public static Double[] MinY = {12573.67};
     public static Double[] MaxY = {753645.03};
 
-    public static StringBuffer BPIPPRMBuildingInput = new StringBuffer();
-    public static StringBuffer BPIPPRMStackInput = new StringBuffer() ;
 
     /* Maximum distance between stack and receptor for which AERMOD computes pollutant concentrations
     in meters. */
     public static double cutoffRadius = 100.0;
 
+    // Variables used to run AERMOD and its preprocessors
+    public static ArrayList<String> BPIPPRMBuildingInput = new ArrayList<>();
+    public static ArrayList<String> BPIPPRMStackInput = new ArrayList<>() ;
 
+    public static  String workingDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\16";
 
 
     @Override
@@ -123,21 +140,19 @@ public class AERMODAgent extends JPSAgent {
 
                 ArrayList<ArrayList<Double>> inputCoordinates = new ArrayList<ArrayList<Double>> (Arrays.asList(ReceptorLat, ReceptorLong));
 
-                ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputCoordinates);
+                ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputCoordinates,"EPSG:4326","EPSG:24500");
                 /*TODO: The arguments to the get method in the next two lines may need to be interchanged. */
                 ReceptorEastEPSG24500 = outputCoordinates.get(0);
                 ReceptorNorthEPSG24500 = outputCoordinates.get(1);
 
                 initGrid();
                 buildings();
+                processBuildings();
                 dispersionCalculation();
 
-
-
-
-
-
-                return requestParams ;
+                JSONObject req = new JSONObject();
+                req.put("Status",0);
+                return req ;
             } catch (Exception e){
                 throw new JPSRuntimeException(e);
             }
@@ -146,7 +161,6 @@ public class AERMODAgent extends JPSAgent {
             System.out.println("bad input.\n");
             throw new JPSRuntimeException(BAD_INPUT);
         }
-
 
     }
 
@@ -194,8 +208,23 @@ public class AERMODAgent extends JPSAgent {
         return true;
     }
 
-    public static ArrayList<ArrayList<Double>> convertCoordinates (ArrayList<ArrayList<Double>> inputcoordinates) {
-        return inputcoordinates;
+    public static ArrayList<ArrayList<Double>> convertCoordinates
+            (ArrayList<ArrayList<Double>> inputcoordinates, String inputCRS, String outputCRS)
+            throws FactoryException, TransformException {
+
+        ArrayList<ArrayList<Double>> outputcoordinates = new ArrayList<>();
+
+        for (int i = 0; i < inputcoordinates.size(); i++) {
+            Coordinate source = new Coordinate(inputcoordinates.get(i).get(0),inputcoordinates.get(i).get(1)) ;
+            CoordinateReferenceSystem sourceCRS = CRS.decode(inputCRS);
+            CoordinateReferenceSystem targetCRS = CRS.decode(outputCRS);
+            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+            Coordinate target = JTS.transform(source, null, transform);
+            ArrayList<Double> outcoord = new ArrayList<>(Arrays.asList(target.getX(),target.getY()));
+            outputcoordinates.add(outcoord);
+        }
+
+        return outputcoordinates;
     }
 
     /* Initialize grid and query geospatial endpoint for corners of stacks and buildings.
@@ -315,7 +344,6 @@ public class AERMODAgent extends JPSAgent {
             String BuildingX = "0";
             String BuildingY = "0";
             String BuildingZ = "0";
-            ArrayList<String> buildvert = new ArrayList<>();
 
             for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
                 JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
@@ -337,14 +365,13 @@ public class AERMODAgent extends JPSAgent {
                 if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
                     BuildingX = String.valueOf(sum_x/(coordinates.length/3));
                     BuildingY = String.valueOf(sum_y/(coordinates.length/3));
-                    buildvert.set(0,coordiData);
+                    BuildingVertices.set(i,coordiData);
                 }
                 if (!z_values.isEmpty() && Double.parseDouble(BuildingZ) < Double.parseDouble(Collections.max(z_values))) {
                     BuildingZ = Collections.max(z_values);
                 }
             }
 
-            BuildingVertices.add(buildprop);
             StringBuffer averageCoordinate = new StringBuffer();
             averageCoordinate.append(BuildingX).append("#").append(BuildingY).append("#").append(BuildingZ);
             BuildingProperties.add(averageCoordinate.toString());
@@ -395,17 +422,17 @@ public class AERMODAgent extends JPSAgent {
                     if (dist2 < cutoffRadius*cutoffRadius) {
                         numberStacks++;
                         ArrayList<Double> inputcoords =
-                                new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
+                                new ArrayList<Double>(Arrays.asList(StackX, StackY)) ;
                         ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
                         // convert coordinates from EPSG24500 to UTM
-                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,"EPSG:24500","EPSG:24548");
 
                         Double StackEastUTM = outputCoordinates.get(0).get(0);
                         Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                        String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
+                        String InputLine = "Stk" + String.valueOf(numberStacks) + " " + "0.0 " +
                                 StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
-                        BPIPPRMStackInput.append(InputLine);
-                        stackUsed.set(stackIndex,false);
+                        BPIPPRMStackInput.add(InputLine);
+                        stackUsed.set(stackIndex,true);
                         usedstacks.add(stackIndex);
                     }
                 }
@@ -437,10 +464,10 @@ public class AERMODAgent extends JPSAgent {
 
                             Double StackEastUTM = outputCoordinates.get(0).get(0);
                             Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                            String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
+                            String InputLine = "Stk" + String.valueOf(numberStacks) + " " + "0.0 " +
                                     StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
-                            BPIPPRMStackInput.append(InputLine);
-                            stackUsed.set(stackIndex,false);
+                            BPIPPRMStackInput.add(InputLine);
+                            stackUsed.set(stackIndex,true);
                             usedstacks.add(stackIndex);
                         }
                     }
@@ -453,7 +480,6 @@ public class AERMODAgent extends JPSAgent {
 
         /* Loop over stacks to identify buildings close enough to cause downwash effects */
         int numberBuildings = 0;
-        ArrayList<Integer> usedbuildings = new ArrayList<Integer>() ;
         for (int i = 0; i < usedstacks.size(); i++) {
             int stackIndex = usedstacks.get(i) ;
             String StackAttribute = StackProperties.get(stackIndex);
@@ -470,10 +496,10 @@ public class AERMODAgent extends JPSAgent {
                 if (!buildingUsed.get(buildingIndex)) {
                     String BuildingAttribute = BuildingProperties.get(buildingIndex);
 
-                    String[] BuildCoords = StackAttribute.split("#");
+                    String[] BuildCoords = BuildingAttribute.split("#");
                     // Check if stack is close enough to receptor
-                    Double BuildingX = Double.parseDouble(StackCoords[0]);
-                    Double BuildingY = Double.parseDouble(StackCoords[1]);
+                    Double BuildingX = Double.parseDouble(BuildCoords[0]);
+                    Double BuildingY = Double.parseDouble(BuildCoords[1]);
                     Double BuildingHeight = Double.parseDouble(StackCoords[2]);
                     Double dist2 = (BuildingX - StackX)*(BuildingX - StackX) + (BuildingY - StackY)*(BuildingY - StackY) ;
                     Double gepHeight = 2.5*BuildingHeight;
@@ -483,37 +509,134 @@ public class AERMODAgent extends JPSAgent {
 
                     if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
                         numberBuildings++;
-                        ArrayList<Double> inputcoords =
-                                new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
-                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                        String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" ;
+                        BPIPPRMBuildingInput.add(InputLine);
+                        String BasePolygonVertices = BuildingVertices.get(buildingIndex);
+                        String [] BaseVertices = BasePolygonVertices.split("#");
+                        int numCorners = BaseVertices.length/3;
+                        InputLine = numCorners + " " + BuildingHeight ;
+                        BPIPPRMBuildingInput.add(InputLine);
+
+                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
+
+                        for (int j = 0; j < BaseVertices.length; j+=3 ){
+                            ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
+                            inputcoordinates.add(inputcoords);
+                        }
+
+
                         // convert coordinates from EPSG24500 to UTM
                         ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                        for (int j = 0; j < outputCoordinates.size(); j++ ){
+                            Double VertexEastUTM = outputCoordinates.get(j).get(0);
+                            Double VertexNorthUTM = outputCoordinates.get(j).get(1);
+                            InputLine = VertexEastUTM + " " + VertexNorthUTM ;
+                            BPIPPRMBuildingInput.add(InputLine);
+                        }
 
-                        Double StackEastUTM = outputCoordinates.get(0).get(0);
-                        Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                        String InputLine = 'Stk' + String.valueOf(numberStacks) + " " + "0.0 " +
-                                StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
-                        BPIPPRMStackInput.append(InputLine);
-                        stackUsed.set(stackIndex,false);
-                        usedstacks.add(stackIndex);
+                        buildingUsed.set(buildingIndex,true);
+
                     }
                 }
 
-                stackIndex = stackList.get(stackIndex);
+                buildingIndex = buildingList.get(stackIndex);
             }
 
+            int jcell0 = 8*icell;
 
- 
+            for (int nabor = 0; nabor < 8; nabor++) {
+                int jcell = cellmap.get(jcell0 + nabor);
+                buildingIndex = buildingHead.get(icell);
+                while (buildingIndex > -1) {
+                    if (!buildingUsed.get(buildingIndex)) {
+                        String BuildingAttribute = BuildingProperties.get(buildingIndex);
+
+                        String[] BuildCoords = BuildingAttribute.split("#");
+                        // Check if stack is close enough to receptor
+                        Double BuildingX = Double.parseDouble(BuildCoords[0]);
+                        Double BuildingY = Double.parseDouble(BuildCoords[1]);
+                        Double BuildingHeight = Double.parseDouble(StackCoords[2]);
+                        Double dist2 = (BuildingX - StackX)*(BuildingX - StackX) + (BuildingY - StackY)*(BuildingY - StackY) ;
+                        Double gepHeight = 2.5*BuildingHeight;
+                        Double criticalDistance = 5.0*BuildingHeight;
+                        Double criticalDistanceSquared = criticalDistance*criticalDistance;
 
 
+                        if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
+                            numberBuildings++;
+                            String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" ;
+                            BPIPPRMBuildingInput.add(InputLine);
+                            String BasePolygonVertices = BuildingVertices.get(buildingIndex);
+                            String [] BaseVertices = BasePolygonVertices.split("#");
+                            int numCorners = BaseVertices.length/3;
+                            InputLine = numCorners + " " + BuildingHeight ;
+                            BPIPPRMBuildingInput.add(InputLine);
+
+                            ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
+
+                            for (int j = 0; j < BaseVertices.length; j+=3 ){
+                                ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
+                                inputcoordinates.add(inputcoords);
+                            }
 
 
+                            // convert coordinates from EPSG24500 to UTM
+                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                            for (int j = 0; j < outputCoordinates.size(); j++ ){
+                                Double VertexEastUTM = outputCoordinates.get(j).get(0);
+                                Double VertexNorthUTM = outputCoordinates.get(j).get(1);
+                                InputLine = VertexEastUTM + " " + VertexNorthUTM ;
+                                BPIPPRMBuildingInput.add(InputLine);
+                            }
 
+                            buildingUsed.set(buildingIndex,true);
+
+                        }
+                    }
+
+                    buildingIndex = buildingList.get(buildingIndex);
+                }
+            }
         }
 
+        // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
+        // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
+        BPIPPRMStackInput.add(String.valueOf(numberStacks));
+        BPIPPRMBuildingInput.add(String.valueOf(numberBuildings));
 
 
+    }
 
+    /* Write out data to BPIPPRM input file and run this program. */
+    public static void processBuildings() {
+
+        ArrayList<String> frontmatter = new ArrayList<>();
+        frontmatter.add("\'BPIPPRM test run\'");
+        frontmatter.add("\'p\'");
+        frontmatter.add("\' METERS    \'  1.0  ");
+        frontmatter.add("\'UTMY \'  0.0 ");
+        String filename = workingDirectory + "bpipprm.inp" ;
+        try {
+            FileWriter writer = new FileWriter(filename);
+            for (String line:frontmatter) {
+                writer.write(line);
+            }
+            int numberBuildingLines = BPIPPRMBuildingInput.size() ;
+            writer.write(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
+            for (int i = 0; i < numberBuildingLines; i++) {
+                writer.write(BPIPPRMBuildingInput.get(i));
+            }
+
+            int numberStackLines = BPIPPRMStackInput.size() ;
+            writer.write(BPIPPRMStackInput.get(numberStackLines - 1));
+            for (int i = 0; i < numberStackLines; i++) {
+                writer.write(BPIPPRMStackInput.get(i));
+            }
+            writer.close();
+        } catch(IOException e) {
+            String errormessage = "Error writing to bpipprm.inp" + e.getMessage();
+            throw new JPSRuntimeException(errormessage);
+        }
 
 
     }
