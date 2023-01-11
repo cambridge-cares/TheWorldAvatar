@@ -13,7 +13,7 @@ get_executables(){
 
         >&2 echo "ERROR Podman cannot run in swarm mode so will have to move to Kubenetes before this actually works"
         # The "--podman-build-args" argument requires podman compose version 0.1.8
-        pip3 install --user 'podman-compose==0.1.8'
+        pip3 install --user 'podman-compose==1.0.3'
         
         EXECUTABLE="podman"
         COMPOSE_EXECUTABLE="podman-compose"
