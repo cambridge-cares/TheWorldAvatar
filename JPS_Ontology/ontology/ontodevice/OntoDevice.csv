@@ -75,6 +75,6 @@ hasProperty,Object Property,,,Device,http://www.ontology-of-units-of-measure.org
 hasProperty,Object Property,,,Device,Quality,,,https://www.theworldavatar.com/kg/ontodevice/,
 hasTimeSeries,Object Property,,,Quality,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,
 hasTimeSeries,Object Property,,,Quantity,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasQualitativeValue,Object Property,,,Quality,QualitativeValue,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+hasQualitativeValue,Object Property,,,Quality,QualitativeValue,,,https://www.theworldavatar.com/kg/ontodevice/,
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
