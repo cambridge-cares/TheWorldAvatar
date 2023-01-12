@@ -13,7 +13,7 @@ def create_app():
         # developer should populate this value in the env file with the value returned by running below command in WSL2
         # echo $(ipconfig.exe | grep 'vEthernet (WSL)' -A4 | cut -d":" -f 2 | tail -n1 | sed -e 's/\s*//g')
         # then uncomment the line below
-        vapourtec_ip_address=#vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
+        vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
         fcexp_file_container_folder=vapourtec_agent_config.FCEXP_FILE_CONTAINER_FOLDER,
         fcexp_file_host_folder=vapourtec_agent_config.FCEXP_FILE_HOST_FOLDER,
         fcexp_template_filename=vapourtec_agent_config.FCEXP_TEMPLATE_FILENAME,
