@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-client:
-    image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.7.0
+    image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.8.0-add-superset-to-stack-SNAPSHOT
     configs:
       - blazegraph
       - ontop
