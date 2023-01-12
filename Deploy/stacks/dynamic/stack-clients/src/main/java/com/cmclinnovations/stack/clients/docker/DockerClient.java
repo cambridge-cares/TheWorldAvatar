@@ -66,12 +66,16 @@ public class DockerClient extends BaseClient {
 
     public static DockerClient getInstance() {
         if (null == instance) {
-            instance = new DockerClient();
+            if (StackClient.getContainerEngineName().equals("podman")) {
+                instance = new PodmanClient();
+            } else {
+                instance = new DockerClient();
+            }
         }
         return instance;
     }
 
-    private DockerClient() {
+    protected DockerClient() {
         this(null);
     }
 
