@@ -482,6 +482,15 @@ public class DockerClient extends BaseClient {
         return getContainer(containerName, true);
     }
 
+    public Optional<Container> getContainerFromID(String containerId) {
+        try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
+            // Setting "showAll" to "true" ensures non-running containers are also returned
+            return listContainersCmd.withIdFilter(List.of(containerId))
+                    .withShowAll(true).exec()
+                    .stream().findAny();
+        }
+    }
+
     public boolean isContainerUp(String containerName) {
         // Setting "showAll" to "false" ensures only running containers are returned
         return getContainer(containerName, false).isPresent();

@@ -24,7 +24,6 @@ import com.github.dockerjava.api.command.CreateServiceCmd;
 import com.github.dockerjava.api.command.CreateServiceResponse;
 import com.github.dockerjava.api.command.InfoCmd;
 import com.github.dockerjava.api.command.InitializeSwarmCmd;
-import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
 import com.github.dockerjava.api.command.ListServicesCmd;
 import com.github.dockerjava.api.command.ListTasksCmd;
@@ -204,12 +203,7 @@ public final class DockerService extends AbstractService {
     }
 
     private Optional<Container> getContainerFromID(String containerId) {
-        try (ListContainersCmd listContainersCmd = dockerClient.getInternalClient().listContainersCmd()) {
-            // Setting "showAll" to "true" ensures non-running containers are also returned
-            return listContainersCmd.withIdFilter(List.of(containerId))
-                    .withShowAll(true).exec()
-                    .stream().findAny();
-        }
+        return dockerClient.getContainerFromID(containerId);
     }
 
     public void doPreStartUpConfiguration(ContainerService service) {
