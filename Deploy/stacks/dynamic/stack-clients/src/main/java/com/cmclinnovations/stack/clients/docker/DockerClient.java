@@ -547,8 +547,7 @@ public class DockerClient extends BaseClient {
     }
 
     public void removeConfig(Config config) {
-        try (RemoveConfigCmd removeConfigCmd = getInternalClient()
-                .removeConfigCmd(config.getId())) {
+        try (RemoveConfigCmd removeConfigCmd = internalClient.removeConfigCmd(config.getId())) {
             removeConfigCmd.exec();
         } catch (Exception ex) {
             // Either the Config has been removed externally
@@ -602,15 +601,13 @@ public class DockerClient extends BaseClient {
                 .withName(StackClient.prependStackName(secretName))
                 .withData(data)
                 .withLabels(StackClient.getStackNameLabelMap());
-        try (CreateSecretCmd createSecretCmd = getInternalClient()
-                .createSecretCmd(secretSpec)) {
+        try (CreateSecretCmd createSecretCmd = internalClient.createSecretCmd(secretSpec)) {
             createSecretCmd.exec();
         }
     }
 
     public void removeSecret(Secret secret) {
-        try (RemoveSecretCmd removeSecretCmd = getInternalClient()
-                .removeSecretCmd(secret.getId())) {
+        try (RemoveSecretCmd removeSecretCmd = internalClient.removeSecretCmd(secret.getId())) {
             removeSecretCmd.exec();
         } catch (Exception ex) {
             // Either the Secret has been removed externally
