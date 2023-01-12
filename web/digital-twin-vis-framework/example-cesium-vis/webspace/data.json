@@ -8,12 +8,6 @@
             "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
         },
         {
-            "id": "house45",
-            "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/house45/tileset.json",
-            "position": [-74.01499545037598, 40.70216915119465, 0]
-        },
-        {
             "id": "sample-2d-data",
             "type": "wms",
             "uri": "https://cugir.library.cornell.edu/geoserver/cugir/ows?SERVICE=WMS&",
@@ -27,11 +21,6 @@
             "id": "3d-tiles-layer",
 			"name": "Buildings of New York", 
             "source": "3d-tiles-source"    
-        },
-        {
-            "id": "house45-layer",
-			"name": "House 45", 
-            "source": "house45"    
         },
         {
             "id": "sample-2d-layer",

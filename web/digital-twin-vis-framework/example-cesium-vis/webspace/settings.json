@@ -4,9 +4,5 @@
         "heading": 50,
         "pitch": -30,
         "roll": 0.0
-    },
-    "fields": {
-        "name": "Name",
-        "description": "Description"
     }
 }
