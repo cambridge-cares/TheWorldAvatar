@@ -10,7 +10,7 @@ init_server
 # used below only seems to add credentials for Docker Hub
 private_images=('docker.cmclinnovations.com/blazegraph:1.1.0' 'docker.cmclinnovations.com/geoserver:2.20.4')
 for private_image in "${private_images[@]}" ; do
-    if [ -z "$(docker images -q "$private_image")" ]; then
+    if [ -z "$(${EXECUTABLE} images -q "$private_image")" ]; then
         ${EXECUTABLE} pull -q "$private_image"
     fi
 done
@@ -26,10 +26,20 @@ while (( $# >= 1 )); do
     shift
 done
 
-if [[ -n "${DEBUG_PORT}" ]]; then
-    export DEBUG_PORT
-    DEBUG_COMPOSE_FILE="--compose-file=docker-compose-debug.yml"
-fi
+if [ "${EXECUTABLE}" == "docker" ]; then
+    if [[ -n "${DEBUG_PORT}" ]]; then
+        export DEBUG_PORT
+        DEBUG_COMPOSE_FILE="--compose-file=docker-compose-debug.yml"
+    fi
 
-# Redeploy services
-${EXECUTABLE} stack deploy --compose-file=docker-compose-stack.yml --compose-file=docker-compose.yml $DEBUG_COMPOSE_FILE --with-registry-auth "${STACK_NAME}"
+    # Redeploy services
+    ${EXECUTABLE} stack deploy --compose-file=docker-compose-stack.yml --compose-file=docker-compose.yml $DEBUG_COMPOSE_FILE --with-registry-auth "${STACK_NAME}"
+else
+    if [[ -n "${DEBUG_PORT}" ]]; then
+        export DEBUG_PORT
+        DEBUG_COMPOSE_FILE="-f docker-compose-debug.yml"
+    fi
+
+    # Redeploy services
+    ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml $DEBUG_COMPOSE_FILE -p "${STACK_NAME}" up
+fi
