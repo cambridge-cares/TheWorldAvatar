@@ -62,6 +62,7 @@ def read_all_temperature(limit = False):
         else:
             return var_store
 
+
     def get_treated_shape():
         # Get geodata
         usage_vals = call_pickle('./Data/pickle_files/shapes_array')
@@ -92,7 +93,6 @@ def read_all_temperature(limit = False):
     df = call_pickle('./Data/pickle_files/df_all_results')
     already_there_LSOA = df['LSOA_code'].tolist()
 
-    '''
     LSOA = get_treated_shape()
     lon,lat,tas = read_nc('tas',loc=True)
     tasmin = read_nc('tasmin',loc=False)
@@ -127,7 +127,7 @@ def read_all_temperature(limit = False):
     months = resume_variables(months = 'months')
     nc_vars_full = resume_variables(nc_vars_full = 'nc_vars_full')
     clim_vars = resume_variables(clim_vars = 'clim_vars')
-
+'''
     temp_result_dict = {}
     df = pd.DataFrame(columns=['LSOA_IRI', 'startUTC', 'clim_var', 'value'])
     for i in tqdm(range(int(len(LSOA)))):
@@ -253,7 +253,42 @@ def read_all_temperature_2021(limit = False):
         LSOA = np.delete(LSOA,del_index,axis=0)
 
         return LSOA
-    '''
+
+    def from_grid_find_temp(lon,lat,nc_vars,month,overall_centroids):
+        '''
+        var_store = np.array([[0 for i in range(len(nc_vars))]])
+        for i in range(len(nc_vars)):
+            nc_vars[i] = nc_vars[i].filled(np.nan)
+
+        for point in tqdm(overall_centroids):
+            i,j = np.where(np.logical_and(lon == point.x, lat == point.y))
+            i = int(i)
+            j = int(j)
+            nc_var_temp = [0 for i in range(len(nc_vars))]
+            for k in range(len(nc_vars)):
+                    nc_var_temp[k] = nc_vars[k][month,i,j]
+                    '''
+        point_indices = {Point(lon[i, j], lat[i, j]): (i, j) for i in range(lon.shape[0]) for j in range(lon.shape[1])}
+
+        var_store = np.array([[0 for i in range(len(nc_vars))]])
+        
+        for i in range(len(nc_vars)):
+            nc_vars[i] = nc_vars[i].filled(np.nan)
+
+        for point in tqdm(overall_centroids):
+            i, j = point_indices.get(point)
+            nc_var_temp = [nc_vars[k][month, i, j] for k in range(len(nc_vars))]
+
+            if nc_var_temp[0] > -1e8:
+                var_store = np.append(var_store,[nc_var_temp],axis=0)
+            else:
+                # This data may missing, assuming it's [9,14,17]
+                var_store = np.append(var_store, [9,14,17], axis=0)
+                print(f'CAUTIONS! Climate data for point {point} at {get_key(month, months_dict)} is missing!')
+
+        var_store = var_store[1:,:]
+        return var_store
+
     LSOA = get_treated_shape()
     lon,lat,tas = read_nc('tas',loc=True)
     tasmin = read_nc('tasmin',loc=False)
@@ -264,20 +299,12 @@ def read_all_temperature_2021(limit = False):
     nc_vars_full = [] 
     for i in range(len(months)):
         month_str = months[i]
-        month,month_end = month_num(month_str)
+        month, month_end = month_num(month_str)
         if i == 0:
             grid_loc,nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=True)
-        '''
-    '''
-        if i == 8:
-            nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
-            for j in range(6):
-                nc_vars_add=np.append(nc_vars_add,[[12,14,16]],axis=0)
-                j = j +1
-        '''
-    '''
         else:
-            nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
+            nc_vars_add = from_grid_find_temp(lon,lat,[tasmin,tas,tasmax],month,grid_loc)
+        
         nc_vars_full.append(nc_vars_add)
 
     full_grid = MultiPoint(points=list(grid_loc))
@@ -292,7 +319,7 @@ def read_all_temperature_2021(limit = False):
     months = resume_variables(months = 'months')
     nc_vars_full = resume_variables(nc_vars_full = 'nc_vars_full')
     clim_vars = resume_variables(clim_vars = 'clim_vars')
-    
+    '''
     temp_result_dict = {}
     for i in tqdm(range(int(len(LSOA)))):
             assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]

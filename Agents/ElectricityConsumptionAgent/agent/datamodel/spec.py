@@ -9,6 +9,7 @@ from agent.errorhandling.exceptions import *
 import datetime
 import os
 import urllib.request
+from shapely import wkt
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
 DEF_NAMESPACE = "ontogasgrid"
@@ -50,6 +51,8 @@ date_dict_2021 =  {'2021-01-01T12:00:00.000Z':0,\
              '2021-10-01T12:00:00.000Z':9,\
              '2021-11-01T12:00:00.000Z':10,\
              '2021-12-01T12:00:00.000Z':11}
+
+months_dict = {'January':0,'February':1,'March':2,'April':3,'May':4,'June':5,'July':6,'August':7,'September':8,'October':9,'November':10,'December':11}
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------------------- Index ------------------------------------------------- ###
@@ -106,6 +109,12 @@ def process_list(data):
       # Convert the list to a numpy array
       data = np.array(data)
       return data
+
+def get_key(val, my_dict):
+    for key, value in my_dict.items():
+        if val == value:
+            return key
+    return None
 
 def parse_to_file(query, filepath = "demofile"):
   '''
@@ -691,29 +700,47 @@ def read_from_web_fuel_poverty(year: str):
   return df
 
 def read_from_web_temp(year:str, var_name:str):
+  '''
+  This function is to read the up-to-date hadUK grid (1km) climate data from web
+  doneload nc file only, for data process to be done later
+  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
+  if the nc file can't be correctly retrieved it is possible that the web infrastructure has been
+  amended.
+
+  Arguments:
+        year: the number of year of which the data you may want to read
+        var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
+  '''
+
   url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
 
   # Use requests to get the HTML of the website
   response = requests.get(url)
   soup = BeautifulSoup(response.text, 'html.parser')
 
-  # Find the link to the xlsx file on the website
+  # Find the link to the nc file on the website
+  # Find table
   download_div = soup.find_all('table', {'class': 'table table-sm'})
+  # Select link based on 'a', href
   inner_url = download_div[0].find_all('a', href=True)
   
+  # Select link contain year of interest
   for year_link in inner_url:
         if year in year_link['href']:
-            link = year_link['href']
+          # Select link that could done load the file
+          if len(year_link.attrs) == 1:
+              link = year_link['href']
 
   try: 
       # Download the xlsx file
       file_name = os.path.basename(link).split('?')[0]
-
   except Exception as ex:
       print(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
       raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
   response = requests.get(link)
+
   open(file_name, 'wb').write(response.content)
+  logger.info(f'nc file {file_name} have been downloaded at the current folder')
 
 # ------------------------------ Repo ---------------------------------------------------------- #
 def read_from_excel(year:str) -> list:
@@ -778,6 +805,22 @@ def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: 
 
     return added_ts
 
+def get_treated_shape():
+    shape_array = call_pickle('./Data/pickle_files/shapes_array')
+
+    # Get rid of repeated data
+    LSOA_codes = np.unique(shape_array[:,0])
+    # Initialisation 
+    wkt_codes=np.zeros(len(LSOA_codes),dtype=object)
+
+    # Extract data of interest 
+    for i in range(len(LSOA_codes)):
+      indices = np.where(shape_array[:, 0] == LSOA_codes[i])
+      wkt_codes[i] = shape_array[indices[0][0], 1]
+    
+    LSOA_codes = [s.replace('http://statistics.data.gov.uk/id/statistical-geography/', '') for s in LSOA_codes]
+
+    print(len(shape_array), len(wkt_codes), len(LSOA_codes))
 '''
     # upload the timeseries data
     print("\nUploading the Electricity consumption time series data:")
@@ -793,5 +836,6 @@ def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: 
 #get_all_data(limit = False)
 #valid_LSOA_list()
 #get_all_data(limit=False)
-read_from_web_temp('2020','tas')
+#read_from_web_temp('2020','tas')
 #read_from_web_fuel_poverty('2016')
+get_treated_shape()
