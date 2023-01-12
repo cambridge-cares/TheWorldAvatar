@@ -69,7 +69,7 @@ public class AERMODAgent extends JPSAgent {
     // Class variables accessed in several agent methods
 
     String[] locations = {"Jurong Island"};
-    String[] StackQueryEndpoint = {"http://theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql/"} ;
+    String[] StackQueryEndpoint = {"jibusinessunits"} ;
     String[] GeospatialQueryEndpoint = {"http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry"} ;
 
     private static int locindex = -1;
@@ -86,25 +86,39 @@ public class AERMODAgent extends JPSAgent {
 
     /* Receptor coordinates */
     public static ArrayList<Double> ReceptorLat, ReceptorLong;
-    public static ArrayList<Double> ReceptorEastEPSG24500, ReceptorNorthEPSG24500;
+    public static ArrayList<ArrayList<Double>> ReceptorDatabaseCoordinates ;
 
-    public static ArrayList<String> StackProperties  ;
+    // Coordinate reference systems used by database (DatabaseCRS) and AERMOD(UTMCRS)
+    public static String[] DatabaseCRS = {"EPSG:24500"};
+    public static String[] UTMCRS = {"EPSG:24548"};
+    public static String DatabaseCoordSys, UTMCoordSys ;
+
+    /* Each element of StackProperties contains the (x,y) coordinates of the center of the base polygon of the stack and the stack height.
+    Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
+     */
+    public static ArrayList<String> StackProperties = new ArrayList<>()  ;
+    public static ArrayList<Double> StackEmissions = new ArrayList<>()  ;
+    public static ArrayList<Double> StackDiameter = new ArrayList<>()  ;
 
     /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
-    Each element of BuildingVertices contains the coordinates of
-    the vertices of the base polygon.
+    Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
      */
-    public static ArrayList<String> BuildingVertices ;
-    public static ArrayList<String> BuildingProperties ;
+    public static ArrayList<String> BuildingVertices = new ArrayList<>() ;
+    public static ArrayList<String> BuildingProperties = new ArrayList<>() ;
 
 
     /* Variables for grid. x and y variables correspond to Easting and Northing respectively. Units
     *  of gridSpacing is meters */
 
-    public static ArrayList<Integer> cellmap, stackHead, stackList, buildingHead,buildingList ;
+    public static ArrayList<Integer> cellmap = new ArrayList<>() ;
+    public static ArrayList<Integer> stackHead = new ArrayList<>() ;
+    public static ArrayList<Integer>  stackList = new ArrayList<>() ;
+    public static ArrayList<Integer> buildingHead = new ArrayList<>() ;
+    public static ArrayList<Integer>  buildingList = new ArrayList<>() ;
 
     // Boolean arrays to check if stacks and buildings have been used previously
-    public static ArrayList<Boolean> stackUsed, buildingUsed ;
+    public static ArrayList<Boolean> stackUsed = new ArrayList<>() ;
+    public static ArrayList<Boolean> buildingUsed = new ArrayList<>() ;
     public static Integer numberGridsX, numberGridsY, numberTotalGrids ;
 
     public static Double xlo, ylo, xhi, yhi ;
@@ -138,12 +152,14 @@ public class AERMODAgent extends JPSAgent {
                 ReceptorLat = new ArrayList<Double>(ReceptorLatString.stream().map(Double::parseDouble).collect(Collectors.toList()))  ;
                 ReceptorLong = new ArrayList<Double> (ReceptorLongString.stream().map(Double::parseDouble).collect(Collectors.toList())) ;
 
-                ArrayList<ArrayList<Double>> inputCoordinates = new ArrayList<ArrayList<Double>> (Arrays.asList(ReceptorLat, ReceptorLong));
+                ArrayList<ArrayList<Double>> inputCoordinates = new ArrayList<> ();
 
-                ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputCoordinates,"EPSG:4326","EPSG:24500");
-                /*TODO: The arguments to the get method in the next two lines may need to be interchanged. */
-                ReceptorEastEPSG24500 = outputCoordinates.get(0);
-                ReceptorNorthEPSG24500 = outputCoordinates.get(1);
+                for (int i = 0; i < ReceptorLat.size();i++){
+                    ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(ReceptorLat.get(i),ReceptorLong.get(i))) ;
+                    inputCoordinates.add(inputcoords);
+                }
+
+                ReceptorDatabaseCoordinates = convertCoordinates(inputCoordinates,"EPSG:4326",DatabaseCoordSys);
 
                 initGrid();
                 buildings();
@@ -151,7 +167,7 @@ public class AERMODAgent extends JPSAgent {
                 dispersionCalculation();
 
                 JSONObject req = new JSONObject();
-                req.put("Status",0);
+                req.put("status",0);
                 return req ;
             } catch (Exception e){
                 throw new JPSRuntimeException(e);
@@ -183,7 +199,7 @@ public class AERMODAgent extends JPSAgent {
 
         String LOCATION = JsonPath.read(requestParams.toString(), "$.job.location");
         for (int i = 0; i < locations.length; i++){
-            if (locations[i] == LOCATION) {
+            if (locations[i].equals(LOCATION) ) {
                 locindex = i;
                 break;
             }
@@ -194,6 +210,8 @@ public class AERMODAgent extends JPSAgent {
 
         StackQueryIRI = StackQueryEndpoint[locindex];
         GeospatialQueryIRI = GeospatialQueryEndpoint[locindex];
+        DatabaseCoordSys = DatabaseCRS[locindex];
+        UTMCoordSys = UTMCRS[locindex];
 
         Latitude = JsonPath.read(requestParams.toString(), "$.job.latitude");
         if(Latitude == null || Latitude.trim().isEmpty()){
@@ -243,45 +261,43 @@ public class AERMODAgent extends JPSAgent {
         numberGridsX = 1 + Math.round(numberIntervalsX);
         numberGridsY = 1 + Math.round(numberIntervalsY);
         numberTotalGrids = numberGridsX*numberGridsY ;
-        cellmap.ensureCapacity(8*numberTotalGrids);
+
         for (int i = 0; i < numberGridsX; i++) {
             for (int j = 0; j < numberGridsY; j++) {
                 int icell = i + j*numberGridsX ;
                 int cellmapindex0 = 8*icell;
-                cellmap.set(cellmapindex0,(i + 1 + j*numberGridsX));
-                cellmap.set(cellmapindex0 + 1,(i - 1 + j*numberGridsX));
-                cellmap.set(cellmapindex0 + 2,(i + (j-1)*numberGridsX));
-                cellmap.set(cellmapindex0 + 3,(i + (j+1)*numberGridsX));
-                cellmap.set(cellmapindex0 + 4,(i - 1 + (j-1)*numberGridsX));
-                cellmap.set(cellmapindex0 + 5,(i - 1 + (j+1)*numberGridsX));
-                cellmap.set(cellmapindex0 + 6,(i + 1 + (j-1)*numberGridsX));
-                cellmap.set(cellmapindex0 + 7,(i + 1 + (j+1)*numberGridsX));
+                cellmap.add(i + 1 + j*numberGridsX);
+                cellmap.add(i - 1 + j*numberGridsX);
+                cellmap.add(i + (j-1)*numberGridsX);
+                cellmap.add(i + (j+1)*numberGridsX);
+                cellmap.add(i - 1 + (j-1)*numberGridsX);
+                cellmap.add(i - 1 + (j+1)*numberGridsX);
+                cellmap.add(i + 1 + (j-1)*numberGridsX);
+                cellmap.add(i + 1 + (j+1)*numberGridsX);
+
+
             }
         }
 
-        stackHead.ensureCapacity(numberTotalGrids);
-        buildingHead.ensureCapacity(numberTotalGrids);
         for (int i = 0; i < numberTotalGrids; i++){
-            stackHead.set(i,-1);
-            buildingHead.set(i,-1);
+            stackHead.add(-1);
+            buildingHead.add(-1);
         }
 
         JSONArray StackOCGMLIRI = StackQuery(StackQueryIRI) ;
         JSONArray BuildingOCGMLIRI = BuildingQuery(StackQueryIRI) ;
-        stackList.ensureCapacity(StackOCGMLIRI.length());
-        buildingList.ensureCapacity(BuildingOCGMLIRI.length());
-        stackUsed.ensureCapacity(StackOCGMLIRI.length());
-        buildingUsed.ensureCapacity(BuildingOCGMLIRI.length());
 
         for (int i = 0; i < StackOCGMLIRI.length(); i++){
-            stackList.set(i,-1);
-            stackUsed.set(i,false);
+            stackList.add(-1);
+            stackUsed.add(false);
         }
         for (int i = 0; i < BuildingOCGMLIRI.length(); i++){
-            buildingList.set(i,-1);
-            buildingUsed.set(i,false);
+            buildingList.add(-1);
+            buildingUsed.add(false);
         }
         for (int i = 0; i < StackOCGMLIRI.length(); i++) {
+            Double emission = StackOCGMLIRI.getJSONObject(i).getDouble("emission");
+            StackEmissions.set(i,emission);
             String IRI = StackOCGMLIRI.getJSONObject(i).getString("IRI");
             StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
             coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
@@ -291,6 +307,8 @@ public class AERMODAgent extends JPSAgent {
             String StackX = "0";
             String StackY = "0";
             String StackZ = "0";
+
+            int basePolygonIndex = -1;
 
             for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
                 JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
@@ -302,7 +320,7 @@ public class AERMODAgent extends JPSAgent {
                 double sum_x = 0; double sum_y = 0;
                 double sum_z = 0; double min_z = 0;
 
-                for(Integer j = 1; j <= coordinates.length; j++) {
+                for(int j = 1; j <= coordinates.length; j++) {
                     if( j%3==0 ){
                         z_values.add(coordinates[j-1]);
                         sum_x = sum_x + Double.parseDouble(coordinates[j-3]);
@@ -314,6 +332,7 @@ public class AERMODAgent extends JPSAgent {
                 if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
                     StackX = String.valueOf(sum_x/(coordinates.length/3));
                     StackY = String.valueOf(sum_y/(coordinates.length/3));
+                    basePolygonIndex = ip;
                 }
                 if (!z_values.isEmpty() && Double.parseDouble(StackZ) < Double.parseDouble(Collections.max(z_values))) {
                     StackZ = Collections.max(z_values);
@@ -324,6 +343,21 @@ public class AERMODAgent extends JPSAgent {
             averageCoordinate.append(StackX).append("#").append(StackY).append("#").append(StackZ);
             StackProperties.add(averageCoordinate.toString());
 
+            // Calculate stack diameter from base polygon data
+            JSONObject coordiS = coordinateQueryResult.getJSONObject(basePolygonIndex);
+            String coordiData = coordiS.getString("polygonData");
+            String[] coordinates = coordiData.split("#");
+            Double StackDoubleX = Double.parseDouble(StackX);
+            Double StackDoubleY = Double.parseDouble(StackY);
+            Double radius = 0.0;
+            for (int j = 0; j < coordinates.length;j+=3){
+                Double dx = StackDoubleX - Double.parseDouble(coordinates[j]);
+                Double dy = StackDoubleY - Double.parseDouble(coordinates[j+1]);
+                Double dist = Math.sqrt(dx*dx + dy*dy);
+                radius = radius +dist;
+            }
+            radius = radius/(coordinates.length/3);
+            StackDiameter.set(i,2*radius);
             int ix = (int) (Math.floor((Double.parseDouble(StackX) - xlo)/gridSpacing));
             int iy = (int) (Math.floor((Double.parseDouble(StackY) - ylo)/gridSpacing));
             int icell = ix + iy*numberGridsX ;
@@ -397,14 +431,14 @@ public class AERMODAgent extends JPSAgent {
      Stack input format (one line per stack): Name, base elevation, height, coordinates.
 
      */
-    public static void buildings() {
+    public static void buildings() throws FactoryException, TransformException {
 
         int numberStacks = 0;
         ArrayList<Integer> usedstacks = new ArrayList<Integer>() ;
         /* Loop over receptors to identify stacks within cutoff distance */
-        for (int i = 0; i < ReceptorEastEPSG24500.size(); i++) {
-            double ReceptorX = ReceptorEastEPSG24500.get(i);
-            double ReceptorY = ReceptorNorthEPSG24500.get(i);
+        for (int i = 0; i < ReceptorDatabaseCoordinates.size(); i++) {
+            double ReceptorX = ReceptorDatabaseCoordinates.get(i).get(0);
+            double ReceptorY = ReceptorDatabaseCoordinates.get(i).get(1);
             int ix = (int) (Math.floor((ReceptorX - xlo)/gridSpacing));
             int iy = (int) (Math.floor((ReceptorY - ylo)/gridSpacing));
             int icell = ix + iy*numberGridsX ;
@@ -424,8 +458,8 @@ public class AERMODAgent extends JPSAgent {
                         ArrayList<Double> inputcoords =
                                 new ArrayList<Double>(Arrays.asList(StackX, StackY)) ;
                         ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
-                        // convert coordinates from EPSG24500 to UTM
-                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,"EPSG:24500","EPSG:24548");
+                        // convert from Database coordinates to UTM
+                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
 
                         Double StackEastUTM = outputCoordinates.get(0).get(0);
                         Double StackNorthUTM = outputCoordinates.get(0).get(1);
@@ -459,8 +493,8 @@ public class AERMODAgent extends JPSAgent {
                             ArrayList<Double> inputcoords =
                                     new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
                             ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
-                            // convert coordinates from EPSG24500 to UTM
-                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                            // convert coordinates from Database coordinates to UTM
+                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
 
                             Double StackEastUTM = outputCoordinates.get(0).get(0);
                             Double StackNorthUTM = outputCoordinates.get(0).get(1);
@@ -525,8 +559,8 @@ public class AERMODAgent extends JPSAgent {
                         }
 
 
-                        // convert coordinates from EPSG24500 to UTM
-                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                        // convert coordinates from Database coordinates to UTM
+                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
                         for (int j = 0; j < outputCoordinates.size(); j++ ){
                             Double VertexEastUTM = outputCoordinates.get(j).get(0);
                             Double VertexNorthUTM = outputCoordinates.get(j).get(1);
@@ -580,8 +614,8 @@ public class AERMODAgent extends JPSAgent {
                             }
 
 
-                            // convert coordinates from EPSG24500 to UTM
-                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates);
+                            // convert coordinates from Database coordinates to UTM
+                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
                             for (int j = 0; j < outputCoordinates.size(); j++ ){
                                 Double VertexEastUTM = outputCoordinates.get(j).get(0);
                                 Double VertexNorthUTM = outputCoordinates.get(j).get(1);
@@ -654,12 +688,14 @@ public class AERMODAgent extends JPSAgent {
         StackIRIQuery.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
         StackIRIQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
         StackIRIQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-        StackIRIQuery.append("SELECT ?IRI WHERE {");
+        StackIRIQuery.append("SELECT ?IRI ?emission WHERE {");
         StackIRIQuery.append("?chemical_plant rdf:type <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant>.");
         StackIRIQuery.append("?chemical_plant geo:ehContains ?plant_item .");
         StackIRIQuery.append("?plant_item rdf:type <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem>.");
         StackIRIQuery.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI .");
-        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, StackIRIQuery.toString());
+        StackIRIQuery.append("?plant_item ocp:hasIndividualCO2Emission ?CO2 .");
+        StackIRIQuery.append("?CO2 om:hasNumericalValue ?emission .}");
+        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore("jibusinessunits", StackIRIQuery.toString());
         return StackIRIQueryResult;
     }
 
@@ -673,7 +709,7 @@ public class AERMODAgent extends JPSAgent {
         BuildingIRIQuery.append("?chemical_plant rdf:type <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant>.");
         BuildingIRIQuery.append("?chemical_plant geo:ehContains ?building .");
         BuildingIRIQuery.append("?building rdf:type <http://www.purl.org/oema/infrastructure/Building>.");
-        BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .");
+        BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .}");
         JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore( StackQueryIRI, BuildingIRIQuery.toString());
         return BuildingIRIQueryResult;
     }
