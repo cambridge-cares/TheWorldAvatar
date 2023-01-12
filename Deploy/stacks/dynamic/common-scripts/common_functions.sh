@@ -13,16 +13,27 @@ get_executables(){
         
         EXECUTABLE="podman"
         COMPOSE_EXECUTABLE="podman-compose"
+        API_SOCK="$XDG_RUNTIME_DIR/podman/podman.sock"
    else
         EXECUTABLE="docker"
         COMPOSE_EXECUTABLE="docker compose"
+        API_SOCK="/var/run/docker.sock"
     fi
+
+    export EXECUTABLE
+    export COMPOSE_EXECUTABLE
+    export API_SOCK
 }
 
-init_swarm(){
-    if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" != "active" ]; then
-        get_executables
-        ${EXECUTABLE} swarm init
+init_server(){
+    if [ "$EXECUTABLE" == "docker" ]; then
+        if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" != "active" ]; then
+            docker swarm init
+        fi
+    else
+        if [ ! -S "$PODMAN_SOCK" ] || [ -z "$(pidof podman)" ]; then
+            podman system service -t 0 "unix://$PODMAN_SOCK" &
+        fi
     fi
 }
 

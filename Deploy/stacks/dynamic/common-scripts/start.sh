@@ -3,8 +3,8 @@
 # Load common functions
 . "${SCRIPTS_DIR}/common_functions.sh"
 
-# Ensure swarm mode is initialised
-init_swarm
+# Ensure the host server is initialised
+init_server
 
 # Pull these images here because the "--with-registry-auth" argument
 # used below only seems to add credentials for Docker Hub

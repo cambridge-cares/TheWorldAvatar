@@ -12,7 +12,7 @@ services:
       - label=disable
     volumes:
       - scratch:/stack_scratch
-      - /var/run/docker.sock:/var/run/docker.sock
+      - $API_SOCK:/var/run/docker.sock
     networks:
       - stack
 
