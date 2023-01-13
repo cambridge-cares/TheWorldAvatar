@@ -11,7 +11,7 @@ setup(
     url="",
     python_requires='>=3.5',
     include_package_data=True,
-    install_requires= ['numpy','pyderivationagent','docopt','py4jps', 'flask', 'rdkit', 'unit_parse'],
+    install_requires= ['numpy','pyderivationagent','docopt','py4jps', 'flask', 'rdkit', 'unit_parse', 'periodictable'],
     entry_points={
         'console_scripts': [
             'pubchemagent=pubchemagent.driver:main',

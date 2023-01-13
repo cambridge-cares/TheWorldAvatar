@@ -1,10 +1,13 @@
 import traceback
+import logging
 import requests
 from typing import Optional, Tuple
 import json
-from unit_parse import parser
+from unit_parse import parser, logger, reduce_quantities, pre_processing_substitution
 from rdkit import Chem
 from periodictable import elements
+from datetime import date
+import re
 
 class pug_api():
     def __init__(self):
@@ -105,11 +108,11 @@ class pug_api():
     def thermo_parser(str) -> dict:
         thermo_props = {}
         unit = ''
-        q_type = ''
         ref_quantity = ''
         ref_unit = ''
-        qref_type = '' 
+        str=pug_api.preprocess(str)
         try:
+            #logger.setLevel(logging.INFO)
             result = parser(str)
             if hasattr(result, 'm'):
                 quantity = result.m
@@ -123,20 +126,16 @@ class pug_api():
                         if hasattr(result[a], 'u'):
                             quantity = result[a].m
                             unit = result[a].u
-                            q_type = result[a]._dimensionality._d
                         else:
                             quantity = result[a] 
                         a = a+1
                     else:
                         ref_quantity = result[a].m
-                        ref_unit = result[a].u
-                        qref_type = result[a]._dimensionality._d              
+                        ref_unit = result[a].u            
             thermo_props ['value'] = quantity
             thermo_props ['unit'] = unit
-            thermo_props ['type'] = q_type
             thermo_props ['ref_value'] = ref_quantity
             thermo_props ['ref_unit'] = ref_unit  
-            thermo_props ['ref_type'] = qref_type
         except Exception as exc:
             print(exc)
             print(str)
@@ -144,6 +143,17 @@ class pug_api():
             return thermo_props
         
         return thermo_props
+
+    def preprocess(str) -> str:
+        str=re.sub("\([0-9]{1,10}.[0-9]{1,10}\)","",str)
+        str=re.sub("\([0-9]{1,10}\)","",str)
+        str=re.sub("± [0-9]{1,10}.[0-9]{1,10}", "",str)
+        str=re.sub("± [0-9]{1,10}", "",str)
+        if bool(data_found := re.findall("[-.0-9]{1,6}[- ]{1,3}[-.0-9]{1,6}", str)):
+            data_found = data_found[0]
+            reduced_range = re.findall("[-]?[.0-9]{1,6}[^0-9-,/; ]{0,10}", data_found)[0]
+            str=str.replace(data_found, reduced_range)
+        return str
 
     def pug_request_sh_prop(self, cid: dict) -> dict:
         
@@ -236,6 +246,12 @@ class pug_api():
         input_domain = 'element/'
         input_identifier = str(el_num) + '/'
         output= 'JSON'
+
+        el_prop_list={'AtomicWeight', 'AtomicNumber', 'ElectronConfiguration',
+        'AtomicRadius','OxidationStates','GroundLevel','IonizationEnergy',
+        'Electronegativity','ElectronAffinity', 'ElementClassification',
+        'ElementPeriodNumber', 'ElementGroupNumber', 'Density',
+        'MeltingPoint', 'BoilingPoint', 'IsotopesCount'}
         
         # request uses
         el_props = {}
@@ -265,6 +281,7 @@ class pug_api():
                             el_props[i]['key'] = key.replace(' ', '').replace('/','')                                     
                             el_props[i]['value'] = ep_string
                             el_props[i]['reference'] = reference
+                            el_props[i]['type']='identifier'
                             i=i+1
                             break
             if 'Section' in data.get('Record').get('Section')[1]:
@@ -272,30 +289,43 @@ class pug_api():
                 for item in properties:
                     if 'Information' in item:
                         prop_list = item.get('Information')
-                        key = item.get('TOCHeading')
-                        for item in prop_list:
-                            el_props[i]={}
-                            if 'StringWithMarkup' in item.get('Value'):
-                                value = item.get('Value').get('StringWithMarkup')
-                                for i_value in value:
-                                    ep_string = i_value.get('String')
-                                    ep_unit = ''
-                                    description = ep_string
-                                    ep_string = pug_api.thermo_parser(ep_string)
-                            else:
-                                value = item.get('Value')
-                                ep_string = value.get('Number')
-                                ep_unit = value.get('Unit')
-                            reference_num = item.get('ReferenceNumber')
-                            for r in Reference:
-                                if r.get('ReferenceNumber') == reference_num:
-                                    reference=r.get('URL')    
-                            el_props[i]['key'] = key.replace(' ', '').replace('/','')                                     
-                            el_props[i]['value'] = ep_string
-                            el_props[i]['unit'] = ep_unit
-                            el_props[i]['description'] = description
-                            el_props[i]['reference'] = reference
-                            i=i+1
+                        key = item.get('TOCHeading').replace(' ', '').replace('/','') 
+                        if key in el_prop_list:
+                            for item in prop_list:
+                                el_props[i]={}
+                                if 'StringWithMarkup' in item.get('Value'):
+                                    value = item.get('Value').get('StringWithMarkup')
+                                    for i_value in value:
+                                        ep_string = i_value.get('String')
+                                        ep_unit = ''
+                                        description = ep_string
+                                        ep_string = pug_api.thermo_parser(ep_string)
+                                else:
+                                    value = item.get('Value')
+                                    ep_string = value.get('Number')
+                                    ep_unit = value.get('Unit')
+                                    description = str(ep_string[0]) + ' ' + ep_unit
+                                    ep_string = pug_api.thermo_parser(description)
+                                reference_num = item.get('ReferenceNumber')
+                                for r in Reference:
+                                    if item.get('Reference'):
+                                        reference='DOI:' + item.get('Reference')[0].partition('DOI:')[2]
+                                    if r.get('ReferenceNumber') == reference_num:
+                                        reference=r.get('URL')    
+                                el_props[i]['key'] = key                                    
+                                el_props[i]['value'] = ep_string
+                                el_props[i]['description'] = description
+                                el_props[i]['reference'] = reference
+                                el_props[i]['dateofaccess'] = date.today()
+                                if key in {'ElectronConfiguration','OxidationStates','GroundLevel'}:
+                                    el_props[i]['type']='string_prop'
+                                elif key == 'ElementClassification': 
+                                    el_props[i]['type']='classification'
+                                elif key in {'Density', 'MeltingPoint', 'BoilingPoint'}:
+                                    el_props[i]['type']='thermo_prop'
+                                else:
+                                    el_props[i]['type']='num_prop'
+                                i=i+1
 
         return el_props
 
@@ -392,8 +422,8 @@ class pug_api():
 if __name__ == "__main__":
     pug_access = pug_api()
 
-   # for el in range(1,118):
-   #     data = pug_access.pug_request_element(el)
+    #for el in range(1,118):
+    #    data = pug_access.pug_request_element(el)
 
     for inchi in ['InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3',
                     'InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',
