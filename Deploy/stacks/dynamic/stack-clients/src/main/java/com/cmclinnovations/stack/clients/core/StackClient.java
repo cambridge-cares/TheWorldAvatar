@@ -47,7 +47,7 @@ public final class StackClient {
     }
 
     public static String getContainerEngineName() {
-        return System.getenv("EXECUTABLE");
+        return System.getenv().getOrDefault("EXECUTABLE", "docker");
     }
 
 }
