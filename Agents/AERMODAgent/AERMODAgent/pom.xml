@@ -18,6 +18,18 @@
         <!-- Version of the JPS Base Library to use -->
         <jps.base.version>1.4.0-SNAPSHOT</jps.base.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>osgeo-repo</id>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+    </repositories>
+
+
+
+
+
     
     <!-- Parent POM -->
     <parent>
@@ -153,6 +165,25 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
+
+        <!-- https://repo.osgeo.org/repository/release/org.geotools/gt-main -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>26.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-extension</artifactId>
+            <version>26.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>26.3</version>
+        </dependency>
+
+
        
     </dependencies>
 </project>

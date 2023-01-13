@@ -70,7 +70,7 @@ public class AERMODAgent extends JPSAgent {
 
     String[] locations = {"Jurong Island"};
     String[] StackQueryEndpoint = {"jibusinessunits"} ;
-    String[] GeospatialQueryEndpoint = {"http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry"} ;
+    String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
 
     private static int locindex = -1;
     public static String StackQueryIRI;
@@ -139,7 +139,7 @@ public class AERMODAgent extends JPSAgent {
     public static ArrayList<String> BPIPPRMBuildingInput = new ArrayList<>();
     public static ArrayList<String> BPIPPRMStackInput = new ArrayList<>() ;
 
-    public static  String workingDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\16";
+    public static  String workingDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\16\\";
 
 
     @Override
@@ -297,7 +297,7 @@ public class AERMODAgent extends JPSAgent {
         }
         for (int i = 0; i < StackOCGMLIRI.length(); i++) {
             Double emission = StackOCGMLIRI.getJSONObject(i).getDouble("emission");
-            StackEmissions.set(i,emission);
+            StackEmissions.add(emission);
             String IRI = StackOCGMLIRI.getJSONObject(i).getString("IRI");
             StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
             coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
@@ -357,11 +357,11 @@ public class AERMODAgent extends JPSAgent {
                 radius = radius +dist;
             }
             radius = radius/(coordinates.length/3);
-            StackDiameter.set(i,2*radius);
+            StackDiameter.add(2*radius);
             int ix = (int) (Math.floor((Double.parseDouble(StackX) - xlo)/gridSpacing));
             int iy = (int) (Math.floor((Double.parseDouble(StackY) - ylo)/gridSpacing));
             int icell = ix + iy*numberGridsX ;
-            stackList.set(i, stackHead.get(icell));
+            stackList.set(i,stackHead.get(icell));
             stackHead.set(icell,i);
 
         }
@@ -370,7 +370,7 @@ public class AERMODAgent extends JPSAgent {
 
             String IRI = BuildingOCGMLIRI.getJSONObject(i).getString("IRI");
             StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
-            coordinateQuery.append("SELECT ?polygonData WHERE {\n");
+            coordinateQuery.append("SELECT ?polygondata WHERE {\n");
             coordinateQuery.append("?surfaceIRI ocgml:GeometryType ?polygondata.");
             coordinateQuery.append("?geometricIRI ocgml:lod2MultiSurfaceId ?surfaceIRI.");
             coordinateQuery.append("?geometricIRI ocgml:buildingId <").append(IRI).append(">.}");
@@ -381,7 +381,7 @@ public class AERMODAgent extends JPSAgent {
 
             for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
                 JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
-                String coordiData = coordiS.getString("polygonData");
+                String coordiData = coordiS.getString("polygondata");
                 ArrayList<String> z_values = new ArrayList<>();
                 String[] coordinates = coordiData.split("#");
                 double sum_x = 0; double sum_y = 0;
@@ -399,7 +399,7 @@ public class AERMODAgent extends JPSAgent {
                 if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
                     BuildingX = String.valueOf(sum_x/(coordinates.length/3));
                     BuildingY = String.valueOf(sum_y/(coordinates.length/3));
-                    BuildingVertices.set(i,coordiData);
+                    BuildingVertices.add(coordiData);
                 }
                 if (!z_values.isEmpty() && Double.parseDouble(BuildingZ) < Double.parseDouble(Collections.max(z_values))) {
                     BuildingZ = Collections.max(z_values);
@@ -463,7 +463,7 @@ public class AERMODAgent extends JPSAgent {
 
                         Double StackEastUTM = outputCoordinates.get(0).get(0);
                         Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                        String InputLine = "Stk" + String.valueOf(numberStacks) + " " + "0.0 " +
+                        String InputLine = "\'Stk" + String.valueOf(numberStacks) + "\'" + " " + "0.0 " +
                                 StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
                         BPIPPRMStackInput.add(InputLine);
                         stackUsed.set(stackIndex,true);
@@ -498,7 +498,7 @@ public class AERMODAgent extends JPSAgent {
 
                             Double StackEastUTM = outputCoordinates.get(0).get(0);
                             Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                            String InputLine = "Stk" + String.valueOf(numberStacks) + " " + "0.0 " +
+                            String InputLine = "\'Stk" + String.valueOf(numberStacks) + "\'" + " " + "0.0 " +
                                     StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
                             BPIPPRMStackInput.add(InputLine);
                             stackUsed.set(stackIndex,true);
@@ -543,12 +543,12 @@ public class AERMODAgent extends JPSAgent {
 
                     if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
                         numberBuildings++;
-                        String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" ;
+                        String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" + " \n" ;
                         BPIPPRMBuildingInput.add(InputLine);
                         String BasePolygonVertices = BuildingVertices.get(buildingIndex);
                         String [] BaseVertices = BasePolygonVertices.split("#");
                         int numCorners = BaseVertices.length/3;
-                        InputLine = numCorners + " " + BuildingHeight ;
+                        InputLine = numCorners + " " + BuildingHeight + " \n" ;
                         BPIPPRMBuildingInput.add(InputLine);
 
                         ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
@@ -564,11 +564,11 @@ public class AERMODAgent extends JPSAgent {
                         for (int j = 0; j < outputCoordinates.size(); j++ ){
                             Double VertexEastUTM = outputCoordinates.get(j).get(0);
                             Double VertexNorthUTM = outputCoordinates.get(j).get(1);
-                            InputLine = VertexEastUTM + " " + VertexNorthUTM ;
+                            InputLine = VertexEastUTM + " " + VertexNorthUTM + " \n";
                             BPIPPRMBuildingInput.add(InputLine);
                         }
 
-                        buildingUsed.set(buildingIndex,true);
+                        buildingUsed.add(true);
 
                     }
                 }
@@ -603,7 +603,7 @@ public class AERMODAgent extends JPSAgent {
                             String BasePolygonVertices = BuildingVertices.get(buildingIndex);
                             String [] BaseVertices = BasePolygonVertices.split("#");
                             int numCorners = BaseVertices.length/3;
-                            InputLine = numCorners + " " + BuildingHeight ;
+                            InputLine = numCorners + " " + BuildingHeight + " \n" ;
                             BPIPPRMBuildingInput.add(InputLine);
 
                             ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
@@ -635,8 +635,10 @@ public class AERMODAgent extends JPSAgent {
 
         // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
         // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
-        BPIPPRMStackInput.add(String.valueOf(numberStacks));
-        BPIPPRMBuildingInput.add(String.valueOf(numberBuildings));
+        String StackLine = String.valueOf(numberStacks) + " \n" ;
+        String BuildingsLine = String.valueOf(numberBuildings) + " \n" ;
+        BPIPPRMStackInput.add(StackLine);
+        BPIPPRMBuildingInput.add(BuildingsLine);
 
 
     }
@@ -645,10 +647,10 @@ public class AERMODAgent extends JPSAgent {
     public static void processBuildings() {
 
         ArrayList<String> frontmatter = new ArrayList<>();
-        frontmatter.add("\'BPIPPRM test run\'");
-        frontmatter.add("\'p\'");
-        frontmatter.add("\' METERS    \'  1.0  ");
-        frontmatter.add("\'UTMY \'  0.0 ");
+        frontmatter.add("\'BPIPPRM test run\' \n");
+        frontmatter.add("\'p\' \n");
+        frontmatter.add("\' METERS    \'  1.0  \n");
+        frontmatter.add("\'UTMY \'  0.0 \n");
         String filename = workingDirectory + "bpipprm.inp" ;
         try {
             FileWriter writer = new FileWriter(filename);
@@ -657,13 +659,13 @@ public class AERMODAgent extends JPSAgent {
             }
             int numberBuildingLines = BPIPPRMBuildingInput.size() ;
             writer.write(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
-            for (int i = 0; i < numberBuildingLines; i++) {
+            for (int i = 0; i < numberBuildingLines-1; i++) {
                 writer.write(BPIPPRMBuildingInput.get(i));
             }
 
             int numberStackLines = BPIPPRMStackInput.size() ;
             writer.write(BPIPPRMStackInput.get(numberStackLines - 1));
-            for (int i = 0; i < numberStackLines; i++) {
+            for (int i = 0; i < numberStackLines-1; i++) {
                 writer.write(BPIPPRMStackInput.get(i));
             }
             writer.close();
@@ -688,6 +690,7 @@ public class AERMODAgent extends JPSAgent {
         StackIRIQuery.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
         StackIRIQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
         StackIRIQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
+        StackIRIQuery.append("PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
         StackIRIQuery.append("SELECT ?IRI ?emission WHERE {");
         StackIRIQuery.append("?chemical_plant rdf:type <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant>.");
         StackIRIQuery.append("?chemical_plant geo:ehContains ?plant_item .");
@@ -695,6 +698,7 @@ public class AERMODAgent extends JPSAgent {
         StackIRIQuery.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI .");
         StackIRIQuery.append("?plant_item ocp:hasIndividualCO2Emission ?CO2 .");
         StackIRIQuery.append("?CO2 om:hasNumericalValue ?emission .}");
+        StackIRIQuery.append("LIMIT 100");
         JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore("jibusinessunits", StackIRIQuery.toString());
         return StackIRIQueryResult;
     }
@@ -705,15 +709,16 @@ public class AERMODAgent extends JPSAgent {
         BuildingIRIQuery.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
         BuildingIRIQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
         BuildingIRIQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
+        BuildingIRIQuery.append("PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
         BuildingIRIQuery.append("SELECT ?IRI WHERE {");
         BuildingIRIQuery.append("?chemical_plant rdf:type <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant>.");
         BuildingIRIQuery.append("?chemical_plant geo:ehContains ?building .");
         BuildingIRIQuery.append("?building rdf:type <http://www.purl.org/oema/infrastructure/Building>.");
         BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .}");
-        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore( StackQueryIRI, BuildingIRIQuery.toString());
+        BuildingIRIQuery.append("LIMIT 100");
+        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore( "jibusinessunits", BuildingIRIQuery.toString());
         return BuildingIRIQueryResult;
     }
-
 
 
 
