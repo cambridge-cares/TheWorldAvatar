@@ -1,6 +1,5 @@
 package com.cmclinnovations.featureinfo;
 
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
@@ -79,7 +78,6 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
 
-
     /**
      * Common RDB connection
      */
@@ -93,7 +91,7 @@ public class FeatureInfoAgent extends JPSAgent {
     /**
      * Load the configuration file.
      */
-    private static void loadConfig() {
+    private final static void loadConfig() {
         try {
             LOGGER.info("Attempting to load configuration settings...");
             CONFIG.load();
@@ -203,7 +201,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * 
      * @param requestParams HTTP request parameters.
      */
-    private void enforceEndpoint(JSONObject requestParams) {
+    private final void enforceEndpoint(JSONObject requestParams) {
         String endpoint = requestParams.getString("endpoint");
         Pattern pattern = Pattern.compile("(?<=namespace\\/)(.*)(?=\\/sparql)");
         Matcher matcher = pattern.matcher(endpoint);
@@ -239,7 +237,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * @param response
      * @throws IOException
      */
-    private void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
+    private final void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
         // Check if request is valid
         boolean validRequest = validateInput(requestParams);
         if(!validRequest) {
@@ -292,7 +290,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * 
      * @return name of matching class
      */
-    private String getClass(String iri, HttpServletResponse response) throws IOException {
+    private final String getClass(String iri, HttpServletResponse response) throws IOException {
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
         LOGGER.debug("Running class queries against following endpoints via federation...");
@@ -387,7 +385,6 @@ public class FeatureInfoAgent extends JPSAgent {
         
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
-      
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
             rsClient, 
             Instant.class
@@ -440,7 +437,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * 
      * @param response HTTP response
      */
-    private boolean check(HttpServletResponse response) throws IOException {
+    private final boolean check(HttpServletResponse response) throws IOException {
         // Check if in valid state
         if(CONFIG == null || !VALID)  {
             LOGGER.error("FeatureInfoAgent could not start in a valid state.");
