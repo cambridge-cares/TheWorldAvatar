@@ -29,11 +29,11 @@
   <!-- Additional Acoustics Units Ontology -->
 
   <!-- Decibels relative to full scale Ontology -->
-
-  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/dBFS">
-    <rdfs:label xml:lang="en">decibels relative to full scale</rdfs:label>
-    <om:symbol>dBFS</om:symbol>
-    <om:alternativeSymbol>dBFS</om:alternativeSymbol>
-  </om:UnitDivision>
+    <om:Unit rdf:about="https://www.theworldavatar.com/kg/ontouom/dBFS">
+      <rdfs:label xml:lang="en">dBFS</rdfs:label>
+      <rdfs:comment xml:lang="en">Decibels relative to full scale</rdfs:comment>
+      <om:symbol>dBFS</om:symbol>
+      <rdf:type rdf:resource="&om;SingularUnit"/>
+    </om:Unit>
 
 </rdf:RDF>
