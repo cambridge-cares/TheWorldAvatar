@@ -54,13 +54,13 @@ import com.github.dockerjava.api.model.TaskState;
 import com.github.dockerjava.api.model.TaskStatus;
 import com.github.dockerjava.api.model.VolumeOptions;
 
-public final class DockerService extends AbstractService {
+public class DockerService extends AbstractService {
 
     private static final String DOCKER_SOCKET_PATH = "/var/run/docker.sock";
 
     public static final String TYPE = "docker";
 
-    private final DockerClient dockerClient;
+    protected final DockerClient dockerClient;
 
     private Network network;
 
@@ -85,7 +85,7 @@ public final class DockerService extends AbstractService {
         createNetwork(stackName);
     }
 
-    private void startDockerSwarm() {
+    protected void startDockerSwarm() {
         try (InfoCmd infoCmd = dockerClient.getInternalClient().infoCmd()) {
 
             SwarmInfo swarmInfo = infoCmd.exec().getSwarm();
@@ -114,7 +114,7 @@ public final class DockerService extends AbstractService {
         }
     }
 
-    private void addStackConfigs() {
+    protected void addStackConfigs() {
         List<Config> existingStackConfigs = dockerClient.getConfigs();
 
         try {
