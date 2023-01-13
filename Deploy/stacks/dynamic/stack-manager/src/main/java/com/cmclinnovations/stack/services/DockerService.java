@@ -56,13 +56,13 @@ import com.github.dockerjava.api.model.VolumeOptions;
 
 public class DockerService extends AbstractService {
 
-    private static final String DOCKER_SOCKET_PATH = "/var/run/docker.sock";
+    protected static final String DOCKER_SOCKET_PATH = "/var/run/docker.sock";
 
     public static final String TYPE = "docker";
 
     protected final DockerClient dockerClient;
 
-    private Network network;
+    protected Network network;
 
     public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
@@ -175,7 +175,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void createNetwork(String name) {
+    protected void createNetwork(String name) {
         Optional<Network> potentialNetwork;
         try (ListNetworksCmd listNetworksCmd = dockerClient.getInternalClient().listNetworksCmd()) {
             potentialNetwork = listNetworksCmd.withNameFilter(name).exec().stream().findAny();
@@ -195,14 +195,14 @@ public class DockerService extends AbstractService {
         potentialNetwork.ifPresent(nw -> this.network = nw);
     }
 
-    private Optional<Service> getSwarmService(ContainerService service) {
+    protected Optional<Service> getSwarmService(ContainerService service) {
         try (ListServicesCmd listServicesCmd = dockerClient.getInternalClient().listServicesCmd()) {
             return listServicesCmd.withNameFilter(List.of(service.getContainerName()))
                     .exec().stream().findAny();
         }
     }
 
-    private Optional<Container> getContainerFromID(String containerId) {
+    protected Optional<Container> getContainerFromID(String containerId) {
         return dockerClient.getContainerFromID(containerId);
     }
 
@@ -262,7 +262,7 @@ public class DockerService extends AbstractService {
         service.setContainerId(containerId);
     }
 
-    private Optional<Container> startSwarmService(ContainerService service) {
+    protected Optional<Container> startSwarmService(ContainerService service) {
 
         ServiceSpec serviceSpec = configureServiceSpec(service);
 
@@ -296,7 +296,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void removeSwarmService(ContainerService service) {
+    protected void removeSwarmService(ContainerService service) {
         Optional<Service> swarmService = getSwarmService(service);
 
         if (swarmService.isPresent()) {
@@ -307,7 +307,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private ServiceSpec configureServiceSpec(ContainerService service) {
+    protected ServiceSpec configureServiceSpec(ContainerService service) {
 
         ServiceSpec serviceSpec = service.getServiceSpec()
                 .withName(service.getContainerName())
@@ -328,7 +328,7 @@ public class DockerService extends AbstractService {
         return serviceSpec;
     }
 
-    private void interpolateVolumes(ContainerSpec containerSpec) {
+    protected void interpolateVolumes(ContainerSpec containerSpec) {
         List<Mount> mounts = containerSpec.getMounts();
         if (null == mounts) {
             mounts = new ArrayList<>();
@@ -369,7 +369,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateConfigs(ContainerSpec containerSpec) {
+    protected void interpolateConfigs(ContainerSpec containerSpec) {
         List<ContainerSpecConfig> containerSpecConfigs = containerSpec.getConfigs();
         if (null != containerSpecConfigs && !containerSpecConfigs.isEmpty()) {
             List<Config> configs = dockerClient.getConfigs();
@@ -383,7 +383,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateConfigFileSpec(ContainerSpecConfig containerSpecConfig) {
+    protected void interpolateConfigFileSpec(ContainerSpecConfig containerSpecConfig) {
         ContainerSpecFile configFileSpec = containerSpecConfig.getFile();
         if (null == configFileSpec) {
             configFileSpec = new ContainerSpecFile();
@@ -403,7 +403,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateConfigId(List<Config> configs, ContainerSpecConfig containerSpecConfig) {
+    protected void interpolateConfigId(List<Config> configs, ContainerSpecConfig containerSpecConfig) {
         if (null == containerSpecConfig.getConfigID()) {
             Optional<String> configID = dockerClient.getConfig(configs, containerSpecConfig.getConfigName())
                     .map(Config::getId);
@@ -416,7 +416,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateSecrets(ContainerSpec containerSpec) {
+    protected void interpolateSecrets(ContainerSpec containerSpec) {
         List<ContainerSpecSecret> containerSpecSecrets = containerSpec.getSecrets();
         if (null != containerSpecSecrets && !containerSpecSecrets.isEmpty()) {
             List<Secret> secrets = dockerClient.getSecrets();
@@ -430,7 +430,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateSecretFileSpec(ContainerSpecSecret containerSpecSecret) {
+    protected void interpolateSecretFileSpec(ContainerSpecSecret containerSpecSecret) {
         ContainerSpecFile secretFileSpec = containerSpecSecret.getFile();
         if (null == secretFileSpec) {
             secretFileSpec = new ContainerSpecFile();
@@ -450,7 +450,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void interpolateSecretId(List<Secret> secrets, ContainerSpecSecret containerSpecSecret) {
+    protected void interpolateSecretId(List<Secret> secrets, ContainerSpecSecret containerSpecSecret) {
         if (null == containerSpecSecret.getSecretId()) {
             Optional<String> secretID = dockerClient.getSecret(secrets, containerSpecSecret.getSecretName())
                     .map(Secret::getId);
@@ -463,7 +463,7 @@ public class DockerService extends AbstractService {
         }
     }
 
-    private void pullImage(ContainerService service) {
+    protected void pullImage(ContainerService service) {
         String image = service.getImage();
         if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
             // No image with the requested image ID, so try to pull image
