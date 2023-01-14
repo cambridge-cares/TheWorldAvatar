@@ -17,7 +17,7 @@ from agent.kgutils.querytemplates import *
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import APIException
 from agent.utils.api_endpoints import *
-from agent.utils.env_configs import API_TOKEN
+from agent.utils.env_configs import ENCODED_AUTH, API_TOKEN
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
@@ -47,7 +47,7 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
 
     # Prepare API request
     url += str(lmk_key)
-    headers = {'Authorization': 'Basic {}'.format(API_TOKEN),
+    headers = {'Authorization': 'Basic {}'.format(ENCODED_AUTH),
                'Accept': 'application/json'}
     # Retrieve EPC data
     try:
@@ -61,13 +61,22 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
         logger.error('Error retrieving EPC data from API.')
         raise APIException('Error retrieving EPC data from API.') from ex
     
-    # Extract relevant EPC data
-    relevant = ['lmk-key', 'address1', 'address2', 'address3',
-                'postcode', 'local-authority', 'uprn',
-                'built-form', 'property-type', 'construction-age-band',
-                'current-energy-rating', 'number-habitable-rooms', 'total-floor-area', 
-                'floor-description', 'roof-description', 'walls-description',
-                'windows-description']
+    # Extract relevant EPC data based on endpoint
+    if (endpoint == 'domestic'):
+        relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                    'postcode', 'local-authority', 'uprn',
+                    'built-form', 'property-type', 'construction-age-band',
+                    'current-energy-rating', 'number-habitable-rooms', 'total-floor-area', 
+                    'floor-description', 'roof-description', 'walls-description',
+                    'windows-description']
+    elif (endpoint == 'non-domestic'):
+        relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                    'postcode', 'local-authority', 'uprn', 'property-type',
+                    'asset-rating-band', 'floor-area']
+    elif (endpoint == 'display'):
+        relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                    'postcode', 'local-authority', 'uprn', 'property-type',
+                    'operational-rating-band', 'total-floor-area']
 
     try:
         epc_data = epc['rows'][0]
@@ -99,7 +108,7 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
         raise ValueError('Invalid endpoint (i.e. EPC type) provided.')
 
     # Prepare authentication header for EPC API
-    headers = {'Authorization': 'Basic {}'.format(API_TOKEN),
+    headers = {'Authorization': 'Basic {}'.format(ENCODED_AUTH),
                'Accept': 'application/json'}
 
     # Initialise variables
@@ -132,13 +141,23 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
     if df_all.empty:
         return df_all
     else:
-        # Extract relevant EPC data
-        relevant = ['lmk-key', 'address1', 'address2', 'address3',
-                    'postcode', 'local-authority', 'uprn',
-                    'built-form', 'property-type', 'construction-age-band',
-                    'current-energy-rating', 'number-habitable-rooms', 'total-floor-area', 
-                    'floor-description', 'roof-description', 'walls-description',
-                    'windows-description', 'lodgement-datetime']           
+        # Extract relevant EPC data based on endpoint
+        if (endpoint == 'domestic'):
+            relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                        'postcode', 'local-authority', 'uprn',
+                        'built-form', 'property-type', 'construction-age-band',
+                        'current-energy-rating', 'number-habitable-rooms', 'total-floor-area',
+                        'floor-description', 'roof-description', 'walls-description',
+                        'windows-description', 'lodgement-datetime']
+        elif (endpoint == 'non-domestic'):
+            relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                        'postcode', 'local-authority', 'uprn', 'property-type',
+                        'asset-rating-band', 'floor-area', 'lodgement-datetime']
+        elif (endpoint == 'display'):
+            relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                        'postcode', 'local-authority', 'uprn', 'property-type',
+                        'operational-rating-band', 'total-floor-area', 'lodgement-datetime',
+                        'building-category']         
         epc_data = df_all[relevant]
 
         # Keep only latest EPD data per UPRN

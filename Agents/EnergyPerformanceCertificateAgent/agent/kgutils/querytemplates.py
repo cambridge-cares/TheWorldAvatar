@@ -185,6 +185,36 @@ def get_children_and_parent_building_properties():
     return query
 
 
+def get_children_and_parent_building_properties_non_domestic():
+    # Get IRIs of instantiated properties and parent buildings as well as
+    # key information of properties to "summarize"
+    query = f"""
+        SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
+                        ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating  
+                        ?usage_iri ?usage_label ?property_type_iri ?floor_area
+        WHERE {{
+            ?property_iri <{OBE_IS_IN}> ?parent_iri ;
+                      <{OBE_HAS_ADDRESS}> ?address_iri .
+            ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
+                     <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?addr_number }}
+            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?addr_bldg_name }}
+            OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?addr_unit_name }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_USAGE}> ?usage_iri }}
+            OPTIONAL {{ ?property_iri <{RDFS_LABEL}> ?usage_label }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area }}
+            OPTIONAL {{ ?parent_iri <{OBE_HAS_IDENTIFIER}> ?parent_id }}
+            
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
 def get_matched_buildings() -> str:
     # Retrieve all OntoBuiltEnv building with a OntoCityGml representations
     query = f"""
@@ -329,8 +359,12 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         # Instances        
         if property_type_iri: triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
         if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
-        if usage_iri: 
-            triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
+        if usage_iri:
+            if (isinstance(usage_iri, list)):
+                for item in usage_iri:
+                    triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{item}> . "
+            else:
+                triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
             if usage_label: triples += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if construction_start or construction_end:
             #TODO: Potentially include relevant construction time bands in ABox
@@ -394,14 +428,14 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
 
     else:
         triples = None
-    
+
     return triples
 
 
 def update_epc_data(property_iri: str = None,
                     built_form_iri: str = None, property_type_iri: str = None,
                     usage_iri: str = None, usage_label: str = None,
-                    construction_end: str = None,
+                    construction_end: str = None, 
                     floor_description: str = None, roof_description: str = None, 
                     wall_description: str = None, windows_description: str = None,  
                     floor_area: float = None, rooms: int = None,
@@ -439,8 +473,12 @@ def update_epc_data(property_iri: str = None,
         if epc_lmkkey:  insert += f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
         if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
-        if usage_iri: 
-            insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
+        if usage_iri:
+            if (isinstance(usage_iri, list)):
+                for usage in usage_iri:
+                    insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage}> . "
+            else:
+                insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "                    
             if usage_label: insert += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if property_type_iri: insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
         if built_form_iri: insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
@@ -486,7 +524,6 @@ def update_epc_data(property_iri: str = None,
 
     else:
         query = None
-
     return query
 
 

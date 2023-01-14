@@ -17,7 +17,7 @@ logger = agentlogging.get_logger("prod")
 
 # Initialise global variables to be read from Docker compose file
 global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-       OCGML_ENDPOINT, NAMESPACE
+       OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
 
 def retrieve_settings():
@@ -27,7 +27,7 @@ def retrieve_settings():
 
     # Define global scope for global variables
     global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           OCGML_ENDPOINT, NAMESPACE
+           OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
     # Retrieve MetOffice API key
     API_TOKEN = os.getenv('API_AUTH')    
@@ -96,6 +96,14 @@ def retrieve_settings():
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
+    # Retrieve MetOffice encoded API key
+    ENCODED_AUTH = os.getenv('ENCODED_AUTH')    
+    if ENCODED_AUTH is None:
+        logger.error('"ENCODED_AUTH" is missing in environment variables.')
+        raise ValueError('"ENCODED_AUTH" is missing in environment variables.')
+    if ENCODED_AUTH == '':
+        logger.error('No "ENCODED_AUTH" value has been provided in environment variables.')
+        raise ValueError('No "ENCODED_AUTH" value has been provided in environment variables.')
 
 # Run when module is imported
 retrieve_settings()
