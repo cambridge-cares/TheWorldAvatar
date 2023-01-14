@@ -52,7 +52,7 @@ GAS_HAVE_NONCONSUM_GASMETERS = GAS +"hasNonConsumingGasMeters"
 
 # Ontofuelpoverty
 OFP_HASHOUSEHOLD = OFP + 'hasHouseholds'
-OFP_FUELPOOR = OFP + 'fuelpoorhouseholds '
+OFP_FUELPOOR = OFP + 'fuelpoorhouseholds'
 OFP_NUMBEROFHOUSEHOLD = OFP + 'numberofhouseholds'
 OFP_VALIDFROM = OFP + "validFrom"
 OFP_VALIDTO = OFP + "validTo"

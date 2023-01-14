@@ -1366,14 +1366,21 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     plt.subplots_adjust(left = 0.127)
     save_figures(filename)
 
+'''
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 df_full['LSOA_code'] = df_full['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
 '''
+'''
     LSOA_code	ons_shape	Electricity_consump	Electricity_meter	Electricty_cosumption_per_household	Gas_consump	Gas_meter	Gas_nonmeter	Gas_consumption_per_household	FuelPoor_%	Household_num	temp
+'''
 '''
 df_elec = df_full[['LSOA_code', 'Electricity_consump']]
 df_gas = df_full[['LSOA_code', 'Gas_consump']]
 df_temp = df_full[['LSOA_code', 'temp']]
+'''
+# Test
+query = output_query_template('Temperature')
+parse_to_file(query)
 
 ############### Test for plot_geodistribution ############
 # Test for geodistribution_with_cities ---------------------------

@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import inspect
 import requests
-from bs4 import BeautifulSoup
 from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import *
 import datetime
@@ -19,6 +18,11 @@ QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/s
 DB_URL = "jdbc:postgresql:ts_example"
 DB_USER = "postgres"
 DB_PASSWORD = "postgres"
+
+CEDA_USERNAME = 'xjieyang'
+CEDA_PASSWORD = '11111111'
+
+YEAR = '2020'
 # Dictionary to convert climate var type to index in tensor
 
 t_dict = {'tasmin':0,\
@@ -805,8 +809,9 @@ def upload_timeseries_to_KG(datairi:list, value:list, year:str, query_endpoint: 
 
     return added_ts
 
-def get_treated_shape():
-    shape_array = call_pickle('./Data/pickle_files/shapes_array')
+def func_where_i_rewrite_shape_array():
+    LSOA_codes_shshs, wkt_codes_shshsh = call_pickle('./Data/pickle_files/shapes_array')
+    shape_array = call_pickle('./Data/shapes_array')
 
     # Get rid of repeated data
     LSOA_codes = np.unique(shape_array[:,0])
@@ -815,12 +820,23 @@ def get_treated_shape():
 
     # Extract data of interest 
     for i in range(len(LSOA_codes)):
-      indices = np.where(shape_array[:, 0] == LSOA_codes[i])
+      indices = np.where(shape_array[:, 0] == 'http://statistics.data.gov.uk/id/statistical-geography/E01000001')
       wkt_codes[i] = shape_array[indices[0][0], 1]
-    
+      print(wkt_codes[i])
+      break
+
+    for i in range(len(LSOA_codes)):
+      indices = np.where(shape_array[:, 0] == 'http://statistics.data.gov.uk/id/statistical-geography/E01000002')
+      wkt_codes[i] = shape_array[indices[0][0], 1]
+      print(wkt_codes[i])
+      break
     LSOA_codes = [s.replace('http://statistics.data.gov.uk/id/statistical-geography/', '') for s in LSOA_codes]
 
-    print(len(shape_array), len(wkt_codes), len(LSOA_codes))
+
+    with open('./Data/pickle_files/shapes_array', 'wb') as f:
+      # Save the variables using pickle.dump()
+      pickle.dump((LSOA_codes, wkt_codes), f)
+
 '''
     # upload the timeseries data
     print("\nUploading the Electricity consumption time series data:")
@@ -838,4 +854,6 @@ def get_treated_shape():
 #get_all_data(limit=False)
 #read_from_web_temp('2020','tas')
 #read_from_web_fuel_poverty('2016')
-get_treated_shape()
+
+# a = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')
+# parse_to_file(a,'temp_dict_2021')

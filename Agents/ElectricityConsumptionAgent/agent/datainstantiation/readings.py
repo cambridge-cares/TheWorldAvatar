@@ -12,11 +12,15 @@ import time
 import numpy as np
 import pandas as pd
 import uuid
-import datetime
+from datetime import datetime
 import netCDF4 as nc
 from shapely.geometry import Point, MultiPoint
 from shapely.ops import nearest_points
 from shapely import wkt
+from bs4 import BeautifulSoup
+import requests
+from requests.exceptions import HTTPError
+from urllib.parse import urlsplit, urlunsplit
 
 import agentlogging
 from agent.kgutils.kgclient import KGClient
@@ -30,6 +34,7 @@ from agent.kgutils.tsclient import TSClient
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+
 # ------------------------- shortcut functions ----------------------------------- #
 def remove_nan_to_NAN(*array_group):
   '''
@@ -210,19 +215,24 @@ def read_from_web_temp (year: str, var_name: str):
           year: the number of year of which the data you may want to read
           var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
     '''
-
+  # Web of interest
   url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
 
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
+  # Create a session to persist the login
+  session = requests.Session()
+  response = session.get(url)
 
+  # Check if the site is to busy
+  if response.status_code == 500:
+        print("Response 500 Internal Server Error, web is busy try it later please")
+        logger.error('Response 500 Internal Server Error, web is busy try it later please')
+        raise HTTPError(500, "Internal Server Error")
+  
+  soup = BeautifulSoup(response.text, 'html.parser')
   # Find the link to the nc file on the website
-  # Find table
   download_div = soup.find_all('table', {'class': 'table table-sm'})
   # Select link based on 'a', href
   inner_url = download_div[0].find_all('a', href=True)
-  
   # Select link contain year of interest
   for year_link in inner_url:
         if year in year_link['href']:
@@ -230,14 +240,49 @@ def read_from_web_temp (year: str, var_name: str):
           if len(year_link.attrs) == 1:
               link = year_link['href']
 
+  # parse the original url into its components
+  parsed_url = urlsplit(link)
+  orginial_path = parsed_url.path
+  # Modify the netloc (the domain)
+  parsed_url = parsed_url._replace(netloc='auth.ceda.ac.uk')
+  # Modify the path 
+  parsed_url = parsed_url._replace(path = '/account/signin/')
+  # Add the query parameter
+  parsed_url = parsed_url._replace(query='r=' + 'https://dap.ceda.ac.uk' + orginial_path + '?' + parsed_url.query)
+  # Use urlunsplit to construct the new URL
+  login_url = urlunsplit(parsed_url)
+
+  # Define the credentials
+  credentials = {
+      "username": CEDA_USERNAME,
+      "password": CEDA_PASSWORD
+  }
+
+  # Get the login page to get the csrf token
+  response = session.get(login_url)
+  soup = BeautifulSoup(response.content, 'html.parser')
+  csrf_token = soup.find('input', {'name': 'csrfmiddlewaretoken'}).get('value')
+  # Add the csrf token to the credentials
+  credentials['csrfmiddlewaretoken'] = csrf_token
+
+  # Make a post request to the login url with the credentials
+  response = session.post(login_url, data=credentials)
+
+  # Check if login was successful
+  if response.status_code == 200:
+      logger.info('logging to CEDA successfully performed!')
+  else:
+      logger.error('logging to CEDA Failed!')
+      raise InvalidInput('logging to CEDA Failed!')
+  
   try: 
-      # Download the xlsx file
+      # Download the nc file
       file_name = os.path.basename(link).split('?')[0]
   except Exception as ex:
-      print(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
+      logger.error(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
       raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
-  response = requests.get(link)
-
+  
+  # Downloading the file
   open(file_name, 'wb').write(response.content)
   logger.info(f'nc file {file_name} have been downloaded at the current folder')
   
@@ -262,7 +307,7 @@ def read_from_pickle(pathname: str):
     return results
 
 # ------------------------- Upload data to KG ------------------------------------ #
-def upload_elec_data_to_KG (year:str = '2020',
+def upload_elec_data_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
                 update_endpoint: str = UPDATE_ENDPOINT):
     '''
@@ -376,7 +421,7 @@ def upload_elec_data_to_KG (year:str = '2020',
 
     return total
 
-def upload_gas_data_to_KG (year:str = '2020',
+def upload_gas_data_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
                 update_endpoint: str = UPDATE_ENDPOINT):
     '''
@@ -478,21 +523,8 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
     '''
     logger.info('Retrieving ONS geographic data from local pickle file ...')
-    shape_array = read_from_pickle('./Data/shapes_array')
+    LSOA_codes, wkt_codes = read_from_pickle('./Data/shapes_array')
 
-    # Get rid of repeated data
-    LSOA_codes = np.unique(shape_array[:,0])
-    LSOA_codes = np.char.replace(LSOA_codes, 'http://statistics.data.gov.uk/id/statistical-geography/', '')
-    
-    # Initialisation 
-    wkt_codes=np.zeros(len(LSOA_codes),dtype=object)
-    
-    # Extract data of interest 
-    for i in range(len(LSOA_codes)):
-      indices = np.where(shape_array[:, 0] == LSOA_codes[i])
-      wkt_codes[i] = shape_array[indices[0][0], 1]
-
-    
     # Split the queries into Batches
     # Perform SPARQL update query in chunks to avoid heap size/memory issues
     total = len(LSOA_codes)
@@ -538,7 +570,7 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
     
     return total
 
-def upload_fuel_poverty_to_KG (year:str = '2020',
+def upload_fuel_poverty_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
                 update_endpoint: str = UPDATE_ENDPOINT):
     '''
@@ -616,7 +648,7 @@ def upload_fuel_poverty_to_KG (year:str = '2020',
 
     return total
 
-def upload_hadUK_climate_to_KG (year:str = '2020',
+def upload_hadUK_climate_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
                 update_endpoint: str = UPDATE_ENDPOINT):
     '''
@@ -643,12 +675,13 @@ def upload_hadUK_climate_to_KG (year:str = '2020',
 
     def read_nc(var_name,year,loc=True):
         '''
-        Given a variable in the HadUK Grid dataset, reads the file
+        Given a variable in the specified year of HadUK Grid dataset, reads the file
         and returns the grid of observations.
         '''
         fn = read_from_web_temp(year, var_name)
         ds = nc.Dataset(fn)
         var_grid = ds.variables[var_name][:]
+        logger.info(f'{year} {var_name}: hadUK climate data from {fn} succesfully retrieved and calculated')
         if loc == True:
             lon = ds.variables['longitude'][:]
             lat = ds.variables['latitude'][:]
@@ -658,12 +691,15 @@ def upload_hadUK_climate_to_KG (year:str = '2020',
             ds.close()
             return var_grid
 
-    def gridded_data_to_array(lon,lat,nc_vars,month,centroids=True):
+    def gridded_data_to_array(lon,lat,nc_vars,month):
         '''
-        Calculate gridded data to array
+        Calculate gridded data to array, filter out meaningless point
+        for point do have value, extract the position of point, and respective value
+
+        return arrays of points, and the respective temperature [tasmin,tas,tasmax]
         '''
-        if centroids == True:
-            overall_centroids = []
+        
+        overall_centroids = []
         var_store = np.array([[0 for i in range(len(nc_vars))]])
         for i in range(len(nc_vars)):
             nc_vars[i] = nc_vars[i].filled(np.nan)
@@ -673,16 +709,13 @@ def upload_hadUK_climate_to_KG (year:str = '2020',
                 for k in range(len(nc_vars)):
                     nc_var_temp[k] = nc_vars[k][month,i,j]
                 if nc_var_temp[0] > -1e8:
-                    if centroids == True:
-                        point = Point([lon[i,j],lat[i,j]])
-                        centroid = point
-                        overall_centroids.append(centroid)
+                    point = Point([lon[i,j],lat[i,j]])
+                    centroid = point
+                    overall_centroids.append(centroid)
                     var_store = np.append(var_store,[nc_var_temp],axis=0)
         var_store = var_store[1:,:]
-        if centroids == True:
-            return overall_centroids, var_store
-        else:
-            return var_store
+        logger.info(f'Gridded data for {get_key(month,months_dict)} have been converted to array')
+        return overall_centroids, var_store
     
     def get_treated_shape():
       '''
@@ -690,7 +723,8 @@ def upload_hadUK_climate_to_KG (year:str = '2020',
       return list containing LSOA code and shape
       '''
       # Get geodata
-      usage_vals = call_pickle('./Data/pickle_files/shapes_array')
+      LSOA_codes, wkt_codes = call_pickle('./Data/shapes_array')
+      usage_vals = np.column_stack((LSOA_codes, wkt_codes))
       # preassigning centroid array
       centroids = np.zeros((len(usage_vals),1),dtype='object')
       i = 0 
@@ -712,36 +746,170 @@ def upload_hadUK_climate_to_KG (year:str = '2020',
       # concatenating results 
       LSOA = np.concatenate((usage_vals,centroids),axis=1)
       LSOA = np.delete(LSOA,del_index,axis=0)
+      logger.info('ONS geometry data successfully retrieved and centroids calculated.')
 
       return LSOA
-
+    
+    def from_grid_find_temp(lon,lat,nc_vars,month,overall_centroids):
+        '''
+        After performed gridded_data_to_array function, where the grid that do have 
+        real temperature reading is retrieved as array.
+        This function will use such an array to extract the temperature reading using
+        the specified points. If one reading is missed which will report
+                    '''
+        point_indices = {Point(lon[i, j], lat[i, j]): (i, j) for i in range(lon.shape[0]) for j in range(lon.shape[1])}
+        nc_vars = [var.filled(np.nan) for var in nc_vars]
+        var_store = np.zeros((len(overall_centroids), len(nc_vars)))
+        missing_data = []
+        for idx, point in enumerate(overall_centroids):
+            i, j = point_indices.get(point)
+            nc_var_temp = [nc_vars[k][month, i, j] for k in range(len(nc_vars))]
+            if nc_var_temp[0] > -1e8:
+                var_store[idx] = nc_var_temp
+            else:
+              # If there is a missing data, assuming it is [9, 14, 17] and report it, for sake of calculation
+              # don't distrbute it this module just takes too long to run :(
+                var_store[idx] = [9, 14, 17]
+                missing_data.append((point, get_key(month, months_dict)))
+        if missing_data:
+            print(f'CAUTIONS! Climate data for points {missing_data} is missing!')
+        logger.info(f'Gridded data for {get_key(month,months_dict)} have been converted to array')
+        return var_store
+    
+    logger.info('Retrieving ONS geometry data for later assosiation ...')
     LSOA = get_treated_shape()
-    lon,lat,tas = read_nc('tas',loc=True)
-    tasmin = read_nc('tasmin',loc=False)
-    tasmax = read_nc('tasmax',loc=False)
+
+    logger.info('Retrieving hadUK grid temperature from web ...')
+    lon,lat,tas = read_nc('tas', year, loc=True)
+    tasmin = read_nc('tasmin', year, loc=False)
+    tasmax = read_nc('tasmax', year, loc=False)
+
+    # Define some list for searching data
     months = ['January','February','March','April','May','June','July','August','September','October','November','December']
     clim_vars = ['tasmin','tas','tasmax']
 
+    logger.info('Converting gridded data to array ...')
     nc_vars_full = [] 
-    for i in range(len(months)):
-        month_str = months[i]
-        month,month_end = month_num(month_str)
-        if i == 0:
-            grid_loc,nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=True)
-        if i == 8:
-            nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
-            
-            for j in range(6):
-                nc_vars_add=np.append(nc_vars_add,[[12,14,16]],axis=0) 
-                j = j +1
-        else:
-            nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
-
+    grid_loc,nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],0)
+    nc_vars_full.append(nc_vars_add)
+    for i in range(1,len(months)):
+        nc_vars_add = from_grid_find_temp(lon,lat,[tasmin,tas,tasmax],i,grid_loc)
         nc_vars_full.append(nc_vars_add)
     
     full_grid = MultiPoint(points=list(grid_loc))
+    
+    logger.info('Computing associated points for each LSOA area...')
+    logger.info('Be patient and get a cuppa tea, this will take long time to run...')
+    for i in tqdm(range(int(len(LSOA)))):
+      assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
+      if any(assoc_mask) == False:
+          assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
+          for j in range(len(grid_loc)):
+              if assoc_point == grid_loc[j]:
+                  assoc_mask[j] = True 
+                  break
+      for month_it in range(len(months)):
+          LSOA_vars_full = nc_vars_full[month_it][assoc_mask,:]
 
-def upload_all(year: str = '2020',query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+          '''
+          (Comment from the creater of this code Tom Savage)
+          Following code is responsible for aggregating mean minimum and maximum temperature values
+
+          LSOA_vars_full contains a matrix with columns of tasmin, tas and tasmax
+          and respective rows for every grid point that falls within a region.
+
+          if the variable is tasmin then the minimum of these values is taken, mean for tas and max for tasmax
+
+          [[tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax],
+          [tasmin ,  tas   , tasmax]]
+
+          [[   |   ,   |    ,   |   ],
+          [   |   ,   |    ,   |   ],
+          [   |   ,   |    ,   |   ],
+          [np.min ,np.mean , np.max],
+          [   |   ,   |    ,   |   ],
+          [   |   ,   |    ,   |   ],
+          [   |   ,   |    ,   |   ]]
+
+
+          [np.min ,np.mean , np.max]
+          (Comment from editor: yea well explained)
+          '''
+          post_proc_vars = np.zeros(3)
+          for k in range(3):
+          # Calculate tasmin, tas, tasmax of each LSOA area based on grid temperature
+              if clim_vars[k] == 'tasmin':
+                  post_proc_vars[k] = np.min(LSOA_vars_full[:,k])
+              elif clim_vars[k] == 'tas': 
+                  post_proc_vars[k] = np.mean(LSOA_vars_full[:,k])
+              else:
+                  post_proc_vars[k] = np.max(LSOA_vars_full[:,k])
+
+          LSOA_vars = post_proc_vars
+          LSOA_IRI = LSOA[i,0]
+          month_str = str(month_it+1)
+          month_str_len = len(month_str)
+          _, month_end = month_num(months[month_it])
+          if month_str_len == 1:
+              month_str = '0'+month_str
+
+          LSOA_code = LSOA_IRI.split('/')[-1]
+          startUTC = datetime.datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+          endUTC = datetime.datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+
+          # Initialise update query
+          query = f"INSERT DATA" + "{"
+          for var in range(len(LSOA_vars)):
+              meas_uuid = CLIMA + 'Measurement_' + str(uuid.uuid4())
+              clim_var = CLIMA + str(clim_vars[var])
+              temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
+              val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
+              query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,endUTC,temp_uuid,val_uuid,LSOA_vars[var])
+          query += "}"
+
+          # Instantiate all non-time series triples
+          kg_client = KGClient(query_endpoint, update_endpoint)
+          kg_client.performUpdate(query)
+
+    logger.info('Insert query for hadUK climate data successfully performed')
+    return int(len(LSOA))
+
+def shortcut_way_temperature (query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+  '''
+  This function is written purely for self entertaining, but could be useful to upload temperature data into KG
+  because for upload_hadUK_climate_to_KG function, which could take a really long time to run (in my case, 50-80hrs)
+  But the time comsuming step is not SPARQL, is the calculation and matching for LSOA and grid temperature
+
+  Therefore, I developed this function for the case that the temperature is known, so sack the cost of calculation
+  '''
+  temp_dict = call_pickle('./Data/temp_Repo/temp_dict in function get_all_data')
+  for losa_key, value_1 in tqdm(temp_dict.items()):
+    LSOA_code = losa_key.replace('http://statistics.data.gov.uk/id/statistical-geography/', '')
+    for date_key, value_2 in value_1.items():
+      startUTC = datetime.datetime.strptime(date_key, '%Y-%m-%dT%H:%M:%S.000Z')
+      # Reformat the date and time as 'YYYY-MM-DDTHH:MM:SS.000Z'
+      month_begin_end_dict = {datetime.datetime(2020, 1, 1, 12, 0): datetime.datetime(2020, 1, 31, 12, 0), datetime.datetime(2020, 2, 1, 12, 0): datetime.datetime(2020, 2, 28, 12, 0), datetime.datetime(2020, 3, 1, 12, 0): datetime.datetime(2020, 3, 31, 12, 0), datetime.datetime(2020, 4, 1, 12, 0): datetime.datetime(2020, 4, 30, 12, 0), datetime.datetime(2020, 5, 1, 12, 0): datetime.datetime(2020, 5, 31, 12, 0), datetime.datetime(2020, 6, 1, 12, 0): datetime.datetime(2020, 6, 30, 12, 0), datetime.datetime(2020, 7, 1, 12, 0): datetime.datetime(2020, 7, 30, 12, 0), datetime.datetime(2020, 8, 1, 12, 0): datetime.datetime(2020, 8, 31, 12, 0), datetime.datetime(2020, 9, 1, 12, 0): datetime.datetime(2020, 9, 30, 12, 0), datetime.datetime(2020, 10, 1, 12, 0): datetime.datetime(2020, 10, 29, 12, 0), datetime.datetime(2020, 11, 1, 12, 0): datetime.datetime(2020, 11, 30, 12, 0), datetime.datetime(2020, 12, 1, 12, 0): datetime.datetime(2020, 12, 31, 12, 0)}
+      EndUTC = month_begin_end_dict[startUTC]
+      # Initialise update query
+      query = f"INSERT DATA" + "{"
+      for clim_var_key, value_3 in value_2.items():
+        clim_var = clim_var_key
+        value = value_3
+        meas_uuid = CLIMA + 'Measurement_' + str(uuid.uuid4())
+        temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
+        val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
+        query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,EndUTC,temp_uuid,val_uuid,value)
+      query += "}"
+      # Instantiate all non-time series triples
+      kg_client = KGClient(query_endpoint, update_endpoint)
+      kg_client.performUpdate(query)
+
+def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
     
     # instantiate the Electricity consumption data
     print("\nUploading the Electricity consumption data:")
@@ -787,15 +955,30 @@ def upload_all(year: str = '2020',query_endpoint: str = QUERY_ENDPOINT, update_e
     print(f'Fuel poverty - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
     logger.info(f'Fuel poverty - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
     
-    return num_elec, num_gas, num_shape, num_fuelpoor
+    # instantiate the hadUK climate data
+    print("\nUploading the hadUK climate data:")
+    logger.info("Uploading the hadUK climate data...")
+    t1 = time.time()
+    num_temp = upload_hadUK_climate_to_KG(year, query_endpoint, update_endpoint)
+    print(f"Number of LOSA output area with instantiated hadUK climate data: {num_elec}")
+    t2= time.time()
+    diff = t2 - t1
+    print(f'hadUK climate data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    logger.info(f'hadUK climate data - Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+
+    return num_elec, num_gas, num_shape, num_fuelpoor, num_temp
 
 if __name__ == '__main__':
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
     '''
-    num_elec, = upload_all()
-    print(f'Number of instantiated LSOA area:{len_query}')
-    print(f'Number of updated time series readings (i.e. dataIRIs):{added_ts}')
+    num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
+    print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
+    print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
+    print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
+    print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
+    print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
     '''
-    upload_elec_data_to_KG('2025')
+#    read_from_web_temp('2019','tas')
+    upload_all()

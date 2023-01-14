@@ -85,7 +85,7 @@ def gas_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,co
                     <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> .
         
             <{region}> <{RDF_TYPE}> <{ONS_DEF_STAT}>;
-                        <{COMP_HASCONSUMED}> <{used_uuid}> .
+                        <{COMP_HASUSED}> <{used_uuid}> .
         
             <{kw_uuid}> <{RDF_TYPE}> <{OM_ENERGY}>;
                             <{OM_HAS_PHENO}> <{used_uuid}> ;
@@ -98,7 +98,7 @@ def gas_update_template(mes_uuid,used_uuid,start_time,end_time,region,kw_uuid,co
             <{met_uuid}> <{GAS_HAVE_CONSUM_GASMETERS}>  {meters};
                          <{GAS_HAVE_NONCONSUM_GASMETERS}>  {non_meters};
                     <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
-                    <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}> 
+                    <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>. 
         """
 
     return triples
@@ -118,8 +118,8 @@ def fuel_poor_update_template(region,house_uuid,start_time,end_time,houses,poor)
 
     <{house_uuid}> <{OFP_VALIDFROM}> "{start_time}"^^<{XSD_DATETIME}> ;
                    <{OFP_VALIDTO}>   "{end_time}"^^<{XSD_DATETIME}> ;
-                   <{OFP_NUMBEROFHOUSEHOLD} <{houses}> ;
-                   <{OFP_FUELPOOR}> <{poor}> .
+                   <{OFP_NUMBEROFHOUSEHOLD}>  {houses} ;
+                   <{OFP_FUELPOOR}>  {poor} .
     """
 
     return triples
@@ -138,14 +138,14 @@ def climate_temperature_update_template(region,meas_uuid,clim_var,start_time,end
             <{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
             <{clim_var}> <{RDF_TYPE}>  <{CLIMB_CLIMBVARIABLE}> .
             <{meas_uuid}>  <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}> ;
-                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>
-                        <{CLIMB_HASVAR}>   <{clim_var}>  .
+                        <{COMP_HAS_ENDUTC}>  "{end_time}"^^<{XSD_DATETIME}>;
+                        <{CLIMB_HASVAR}>   "{clim_var}"^^<{XSD_STRING}> .
             <{temp_uuid}>  <{RDF_TYPE}>  <{OM_TEMPERATURE}> ;
                            <{OM_HAS_PHENO}>  <{meas_uuid}> ;
                            <{OM_HAS_VALUE}>  <{val_uuid}> .
             <{val_uuid}> <{RDF_TYPE}>  <{OM_MEASURE}> ;
                          <{OM_HAS_UNIT}>  <{OM_DEGREE_C}> ;
-                         <{OM_HAS_NUMERICALVALUE}> <{value}> .
+                         <{OM_HAS_NUMERICALVALUE}> {value} .
         """
 
     return triples
@@ -177,7 +177,7 @@ def output_query_template(keyword: str, year: str = '2020'):
 
     # 'Fuel poverty' - return LSOA code, propotion of fuel poor, number of household
     if keyword == 'Fuel poverty':
-        query+= ' (xsd:float(?a)/xsd:float(?b) AS ?result) ?num'
+        query+= ' (xsd:float(?a)/xsd:float(?num) AS ?result) ?num'
 
     # 'ONS output area' - return LSOA code, WKT form geometry data
     if keyword == 'ONS output area':
@@ -191,28 +191,28 @@ def output_query_template(keyword: str, year: str = '2020'):
         query+= f"""<{COMP_HASCONSUMED}> ?elec;
                     <{GAS_HAS_ELECMETERS}> ?meteriri.
     ?meteriri <{GAS_HAS_CONSUM_ELECMETERS}> ?meter;
-              <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
+              <{COMP_HAS_STARTUTC}>  "{year + "-01-01 12:00:00"}"^^<{XSD_DATETIME}>.
     ?energy <{OM_HAS_PHENO}> ?elec;
             <{OM_HAS_VALUE}> ?usageiri.
     ?usageiri <{OM_HAS_NUMERICALVALUE}> ?usage.
-    ?elec <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
+    ?elec <{COMP_HAS_STARTUTC}>  "{year + "-01-01 12:00:00"}"^^<{XSD_DATETIME}>.
     """
 
     if keyword == 'Gas':
         query+= f"""<{COMP_HASUSED}> ?gas;
                     <{GAS_HAVE_GASMETERS}> ?metiri.
         ?metiri <{GAS_HAVE_CONSUM_GASMETERS}> ?meter;
-                <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>; 
+                <{COMP_HAS_STARTUTC}>  "{year + "-01-01 12:00:00"}"^^<{XSD_DATETIME}>; 
                 <{GAS_HAVE_NONCONSUM_GASMETERS}> ?nonmeter.
         ?energy <{OM_HAS_PHENO}> ?gas;
                  <{OM_HAS_VALUE}> ?usageiri.
-        ?usageiri <{OM_HAS_NUMERICALVALUE}>  ?usage;
-                  <{COMP_HAS_STARTUTC}>  "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>.
+        ?usageiri <{OM_HAS_NUMERICALVALUE}>  ?usage.
+        ?gas      <{COMP_HAS_STARTUTC}>  "{year + "-01-01 12:00:00"}"^^<{XSD_DATETIME}>.
 
         """
 
     if keyword == 'Temperature':
-        query+= f"""    <{CLIMB_HASMEASURE}  ?m.
+        query+= f"""    <{CLIMB_HASMEASURE}>  ?m.
     ?m <{COMP_HAS_STARTUTC}> ?start;
         <{COMP_HAS_ENDUTC}> ?end.
     ?m  <{CLIMB_HASVAR}> ?var.
@@ -220,13 +220,13 @@ def output_query_template(keyword: str, year: str = '2020'):
     ?p <{OM_HAS_VALUE}> ?t_iri.
     ?t_iri <{OM_HAS_NUMERICALVALUE}> ?t.
 
-    FILTER (regex(str(?start), "{year}-\\d\\d-01T12:00:00") && datatype(?start) = xsd:dateTime)
+    FILTER (regex(str(?start), "{year}-\\\d\\\d-01 12:00:00") && datatype(?start) = xsd:dateTime)
         """
 
     if keyword == 'Fuel poverty':
         query+= f"""  <{OFP_HASHOUSEHOLD}> ?housesiri.
      ?housesiri <{OFP_FUELPOOR}> ?a;
-             <{OFP_VALIDFROM}> "{year + "-01-01T12:00:00"}"^^<{XSD_DATETIME}>;
+             <{OFP_VALIDFROM}> "{year + "-01-01 12:00:00"}"^^<{XSD_DATETIME}>;
              <{OFP_NUMBEROFHOUSEHOLD}> ?num.
         """
 
@@ -238,3 +238,4 @@ def output_query_template(keyword: str, year: str = '2020'):
     #--------------------------Query end here----------------------------------
     query+= "}"
     return query
+
