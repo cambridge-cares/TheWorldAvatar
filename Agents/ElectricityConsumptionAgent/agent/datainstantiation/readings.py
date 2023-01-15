@@ -800,7 +800,7 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
     
     logger.info('Computing associated points for each LSOA area...')
     logger.info('Be patient and get a cuppa tea, this will take long time to run...')
-    for i in tqdm(range(int(len(LSOA)))):
+    for i in tqdm(range(26458, int(len(LSOA)))):
       assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
       if any(assoc_mask) == False:
           assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
@@ -972,13 +972,10 @@ if __name__ == '__main__':
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
-    '''
+    
     num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
     print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
     print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
     print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
     print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
     print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
-    '''
-#    read_from_web_temp('2019','tas')
-    upload_all()
