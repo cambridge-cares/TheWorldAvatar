@@ -11,9 +11,7 @@ import urllib.request
 from shapely import wkt
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
-DEF_NAMESPACE = "ontogasgrid"
-LOCAL_KG = "http://localhost:8080/blazegraph"
-QUERY_ENDPOINT= UPDATE_ENDPOINT = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
+QUERY_ENDPOINT= UPDATE_ENDPOINT = "http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql"
 
 DB_URL = "jdbc:postgresql:ts_example"
 DB_USER = "postgres"

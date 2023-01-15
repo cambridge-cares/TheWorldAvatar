@@ -49,7 +49,7 @@ def remove_nan_to_NAN(*array_group):
   return return_array_group
 
 # ------------------------- Read data from source -------------------------------- #
-def read_from_web_elec (year: str):
+def read_from_web_elec (year: str = YEAR):
   '''
   This function is to read the up-to-date subnational electricity consumption data from web
   return a dataframe to represent the file been read
@@ -99,7 +99,7 @@ please check the {file_name} located on the current folder, see if the 'year' sh
   
   return df
 
-def read_from_web_gas (year: str):
+def read_from_web_gas (year: str = YEAR):
   '''
   This function is to read the up-to-date subnational gas consumption data from web
   return a dataframe to represent the file been read
@@ -149,7 +149,7 @@ please check the {file_name} located on the current folder, see if the 'year' sh
   
   return df
 
-def read_from_web_fuel_poverty (year: str):
+def read_from_web_fuel_poverty (year: str = YEAR):
   '''
   This function is to read the up-to-date subnational fuel poverty data from web
   return a dataframe to represent the file been read
@@ -203,7 +203,7 @@ please check the {file_name} located on the current folder, see if the 'Table 3'
   
   return df
 
-def read_from_web_temp (year: str, var_name: str):
+def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
   '''
     This function is to read the up-to-date hadUK grid (1km) climate data from web
     doneload nc file only, for data process to be done later
@@ -288,7 +288,7 @@ def read_from_web_temp (year: str, var_name: str):
   
   return file_name
 
-def read_from_pickle(pathname: str):
+def read_from_pickle(pathname: str = YEAR):
     '''
     This function is to read the local pickle file to get the ONS geographic data
 

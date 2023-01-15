@@ -7,6 +7,13 @@
 # required SPARQL queries (Mainly used in 'querytemplates.py' module)
 
 ###--- --- --- --- --- URLs to ontology .owl files --- --- --- --- ---###
+TBOX_URL_FUELPOVERTY = 'http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl'
+TBOX_URL_GASGRID = 'http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl'
+TBOX_URL_CLIMATE = 'http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl'
+TBOX_URL_GASCOMPONENT = 'http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl'
+TBOX_URL_GASSYSTEM = 'http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl'
+
+ABOX_URL = 'not found???'
 
 GAS = "http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#"
 COMP = "http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#"
@@ -15,6 +22,7 @@ CLIMB =  "http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#"
 OFP = "http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#"
 OFPT = "http://www.theworldavatar.com/kb/ontofuelpoverty/abox/"
 CLIMA =  "http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/"
+
 ###--- --- --- --- --- Common Base URLs --- --- --- --- ---###
 
 # External ontologies

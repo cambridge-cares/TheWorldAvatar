@@ -2,6 +2,10 @@
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
 # Date: 30 Oct 2022                            #
 ################################################
+################################################
+# Editor: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
 
 # The purpose of this module is to initialise the knowledge graph,
 # i.e. create Blazegraph namespace and upload ontology TBox and ABox
@@ -14,7 +18,8 @@ import agentlogging
 from agent.datamodel.iris import *
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import KGException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+#from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.datamodel.spec import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -67,7 +72,7 @@ def create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
-def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
+def upload_ontology(tbox_url=TBOX_URL_GASCOMPONENT, abox_url=ABOX_URL):
     """
     Uploads TBox and ABox to KG namespace
 
@@ -85,7 +90,7 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
 
     # Verify that TBox has not been initialized
     try:
-        query = f'SELECT * WHERE {{ <{EMS}> <{OWL_VERSION}> ?v}}'
+        query = f'SELECT * WHERE {{ <http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl> <{OWL_VERSION}> ?v}}'
         res = kg_client.performQuery(query)
     except Exception as ex:
         logger.error("Unable to retrieve TBox version from KG.")
