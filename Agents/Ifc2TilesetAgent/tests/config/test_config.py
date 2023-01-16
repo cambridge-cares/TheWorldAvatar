@@ -10,7 +10,6 @@ import yaml
 
 # Self import
 import agent.config.config as properties
-from agent.exceptions import InvalidInputError
 
 
 def gen_test_yaml_file(output_path):
