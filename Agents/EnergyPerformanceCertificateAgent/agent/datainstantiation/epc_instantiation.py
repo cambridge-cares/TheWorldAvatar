@@ -1357,6 +1357,13 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
 
             # Iterate through all buildings (each building represents one geospatial feature)
             for b in data['obe_bldg'].unique():
+                # Get building usage
+                query = get_buildings_usage()
+                try:
+                    usage = kgclient_epc.performQuery(query)
+                except KGException as ex:
+                    logger.error('Unable to retrieve building usage category.')
+                    raise KGException('Unable to retrieve building usage category.') from ex
                 # Extract all floor surface geometries for this building
                 surf = data[data['obe_bldg'] == b]
                 # Initialise list of surface geometry coordinates (polygons)
@@ -1403,6 +1410,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
                     'type': feature_type,
+                    'usage': usage,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])

@@ -227,6 +227,18 @@ def get_matched_buildings() -> str:
     query = ' '.join(query.split())
     return query
 
+def get_buildings_usage(bldg_iri: str):
+    # Retrieve usages of OntoBuiltEnv buildings 
+    query = f"""
+        SELECT ?usage
+        WHERE {{
+          <{bldg_iri}> <{OBE_HAS_USAGE}> ?usage .
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
 
 def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint, bldg_iris=[]) -> str:
     # Retrieved relevant OCGML information for matched buildings (i.e. OBE building IRIs)
