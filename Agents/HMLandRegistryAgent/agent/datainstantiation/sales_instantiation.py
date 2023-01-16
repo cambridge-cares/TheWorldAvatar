@@ -18,7 +18,7 @@ from py4jps import agentlogging
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import *
 from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
-from agent.errorhandling.exceptions import KGException
+from agent.errorhandling.exceptions import KGException, TSException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
@@ -167,9 +167,15 @@ def update_all_transaction_records(min_conf_score=90,
             insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
                                                             ppi_iri=ppi_iri)
             kgclient_obe.performUpdate(insert_query)
-            # Initialise TimeSeries
-            ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
-                                            ts_client.conn)
+            
+            # Initialise TimeSeries with try-with-resources block
+            try:
+                with ts_client.connect() as conn:
+                    ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
+                                            conn)
+            except Exception as ex:
+                logger.error('Error initialising time series')
+                raise TSException('Error initialising time series') from ex
             instantiated_ukhpi += 1
         else:
             updated_ukhpi += 1
@@ -180,7 +186,12 @@ def update_all_transaction_records(min_conf_score=90,
                                      ppi_iri=d['ukhpi'], kgclient_hm=kgclient_hm)
 
         # 5) Update Property Price Index time series data in KG
-        ts_client.tsclient.addTimeSeriesData(ts, ts_client.conn)
+        try:
+            with ts_client.connect() as conn:
+                ts_client.tsclient.addTimeSeriesData(ts, conn)
+        except Exception as ex:
+            logger.error('Error adding time series data')
+            raise TSException('Error adding time series data') from ex
     
     return (instantiated_tx, updated_tx, instantiated_ukhpi, updated_ukhpi)
 

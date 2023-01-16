@@ -41,5 +41,4 @@ LocalDate = jpsBaseLibView.java.time.LocalDate
 TIMECLASS = LocalDate.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
 DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
