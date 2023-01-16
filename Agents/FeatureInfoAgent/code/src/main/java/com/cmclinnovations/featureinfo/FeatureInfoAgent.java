@@ -158,28 +158,13 @@ public class FeatureInfoAgent extends JPSAgent {
             switch (url) {
                 case "/get":
                 case "get": {
-                    LOGGER.info("Detected request to get meta and timeseries data.");
-
-                    // Enforce a Blazegraph endpoint if passed
-                    // NOTE: Disabled until we know if the federation is acceptable
-                    // if(requestParams.has("endpoint")) {
-                    //     this.enforceEndpoint(requestParams);
-                    // }
-                    this.runLogic(requestParams, response);
+                    getRoute(requestParams, response);
                 }
                 break;
 
                 case "/status":
                 case "status": {
-                    LOGGER.info("Detected request to get agent status...");
-
-                    if(CONFIG != null && FeatureInfoAgent.VALID) {
-                        response.setStatus(Response.Status.OK.getStatusCode());
-                        response.getWriter().write("{\"description\":\"Ready to serve.\"}");
-                    } else {
-                        response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-                        response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
-                    }
+                    statusRoute(response);
                 }
                 break;
 
@@ -197,20 +182,34 @@ public class FeatureInfoAgent extends JPSAgent {
     }
 
     /**
-     * Enforce a single Blazegraph endpoint for requests.
+     * Initiate logic required to process a request on the "/get" route.
      * 
-     * @param requestParams HTTP request parameters.
+     * @param requestParams HTTP request parameters
+     * @param response HTTp response
+     * 
+     * @throws IOException
      */
-    private final void enforceEndpoint(JSONObject requestParams) {
-        String endpoint = requestParams.getString("endpoint");
-        Pattern pattern = Pattern.compile("(?<=namespace\\/)(.*)(?=\\/sparql)");
-        Matcher matcher = pattern.matcher(endpoint);
+    protected void getRoute(JSONObject requestParams, HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to get meta and timeseries data.");
+        this.runLogic(requestParams, response);
+    }
 
-        if(matcher.find()) {
-            String name = matcher.group();
-            this.enforcedEndpoint = new ConfigEndpoint(name, endpoint, null, null, EndpointType.BLAZEGRAPH);
+    /**
+     * Run logic for the "/status" route.
+     * 
+     * @param response HTTO response
+     * 
+     * @throws IOException
+     */
+    protected void statusRoute(HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to get agent status...");
+
+        if(CONFIG != null && FeatureInfoAgent.VALID) {
+            response.setStatus(Response.Status.OK.getStatusCode());
+            response.getWriter().write("{\"description\":\"Ready to serve.\"}");
         } else {
-            LOGGER.warn("Could not parse requested endpoint, will federate across all.");
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
         }
     }
 
@@ -237,7 +236,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * @param response
      * @throws IOException
      */
-    private final void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
+    protected void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
         // Check if request is valid
         boolean validRequest = validateInput(requestParams);
         if(!validRequest) {
