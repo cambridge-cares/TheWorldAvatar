@@ -233,7 +233,10 @@ public class FeatureInfoAgent extends JPSAgent {
 
     /**
      * Runs the main agent logic for the /get route (on valid request)
-     * @param response
+     * 
+     * @param requestParams JSONObject of request parameters
+     * @param response HTTP response
+     * 
      * @throws IOException
      */
     protected void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
