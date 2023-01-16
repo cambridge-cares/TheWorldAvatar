@@ -300,6 +300,13 @@ public class FeatureInfoAgent extends JPSAgent {
 
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
+
+        // Set the username and password for access (assumes all endpoints within same stack!)
+        if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
+            rsClient.setUser(endpoints.get(0).username());
+            rsClient.setPassword(endpoints.get(0).password());
+        }
+
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
 
         // Determine the class match
@@ -350,6 +357,13 @@ public class FeatureInfoAgent extends JPSAgent {
 
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
+
+        // Set the username and password for access (assumes all endpoints within same stack!)
+        if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
+            rsClient.setUser(endpoints.get(0).username());
+            rsClient.setPassword(endpoints.get(0).password());
+        }
+
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
 
         // Run queries
