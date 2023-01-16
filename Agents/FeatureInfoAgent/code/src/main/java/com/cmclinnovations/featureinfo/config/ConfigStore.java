@@ -365,7 +365,9 @@ public class ConfigStore extends ContainerClient {
 
             endpoints.add(endpoint);
             String url = endpoint.url();
+            
             LOGGER.info("Have found a Blazegraph endpoint at: {}", url);
+            LOGGER.info("Using username: {}", getter.getUsername());
         }
     }
 

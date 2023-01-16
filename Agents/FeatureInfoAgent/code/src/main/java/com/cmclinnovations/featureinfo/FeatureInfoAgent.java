@@ -270,7 +270,6 @@ public class FeatureInfoAgent extends JPSAgent {
                 response.getWriter().write(result.toString());
 
                 LOGGER.info("JSON data has been written to the response object.");
-                LOGGER.debug(result.toString(2));
             }
 
         } catch(Exception exception) {
@@ -293,7 +292,6 @@ public class FeatureInfoAgent extends JPSAgent {
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
         LOGGER.debug("Running class queries against following endpoints via federation...");
-        endpoints.forEach(point -> LOGGER.debug(point));
 
         // Build class handler
         ClassHandler handler = new ClassHandler(iri, endpoints);
@@ -305,6 +303,8 @@ public class FeatureInfoAgent extends JPSAgent {
         if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
             rsClient.setUser(endpoints.get(0).username());
             rsClient.setPassword(endpoints.get(0).password());
+
+            LOGGER.info("Creating a RemoteStoreClient with username: {}", rsClient.getUser());
         }
 
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
@@ -362,6 +362,8 @@ public class FeatureInfoAgent extends JPSAgent {
         if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
             rsClient.setUser(endpoints.get(0).username());
             rsClient.setPassword(endpoints.get(0).password());
+
+            LOGGER.info("Creating a RemoteStoreClient with username: {}", rsClient.getUser());
         }
 
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
