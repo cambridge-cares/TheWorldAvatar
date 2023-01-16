@@ -6,17 +6,19 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.javagateway import jpsBaseLibGW
-from agent.kgutils.kgclient import KGClient
 from agent.datamodel.data_mapping import TIMECLASS
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                             DB_URL, DB_USER, DB_PASSWORD
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
+# Create a JVM module view and use it to import the required java classes
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
+jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
 class TSClient:
 
@@ -32,12 +34,7 @@ class TSClient:
             rdb_url (str): URL of relational database
             rdb_user (str): Username for relational database
             rdb_password (str): Password for relational database
-        """
-
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
+        """        
 
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
@@ -58,10 +55,6 @@ class TSClient:
     @staticmethod
     def create_timeseries(times: list, dataIRIs: list, values: list):
         # Create Java TimeSeries object (i.e. to attach via TSClient)
-
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
         try:
             timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)

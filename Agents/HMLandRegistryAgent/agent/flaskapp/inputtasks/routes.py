@@ -5,7 +5,7 @@
 
 from flask import Blueprint, request, jsonify
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.errorhandling.exceptions import InvalidInput
 from agent.datainstantiation.sales_instantiation import update_transaction_records, \

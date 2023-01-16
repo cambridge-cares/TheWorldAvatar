@@ -17,7 +17,7 @@ setup(
         'flask~=2.2',
         'JayDeBeApi~=1.2',
         'pandas~=1.3',
-        'py4jps>=1.0.26', 
+        'py4jps>=1.0.30', 
         'requests~=2.28',
         'fuzzywuzzy~=0.18',
         'python-Levenshtein~=0.20'

@@ -8,7 +8,7 @@
 
 import uuid
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 
