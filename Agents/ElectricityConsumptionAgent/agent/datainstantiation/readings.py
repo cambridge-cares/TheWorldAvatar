@@ -74,28 +74,28 @@ def read_from_web_elec (year: str = YEAR):
   try:
     file_name = os.path.basename(link)
     response = requests.get(link)
-    open(file_name, 'wb').write(response.content)
+    open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
   
-  logger.info(f'xlsx file {file_name} have been downloaded at the current folder')
+  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
   # Check if the file is valid
   if not 'LSOA' in file_name:
     if 'not' in file_name:
-      logger.error(f"Invalid file downloaded -- check the current folder and source:{url} ")
+      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
       raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
 
   # Parse the data from the xlsx file into a pandas DataFrame
   try: 
-    df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
+    df = pd.read_excel('./downloads/'+ file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
     logger.info('Electricity consumption/meter data successfully retrieved from web')
   
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'year' sheet exist")
+please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'year' sheet exist") from ex
+please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist") from ex
   
   return df
 
@@ -124,28 +124,28 @@ def read_from_web_gas (year: str = YEAR):
   try:
     file_name = os.path.basename(link)
     response = requests.get(link)
-    open(file_name, 'wb').write(response.content)
+    open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
 
-  logger.info(f'xlsx file {file_name} have been downloaded at the current folder')
+  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
   # Check if the file is valid
   if not 'LSOA' in file_name:
     if 'not' in file_name:
-      logger.error(f"Invalid file downloaded -- check the current folder and source:{url} ")
+      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
       raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
   
   try:
     # Parse the data from the xlsx file into a pandas DataFrame
-    df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
+    df = pd.read_excel('./downloads/'+ file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
     logger.info('Gas consumption/meter data successfully retrieved from web')
   
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'year' sheet exist")
+please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'year' sheet exist") from ex
+please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist") from ex
   
   return df
 
@@ -178,28 +178,28 @@ def read_from_web_fuel_poverty (year: str = YEAR):
   try:
     file_name = os.path.basename(link)
     response = requests.get(link)
-    open(file_name, 'wb').write(response.content)
+    open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
   
-  logger.info(f'xlsx file {file_name} have been downloaded at the current folder')
+  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
   # Check if the file is valid
   if not 'sub-regional' in file_name:
     if not year_published in file_name:
-      logger.error(f"Invalid file downloaded -- check the current folder and source:{url} ")
+      logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
       raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
 
   try:
     # Parse the data from the xlsx file into a pandas DataFrame
-    df = pd.read_excel(file_name, sheet_name="Table 3", skiprows=2, skipfooter=8)
+    df = pd.read_excel('./downloads/'+ file_name, sheet_name="Table 3", skiprows=2, skipfooter=8)
     logger.info('Fuel poverty data successfully retrieved from web')
   
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'Table 3' sheet contains desireable datasets")
+please check the {file_name} located on the file in ./downloads folder, see if the 'Table 3' sheet contains desireable datasets")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
-please check the {file_name} located on the current folder, see if the 'Table 3' sheet contains desireable datasets") from ex
+please check the {file_name} located on the file in ./downloads folder, see if the 'Table 3' sheet contains desireable datasets") from ex
   
   return df
 
@@ -283,10 +283,10 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
       raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
   
   # Downloading the file
-  open(file_name, 'wb').write(response.content)
-  logger.info(f'nc file {file_name} have been downloaded at the current folder')
+  open('./downloads/'+ file_name, 'wb').write(response.content)
+  logger.info(f'nc file {file_name} have been downloaded at the ./downloads folder')
   
-  return file_name
+  return './downloads/'+ file_name
 
 def read_from_pickle(pathname: str = YEAR):
     '''

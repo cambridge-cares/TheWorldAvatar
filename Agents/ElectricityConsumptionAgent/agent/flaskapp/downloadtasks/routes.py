@@ -29,7 +29,7 @@ def api_download_electricity():
     try:
         # Download only
         read_from_web_elec()
-        print(f'xlsx file for electricity consumption in year {YEAR} successfully downloaded at current folder')
+        print(f'xlsx file for electricity consumption in year {YEAR} successfully downloaded at ./downloads folder')
         return jsonify({"status": '200', "msg": "success"})
 
     except Exception as ex:
@@ -48,7 +48,7 @@ def api_download_gas():
     try:
         # Download only
         read_from_web_gas()
-        print(f'xlsx file for gas consumption in year {YEAR} successfully downloaded at current folder')
+        print(f'xlsx file for gas consumption in year {YEAR} successfully downloaded at ./downloads folder')
         return jsonify({"status": '200', "msg": "success"})
 
     except Exception as ex:
@@ -67,7 +67,7 @@ def api_download_fuelpoverty():
     try:
         # Download only
         read_from_web_fuel_poverty()
-        print(f'xlsx file for fuelpoverty in year {YEAR} successfully downloaded at current folder')
+        print(f'xlsx file for fuelpoverty in year {YEAR} successfully downloaded at ./downloads folder')
         return jsonify({"status": '200', "msg": "success"})
 
     except Exception as ex:
@@ -88,7 +88,7 @@ def api_download_temperature():
         read_from_web_temp(var_name='tas')
         read_from_web_temp(var_name='tasmin')
         read_from_web_temp(var_name='tasmax')
-        print(f'xlsx file for hadUK climate 1km grid data in year {YEAR} successfully downloaded at current folder')
+        print(f'xlsx file for hadUK climate 1km grid data in year {YEAR} successfully downloaded at ./downloads folder')
         return jsonify({"status": '200', "msg": "success"})
 
     except Exception as ex:

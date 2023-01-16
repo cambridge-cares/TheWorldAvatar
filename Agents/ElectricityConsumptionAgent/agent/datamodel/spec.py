@@ -7,7 +7,9 @@ from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import *
 import datetime
 import os
-import urllib.request
+from bs4 import BeautifulSoup
+import requests
+from urllib.parse import urlsplit, urlunsplit
 from shapely import wkt
 
 ### --------------------------------- Spec Vars -------------------------------------------- ###
@@ -58,6 +60,7 @@ months_dict = {'January':0,'February':1,'March':2,'April':3,'May':4,'June':5,'Ju
 ### ------------------------------------------------------------------------------------------ ###
 
 ### ---------------------------------- Index ------------------------------------------------- ###
+
 monthly_electricity_consumption_2020 = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
 monthly_gas_consumption_2020 = [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]
 monthly_gas_consumption_2021 = [9.74 ,7.90 ,7.67 ,6.81 ,5.63 ,3.40 ,3.73 ,3.64 ,4.04 ,5.04 ,7.19 ,7.96]
@@ -629,120 +632,6 @@ def get_all_data(limit = False):
     print(f"All the data for {len(df)} LSOA areas has been stored to pickle file")
     convert_df(df)
     return df
-
-def read_from_web_elec(year: str):
-  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption'
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[4].find('a', href=True)['href']
-
-  # Download the xlsx file
-  file_name = os.path.basename(link)
-  response = requests.get(link)
-  open(file_name, 'wb').write(response.content)
-  if not 'LSOA' in file_name:
-    if 'not' in file_name:
-      raise InvalidInput('...')
-
-  # Parse the data from the xlsx file into a pandas DataFrame
-  df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
-  
-  return df
-
-def read_from_web_gas(year: str):
-  url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption'
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[4].find('a', href=True)['href']
-
-  # Download the xlsx file
-  file_name = os.path.basename(link)
-  response = requests.get(link)
-  open(file_name, 'wb').write(response.content)
-
-  # Parse the data from the xlsx file into a pandas DataFrame
-  df = pd.read_excel(file_name, sheet_name = year, engine='openpyxl',skiprows=4, skipfooter=1)
-  
-  return df
-
-def read_from_web_fuel_poverty(year: str):
-
-  # There is a lag between data published time and data time, e.g. the data for 2020 is published on 2022. 
-  # And the published date is always 2 years after the data date
-  year_published = str(int(year) + 2)
-  
-  url = 'https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-' + year_published
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the xlsx file on the website
-  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
-  link = download_div[0].find('a', href=True)['href']
-
-  # Download the xlsx file
-  file_name = os.path.basename(link)
-  response = requests.get(link)
-  open(file_name, 'wb').write(response.content)
-
-  # Parse the data from the xlsx file into a pandas DataFrame
-  df = pd.read_excel(file_name, sheet_name="Table 3", skiprows=2, skipfooter=8)
-  
-  return df
-
-def read_from_web_temp(year:str, var_name:str):
-  '''
-  This function is to read the up-to-date hadUK grid (1km) climate data from web
-  doneload nc file only, for data process to be done later
-  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
-  if the nc file can't be correctly retrieved it is possible that the web infrastructure has been
-  amended.
-
-  Arguments:
-        year: the number of year of which the data you may want to read
-        var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
-  '''
-
-  url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
-
-  # Use requests to get the HTML of the website
-  response = requests.get(url)
-  soup = BeautifulSoup(response.text, 'html.parser')
-
-  # Find the link to the nc file on the website
-  # Find table
-  download_div = soup.find_all('table', {'class': 'table table-sm'})
-  # Select link based on 'a', href
-  inner_url = download_div[0].find_all('a', href=True)
-  
-  # Select link contain year of interest
-  for year_link in inner_url:
-        if year in year_link['href']:
-          # Select link that could done load the file
-          if len(year_link.attrs) == 1:
-              link = year_link['href']
-
-  try: 
-      # Download the xlsx file
-      file_name = os.path.basename(link).split('?')[0]
-  except Exception as ex:
-      print(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
-      raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
-  response = requests.get(link)
-
-  open(file_name, 'wb').write(response.content)
-  logger.info(f'nc file {file_name} have been downloaded at the current folder')
 
 # ------------------------------ Repo ---------------------------------------------------------- #
 def read_from_excel(year:str) -> list:
