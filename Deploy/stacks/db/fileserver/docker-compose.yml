@@ -1,19 +1,24 @@
 version: "3.8"
 
 services:
-  test-file-server:
-    image: test-file-server
+  file-server:
+    image: docker.cmclinnovations.com/file-server:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     build:
       args:
         mvn_profile: dev-profile
       context: .
-    container_name: file-server
     ports:
       - "58090:8080"
-
     volumes:
       - file_server:/app/fs_root
       - external_maven_repo:/root/.m2
+    networks:
+      - stack
 
 volumes:
   external_maven_repo:

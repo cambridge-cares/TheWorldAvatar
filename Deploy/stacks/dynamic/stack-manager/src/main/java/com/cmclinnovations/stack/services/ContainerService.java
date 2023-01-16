@@ -94,6 +94,10 @@ public class ContainerService extends AbstractService {
         }
     }
 
+    public void removeEnvironmentVariable(String key) {
+        getConfig().removeEnvironmentVariable(key);
+    }
+
     protected final void checkEnvironmentVariableNonNull(String key) {
         String value = getEnvironmentVariable(key);
         Objects.requireNonNull(value,
@@ -138,19 +142,15 @@ public class ContainerService extends AbstractService {
     }
 
     /**
-     * If the named secret exists then add it to this service.
+     * If the named secret doesn't exist then add a dummy one, this is needed as
+     * Docker requires that all secrets a container references exist.
      * 
      * @param secretName
      */
-    protected boolean addOptionalSecret(String secretName) {
+    protected boolean ensureOptionalSecret(String secretName) {
         boolean secretExists = dockerClient.secretExists(secretName);
-        if (secretExists) {
-            List<ContainerSpecSecret> secrets = getConfig().getContainerSpec().getSecrets();
-            if (null == secrets) {
-                secrets = new ArrayList<>();
-                getConfig().getContainerSpec().withSecrets(secrets);
-            }
-            secrets.add(new ContainerSpecSecret().withSecretName(secretName));
+        if (!secretExists) {
+            dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;
     }
