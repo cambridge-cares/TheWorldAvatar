@@ -15,13 +15,13 @@ import requests
 import pandas as pd
 
 #import agentlogging
-from airquality.kgutils.querytemplates import *
-from airquality.datamodel.utils import create_sparql_prefix
-from airquality.dataretrieval.stations import get_all_airquality_station_ids
-from airquality.kgutils.kgclient import KGClient
-from airquality.errorhandling.exceptions import APIException, InvalidInput
-from airquality.datamodel.utils import PREFIXES
-from airquality.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.kgutils.querytemplates import *
+from agent.datamodel.utils import create_sparql_prefix
+from agent.dataretrieval.stations import get_all_airquality_station_ids
+from agent.kgutils.kgclient import KGClient
+from agent.errorhandling.exceptions import APIException, InvalidInput
+from agent.datamodel.utils import PREFIXES
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

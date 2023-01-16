@@ -6,7 +6,7 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-from airquality.datamodel import *
+from agent.datamodel import *
 
 
 def all_airquality_station_ids() -> str:

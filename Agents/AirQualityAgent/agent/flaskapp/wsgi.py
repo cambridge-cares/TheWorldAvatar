@@ -9,12 +9,12 @@
 import os
 from pathlib import Path
 
-from airquality.flaskapp import create_app
+from agent.flaskapp import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
-from airquality.datainstantiation.readings import update_all_stations
-from airquality.dataretrieval.stations import create_json_output_files
+from agent.datainstantiation.readings import update_all_stations
+from agent.dataretrieval.stations import create_json_output_files
 
 # Add recurring background tasks
 # 1) Assimilate latest time series data once per day

@@ -10,8 +10,8 @@ import os
 from pathlib import Path
 
 #import agentlogging
-from airquality.errorhandling.exceptions import TSException
-from airquality.kgutils.javagateway import jpsBaseLibGW
+from agent.errorhandling.exceptions import TSException
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

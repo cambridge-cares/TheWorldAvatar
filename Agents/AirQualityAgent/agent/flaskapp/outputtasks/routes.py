@@ -8,9 +8,9 @@ import datetime as dt
 from flask import Blueprint, request, jsonify
 
 #import agentlogging
-from airquality.dataretrieval.stations import create_json_output_files
-from airquality.utils.readings_mapping import TIME_FORMAT
-from airquality.errorhandling.exceptions import InvalidInput
+from agent.dataretrieval.stations import create_json_output_files
+from agent.utils.readings_mapping import TIME_FORMAT
+from agent.errorhandling.exceptions import InvalidInput
 
 
 # Initialise logger

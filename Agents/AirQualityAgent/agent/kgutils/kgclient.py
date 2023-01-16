@@ -4,8 +4,8 @@
 import json
 
 #import agentlogging
-from airquality.errorhandling.exceptions import KGException
-from airquality.kgutils.javagateway import jpsBaseLibGW
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

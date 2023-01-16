@@ -12,15 +12,15 @@ import time
 from math import nan
 
 #import agentlogging
-from airquality.dataretrieval.readings import *
-from airquality.dataretrieval.stations import *
-from airquality.datainstantiation.stations import *
-from airquality.kgutils.querytemplates import *
-from airquality.kgutils.kgclient import KGClient
-from airquality.kgutils.timeseries import TSClient
-from airquality.errorhandling.exceptions import APIException
-from airquality.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from airquality.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
+from agent.dataretrieval.readings import *
+from agent.dataretrieval.stations import *
+from agent.datainstantiation.stations import *
+from agent.kgutils.querytemplates import *
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.timeseries import TSClient
+from agent.errorhandling.exceptions import APIException
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
                                               TIME_FORMAT, DATACLASS
 
 # Initialise logger
@@ -29,7 +29,7 @@ from airquality.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
 
 def add_readings_timeseries(instantiated_ts_iris: list = None,
                             query_endpoint: str = QUERY_ENDPOINT,
-                            update_endpoint: str = UPDATE_ENDPOINT) -> int:
+                            update_endpoint: str = UPDATE_ENDPOINT):
     """
         Adds time series data to instantiated time series IRIs
         

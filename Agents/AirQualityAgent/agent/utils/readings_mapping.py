@@ -9,9 +9,9 @@
 
 from math import nan
 
-from airquality.datamodel.observation_types import *
-from airquality.datamodel.iris import *
-from airquality.kgutils.javagateway import jpsBaseLibGW
+from agent.datamodel.observation_types import *
+from agent.datamodel.iris import *
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 
 # Mapping of observation variables to OntoEMS concepts

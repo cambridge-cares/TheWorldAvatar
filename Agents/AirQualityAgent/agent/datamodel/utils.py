@@ -7,7 +7,7 @@
 # of IRIs and PREFIXES while creating SPARQL queries
 
 #import agentlogging
-from airquality.datamodel.iris import *
+from agent.datamodel.iris import *
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

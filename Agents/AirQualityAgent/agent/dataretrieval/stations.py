@@ -14,13 +14,13 @@ import pathlib
 import pandas as pd
 
 #import agentlogging
-from airquality.kgutils.kgclient import KGClient
-from airquality.kgutils.timeseries import TSClient
-from airquality.kgutils.querytemplates import *
-from airquality.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from airquality.errorhandling.exceptions import InvalidInput
-from airquality.dataretrieval.readings import get_time_series_data
-from airquality.utils.output_formatting import create_geojson_output, create_metadata_output
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.timeseries import TSClient
+from agent.kgutils.querytemplates import *
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.errorhandling.exceptions import InvalidInput
+from agent.dataretrieval.readings import get_time_series_data
+from agent.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

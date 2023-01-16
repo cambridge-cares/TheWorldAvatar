@@ -13,9 +13,9 @@ def create_app(test_config=None):
 
     with app.app_context():
         # Import parts of application
-        import airquality.flaskapp.home.routes as home
-        import airquality.flaskapp.inputtasks.routes as inputtasks
-        import airquality.flaskapp.outputtasks.routes as outputtasks
+        import agent.flaskapp.home.routes as home
+        import agent.flaskapp.inputtasks.routes as inputtasks
+        import agent.flaskapp.outputtasks.routes as outputtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)

@@ -1,4 +1,4 @@
-from airquality.datamodel.observation_types import *
+from agent.datamodel.observation_types import *
 
 ###--- Common Base URLs ---###
 # External ontologies
