@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.mobileappagent;
 
+import org.jooq.exception.DataAccessException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
-
+//To run this agent, run curl -s http://localhost:8080/MobileAppAgent-1.0-SNAPSHOT/performTS/ in command prompt
 @Controller
-@WebServlet(urlPatterns = {"/performdata"})
+@WebServlet(urlPatterns = {"/performTS"})
 public class MobileAppAgent extends JPSAgent {
 
     //Declare tables
@@ -100,21 +100,53 @@ public class MobileAppAgent extends JPSAgent {
 
                 dataArray = rdbStoreClient.executeQuery(Query);
 
-                //Check if timeseries exists
 
-                //If not exists then create timeseries
-                //Create Timeseries
-                List<String> dataIRIList = createTimeSeries(i);
+//                try {
+//                    if (!tsClient.checkDataHasTimeSeries(iri)) {
+//                        return false;
+//                    }
+//                    // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+//                } catch (DataAccessException e) {
+//                    if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
+//                        return false;
+//                    } else {
+//                        throw e;
+//                    }
+//                }
 
-                //GetTimeSeries
-                TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
 
-                //Add timeseries data with tsList
-                try (Connection conn = rdbStoreClient.getConnection()) {
-                    tsClient.addTimeSeriesData(getTimeSeries, conn);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new JPSRuntimeException(e);
+
+                try//Check if dbTable exists
+                {
+
+                    JSONArray dataIRIArray;
+                    OffsetDateTime timeThreshold;
+
+                    //If dbTable exists
+                    Query = getDataIRIFromDBTable(i);
+                    dataIRIArray = rdbStoreClient.executeQuery(Query);
+
+                    //Get the newest timeseries
+                    TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIArray);
+                    pruneTimeSeries (getTimeSeries,timeThreshold);
+
+                }
+                finally //When time series does not exist create timeseries
+                {
+
+                    //Create Timeseries
+                    List<String> dataIRIList = createTimeSeries(i);
+
+                    //GetTimeSeries
+                    TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
+
+                    //Add timeseries data with tsList
+                    try (Connection conn = rdbStoreClient.getConnection()) {
+                        tsClient.addTimeSeriesData(getTimeSeries, conn);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new JPSRuntimeException(e);
+                    }
                 }
 
             }
@@ -221,56 +253,68 @@ public class MobileAppAgent extends JPSAgent {
         return query;
     }
 
+    private static String getDataIRIFromDBTable(int i){
+        String query;
+
+        query = "SELECT \"dataIRI\" FROM public.\"dbTable\" WHERE \"dataIRI\" LIKE ";
+        for (int b = 1; b < tableHeaderList.get(i).size(); b++){
+            if (b==1){ query =query+"'%"+tableHeaderList.get(i).get(b)+"%'";}
+            else {query = query + " OR \"dataIRI\" LIKE "+"'%"+tableHeaderList.get(i).get(b)+"%'";}
+        }
+
+        return query;
+    }
+
 
     /**
      * Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do no exist
      * using the time series client.
      */
 
-//    public void initializeTimeSeriesIfNotExist() {
-//            // The IRIs used by the current mapping
-//            List<String> iris = dataArray.getAllIRIs();
-//            // Check whether IRIs have a time series linked and if not initialize the corresponding time series
-//            if(!timeSeriesExist(iris)) {
-//                // Get the classes (datatype) corresponding to each JSON key needed for initialization
-//                List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
-//                // Initialize the time series
-//                try {
-//                    tsClient.initTimeSeries(iris, classes, timeUnit, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
-//                    LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-//                } catch (Exception e) {
-//                    throw new JPSRuntimeException("Could not initialize timeseries!");
-//                }
-//            }
-//
-//    }
-//
-//
-//    /**
-//     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
-//     * the time series is not initialised in the central RDB lookup table using the time series client.
-//     * @param iris The IRIs that should be attached to the same time series provided as list of strings.
-//     * @return True if all IRIs have a time series attached, false otherwise.
-//     */
-//    private boolean timeSeriesExist(List<String> iris) {
-//        // If any of the IRIs does not have a time series the time series does not exist
-//        for(String iri: iris) {
-//            try {
-//                if (!tsClient.checkDataHasTimeSeries(iri)) {
-//                    return false;
-//                }
-//                // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
-//            } catch (DataAccessException e) {
-//                if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
-//                    return false;
-//                }
-//                else {
-//                    throw e;
-//                }
-//            }
-//        }
-//        return true;
-//    }
+    public void initializeTimeSeriesIfNotExist() {
+            // The IRIs used by the current mapping
+            List<String> iris = dataArray.getAllIRIs();
+            // Check whether IRIs have a time series linked and if not initialize the corresponding time series
+            if(!timeSeriesExist(iris)) {
+                // Get the classes (datatype) corresponding to each JSON key needed for initialization
+                List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
+                // Initialize the time series
+                try {
+                    tsClient.initTimeSeries(iris, classes, timeUnit, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+                    LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+                } catch (Exception e) {
+                    throw new JPSRuntimeException("Could not initialize timeseries!");
+                }
+            }
+
+    }
+
+
+    /**
+     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
+     * the time series is not initialised in the central RDB lookup table using the time series client.
+     * @param iris The IRIs that should be attached to the same time series provided as list of strings.
+     * @return True if all IRIs have a time series attached, false otherwise.
+     */
+    private boolean timeSeriesExist(List<String> iris) {
+        // If any of the IRIs does not have a time series the time series does not exist
+        for(String iri: iris) {
+            try {
+                if (!tsClient.checkDataHasTimeSeries(iri)) {
+                    return false;
+                }
+                // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+            } catch (DataAccessException e) {
+                if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
+                    return false;
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+        return true;
+    }
 
 
 
