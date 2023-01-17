@@ -56,7 +56,7 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 
-public class DockerClient extends BaseClient {
+public class DockerClient extends BaseClient implements ContainerManager<com.github.dockerjava.api.DockerClient> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
@@ -95,9 +95,16 @@ public class DockerClient extends BaseClient {
                 .sslConfig(dockerConfig.getSSLConfig())
                 .build();
 
-        internalClient = DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
+        internalClient = buildInternalClient(dockerConfig, httpClient);
     }
 
+    @Override
+    public com.github.dockerjava.api.DockerClient buildInternalClient(DockerClientConfig dockerConfig,
+            DockerHttpClient httpClient) {
+        return DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
+    }
+
+    @Override
     public com.github.dockerjava.api.DockerClient getInternalClient() {
         return internalClient;
     }
