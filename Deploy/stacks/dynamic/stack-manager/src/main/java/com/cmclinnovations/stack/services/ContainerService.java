@@ -18,6 +18,7 @@ import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.TaskSpec;
+import com.github.odiszapc.nginxparser.NgxConfig;
 
 public class ContainerService extends AbstractService {
 
@@ -153,6 +154,10 @@ public class ContainerService extends AbstractService {
             dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;
+    }
+
+    public void addServerSpecificNginxSettings(NgxConfig locationConfigOut) {
+        // do nothing by default
     }
 
 }
