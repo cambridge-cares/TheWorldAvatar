@@ -160,4 +160,9 @@ public class ContainerService extends AbstractService {
         // do nothing by default
     }
 
+    public void addServerSpecificNginxSettingsToPrimaryLocationBlock(NgxBlock locationBlock,
+            Map<String, String> upstreams, Entry<String, Connection> endpoint) {
+        // do nothing by default
+    }
+
 }
