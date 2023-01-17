@@ -239,9 +239,7 @@ public class DockerService extends AbstractService
 
             pullImage(service);
 
-            removeSwarmService(service);
-
-            container = startSwarmService(service);
+            container = configureContainerWrapper(service);
         }
 
         final String containerId;
@@ -276,7 +274,15 @@ public class DockerService extends AbstractService
         service.setContainerId(containerId);
     }
 
-    protected Optional<Container> startSwarmService(ContainerService service) {
+    protected Optional<Container> configureContainerWrapper(ContainerService service) {
+        Optional<Container> container;
+        removeSwarmService(service);
+
+        container = startSwarmService(service);
+        return container;
+    }
+
+    private Optional<Container> startSwarmService(ContainerService service) {
 
         ServiceSpec serviceSpec = configureServiceSpec(service);
 
@@ -310,7 +316,7 @@ public class DockerService extends AbstractService
         }
     }
 
-    protected void removeSwarmService(ContainerService service) {
+    private void removeSwarmService(ContainerService service) {
         Optional<Service> swarmService = getSwarmService(service);
 
         if (swarmService.isPresent()) {

@@ -42,6 +42,12 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>io.kubernetes</groupId>
+      <artifactId>client-java</artifactId>
+      <version>15.0.1</version>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
@@ -119,14 +125,17 @@
             <manifest>
               <!-- These properties add the copied dependencies to the classpath so the .jar can
               find them at runtime. -->
-              <addClasspath>true</addClasspath>
+              <addClasspath>
+                true</addClasspath>
               <classpathPrefix>./lib/</classpathPrefix>
               <classpathLayoutType>simple</classpathLayoutType>
               <useUniqueVersions>false</useUniqueVersions>
-              <mainClass>com.cmclinnovations.stack.App</mainClass>
+              <mainClass>
+                com.cmclinnovations.stack.App</mainClass>
             </manifest>
           </archive>
-          <outputDirectory>${project.build.directory}</outputDirectory>
+          <outputDirectory>
+            ${project.build.directory}</outputDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -142,7 +151,8 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeScope>runtime</includeScope>
+              <includeScope>
+                runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <useRepositoryLayout>false</useRepositoryLayout>
             </configuration>

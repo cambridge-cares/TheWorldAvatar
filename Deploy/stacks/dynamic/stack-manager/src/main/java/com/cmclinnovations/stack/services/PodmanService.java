@@ -1,11 +1,15 @@
 package com.cmclinnovations.stack.services;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.model.Container;
+
+import io.kubernetes.client.openapi.models.V1Pod;
 
 public class PodmanService extends DockerService {
 
@@ -40,12 +44,35 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void removeSwarmService(ContainerService service) {
+    protected Optional<Container> configureContainerWrapper(ContainerService service) {
+        Optional<Container> container;
+        removePod(service);
+
+        container = startPod(service);
+        return container;
     }
 
-    @Override
-    protected Optional<Container> startSwarmService(ContainerService service) {
-        return Optional.empty();
+    private Optional<V1Pod> getPod(ContainerService service) {
+        try (ListPodsCmd listPodsCmd = getClient().getInternalClient().listPodsCmd()) {
+            return listPodsCmd.withNameFilter(List.of(service.getContainerName()))
+                    .exec().stream().findAny();
+        }
     }
+
+    private void removePod(ContainerService service) {
+        Optional<V1Pod> pod = getPod(service);
+
+        if (pod.isPresent()) {
+            // try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
+            // .removeServiceCmd(swarmService.get().getId())) {
+            // removeServiceCmd.exec();
+            // }
+        }
+    }
+
+    private Optional<Container> startPod(ContainerService service) {
+        return null;
+    }
+
 
 }
