@@ -35,7 +35,7 @@ public class SupersetService extends ContainerService {
         NgxParam proxyRedirectParam = new NgxParam();
         proxyRedirectParam.addValue("proxy_set_header");
         proxyRedirectParam.addValue("X-Script-Name");
-        proxyRedirectParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true));
+        proxyRedirectParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, false));
         locationBlock.addEntry(proxyRedirectParam);
     }
 }
