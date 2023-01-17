@@ -156,11 +156,11 @@ public class ContainerService extends AbstractService {
         return secretExists;
     }
 
-    public void addServerSpecificNginxLocationBlock(NgxConfig locationConfigOut) {
+    public void addServerSpecificNginxLocationBlocks(NgxConfig locationConfigOut) {
         // do nothing by default
     }
 
-    public void addServerSpecificNginxSettingsToPrimaryLocationBlock(NgxBlock locationBlock,
+    public void addServerSpecificNginxSettingsToLocationBlock(NgxBlock locationBlock,
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
         // do nothing by default
     }
