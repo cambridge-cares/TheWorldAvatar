@@ -151,6 +151,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                     }
                     locationConfigOut.addEntry(locationBlock);
                 }
+                service.addServerSpecificNginxSettings(locationConfigOut);
             }
         }
     }
