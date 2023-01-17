@@ -6,9 +6,9 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       # MetOffice Data Point API key
-      - API_KEY=
+      - API_KEY= 
       # Target Blazegraph namespace
-      - NAMESPACE=stations
+      - NAMESPACE= ontogasgrid
       # Target layer name in geoserver, also table name in PostGIS
       - LAYERNAME=metoffice
       # Target PostGIS/PostgreSQL database name
@@ -17,7 +17,7 @@ services:
       - GEOSERVER_WORKSPACE=metoffice
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
-      - "5000:5001"
+      - "5000:5000"
     volumes:
       # Link container output directory to local directory to access output files
       # (i.e. only required for creation of output geojson files)

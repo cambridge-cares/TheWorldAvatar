@@ -879,36 +879,6 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
     logger.info('Insert query for hadUK climate data successfully performed')
     return int(len(LSOA))
 
-def shortcut_way_temperature (query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
-  '''
-  This function is written purely for self entertaining, but could be useful to upload temperature data into KG
-  because for upload_hadUK_climate_to_KG function, which could take a really long time to run (in my case, 50-80hrs)
-  But the time comsuming step is not SPARQL, is the calculation and matching for LSOA and grid temperature
-
-  Therefore, I developed this function for the case that the temperature is known, so sack the cost of calculation
-  '''
-  temp_dict = call_pickle('./Data/temp_Repo/temp_dict in function get_all_data')
-  for losa_key, value_1 in tqdm(temp_dict.items()):
-    LSOA_code = losa_key.replace('http://statistics.data.gov.uk/id/statistical-geography/', '')
-    for date_key, value_2 in value_1.items():
-      startUTC = datetime.datetime.strptime(date_key, '%Y-%m-%dT%H:%M:%S.000Z')
-      # Reformat the date and time as 'YYYY-MM-DDTHH:MM:SS.000Z'
-      month_begin_end_dict = {datetime.datetime(2020, 1, 1, 12, 0): datetime.datetime(2020, 1, 31, 12, 0), datetime.datetime(2020, 2, 1, 12, 0): datetime.datetime(2020, 2, 28, 12, 0), datetime.datetime(2020, 3, 1, 12, 0): datetime.datetime(2020, 3, 31, 12, 0), datetime.datetime(2020, 4, 1, 12, 0): datetime.datetime(2020, 4, 30, 12, 0), datetime.datetime(2020, 5, 1, 12, 0): datetime.datetime(2020, 5, 31, 12, 0), datetime.datetime(2020, 6, 1, 12, 0): datetime.datetime(2020, 6, 30, 12, 0), datetime.datetime(2020, 7, 1, 12, 0): datetime.datetime(2020, 7, 30, 12, 0), datetime.datetime(2020, 8, 1, 12, 0): datetime.datetime(2020, 8, 31, 12, 0), datetime.datetime(2020, 9, 1, 12, 0): datetime.datetime(2020, 9, 30, 12, 0), datetime.datetime(2020, 10, 1, 12, 0): datetime.datetime(2020, 10, 29, 12, 0), datetime.datetime(2020, 11, 1, 12, 0): datetime.datetime(2020, 11, 30, 12, 0), datetime.datetime(2020, 12, 1, 12, 0): datetime.datetime(2020, 12, 31, 12, 0)}
-      EndUTC = month_begin_end_dict[startUTC]
-      # Initialise update query
-      query = f"INSERT DATA" + "{"
-      for clim_var_key, value_3 in value_2.items():
-        clim_var = clim_var_key
-        value = value_3
-        meas_uuid = CLIMA + 'Measurement_' + str(uuid.uuid4())
-        temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
-        val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
-        query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,EndUTC,temp_uuid,val_uuid,value)
-      query += "}"
-      # Instantiate all non-time series triples
-      kg_client = KGClient(query_endpoint, update_endpoint)
-      kg_client.performUpdate(query)
-
 def upload_all(year: str = YEAR, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
     
     # instantiate the Electricity consumption data

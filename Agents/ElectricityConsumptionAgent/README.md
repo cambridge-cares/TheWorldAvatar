@@ -1,6 +1,6 @@
 # Description
 
-The `LSOAAnalyst agent` is dedicated to process data around the UK Lower-layer Super Output Area (LSOA), which is composited with feature of data download, instantiation, calculation and output.
+The `LSOAInput agent` is dedicated to process data around the UK Lower-layer Super Output Area (LSOA), which is composited with feature of data download and instantiation.
 
 Currently this agent is focusing on the data of electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape to perform the use case of analysing the deployment of heat pump. The data instatiated in the knowledge graph follows[Ontoclimate](http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl), [Ontofuelpoverty](http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl) and [Ontogasgrid](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/GasGrid) ontologies in the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar). 
 

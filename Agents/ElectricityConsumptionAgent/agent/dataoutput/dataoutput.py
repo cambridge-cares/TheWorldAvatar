@@ -371,12 +371,11 @@ def read_from_web_monthly_distribution_elec(year:str = YEAR):
   # Parse the data from the xlsx file into a pandas DataFrame
   try: 
     df = pd.read_excel('./downloads/'+ file_name, sheet_name = 'Month', engine='openpyxl',skiprows=5)
-    logger.info(f'Monthly distribution for electricity successfully retrieved from web')
-
     df = df[df['Month'].str.contains(year)]
     df['Electricity'] = df[df.columns[df.columns.str.contains('Total electricity consumption')]]
     df['Electricity'] = df['Electricity'].apply(convert_to_float)
     value_list = df['Electricity'].tolist()
+    logger.info(f'Monthly distribution for electricity successfully retrieved from web')
 
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -426,12 +425,11 @@ def read_from_web_monthly_distribution_gas(year:str = YEAR):
   # Parse the data from the xlsx file into a pandas DataFrame
   try: 
         df = pd.read_excel('./downloads/'+ file_name, sheet_name = 'Month', usecols=range(0,9), engine='openpyxl',skiprows=5)
-        logger.info(f'Monthly distribution for gas consumption successfully retrieved from web')
-
         df = df[df['Month'].str.contains(year)]
         df['Gas'] = df[df.columns[df.columns.str.contains('Natural gas')]]
         df['Gas'] = df['Gas'].apply(convert_to_float)
         value_list = df['Gas'].tolist()
+        logger.info(f'Monthly distribution for gas consumption successfully retrieved from web')
 
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -482,13 +480,13 @@ def read_from_web_price_elec(year:str = YEAR):
   # Parse the data from the xlsx file into a pandas DataFrame
   try: 
         df = pd.read_excel('./downloads/'+ file_name, sheet_name = '2.2.4', engine='openpyxl',skiprows=12)
-        logger.info(f'Monthly distribution for gas consumption successfully retrieved from web')
         year = convert_to_int(year)
         df = df.loc[df.iloc[:,0] == year]
         row = df.loc[df.iloc[:,1] == "United Kingdom"]
         # get the value at the desire column in this row
         row = row.loc[:,row.columns.str.contains('Overall: Average variable unit price')]
         value = row.iloc[:,-1].values[0]
+        logger.info(f'{year} electricity price successfully retrieved from web')
 
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -508,7 +506,6 @@ def read_from_web_price_gas(year:str = YEAR):
 
   Arguments:
         year: the number of year of which the data you may want to read
-        var: 'Electricity' or 'Gas'
   '''
   url = 'https://www.gov.uk/government/statistical-data-sets/annual-domestic-energy-price-statistics'
 
@@ -537,13 +534,13 @@ def read_from_web_price_gas(year:str = YEAR):
   # Parse the data from the xlsx file into a pandas DataFrame
   try: 
         df = pd.read_excel('./downloads/'+ file_name, sheet_name = '2.3.4', engine='openpyxl',skiprows=10)
-        logger.info(f'Monthly distribution for gas consumption successfully retrieved from web')
         year = convert_to_int(year)
         df = df.loc[df.iloc[:,0] == year]
         row = df.loc[df.iloc[:,1] == "Great Britain"]
         # get the value at the last column in this row
         row = row.loc[:,row.columns.str.contains('Overall: Average variable unit price')]
         value = row.iloc[:,-1].values[0]
+        logger.info(f'{year} gas price successfully retrieved from web')
 
   except Exception as ex:
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -553,7 +550,78 @@ please check the {file_name} located on the file in ./downloads folder, see if t
   
   return value
 #elec_price = read_from_web_price_elec('2020')
-gas_price = read_from_web_price_gas('2020')
+#gas_price = read_from_web_price_gas('2020')
+
+def read_from_web_carbon_index(var: str, year:str = YEAR):
+  '''
+  This function is to read the up-to-date national electricity/gas carbon index from web
+  return a float value for price (kgCO2e/unit)
+  NOTE: This function can work based on the assumption that the web address and page structure  won't change,
+  if the xlsx file can't be correctly retrieved it is possible that the web infrastructure has been
+  amended.
+
+  Arguments:
+        var: 'Gas'/'Electricity'
+        year: the number of year of which the data you may want to read
+  '''
+  url = 'https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-' + year
+
+  # Use requests to get the HTML of the website
+  response = requests.get(url)
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the link to the xlsx file on the website
+  download_div = soup.find_all('div', {'class': 'attachment-thumb'})
+  link = download_div[0].find('a', href=True)['href']
+
+  # Download the xlsx file
+  try:
+    file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
+    response = requests.get(link)
+    open('./downloads/'+ file_name, 'wb').write(response.content)
+  except Exception as ex:
+    logger.error(f"Excel file fail to be downloaded")
+    raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
+  
+  logger.info(f'xlsx file {file_name} have been downloaded at the ./downloads folder')
+  # Check if the file is valid
+  if not 'conversion-factors' in file_name:
+    if not year in file_name:
+        logger.error(f"Invalid file downloaded -- check the file in ./downloads folder and source:{url} ")
+        raise InvalidInput(f'The file downloaded is not valid, check the webpage:{url} or download mannually.')
+  # Parse the data from the xlsx file into a pandas DataFrame
+  if var == 'Gas':
+    try:
+        df = pd.read_excel('./downloads/'+ file_name, sheet_name = 'Fuels', engine='openpyxl',skiprows=10)
+        # Find the cell that contains the value 'Activity'
+        df_boo = df.apply(lambda x: x.astype(str).str.find('Natural gas'))
+        cell_value = df[df_boo != -1].dropna(how='all')
+        index = df.iloc[cell_value.index[0]+3, 4]
+        logger.info(f'{year} {var} carbon index successfully retrieved from web')
+
+    except Exception as ex:
+        logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
+    please check the {file_name} located on the file in ./downloads folder, see if the desire sheet (and sheet name) exist")
+        raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
+    please check the {file_name} located on the file in ./downloads folder, see if the desire sheet (and sheet name) exist") from ex
+  
+  if var == 'Electricity':
+    try:
+        df = pd.read_excel('./downloads/'+ file_name, sheet_name = 'UK electricity', engine='openpyxl',skiprows=10)
+        # Find the cell that contains the value 'Activity'
+        df_boo = df.apply(lambda x: x.astype(str).str.find('Electricity: UK'))
+        cell_value = df[df_boo != -1].dropna(how='all')
+        index = df.iloc[cell_value.index[0], 5]
+        logger.info(f'{year} {var} carbon index successfully retrieved from web')
+
+    except Exception as ex:
+        logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
+    please check the {file_name} located on the file in ./downloads folder, see if the desire sheet (and sheet name) exist")
+        raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
+    please check the {file_name} located on the file in ./downloads folder, see if the desire sheet (and sheet name) exist") from ex
+  
+  return index
+#carb_index_elec = read_from_web_carbon_index('Electricity','2020')
 
 
 # ------------------------ Data retrieval (from KG) ------------------------ #
