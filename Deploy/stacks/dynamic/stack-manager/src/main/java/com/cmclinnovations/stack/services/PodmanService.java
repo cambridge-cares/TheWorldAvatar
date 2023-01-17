@@ -1,7 +1,9 @@
 package com.cmclinnovations.stack.services;
 
+import java.net.URI;
 import java.util.Optional;
 
+import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.Container;
 
@@ -14,7 +16,23 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void startDockerSwarm() {
+    public PodmanClient initClient(URI dockerUri) {
+        return new PodmanClient(dockerUri);
+    }
+
+    @Override
+    public PodmanClient getClient() {
+        return (PodmanClient) super.getClient();
+    }
+
+    @Override
+    protected void initialise(String stackName) {
+
+        addStackSecrets();
+
+        addStackConfigs();
+
+        createNetwork(stackName);
     }
 
     @Override
