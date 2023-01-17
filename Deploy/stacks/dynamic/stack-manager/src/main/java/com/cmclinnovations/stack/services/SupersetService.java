@@ -1,16 +1,21 @@
 package com.cmclinnovations.stack.services;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.net.URI;
+import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.odiszapc.nginxparser.NgxBlock;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxParam;
@@ -83,5 +88,22 @@ public class SupersetService extends ContainerService {
         ruleParam.addValue(FileUtils.fixSlashs(url.getPath(), false, true)
                 + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$uri$is_args$query_string");
         spectialRedirectionParma.addEntry(ruleParam);
+    }
+
+    @Override
+    public void doPreStartUpConfiguration() {
+        ContainerSpec containerSpec = getContainerSpec();
+
+        try (InputStream supersetConfig = SupersetService.class.getResourceAsStream("superset/superset_config.py");
+                InputStreamReader inputStreamReader = new InputStreamReader(supersetConfig);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String fileText = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
+            containerSpec
+                    .withCommand(List.of("/bin/sh", "-c",
+                            "echo \"" + fileText + "\" > pythonpath/superset_config.py"
+                                    + " && /usr/bin/run-server.sh"));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
