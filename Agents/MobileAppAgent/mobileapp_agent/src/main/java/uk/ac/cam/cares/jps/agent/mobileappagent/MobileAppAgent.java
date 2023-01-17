@@ -20,10 +20,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
-
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatterBuilder;
 
 //To run this agent, run curl -s http://localhost:8080/MobileAppAgent-1.0-SNAPSHOT/performTS/ in command prompt
 @Controller
@@ -78,6 +83,7 @@ public class MobileAppAgent extends JPSAgent {
     private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
 
     private static final Logger LOGGER = LogManager.getLogger(MobileAppAgent.class);
+    public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
 
     /**
@@ -175,19 +181,19 @@ public class MobileAppAgent extends JPSAgent {
             finally //When time series does not exist create timeseries
             {
 
-//                //Create Timeseries
-//                List<String> dataIRIList = createTimeSeries(i);
-//
-//                //GetTimeSeries
-//                TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
-//
-//                //Add timeseries data with tsList
-//                try (Connection conn = rdbStoreClient.getConnection()) {
-//                    tsClient.addTimeSeriesData(getTimeSeries, conn);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    throw new JPSRuntimeException(e);
-//                }
+                //Create Timeseries
+                List<String> dataIRIList = createTimeSeries(i);
+
+                //GetTimeSeries
+                TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
+
+                //Add timeseries data with tsList
+                try (Connection conn = rdbStoreClient.getConnection()) {
+                    tsClient.addTimeSeriesData(getTimeSeries, conn);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
             }
 
         }
@@ -315,15 +321,13 @@ public class MobileAppAgent extends JPSAgent {
         }
         return listdata;
     }
-//value = dataArray.getJSONObject(row).getDouble((tableHeader.get(column)).toString())
-//.get("dataIRI")
+
     /**
      * @param ts
      * @throws IllegalArgumentException
      */
     public void updateData(TimeSeries <OffsetDateTime> ts) throws IllegalArgumentException {
         // Update each time series
-//        for (TimeSeries<OffsetDateTime> ts : timeSeries) {
             // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
             OffsetDateTime endDataTime;
             try (Connection conn = rdbStoreClient.getConnection()) {
@@ -334,7 +338,10 @@ public class MobileAppAgent extends JPSAgent {
                 } catch (Exception e) {
                     throw new JPSRuntimeException("Could not get max time!");
                 }
-                OffsetDateTime startCurrentTime = ts.getTimes().get(0);
+
+
+                OffsetDateTime startCurrentTime = convertStringToOffsetDateTime(String.valueOf(ts.getTimes().get(0)));
+
                 // If there is already a maximum time
                 if (endDataTime != null) {
                     // If the new data overlaps with existing timestamps, prune the new ones
@@ -345,7 +352,7 @@ public class MobileAppAgent extends JPSAgent {
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
                     try {
-                        tsClient.addTimeSeriesData(ts);
+                        tsClient.addTimeSeriesData(ts, conn);
                         LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                     } catch (Exception e) {
                         throw new JPSRuntimeException("Could not add timeseries!");
@@ -357,7 +364,7 @@ public class MobileAppAgent extends JPSAgent {
             }
 
         }
-//    }
+
 
 
 
@@ -372,8 +379,9 @@ public class MobileAppAgent extends JPSAgent {
         List<OffsetDateTime> times = timeSeries.getTimes();
         int index = 0;
         while(index < times.size()) {
-            if (times.get(index).isAfter(timeThreshold)) {
+            if (convertStringToOffsetDateTime(String.valueOf(times.get(index))).isAfter(timeThreshold)) {
                 break;
+
             }
             index++;
         }
@@ -397,6 +405,29 @@ public class MobileAppAgent extends JPSAgent {
             }
         }
         return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
+    }
+
+    /**
+     * @param timestamp
+     * @return
+     */
+    private OffsetDateTime convertStringToOffsetDateTime(String timestamp)  {
+
+        timestamp=timestamp.replace("Z","");
+
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                // date / time
+                .appendPattern("yyyy-MM-dd HH:mm:ss")
+                // nanoseconds, with minimum 1 and maximum 9 digits and a decimal point
+                .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, true)
+                // create formatter
+                .toFormatter();
+        LocalDateTime localTime = LocalDateTime.parse(timestamp, formatter);
+
+
+        // Then add the zone id
+        return OffsetDateTime.of(localTime, MobileAppAgent.ZONE_OFFSET);
+
     }
 
 }
