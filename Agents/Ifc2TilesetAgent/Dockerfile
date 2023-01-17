@@ -3,8 +3,8 @@
 # Base image is the full Python version
 FROM python:3.9 as builder
 
-# Install required software
-RUN apt update && apt install -y git curl unzip
+# Install required software including Java
+RUN apt update && apt install -y git curl unzip openjdk-11-jdk-headless git
 
 # Expose the port on which our server will run
 EXPOSE 5105
