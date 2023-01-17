@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#"
+     xml:base="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasManufacturingProcessAffectingFactor -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasManufacturingProcessAffectingFactor">
+        <rdfs:label xml:lang="en">has manufacturing process affecting factor</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasProcessingTechnique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasProcessingTechnique">
+        <rdfs:label xml:lang="en">has processing technique</rdfs:label>
+        <skos:altLabel xml:lang="en">has manufacturing process</skos:altLabel>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#usesFiller -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#usesFiller">
+        <rdfs:label xml:lang="en">uses filler</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CalciumCarbonate -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CalciumCarbonate">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler"/>
+        <rdfs:label xml:lang="en">Calcium Carbonate</rdfs:label>
+        <skos:altLabel xml:lang="en">CaCO3</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CarbonFibre -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CarbonFibre">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler"/>
+        <rdfs:label xml:lang="en">Carbon Fibre</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CeramicMatrixComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CeramicMatrixComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixMaterialBasedCompositeMaterial"/>
+        <rdfs:label xml:lang="en">Ceramic Matrix Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeManufacturingProcess -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeManufacturingProcess">
+        <owl:equivalentClass rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Composite Manufacturing Process</rdfs:label>
+        <skos:altLabel xml:lang="en">Composite Material Manufacturing Process</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeMaterial -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeMaterial">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A material consisting of two or more distinct phases bonded together (Comprehensive Composite Materials, 2000). A composite material is composed from at least two materials, where one is the reinforcing material and other is the matrix material (Advanced Composite Materials for Automotive Applications, 2013).</rdfs:comment>
+        <rdfs:label xml:lang="en">Composite Material</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique">
+        <rdfs:label xml:lang="en">Composite Processing Technique</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor">
+        <rdfs:label xml:lang="en">Factor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreDistribution -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreDistribution">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor"/>
+        <rdfs:label xml:lang="en">Fibre Distribution</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreOrientation -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreOrientation">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor"/>
+        <rdfs:label xml:lang="en">Fibre Orientation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreReinforcedComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreReinforcedComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReinforcementBasedCompositeMaterial"/>
+        <rdfs:label xml:lang="en">Fibre-reinforced Composite</rdfs:label>
+        <skos:altLabel xml:lang="en">Fibrous Composite</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreThermalStability -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreThermalStability">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor"/>
+        <rdfs:label xml:lang="en">Fibre Thermal Stability</rdfs:label>
+        <skos:altLabel xml:lang="en">Thermal stability of fibre</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Filler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler"/>
+        <rdfs:label xml:lang="en">Glass</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass-matThermoplasticCompressionMoulding -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass-matThermoplasticCompressionMoulding">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Glass-mat Thermoplastic Compression Moulding</rdfs:label>
+        <skos:altLabel xml:lang="en">Glass-mat Thermoplastic (GMT) Compression Moulding</skos:altLabel>
+        <skos:altLabel xml:lang="en">Glass-mat Thermoplastic by using Compression Moulding</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#InjectionMoulding -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#InjectionMoulding">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Injection Moulding</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#LaminatedComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#LaminatedComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#StructuralComposite"/>
+        <rdfs:label xml:lang="en">Laminated Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixFibreCompatibility -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixFibreCompatibility">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Factor"/>
+        <rdfs:label xml:lang="en">Matrix Fibre Compatibility</rdfs:label>
+        <skos:altLabel xml:lang="en">Compatibility between Matrix and Fibres</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixMaterialBasedCompositeMaterial -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixMaterialBasedCompositeMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeMaterial"/>
+        <rdfs:label xml:lang="en">Matrix Material Based Composite Material</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MetalMatrixComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MetalMatrixComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixMaterialBasedCompositeMaterial"/>
+        <rdfs:label xml:lang="en">Metal Matrix Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ParticleReinforcedComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ParticleReinforcedComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReinforcementBasedCompositeMaterial"/>
+        <rdfs:label xml:lang="en">Particle-reinforced Composite</rdfs:label>
+        <skos:altLabel xml:lang="en">Particulate Composite</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#PolymerMatrixComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#PolymerMatrixComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixMaterialBasedCompositeMaterial"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasManufacturingProcessAffectingFactor"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreDistribution"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreOrientation"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#FibreThermalStability"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#MatrixFibreCompatibility"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#usesFiller"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CalciumCarbonate"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CarbonFibre"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Talc"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Wollastonite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasProcessingTechnique"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Glass-matThermoplasticCompressionMoulding"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#InjectionMoulding"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReactionInjectionMoulding"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ResinTransferMoulding"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#SheetMouldingCompoundProcess"/>
+                            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Thermoforming"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:onClass>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Polymer Matrix Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReactionInjectionMoulding -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReactionInjectionMoulding">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Reaction Injection Moulding</rdfs:label>
+        <skos:altLabel xml:lang="en">RIM</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReinforcementBasedCompositeMaterial -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReinforcementBasedCompositeMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeMaterial"/>
+        <rdfs:label xml:lang="en">Reinforcement Based Composite Material</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ResinTransferMoulding -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ResinTransferMoulding">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">RTM</rdfs:label>
+        <rdfs:label xml:lang="en">Resin Transfer Moulding</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#SandwitchComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#SandwitchComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#StructuralComposite"/>
+        <rdfs:label xml:lang="en">Sandwitch Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#SheetMouldingCompoundProcess -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#SheetMouldingCompoundProcess">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Sheet Moulding Compound Process</rdfs:label>
+        <skos:altLabel xml:lang="en">SMC</skos:altLabel>
+        <skos:altLabel xml:lang="en">SMP Process</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#StructuralComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#StructuralComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ReinforcementBasedCompositeMaterial"/>
+        <rdfs:label xml:lang="en">Structural Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Talc -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Talc">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler"/>
+        <rdfs:label xml:lang="en">Talc</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Thermoforming -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Thermoforming">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
+        <rdfs:label xml:lang="en">Thermoforming</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ThermoplasticMatrixComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ThermoplasticMatrixComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#PolymerMatrixComposite"/>
+        <rdfs:label xml:lang="en">Thermoplastic Matrix Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ThermosetMatrixComposite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#ThermosetMatrixComposite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#PolymerMatrixComposite"/>
+        <rdfs:label xml:lang="en">Thermoset Matrix Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Wollastonite -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Wollastonite">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Filler"/>
+        <rdfs:label xml:lang="en">Wollastonite</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
