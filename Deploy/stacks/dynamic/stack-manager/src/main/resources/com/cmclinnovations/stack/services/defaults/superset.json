@@ -1,0 +1,17 @@
+{
+    "type": "superset",
+    "ServiceSpec": {
+        "Name": "superset",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "apache/superset:latest"
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8088/",
+            "externalPath": "/dashboard"
+        }
+    }
+}
