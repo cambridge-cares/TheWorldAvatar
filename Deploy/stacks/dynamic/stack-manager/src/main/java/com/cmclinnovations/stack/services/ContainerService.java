@@ -158,12 +158,12 @@ public class ContainerService extends AbstractService {
 
     public void addServerSpecificNginxLocationBlocks(NgxConfig locationConfigOut, NgxConfig locationConfigOut2,
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
-        // do nothing by default
+        // Do nothing by default, override if container needs alteration to a NGINX location configuration block
     }
 
     public void addServerSpecificNginxSettingsToLocationBlock(NgxBlock locationBlock,
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
-        // do nothing by default
+        // Do nothing by default, override if container needs to add an NGINX location configuration block
     }
 
 }
