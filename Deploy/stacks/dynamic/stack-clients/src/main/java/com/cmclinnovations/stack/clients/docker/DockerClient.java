@@ -585,6 +585,10 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
+    protected Map<String, String> getSecretLabels() {
+        return StackClient.getStackNameLabelMap();
+    }
+
     public boolean secretExists(String secretName) {
         return getSecret(secretName).isPresent();
     }
@@ -594,7 +598,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             String fullSecretName = StackClient.prependStackName(secretName);
             return listSecretsCmd
                     .withNameFilter(List.of(fullSecretName))
-                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .withLabelFilter(getSecretLabels())
                     .exec().stream()
                     .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
                     .findFirst();
@@ -611,7 +615,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
             return listSecretsCmd
-                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .withLabelFilter(getSecretLabels())
                     .exec().stream().collect(Collectors.toList());
         }
     }
@@ -620,7 +624,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         SecretSpec secretSpec = new SecretSpec()
                 .withName(StackClient.prependStackName(secretName))
                 .withData(data)
-                .withLabels(StackClient.getStackNameLabelMap());
+                .withLabels(getSecretLabels());
         try (CreateSecretCmd createSecretCmd = internalClient.createSecretCmd(secretSpec)) {
             createSecretCmd.exec();
         }
