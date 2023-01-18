@@ -1,17 +1,14 @@
-import json
 import os
-import pickle
-import re
-import sys
 import traceback
-from transformers import BertTokenizer
 import torch
+
+from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
-from Marie.EntityLinking.Inference import BertNEL
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.TransEScoreModel import TransEScoreModel
 from Marie.Util.location import DATA_DIR
+from Marie.Util.CommonTools.FileLoader import FileLoader
 
 
 class QAEngine:
@@ -20,31 +17,25 @@ class QAEngine:
         self.model_name = f"bert_{dataset_name}"
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
+        self.file_loader = FileLoader(full_dataset_dir=os.path.join(DATA_DIR, self.dataset_dir),
+                                      dataset_name=self.dataset_name)
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name=self.dataset_name)
-        # self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
-        self.chemical_nel = BertNEL()
+        self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
         self.device = torch.device("cpu")
         '''Load pickles for idx - label and label - idx transformation '''
-        i2e_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'idx2entity.pkl'), 'rb')
-        self.idx2entity = pickle.load(i2e_file)
-        e2i_file = open(os.path.join(DATA_DIR, self.dataset_dir, 'entity2idx.pkl'), 'rb')
-        self.entity2idx = pickle.load(e2i_file)
-
+        # ============================= Load files ======================================================
+        self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
+        self.value_dictionary = self.file_loader.load_value_dict(dict_type=dict_type)
+        # ===============================================================================================
         if embedding == "transe":
             self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
                                                 dataset_dir=self.dataset_dir, dim=dim)
             self.score_model = self.score_model.to(self.device)
 
         '''Initialize tokenizer'''
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-        self.max_length = 12
-        self.value_dictionary_path = os.path.join(DATA_DIR, self.dataset_dir,
-                                                  f"{self.dataset_name}_value_dict.{dict_type}")
-        if dict_type == 'json':
-            self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
-        else:
-            file = open(self.value_dictionary_path, 'rb')
-            self.value_dictionary = pickle.load(file)
+        self.nlp = NLPTools()
+        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+        # self.max_length = 12
 
     def prepare_prediction_batch(self, question, head_entity, candidate_entities):
         """
@@ -57,7 +48,7 @@ class QAEngine:
         candidate_entities = torch.LongTensor(candidate_entities).to(self.device)
         self.marie_logger.info(f" - Candidate entities: {candidate_entities}")
         repeat_num = len(candidate_entities)
-        tokenized_question_batch = self.tokenize_question(question, repeat_num)
+        tokenized_question_batch = self.nlp.tokenize_question(question, repeat_num)
         self.marie_logger.info(f" - Question tokenized {question}")
         head_entity_batch = torch.LongTensor([head_entity]).repeat(repeat_num).to(self.device)
         self.marie_logger.info(f" - Head entity index {head_entity}")
@@ -65,19 +56,19 @@ class QAEngine:
         self.marie_logger.info(f" - Prediction batch is prepared")
         return prediction_batch
 
-    def tokenize_question(self, question, repeat_num):
-        """
-        :param question: question in text
-        :param repeat_num:
-        :return:
-        """
-        tokenized_question = self.tokenizer(question,
-                                            padding='max_length', max_length=self.max_length, truncation=True,
-                                            return_tensors="pt")
-        attention_mask, input_ids = tokenized_question['attention_mask'], tokenized_question['input_ids']
-        attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
-        input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
-        return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
+    # def tokenize_question(self, question, repeat_num):
+    #     """
+    #     :param question: question in text
+    #     :param repeat_num:
+    #     :return:
+    #     """
+    #     tokenized_question = self.nlp.tokenizer(question,
+    #                                         padding='max_length', max_length=self.max_length, truncation=True,
+    #                                         return_tensors="pt")
+    #     attention_mask, input_ids = tokenized_question['attention_mask'], tokenized_question['input_ids']
+    #     attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
+    #     input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
+    #     return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
     def find_answers(self, question: str, head_entity: str, head_name: str, k=5):
         """
@@ -108,7 +99,7 @@ class QAEngine:
             return ["EMPTY"], [-999], ["EMPTY"]
 
     def extract_head_ent(self, mention):
-        self.marie_logger.info("extracting head entity")
+        self.marie_logger.info(f"extracting head entity: {mention}")
         return self.chemical_nel.find_cid(mention=mention)
 
     def value_lookup(self, node):
@@ -135,19 +126,13 @@ class QAEngine:
 
     def run(self, question, head=None, mention=None):
         """
+        :param mention:
         :param head: directly give a head for testing and evaluation purpose.
         :param question:
         :return:
         """
-        # get the mention,
-        question = question.replace("'s ", " # ")
-        # # only upper chemical formula
-        # formula_regex = r"([A-Za-z]+[0-9]+)+"
-        # formula = re.findall(formula_regex, question)
-        # if len(formula) > 0:
-        #     formula = formula[0]
-        #     question = question.replace(formula, formula.upper())
-
+        if mention is None:
+            mention = self.chemical_nel.get_mention(question=question)
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
             if head is not None:
@@ -159,13 +144,14 @@ class QAEngine:
             # return {"Error": "No target can be recognised from this question"}
             return ["EMPTY"], [-999], ["EMPTY"]
 
-        question = self.remove_head_entity(question, mention_string).lower()
+        try:
+            question = self.nlp.remove_head_entity(question, mention_string).lower()
+        except AttributeError:
+            return ["EMPTY"], [-999], ["EMPTY"]
+
         self.marie_logger.info(f"Question with head entity ({mention_string}) removed {question}")
         answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=name)
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
         return answer_list, score_list, target_list
         # return self.process_answer(answer_list, nel_confidence, mention_string, name, score_list)
-
-    def remove_head_entity(self, _question, _head_entity):
-        return _question.upper().replace(_head_entity.upper(), '').strip().lower()

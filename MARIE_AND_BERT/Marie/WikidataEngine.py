@@ -1,7 +1,7 @@
-from Marie.QAEngine import QAEngine
+from Marie.QAEngineNumerical import QAEngineNumerical
 
 
-class WikidataEngine(QAEngine):
+class WikidataEngine(QAEngineNumerical):
 
     def __init__(self, dataset_dir="CrossGraph/wikidata_single", dataset_name="wikidata_single"):
         super().__init__(dataset_dir, dataset_name, dim=40)
