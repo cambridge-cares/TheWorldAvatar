@@ -15,6 +15,16 @@ public final class DefaultPodmanCmdExecFactory extends AbstractPodmanCmdExecFact
         this.dockerCmdExecFactory = new DefaultDockerCmdExecFactory(dockerHttpClient, objectMapper);
     }
 
+    @Override
+    public void init(DockerClientConfig dockerClientConfig) {
+        dockerCmdExecFactory.init(dockerClientConfig);
+    }
+
+    @Override
+    protected DockerClientConfig getDockerClientConfig() {
+        return dockerCmdExecFactory.getDockerClientConfig();
+    }
+
     public DockerHttpClient getDockerHttpClient() {
         return dockerCmdExecFactory.getDockerHttpClient();
     }
