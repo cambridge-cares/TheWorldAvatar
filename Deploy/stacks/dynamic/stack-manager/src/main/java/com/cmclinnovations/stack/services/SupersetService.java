@@ -106,4 +106,9 @@ public class SupersetService extends ContainerService {
             throw new RuntimeException("Failed to load \"superset_config.py\" file.",ex);
         }
     }
+
+    @Override
+    public void doPostStartUpConfiguration() {
+        executeCommand("sh","-c","pip install sqlalchemy==1.4.46 && superset db upgrade && superset init");
+    }
 }
