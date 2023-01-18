@@ -42,20 +42,20 @@ class ChemicalNEL:
         self.ner = BertNEL()
 
     def get_mention(self, question):
+        # _, mention_string = self.ner.find_cid(question)
+        # return mention_string
+        question = question.replace("'s", " of ")
+
         try:
-            return self.ner.find_cid(question)[2]
+            _mention, smiles_string = self.ner.find_cid(question)# [2]
+            # print("mention:", mention)
+            # print("smiles_string:", smiles_string)
+            return smiles_string
         except:
             self.marie_logger.error(
                 f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
 
     def find_cid(self, mention):
-        # q_cap = question.upper()
-        # q_cap = question
-        # doc = Document(q_cap)
-        # mentions = doc.cems
-        # mentions = [self.ner.find_cid(q_cap)[2]]
-
-        # self.marie_logger.info(f"mentions: {mentions} in question {question}")
         try:
             mention_str = mention
             # TODO: rearrange the chemical formula
@@ -66,7 +66,7 @@ class ChemicalNEL:
             return confidence, self.name_dict[key], str(mention_str), key
 
         except (IndexError, TypeError):
-            return None
+            return None, None, None, None
 
     def cid_lookup(self, mention):
         return self.name_dict(mention)
@@ -76,13 +76,23 @@ class ChemicalNEL:
 
 
 if __name__ == '__main__':
-    cn = ChemicalNEL(dataset_name="pubchem")
+    cn = ChemicalNEL(dataset_name="wikidata_numerical")
     START_TIME = time.time()
-    mention = cn.get_mention("What is CO2's molecular weight")
+    mention = cn.get_mention("what is the mass of [I-].[I-].[I-].[I-].[Po]")
     rst = cn.find_cid(mention=mention)
     print(rst)
 
+    mention = cn.get_mention("what is the mass of C6H6")
+    rst = cn.find_cid(mention=mention)
+    print(rst)
+
+    mention = cn.get_mention("what is C6H6's smiles")
+    rst = cn.find_cid(mention=mention)
+    print(rst)
+
+    mention = cn.get_mention("what is CC[CH2]'s inchi")
+    rst = cn.find_cid(mention=mention)
+    print(rst)
+
+
     print(time.time() - START_TIME)
-    # print(chemparse.parse_formula('H4(C1)CCC'))
-    # print(chemparse.parse_formula('H4C1'))
-    # print(chemparse.parse_formula('H4C'))

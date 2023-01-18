@@ -5,13 +5,14 @@ import torch
 from Marie.EntityLinking.translator.ner_smile import NerSMILE
 from transformers import BertTokenizerFast
 
+
 class Translator():
     def __init__(self, modelpath=None):
         if modelpath:
             modelconfig = {
                 'tokenizer': BertTokenizerFast.from_pretrained('bert-base-uncased'),
                 'device': 'cuda' if torch.cuda.is_available() else 'cpu',
-                'model_path':modelpath
+                'model_path': modelpath
             }
             self.ner = NerSMILE(modelconfig)
             self.translate = self.translate_ner
@@ -19,12 +20,11 @@ class Translator():
         else:
             self.translate = self.translate_regex
 
-
     def translate_regex(self, raw_data):
         for entry in raw_data:
             text = entry["text"]
-            #TODO: this won't work when . is inside the SMILE
-            tokens = [x.strip().replace('.','').replace('?', '') for x in text.split(' ')]
+            # TODO: this won't work when . is inside the SMILE
+            tokens = [x.strip().replace('.', '').replace('?', '') for x in text.split(' ')]
             for idx, t in enumerate(tokens):
                 if self.regexSMILES(t):
                     translated = self.translateSMILES(t)
@@ -33,22 +33,20 @@ class Translator():
             entry['text'] = ' '.join(tokens)
         return raw_data
 
-
     def translate_ner(self, raw_data):
+        smiles_string = None
         sentences = [entry['text'] for entry in raw_data]
         smiles = self.ner.extractSMILE(sentences)
         for smile_candidates, entry in zip(smiles, raw_data):
-            if len(smile_candidates)>0:
+            if len(smile_candidates) > 0:
                 for c in smile_candidates:
-                    if c:
+                    if c and c.lower() != "inchi":
+                        smiles_string = c
                         t_c = self.translateSMILES(c)
                         if t_c:
-                            print('smile string detected'.format(t_c))
-                            entry['text'] = entry['text'].replace(c, t_c)
-        return raw_data
-
-
-
+                            pass
+                            # entry['text'] = entry['text'].replace(c, t_c)
+        return raw_data, smiles_string
 
     def regexSMILESlist(self, text_list):
         out = []
@@ -75,6 +73,8 @@ class Translator():
 
 if __name__ == "__main__":
     import json
+
+
     def loadjsonl(filepath):
         with open(filepath, 'r') as f:
             items = []
@@ -82,9 +82,12 @@ if __name__ == "__main__":
                 items.append(json.loads(line))
 
         return items
-    #dummy = loadjsonl("C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\smile_test.jsonl")
 
-    dummy = [{'text':'what is the chemical formula of What sort of molecule is CC=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCC1=C(C(=CC=C1)OC)O)C)C)C)C)C)C)C'}]
+
+    # dummy = loadjsonl("C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\smile_test.jsonl")
+
+    dummy = [{
+                 'text': 'what is the chemical formula of What sort of molecule is CC=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCC1=C(C(=CC=C1)OC)O)C)C)C)C)C)C)C'}]
     t = Translator(modelpath="D:\work\Marie\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER.bin")
     out = t.translate(dummy)
     print([i['text'] for i in out])
