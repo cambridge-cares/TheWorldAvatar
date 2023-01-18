@@ -11,3 +11,4 @@ services:
       - 5105:5105
     volumes:
       - ./data:/app/data
+      - ./config/properties.yaml:/app/config/properties.yaml
