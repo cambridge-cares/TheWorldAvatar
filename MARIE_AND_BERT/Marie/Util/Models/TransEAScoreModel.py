@@ -98,9 +98,9 @@ class TransEAScoreModel(nn.Module):
             question = question_single.repeat(len(e_h_idx), 1).to(self.device)
             head = torch.tensor(self.ent_embedding.iloc[e_h_idx].values).to(self.device)
             tail = torch.tensor(self.ent_embedding.iloc[e_t_idx].values).to(self.device)
-            projected_rel = self.get_relation_prediction(question_embedding=question)
+            projected_rel, predicted_rel_idx = self.get_relation_prediction(question_embedding=question)
             triple_score = self.triple_distance(head=head, tail=tail, projected_rel=projected_rel)
-            return triple_score
+            return triple_score, predicted_rel_idx
 
     def get_numerical_operator(self, question_embedding):
         numerical_operator_output = self.linear_O_1(question_embedding).to(self.device)
@@ -143,7 +143,8 @@ class TransEAScoreModel(nn.Module):
         # print("attr shape", attr_batch.shape)
         # print("bias shape", bias_batch.shape)
         # print("head shape", head.shape)
-        return (torch.sum(head * best_match_attr, dim=1) + bias_batch)[0] * 100
+        value = (torch.sum(head * best_match_attr, dim=1) + bias_batch)
+        return torch.abs(value[0]) / 2
         # return torch.sum(head * attr, dim=1) + bias
 
     def get_attribute_prediction(self, question_embedding):
@@ -164,7 +165,7 @@ class TransEAScoreModel(nn.Module):
         cos_similarity = self.cosine_similarity(pred_rel, all_rels)
         best_match_idx = torch.argmax(cos_similarity).item()
         best_match_rel = all_rels[best_match_idx]
-        return best_match_rel
+        return best_match_rel, best_match_idx
         # return linear_output_R
 
     def predict(self, question):
