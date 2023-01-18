@@ -1,19 +1,24 @@
 # IFC2Tileset Agent
 
 ## Description
-This agent processes an IFC file into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium. It assumes that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets will be generated in the output `data` directory.
+This agent queries and processes the IFC data stored on a knowledge graph into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium.
+Before running this agent, the IFC model **MUST** be instantiated with the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent). Please ensure that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets and
+their geometry (`gltf`/`glb`) files will be generated in the output `data` directory.
 
-A brief description of its workflow can be found below:
-1. The geometries in the IFC file are split based on their individual assets. These are converted into glTF models that are stored locally.
-2. During the splitting process, a mapping dictionary is generated that links the asset file names to their UID and names. 
-3. THREE 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The mapping dictionary supplements the tileset with asset information (if any).
+A brief description of the workflow can be found below:
+1. Instantiate the semantic and geometry data in IFC models using the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
+2. Queries for the metadata (IFC uid, asset name, data IRI) of relevant assets from a specified endpoint.
+3. Split the geometries in the IFC model based on these metadata into their individual assets.* These are then converted into glTF models that are stored locally.
+4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset metadata (if any).
+
+**At the moment, this agent is unable to process the geometry data queried from the knowledge graph, and will require the same IFC model file as an input to create the geometry files.*
 
 # Instructions
 ## 1. Building the agent
 The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed on a [local development environment](#11-python-virtual-environment-and-required-packages), this is not the recommended setup. 
 
 ### 1.1 Python virtual environment and required packages:
-A brief explanation of the initial steps for local deployment has been included to highlight the three key dependencies. Local deployment of the agent on the `gunicorn` server and its usage is out of this document's scope.
+A brief explanation of the initial steps for local deployment has been included to highlight the three key dependencies. Local deployment of the agent on the `gunicorn` or other servers and its usage is out of this document's scope.
 
 1) Open `cmd` terminal and navigate into this folder (referred to as `<root>` in the following) 
 
@@ -67,12 +72,13 @@ docker-compose up -d
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
 
 Please modify the following properties in `config/properties.yaml`:
-    - `root_tile`*: Bounding box for the root tile ie entire model
-    - `child_tile`*: Bounding box for all children tiles containing assets
-    - `query_endpoint`^ : SPARQL endpoint for Query operations
-    - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
+- `root_tile`*: Bounding box for the root tile ie entire model
+- `child_tile`*: Bounding box for all children tiles containing assets
+- `query_endpoint`^ : SPARQL endpoint for Query operations
+- `update_endpoint`^ : SPARQL endpoint for UPDATE operations
 
 **WIP: Generating bounding boxes from their model automatically, will make this redundant*
+
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
 
 ### 2.2 API
@@ -97,12 +103,14 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 
 ## 3. For Developers
-There are four scripts available in the agent.
-- `agent/app.py` is the entry point and calls developed functions to execute the conversion process
-- `agent/utils.py` contain miscellaneous functions
-- `agent/ifc2gltf.py` contain the functions that splits the ifc file into their individual assets and converts them into glTF models
-    - Add additional IFC feature classes here if we encounter them
-- `agent/ifc2tileset` sub-module contains functions to generate the tileset and write them to json
+The agent have been packaged into the following submodules:
+- `agent/app.py` is the agent's entry point that accepts and processes all HTTP requests
+- `agent/config` contain functions to retrieve the properties in `config/properties.yaml`
+- `agent/exceptions` contain the exceptions encountered in this agent
+- `agent/kgutils` contain miscellaneous functions to access and query the Knowledge graph
+- `agent/utils` contain miscellaneous functions for searching, validating inputs, and system operations
+- `agent/ifc2gltf` contain functions to query the metadata, and process the IFC input into their individual geometry files for each asset
+- `agent/ifc2tileset` contain functions to generate the tileset and write them to json
     - If you are unable to see the assets, **Modify the bounding box coordinates** according to your use case
 
 As Git does not allow empty directories, `.gitignore` files have been added to the subdirectories  of `<root>\data\`. This is important to set up the file structure for the code to run. 
@@ -130,8 +138,8 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
 - Determine the purpose of an asset 
     - Picking individual asset to get their meta data in pop-ups
     - Merely a background element 
-- Picking individual assets
-    - Only the following types are supported in the converter:
+- Selecting individual assets' names
+    - Their names must include the following supported words:
         - Sensors
         - Meters
         - Weather Station
@@ -139,4 +147,4 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
         - Fridge
 - Ensure that the assets are classified as Furniture or Generic Models for the converter to recognise them
     - `Furniture` are exported as IfcFurnishingElement while `Generic Models` are exported as IfcBuildingElementProxy 
-    - For new asset types, please include their name (or part of) into line 60 of `agent/ifc2gltf.py`
+    - For new asset types, please include their name into `classify_file_name()` at `agent/ifc2gltf/kghelper.py`
