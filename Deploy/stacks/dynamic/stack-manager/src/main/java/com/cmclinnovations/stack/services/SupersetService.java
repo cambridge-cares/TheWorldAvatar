@@ -103,12 +103,14 @@ public class SupersetService extends ContainerService {
                             "echo \"" + fileText + "\" > pythonpath/superset_config.py"
                                     + " && /usr/bin/run-server.sh"));
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to load \"superset_config.py\" file.",ex);
+            throw new RuntimeException("Failed to load \"superset_config.py\" file.", ex);
         }
     }
 
     @Override
     public void doPostStartUpConfiguration() {
+        executeCommand("superset", "fab", "create-admin", "--username", "admin", "--firstname", "Superset",
+                "--lastname", "Admin", "--email", "admin@superset.com", "--password", "admin");
         executeCommand("sh","-c","pip install sqlalchemy==1.4.46 && superset db upgrade && superset init");
     }
 }
