@@ -5,44 +5,71 @@ This module provides helper functions to generate glTF models from the IFC file.
 """
 
 # Third party imports
-from ifcopenshell.util.selector import Selector
 from py4jps import agentlogging
 
 # Self imports
-from agent.utils import find_word
+from agent.kgutils.const import ID_VAR
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
-def verify_feature_exists(featurelist, ifc):
+def append_aggregate(aggregates_df, dictionary):
     """
-    Verifies if the IFC feature in a list exist in the IFC file
+    Appends the IFC id of aggregate elements into the dictionary according to file name
 
     Arguments:
-        featurelist - A list of IfcClasses to verify in string. Accepted format: '.IfcFeatureType'
-        ifc - The required IFC model loaded in ifcopenshell
-    Returns:
-    A list containing features that exist in the format 'IfcFeatureType'
+        aggregates_df - A dataframe of assets to be aggregated into furniture and others
+        dictionary - A dictionary to append their IFC id
     """
-    # selector is a utility tool from  ifcopenshell
-    selector = Selector()
-    result_list = []
-    for feature in featurelist:
-        if len(selector.parse(ifc, feature)) > 0:
-            result_list += [feature[1:]]
-    return result_list
+    # Initialise list containing the right assets
+    furniture_elements = []
+    solar_panel_elements = []
+    sewage_network_elements = []
+    # Check for empty dataframe
+    if not aggregates_df.empty:
+        # Store asset in list based on which category they belong to
+        for row in range(len(aggregates_df.index)):
+            file_cell = aggregates_df['file'].iloc[row]
+            if file_cell == "furniture":
+                furniture_elements.append(file_cell)
+            elif file_cell == "solarpanel":
+                solar_panel_elements.append(file_cell)
+            elif file_cell == "sewagenetwork":
+                sewage_network_elements.append(file_cell)
+    # Add to dictionary if list is not empty
+    if furniture_elements:
+        dictionary["furniture"] = furniture_elements
+    if solar_panel_elements:
+        dictionary["solarpanel"] = solar_panel_elements
+    if sewage_network_elements:
+        dictionary["sewagenetwork"] = sewage_network_elements
 
 
-def gendict4split(ifc):
+def append_individual_asset(asset_df, dictionary):
     """
-    Creates a dictionary {filename : ifc_classes or ifc_id} to split
+    Appends the IFC id of individual elements into the dictionary according to file name
+
+    Arguments:
+        asset_df - A dataframe of individual assets
+        dictionary - A dictionary to append their IFC id
+    """
+    # Check for empty dataframe
+    if not asset_df.empty:
+        # Store asset in list based on which category they belong to
+        for row in range(len(asset_df.index)):
+            dictionary[asset_df['file'].iloc[row]] = asset_df[ID_VAR].iloc[row]
+
+
+def gendict4split(dataframe):
+    """
+    Creates a dictionary {filename : ifc_id} to split
     the IFC model into smaller IFC files
 
     Arguments:
-        ifc - The required IFC model loaded in ifcopenshell
+        dataframe - A dataframe containing all assets' uid and file name
     Returns:
         The required dictionary for splitting the IFC model
-        A hashtable to match assets to their IFC ID
+        A dataframe containing individual assets' metadata
     """
     # Initialise a dictionary with the IFC classes to exclude from the building output model
     # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
@@ -51,43 +78,16 @@ def gendict4split(ifc):
                       "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement",
                       "IfcFlowSegment"]}
 
-    hashmapping = {}
-    counter = 1
-    # Store the IDs that should be generated as part of the interior furniture or solar panel model
-    furniture_elements = []
-    solar_panel_elements = []
-    sewage_network_elements = []
-    for feature in ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal"]:
-        for element in ifc.by_type(feature):
-            # If the name contains these key words,generate individual models for them
-            wordlist = ["Sensor", "Weather Station", "Meter",
-                "Fume Hood", "Explosive Precursor", "Chemistry Robot",
-                "Fridge"]
-            if find_word(wordlist, element.Name):
-                # Simplify the name of asset files, as
-                # Cesium cannot load complicated or long file names
-                dict_elements["asset"+str(counter)] = element.GlobalId
-                # Create a hashtable dict to store the mapping values
-                hashmapping[element.GlobalId] = {
-                    "file": "asset"+str(counter), "name": element.Name}
-                counter = counter+1
-            # If the name contain a solar panel, generate a separate solar panel model
-            elif find_word(["Solar Panel"], element.Name):
-                solar_panel_elements.append(element.GlobalId)
-            elif find_word(["Manhole"], element.Name):
-                sewage_network_elements.append(element.GlobalId)
-            else:
-                furniture_elements.append(element.GlobalId)
-    for element in ifc.by_type("IfcFlowSegment"):
-        sewage_network_elements.append(element.GlobalId)
-    # Add to dictionary if list is not empty
-    if furniture_elements:
-        dict_elements["furniture"] = furniture_elements
-    if solar_panel_elements:
-        dict_elements["solarpanel"] = solar_panel_elements
-    if sewage_network_elements:
-        dict_elements["sewagenetwork"] = sewage_network_elements
-    return dict_elements, hashmapping
+    if not dataframe.empty:
+        # Initialise a list of file names for aggregated assets
+        aggregatelist= ["solarpanel","sewagenetwork","furniture"]
+        logger.debug("Appending aggregate assets to dictionary...")
+        append_aggregate(dataframe.loc[dataframe['file'].isin(aggregatelist)], dict_elements)
+
+        logger.debug("Appending individual assets to dictionary...")
+        assetdata = dataframe.loc[~dataframe['file'].isin(aggregatelist)]
+        append_individual_asset(assetdata, dict_elements)
+    return dict_elements, assetdata
 
 
 def append_ifcconvert_command(key, value, ifcconvert_command):

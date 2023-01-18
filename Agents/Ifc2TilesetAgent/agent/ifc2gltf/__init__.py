@@ -8,25 +8,30 @@ to split and convert the IFC model to glTF.
 from py4jps import agentlogging
 
 # Self imports
+from agent.ifc2gltf.kghelper import retrieve_metadata
 from agent.ifc2gltf.ifchelper import gendict4split, append_ifcconvert_command
 from agent.utils import run_shellcommand, retrieve_abs_filepath
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
-def conv2gltf(ifc, input_ifc):
+def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
     """
     Invokes the related external tools to convert an IFC file
     to the glTF format in the gltf subfolder
 
     Arguments:
-        ifc - The required IFC model loaded in ifcopenshell
         input_ifc - Local file path of ifc model
+        query_endpoint - SPARQL QUERY endpoint
+        update_endpoint - SPARQL UPDATE endpoint
     Returns:
-        A hashtable linking each IFC id with their glTF file name
+        A dataframe containing the individual assets and their metadata
     """
-    logger.debug("Generating dictionary for splitting IFC assets.")
-    dict_for_split, hashmapping = gendict4split(ifc)
+    logger.info("Retrieving metadata from endpoint...")
+    metadata = retrieve_metadata(query_endpoint, update_endpoint)
+
+    logger.info("Generating dictionary for splitting IFC assets.")
+    dict_for_split, asset_data = gendict4split(metadata)
 
     for key, value_list in dict_for_split.items():
         glbpath = "./data/glb/" + key + ".glb"
@@ -44,6 +49,6 @@ def conv2gltf(ifc, input_ifc):
         run_shellcommand(ifcconvert_command)
         logger.debug("IfcConvert command executed: " + " ".join(ifcconvert_command))
         run_shellcommand(glb2gltf_command, True)
-        logger.debug("gltf-pipieline Command executed: " + " ".join(glb2gltf_command))
+        logger.debug("gltf-pipeline Command executed: " + " ".join(glb2gltf_command))
     logger.info("Conversion to gltf completed...")
-    return hashmapping
+    return asset_data

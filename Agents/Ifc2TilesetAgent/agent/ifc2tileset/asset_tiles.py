@@ -7,39 +7,38 @@ This module provides methods to generate tilesets related to assets.
 # Self imports
 import agent.app as state
 import agent.config.config as properties
-from agent.ifc2tileset.root_tile import gen_root_content
+from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
-def init_asset_tiles():
+def init_asset_tiles(tileset):
     """
     Initialise the tileset to receive asset information
 
     Returns:
     The tileset generated with initialised asset metadata as a python dictionary
     """
-    # Generate a tileset with root content added
-    tileset = gen_root_content()
-
     # Add new contents to the tileset
-    tileset["schema"] = {'classes': {
-        'AssetMetaData': {
+    tileset['schema']['classes']['AssetMetaData'] = {
             'name': "Asset metadata",
             'description': "A metadata class for all individual assets",
             # Store all asset information here even if they are not used for specific assets
             'properties': {
-                "name": {
+                NAME_VAR: {
                     "description": "Name of the asset",
                     "type": "STRING"
                 },
-                "uid": {
+                ID_VAR: {
                     "description": "Unique identifier generated in IFC",
+                    "type": "STRING"
+                },
+                IRI_VAR: {
+                    "description": "Data IRI of the asset",
                     "type": "STRING"
                 }
             }
         }
-    }}
 
-    tileset["root"]["children"] = [{
+    tileset['root']['children'] = [{
         "boundingVolume": {"box": properties.bbox_child},
         "geometricError": 50,
         # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
@@ -78,27 +77,32 @@ def appenddict_rec(tileset_root, assetlist, i=6):
         return
 
 
-def gen_tileset_assets(hashmapping):
+def gen_tileset_assets(asset_df, tileset):
     """
     Add asset properties into the tileset.
 
+    Arguments:
+        asset_df - dataframe containing mappings for asset metadata
+        tileset - tileset for adding asset metadata
     Returns:
     The tileset generated with asset metadata as a python dictionary
     """
     # Initialise tileset structure for assets
-    tileset = init_asset_tiles()
+    tileset = init_asset_tiles(tileset)
 
     # A Python list is required to handle duplicate keys in a nested dictionary
     assetlist = []
     # Add geometry and uid for each asset
-    for uid, nested_dict in hashmapping.items():
+    for row in range(len(asset_df.index)):
         assetlist.append({
-            'uri': state.asset_url +nested_dict.get("file")+".gltf",
+            'uri': state.asset_url + asset_df['file'].iloc[row]+".gltf",
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                 'class': "AssetMetaData",
-                'properties': {"name": nested_dict.get("name").split(":")[0],
-                               "uid": uid}
+                'properties': {NAME_VAR: asset_df[NAME_VAR].iloc[row].split(":")[0],
+                               ID_VAR: asset_df[ID_VAR].iloc[row],
+                               IRI_VAR: asset_df[IRI_VAR].iloc[row]
+                               }
             }
         })
 
