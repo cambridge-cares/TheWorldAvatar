@@ -9,6 +9,8 @@
 
 from tqdm import tqdm
 import time
+import os
+import pickle
 import numpy as np
 import pandas as pd
 import uuid
@@ -25,12 +27,13 @@ from urllib.parse import urlsplit, urlunsplit
 import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
-from agent.utils.readings_mapping import DATACLASS, TIME_FORMAT
 from agent.errorhandling.exceptions import *
-from agent.datamodel.spec import *
+from agent.utils.env_configs import YEAR, CEDA_PASSWORD, CEDA_USERNAME
+from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 #from agent.kgutils.tsclient import jpsBaseLibView
-from agent.kgutils.tsclient import TSClient
+#from agent.kgutils.tsclient import TSClient
+#from agent.utils.readings_mapping import DATACLASS, TIME_FORMAT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -48,6 +51,42 @@ def remove_nan_to_NAN(*array_group):
   
   return return_array_group
 
+def get_key(val, my_dict):
+    for key, value in my_dict.items():
+        if val == value:
+            return key
+    return None
+
+def call_pickle(pathname):
+    '''
+  This module is to retrieve the result of the a pickle file under the pathname you specified
+  could be useful to retrieve the result of a pickle file
+  '''
+    try:
+        infile = open(pathname,'rb')
+        results = pickle.load(infile)
+        infile.close()
+    except Exception as ex:
+        raise InvalidInput("filepath can not be read -- check if the file exist") from ex
+        
+    return results
+
+def generate_time_dict(year: str):
+
+      time_dict = {f'{year}-01-01T12:00:00.000Z':0,\
+             f'{year}-02-01T12:00:00.000Z':1,\
+             f'{year}-03-01T12:00:00.000Z':2,\
+             f'{year}-04-01T12:00:00.000Z':3,\
+             f'{year}-05-01T12:00:00.000Z':4,\
+             f'{year}-06-01T12:00:00.000Z':5,\
+             f'{year}-07-01T12:00:00.000Z':6,\
+             f'{year}-08-01T12:00:00.000Z':7,\
+             f'{year}-09-01T12:00:00.000Z':8,\
+             f'{year}-10-01T12:00:00.000Z':9,\
+             f'{year}-11-01T12:00:00.000Z':10,\
+             f'{year}-12-01T12:00:00.000Z':11}
+            
+      return time_dict
 # ------------------------- Read data from source -------------------------------- #
 def read_from_web_elec (year: str = YEAR):
   '''
@@ -661,7 +700,8 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
     '''
-
+    months_dict = {'January':0,'February':1,'March':2,'April':3,'May':4,'June':5,'July':6,'August':7,'September':8,'October':9,'November':10,'December':11}
+    
     def month_num(month_str):
       '''
       Converts a string of month name to that month's number 

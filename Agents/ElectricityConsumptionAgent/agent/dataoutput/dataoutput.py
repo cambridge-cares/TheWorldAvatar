@@ -12,7 +12,7 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import *
-from agent.datamodel.spec import *
+from agent.Repo.spec import *
 
 import matplotlib.pyplot as plt
 import shapely.wkt

@@ -8,6 +8,8 @@
 
 import os
 import warnings
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 
 import agentlogging
 
@@ -21,17 +23,18 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATAPOINT_API_KEY, NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           ONTOP_FILE
+    global YEAR, NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
+           ONTOP_FILE, CEDA_USERNAME, CEDA_PASSWORD
 
-    # Retrieve MetOffice API key
-    DATAPOINT_API_KEY = os.getenv('API_KEY')    
-    if DATAPOINT_API_KEY is None:
-        logger.error('"API_KEY" is missing in environment variables.')
-        raise ValueError('"API_KEY" is missing in environment variables.')
-    if DATAPOINT_API_KEY == '':
-        logger.error('No "API_KEY" value has been provided in environment variables.')
-        raise ValueError('No "API_KEY" value has been provided in environment variables.')
+    # Retrieve the YEAR of which the user is interested in processing data about
+    # the UK Lower-layer Super Output Area (LSOA)
+    YEAR = os.getenv('YEAR')    
+    if YEAR is None:
+        logger.error('"YEAR" is missing in environment variables.')
+        raise ValueError('"YEAR" is missing in environment variables.')
+    if YEAR == '':
+        logger.error('No "YEAR" value has been provided in environment variables.')
+        raise ValueError('No "YEAR" value has been provided in environment variables.')
 
     # Retrieve target Blazegraph name for data to instantiate
     NAMESPACE = os.getenv('NAMESPACE')
@@ -82,6 +85,27 @@ def retrieve_settings():
         logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
 
+    load_dotenv('./downloads/.env')
+    key = os.getenv('CEDA_KEY').encode()
+    cipher = Fernet(key)
+    # Retrieve the CEDA_USERNAME
+    CEDA_USERNAME = os.getenv('CEDA_USERNAME')    
+    if CEDA_USERNAME is None:
+        logger.error('"CEDA_USERNAME" is missing in environment variables.')
+        raise ValueError('"CEDA_USERNAME" is missing in environment variables.')
+    if CEDA_USERNAME == '':
+        logger.error('No "CEDA_USERNAME" value has been provided in environment variables.')
+        raise ValueError('No "CEDA_USERNAME" value has been provided in environment variables.')
+
+    # Retrieve the CEDA_PASSWORD
+    encrypted_password = os.getenv('CEDA_PASSWORD')
+    CEDA_PASSWORD = str(cipher.decrypt(encrypted_password), 'utf-8')
+    if CEDA_PASSWORD is None:
+        logger.error('"CEDA_PASSWORD" is missing in environment variables.')
+        raise ValueError('"CEDA_PASSWORD" is missing in environment variables.')
+    if CEDA_PASSWORD == '':
+        logger.error('No "CEDA_PASSWORD" value has been provided in environment variables.')
+        raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
 
 # Run when module is imported
 retrieve_settings()

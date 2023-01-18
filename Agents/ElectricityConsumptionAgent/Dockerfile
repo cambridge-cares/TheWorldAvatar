@@ -6,8 +6,8 @@
 #------------------------------------------------------
 FROM python:3.7.11-slim-buster as base
 # Meta data
-LABEL authors = "mh807@cam.ac.uk"
-LABEL description = "Met Office weather station agent"
+LABEL authors = "jx309@cam.ac.uk"
+LABEL description = "LSOAInput (Lower-layer Super Output Area in the UK) agent"
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1

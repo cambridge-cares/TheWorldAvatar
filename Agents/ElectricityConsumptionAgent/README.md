@@ -13,7 +13,11 @@ This section specifies the minimum requirements to build and deploy the Docker i
 
 ## 1.1 Prerequisites
 
-Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA](https://services.ceda.ac.uk/cedasite/register/info/) platform. Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
+Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA](https://services.ceda.ac.uk/cedasite/register/info/) platform. 
+Once the registration is done, please run the `./agent/utils/CEDA_env_config.py` script, this module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.
+Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module.
+
+Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
 
 
 ### **1) The environment variables used by the agent container**
@@ -22,8 +26,6 @@ Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lo
 # Agent configuration
 YEAR                  # The year of which data you want to process
                       # e.g. '2020' (Set as default)
-CEDA_USERNAME         # The username of the CEDA account
-CEDA_PASSWORD         # The password of the CEDA account
 
 # Stack & Stack Clients configuration
 STACK_NAME            # Name of stack to which agent shall be deployed
