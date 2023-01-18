@@ -103,7 +103,7 @@ public class SupersetService extends ContainerService {
                             "echo \"" + fileText + "\" > pythonpath/superset_config.py"
                                     + " && /usr/bin/run-server.sh"));
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Failed to load \"superset_config.py\" file.",ex);
         }
     }
 }
