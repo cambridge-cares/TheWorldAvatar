@@ -94,7 +94,7 @@ class CrossGraphQAEngine:
 
         return result
 
-    def run(self, question, test=False, heads=None):
+    def run(self, question, test=False, heads={}):
         """
         The main interface for the integrated QA engine
         :param head_entity_list:
