@@ -15,7 +15,7 @@ def hit_k_rate(true_answer, pred_answers):
     scores = []
     k_list = [1, 5, 10]
     for k in k_list:
-        top_k_answers = pred_answers[0: min(k, len(pred_answers)) + 1]
+        top_k_answers = pred_answers[0: min(k, len(pred_answers))]
         if true_answer in top_k_answers:
             scores.append(1)
         else:
@@ -108,10 +108,10 @@ class Evaluator:
             engine = CrossGraphQAEngine()
             for idx, row in self.cross_graph_test.iterrows():
                 _, question, heads, domains, answers, mention = row
-                heads = {}
+                heads_dict = {}
                 for h, d in zip(heads, domains):
-                    heads[d] = h
-                answers = engine.run(question, test=True, heads={})
+                    heads_dict[d] = h
+                answers = engine.run(question, test=True, heads=heads_dict)
                 answer_dict[question] = answers
 
             with open(answer_dict_path, 'w') as f:
@@ -123,13 +123,14 @@ class Evaluator:
         hit_10 = 0
         ner_failure = 0
         total_counter = 0
+        total_mrr = 0
 
         df_test = pd.read_csv(os.path.join(self.dataset_dir, ontology, f'{ontology}_test.tsv'), sep='\t')
         for idx, row in df_test.iterrows():
             total_counter += 1
             question, head, domain, answer, mention, rel = row
             try:
-                answer_list, score_list, target_list = engine.run(question)
+                answer_list, score_list, target_list = engine.run(question, mention=mention, test=True)
                 target = target_list[0]
                 print("target", target)
                 print("mention", mention)
@@ -149,6 +150,11 @@ class Evaluator:
                         hit_5 += 1
                     elif answer_index <= min(len(answer_list), 10):
                         hit_10 += 1
+                    mrr = 1/(answer_index+1)
+                else:
+                    mrr = 0
+
+                total_mrr += mrr
 
             # TODO: check the hit rate of the answer ...
             except ValueError:
@@ -165,11 +171,12 @@ class Evaluator:
         print(f"hit 1 rate {hit_1 / total_counter}")
         print(f"hit 5 rate {hit_5 / total_counter}")
         print(f"hit 10 rate {hit_10 / total_counter}")
+        print(f"mrr {total_mrr / total_counter}")
 
         print(f"filtered hit 1 rate {hit_1 / (total_counter - ner_failure)}")
         print(f"filtered hit 5 rate {hit_5 / (total_counter - ner_failure)}")
         print(f"filtered hit 10 rate {hit_10 / (total_counter - ner_failure)}")
-
+        print(f"filtered mrr {total_mrr / (total_counter - ner_failure)}")
 
 if __name__ == "__main__":
     my_evaluator = Evaluator()
