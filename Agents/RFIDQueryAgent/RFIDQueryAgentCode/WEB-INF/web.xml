@@ -11,7 +11,7 @@
 
 	<servlet>
 		<servlet-name>RFIDQueryAgentServlet</servlet-name>
-		<servlet-class>uk.ac.cam.cares.jps.agent.rfidquery.RFIDQueryAgent</servlet-class>
+		<servlet-class>uk.ac.cam.cares.jps.agent.rfidquery.RFIDQueryAgentLauncher</servlet-class>
 	</servlet>
 
 	<servlet-mapping>

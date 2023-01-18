@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/rfid-query-agent-code
+WORKDIR /root/RFIDQueryAgentCode
 RUN mvn package
 
 #==================================================================================================
@@ -32,7 +32,7 @@ ENV CLIENT_PROPERTIES="/root/client.properties"
 # Set the environment variable that points to where the email agent is located at
 ENV EMAIL_AGENT_URL="http://host.docker.internal:8099/email_agent"
 
-COPY --from=builder /root/rfid-query-agent-code/output/rfid-query-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/RFIDQueryAgentCode/output/rfid-query-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

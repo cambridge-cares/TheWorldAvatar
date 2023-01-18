@@ -73,7 +73,7 @@ public class RFIDQueryAgent{
         for (int i = 0; i <= dataIRIs.split(",").length - 1; i++) {
             this.dataIRIList.add(i, dataIRIs.split(",")[i]);
         }
-
+        LOGGER.info("The first element in this list is " + dataIRIList.get(0));
         this.numOfHours = Long.valueOf(Hours);
     }
 
@@ -113,13 +113,14 @@ public class RFIDQueryAgent{
      */
     public JSONObject queriesStatusAndCheckTimeStamps() {
         JSONObject results = new JSONObject();
-        for (int i = 0; i < dataIRIList.size() - 1; i++) {
+        for (int i = 0; i <= dataIRIList.size() - 1; i++) {
             JSONObject values = new JSONObject();
             TimeSeries<OffsetDateTime> LatestTimeSeries = queryLatestRFIDStatus(dataIRIList.get(i));
             values = checkRFIDStatusThreshold(LatestTimeSeries, dataIRIList.get(i), numOfHours);
             results.put("iri_"+i, values);
+            LOGGER.info(results);
         }
-
+        LOGGER.info("The final result is " + results);
         return results;
     }
 
@@ -183,7 +184,7 @@ public class RFIDQueryAgent{
             EmailSender sender = new EmailSender();
             String emailMessages;
             emailMessages = "The bottle with the following information has been removed since " + latestTimeStamp.toString() + 
-            "The bottle has the following tag ID " + tagID + " and it is storing " + chemicalSpeciesName + ". This chemical species has the following information: ";
+            ". The bottle has the following tag ID " + tagID + " and it is storing " + chemicalSpeciesName + ". This chemical species has the following information: ";
             sender.sendEmail("Alert!", emailMessages);
         
         } catch (Exception e) {
