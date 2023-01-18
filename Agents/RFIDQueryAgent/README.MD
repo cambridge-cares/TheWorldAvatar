@@ -15,11 +15,11 @@ The [next section](#requirements) will explain the requirements to run the agent
 3) It is required to have some timeseries data that contains the status of the RFID tags (In/Out) already instantiated in the knowledge graph. One such agent that currently does that is the [RFID Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDUpdateAgent).
 
 ### Property file
-For running the agent, one property file are required:
+For running the agent, one property file is required:
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 
 #### Time-series client properties
-The time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
+The time-series client properties file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
 - `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database
 - `db.user` the username to access the Postgres database
 - `db.password` the password to access the Postgres database
@@ -38,11 +38,13 @@ The RFID Query Agent is set up to use the Maven repository at https://maven.pkg.
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
+
 Modify `client.properties` in the `config` folder accordingly. 
 
 Modify the `Dockerfile` found in the same directory as this README. Change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at.
 
-To build and start the agent, open up the command prompt in the same directory as this README, run
+
+To build and start the agent, open up the command prompt in the same directory as this `README`, run
 ```
 docker-compose up -d
 ```
@@ -56,11 +58,11 @@ POST http://localhost:1021/rfid-query-agent/retrieve
 Content-Type: application/json
 {dataIRIs":"iri_1,iri_2,iri_3","hours":"10","timeSeriesClientProperties":"CLIENT_PROPERTIES"}
 ```
-The JSONObject should contain the data IRIs of the RFID tags status, each IRI should be separated by a "," (see example below), the number of hours that the tagged object is allowed to be "Out" for and the environment variable pointing to where the `timeseries client.properties` is located at (The `Dockerfile` automatically does this for you).
+The JSONObject should contain the data IRIs of the RFID tags status, each IRI should be separated by a "," (see example below), the number of hours that the tagged object is allowed to be "Out" for and the environment variable pointing to where the `client.properties` is located at(The `Dockerfile` automatically does this for you).
 
 In curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"1\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\"}" http://localhost:1022/rfid-query-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"1\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\"}" http://localhost:1021/rfid-query-agent/retrieve
 ```
 If the agent runs successfully, you should see a returned JSON Object depending on the following scenarios:
 
