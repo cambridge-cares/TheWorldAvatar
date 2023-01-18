@@ -160,6 +160,7 @@ public class RFIDQueryAgent{
 
             // if 2022-10-27 22:20:02+08 is before the current date time, it means that the bottle has been outside of the cabinet for a time
             // period longer than the allowed duration
+            LOGGER.info("Comparing threshold timestamp " + thresholdTimeStamp + " with current timestamp " + currentDateTime);
             if (thresholdTimeStamp.isBefore(currentDateTime)) {
                 exceedThreshold = true;
             }
