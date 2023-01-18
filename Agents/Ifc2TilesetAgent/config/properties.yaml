@@ -18,3 +18,9 @@ child_tile:
   length: 100 # x-axis
   width: 50 # y-axis
   height: 5 # z-axis
+
+# SPARQL endpoints
+# Valid Format: http://IPv4ADDRESS:PORTNO/blazegraph/namespace/NAMESPACE/sparql
+# localhost and docker.internal.host are not accessible without further network configurations
+query_endpoint: "http://localhost:9999/blazegraph/namespace/bim/sparql"
+update_endpoint: "http://localhost:9999/blazegraph/namespace/bim/sparql"

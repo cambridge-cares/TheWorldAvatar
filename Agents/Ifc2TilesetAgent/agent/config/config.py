@@ -33,6 +33,10 @@ def set_properties(path):
         properties['child_tile']['z_center'], properties['child_tile']['length'],
         properties['child_tile']['width'], properties['child_tile']['height'])
 
+    query_endpoint = properties['query_endpoint']
+    update_endpoint = properties['update_endpoint']
+    return query_endpoint, update_endpoint
+
 
 def set_bbox(x_center, y_center, z_center, length, width, height):
     """

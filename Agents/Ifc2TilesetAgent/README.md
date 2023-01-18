@@ -66,11 +66,15 @@ docker-compose up -d
 ### 2.1 Precursor
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
 
-Please modify the following properties according to your model in `config/properties.yaml`:
-    - `root_tile`*: Bounding box for the root tile
+Please modify the following properties in `config/properties.yaml`:
+    - `root_tile`*: Bounding box for the root tile ie entire model
     - `child_tile`*: Bounding box for all children tiles containing assets
+    - `query_endpoint`^ : SPARQL endpoint for Query operations
+    - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
 
 **WIP: Generating bounding boxes from their model automatically, will make this redundant*
+^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
+
 ### 2.2 API
 Instructions for the agent and its various API endpoints can be found at the API root `http://localhost:5105/`. A brief overview is as follows:
 - **POST** request to convert an IFC model to 3D Tileset, and output tileset.json files. Accepted parameters:

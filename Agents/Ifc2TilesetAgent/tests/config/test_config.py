@@ -11,6 +11,7 @@ import yaml
 # Self import
 import agent.config.config as properties
 
+ENDPOINT = "http://www.example.org/test"
 
 def gen_test_yaml_file(output_path):
     """
@@ -35,7 +36,9 @@ def gen_test_yaml_file(output_path):
             length = 50,
             width = 50,
             height = 6
-        )
+        ),
+        query_endpoint = ENDPOINT,
+        update_endpoint = ENDPOINT
     )
     # Generate the file
     with open(output_path, 'w') as outfile:
@@ -50,12 +53,14 @@ def test_set_properties():
     yaml_path = 'sample.yml'
     gen_test_yaml_file(yaml_path)
     # Execute method
-    properties.set_properties(yaml_path)
+    res_query_endpoint, res_update_endpoint = properties.set_properties(yaml_path)
     # Generate expected box
     expected_root_bbox = [40, 0, 15, 50, 0, 0, 0, 50, 0, 0, 0, 5]
     expected_child_bbox = [10, 0, 5, 25, 0, 0, 0, 25, 0, 0, 0, 3]
     assert expected_root_bbox == properties.bbox_root
     assert expected_child_bbox == properties.bbox_child
+    assert ENDPOINT == res_query_endpoint
+    assert ENDPOINT == res_update_endpoint
 
 
 def test_bbox_root():
