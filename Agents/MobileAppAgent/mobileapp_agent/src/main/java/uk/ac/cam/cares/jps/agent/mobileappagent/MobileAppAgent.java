@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.mobileappagent;
 
-import org.apache.commons.logging.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.exception.DataAccessException;
@@ -13,19 +12,15 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-import java.sql.Array;
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatterBuilder;
@@ -108,116 +103,123 @@ public class MobileAppAgent extends JPSAgent {
         if (validateInput(requestParams)) {
             //Loop through each table
             for (int i = 0; i < tableList.size(); i++) {
-                Query = getQueryString(i);
 
+                Query = getQueryString(i);
                 dataArray = rdbStoreClient.executeQuery(Query);
 
-                try//Check if dbTable exists
+
+                if (checkIfTimeSeriesExists(i))//Check if dbTable exists
                 {
+                    String IRIQuery;
 
-                    JSONArray dataIRIArray;
-                    OffsetDateTime timeThreshold;
-
-                    //If dbTable exists
-                    Query = getDataIRIFromDBTable(i);
-                    dataIRIArray = rdbStoreClient.executeQuery(Query);
+                    IRIQuery = getDataIRIFromDBTable(i);
+                    JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
 
                     //Get the newest timeseries
                     TimeSeries getTimeSeries = parseDataToLists(i, dataArray, parseJSONArrayToList(dataIRIArray));
-
-
                     updateData(getTimeSeries);
-
-
                 }
-                finally //When time series does not exist create timeseries
+                else  //When time series does not exist create timeseries
                 {
-
-                    //Create Timeseries
-                    List<String> dataIRIList = createTimeSeries(i);
-
-                    //GetTimeSeries
-                    TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
-
-                    //Add timeseries data with tsList
-                    try (Connection conn = rdbStoreClient.getConnection()) {
-                        tsClient.addTimeSeriesData(getTimeSeries, conn);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        throw new JPSRuntimeException(e);
-                    }
+                    initTimeseriesIfNotExist(i,dataArray);
                 }
-
             }
-
         }
         return requestParams;
     }
 
+    /**
+     * Checks the incoming JSON request for validity.
+     * @param requestParams JSON request parameters.
+     * @return request validity
+     */
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        boolean valid = true;
+        return valid;
+    }
 
-    public void Test(){
+
+    public void Test() {
+        //Loop through each table
         for (int i = 0; i < tableList.size(); i++) {
+            
             Query = getQueryString(i);
-
             dataArray = rdbStoreClient.executeQuery(Query);
 
-            try//Check if dbTable exists
+
+            if (checkIfTimeSeriesExists(i))//Check if dbTable exists
             {
                 String IRIQuery;
 
-                JSONArray dataIRIArray;
-                OffsetDateTime timeThreshold;
-
-                //If dbTable exists
                 IRIQuery = getDataIRIFromDBTable(i);
-                dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
+                JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
 
                 //Get the newest timeseries
                 TimeSeries getTimeSeries = parseDataToLists(i, dataArray, parseJSONArrayToList(dataIRIArray));
-
                 updateData(getTimeSeries);
-
             }
-            finally //When time series does not exist create timeseries
+            else  //When time series does not exist create timeseries
             {
-
-                //Create Timeseries
-                List<String> dataIRIList = createTimeSeries(i);
-
-                //GetTimeSeries
-                TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
-
-                //Add timeseries data with tsList
-                try (Connection conn = rdbStoreClient.getConnection()) {
-                    tsClient.addTimeSeriesData(getTimeSeries, conn);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new JPSRuntimeException(e);
-                }
+                initTimeseriesIfNotExist(i,dataArray);
             }
-
         }
-
     }
 
-        /**
-         * Checks the incoming JSON request for validity.
-         * @param requestParams JSON request parameters.
-         * @return request validity
-         */
-        @Override
-        public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-            boolean valid = true;
-            return valid;
+    /**
+     *
+     * @param i
+     * @return
+     */
+
+
+
+    private boolean checkIfTimeSeriesExists(int i){
+        String IRIQuery;
+        try {
+            IRIQuery = getDataIRIFromDBTable(i);
+            JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
+            if (dataIRIArray.length() == 0){
+                return false;
+            }
         }
+        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+        catch (Exception e) {
+                return false;
+        }
+        return true;
+    }
 
 
-        /**
-         * @param tableNumber
-         * @param dataArray
-         * @param dataIRIList
-         * @return
-         */
+
+    /**
+     *
+     * @param i
+     * @param dataArray
+     */
+    private void initTimeseriesIfNotExist(int i , JSONArray dataArray){
+        //Create Timeseries
+        List<String> dataIRIList = createTimeSeries(i);
+
+        //GetTimeSeries
+        TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
+
+        //Add timeseries data with tsList
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tsClient.addTimeSeriesData(getTimeSeries, conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+
+    /**
+     * @param tableNumber
+     * @param dataArray
+     * @param dataIRIList
+     * @return
+     */
     private TimeSeries parseDataToLists(int tableNumber, JSONArray dataArray, List<String> dataIRIList) {
         List<TimeSeries<Double>> tsList = new ArrayList<>();
         List<String> timesList = new ArrayList<>();
@@ -284,7 +286,6 @@ public class MobileAppAgent extends JPSAgent {
      * @param i
      * @return
      */
-
     private static String getQueryString(int i){
         String query;
 
@@ -298,6 +299,11 @@ public class MobileAppAgent extends JPSAgent {
         return query;
     }
 
+
+    /**
+     * @param i
+     * @return
+     */
     private static String getDataIRIFromDBTable(int i){
         String query;
 
@@ -309,6 +315,12 @@ public class MobileAppAgent extends JPSAgent {
 
         return query;
     }
+
+
+    /**
+     * @param jArray
+     * @return
+     */
 
     private static ArrayList<String> parseJSONArrayToList (JSONArray jArray){
         ArrayList<String> listdata = new ArrayList<String>();
@@ -363,7 +375,7 @@ public class MobileAppAgent extends JPSAgent {
                 throw new JPSRuntimeException(e);
             }
 
-        }
+    }
 
 
 
@@ -427,7 +439,6 @@ public class MobileAppAgent extends JPSAgent {
 
         // Then add the zone id
         return OffsetDateTime.of(localTime, MobileAppAgent.ZONE_OFFSET);
-
     }
 
 }
