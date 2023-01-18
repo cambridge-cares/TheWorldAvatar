@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.agent.rfidquery;
 
-import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
@@ -17,7 +14,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -32,10 +28,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * This test class is to test the ESPHome agent with a running KG and postgres database.
+ * This test class is to test the RFID Query agent with a running KG and postgres database.
  */
 
- 
+
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
         
@@ -53,18 +49,28 @@ public class RFIDQueryAgentIntegrationTest {
     private final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
     @Rule
+    //temp folder for temp client.properties file
     public TemporaryFolder folder = new TemporaryFolder();
+
+    //RFIDQueryAgent
     private RFIDQueryAgent agent;
+
+    //tsClient
     private TimeSeriesClient<OffsetDateTime> tsClient;
+
     //single key for mocking RFID tag status data IRI
     private final String key = "tag_01_status";
+
     // Example prefix for IRIs
     private final String examplePrefix = "example:prefix/api_";
+
     //endpoint
     String endpoint;
-    // IRIs corresponding to the keys
+
+    // list of IRIs
     private ArrayList<String> IRIs;
     private ArrayList<String> testIRIs;
+
     //lists of date time
     private List<OffsetDateTime> times;
 
@@ -74,15 +80,11 @@ public class RFIDQueryAgentIntegrationTest {
     // Readings used by several tests
     JSONObject allReadings;
 
+    //timestamp
     String timestamp;
     
     //list of classes to initialize timeseries
     private List<Class<?>> classes;
-    
-    //Prefixes
-    public static final String ns_ontology = "https://www.theworldavatar.com/kg/ontotimeseries/";
- 	private static final Prefix prefix_ontology = SparqlBuilder.prefix("ts", iri(ns_ontology));
- 	private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
  	
     @Before
     public void initializeMockTimeSeriesandAgent() throws IOException {
@@ -110,7 +112,7 @@ public class RFIDQueryAgentIntegrationTest {
         kbClient.setQueryEndpoint(endpoint);
         
         String propertiesFile = Paths.get(folder.getRoot().toString(), "all.properties").toString();
-        //single mock property file to represent all 3 properties files
+        //single mock property file to represent the tsClient properties file
         writePropertyFile(propertiesFile, Arrays.asList("db.user=postgres", "db.password=cares1010", "sparql.query.endpoint="+endpoint, "sparql.update.endpoint="+endpoint));
         
         // Initialise TimeSeriesClient client with pre-configured kb client
@@ -118,6 +120,7 @@ public class RFIDQueryAgentIntegrationTest {
          
         // Configure database access
         tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+
         //Initialise mock timeseries in triple store and relational database
         classes = new ArrayList<>();
         classes.add(0, String.class);
@@ -130,7 +133,6 @@ public class RFIDQueryAgentIntegrationTest {
     public void addMockTimeSeriesData() {
         String value = "Out";
 
-        allReadings = new JSONObject();
         Values = new ArrayList<>();
         Values.add(0, value);
 
@@ -142,7 +144,6 @@ public class RFIDQueryAgentIntegrationTest {
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         Object ts = sdf.format(date);
-
         timestamp = ts.toString();
         
         testIRIs = new ArrayList<>();
@@ -163,32 +164,9 @@ public class RFIDQueryAgentIntegrationTest {
             postgres.stop();
         }
     }
-
-    /**
-     * Converts a string into a datetime object with zone information using the zone globally define for the agent.
-     * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
-     * @return The resulting datetime object.
-     */
-    private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
-        // Convert first to a local time
-        LocalDateTime localTime = LocalDateTime.parse(timestamp);
-        // Then add the zone id
-        return OffsetDateTime.of(localTime, ZoneOffset.UTC);
-    }
-    
-    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
-        // Overwrite potentially existing properties file
-        FileWriter writer = new FileWriter(filepath, false);
-        // Populate file
-        for (String s : properties) {
-            writer.write(s + "\n");
-        }
-        // Close the file and return the file
-        writer.close();
-    }
     
     @Test
-    public void querylatestRFIDStatusError() throws IOException {
+    public void querylatestRFIDStatusFail() throws IOException {
     	try {
     		agent.queryLatestRFIDStatus("wrong_data_iri");
     		Assert.fail();
@@ -208,14 +186,36 @@ public class RFIDQueryAgentIntegrationTest {
         //create rdbclient
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
         agent.setRDBClient(rdbStoreClient);
-
-        agent.setRDBClient(rdbStoreClient);
         agent.setTsClient(tsClient);
         TimeSeries<OffsetDateTime> timeseries = agent.queryLatestRFIDStatus(IRIs.get(0));
 
         Assert.assertEquals("Out", timeseries.getValuesAsString(IRIs.get(0)).get(0));
         Assert.assertTrue(timeseries.getTimes().get(0).toString(), true);
-    }    
+    }
+
+    /**
+     * Converts a string into a datetime object with zone information using the zone globally define for the agent.
+     * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
+     * @return The resulting datetime object.
+     */
+    private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
+        // Convert first to a local time
+        LocalDateTime localTime = LocalDateTime.parse(timestamp);
+
+        // Then add the zone id
+        return OffsetDateTime.of(localTime, ZoneOffset.UTC);
+    }
+    
+    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
+        // Overwrite potentially existing properties file
+        FileWriter writer = new FileWriter(filepath, false);
+        // Populate file
+        for (String s : properties) {
+            writer.write(s + "\n");
+        }
+        // Close the file and return the file
+        writer.close();
+    }
     
 }
     	

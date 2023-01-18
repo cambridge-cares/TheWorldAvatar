@@ -52,6 +52,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     
     //set kbClient
     RemoteStoreClient kbClient = new RemoteStoreClient();
+
+	//tsClient
+	TimeSeriesClient<OffsetDateTime> tsClient;
     
     //JSONObjects
     JSONObject message;
@@ -73,12 +76,15 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
+
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to Agent..");
         	String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
         	String DataIRIs = requestParams.getString(KEY_DATAIRIS);
 			String numOfHours = requestParams.getString(KEY_NUMOFHOURS);
+
             String[] args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours};
+
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("message","POST request has been sent successfully.");
             requestParams = jsonMessage;
@@ -98,8 +104,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
       
       if (requestParams.isEmpty()) {
     	  validate = false;
-    	  LOGGER.info("Empty Request!");
-    	  
+    	  LOGGER.info("Empty Request!");  
       }
       else {
 		validate = requestParams.has(KEY_TIMESERIES_CLIENTPROPERTIES);
@@ -121,7 +126,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     }
     
     public JSONObject initializeAgent(String[] args) {
-    	
     	 // Ensure that there are three arguments provided
         if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
@@ -131,6 +135,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     	
          // Create the agent
 		 RFIDQueryAgent agent;
+
 		 try {
 			 agent = new RFIDQueryAgent(args[1], args[2]);
 		 } catch (IOException e) {
@@ -138,6 +143,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			 throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
 		 }
 		 LOGGER.info("Input agent object initialized.");
+
 		 JSONObject jsonMessage = new JSONObject();
 		 jsonMessage.accumulate("Result", "Input agent object initialized.");
 		 
@@ -150,7 +156,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		 RemoteStoreClient kbClient = new RemoteStoreClient();
 		 kbClient.setQueryEndpoint(sparqlQueryEndpoint);
 		 kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
-		 TimeSeriesClient<OffsetDateTime> tsClient;
 		 
 		 RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
 		 agent.setRDBClient(rdbStoreClient);
@@ -163,10 +168,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			 LOGGER.error(TSCLIENT_ERROR_MSG, e);
 			 throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
 		 }
+
 		 LOGGER.info("Time series client object initialized.");
 		 jsonMessage.accumulate("Result", "Time series client object initialized.");
 
 		 JSONObject overallResults = new JSONObject();
+
 		 try {
 			overallResults = agent.queriesStatusAndCheckTimeStamps();
 			LOGGER.info("Queried for latest RFID tag status and checked timestamp threshold.");
@@ -177,8 +184,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			LOGGER.error(GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG, e);
 			throw new JPSRuntimeException(GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG ,e);
 		}
+
 		/**
-		 * loop through results to get tag ID, exceedThreshold
+		 * loop through results to get data IRI, exceedThreshold, timestamp
 		 * If exceedThreshold is true, query for chemical species info
 		 * Run sendEmail with tag ID, chemical species info
 		 */
@@ -189,6 +197,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			String dataIRI = a.getString("dataIRI");
 
 			LOGGER.info("exceedThreshold for " + dataIRI + " is " + exceedThreshold);
+
 			if (exceedThreshold == true){
 				LOGGER.info("Preparing to send email...");
 				agent.sendEmail(dataIRI, "Potassium Nitrate", timestamp);
@@ -196,7 +205,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}
 		}
-		 
 		 return jsonMessage;
 	 }
 
@@ -211,6 +219,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
         if (!file.exists()) {
             throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
         }
+		
         try (InputStream input = new FileInputStream(file)) {
 
             // Load properties file from specified path

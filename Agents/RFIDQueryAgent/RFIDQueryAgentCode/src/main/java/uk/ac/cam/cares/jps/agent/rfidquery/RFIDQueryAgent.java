@@ -113,6 +113,7 @@ public class RFIDQueryAgent{
      */
     public JSONObject queriesStatusAndCheckTimeStamps() {
         JSONObject results = new JSONObject();
+
         for (int i = 0; i <= dataIRIList.size() - 1; i++) {
             JSONObject values = new JSONObject();
             TimeSeries<OffsetDateTime> LatestTimeSeries = queryLatestRFIDStatus(dataIRIList.get(i));
@@ -120,6 +121,7 @@ public class RFIDQueryAgent{
             results.put("iri_"+i, values);
             LOGGER.info(results);
         }
+
         LOGGER.info("The final result is " + results);
         return results;
     }
@@ -133,34 +135,44 @@ public class RFIDQueryAgent{
      */
     public JSONObject checkRFIDStatusThreshold (TimeSeries<OffsetDateTime> timeSeriesObject, String dataIRI, Long hours) {
     	Boolean exceedThreshold = false ;
+        String latestTimeSeriesValue ;
+        OffsetDateTime latestTimeStamp ;
+
+        try {
         //process timeseries object and convert to a suitable form, retrieve values only
     	dataValuesAsString = timeSeriesObject.getValuesAsString(dataIRI);
-    	String latestTimeSeriesValue = dataValuesAsString.get(dataValuesAsString.size() - 1);
-    	OffsetDateTime latestTimeStamp = timeSeriesObject.getTimes().get(timeSeriesObject.getTimes().size() - 1);
+    	latestTimeSeriesValue = dataValuesAsString.get(dataValuesAsString.size() - 1);
+    	latestTimeStamp = timeSeriesObject.getTimes().get(timeSeriesObject.getTimes().size() - 1);
+        } catch (Exception e){
+            throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object.");
+        }
+
     	if (latestTimeSeriesValue.contains("In")) {
     	LOGGER.info("The latest RFID status is " + latestTimeSeriesValue);
-    	
     	LOGGER.info("The latest timestamp is "+ latestTimeStamp);
-
         exceedThreshold = false;
-
-    	} else if (latestTimeSeriesValue.contains("Out")) {
+    	} 
+        else if (latestTimeSeriesValue.contains("Out")) {
             // if latest status is Out and timestamp is "2022-10-27 18:20:02+08"
 			// take timestamp and add the number of hours in which a bottle is allowed to be outside of the cabinet for 
 			// e.g. "2022-10-27 18:20:02+08 + 4 hours = 2022-10-27 22:20:02+08"
+            //This is the thresholdTimeStamp
             OffsetDateTime thresholdTimeStamp = latestTimeStamp.plusHours(hours);
+
             long timestamp = System.currentTimeMillis();
             Date date = new java.util.Date(timestamp);
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Object ts = sdf.format(date);
             LocalDateTime localTime = LocalDateTime.parse(ts.toString());
+
             // Then add the zone id
             OffsetDateTime currentDateTime = OffsetDateTime.of(localTime, ZoneOffset.UTC);
 
             // if 2022-10-27 22:20:02+08 is before the current date time, it means that the bottle has been outside of the cabinet for a time
             // period longer than the allowed duration
             LOGGER.info("Comparing threshold timestamp " + thresholdTimeStamp + " with current timestamp " + currentDateTime);
+
             if (thresholdTimeStamp.isBefore(currentDateTime)) {
                 exceedThreshold = true;
             }
@@ -168,7 +180,9 @@ public class RFIDQueryAgent{
                 exceedThreshold = false;
             }
         }
+        
         JSONObject values = new JSONObject();
+
         values.put("exceedThreshold", exceedThreshold);
         values.put("timestamp", latestTimeStamp.toString());
         values.put("dataIRI", dataIRI);
@@ -187,7 +201,6 @@ public class RFIDQueryAgent{
             emailMessages = "The bottle with the following information has been removed since " + latestTimeStamp.toString() + 
             ". The bottle has the following tag ID " + tagID + " and it is storing " + chemicalSpeciesName + ". This chemical species has the following information: ";
             sender.sendEmail("Alert!", emailMessages);
-        
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to send out alert email!");
         }
