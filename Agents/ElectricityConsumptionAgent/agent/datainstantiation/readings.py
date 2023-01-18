@@ -3,10 +3,6 @@
 # Date: 30/11 2022                            #
 ################################################
 
-# The purpose of this module is to read the Electricity consumption data, 
-# and instantiate both the data along with timeseries
-# into the Knowledge graph
-
 from tqdm import tqdm
 import time
 import os

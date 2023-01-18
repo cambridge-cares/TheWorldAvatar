@@ -1,6 +1,10 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 09 Sep 2022                            #
+# Date: 30 Oct 2022                            #
+################################################
+################################################
+# Editor: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
 ################################################
 
 # The purpose of this module is to provide functionality to interact with the
@@ -12,7 +16,7 @@ import json
 
 import agentlogging
 from agent.errorhandling.exceptions import StackException
-from agent.kgutils.javagateway import jpsBaseLibGW # stackClientsGw, 
+from agent.kgutils.javagateway import jpsBaseLibGW, stackClientsGw
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
 

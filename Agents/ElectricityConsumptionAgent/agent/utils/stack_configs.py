@@ -1,6 +1,6 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 08 Sep 2022                            #
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
 ################################################
 
 # The purpose of this module is to retrieve relevant properties and settings 
@@ -8,7 +8,7 @@
 
 import agentlogging
 
-#from agent.kgutils.javagateway import stackClientsGw
+from agent.kgutils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE
 
 # Initialise logger

@@ -1,7 +1,11 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 04 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 30 Oct 2022                            #
+################################################
+################################################
+# Editor: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
 
 # The purpose of this module is to provide a mapping between retrieved 
 # observation variables from Met Office (via metoffer) to corresponding

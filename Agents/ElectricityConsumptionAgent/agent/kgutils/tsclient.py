@@ -1,6 +1,10 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
-# Date: 08 Apr 2022                            #
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 30 Oct 2022                            #
+################################################
+################################################
+# Editor: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
 ################################################
 
 # The purpose of this module is to provide functionality to use
@@ -12,8 +16,7 @@ import agentlogging
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.utils.readings_mapping import TIMECLASS
-#from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
-from agent.datamodel.spec import *
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

@@ -1,3 +1,8 @@
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
+
 class InvalidInput(Exception):
     """Raise in case of an invalid input to the agent."""
 

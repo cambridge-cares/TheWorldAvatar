@@ -18,8 +18,7 @@ import agentlogging
 from agent.datamodel.iris import *
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import KGException
-#from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.datamodel.spec import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

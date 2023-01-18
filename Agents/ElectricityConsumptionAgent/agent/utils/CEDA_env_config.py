@@ -1,3 +1,14 @@
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk) #
+# Date: 30/11 2022                            #
+################################################
+
+# This module will record your CEDA username and password (as Encrypted text) through a popped window, 
+# and saved in the ./downloads/.env path, which can be retrieved as environmental variable. 
+# Note that this module will try to login in to CEDA using the username and password you provided, 
+# only if the login success, .env will be saved. If the login failed for more than 5 times which will raise 
+# an InvalidInputError and stop the module.
+
 import PySimpleGUI as sg
 import os
 from cryptography.fernet import Fernet
