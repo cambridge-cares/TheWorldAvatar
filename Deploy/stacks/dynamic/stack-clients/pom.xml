@@ -22,6 +22,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
+
+    <yaml.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</yaml.file>
+
   </properties>
 
   <!-- Repository locations to deploy to -->
@@ -42,10 +46,25 @@
 
   <dependencies>
 
+    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
-      <groupId>io.kubernetes</groupId>
-      <artifactId>client-java</artifactId>
-      <version>15.0.1</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+
+    <!--
+    https://mvnrepository.com/artifact/org.threeten/threetenbp -->
+    <dependency>
+      <groupId>org.threeten</groupId>
+      <artifactId>threetenbp</artifactId>
+      <version>1.6.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>1.6.9</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
@@ -125,17 +144,14 @@
             <manifest>
               <!-- These properties add the copied dependencies to the classpath so the .jar can
               find them at runtime. -->
-              <addClasspath>
-                true</addClasspath>
+              <addClasspath>true</addClasspath>
               <classpathPrefix>./lib/</classpathPrefix>
               <classpathLayoutType>simple</classpathLayoutType>
               <useUniqueVersions>false</useUniqueVersions>
-              <mainClass>
-                com.cmclinnovations.stack.App</mainClass>
+              <mainClass>com.cmclinnovations.stack.App</mainClass>
             </manifest>
           </archive>
-          <outputDirectory>
-            ${project.build.directory}</outputDirectory>
+          <outputDirectory>${project.build.directory}</outputDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -155,6 +171,52 @@
                 runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <useRepositoryLayout>false</useRepositoryLayout>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>2.4.29</version>
+        <configuration>
+          <inputSpec>${yaml.file}</inputSpec>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-swagger-client</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <output>${project.build.directory}/generated-sources/swagger</output>
+              <language>java</language>
+              <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
+              <generateApis>false</generateApis>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <addCompileSourceRoot>false</addCompileSourceRoot>
+              <modelsToGenerate>ListPodsReport,ListPodContainer,OffsetDateTime</modelsToGenerate>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/swagger/src/main/java</source>
+              </sources>
             </configuration>
           </execution>
         </executions>
