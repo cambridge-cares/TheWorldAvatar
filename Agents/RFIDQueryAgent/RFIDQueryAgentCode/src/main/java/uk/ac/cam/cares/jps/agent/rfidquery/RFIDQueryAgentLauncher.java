@@ -84,8 +84,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
             requestParams = jsonMessage;
             }
       else {
-    	  jsonMessage.accumulate("message","Unable to validate request sent to the agent.");
-    	  requestParams = jsonMessage;
+    	  LOGGER.info("Unable to validate request sent to the agent!");
+    	  throw new JPSRuntimeException("Unable to validate request sent to the agent!");
       }
 	return requestParams;
 }
@@ -113,7 +113,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			timeseriesClientProperties =  (requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
 			if (System.getenv(timeseriesClientProperties) == null) {
 				validate = false;
-				LOGGER.info("Environment variable is not assigned to the timeseries client properties file!");
+				LOGGER.info("Unable to find properties file!");
 			}
 		}
 	}
@@ -234,12 +234,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
             if (prop.containsKey("sparql.query.endpoint")) {
 	        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
 	        } else {
-	        	throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+	        	throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
 	        }
 	        if (prop.containsKey("sparql.update.endpoint")) {
 	        	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
 	        } else {
-	        	throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+	        	throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
 	        }
         }
         }
