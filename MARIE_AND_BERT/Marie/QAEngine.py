@@ -124,14 +124,14 @@ class QAEngine:
             result_list.append(row)
         return result_list
 
-    def run(self, question, head=None, mention=None):
+    def run(self, question, head=None, mention=None, test=False):
         """
         :param mention:
         :param head: directly give a head for testing and evaluation purpose.
         :param question:
         :return:
         """
-        if mention is None:
+        if test:
             mention = self.chemical_nel.get_mention(question=question)
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
