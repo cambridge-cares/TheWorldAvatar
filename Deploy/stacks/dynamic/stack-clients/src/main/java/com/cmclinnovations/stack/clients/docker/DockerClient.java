@@ -596,12 +596,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     public Optional<Secret> getSecret(String secretName) {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
             String fullSecretName = StackClient.prependStackName(secretName);
-            return listSecretsCmd
-                    .withNameFilter(List.of(fullSecretName))
-                    .withLabelFilter(getSecretLabels())
-                    .exec().stream()
-                    .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
-                    .findFirst();
+            return getSecret(listSecretsCmd.withNameFilter(List.of(fullSecretName)).exec(), secretName);
         }
     }
 
@@ -614,9 +609,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
-            return listSecretsCmd
-                    .withLabelFilter(getSecretLabels())
-                    .exec().stream().collect(Collectors.toList());
+            return listSecretsCmd.exec().stream().collect(Collectors.toList());
         }
     }
 
