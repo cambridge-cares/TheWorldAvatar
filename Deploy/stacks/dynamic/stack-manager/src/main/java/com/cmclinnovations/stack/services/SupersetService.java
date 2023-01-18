@@ -59,13 +59,12 @@ public class SupersetService extends ContainerService {
             Map<String, String> upstreams, Entry<String, Connection> endpoint) {
         Connection connection = endpoint.getValue();
         URI externalPath = connection.getExternalPath();
-        URL url = connection.getUrl();
 
         // adding redirection of problematic uris
-        NgxBlock specialRedirectionParma = new NgxBlock();
-        specialRedirectionParma.addValue(LOCATION);
-        specialRedirectionParma.addValue("~");
-        specialRedirectionParma.addValue("^/(" + String.join("|", PROBLEMATICURIEXTENTIONS_LIST) + ")");
+        NgxBlock specialRedirectionBlock = new NgxBlock();
+        specialRedirectionBlock.addValue(LOCATION);
+        specialRedirectionBlock.addValue("~");
+        specialRedirectionBlock.addValue("^/(" + String.join("|", PROBLEMATICURIEXTENTIONS_LIST) + ")");
 
         NgxParam tryFileParam = new NgxParam();
         tryFileParam.addValue("try_files");
@@ -73,21 +72,22 @@ public class SupersetService extends ContainerService {
         tryFileParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true) + "$uri");
         tryFileParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true) + "$uri?$query_string");
         tryFileParam.addValue("@rules");
-        specialRedirectionParma.addEntry(tryFileParam);
+        specialRedirectionBlock.addEntry(tryFileParam);
+        locationConfigOut.addEntry(specialRedirectionBlock);
 
         // adding @rules "return 308
         // http://localhost:3850/dashboard$uri$is_args$query_string;"
-        NgxBlock spectialRedirectionParma = new NgxBlock();
-        spectialRedirectionParma.addValue(LOCATION);
-        spectialRedirectionParma.addValue("~");
-        spectialRedirectionParma.addValue("^/(" + String.join("|", PROBLEMATICURIEXTENTIONS_LIST) + ")");
+        NgxBlock rulesBlock = new NgxBlock();
+        rulesBlock.addValue(LOCATION);
+        rulesBlock.addValue("@rules");
 
         NgxParam ruleParam = new NgxParam();
         ruleParam.addValue("return");
         ruleParam.addValue("308");
-        ruleParam.addValue(FileUtils.fixSlashs(url.getPath(), false, true)
-                + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$uri$is_args$query_string");
-        spectialRedirectionParma.addEntry(ruleParam);
+        ruleParam.addValue("$scheme://$http_host" + FileUtils.fixSlashs(externalPath.getPath(), true, false)
+                + "$uri$is_args$query_string");
+        rulesBlock.addEntry(ruleParam);
+        locationConfigOut.addEntry(rulesBlock);
     }
 
     @Override
