@@ -29,7 +29,7 @@ class QueryBuilder:
     def __init__(self, query_type: int = 0):
         if query_type == 0:
             self.prefix = ""
-            self.select_string = "SELECT {"
+            self.select_string = "SELECT "
             self.where_string = "WHERE {"
         else:
             logger.error("Invalid query_type parameter! Valid parameter includes 0.")
@@ -37,7 +37,7 @@ class QueryBuilder:
 
 
     def __str__(self):
-        return self.prefix + self.select_string + "} " + self.where_string + "}"
+        return self.prefix + self.select_string + self.where_string + "}"
 
 
     def add_prefix(self, namespace: str, prefix: str ="base"):
@@ -78,9 +78,9 @@ class QueryBuilder:
             subject - subject node in the form "prefix:class" [iri] or "var" [variable]
             predicate - predicate node in the form "prefix:property" [iri] or "var" [variable]
             object - object node in the form "prefix:class" [iri] or "var" [variable]
-            var_ind - an indicator determining which nodes are variables. 0 indicates no variable,
-                1 references subject, 2 references predicate, 3 references object,
-                4 references subject and predicate, 5 references subject and object,
+            var_ind - an indicator determining which nodes are variables. 0 indicates no variable,\
+                1 references subject, 2 references predicate, 3 references object,\
+                4 references subject and predicate, 5 references subject and object,\
                 6 references predicate and object, 7 references all as variables
         """
         if var_ind == 0:
@@ -119,7 +119,8 @@ class QueryBuilder:
 
         Arguments:
             var - variable for filtering
-            *values - a variable number of values to be added for filtering
+            *values - a variable number of values to be added for filtering \
+                if values are classes, please input as "prefix:class"
         """
         if "VALUES" in self.where_string:
             logger.warning("VALUES clause has already been defined!")
@@ -128,7 +129,8 @@ class QueryBuilder:
         self.where_string += "VALUES ?" + var + self.whitespace + "{"
         # Add each value to the string
         for value in values:
-            if isinstance(value, str):
+            # If value is a string and is not in prefix:iri format
+            if isinstance(value, str) and ":" not in value:
                 self.where_string += "'" + (value) + "'" + self.whitespace
             else:
                 self.where_string += str(value) + self.whitespace

@@ -18,7 +18,7 @@ def test_init_querybuilder():
     """
     builder = QueryBuilder(0)
     assert builder.prefix == ""
-    assert builder.select_string == "SELECT {"
+    assert builder.select_string == "SELECT "
     assert builder.where_string == "WHERE {"
 
 
@@ -89,7 +89,7 @@ def test_add_select_var():
     # Execute methods
     builder.add_select_var(test_var)
     # Test assertion
-    assert builder.select_string == "SELECT {?" + test_var + " "
+    assert builder.select_string == "SELECT ?" + test_var + " "
 
 
 def test_add_where_triple():
@@ -166,6 +166,12 @@ def test_add_values_where():
     # Test method
     assert builder.where_string == "WHERE {VALUES ?" + test_var + " {'test' 'result' } \n"
 
+    # Test for classes
+    builder = QueryBuilder(0)
+    builder.add_values_where(test_var, "base:Subject", "base:Object")
+    # Test method
+    assert builder.where_string == "WHERE {VALUES ?" + test_var + " {base:Subject base:Object } \n"
+
 
 def test_add_values_where_fail():
     """
@@ -195,7 +201,7 @@ def test_str_return():
     builder.add_select_var(subject, pred, object_node)
     builder.add_where_triple(subject, pred, object_node, 7)
     # Generate expected values
-    expected = "SELECT {?" + subject + " ?" + pred + " ?" + object_node + " } "
+    expected = "SELECT ?" + subject + " ?" + pred + " ?" + object_node + " "
     expected += "WHERE {?" + subject + " ?" + pred + " ?" + object_node + ".\n}"
     # Test assertion
     assert str(builder) == expected
