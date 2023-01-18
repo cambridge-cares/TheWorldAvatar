@@ -5,12 +5,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.Map;
 
+import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.core.util.FiltersBuilder;
 
-import io.kubernetes.client.openapi.models.V1Pod;
 
-public class ListPodsCmdImpl extends AbstrDockerCmd<ListPodsCmd, List<V1Pod>> implements
+public class ListPodsCmdImpl extends AbstrDockerCmd<ListPodsCmd, List<ListPodsReport>> implements
         ListPodsCmd {
 
     private FiltersBuilder filters = new FiltersBuilder();

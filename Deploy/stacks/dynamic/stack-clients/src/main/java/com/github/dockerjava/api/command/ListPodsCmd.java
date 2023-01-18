@@ -5,9 +5,9 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
-import io.kubernetes.client.openapi.models.V1Pod;
+import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 
-public interface ListPodsCmd extends SyncDockerCmd<List<V1Pod>> {
+public interface ListPodsCmd extends SyncDockerCmd<List<ListPodsReport>> {
 
     @CheckForNull
     Map<String, List<String>> getFilters();
@@ -17,6 +17,6 @@ public interface ListPodsCmd extends SyncDockerCmd<List<V1Pod>> {
      */
     ListPodsCmd withNameFilter(List<String> names);
 
-    interface Exec extends DockerCmdSyncExec<ListPodsCmd, List<V1Pod>> {
+    interface Exec extends DockerCmdSyncExec<ListPodsCmd, List<ListPodsReport>> {
     }
 }

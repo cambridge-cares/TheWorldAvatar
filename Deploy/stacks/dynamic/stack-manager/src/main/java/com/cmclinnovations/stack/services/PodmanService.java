@@ -6,10 +6,10 @@ import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.model.Container;
 
-import io.kubernetes.client.openapi.models.V1Pod;
 
 public class PodmanService extends DockerService {
 
@@ -52,7 +52,7 @@ public class PodmanService extends DockerService {
         return container;
     }
 
-    private Optional<V1Pod> getPod(ContainerService service) {
+    private Optional<ListPodsReport> getPod(ContainerService service) {
         try (ListPodsCmd listPodsCmd = getClient().getInternalClient().listPodsCmd()) {
             return listPodsCmd.withNameFilter(List.of(service.getContainerName()))
                     .exec().stream().findAny();
@@ -60,7 +60,7 @@ public class PodmanService extends DockerService {
     }
 
     private void removePod(ContainerService service) {
-        Optional<V1Pod> pod = getPod(service);
+        Optional<ListPodsReport> pod = getPod(service);
 
         if (pod.isPresent()) {
             // try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
