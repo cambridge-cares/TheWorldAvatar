@@ -1,21 +1,23 @@
 package com.github.dockerjava.core.exec;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.MediaType;
 import com.github.dockerjava.core.WebTarget;
 import com.github.dockerjava.core.util.FiltersEncoder;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import io.kubernetes.client.openapi.models.V1Pod;
-import jakarta.json.JsonObject;
 
 public class ListPodsCmdExec extends AbstrSyncDockerCmdExec<ListPodsCmd, List<V1Pod>> implements
         ListPodsCmd.Exec {
@@ -39,17 +41,17 @@ public class ListPodsCmdExec extends AbstrSyncDockerCmdExec<ListPodsCmd, List<V1
 
         LOGGER.trace("GET: {}", webTarget);
 
-        List<JsonObject> podsJson = webTarget.request().accept(MediaType.APPLICATION_JSON)
-                .get(new TypeReference<List<JsonObject>>() {
-                });
+        try (InputStream inputStream = webTarget.request().accept(MediaType.APPLICATION_JSON).get();
+                Reader reader = new InputStreamReader(inputStream)) {
+            List<V1Pod> pods = gson.fromJson(reader, new TypeToken<List<V1Pod>>() {
+            }.getType());
 
-        List<V1Pod> pods = podsJson.stream()
-                .map(object -> gson.fromJson(object.toString(), V1Pod.class))
-                .collect(Collectors.toList());
+            LOGGER.trace("Response: {}", pods);
 
-        LOGGER.trace("Response: {}", pods);
-
-        return pods;
+            return pods;
+        } catch (IOException ex) {
+            throw new RuntimeException(null, ex);
+        }
     }
 
 }
