@@ -367,3 +367,17 @@ def instantiate_building_elevation(elevation_data):
     query = ' '.join(query.split())
 
     return query
+
+
+def get_property_value(prop_iri: str):
+    # Retrieve usages of OntoBuiltEnv buildings 
+    query = f"""
+        SELECT ?prop_value
+        WHERE {{
+        <{prop_iri}> <{OBE_HAS_LATEST_TRANSACTION}> ?transaction .
+        ?transaction <{LRPPI_PRICE}> ?prop_value .
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query

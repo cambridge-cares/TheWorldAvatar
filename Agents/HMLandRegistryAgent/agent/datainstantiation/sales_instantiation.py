@@ -63,9 +63,9 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         kgclient_hm = KGClient(api_endpoint, api_endpoint)
 
     # Initialise relevant Stack Clients and parameters
-    postgis_client = PostGISClient()
-    gdal_client = GdalClient()
-    geoserver_client = GeoserverClient()
+    # postgis_client = PostGISClient()
+    # gdal_client = GdalClient()
+    # geoserver_client = GeoserverClient()
 
     # 1) Retrieve location information for properties from list
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
@@ -164,7 +164,6 @@ def update_all_transaction_records(min_conf_score=90,
     #    Property Price Indices in OntoBuiltEnv
     logger.info('Updating UK House Price Index ...')
     districts = get_admin_district_index_dict(kgclient_obe)
-
     for d in districts: 
         if not d['ukhpi']:
             # Instantiate Property Price Index (i.e. time series data IRI) if
@@ -552,13 +551,13 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
 
             # Iterate through all buildings (each building represents one geospatial feature)
             for b in data['obe_bldg'].unique():
-                # # Get building usage
-                # query = get_buildings_usage()
-                # try:
-                #     usage = kgclient_epc.performQuery(query)
-                # except KGException as ex:
-                #     logger.error('Unable to retrieve building usage category.')
-                #     raise KGException('Unable to retrieve building usage category.') from ex
+                # Get building usage
+                query = get_property_value(b)
+                try:
+                    prop_value = kgclient_epc.performQuery(query)
+                except KGException as ex:
+                    logger.error('Unable to retrieve property value.')
+                    raise KGException('Unable to retrieve property value.') from ex
                 # Extract all floor surface geometries for this building
                 surf = data[data['obe_bldg'] == b]
                 # Initialise list of surface geometry coordinates (polygons)
@@ -605,7 +604,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
                     'type': feature_type,
-                    # 'usage': usage,
+                    'property_value': prop_value,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])
