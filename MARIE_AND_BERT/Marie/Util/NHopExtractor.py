@@ -14,13 +14,14 @@ class HopExtractor:
     The Hop Extractor class extracts n-hop neighbours of a certain entity.
     """
 
-    def __init__(self, dataset_dir, dataset_name, n: int = 3):
+    def __init__(self, dataset_dir, dataset_name, n: int = 3, numerical=False):
         """
         Initialize the extractor instance
         :param dataset_dir: the folder of the triples and indexing files
         :param dataset_name: the names of the dataset
         :param n: the maximum distance between the head entity and the neighbours
         """
+        self.numerical = numerical
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
         self.n = n
@@ -31,8 +32,12 @@ class HopExtractor:
         self.relation2idx_path = os.path.join(DATA_DIR, self.dataset_dir, f'relation2idx.pkl')
         self.relation2idx = pickle.load(open(self.relation2idx_path, "rb"))
         self.ent_labels = list(self.entity2idx.keys())
-        self.three_hop_dict_label_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_label')
-        self.three_hop_dict_index_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_index')
+        if self.numerical:
+            self.three_hop_dict_label_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_label_numerical')
+            self.three_hop_dict_index_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_index_numerical')
+        else:
+            self.three_hop_dict_label_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_label')
+            self.three_hop_dict_index_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_index')
         self.three_hop_dict_label = {}
         self.three_hop_dict_index = {}
         self.parse_knowledge_graph()
@@ -124,9 +129,9 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    ontology = "pubchem"
+    ontology = "ontokin_reactions_test"
     # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/{ontology}'),
-                                dataset_name=ontology)
+                                dataset_name="ontokin_reactions_test")
 
     print(time.time() - START_TIME)
