@@ -16,7 +16,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
     
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
@@ -47,6 +47,9 @@ def retrieve_settings():
     # for Blazegraph)
     QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
+
+    # Extract ONTOP endpoint
+    ONTOP_URL = ont_conf.getUrl()
 
 
 # Run when module is imported

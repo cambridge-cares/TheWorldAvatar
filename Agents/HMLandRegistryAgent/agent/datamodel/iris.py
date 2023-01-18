@@ -48,6 +48,8 @@ OBE_HAS_IDENTIFIER = OBE + 'hasIdentifier'
 OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
+OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
+OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
@@ -118,3 +120,11 @@ OM_M = OM + 'metre'
 OM_M2 = OM + 'squareMetre'
 OM_GBP = OM + 'poundSterling'
 UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
+
+###--- OntoCityGml TBox ---###
+OCGML_BLDG_HEIGHT = OCGML + 'measuredHeigh'     # typo intended (part of OCGML ontology)
+OCGML_BLDG_HEIGHT_UNIT = OCGML + 'measuredHeightUnit'
+OCGML_FOOTPRINT = OCGML + 'lod0FootprintId'
+OCGML_GEOM_TYPE = OCGML + 'GeometryType'
+OCGML_ROOT_ID = OCGML + 'rootId'
+OCGML_SRSNAME = OCGML + 'srsname'

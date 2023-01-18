@@ -28,6 +28,7 @@ COPY --from=stackclients /app ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+COPY ./resources/ontop.obda ./resources/ontop.obda
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries

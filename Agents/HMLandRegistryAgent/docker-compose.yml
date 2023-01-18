@@ -7,10 +7,17 @@ services:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
+      # Target Blazegraph namespace
       - NAMESPACE=buildings
+      # Layer name in geoserver, also table name in PostGIS
+      - LAYERNAME=buildings
+      - GEOSERVER_WORKSPACE=buildings
+      - OCGML_ENDPOINT=http://192.168.1.117:9999/blazegraph/namespace/ocgml/sparql
+      - ONTOP_FILE=/app/resources/ontop.obda
     ports:
       - "5002:5000"
     volumes:
+      - ./data:/app/data
       - logs:/root/.jps
     configs:
       - blazegraph

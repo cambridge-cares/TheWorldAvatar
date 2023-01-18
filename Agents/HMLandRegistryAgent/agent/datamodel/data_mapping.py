@@ -32,6 +32,12 @@ PPD_PROPERTY_TYPES = {
 # --> Use to xsd:date, i.e. ISO 8601 YYYY-MM-DD
 TIME_FORMAT = 'YYYY-MM-DD'
 
+# Define full coordinate reference systems (CRS) for pyproj
+CRSs = {'EPSG:27700': 'urn:ogc:def:crs:EPSG::27700',
+        'EPSG:4326': 'urn:ogc:def:crs:EPSG::4326',
+        'crs_84': 'urn:ogc:def:crs:OGC::CRS84'
+        }
+
 ### Create required JAVA classes ###
 
 # Create data class for time entries (LocalDate)

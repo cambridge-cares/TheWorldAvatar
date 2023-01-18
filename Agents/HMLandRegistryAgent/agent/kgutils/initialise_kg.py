@@ -128,7 +128,7 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
                 with open(temp_fp, 'w') as f:
                     f.write(content.text)
                 # Create Java file
-                temp_f = kg_client.jpsBaseLib_view.java.io.File(temp_fp)
+                temp_f = kg_client.jpsBaseLibView.java.io.File(temp_fp)
                 # Upload .owl file to KG
                 logger.info(f'Uploading {i} .owl file to KG ...')
                 kg_client.kg_client.uploadFile(temp_f)
