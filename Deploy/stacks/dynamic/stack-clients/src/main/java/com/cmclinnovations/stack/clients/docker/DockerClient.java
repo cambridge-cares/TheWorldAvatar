@@ -87,7 +87,6 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder
-                .withApiVersion(RemoteApiVersion.VERSION_1_40)
                 .build();
 
         DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
