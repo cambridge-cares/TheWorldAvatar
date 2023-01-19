@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='pyderivationagent',
-    version='1.4.1',
+    version='1.4.2',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
