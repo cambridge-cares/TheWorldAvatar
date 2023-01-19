@@ -873,12 +873,12 @@ public class DerivationClient {
 	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
 		// if another agent thread is cleaning up the same derivation concurrently
-		// and successed before this thread, then this method will return false
+		// and succeeded before this thread, then this method will return false
 		if (this.sparqlClient.addUuidLockToFinishedStatus(derivation)) {
 			// only progress to clean up if the uuidLock is added successfully
 			// otherwise, the other thread will handle the job, or it is already cleaned up
 			cleanUpFinishedDerivation(derivation);
-			LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleand up.");
+			LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleaned up.");
 		}
 	}
 
