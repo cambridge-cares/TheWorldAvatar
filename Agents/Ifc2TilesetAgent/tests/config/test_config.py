@@ -4,6 +4,9 @@
 A test suite for the agent.config.config submodule.
 """
 
+# Standard import
+import os
+
 # Third party import
 import pytest
 import yaml
@@ -52,15 +55,18 @@ def test_set_properties():
     # Set up and generate sample yaml file
     yaml_path = 'sample.yml'
     gen_test_yaml_file(yaml_path)
-    # Execute method
-    res_query_endpoint, res_update_endpoint = properties.set_properties(yaml_path)
-    # Generate expected box
-    expected_root_bbox = [40, 0, 15, 50, 0, 0, 0, 50, 0, 0, 0, 5]
-    expected_child_bbox = [10, 0, 5, 25, 0, 0, 0, 25, 0, 0, 0, 3]
-    assert expected_root_bbox == properties.bbox_root
-    assert expected_child_bbox == properties.bbox_child
-    assert ENDPOINT == res_query_endpoint
-    assert ENDPOINT == res_update_endpoint
+    try:
+        # Execute method
+        res_query_endpoint, res_update_endpoint = properties.set_properties(yaml_path)
+        # Generate expected box
+        expected_root_bbox = [40, 0, 15, 50, 0, 0, 0, 50, 0, 0, 0, 5]
+        expected_child_bbox = [10, 0, 5, 25, 0, 0, 0, 25, 0, 0, 0, 3]
+        assert expected_root_bbox == properties.bbox_root
+        assert expected_child_bbox == properties.bbox_child
+        assert ENDPOINT == res_query_endpoint
+        assert ENDPOINT == res_update_endpoint
+    finally:
+        os.remove(yaml_path)
 
 
 def test_bbox_root():

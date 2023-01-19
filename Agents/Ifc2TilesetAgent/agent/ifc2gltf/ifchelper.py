@@ -31,11 +31,11 @@ def append_aggregate(aggregates_df, dictionary):
         for row in range(len(aggregates_df.index)):
             file_cell = aggregates_df['file'].iloc[row]
             if file_cell == "furniture":
-                furniture_elements.append(file_cell)
+                furniture_elements.append(aggregates_df[ID_VAR].iloc[row])
             elif file_cell == "solarpanel":
-                solar_panel_elements.append(file_cell)
+                solar_panel_elements.append(aggregates_df[ID_VAR].iloc[row])
             elif file_cell == "sewagenetwork":
-                sewage_network_elements.append(file_cell)
+                sewage_network_elements.append(aggregates_df[ID_VAR].iloc[row])
     # Add to dictionary if list is not empty
     if furniture_elements:
         dictionary["furniture"] = furniture_elements
@@ -87,6 +87,8 @@ def gendict4split(dataframe):
         logger.debug("Appending individual assets to dictionary...")
         assetdata = dataframe.loc[~dataframe['file'].isin(aggregatelist)]
         append_individual_asset(assetdata, dict_elements)
+    else:
+        assetdata = {}
     return dict_elements, assetdata
 
 

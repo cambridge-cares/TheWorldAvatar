@@ -82,7 +82,7 @@ def read_ifc_file(ifc_dir):
     elif len(filelist) == 1:
         ifc_input = os.path.join(ifcpath, filelist[0])
         logger.debug("One IFC file detected: " + ifc_input)
-    else:
+    elif len(filelist)>1:
         errormsg = 'More than one IFC file is located at the ./data/ifc folder. '
         errormsg += 'Please place only ONE IFC file'
         logger.error(errormsg)

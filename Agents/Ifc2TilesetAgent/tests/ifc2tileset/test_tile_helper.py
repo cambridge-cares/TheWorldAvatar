@@ -27,7 +27,6 @@ def retrieve_tileset_contents(json_filepath):
     contents = json_output.read()  # Store as string
     tileset_content = json.loads(contents)  # Convert to dictionary
     json_output.close()
-    os.remove(json_filepath)  # Remove the file before any assertion
     return tileset_content
 
 
@@ -37,14 +36,17 @@ def test_jsonwriter():
     """
     sample_tileset = {"testkey": "testvalue"}
     sample_name = "jsontest"
-    # Execute method
-    jsonwriter(sample_tileset, sample_name)
     # JSON output path
     test_json = os.path.join("data", sample_name+".json")
-    # Test that the tileset.json has been created
-    assert os.path.exists(test_json)
-    # Test that the tileset contents are equivalent to the dictionary
-    assert retrieve_tileset_contents(test_json) == sample_tileset
+    try:
+        # Execute method
+        jsonwriter(sample_tileset, sample_name)
+        # Test that the tileset.json has been created
+        assert os.path.exists(test_json)
+        # Test that the tileset contents are equivalent to the dictionary
+        assert retrieve_tileset_contents(test_json) == sample_tileset
+    finally:
+        os.remove(test_json)  # Remove tileset
 
 
 def test_gen_solarpanel_tileset_no_solarpanel():
@@ -64,20 +66,21 @@ def test_gen_solarpanel_tileset():
     # Create a solarpanel.gltf for testing
     solarpanel = os.path.join("data", "gltf", "solarpanel.gltf")
     open(solarpanel, "x", encoding="utf-8")
-    # Execute method
-    gen_solarpanel_tileset()
-    os.remove(solarpanel)  # Remove glTF as it isn't required after
-
-    # JSON output path
-    json_filepath = os.path.join("data", "tileset_solarpanel.json")
-    # Test that the tileset.json has been created
-    assert os.path.exists(json_filepath)
-    # Read the tileset
-    tileset_content = retrieve_tileset_contents(json_filepath)
-    # Test that the tileset contents are equivalent to the dictionary
-    assert tileset_content["root"]["content"] == {
-        "uri": "./gltf/solarpanel.gltf"}
-
+    try:
+        # Execute method
+        gen_solarpanel_tileset()
+        # JSON output path
+        json_filepath = os.path.join("data", "tileset_solarpanel.json")
+        # Test that the tileset.json has been created
+        assert os.path.exists(json_filepath)
+        # Read the tileset
+        tileset_content = retrieve_tileset_contents(json_filepath)
+        # Test that the tileset contents are equivalent to the dictionary
+        assert tileset_content["root"]["content"] == {
+            "uri": "./gltf/solarpanel.gltf"}
+    finally:
+        os.remove(solarpanel)  # Remove glTF
+        os.remove(json_filepath)  # Remove tileset
 
 def test_gen_sewagenetwork_tileset_no_sewage():
     """
@@ -96,16 +99,18 @@ def test_gen_sewagenetwork_tileset():
     # Create a sewagenetwork.gltf for testing
     sewage = os.path.join("data", "gltf", "sewagenetwork.gltf")
     open(sewage, "x", encoding="utf-8")
-    # Execute method
-    gen_sewagenetwork_tileset()
-    os.remove(sewage)  # Remove glTF as it isn't required after
-
-    # JSON output path
-    json_filepath = os.path.join("data", "tileset_sewage.json")
-    # Test that the tileset.json has been created
-    assert os.path.exists(json_filepath)
-    # Read the tileset
-    tileset_content = retrieve_tileset_contents(json_filepath)
-    # Test that the tileset contents are equivalent to the dictionary
-    assert tileset_content["root"]["content"] == {
-        "uri": "./gltf/sewagenetwork.gltf"}
+    try:
+        # Execute method
+        gen_sewagenetwork_tileset()
+        # JSON output path
+        json_filepath = os.path.join("data", "tileset_sewage.json")
+        # Test that the tileset.json has been created
+        assert os.path.exists(json_filepath)
+        # Read the tileset
+        tileset_content = retrieve_tileset_contents(json_filepath)
+        # Test that the tileset contents are equivalent to the dictionary
+        assert tileset_content["root"]["content"] == {
+            "uri": "./gltf/sewagenetwork.gltf"}
+    finally:
+        os.remove(sewage)  # Remove glTF
+        os.remove(json_filepath)  # Remove tileset

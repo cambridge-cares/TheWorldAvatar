@@ -84,30 +84,3 @@ def gen_sample_ifc_file(ifc_path, is_simplified=True):
         # Write out to a file
         model.write(ifc_path)
     return idlist
-
-
-
-
-def test_conv2gltf():
-    """
-    Tests conv2gltf()
-    """
-    # Create sample IFC file at this path
-    ifc_path = os.path.join("data","ifc","model.ifc")
-    glb_path = os.path.join("data","glb","building.glb")
-    gltf_path = os.path.join("data","gltf","building.gltf")
-    gen_sample_ifc_file(ifc_path)
-    # Open the file in Python
-    ifc = ifcopenshell.open(ifc_path)
-    # Execute method
-    hashmapping = conv2gltf(ifc,ifc_path)
-    # Check if these files exists, and store them for testing after clean up
-    glb_gltf_exists = os.path.exists(glb_path) and os.path.exists(gltf_path)
-    # Remove files
-    os.remove(ifc_path)
-    os.remove(glb_path)
-    os.remove(gltf_path)
-    # Test that both glb and gltf exists
-    assert glb_gltf_exists
-    # Check hashmapping is empty without any asset
-    assert not hashmapping

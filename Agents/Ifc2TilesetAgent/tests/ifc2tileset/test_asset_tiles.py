@@ -4,18 +4,28 @@
 A test suite for the agent.ifc2tileset.asset_tiles submodule.
 """
 
+# Third party imports
+import pandas as pd
+
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
+from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema
 
 
 def test_init_asset_tiles():
     """
     Tests init_asset_tiles()
     """
+    # Initialise test parameters
     expected_bbox = []
     properties.bbox_child = expected_bbox
-    output = init_asset_tiles()
+    endpoint = "endpoint"
+    # Init root tile for input
+    input = root_tile()
+    append_tileset_schema(input, endpoint, endpoint)
+    # Execute method
+    output = init_asset_tiles(input)
     # Test that root tile is generated with no glTF content
     assert output["asset"]["version"] == "1.1"
     assert output["geometricError"] == 1024
@@ -29,6 +39,8 @@ def test_init_asset_tiles():
     assert metadata["properties"]["name"]["type"] == "STRING"
     assert metadata["properties"]["uid"]["description"] == "Unique identifier generated in IFC"
     assert metadata["properties"]["uid"]["type"] == "STRING"
+    assert metadata["properties"]["iri"]["description"] == "Data IRI of the asset"
+    assert metadata["properties"]["iri"]["type"] == "STRING"
     # Test that root -> children link exists
     assert output["root"]["children"][0]["geometricError"] == 50
     assert output["root"]["children"][0]["boundingVolume"]["box"] == expected_bbox
@@ -82,11 +94,9 @@ def assert_nested_node_content(nested_node_list, test_range, current_asset_num=6
     Arguments:
     nested_node_list - a list containing the dictionary's nested node by depth
     test_range - number of assets generated for testing
-    current_asset_num - starts the assertion from this number.
-            Only accepts 0 or 6, which provide tests for
+    current_asset_num - starts the assertion from this number. \
+            Only accepts 0 or 6, which provide tests for \
             gen_tileset_assets() or appenddict_rec() respectively
-    Returns:
-    The sample hashmapping
     """
     # Assign test cases according to input
     if current_asset_num == 6:
@@ -117,6 +127,7 @@ def assert_nested_node_content(nested_node_list, test_range, current_asset_num=6
                 assert metadata["properties"]["name"] == "element" + \
                     str(asset_no)
                 assert metadata["properties"]["uid"] == "uid"+str(asset_no)
+                assert metadata["properties"]["iri"] == "iri"+str(asset_no)
 
             else:
                 assert nested_dict["contents"][i]["asset" +
@@ -156,21 +167,24 @@ def test_appenddict_rec_more_than_six_assets():
     assert_nested_node_content(test_dict_list, test_range)
 
 
-def gen_sample_hashmapping(test_range):
+def gen_sample_df(test_range):
     """
-    A test function to generate sample hashmapping for the
+    A test function to generate sample datafarame for the
     test of gen_tileset_assets()
 
     Argument:
     test_range - number of assets to generated for testing
     Returns:
-    The sample hashmapping
+    The sample dataframe
     """
-    sample_hashmapping = {}
+    rows = []
     for i in range(test_range):
-        sample_hashmapping["uid" +
-                           str(i)] = {"file": "asset"+str(i), "name": "element"+str(i)}
-    return sample_hashmapping
+        rows.append({'uid' : "uid" + str(i),
+            'name' : "element" + str(i),
+            'iri' : "iri" + str(i),
+            'file' : "asset" + str(i)}
+        )
+    return pd.DataFrame(rows)
 
 
 def test_gen_tileset_assets():
@@ -179,8 +193,14 @@ def test_gen_tileset_assets():
     """
     # Generate sample parameters
     test_range = 8
-    sample_hashmapping = gen_sample_hashmapping(test_range)
-    tileset = gen_tileset_assets(sample_hashmapping)
+    sample_df = gen_sample_df(test_range)
+    endpoint = "endpoint"
+    sample_tileset = root_tile()
+    append_tileset_schema(sample_tileset, endpoint, endpoint)
+    # Execute test method
+    tileset = gen_tileset_assets(sample_df, sample_tileset)
+
+    # Process result for programmatic testing
     test_dict_list = []
     gen_nested_dicts_for_test(tileset["root"], test_dict_list)
 

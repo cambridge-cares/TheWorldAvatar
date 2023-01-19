@@ -34,5 +34,9 @@ def gen_tilesets(asset_data, query_endpoint: str, update_endpoint: str):
     if not asset_data.empty:
         logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
         bim_tileset = gen_tileset_assets(asset_data, bim_tileset)
-
-    jsonwriter(bim_tileset, "tileset_bim")
+    # If there are any root content (building or furniture) or asset info
+    if "contents" in bim_tileset["root"] or \
+        "content" in bim_tileset["root"] or \
+        "children" in bim_tileset["root"]: 
+        # In such cases, generate the bim tileset
+        jsonwriter(bim_tileset, "tileset_bim")
