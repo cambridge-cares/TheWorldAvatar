@@ -50,6 +50,9 @@ def login_trival():
 
     # Make a post request to the login url with the credentials
     response = session.post(url, data=credentials)
+    if response.status_code != 200:
+        sg.PopupError(f'Response {response.status_code} CEDA platform fail to connect! -- Try to login later')
+        logger.error(f'Response {response.status_code} CEDA platform fail to connect! -- Try to login later')
     if "auth_tkt" in session.cookies:
         statue = "Logged in"
     else:
@@ -60,6 +63,7 @@ def login_trival():
 attempts = 0
 while True:
     layout = [
+        [sg.Text('NOTE: The login process make take a bit time, please be patient...')],
         [sg.Text('Enter your CEDA username:'), sg.Input()],
         [sg.Text('Enter your CEDA password:'), sg.Input(password_char='*')],
         [sg.Button('Submit'), sg.Cancel()]
@@ -87,11 +91,12 @@ while True:
 
         statue = login_trival()
         if statue == "Logged in":
-            logger.info('logging to CEDA successfully performed!')
             # Save those three env vars into .env file
             with open('./downloads/.env', 'w') as env_file:
                 for key in ['CEDA_USERNAME','CEDA_KEY',"CEDA_PASSWORD"]:
                     env_file.write("{}={}\n".format(key, os.getenv(key)))
+            logger.info('logging to CEDA successfully performed! .env have been saved at ./downloads folder')
+            sg.Popup('logging to CEDA successfully performed! .env have been saved at ./downloads folder')
             break
         else:
             attempts +=1

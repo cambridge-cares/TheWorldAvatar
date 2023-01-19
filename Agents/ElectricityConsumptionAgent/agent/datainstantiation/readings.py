@@ -67,7 +67,7 @@ def call_pickle(pathname):
         
     return results
 
-def generate_time_dict(year: str):
+def generate_time_dict(year: str = YEAR):
 
       time_dict = {f'{year}-01-01T12:00:00.000Z':0,\
              f'{year}-02-01T12:00:00.000Z':1,\
@@ -83,6 +83,7 @@ def generate_time_dict(year: str):
              f'{year}-12-01T12:00:00.000Z':11}
             
       return time_dict
+
 # ------------------------- Read data from source -------------------------------- #
 def read_from_web_elec (year: str = YEAR):
   '''

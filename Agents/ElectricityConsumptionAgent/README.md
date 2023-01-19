@@ -13,15 +13,24 @@ This section specifies the minimum requirements to build and deploy the Docker i
 
 ## 1.1 Prerequisites
 
-Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA](https://services.ceda.ac.uk/cedasite/register/info/) platform. 
-Once the registration is done, please run the `./agent/utils/CEDA_env_config.py` script, this module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.
+### **1) Registrate an account at CEDA platform**
+
+Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/). 
+
+### **2) Record the CEDA account username and password as environmental variable**
+
+Once the registration is done, please run the `./agent/utils/CEDA_env_config.py` script, simply by running the following command from a powershell terminal at current folder
+```bash
+py ./agent/utils/CEDA_env_config.py
+```
+This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.
 Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module.
 
+
+
+
+### **3) The environment variables used by the agent container**
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
-
-
-### **1) The environment variables used by the agent container**
-
 ```bash
 # Agent configuration
 YEAR                  # The year of which data you want to process
@@ -37,7 +46,7 @@ ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container
 ```
 
 
-### **2) Accessing Github's Container registry**
+### **4) Accessing Github's Container registry**
 
 While building the Docker image of the agent, it also gets pushed to the [Github container registry]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
 ```
@@ -45,7 +54,7 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **5) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -89,8 +98,8 @@ bash ./stack.sh start <STACK_NAME>
 
 ## Default value in the code
 
-> YEAR = '2020'
-> QUERY_ENDPOINT= UPDATE_ENDPOINT = http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql
+> YEAR = '2020'  \
+> QUERY_ENDPOINT= UPDATE_ENDPOINT = http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql  \
 > DB_URL = jdbc:postgresql:ts_example  \
 > DB_USER = postgres  \
 > DB_PASSWORD = postgres    
