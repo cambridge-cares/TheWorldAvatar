@@ -53,6 +53,19 @@
       <version>2.10.1</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/io.gsonfire/gson-fire -->
+    <dependency>
+      <groupId>io.gsonfire</groupId>
+      <artifactId>gson-fire</artifactId>
+      <version>1.8.5</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp -->
+    <dependency>
+      <groupId>com.squareup.okhttp</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>2.7.5</version>
+    </dependency>
 
     <dependency>
       <groupId>io.swagger</groupId>
@@ -190,9 +203,11 @@
               <addCompileSourceRoot>true</addCompileSourceRoot>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <generateApis>false</generateApis>
-              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateSupportingFiles>true</generateSupportingFiles>
               <generateModelDocumentation>false</generateModelDocumentation>
-              <modelsToGenerate>ListPodsReport,ListPodContainer,OffsetDateTime</modelsToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <modelsToGenerate>ListPodsReport,ListPodContainer</modelsToGenerate>
+              <supportingFilesToGenerate>JSON.java</supportingFilesToGenerate>
             </configuration>
           </execution>
         </executions>

@@ -2,12 +2,19 @@ package com.github.dockerjava.core;
 
 import java.io.IOException;
 
+import com.cmclinnovations.swagger.podman.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.transport.DockerHttpClient;
 
 public final class DefaultPodmanCmdExecFactory extends AbstractPodmanCmdExecFactory {
 
+    private static final JSON swaggerObjectMapper = new JSON();
+
     private final DefaultDockerCmdExecFactory dockerCmdExecFactory;
+
+    public static JSON getSwaggerObjectMapper() {
+        return swaggerObjectMapper;
+    }
 
     public DefaultPodmanCmdExecFactory(
             DockerHttpClient dockerHttpClient,
