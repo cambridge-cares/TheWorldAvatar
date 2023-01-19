@@ -1,3 +1,9 @@
+###--- Ontology TBox and Abox URLs ---###
+TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+# 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+ABOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv ABox.owl'
+#'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'

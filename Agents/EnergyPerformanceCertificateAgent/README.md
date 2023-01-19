@@ -6,7 +6,6 @@ It is designed to interact with the stack spun up by the stack manager.
 
 <span style="color:red">Tests are currently still excluded.</span>
 <br/><br/>
-<span style="color:red">The current version of the agent (i.e. commit ef61ae035f7aeb36b692eddd45188ce7231528c1) retrieves data only from the Domestic EPC API endpoint. (to be extended!)</span>
 
 # 1. Setup
 
@@ -20,13 +19,20 @@ Before building and deploying the Docker image, several key properties need to b
 
 ### **1) The environment variables used by the agent container**
 
-1) STACK_NAME
-2) API_AUTH (authentication token for EPC API)
-3) DATABASE (database name in PostGIS)
-4) LAYERNAME (layer name in Geoserver, also the table name for geospatial features in PostGIS)
-5) GEOSERVER_WORKSPACE
-6) ONTOP_FILE
+
 7) OCGML_ENDPOINT (SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs)
+
+```bash
+API_AUTH              # Authentication token for EPC API
+ENCODED_AUTH          # Base64-encoded authentication token for EPC API
+STACK_NAME            # Name of stack to which agent shall be deployed
+NAMESPACE             # Blazegraph namespace into which to instantiate data
+DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
+LAYERNAME             # Geoserver ayer name, ALSO table name for geospatial features in PostGIS
+GEOSERVER_WORKSPACE   
+ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container)
+OCGML_ENDPOINT        # SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs
+```
 
 ### **2) Accessing Github's Container registry**
 
@@ -36,7 +42,11 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **3) Accessing CMCL docker registry**
+
+The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+
+### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -63,17 +73,17 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile]. Compiling those resources requires a [Java Runtime Environment version >=11].
+This agent requires [JPS_BASE_LIB] to be wrapped by [py4jps]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*.
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest py4jps Stack_Clients resources
-bash build_py4jps_resource.sh
 # Buildings the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK NAME>
 ```
+
+In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -96,7 +106,7 @@ Once logged in, a remote copy of The World Avatar repository can be cloned using
 ```bash
 $ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
 $ cd <REPO NAME>
-$ git checkout dev-MetOfficeAgent-withinStack
+$ git checkout main
 $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
@@ -131,7 +141,7 @@ git config core.fileMode false
 
 # 2. Using the Agent
 
-Agent start-up will automatically register a recurring task to assimilate latest EPC data for all instantiated UPRNs every 4 weeks (i.e. new data is published 3-4 times a year). Besides this recurring background task, additional HTTP requests can be sent to the agent.
+Agent start-up will automatically register a recurring task to assimilate latest EPC data for all instantiated UPRNs every 4 weeks (i.e. new data is published 3-4 times a year). Besides this recurring background task, additional HTTP requests can be sent to the agent. The blazegraph namespace as specified in the `docker-compose` file is created upon agent startup and the OntoBuiltEnv TBox and ABox owl files are uploaded to it.
 
 &nbsp;
 
@@ -176,10 +186,9 @@ In case the quad data is not already available via a SPARQL endpoint, the follow
     This shall bring up Blazegraph at endpoint http://128.199.197.40:4999/blazegraph/ .
 3) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
 
-### **2) Initialise namespace for EPC building data**
+### **2) Instantiate relevant postcode instances**
 
-1) Create `buildings` namespace and upload TBox and ABox .owl files by sending `POST` request to `/api/epcagent/initialise`
-2) Instantiate all relevant postcode instances by sending `POST` request to `/api/epcagent/instantiate/postcodes`
+Instantiate all relevant postcode instances by sending `POST` request to `/api/epcagent/instantiate/postcodes`
 
 ### **3) Instantiate all EPC building data**
 
@@ -246,8 +255,9 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-dtvf-cesium/web/digital-twin-vis-framework/example-mapbox-vis
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
+[CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile

@@ -90,11 +90,9 @@ def upload_ontology():
     """
         Uploads TBox and ABox from TWA to KG namespace
     """
-
     # URLs to .owl files
-    #TODO: Potentially to be replaced with better maintained Github Links
-    tbox = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
-    abox = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
+    tbox = TBOX_URL
+    abox = ABOX_URL
 
     # Create KGclient to upload .owl files
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)

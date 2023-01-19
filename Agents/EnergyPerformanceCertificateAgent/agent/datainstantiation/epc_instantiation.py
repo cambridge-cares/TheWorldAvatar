@@ -1358,7 +1358,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             # Iterate through all buildings (each building represents one geospatial feature)
             for b in data['obe_bldg'].unique():
                 # Get building usage
-                query = get_buildings_usage()
+                query = get_buildings_usage(b)
                 try:
                     usage = kgclient_epc.performQuery(query)
                 except KGException as ex:
