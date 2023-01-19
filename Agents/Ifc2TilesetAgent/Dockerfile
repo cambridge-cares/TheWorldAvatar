@@ -1,7 +1,7 @@
 # First stage: Download dependencies and build python code
 #==================================================================================================
 # Base image is a light weight version of Python
-FROM python:3.9-slim as builder
+FROM python:3.9.16-slim as builder
 
 # Install required software including Java
 RUN apt update && apt install -y git curl unzip openjdk-11-jdk-headless git
