@@ -866,11 +866,32 @@ public class DerivationClient {
 	/**
 	 * This method cleans up the "Finished" derivation in the knowledge graph by
 	 * deleting all old instances, reconnecting the new generated derived IRI with
-	 * derivations, deleting all status, and updating timestamp in one-go.
+	 * derivations, deleting all status, and updating timestamp in one-go. This
+	 * method is thread-safe.
 	 * 
 	 * @param derivation
 	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
+		// if another agent thread is cleaning up the same derivation concurrently
+		// and successed before this thread, then this method will return false
+		if (this.sparqlClient.addUuidLockToFinishedStatus(derivation)) {
+			// only progress to clean up if the uuidLock is added successfully
+			// otherwise, the other thread will handle the job, or it is already cleaned up
+			cleanUpFinishedDerivation(derivation);
+			LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleand up.");
+		}
+	}
+
+	/**
+	 * This method cleans up the "Finished" derivation in the knowledge graph by
+	 * deleting all old instances, reconnecting the new generated derived IRI with
+	 * derivations, deleting all status, and updating timestamp in one-go. This
+	 * method should only be called if the agent is sure that this is the correct
+	 * thread to do the clean up.
+	 * 
+	 * @param derivation
+	 */
+	private void cleanUpFinishedDerivation(String derivation) {
 		// this method is similar to the part of code in DerivationAgent that updates
 		// the updated synchronous derivations by first matching the old-new instances
 		// and then calling reconnectNewDerivedIRIs(List<TriplePattern>
