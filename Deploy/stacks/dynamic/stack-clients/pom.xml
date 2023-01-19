@@ -184,7 +184,6 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <output>${project.build.directory}/generated-sources/swagger</output>
               <language>java</language>
               <configOptions>
                 <dateLibrary>java8</dateLibrary>
@@ -193,30 +192,13 @@
               <generateApis>false</generateApis>
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateModelDocumentation>false</generateModelDocumentation>
-              <addCompileSourceRoot>false</addCompileSourceRoot>
+              <addCompileSourceRoot>true</addCompileSourceRoot>
               <modelsToGenerate>ListPodsReport,ListPodContainer,OffsetDateTime</modelsToGenerate>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/swagger/src/main/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
 
   </build>
