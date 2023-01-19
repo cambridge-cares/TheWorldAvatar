@@ -28,6 +28,10 @@ class QueryHandlerTest {
                 + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.SKOS_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
         expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.OM_PREFIX + InsertBuilderTest.COLON
                 + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.OM_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
+        expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.XSD_PREFIX + InsertBuilderTest.COLON
+                + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.XSD_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
+        expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.RDFS_PREFIX + InsertBuilderTest.COLON
+                + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.RDFS_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
         expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.RDF_PREFIX + InsertBuilderTest.COLON
                 + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.RDF_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
         expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.BASE_PREFIX + InsertBuilderTest.COLON

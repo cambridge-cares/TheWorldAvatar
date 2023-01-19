@@ -17,6 +17,8 @@ class QueryHandler {
     protected static void genInsertPrefixMapping(InsertBuilder builder, String baseNameSpace) {
         builder.addPrefix(OntologyConstant.BASE_PREFIX, baseNameSpace);
         builder.addPrefix(OntologyConstant.RDF_PREFIX, OntologyConstant.RDF_URI);
+        builder.addPrefix(OntologyConstant.RDFS_PREFIX, OntologyConstant.RDFS_URI);
+        builder.addPrefix(OntologyConstant.XSD_PREFIX, OntologyConstant.XSD_URI);
         builder.addPrefix(OntologyConstant.OM_PREFIX, OntologyConstant.OM_URI);
         builder.addPrefix(OntologyConstant.SKOS_PREFIX, OntologyConstant.SKOS_URI);
         builder.addPrefix(OntologyConstant.QUDT_PREFIX, OntologyConstant.QUDT_URI);
