@@ -3,90 +3,89 @@ OntoDevice,TBox,https://www.theworldavatar.com/kg/ontodevice/,https://www.w3.org
 OntoDevice,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDevice,TBox,"OntoDevice is an ontology for describing devices, their capabilities and properties.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDevice,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-Device,Class,https://saref.etsi.org/core/Device,IS-A,,,,An object designed and manufactured to perform one or more functions.,https://www.theworldavatar.com/kg/ontodevice/,
-Sensor,Class,Device,IS-A,,,,A sensor is a device that detects and responds to some type of input from the physical environment.,https://www.theworldavatar.com/kg/ontodevice/,
-MicroController,Class,Device,IS-A,,,,A microcontroller is an integrated circuit (IC) designed to handle a specific task in embedded systems.,https://www.theworldavatar.com/kg/ontodevice/,
-Appliance,Class,Device,IS-A,,,,"An electrical/mechanical machine that accomplish some household functions, such as cleaning or cooking.",https://www.theworldavatar.com/kg/ontodevice/,
-Meter,Class,Device,IS-A,,,,A device built to accurately detect and display a quantity in a form readable by a human being.,https://www.theworldavatar.com/kg/ontodevice/,
-MobilePhone,Class,Device,IS-A,,,,A portable telephone that can make and receive calls over a radio frequency link.,https://www.theworldavatar.com/kg/ontodevice/,
-Microphone,Class,Device,IS-A,,,,A transducer that converts sound into an electrical signal.,https://www.theworldavatar.com/kg/ontodevice/,
-Camera,Class,Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,
-WeatherStation,Class,Device,IS-A,,,,"A device, either on land or sea, with instruments and equipment for measuring atmospheric conditions to provide information for weather forecasts and to study the weather and climate.",https://www.theworldavatar.com/kg/ontodevice/,
-ElectronicTag,Class,Device,IS-A,,,,"A tag that uses a form of electronic identification technology (Bluetooth, RFID etc).",https://www.theworldavatar.com/kg/ontodevice/,
-MagnetoMeter,Class,Meter,IS-A,,,,A device that measures magnetic field or magnetic dipole moment.,https://www.theworldavatar.com/kg/ontodevice/,
-AcceleroMeter,Class,Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,
-ElectricalMeter,Class,Meter,IS-A,,,,"A device that measures the amount of electric energy consumed by a residence, a business, or an electrically powered device.",https://www.theworldavatar.com/kg/ontodevice/,
-WaterMeter,Class,Meter,IS-A,,,,A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.,https://www.theworldavatar.com/kg/ontodevice/,
-PollutionMeter,Class,Meter,IS-A,,,,A device for measuring air quality.,https://www.theworldavatar.com/kg/ontodevice/,
-OilMeter,Class,Meter,IS-A,,,,A device for measuring the flow of oil.,https://www.theworldavatar.com/kg/ontodevice/,
-SmartSensor,Class,Sensor,IS-A,,,,A device that is composed of one or more Sensors together with a MicroController.,https://www.theworldavatar.com/kg/ontodevice/,
-IlluminanceSensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the level of illuminance.,https://www.theworldavatar.com/kg/ontodevice/,
-CO2Sensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,
-HumiditySensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the level of humidity in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,
-TemperatureSensor,Class,Sensor,IS-A,,,,A sensor that is able to measure hotness and coolness and converts it into an electrical signal. ,https://www.theworldavatar.com/kg/ontodevice/,
-RFIDSensor,Class,Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,
-GravitySensor,Class,Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth’s gravity caused by variations in rock or other materials’ density underground.,https://www.theworldavatar.com/kg/ontodevice/,
-GPSSensor,Class,Sensor,IS-A,,,,A GPS Sensor or Receiver is a device used within Earth’s planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,
-SmartPhone,Class,MobilePhone,IS-A,,,,A portable computer device that combines mobile telephone and computing functions into one unit.,https://www.theworldavatar.com/kg/ontodevice/,
-Fridge,Class,Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,
-RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,
-PassiveRFIDTag,Class,RFIDTag,IS-A,,,,A passive RFID tag that functions via the electromagnetic energy that gets transmitted from the RFID reader. ,https://www.theworldavatar.com/kg/ontodevice/,
-ActiveRFIDTag,Class,RFIDTag,IS-A,,,,An active RFID tag that requires batteries for operation.,https://www.theworldavatar.com/kg/ontodevice/,
-SurvivalRange,Class,,,,,,Survival Range describes Survival Properties of a device under some specified conditions.,https://www.theworldavatar.com/kg/ontodevice/,
-OperatingRange,Class,,,,,,Operating Range describes normal Operating Properties of a device under some specified conditions.,https://www.theworldavatar.com/kg/ontodevice/,
-SystemCapability,Class,,,,,,"System Capability describes normal measurement, actuation, sampling properties such as accuracy, range, precision, etc. of a System under some specified Conditions such as a temperature range. ",https://www.theworldavatar.com/kg/ontodevice/,
-SystemProperty,Class,,,,,,A System Property is an identifiable and observable characteristic that represents the System's ability to operate its primary purpose.,https://www.theworldavatar.com/kg/ontodevice/,
-Accuracy,Class,SystemProperty,IS-A,,,,Accuracy is the maximum difference that will exist between the actual value (which must be measured by a primary or good secondary standard) and the indicated value at the output of a measurement device (e.g. sensor).,https://www.theworldavatar.com/kg/ontodevice/,
-MeasurementRange,Class,SystemProperty,IS-A,,,,Measurement range is the range that a measurement device can perform measurement.,https://www.theworldavatar.com/kg/ontodevice/,
-Precision,Class,SystemProperty,IS-A,,,,Precision is the degree of reproducibility of a measurement.,https://www.theworldavatar.com/kg/ontodevice/,
-Resolution,Class,SystemProperty,IS-A,,,,Resolution is the smallest detectable incremental change of input parameter that can be detected in the output signal.,https://www.theworldavatar.com/kg/ontodevice/,
-Sensitivity,Class,SystemProperty,IS-A,,,,Sensitivity is the minimum input of physical parameter that will create a detectable output change.,https://www.theworldavatar.com/kg/ontodevice/,
-SamplingFrequency,Class,SystemProperty,IS-A,,,,Sampling Frequency is the number of samples that a measurement device can produce per second .,https://www.theworldavatar.com/kg/ontodevice/,
-Condition,Class,,,,,,Conditions that affects the properties of a device and its operations.,https://www.theworldavatar.com/kg/ontodevice/,
-OperatingProperty,Class,,,,,,Operating Property is an identifiable characteristic that represents how the device operates under the specified Conditions.,https://www.theworldavatar.com/kg/ontodevice/,
-QualitativeValue,Class,,,,,,The value of a quality that is non-numerical and can be observed but not measured.,https://www.theworldavatar.com/kg/ontodevice/,
-Quality,Class,,,,,,"A Quality refers to the characteristic or feature of something (Colour, Status etc).",https://www.theworldavatar.com/kg/ontodevice/,
-Status,Class,Quality,IS-A,,,,The current state or situation of something.,https://www.theworldavatar.com/kg/ontodevice/,
-InOutStatus,Class,Status,IS-A,,,,The current state of something on whether it is inside or outside of something else like a location.,https://www.theworldavatar.com/kg/ontodevice/,
-OnOffStatus,Class,Status,IS-A,,,,The current state of something on whether it is turned on or off at the moment.,https://www.theworldavatar.com/kg/ontodevice/,
-PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Length,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Height,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Width,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,
-https://www.theworldavatar.com/kg/ontogeo/WGS84Point,Class,,,,,,,https://www.theworldavatar.com/kg/ontogeo/,
-observes,Object Property,,IS-A,Device,Quality,,,https://www.theworldavatar.com/kg/ontodevice/,
-isObservedBy,Object Property,observes,INVERSE-OF,Quality,Device,,,https://www.theworldavatar.com/kg/ontodevice/,
-measures,Object Property,,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,,https://www.theworldavatar.com/kg/ontodevice/,
-measures,Object Property,,IS-A,Device,https://www.theworldavatar.com/kg/ontogeo/WGS84Point,,,https://www.theworldavatar.com/kg/ontodevice/,
-isMeasuredBy,Object Property,measures,INVERSE-OF,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Device,,,https://www.theworldavatar.com/kg/ontodevice/,
-isMeasuredBy,Object Property,measures,INVERSE-OF,https://www.theworldavatar.com/kg/ontogeo/WGS84Point,Device,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasLength,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasHeight,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasWidth,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Width,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasPrice,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasMass,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasSystemCapability,Object Property,,IS-A,Device,SystemCapability,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasOperatingRange,Object Property,,IS-A,Device,OperatingRange,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasSurvivalRange,Object Property,,IS-A,Device,SurvivalRange,,,https://www.theworldavatar.com/kg/ontodevice/,
-inCondition,Object Property,,IS-A,SystemCapability,Condition,,,https://www.theworldavatar.com/kg/ontodevice/,
-inCondition,Object Property,,IS-A,OperatingRange,Condition,,,https://www.theworldavatar.com/kg/ontodevice/,
-inCondition,Object Property,,IS-A,SurvivalRange,Condition,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasOperatingProperty,Object Property,,IS-A,SystemCapability,OperatingProperty,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasOperatingProperty,Object Property,,IS-A,OperatingRange,OperatingProperty,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasOperatingProperty,Object Property,,IS-A,SurvivalRange,OperatingProperty,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasSystemProperty,Object Property,,IS-A,SystemCapability,SystemProperty,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasProperty,Object Property,,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasProperty,Object Property,,IS-A,Device,Quality,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasTimeSeries,Object Property,,IS-A,Quality,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasTimeSeries,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,
-hasQualitativeValue,Object Property,,IS-A,Quality,QualitativeValue,,,https://www.theworldavatar.com/kg/ontodevice/,
-isAttachedTo,Object Property,,IS-A,Device,Device,,,https://www.theworldavatar.com/kg/ontodevice/,
-isConnectedTo,Object Property,,IS-A,Device,Device,,,https://www.theworldavatar.com/kg/ontodevice/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+https://saref.etsi.org/core/Device,Class,,IS-A,,,,,https://saref.etsi.org/core/,Device
+Device,Class,https://saref.etsi.org/core/Device,IS-A,,,,An object designed and manufactured to perform one or more functions.,https://www.theworldavatar.com/kg/ontodevice/,Device
+Sensor,Class,Device,IS-A,,,,A sensor is a device that detects and responds to some type of input from the physical environment.,https://www.theworldavatar.com/kg/ontodevice/,Sensor
+MicroController,Class,Device,IS-A,,,,A microcontroller is an integrated circuit (IC) designed to handle a specific task in embedded systems.,https://www.theworldavatar.com/kg/ontodevice/,MicroController
+Appliance,Class,Device,IS-A,,,,"An electrical/mechanical machine that accomplish some household functions, such as cleaning or cooking.",https://www.theworldavatar.com/kg/ontodevice/,Appliance
+Meter,Class,Device,IS-A,,,,A device built to accurately detect and display a quantity in a form readable by a human being.,https://www.theworldavatar.com/kg/ontodevice/,Meter
+MobilePhone,Class,Device,IS-A,,,,A portable telephone that can make and receive calls over a radio frequency link.,https://www.theworldavatar.com/kg/ontodevice/,Mobile phone
+Microphone,Class,Device,IS-A,,,,A transducer that converts sound into an electrical signal.,https://www.theworldavatar.com/kg/ontodevice/,Microphone
+Camera,Class,Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,Camera
+WeatherStation,Class,Device,IS-A,,,,"A device, either on land or sea, with instruments and equipment for measuring atmospheric conditions to provide information for weather forecasts and to study the weather and climate.",https://www.theworldavatar.com/kg/ontodevice/,Weather station
+ElectronicTag,Class,Device,IS-A,,,,"A tag that uses a form of electronic identification technology (Bluetooth, RFID etc).",https://www.theworldavatar.com/kg/ontodevice/,Electronic tag
+MagnetoMeter,Class,Meter,IS-A,,,,A device that measures magnetic field or magnetic dipole moment.,https://www.theworldavatar.com/kg/ontodevice/,Magnetometer
+AcceleroMeter,Class,Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Accelerometer
+ElectricalMeter,Class,Meter,IS-A,,,,"A device that measures the amount of electric energy consumed by a residence, a business, or an electrically powered device.",https://www.theworldavatar.com/kg/ontodevice/,Electrical meter
+WaterMeter,Class,Meter,IS-A,,,,A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.,https://www.theworldavatar.com/kg/ontodevice/,Water meter
+PollutionMeter,Class,Meter,IS-A,,,,A device for measuring air quality.,https://www.theworldavatar.com/kg/ontodevice/,Pollution meter
+OilMeter,Class,Meter,IS-A,,,,A device for measuring the flow of oil.,https://www.theworldavatar.com/kg/ontodevice/,Oil meter
+SmartSensor,Class,Sensor,IS-A,,,,A device that is composed of one or more Sensors together with a MicroController.,https://www.theworldavatar.com/kg/ontodevice/,Smart sensor
+IlluminanceSensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the level of illuminance.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance sensor
+CO2Sensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
+HumiditySensor,Class,Sensor,IS-A,,,,A sensor that is able to measure the level of humidity in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Humidity sensor
+TemperatureSensor,Class,Sensor,IS-A,,,,A sensor that is able to measure hotness and coolness and converts it into an electrical signal. ,https://www.theworldavatar.com/kg/ontodevice/,Temperature sensor
+RFIDSensor,Class,Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,RFID sensor
+GravitySensor,Class,Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth’s gravity caused by variations in rock or other materials’ density underground.,https://www.theworldavatar.com/kg/ontodevice/,Gravity sensor
+GPSSensor,Class,Sensor,IS-A,,,,A GPS Sensor or Receiver is a device used within Earth’s planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS sensor
+SmartPhone,Class,MobilePhone,IS-A,,,,A portable computer device that combines mobile telephone and computing functions into one unit.,https://www.theworldavatar.com/kg/ontodevice/,Smart phone
+Fridge,Class,Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
+RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,RFID tag
+PassiveRFIDTag,Class,RFIDTag,IS-A,,,,A passive RFID tag that functions via the electromagnetic energy that gets transmitted from the RFID reader. ,https://www.theworldavatar.com/kg/ontodevice/,Passive RFID tag
+ActiveRFIDTag,Class,RFIDTag,IS-A,,,,An active RFID tag that requires batteries for operation.,https://www.theworldavatar.com/kg/ontodevice/,Active RFID tag
+SurvivalRange,Class,,,,,,Survival Range describes Survival Properties of a device under some specified conditions.,https://www.theworldavatar.com/kg/ontodevice/,Survival range
+OperatingRange,Class,,,,,,Operating Range describes normal Operating Properties of a device under some specified conditions.,https://www.theworldavatar.com/kg/ontodevice/,Operating range
+SystemCapability,Class,,,,,,"System Capability describes normal measurement, actuation, sampling properties such as accuracy, range, precision, etc. of a System under some specified Conditions such as a temperature range. ",https://www.theworldavatar.com/kg/ontodevice/,System capability
+SystemProperty,Class,,,,,,A System Property is an identifiable and observable characteristic that represents the System's ability to operate its primary purpose.,https://www.theworldavatar.com/kg/ontodevice/,System property
+Accuracy,Class,SystemProperty,IS-A,,,,Accuracy is the maximum difference that will exist between the actual value (which must be measured by a primary or good secondary standard) and the indicated value at the output of a measurement device (e.g. sensor).,https://www.theworldavatar.com/kg/ontodevice/,Accuracy
+MeasurementRange,Class,SystemProperty,IS-A,,,,Measurement range is the range that a measurement device can perform measurement.,https://www.theworldavatar.com/kg/ontodevice/,Measurement range
+Precision,Class,SystemProperty,IS-A,,,,Precision is the degree of reproducibility of a measurement.,https://www.theworldavatar.com/kg/ontodevice/,Precision
+Resolution,Class,SystemProperty,IS-A,,,,Resolution is the smallest detectable incremental change of input parameter that can be detected in the output signal.,https://www.theworldavatar.com/kg/ontodevice/,Resolution
+Sensitivity,Class,SystemProperty,IS-A,,,,Sensitivity is the minimum input of physical parameter that will create a detectable output change.,https://www.theworldavatar.com/kg/ontodevice/,Sensitivity
+SamplingFrequency,Class,SystemProperty,IS-A,,,,Sampling Frequency is the number of samples that a measurement device can produce per second .,https://www.theworldavatar.com/kg/ontodevice/,Sampling frequency
+Condition,Class,,,,,,Conditions that affects the properties of a device and its operations.,https://www.theworldavatar.com/kg/ontodevice/,Condition
+OperatingProperty,Class,,,,,,Operating Property is an identifiable characteristic that represents how the device operates under the specified Conditions.,https://www.theworldavatar.com/kg/ontodevice/,Operating property
+QualitativeValue,Class,,,,,,The value of a quality that is non-numerical and can be observed but not measured.,https://www.theworldavatar.com/kg/ontodevice/,Qualitative value
+Quality,Class,,,,,,"A Quality refers to the characteristic or feature of something (Colour, Status etc).",https://www.theworldavatar.com/kg/ontodevice/,Quality
+Status,Class,Quality,IS-A,,,,The current state or situation of something.,https://www.theworldavatar.com/kg/ontodevice/,Status
+InOutStatus,Class,Status,IS-A,,,,The current state of something on whether it is inside or outside of something else like a location.,https://www.theworldavatar.com/kg/ontodevice/,In out status
+OnOffStatus,Class,Status,IS-A,,,,The current state of something on whether it is turned on or off at the moment.,https://www.theworldavatar.com/kg/ontodevice/,On off status
+PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
+http://www.ontology-of-units-of-measure.org/resource/om-2/Length,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Length
+http://www.ontology-of-units-of-measure.org/resource/om-2/Height,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Height
+http://www.ontology-of-units-of-measure.org/resource/om-2/Width,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Width
+http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Amount of money
+http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Mass
+http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Quantity
+http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Measure
+http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Unit
+https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,TimeSeries
+https://www.theworldavatar.com/kg/ontogeo/WGS84Point,Class,,,,,,,https://www.theworldavatar.com/kg/ontogeo/,WGS84 point
+observes,Object Property,,IS-A,Device,Quality,,A relationship between a device and the quality it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
+isObservedBy,Object Property,observes,INVERSE-OF,Quality,Device,,A relationship between a quality and the device that is observing it.,https://www.theworldavatar.com/kg/ontodevice/,is observed by
+measures,Object Property,,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a device and a quantity that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
+measures,Object Property,,IS-A,Device,https://www.theworldavatar.com/kg/ontogeo/WGS84Point,,A relationship between a device and a quantity that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
+isMeasuredBy,Object Property,measures,INVERSE-OF,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Device,,A relationship between a quantity and the device that is measuring it.,https://www.theworldavatar.com/kg/ontodevice/,is measured by
+isMeasuredBy,Object Property,measures,INVERSE-OF,https://www.theworldavatar.com/kg/ontogeo/WGS84Point,Device,,A relationship between a quantity and the device that is measuring it.,https://www.theworldavatar.com/kg/ontodevice/,is measured by
+hasLength,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,,A relationship between a device and its length.,https://www.theworldavatar.com/kg/ontodevice/,has length
+hasHeight,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship between a device and its height.,https://www.theworldavatar.com/kg/ontodevice/,has height
+hasWidth,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Width,,A relationship between a device and its width.,https://www.theworldavatar.com/kg/ontodevice/,has width
+hasPrice,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,A relationship between a device and its price.,https://www.theworldavatar.com/kg/ontodevice/,has price
+hasMass,Object Property,hasProperty,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,,A relationship between a device and its mass.,https://www.theworldavatar.com/kg/ontodevice/,has mass
+hasSystemCapability,Object Property,,IS-A,Device,SystemCapability,,A relationship between a device and its system capability.,https://www.theworldavatar.com/kg/ontodevice/,has system capability
+hasOperatingRange,Object Property,,IS-A,Device,OperatingRange,,A relationship between a device and its operating range.,https://www.theworldavatar.com/kg/ontodevice/,has operating range
+hasSurvivalRange,Object Property,,IS-A,Device,SurvivalRange,,A relationship between a device and its survival range.,https://www.theworldavatar.com/kg/ontodevice/,has survival range
+inCondition,Object Property,,IS-A,SystemCapability,Condition,,"A relationship that describes the prevailing environmental Conditions for system capabilites, operating ranges and survival ranges.",https://www.theworldavatar.com/kg/ontodevice/,in condition
+inCondition,Object Property,,IS-A,OperatingRange,Condition,,"A relationship that describes the prevailing environmental Conditions for system capabilites, operating ranges and survival ranges.",https://www.theworldavatar.com/kg/ontodevice/,in condition
+inCondition,Object Property,,IS-A,SurvivalRange,Condition,,"A relationship that describes the prevailing environmental Conditions for system capabilites, operating ranges and survival ranges.",https://www.theworldavatar.com/kg/ontodevice/,in condition
+hasOperatingProperty,Object Property,,IS-A,OperatingRange,OperatingProperty,,A relationship between the operating range of a device to an operating property.,https://www.theworldavatar.com/kg/ontodevice/,has operating property
+hasSystemProperty,Object Property,,IS-A,SystemCapability,SystemProperty,,A relationship between the system capability of a device to a system property.,https://www.theworldavatar.com/kg/ontodevice/,has system property
+hasProperty,Object Property,,IS-A,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a device and its properties (some quantity or quality).,https://www.theworldavatar.com/kg/ontodevice/,has property
+hasProperty,Object Property,,IS-A,Device,Quality,,A relationship between a device and its properties (some quantity or quality).,https://www.theworldavatar.com/kg/ontodevice/,has property
+https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,IS-A,QualitativeValue,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
+https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
+hasQualitativeValue,Object Property,,IS-A,Quality,QualitativeValue,,A relationship between a quality and its value.,https://www.theworldavatar.com/kg/ontodevice/,has qualitative value
+isAttachedTo,Object Property,,IS-A,Device,Device,,A relationship that describes a device being attached to another device where the attached device’s operation is not affected by the device it is attached to and vice versa.,https://www.theworldavatar.com/kg/ontodevice/,is attached to
+isConnectedTo,Object Property,,IS-A,Device,Device,,A relationship that describes a device being connected to another device where the operation of one device will affect the other.,https://www.theworldavatar.com/kg/ontodevice/,is connected to
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,IS-A,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has unit
