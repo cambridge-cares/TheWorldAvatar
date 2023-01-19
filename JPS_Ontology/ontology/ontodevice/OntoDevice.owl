@@ -285,6 +285,21 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/isPropertyOf -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/isPropertyOf">
+        <owl:inverseOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Quality"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property (some quantity or quality) and the device that the property belongs to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is property of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/measures -->
 
 
