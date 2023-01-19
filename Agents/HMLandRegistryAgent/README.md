@@ -17,8 +17,15 @@ Before building and deploying the Docker image, several key properties need to b
 
 ### **1) The environment variables used by the agent container**
 
-1) STACK_NAME
-2) DATABASE (database name in PostGIS)
+```bash
+STACK_NAME            # Name of stack to which agent shall be deployed
+NAMESPACE             # Blazegraph namespace into which to instantiate data
+DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
+LAYERNAME             # Geoserver ayer name, ALSO table name for geospatial features in PostGIS
+GEOSERVER_WORKSPACE   
+ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container)
+OCGML_ENDPOINT        # SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs
+```
 
 ### **2) Accessing Github's Container registry**
 
@@ -28,7 +35,11 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **3) Accessing CMCL docker registry**
+
+The agent requires building the [StackClients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+
+### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -55,17 +66,17 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [Dockerfile]. Compiling those resources requires a [Java Runtime Environment version >=11].
+This agent requires [JPS_BASE_LIB] to be wrapped by [py4jps]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest Stack_Clients resource for py4jps
-bash build_py4jps_stackclients_resource.sh
 # Building the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK NAME>
 ```
+
+In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -88,7 +99,7 @@ Once logged in, a remote copy of The World Avatar repository can be cloned using
 ```bash
 $ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
 $ cd <REPO NAME>
-$ git checkout dev-PropertySalesInstantiationAgent
+$ git checkout main
 $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
@@ -126,7 +137,7 @@ git config core.fileMode false
 
 Agent start-up will automatically register a recurring task to assimilate latest sales transaction and UK house price index data for all instantiated properties every 4 weeks (i.e. new data is published monthly). Besides this recurring background task, additional HTTP requests can be sent to the agent.
 
-The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data is the same as used by the [EPC Agent] and is set by the [stack_configs] script. In case another endpoint is required, the `stack_configs` script needs to be updated accordingly (i.e. by adjusting the namespace name passed to `bg_conf.getUrl()`). Furthermore, it needs to be noted that the `Property Sales Instantiation` agent requires building instances instantiated according to `OntoBuiltEnv` to function properly.
+The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data is the same as used by the [EPC Agent] and is set by the `docker-compose.yml` script. In case another endpoint is required, the `docker-compose.yml` script needs to be updated accordingly. Furthermore, it needs to be noted that the `Property Sales Instantiation` agent requires building instances instantiated according to `OntoBuiltEnv` to function properly.
 
 
 &nbsp;
@@ -140,6 +151,7 @@ An overview of all provided API endpoints and their functionality is provided af
 - POST request to update transaction records for all instantiated properties, incl. property price indices for instantiated local authorities (i.e. most granular geography for which UK House Price Index is published):
   > `/api/landregistry/update_all`
 
+Example requests are provided in the [resources] folder.
 
 &nbsp;
 # Authors #
@@ -170,7 +182,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
 

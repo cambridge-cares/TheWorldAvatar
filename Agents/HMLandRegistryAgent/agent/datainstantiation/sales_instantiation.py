@@ -62,11 +62,6 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     if not kgclient_hm:
         kgclient_hm = KGClient(api_endpoint, api_endpoint)
 
-    # Initialise relevant Stack Clients and parameters
-    # postgis_client = PostGISClient()
-    # gdal_client = GdalClient()
-    # geoserver_client = GeoserverClient()
-
     # 1) Retrieve location information for properties from list
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
     logger.info('Retrieving instantiated properties with location info ...')
