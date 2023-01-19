@@ -173,26 +173,25 @@
         <groupId>io.swagger</groupId>
         <artifactId>swagger-codegen-maven-plugin</artifactId>
         <version>2.4.29</version>
-        <configuration>
-          <inputSpec>${yaml.file}</inputSpec>
-        </configuration>
         <executions>
           <execution>
+            <?m2e execute onConfiguration?>
             <id>generate-swagger-client</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
+              <inputSpec>${yaml.file}</inputSpec>
               <language>java</language>
               <configOptions>
                 <dateLibrary>java8</dateLibrary>
               </configOptions>
+              <addCompileSourceRoot>true</addCompileSourceRoot>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <generateApis>false</generateApis>
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateModelDocumentation>false</generateModelDocumentation>
-              <addCompileSourceRoot>true</addCompileSourceRoot>
               <modelsToGenerate>ListPodsReport,ListPodContainer,OffsetDateTime</modelsToGenerate>
             </configuration>
           </execution>
