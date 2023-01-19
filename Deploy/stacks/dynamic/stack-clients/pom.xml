@@ -53,13 +53,6 @@
       <version>2.10.1</version>
     </dependency>
 
-    <!--
-    https://mvnrepository.com/artifact/org.threeten/threetenbp -->
-    <dependency>
-      <groupId>org.threeten</groupId>
-      <artifactId>threetenbp</artifactId>
-      <version>1.6.5</version>
-    </dependency>
 
     <dependency>
       <groupId>io.swagger</groupId>
@@ -193,6 +186,9 @@
             <configuration>
               <output>${project.build.directory}/generated-sources/swagger</output>
               <language>java</language>
+              <configOptions>
+                <dateLibrary>java8</dateLibrary>
+              </configOptions>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <generateApis>false</generateApis>
               <generateSupportingFiles>false</generateSupportingFiles>
