@@ -1,8 +1,5 @@
 package com.github.dockerjava.core.exec;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -10,14 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.dockerjava.api.command.ListPodsCmd;
-import com.github.dockerjava.core.DefaultPodmanCmdExecFactory;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.InvocationBuilder;
 import com.github.dockerjava.core.MediaType;
 import com.github.dockerjava.core.WebTarget;
 import com.github.dockerjava.core.util.FiltersEncoder;
-import com.google.gson.reflect.TypeToken;
 
 public class ListPodsCmdExec extends AbstrSyncDockerCmdExec<ListPodsCmd, List<ListPodsReport>> implements
         ListPodsCmd.Exec {
@@ -39,18 +34,13 @@ public class ListPodsCmdExec extends AbstrSyncDockerCmdExec<ListPodsCmd, List<Li
 
         LOGGER.trace("GET: {}", webTarget);
 
-        InvocationBuilder invocationBuilder = webTarget.request().accept(MediaType.APPLICATION_JSON);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(invocationBuilder.get()))) {
-            List<ListPodsReport> pods = DefaultPodmanCmdExecFactory.getSwaggerObjectMapper()
-                    .getGson().fromJson(reader, new TypeToken<List<ListPodsReport>>() {
-                    }.getType());
+        List<ListPodsReport> pods = webTarget.request().accept(MediaType.APPLICATION_JSON)
+                .get(new TypeReference<List<ListPodsReport>>() {
+                });
 
-            LOGGER.trace("Response: {}", pods);
+        LOGGER.trace("Response: {}", pods);
 
-            return pods;
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read Podman API method response.", ex);
-        }
+        return pods;
     }
 
 }

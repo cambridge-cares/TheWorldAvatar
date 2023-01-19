@@ -46,25 +46,11 @@
 
   <dependencies>
 
-    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.gsonfire/gson-fire -->
-    <dependency>
-      <groupId>io.gsonfire</groupId>
-      <artifactId>gson-fire</artifactId>
-      <version>1.8.5</version>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.squareup.okhttp/okhttp -->
-    <dependency>
-      <groupId>com.squareup.okhttp</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>2.7.5</version>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.14.1</version>
     </dependency>
 
     <dependency>
@@ -197,17 +183,21 @@
             <configuration>
               <inputSpec>${yaml.file}</inputSpec>
               <language>java</language>
+              <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <configOptions>
                 <dateLibrary>java8</dateLibrary>
+                <library>jersey2</library>
               </configOptions>
               <addCompileSourceRoot>true</addCompileSourceRoot>
-              <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <generateApis>false</generateApis>
-              <generateSupportingFiles>true</generateSupportingFiles>
-              <generateModelDocumentation>false</generateModelDocumentation>
-              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModels>true</generateModels>
               <modelsToGenerate>ListPodsReport,ListPodContainer</modelsToGenerate>
-              <supportingFilesToGenerate>JSON.java</supportingFilesToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <supportingFilesToGenerate></supportingFilesToGenerate>
             </configuration>
           </execution>
         </executions>
