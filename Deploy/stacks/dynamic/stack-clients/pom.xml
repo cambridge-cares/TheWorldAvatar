@@ -185,7 +185,7 @@
               <language>java</language>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <configOptions>
-                <dateLibrary>java8</dateLibrary>
+                <dateLibrary>legacy</dateLibrary>
                 <library>jersey2</library>
               </configOptions>
               <addCompileSourceRoot>true</addCompileSourceRoot>
