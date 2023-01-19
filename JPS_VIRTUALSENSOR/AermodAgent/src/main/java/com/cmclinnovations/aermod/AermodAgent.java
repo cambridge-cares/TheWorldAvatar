@@ -109,6 +109,14 @@ public class AermodAgent extends DerivationAgent {
         	srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
+        // Query buildings and plant items.
+        //Run BPIPPRM
+        BuildingsPlantItems bpi = new BuildingsPlantItems(simulationDirectory,scope, nx, ny, srid);
+        if (bpi.run() != 0) {
+            LOGGER.error("Failed to run BPIPPRM, terminating");
+            return;
+        }
+
         // create emissions input
         if (aermod.createPointsFile(ships, srid) != 0) {
             LOGGER.error("Failed to create points emissions file, terminating");
