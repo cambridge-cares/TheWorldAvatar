@@ -2826,6 +2826,9 @@ public class DerivationSparql {
 		Variable statusType = SparqlBuilder.var("statusType");
 		Variable sndIRI = SparqlBuilder.var("sndIRI");
 
+		// variables for uuidLock
+		Variable uuid = SparqlBuilder.var("uuid");
+
 		// filter ?derivationTimestamp < ?upstreamTimestamp
 		Expression<?> tsFilter = Expressions.lt(dTs, upsTs);
 
@@ -2854,11 +2857,13 @@ public class DerivationSparql {
 		// derivation created for new information
 		GraphPattern entityPattern = GraphPatterns.and(e.has(belongsTo, d), e.has(p1, o), s.has(p2, e).optional())
 				.optional();
+		// this GraphPattern queries the uuidLock of this derivation
+		GraphPattern uuidLockPattern = d.has(uuidLock, uuid);
 
 		// construct the sub query
-		sub.select(d, unixtimeIRI, dTs, retrievedInputsAtTs, status, statusType, sndIRI, downd, e, p1, o, s, p2)
+		sub.select(d, unixtimeIRI, dTs, retrievedInputsAtTs, status, statusType, sndIRI, downd, e, p1, o, s, p2, uuid)
 				.where(derivationTsPattern, retrievedInputsAtPattern, statusQueryPattern, directedDownstreamPattern,
-						entityPattern);
+						entityPattern, uuidLockPattern);
 
 		// delete old outputs (entities) - basically delete this individual
 		TriplePattern deleteEntityAsSubject = e.has(p1, o);
@@ -2872,11 +2877,14 @@ public class DerivationSparql {
 		TriplePattern deleteRetrievedInputsAt = d.has(retrievedInputsAt, retrievedInputsAtTs);
 		TriplePattern insertNewTimestamp = unixtimeIRI.has(numericPosition, retrievedInputsAtTs);
 
+		// delete uuidLock
+		TriplePattern deleteUuidLock = d.has(uuidLock, uuid);
+
 		// construct the complete SPARQL update, note that some of the insert triples
 		// have already been added at the beginning of this method
 		modify.prefix(prefixTime, prefixDerived)
 				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, tp3, deleteDirectedDownstream,
-						deleteOldTimestamp, deleteRetrievedInputsAt)
+						deleteOldTimestamp, deleteRetrievedInputsAt, deleteUuidLock)
 				.insert(insertNewTimestamp).where(sub);
 
 		return updateDerivationIfHttpPostAvailable(modify.getQueryString());
