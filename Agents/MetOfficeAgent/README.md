@@ -181,7 +181,17 @@ To run the tests, please follow those instructions:
     # Install agentlogging (separate installation required, as not possible to include in setup.py)
     python -m pip install -r requirements.txt
     ```
-3. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
+3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` directory, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
+    ```bash
+    # Pull Stack_Clients resource for py4jps Docker image
+    docker pull docker.cmclinnovations.com/stack-client:1.6.2
+    # Create a temporary folder for stackclients at the agent root (TheWorldAvatar\Agents\MetOfficeAgent)
+    mkdir tmp_stack 
+    # Install Stack_Clients resource for py4jps
+    jpsrm install StackClients ./tmp_stack --jar stack-clients-1.6.0.jar
+    ```
+
+4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
     ```bash
     # Uncomment integration tests and start Docker services (if wanted)
     docker compose -f "tests\docker-compose.test.yml" up -d --build 
