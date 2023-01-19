@@ -37,7 +37,7 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
 
 ### **3) Accessing CMCL docker registry**
 
-The agent requires building the [StackClients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
 
 ### **4) VS Code specifics**
 
@@ -185,6 +185,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
+[CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
