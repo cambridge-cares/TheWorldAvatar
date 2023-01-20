@@ -76,9 +76,18 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
+                if epc_data.get('property-type') in ['Flat', 'Maisonette']:
+                    parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
+                    # Retrieve parent building IRI if already instantiated, otherwise create            
+                    if parent:
+                        parent_iri = parent
+                    else:
+                        parent_iri = KB + 'Building_' + str(uuid.uuid4())
                 #TODO: Potentially incorporate more thorough check here, i.e. to
                 # avoid Flats (according to EPC data) having OCGML building representation
-                parent_iri = None
+                else:
+                    parent_iri = None
+
             else:
                 parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                 # Retrieve parent building IRI if already instantiated, otherwise create            
@@ -222,9 +231,17 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
+                if row.get('property-type') in ['Flat', 'Maisonette']:
+                    parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
+                    # Retrieve parent building IRI if already instantiated, otherwise create            
+                    if parent:
+                        parent_iri = parent
+                    else:
+                        parent_iri = KB + 'Building_' + str(uuid.uuid4())
                 #TODO: Potentially incorporate more thorough check here, i.e. to
                 # avoid Flats (according to EPC data) having OCGML building representation
-                parent_iri = None
+                else:
+                    parent_iri = None
             else:
                 parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                 # Retrieve parent building IRI if already instantiated, otherwise create            
@@ -633,16 +650,6 @@ def extract_address_information(line1, line2, line3, prop_type, epc_endpoint):
     # ASSUMPTION: Address information provided in decreasing granularity, i.e.
     # order: flat information - building information - street information
     field1 = line1
-    # if not field1.empty:
-    # For instantiation of all EPCs vs for a single certificate
-    # if (isinstance(line1, pd.Series)):
-    #     field1 = line1[0]
-    #     line2 = line2[0]
-    #     line3 = line3[0]
-    # if (isinstance(prop_type, pd.Series)):
-    #     to_inst['property-type'] = prop_type[0]
-    # else:
-    # to_inst['property-type'] = prop_type
 
     if field1:
         # If only first address field is provided -> extract (number and) street
