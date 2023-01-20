@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.github.dockerjava.jaxrs.ApiClientExtension;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
@@ -170,7 +171,7 @@ public class PodmanService extends DockerService {
         generator.setLabels(containerSpec.getLabels());
         generator.setNamespace(StackClient.getStackName());
         try {
-            ContainersApi api = new ContainersApi();
+            ContainersApi api = new ContainersApi(new ApiClientExtension(URI.create("unix:///var/run/docker.sock")));
             ContainerCreateResponse containerCreateResponse = api.containerCreateLibpod(generator);
 
             return getContainerIfCreated(service.getContainerName());
