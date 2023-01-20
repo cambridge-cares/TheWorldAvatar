@@ -289,30 +289,34 @@ public class DockerService extends AbstractService
         try (CreateServiceCmd createServiceCmd = dockerClient.getInternalClient().createServiceCmd(serviceSpec)) {
             CreateServiceResponse createServiceResponse = createServiceCmd.exec();
 
-            TaskStatus taskStatus = new TaskStatus();
-            TaskState taskState = null;
-            do {
-                try (ListTasksCmd listTasksCmd = dockerClient.getInternalClient().listTasksCmd()) {
-                    Optional<Task> task = listTasksCmd.withServiceFilter(service.getContainerName())
-                            .exec().stream().findFirst();
-                    if (task.isPresent()) {
-                        taskStatus = task.get().getStatus();
-                        taskState = taskStatus.getState();
-                    }
-                }
-            } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
+            return getContainerIfCreated(service.getContainerName());
+        }
+    }
 
-            if (!TaskState.RUNNING.equals(taskState)) {
-                String errMessage = taskStatus.getErr();
-                if (null != errMessage) {
-                    errMessage = taskStatus.getMessage();
+    protected Optional<Container> getContainerIfCreated(String containerName) {
+        TaskStatus taskStatus = new TaskStatus();
+        TaskState taskState = null;
+        do {
+            try (ListTasksCmd listTasksCmd = dockerClient.getInternalClient().listTasksCmd()) {
+                Optional<Task> task = listTasksCmd.withServiceFilter(containerName)
+                        .exec().stream().findFirst();
+                if (task.isPresent()) {
+                    taskStatus = task.get().getStatus();
+                    taskState = taskStatus.getState();
                 }
-                throw new RuntimeException("Failed to start service '" + service.getContainerName()
-                        + "'. Error message is:\n" + errMessage);
-            } else {
-                String containerId = taskStatus.getContainerStatus().getContainerID();
-                return getContainerFromID(containerId);
             }
+        } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
+
+        if (!TaskState.RUNNING.equals(taskState)) {
+            String errMessage = taskStatus.getErr();
+            if (null != errMessage) {
+                errMessage = taskStatus.getMessage();
+            }
+            throw new RuntimeException("Failed to start service '" + containerName
+                    + "'. Error message is:\n" + errMessage);
+        } else {
+            String containerId = taskStatus.getContainerStatus().getContainerID();
+            return getContainerFromID(containerId);
         }
     }
 
