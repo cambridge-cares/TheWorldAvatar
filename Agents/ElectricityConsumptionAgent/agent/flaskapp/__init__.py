@@ -3,7 +3,7 @@
 from flask import Flask
 
 #from agent.utils.stack_configs import UPDATE_ENDPOINT
-from agent.datamodel.spec import UPDATE_ENDPOINT
+from agent.utils.stack_configs import UPDATE_ENDPOINT
 from agent.kgutils.initialise_kg import create_blazegraph_namespace, upload_ontology
 
 
@@ -37,6 +37,6 @@ def create_app(test_config=None):
     create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
 
     # Upload ontology if not exists (on app startup)
-    upload_ontology()
+    #upload_ontology()
 
     return app

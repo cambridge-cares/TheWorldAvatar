@@ -6,7 +6,7 @@
 from flask import Blueprint, request, jsonify
 
 import agentlogging
-from agent.datamodel.spec import YEAR
+from agent.utils.env_configs import YEAR
 from agent.datainstantiation.readings import read_from_web_elec,read_from_web_gas,read_from_web_fuel_poverty,read_from_web_temp
 
 # Initialise logger
