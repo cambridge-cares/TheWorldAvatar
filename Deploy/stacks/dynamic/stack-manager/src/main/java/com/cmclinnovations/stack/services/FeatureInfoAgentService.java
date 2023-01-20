@@ -40,7 +40,7 @@ public class FeatureInfoAgentService extends ContainerService {
 
         NgxParam allowHeadersHeaderParam = new NgxParam();
         allowHeadersHeaderParam.addValue("add_header");
-        allowHeadersHeaderParam.addValue("'Access-Control-Allow-Methods'");
+        allowHeadersHeaderParam.addValue("'Access-Control-Allow-Headers'");
         allowHeadersHeaderParam.addValue(
                 "'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type'");
         locationBlock.addEntry(allowHeadersHeaderParam);
