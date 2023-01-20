@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
+import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxParam;
 
 public class FeatureInfoAgentService extends ContainerService {
@@ -19,6 +20,9 @@ public class FeatureInfoAgentService extends ContainerService {
     @Override
     public void addServerSpecificNginxSettingsToLocationBlock(NgxBlock locationBlock, Map<String, String> upstreams,
             Entry<String, Connection> endpoint) {
+
+        NgxComment corsFixComment = new NgxComment("# Necessary to fix CORS problem");
+        locationBlock.addEntry(corsFixComment);
 
         NgxParam allowOriginHeaderParam = new NgxParam();
         allowOriginHeaderParam.addValue("add_header");
