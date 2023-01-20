@@ -30,5 +30,11 @@ public class FeatureInfoAgentService extends ContainerService {
         allowOriginHeaderParam.addValue("'*'");
         allowOriginHeaderParam.addValue("always");
         locationBlock.addEntry(allowOriginHeaderParam);
+
+        NgxParam allowMethodsHeaderParam = new NgxParam();
+        allowMethodsHeaderParam.addValue("add_header");
+        allowMethodsHeaderParam.addValue("'Access-Control-Allow-Methods'");
+        allowMethodsHeaderParam.addValue("'GET'");
+        locationBlock.addEntry(allowMethodsHeaderParam);
     }
 }
