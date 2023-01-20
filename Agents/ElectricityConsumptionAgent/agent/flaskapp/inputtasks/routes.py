@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify
 
 import agentlogging
 from agent.datainstantiation.readings import upload_all, upload_elec_data_to_KG, upload_gas_data_to_KG, upload_fuel_poverty_to_KG, upload_Geoinfo_to_KG, upload_hadUK_climate_to_KG
-
+from utils.CEDA_env_config import record_login_info
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -15,6 +15,22 @@ logger = agentlogging.get_logger("prod")
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__
 )
+# Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
+@inputtasks_bp.route('/api/electricityconsumptionagent/prerequisite/login', methods=['GET'])
+def api_login():
+    # Check arguments (query parameters)
+    if len(request.args) > 0:
+        #print("Query parameters provided, although not required. " \
+        #      + "Provided arguments will be neglected.")
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
+    try:
+        record_login_info()
+        return jsonify({"status": '200', "msg": "success"})
+
+    except Exception as ex:
+        print(ex)
+        return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
 @inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/electricity', methods=['GET'])

@@ -13,7 +13,18 @@ home_bp = Blueprint(
 # Show an instructional message at the app root
 @home_bp.route('/', methods=['GET'])
 def default():
-    msg  = 'Hi there, The LSOAProbe agent offers the following functions :<BR>'
+    msg  = 'Hi there, The LSOAInput agent offers the following functions :<BR>'
+    msg += "<BR>"
+    msg += "NOTE: If you want to download or instantiate hadUK climate temperature data, DON'T forget to registrate an account at CEDA (https://services.ceda.ac.uk/cedasite/register/info/), "
+    msg += "and specify username and password by going to (GET request): <BR>"
+    msg += "&nbsp&nbsp /api/electricityconsumptionagent/prerequisite/login"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, "
+    msg += "which can be retrieved as environmental variable."
+    msg += "Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. "
+    msg += "If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module."
+    msg += "<BR>"
     msg += "<BR>"
     msg += " ---------------------- Data Download ------------------------------------"
     msg += "<BR>"
@@ -30,7 +41,6 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to download nc files of hadUK climate data in 1km grid (GET request):<BR>"
-    msg += "NOTE: DON'T forget to registrate an account at CEDA (https://services.ceda.ac.uk/cedasite/register/info/), and specify username and password as per instruction on README file <BR>"
     msg += "&nbsp&nbsp /api/electricityconsumptionagent/download/temperature"
     msg += "<BR>"
     msg += "<BR>"
@@ -49,7 +59,6 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to download and instantiate all hadUK climate data in 1km grid to KG (GET request):<BR>"
-    msg += "NOTE: DON'T forget to registrate an account at CEDA (https://services.ceda.ac.uk/cedasite/register/info/), and specify username and password as per instruction on README file <BR>"
     msg += "&nbsp&nbsp /api/electricityconsumptionagent/instantiate/temperature"
     msg += "<BR>"
     msg += "<BR>"
@@ -58,7 +67,6 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to download and instantiate all data as mentioned above to KG (GET request):<BR>"
-    msg += "NOTE: DON'T forget to registrate an account at CEDA (https://services.ceda.ac.uk/cedasite/register/info/), and specify username and password as per instruction on README file <BR>"
     msg += "&nbsp&nbsp /api/electricityconsumptionagent/instantiate/all"
     msg += "<BR>"
     msg += "<BR>"
