@@ -221,6 +221,12 @@ public class DerivationClientIntegrationTest {
         System.out.println("results5: " + results5);
         Assert.assertEquals(0, results5.length());
 
+        // there should be no uuidLock
+        JSONArray resultsUuidLock = storeClient.executeQuery(
+            String.format("SELECT ?uuidLock WHERE { <%s> <%s> ?uuidLock . }", derivation, DerivationSparql.derivednamespace + "uuidLock"));
+        System.out.println("resultsUuidLock: " + resultsUuidLock);
+        Assert.assertEquals(0, resultsUuidLock.length());
+
         // outputs should be replaced
         JSONArray results6;
         for (String iri : newDerivedIRI) {
