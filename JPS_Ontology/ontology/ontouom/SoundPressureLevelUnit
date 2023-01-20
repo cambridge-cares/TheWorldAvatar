@@ -26,14 +26,15 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Loudness Upper Ontology -->
+  <!-- Sound Pressure Level Upper Ontology -->
 
-  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/LoudnessUnit">
-    <rdfs:label xml:lang="en">loudness unit</rdfs:label>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit">
+    <rdfs:label xml:lang="en">sound pressure level unit</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Unit"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:oneOf rdf:parseType="Collection">
+          <om:PrefixedUnit rdf:resource="&om;decibel"/>
           <om:SingularUnit rdf:about="https://www.theworldavatar.com/kg/ontouom/dBFS">
         </owl:oneOf>
       </owl:Class>
