@@ -41,8 +41,7 @@ At the time of writing, the FIA has a few restrictions that all users should be 
 - The FIA can only be run within a [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 - The FIA can only report on metadata and timeseries that are contained within the same stack.
 - The FIA can only return timeseries data on series that use the Instant class.
-- The FIA can only return timeseries data from a single PostGreSQL database.
-- The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute to return).
+- The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute or so to return).
 
 ## Requirements
 
