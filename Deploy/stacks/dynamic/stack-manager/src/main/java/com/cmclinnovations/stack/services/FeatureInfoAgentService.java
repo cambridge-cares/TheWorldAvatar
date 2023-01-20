@@ -24,25 +24,7 @@ public class FeatureInfoAgentService extends ContainerService {
         allowOriginHeaderParam.addValue("add_header");
         allowOriginHeaderParam.addValue("'Access-Control-Allow-Origin'");
         allowOriginHeaderParam.addValue("'*'");
+        allowOriginHeaderParam.addValue("always");
         locationBlock.addEntry(allowOriginHeaderParam);
-
-        NgxParam allowCredentialsHeaderParam = new NgxParam();
-        allowCredentialsHeaderParam.addValue("add_header");
-        allowCredentialsHeaderParam.addValue("'Access-Control-Allow-Credentials'");
-        allowCredentialsHeaderParam.addValue("'true'");
-        locationBlock.addEntry(allowCredentialsHeaderParam);
-
-        NgxParam allowMethodsHeaderParam = new NgxParam();
-        allowMethodsHeaderParam.addValue("add_header");
-        allowMethodsHeaderParam.addValue("'Access-Control-Allow-Methods'");
-        allowMethodsHeaderParam.addValue("'GET, POST, OPTIONS'");
-        locationBlock.addEntry(allowMethodsHeaderParam);
-
-        NgxParam allowHeadersHeaderParam = new NgxParam();
-        allowHeadersHeaderParam.addValue("add_header");
-        allowHeadersHeaderParam.addValue("'Access-Control-Allow-Headers'");
-        allowHeadersHeaderParam.addValue(
-                "'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type'");
-        locationBlock.addEntry(allowHeadersHeaderParam);
     }
 }
