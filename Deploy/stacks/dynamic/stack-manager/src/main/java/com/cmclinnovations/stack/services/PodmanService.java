@@ -12,13 +12,27 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.cmclinnovations.swagger.podman.ApiException;
+import com.cmclinnovations.swagger.podman.api.ContainersApi;
+import com.cmclinnovations.swagger.podman.model.BindOptions;
+import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
+import com.cmclinnovations.swagger.podman.model.Mount;
+import com.cmclinnovations.swagger.podman.model.Secret;
+import com.cmclinnovations.swagger.podman.model.SpecGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.command.RemovePodCmd;
+import com.github.dockerjava.api.model.BindPropagation;
 import com.github.dockerjava.api.model.Container;
-
+import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.ContainerSpecConfig;
+import com.github.dockerjava.api.model.ContainerSpecFile;
+import com.github.dockerjava.api.model.ContainerSpecSecret;
 
 public class PodmanService extends DockerService {
 
@@ -104,8 +118,82 @@ public class PodmanService extends DockerService {
     }
 
     private Optional<Container> startPod(ContainerService service) {
-        return null;
+        String containerName = service.getContainerName();
+        ContainerSpec containerSpec = service.getContainerSpec();
+
+        SpecGenerator generator = new SpecGenerator();
+
+        generator.setName(containerName);
+        generator.setPod(containerName);
+        generator.setImage(service.getImage());
+        generator.setEnv(service.getConfig().getEnvironment());
+        generator.setCommand(containerSpec.getCommand());
+        List<ContainerSpecSecret> secrets = containerSpec.getSecrets();
+        if (null != secrets) {
+            generator.setSecrets(secrets.stream()
+                    .map(dockerSecret -> {
+                        ContainerSpecFile file = dockerSecret.getFile();
+                        return new Secret()
+                                .source(file.getName())
+                                .GID(Integer.parseInt(file.getGid()))
+                                .UID(Integer.parseInt(file.getUid()))
+                                .mode(file.getMode().intValue());
+                    })
+                    .collect(Collectors.toList()));
+        }
+        List<ContainerSpecConfig> configs = containerSpec.getConfigs();
+        if (null != configs) {
+            configs.forEach(dockerConfig -> {
+                ContainerSpecFile file = dockerConfig.getFile();
+                if (null != file) {
+                    Long mode = file.getMode();
+                    generator.addSecretsItem(new Secret()
+                            .source(file.getName())
+                            .target("/" + dockerConfig.getConfigName())
+                            .GID(Integer.parseInt(file.getGid()))
+                            .UID(Integer.parseInt(file.getUid()))
+                            .mode(mode == null ? null : Math.toIntExact(mode)));
+                }
+            });
+        }
+        List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
+        if (null != dockerMounts) {
+            generator.setMounts(dockerMounts.stream()
+                    .map(dockerMount -> new Mount()
+                            .source(dockerMount.getSource())
+                            .target(dockerMount.getTarget())
+                            .type(dockerMount.getType().name().toLowerCase())
+                            .readOnly(dockerMount.getReadOnly())
+                            .bindOptions(convertBindOptions(dockerMount.getBindOptions())))
+                    .collect(Collectors.toList()));
+        }
+        generator.setLabels(containerSpec.getLabels());
+        generator.setNamespace(StackClient.getStackName());
+        try {
+            ContainersApi api = new ContainersApi();
+            ContainerCreateResponse containerCreateResponse = api.containerCreateLibpod(generator);
+
+            return getContainerIfCreated(service.getContainerName());
+        } catch (ApiException ex) {
+            throw new RuntimeException("Failed to create Podman Container '" + containerName + "''.", ex);
+        }
     }
 
+    private BindOptions convertBindOptions(com.github.dockerjava.api.model.BindOptions dockerBindOptions) {
+        try {
+            if (null == dockerBindOptions) {
+                return null;
+            } else {
+                BindPropagation propagation = dockerBindOptions.getPropagation();
+                BindOptions podmanBindOptions = new BindOptions();
+                if (null != propagation) {
+                    podmanBindOptions.propagation(new ObjectMapper().writeValueAsString(propagation));
+                }
+                return podmanBindOptions;
+            }
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
 }
