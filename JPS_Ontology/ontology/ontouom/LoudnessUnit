@@ -34,7 +34,6 @@
     <owl:equivalentClass>
       <owl:Class>
         <owl:oneOf rdf:parseType="Collection">
-          <om:PrefixedUnit rdf:resource="&om;decibel"/>
           <om:SingularUnit rdf:about="https://www.theworldavatar.com/kg/ontouom/dBFS">
         </owl:oneOf>
       </owl:Class>
