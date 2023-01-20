@@ -8,6 +8,7 @@ import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 import com.github.dockerjava.api.command.ListPodsCmd;
+import com.github.dockerjava.api.command.RemovePodCmd;
 import com.github.dockerjava.api.model.Container;
 
 
@@ -63,10 +64,10 @@ public class PodmanService extends DockerService {
         Optional<ListPodsReport> pod = getPod(service);
 
         if (pod.isPresent()) {
-            // try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
-            // .removeServiceCmd(swarmService.get().getId())) {
-            // removeServiceCmd.exec();
-            // }
+            try (RemovePodCmd removePodCmd = getClient().getInternalClient()
+                    .removePodCmd(pod.get().getId())) {
+                removePodCmd.exec();
+            }
         }
     }
 

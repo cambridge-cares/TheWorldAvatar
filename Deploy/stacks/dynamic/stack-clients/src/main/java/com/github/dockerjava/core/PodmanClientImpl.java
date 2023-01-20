@@ -9,7 +9,9 @@ import com.github.dockerjava.api.DockerClientDelegate;
 import com.github.dockerjava.api.PodmanClient;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.command.PodmanCmdExecFactory;
+import com.github.dockerjava.api.command.RemovePodCmd;
 import com.github.dockerjava.core.command.ListPodsCmdImpl;
+import com.github.dockerjava.core.command.RemovePodCmdImpl;
 import com.github.dockerjava.transport.DockerHttpClient;
 
 public class PodmanClientImpl extends DockerClientDelegate implements PodmanClient {
@@ -65,6 +67,11 @@ public class PodmanClientImpl extends DockerClientDelegate implements PodmanClie
     @Override
     public ListPodsCmd listPodsCmd() {
         return new ListPodsCmdImpl(getPodmanCmdExecFactory().createListPodsCmdExec());
+    }
+
+    @Override
+    public RemovePodCmd removePodCmd(String podId) {
+        return new RemovePodCmdImpl(getPodmanCmdExecFactory().createRemovePodCmdExec(), podId);
     }
 
     @Override
