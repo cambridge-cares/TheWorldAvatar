@@ -43,7 +43,7 @@ public class PodmanService extends DockerService {
 
         addStackSecrets();
 
-        addStackConfigs();
+        // addStackConfigs();
 
         createNetwork(stackName);
     }
