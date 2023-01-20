@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.TaskSpec;
 
@@ -91,6 +94,10 @@ public class ContainerService extends AbstractService {
         }
     }
 
+    public void removeEnvironmentVariable(String key) {
+        getConfig().removeEnvironmentVariable(key);
+    }
+
     protected final void checkEnvironmentVariableNonNull(String key) {
         String value = getEnvironmentVariable(key);
         Objects.requireNonNull(value,
@@ -132,6 +139,20 @@ public class ContainerService extends AbstractService {
 
     public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
+    }
+
+    /**
+     * If the named secret doesn't exist then add a dummy one, this is needed as
+     * Docker requires that all secrets a container references exist.
+     * 
+     * @param secretName
+     */
+    protected boolean ensureOptionalSecret(String secretName) {
+        boolean secretExists = dockerClient.secretExists(secretName);
+        if (!secretExists) {
+            dockerClient.addSecret(secretName, "UNUSED");
+        }
+        return secretExists;
     }
 
 }

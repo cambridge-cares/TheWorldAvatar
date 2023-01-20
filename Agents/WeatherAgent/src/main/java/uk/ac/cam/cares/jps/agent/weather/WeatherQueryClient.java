@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,29 +71,30 @@ class WeatherQueryClient {
 	private static Iri hasGeometry = iri("http://www.opengis.net/ont/geosparql#hasGeometry");
     
     // IRI of units used
-    private static Iri unit_mm = p_om.iri("millimetre");
-    private static Iri unit_degree = p_om.iri("degree");
-    private static Iri unit_mbar = p_om.iri("millibar");
-    private static Iri unit_celcius = p_om.iri("degreeCelsius");
-    private static Iri unit_ms = p_om.iri("metrePerSecond-Time");
-    private static Iri unit_fraction = p_om.iri("RatioUnit"); 
-    private static Iri unit_percentage = p_om.iri("PercentageUnit");
+    private static final Iri UNIT_MM = p_om.iri("millimetre");
+    private static final Iri UNIT_DEGREE = p_om.iri("degree");
+    private static final Iri UNIT_MBAR = p_om.iri("millibar");
+    private static final Iri UNIT_CELCIUS = p_om.iri("degreeCelsius");
+    private static final Iri UNIT_MS = p_om.iri("metrePerSecond-Time");
+    private static final Iri UNIT_FRACTION = p_om.iri("RatioUnit"); 
+    private static final Iri UNIT_PERCENTAGE = p_om.iri("PercentageUnit");
     
     // measured properties
     private static List<String> weatherClasses = Arrays.asList(CloudCover, Rainfall,
 	    AtmosphericPressure, AirTemperature, RelativeHumidity, WindSpeed, WindDirection);
     
     // fixed units for each measured property
-    @SuppressWarnings("serial")
-	static Map<String, Iri> unitMap = new HashMap<String , Iri>() {{
-    	put(CloudCover, unit_percentage);
-    	put(Rainfall, unit_mm);
-    	put(AtmosphericPressure, unit_mbar);
-    	put(AirTemperature, unit_celcius);
-    	put(RelativeHumidity, unit_fraction);
-    	put(WindSpeed, unit_ms);
-    	put(WindDirection, unit_degree);
-    }};
+	private static Map<String, Iri> UNIT_MAP = new HashMap<>(); 
+	static {
+    	UNIT_MAP.put(CloudCover, UNIT_PERCENTAGE);
+    	UNIT_MAP.put(Rainfall, UNIT_MM);
+    	UNIT_MAP.put(AtmosphericPressure, UNIT_MBAR);
+    	UNIT_MAP.put(AirTemperature, UNIT_CELCIUS);
+    	UNIT_MAP.put(RelativeHumidity, UNIT_PERCENTAGE);
+    	UNIT_MAP.put(WindSpeed, UNIT_MS);
+    	UNIT_MAP.put(WindDirection, UNIT_DEGREE);
+		UNIT_MAP = Collections.unmodifiableMap(UNIT_MAP);
+    }
     
     RemoteStoreClient kgClient;
     TimeSeriesClient<Instant> tsClient;
@@ -112,7 +114,7 @@ class WeatherQueryClient {
      * @return
      */
     String createStation(double lat, double lon, String name) {
-		String station_iri = ontoems + "weatherstation_" + UUID.randomUUID();
+		String stationIri = ontoems + "weatherstation_" + UUID.randomUUID();
 
 		// create geojson object for PostGIS
 		JSONObject geojson = new JSONObject();
@@ -120,8 +122,8 @@ class WeatherQueryClient {
 		JSONObject properties = new JSONObject();
 		geometry.put("type","Point");
 		geometry.put("coordinates", new JSONArray().put(lon).put(lat));
-		properties.put("iri", station_iri);
-		properties.put("geom_iri", station_iri + "/geometry");
+		properties.put("iri", stationIri);
+		properties.put("geom_iri", stationIri + "/geometry");
 		properties.put("type", "weather");
 		if (name != null) {
 			properties.put("name", name);
@@ -143,12 +145,12 @@ class WeatherQueryClient {
 		LOGGER.info("Instantiating weather station in triple-store");
 		ModifyQuery modify = Queries.MODIFY();
     	
-    	Iri station = iri(station_iri);
+    	Iri station = iri(stationIri);
 
     	modify.insert(station.isA(ReportingStation));
     	
-    	List<String> datalist_for_timeseries = new ArrayList<>();
-    	List<Class<?>> classlist_for_timeseries = new ArrayList<>();
+    	List<String> dataListForTimeSeries = new ArrayList<>();
+    	List<Class<?>> classListForTimeSeries = new ArrayList<>();
     	
     	// add 1 sensor per property
     	for (String weatherClass : weatherClasses) {
@@ -157,13 +159,13 @@ class WeatherQueryClient {
     		Iri measure = iri(measureIri);
     		
     		// to create time series table later
-    		datalist_for_timeseries.add(measureIri);
-    		classlist_for_timeseries.add(Double.class);
+    		dataListForTimeSeries.add(measureIri);
+    		classListForTimeSeries.add(Double.class);
     		
     		// triples to insert
     		modify.insert(station.has(reports,quantity));
     		modify.insert(quantity.isA(iri(weatherClass)).andHas(hasValue,measure));
-    		modify.insert(measure.isA(Measure).andHas(hasUnit,unitMap.get(weatherClass)));
+    		modify.insert(measure.isA(Measure).andHas(hasUnit,UNIT_MAP.get(weatherClass)));
     	}
     	
     	modify.prefix(p_ems,p_om);
@@ -173,20 +175,17 @@ class WeatherQueryClient {
     	
 		LOGGER.info("Creating time series for station");
     	// then create a table for this weather station
-    	tsClient.initTimeSeries(datalist_for_timeseries, classlist_for_timeseries, null);
+    	tsClient.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, null);
     	
-    	// populate with current weather data
-    	updateStation(station_iri);
-    	
-    	return station_iri;
+    	return stationIri;
     }
     
     /**
      * deletes the given station, including its associated time series
      * @param station_iri
      */
-    void deleteStation(String station_iri) {
-    	Iri station = iri(station_iri);
+    void deleteStation(String stationIri) {
+    	Iri station = iri(stationIri);
     	
     	SelectQuery query = Queries.SELECT();
     	
@@ -223,12 +222,12 @@ class WeatherQueryClient {
     	tsClient.deleteTimeSeries(timeseriesIRI);
     }
     
-    Instant getLastUpdateTime(String station_iri) {
+    Instant getLastUpdateTime(String stationIri) {
     	// query measure IRI
 		SelectQuery query = Queries.SELECT();
 
 		Variable measure = query.var();
-		Iri station = iri(station_iri);
+		Iri station = iri(stationIri);
 
 		GraphPattern gp =  station.has(PropertyPaths.path(reports,hasValue),measure);
 
@@ -237,10 +236,10 @@ class WeatherQueryClient {
 		List<String> measures = kgClient.executeQuery(query.getQueryString()).toList().stream()
 		.map(m -> ((HashMap<String,String>) m).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
 
-		if (measures.size() > 0) {
+		if (!measures.isEmpty()) {
 			return tsClient.getLatestData(measures.get(0)).getTimes().get(0);
 		} else {
-			String errmsg = station_iri + " probably does not exist";
+			String errmsg = stationIri + " probably does not exist";
 			LOGGER.error(errmsg);
 			throw new RuntimeException(errmsg);
 		}
@@ -250,27 +249,34 @@ class WeatherQueryClient {
      * updates weather station with the latest data
      * @param station_iri
      */
-    void updateStation(String station_iri) {
+    void updateStation(String stationIri, String timestamp) {
 		// get the coordinates of this station
 		// build coordinate query
 		SelectQuery query2 = Queries.SELECT();
 		Variable wkt = query2.var();
-		query2.select(wkt).where(iri(station_iri).has(PropertyPaths.path(hasGeometry, asWKT),wkt));
+
+		ServiceEndpoint ontop = new ServiceEndpoint(Config.ontop_url);
+		query2.select(wkt).where(ontop.service(iri(stationIri).has(PropertyPaths.path(hasGeometry, asWKT),wkt)));
 		
-		// submit coordinate query to ontop
-		String wkt_string = ontopClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
+		// submit coordinate query to ontop via blazegraph
+		String wktString = kgClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
 		
 		// parse wkt literal
-		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wkt_string);
+		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wktString);
 		double lat = geometryWrapper.getXYGeometry().getCoordinate().getY();
 		double lon = geometryWrapper.getXYGeometry().getCoordinate().getX();
 		
 		// the key for this map is the weather class, value is the corresponding value
-		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(lat, lon);
+		Map<String,Double> newWeatherData;
+		if (timestamp == null) {
+			newWeatherData = WeatherAPIConnector.getCurrentWeatherDataFromOpenWeather(lat, lon);
+		} else {
+			newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeatherWithTimestamp(lat, lon, timestamp);
+		}
 	    
 		// to construct time series object
-		List<String> datavalue_list = new ArrayList<>();
-		List<List<?>> value_list = new ArrayList<>();
+		List<String> datavalueList = new ArrayList<>();
+		List<List<?>> valueList = new ArrayList<>();
 		
 		// query measure IRIs and match numerical values to it
 		SelectQuery query3 = Queries.SELECT();
@@ -278,7 +284,7 @@ class WeatherQueryClient {
 		Variable measure = query3.var();
 		Variable weatherType = query3.var();
 		
-		GraphPattern gp = GraphPatterns.and(iri(station_iri).has(reports,quantity), quantity.isA(weatherType).andHas(hasValue,measure));
+		GraphPattern gp = GraphPatterns.and(iri(stationIri).has(reports,quantity), quantity.isA(weatherType).andHas(hasValue,measure));
 		
 		query3.select(measure, weatherType).where(gp).prefix(p_om,p_ems);
 
@@ -286,13 +292,18 @@ class WeatherQueryClient {
 
 		for (int i = 0; i < queryResults.length(); i++) {
 			JSONObject queryResult = queryResults.getJSONObject(i);
-			datavalue_list.add(queryResult.getString(measure.getQueryString().substring(1)));
+			datavalueList.add(queryResult.getString(measure.getQueryString().substring(1)));
 			double numericalValue = newWeatherData.get(queryResult.getString(weatherType.getQueryString().substring(1)));
-			value_list.add(Arrays.asList(numericalValue));
+			valueList.add(Arrays.asList(numericalValue));
 		}
 		
 		// append new values to time series table
-		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(Instant.now()), datavalue_list, value_list);
+		TimeSeries<Instant> ts;
+		if (timestamp == null) {
+			ts = new TimeSeries<>(Arrays.asList(Instant.now()), datavalueList, valueList);
+		} else {
+			ts = new TimeSeries<>(Arrays.asList(Instant.ofEpochSecond(Long.parseLong(timestamp))), datavalueList, valueList);
+		}
 		tsClient.addTimeSeriesData(ts);
     }
 
@@ -300,11 +311,11 @@ class WeatherQueryClient {
      * get latest weather data
      * @param station_iri
      */
-	TimeSeries<Instant> getLatestWeatherData(String station_iri) {
+	TimeSeries<Instant> getLatestWeatherData(String stationIri) {
     	// first query the data IRIs
     	SelectQuery query = Queries.SELECT();
     	
-    	Iri station = iri(station_iri);
+    	Iri station = iri(stationIri);
     	Variable measure = query.var();
     	
     	GraphPattern queryPattern = station.has(PropertyPaths.path(reports,hasValue), measure);
@@ -315,9 +326,8 @@ class WeatherQueryClient {
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
-    	TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(datalist, latestTime, latestTime);
     	
-    	return ts;
+    	return tsClient.getTimeSeriesWithinBounds(datalist, latestTime, latestTime);
     }
     
 	/**
@@ -325,11 +335,11 @@ class WeatherQueryClient {
 	 * @param station_iri
 	 * @return
 	 */
-	TimeSeries<Instant> getHistoricalWeatherData(String station_iri, int hour) {
+	TimeSeries<Instant> getHistoricalWeatherData(String stationIri, int hour) {
 		// first query the data IRIs
     	SelectQuery query = Queries.SELECT();
     	
-    	Iri station = iri(station_iri);
+    	Iri station = iri(stationIri);
     	Variable measure = query.var();
     	
     	GraphPattern queryPattern = station.has(PropertyPaths.path(reports,hasValue),measure);
@@ -340,9 +350,8 @@ class WeatherQueryClient {
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
-    	Instant queryEarliestTime = Instant.now().minus(Duration.ofHours(1));
-    	TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(datalist, queryEarliestTime, latestTime);
+    	Instant queryEarliestTime = Instant.now().minus(Duration.ofHours(hour));
     	
-    	return ts;
+    	return tsClient.getTimeSeriesWithinBounds(datalist, queryEarliestTime, latestTime);
 	}
 }

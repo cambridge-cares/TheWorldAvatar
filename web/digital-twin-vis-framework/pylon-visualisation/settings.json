@@ -1,0 +1,15 @@
+{
+    "start": {
+        "center": [
+            0.3,
+            52
+        ],
+        "zoom": 7,
+        "bearing": 0,
+        "pitch": 45
+    },
+    "search": [
+        {}
+    ],
+    "attribution": "<div style='padding: 10px; text-align: left;'>This is an example of a some custom HTML content that can be added to the 'Attributions' node in the bottom-left corner of the map.<br><br>If this property was not defined within the settings file, then this component would not appear on the map.</div>"
+}
