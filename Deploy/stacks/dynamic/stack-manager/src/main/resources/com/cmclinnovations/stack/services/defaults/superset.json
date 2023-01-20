@@ -11,7 +11,7 @@
     "endpoints": {
         "ui": {
             "url": "http://localhost:8088/",
-            "externalPath": "/dashboard"
+            "externalPath": "/analytics"
         }
     }
 }
