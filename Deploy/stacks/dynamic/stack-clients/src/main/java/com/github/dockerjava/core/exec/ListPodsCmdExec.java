@@ -25,7 +25,7 @@ public class ListPodsCmdExec extends AbstrSyncDockerCmdExec<ListPodsCmd, List<Li
 
     @Override
     protected List<ListPodsReport> execute(ListPodsCmd command) {
-        WebTarget webTarget = getBaseResource().path("/v4.0.0/libpod/pods/json");
+        WebTarget webTarget = getBaseResource().path("pods", "json");
 
         Map<String, List<String>> filters = command.getFilters();
         if (filters != null && !filters.isEmpty()) {

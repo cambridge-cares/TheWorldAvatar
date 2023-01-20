@@ -11,9 +11,11 @@ public abstract class AbstractPodmanCmdExecFactory implements PodmanCmdExecFacto
 
     protected abstract WebTarget getBaseResource();
 
+    protected abstract WebTarget getPodmanBaseResource();
+
     // pods
     @Override
     public ListPodsCmd.Exec createListPodsCmdExec() {
-        return new ListPodsCmdExec(getBaseResource(), getDockerClientConfig());
+        return new ListPodsCmdExec(getPodmanBaseResource(), getDockerClientConfig());
     }
 }

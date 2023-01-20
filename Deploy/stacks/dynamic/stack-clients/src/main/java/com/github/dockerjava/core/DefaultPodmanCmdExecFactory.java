@@ -35,6 +35,11 @@ public final class DefaultPodmanCmdExecFactory extends AbstractPodmanCmdExecFact
     }
 
     @Override
+    protected WebTarget getPodmanBaseResource() {
+        return getBaseResource().path("v4.0.0", "libpod");
+    }
+
+    @Override
     public void close() throws IOException {
         dockerCmdExecFactory.close();
     }
