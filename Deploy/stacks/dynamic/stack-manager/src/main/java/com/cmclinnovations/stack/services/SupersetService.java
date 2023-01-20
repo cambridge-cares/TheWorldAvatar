@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.superset.SupersetEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
@@ -28,6 +29,13 @@ public class SupersetService extends ContainerService {
             "dashboardmodelview", "slicemodelview", "dashboardasync", "druiddatasourcemodelview", "api",
             "csstemplateasyncmodelview", "chart", "savedqueryviewapi", "r", "datasource", "sliceaddview");
     public static final String LOCATION = "location";
+
+    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_PORT = "8088";
+    private static final String DEFAULT_PASSWORD_FILE = "/run/secrets/superset_password";
+    private static final String DEFAULT_FIRSTNAME = "Superset";
+    private static final String DEFAULT_LASTNAME = "Admin";
+    private static final String DEFAULT_EMAIL = "admin@superset.com";
 
     public SupersetService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
@@ -109,8 +117,23 @@ public class SupersetService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        executeCommand("superset", "fab", "create-admin", "--username", "admin", "--firstname", "Superset",
-                "--lastname", "Admin", "--email", "admin@superset.com", "--password", "admin");
-        executeCommand("sh","-c","pip install sqlalchemy==1.4.46 && superset db upgrade && superset init");
+        SupersetEndpointConfig endpointConfig = new SupersetEndpointConfig(
+                EndpointNames.SUPERSET, getHostName(), DEFAULT_PORT,
+                DEFAULT_USERNAME, DEFAULT_PASSWORD_FILE, DEFAULT_FIRSTNAME, DEFAULT_LASTNAME, DEFAULT_EMAIL);
+
+        writeEndpointConfig(endpointConfig);
+
+        makeUser(endpointConfig);
+
+        executeCommand("sh", "-c",
+                "pip install sqlalchemy==1.4.46 && pip install psycopg2 && superset db upgrade && superset init");
     }
+
+    private void makeUser(SupersetEndpointConfig endpointConfig) {
+        executeCommand("superset", "fab", "create-admin", "--username", endpointConfig.getUsername(), "--firstname",
+                endpointConfig.getFirstName(),
+                "--lastname", endpointConfig.getLastName(), "--email", endpointConfig.getEmail(), "--password",
+                endpointConfig.getPassword());
+    }
+
 }
