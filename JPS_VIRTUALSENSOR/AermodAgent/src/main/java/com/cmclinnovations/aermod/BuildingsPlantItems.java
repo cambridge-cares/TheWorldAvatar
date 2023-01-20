@@ -5,6 +5,7 @@ subsequently used to run AERMOD.
 
 package com.cmclinnovations.aermod;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,15 +15,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +41,7 @@ public class BuildingsPlantItems {
     String[] StackQueryEndpoint = {"jibusinessunits"} ;
     String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
 
-    private static int locindex = -1;
+    public static int locindex = -1;
     public static String StackQueryIRI;
     public static String GeospatialQueryIRI;
 
@@ -49,43 +52,39 @@ public class BuildingsPlantItems {
     public static String Longitude;
 
 
-
     /* Receptor coordinates */
-    public static ArrayList<Double> ReceptorLat, ReceptorLong;
-
     public static List<List<Double>> ReceptorDatabaseCoordinates = new ArrayList<>() ;
 
-    // Coordinate reference systems used by database (DatabaseCRS) and AERMOD(UTMCRS)
+    // Coordinate reference systems used by database (DatabaseCoordSys) and AERMOD(UTMCoordSys)
     public static String[] DatabaseCRS = {"EPSG:24500"};
-    public static String[] UTMCRS = {"EPSG:24548"};
     public static String DatabaseCoordSys, UTMCoordSys ;
 
     /* Each element of StackProperties contains the (x,y) coordinates of the center of the base polygon of the stack and the stack height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
      */
-    public static ArrayList<String> StackProperties = new ArrayList<>()  ;
-    public static ArrayList<Double> StackEmissions = new ArrayList<>()  ;
-    public static ArrayList<Double> StackDiameter = new ArrayList<>()  ;
+    public static List<String> StackProperties = new ArrayList<>()  ;
+    public static List<Double> StackEmissions = new ArrayList<>()  ;
+    public static List<Double> StackDiameter = new ArrayList<>()  ;
 
     /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
      */
-    public static ArrayList<String> BuildingVertices = new ArrayList<>() ;
-    public static ArrayList<String> BuildingProperties = new ArrayList<>() ;
+    public static List<String> BuildingVertices = new ArrayList<>() ;
+    public static List<String> BuildingProperties = new ArrayList<>() ;
 
 
     /* Variables for grid. x and y variables correspond to Easting and Northing respectively. Units
      *  of gridSpacing is meters */
 
-    public static ArrayList<Integer> cellmap = new ArrayList<>() ;
-    public static ArrayList<Integer> stackHead = new ArrayList<>() ;
-    public static ArrayList<Integer>  stackList = new ArrayList<>() ;
-    public static ArrayList<Integer> buildingHead = new ArrayList<>() ;
-    public static ArrayList<Integer>  buildingList = new ArrayList<>() ;
+    public static List<Integer> cellmap = new ArrayList<>() ;
+    public static List<Integer> stackHead = new ArrayList<>() ;
+    public static List<Integer>  stackList = new ArrayList<>() ;
+    public static List<Integer> buildingHead = new ArrayList<>() ;
+    public static List<Integer>  buildingList = new ArrayList<>() ;
 
     // Boolean arrays to check if stacks and buildings have been used previously
-    public static ArrayList<Boolean> stackUsed = new ArrayList<>() ;
-    public static ArrayList<Boolean> buildingUsed = new ArrayList<>() ;
+    public static List<Boolean> stackUsed = new ArrayList<>() ;
+    public static List<Boolean> buildingUsed = new ArrayList<>() ;
     public static Integer numberGridsX, numberGridsY, numberTotalGrids ;
 
     /* Maximum distance between stack and receptor for which AERMOD computes pollutant concentrations
@@ -95,24 +94,20 @@ public class BuildingsPlantItems {
     public static Double gridSpacing = cutoffRadius;
 
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
-    public static Double[] MinX = {1.216988};
-    public static Double[] MaxX = {1.293530};
-    public static Double[] MinY = {103.650684};
-    public static Double[] MaxY = {103.743038};
-
-
+    public static List<String> boundaryPolygons = new ArrayList<> (
+            Arrays.asList("POLYGON ((1.216988 103.650684, 1.216988 103.743038, 1.293530 103.743038, 1.293530 103.650684, 1.216988 103.650684))")) ;
 
 
     // Variables used to run AERMOD and its preprocessors
-    public static ArrayList<String> BPIPPRMBuildingInput = new ArrayList<>();
-    public static ArrayList<String> BPIPPRMStackInput = new ArrayList<>() ;
+    public static List<String> BPIPPRMBuildingInput = new ArrayList<>();
+    public static List<String> BPIPPRMStackInput = new ArrayList<>() ;
 
-    private Path simulationDirectory;
-    private Path bpipprmDirectory;
+    public Path simulationDirectory;
+    public static Path bpipprmDirectory;
 
-    public BuildingsPlantItems(Path simulationDirectory, Polygon scope, int nx, int ny, int srid) {
+    public BuildingsPlantItems(Path simulationDirectory, Polygon scope, int nx, int ny, int srid) throws ParseException {
         this.simulationDirectory = simulationDirectory;
-        this.bpipprmDirectory = simulationDirectory.resolve("bpipprm");
+        bpipprmDirectory = simulationDirectory.resolve("bpipprm");
         bpipprmDirectory.toFile().mkdir();
 
         // Determine namespace to query based on input polygon
@@ -132,11 +127,20 @@ public class BuildingsPlantItems {
         double yMax = Collections.max(yDoubles);
         double yMin = Collections.min(yDoubles);
 
-        for (int i = 0; i < MinX.length; i++){
-            if (xMax < MaxX[i] && xMin > MinX[i] && yMax < MaxY[i] && yMin > MinY[i]){
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
+        Polygon boundary = null;
+
+        for (int i = 0; i < boundaryPolygons.size(); i++){
+            String wkt = boundaryPolygons.get(i);
+            boundary = (Polygon) new WKTReader(geometryFactory).read(wkt);
+            if (boundary.covers(scope)) {
                 locindex = i;
                 break;
             }
+        }
+
+        if (locindex == -1) {
+            throw new RuntimeException("Input polygon not found in any namespace.");
         }
 
         StackQueryIRI = StackQueryEndpoint[locindex];
@@ -156,10 +160,16 @@ public class BuildingsPlantItems {
             }
         }
 
-        xlo = gridSpacing*Math.floor(xMin/gridSpacing) ;
-        xhi = gridSpacing*Math.ceil(xMax/gridSpacing) ;
-        ylo = gridSpacing*Math.floor(yMin/gridSpacing) ;
-        yhi = gridSpacing*Math.ceil(yMax/gridSpacing) ;
+        Envelope bounds = boundary.getEnvelopeInternal();
+        xlo = bounds.getMinX();
+        xhi = bounds.getMaxX();
+        ylo = bounds.getMinY();
+        yhi = bounds.getMaxY();
+
+        xlo = gridSpacing*Math.floor(xlo/gridSpacing) ;
+        xhi = gridSpacing*Math.ceil(xhi/gridSpacing) ;
+        ylo = gridSpacing*Math.floor(ylo/gridSpacing) ;
+        yhi = gridSpacing*Math.ceil(yhi/gridSpacing) ;
         float numberIntervalsX = (float) ((xhi - xlo)/gridSpacing);
         float numberIntervalsY = (float) ((yhi - ylo)/gridSpacing);
         numberGridsX = 1 + Math.round(numberIntervalsX);
@@ -169,11 +179,15 @@ public class BuildingsPlantItems {
 
     }
 
-    int run() {
+    public static int run() {
         try {
             initGrid();
-            buildings();
-            processBuildings();
+            getStacksBuildings();
+            if (createBPIPPRMInput() == 0) runBPIPPRM();
+            else {
+                LOGGER.error("Failed to create BPIPPRM input file, terminating");
+                return 1;
+            }
         } catch (Exception e) {
             return 1;
         }
@@ -181,8 +195,7 @@ public class BuildingsPlantItems {
     }
 
     public static List<List<Double>> convertCoordinates
-            (List<List<Double>> inputcoordinates, String inputCRS, String outputCRS)
-            throws FactoryException, TransformException {
+            (List<List<Double>> inputcoordinates, String inputCRS, String outputCRS) {
 
         List<List<Double>> outputcoordinates = new ArrayList<>();
 
@@ -200,7 +213,6 @@ the linked lists for each of these types of structures.
  */
     public static void initGrid () {
 
-
         for (int i = 0; i < numberGridsX; i++) {
             for (int j = 0; j < numberGridsY; j++) {
                 int icell = i + j*numberGridsX ;
@@ -212,7 +224,6 @@ the linked lists for each of these types of structures.
                 cellmap.add(i - 1 + (j+1)*numberGridsX);
                 cellmap.add(i + 1 + (j-1)*numberGridsX);
                 cellmap.add(i + 1 + (j+1)*numberGridsX);
-
 
             }
         }
@@ -251,7 +262,7 @@ the linked lists for each of these types of structures.
             for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
                 JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
                 String coordiData = coordiS.getString("polygonData");
-                ArrayList<String> z_values = new ArrayList<>();
+                List<String> z_values = new ArrayList<>();
 
 
                 String[] coordinates = coordiData.split("#");
@@ -320,7 +331,7 @@ the linked lists for each of these types of structures.
             for (int ip = 0; ip < coordinateQueryResult.length(); ip++) {
                 JSONObject coordiS = coordinateQueryResult.getJSONObject(ip);
                 String coordiData = coordiS.getString("polygondata");
-                ArrayList<String> z_values = new ArrayList<>();
+                List<String> z_values = new ArrayList<>();
                 String[] coordinates = coordiData.split("#");
                 double sum_x = 0; double sum_y = 0;
                 double sum_z = 0; double min_z = 0;
@@ -369,10 +380,10 @@ the linked lists for each of these types of structures.
      Stack input format (one line per stack): Name, base elevation, height, coordinates.
 
      */
-    public static void buildings() throws FactoryException, TransformException {
+    public static void getStacksBuildings() throws FactoryException, TransformException {
 
         int numberStacks = 0;
-        ArrayList<Integer> usedstacks = new ArrayList<Integer>() ;
+        List<Integer> usedstacks = new ArrayList<>() ;
         /* Loop over receptors to identify stacks within cutoff distance */
         for (int i = 0; i < ReceptorDatabaseCoordinates.size(); i++) {
             double ReceptorX = ReceptorDatabaseCoordinates.get(i).get(0);
@@ -393,11 +404,11 @@ the linked lists for each of these types of structures.
                     Double dist2 = (StackX - ReceptorX)*(StackX - ReceptorX) + (StackY - ReceptorY)*(StackY - ReceptorY) ;
                     if (dist2 < cutoffRadius*cutoffRadius) {
                         numberStacks++;
-                        ArrayList<Double> inputcoords =
-                                new ArrayList<Double>(Arrays.asList(StackX, StackY)) ;
-                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                        List<Double> inputcoords =
+                                new ArrayList<>(Arrays.asList(StackX, StackY)) ;
+                        List<List<Double>> inputcoordinates = new ArrayList<>(Arrays.asList(inputcoords)) ;
                         // convert from Database coordinates to UTM
-                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+                        List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
 
                         Double StackEastUTM = outputCoordinates.get(0).get(0);
                         Double StackNorthUTM = outputCoordinates.get(0).get(1);
@@ -428,11 +439,11 @@ the linked lists for each of these types of structures.
                         Double dist2 = (StackX - ReceptorX)*(StackX - ReceptorX) + (StackY - ReceptorY)*(StackY - ReceptorY) ;
                         if (dist2 < cutoffRadius*cutoffRadius) {
                             numberStacks++;
-                            ArrayList<Double> inputcoords =
-                                    new ArrayList<Double>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
-                            ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<ArrayList<Double>>(Arrays.asList(inputcoords)) ;
+                            List<Double> inputcoords =
+                                    new ArrayList<>(Arrays.asList(Double.parseDouble(StackCoords[0]), Double.parseDouble(StackCoords[1]))) ;
+                            List<List<Double>> inputcoordinates = new ArrayList<>(Arrays.asList(inputcoords)) ;
                             // convert coordinates from Database coordinates to UTM
-                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+                            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
 
                             Double StackEastUTM = outputCoordinates.get(0).get(0);
                             Double StackNorthUTM = outputCoordinates.get(0).get(1);
@@ -489,16 +500,16 @@ the linked lists for each of these types of structures.
                         InputLine = numCorners + " " + BuildingHeight + " \n" ;
                         BPIPPRMBuildingInput.add(InputLine);
 
-                        ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
+                        List<List<Double>> inputcoordinates = new ArrayList<> () ;
 
                         for (int j = 0; j < BaseVertices.length; j+=3 ){
-                            ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
+                            List<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
                             inputcoordinates.add(inputcoords);
                         }
 
 
                         // convert coordinates from Database coordinates to UTM
-                        ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+                        List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
                         for (int j = 0; j < outputCoordinates.size(); j++ ){
                             Double VertexEastUTM = outputCoordinates.get(j).get(0);
                             Double VertexNorthUTM = outputCoordinates.get(j).get(1);
@@ -544,7 +555,7 @@ the linked lists for each of these types of structures.
                             InputLine = numCorners + " " + BuildingHeight + " \n" ;
                             BPIPPRMBuildingInput.add(InputLine);
 
-                            ArrayList<ArrayList<Double>> inputcoordinates = new ArrayList<> () ;
+                            List<List<Double>> inputcoordinates = new ArrayList<> () ;
 
                             for (int j = 0; j < BaseVertices.length; j+=3 ){
                                 ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
@@ -553,7 +564,7 @@ the linked lists for each of these types of structures.
 
 
                             // convert coordinates from Database coordinates to UTM
-                            ArrayList<ArrayList<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+                            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
                             for (int j = 0; j < outputCoordinates.size(); j++ ){
                                 Double VertexEastUTM = outputCoordinates.get(j).get(0);
                                 Double VertexNorthUTM = outputCoordinates.get(j).get(1);
@@ -582,45 +593,63 @@ the linked lists for each of these types of structures.
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
-    public static void processBuildings() {
+    public static int createBPIPPRMInput() {
 
-        ArrayList<String> frontmatter = new ArrayList<>();
+        List<String> frontmatter = new ArrayList<>();
         frontmatter.add("\'BPIPPRM test run\' \n");
         frontmatter.add("\'p\' \n");
         frontmatter.add("\' METERS    \'  1.0  \n");
         frontmatter.add("\'UTMY \'  0.0 \n");
-        String filename = workingDirectory + "bpipprm.inp" ;
-        try {
-            FileWriter writer = new FileWriter(filename);
-            for (String line:frontmatter) {
-                writer.write(line);
-            }
-            int numberBuildingLines = BPIPPRMBuildingInput.size() ;
-            writer.write(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
-            for (int i = 0; i < numberBuildingLines-1; i++) {
-                writer.write(BPIPPRMBuildingInput.get(i));
-            }
 
-            int numberStackLines = BPIPPRMStackInput.size() ;
-            writer.write(BPIPPRMStackInput.get(numberStackLines - 1));
-            for (int i = 0; i < numberStackLines-1; i++) {
-                writer.write(BPIPPRMStackInput.get(i));
-            }
-            writer.close();
-        } catch(IOException e) {
-            String errormessage = "Error writing to bpipprm.inp" + e.getMessage();
-            throw new JPSRuntimeException(errormessage);
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(frontmatter);
+        sb.append(System.lineSeparator());
+        int numberBuildingLines = BPIPPRMBuildingInput.size() ;
+        sb.append(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
+        sb.append(System.lineSeparator());
+        for (int i = 0; i < numberBuildingLines-1; i++) {
+            sb.append(BPIPPRMBuildingInput.get(i));
+            sb.append(System.lineSeparator());
         }
-
+        int numberStackLines = BPIPPRMStackInput.size() ;
+        sb.append(BPIPPRMStackInput.get(numberStackLines - 1));
+        for (int i = 0; i < numberStackLines-1; i++) {
+            sb.append(BPIPPRMStackInput.get(i));
+            sb.append(System.lineSeparator());
+        }
+        return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
 
     }
 
-
-    public static void dispersionCalculation() {
-
-
-
+    public static int writeToFile(Path path, String content) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            LOGGER.info("Writing file: {}", path);
+            writer.write(content);
+            return 0;
+        } catch (IOException e) {
+            String errmsg = "Failed to write " + path.getFileName();
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
     }
+
+    public static int runBPIPPRM() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"bpipprm.exe", "bpipprm.inp"}, null, bpipprmDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+        } catch (IOException e) {
+            return 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
+        return 0;
+    }
+
 
     public static JSONArray StackQuery (String StackQueryIRI) {
         StringBuffer StackIRIQuery = new StringBuffer("PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
@@ -637,7 +666,7 @@ the linked lists for each of these types of structures.
         StackIRIQuery.append("?plant_item ocp:hasIndividualCO2Emission ?CO2 .");
         StackIRIQuery.append("?CO2 om:hasNumericalValue ?emission .}");
         StackIRIQuery.append("LIMIT 100");
-        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore("jibusinessunits", StackIRIQuery.toString());
+        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, StackIRIQuery.toString());
         return StackIRIQueryResult;
     }
 
@@ -654,7 +683,7 @@ the linked lists for each of these types of structures.
         BuildingIRIQuery.append("?building rdf:type <http://www.purl.org/oema/infrastructure/Building>.");
         BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .}");
         BuildingIRIQuery.append("LIMIT 100");
-        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore( "jibusinessunits", BuildingIRIQuery.toString());
+        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, BuildingIRIQuery.toString());
         return BuildingIRIQueryResult;
     }
 

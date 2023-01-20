@@ -35,6 +35,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import org.locationtech.jts.io.ParseException;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -111,7 +112,12 @@ public class AermodAgent extends DerivationAgent {
 
         // Query buildings and plant items.
         //Run BPIPPRM
-        BuildingsPlantItems bpi = new BuildingsPlantItems(simulationDirectory,scope, nx, ny, srid);
+        BuildingsPlantItems bpi = null;
+        try {
+            bpi = new BuildingsPlantItems(simulationDirectory,scope, nx, ny, srid);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         if (bpi.run() != 0) {
             LOGGER.error("Failed to run BPIPPRM, terminating");
             return;
