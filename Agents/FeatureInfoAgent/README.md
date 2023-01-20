@@ -30,6 +30,8 @@ The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent fr
             1. If no data found, quietly continue.
       7. Build and return final JSON object.
 
+Note that the agent's configuration file is read and its contents cached when the system first boots (meaning any changes to the file will require a restart), but the individual query files are read as-needed (i.e. once a request has been recieved) and are not currently cached (meaning any changes to these will take effect upon subsequent requests without the requirement for a restart).
+
 It's also worth noting that in the current version of the FIA, any queries to the knowledge graphs are sent to all discovered namespace endpoints via federation. Whilst this will marginally increase processing times, these queries should be pretty quick, and shouldn't be triggered too often, so the risk of delay is hopefully less than the benefit of not having to specify the endpoint beforehand.
 
 ## Restrictions

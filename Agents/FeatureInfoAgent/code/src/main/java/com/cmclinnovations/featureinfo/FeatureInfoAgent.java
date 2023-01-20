@@ -100,6 +100,7 @@ public class FeatureInfoAgent extends JPSAgent {
             LOGGER.error("Could not initialise agent configuration!", exception);
         }
     }
+    
     /**
      * Perform required setup.
      *
@@ -414,8 +415,8 @@ public class FeatureInfoAgent extends JPSAgent {
         // Build RBD client
         String dbName = CONFIG.getDatabaseName(classMatch);
         if(dbName == null) {
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"No database name registered for matching class.\"}");
+            LOGGER.warn("No PostgreSQL database name registered for the class: {}", classMatch);
+            LOGGER.warn("Skipping timeseries queries.");
             return null;
         }
 
