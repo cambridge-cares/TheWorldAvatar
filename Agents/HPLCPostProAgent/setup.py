@@ -12,8 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.4.1', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.2.7'],
-                      # TODO update chemistry_and_robots package version number after the new release due to the move of unit_conversion
+    install_requires=['pyderivationagent>=1.4.2', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.2.7'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
