@@ -17,6 +17,7 @@ class OntologyConstant {
     protected static final String UBEMMP_PREFIX = "ontoubemmp";
     protected static final String ONTOHEATNETWORK_PREFIX = "heatnetwork";
     protected static final String ONTOCAPE_PREFIX = "ontocape";
+    protected static final String PS_PREFIX = "ps";
     // URI
     protected static final String RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     protected static final String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
@@ -27,12 +28,14 @@ class OntologyConstant {
     protected static final String UBEMMP_URI = "https://www.theworldavatar.com/kg/ontoubemmp/";
     protected static final String ONTOHEATNETWORK_URI = "https://www.theworldavatar.com/kg/ontoheatnetwork/";
     protected static final String ONTOCAPE_URI = "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#";
+    protected static final String PS_URI = "https://www.theworldavatar.com/kg/ps/";
     // Classes
     protected static final String XSD_STRING = XSD_PREFIX + ":string";
     protected static final String OM_KWH = OM_PREFIX + ":kilowattHour";
     protected static final String OM_EUR = OM_PREFIX + ":euro";
     protected static final String UBEMMP_ELECCONSUMPTION = UBEMMP_PREFIX + ":ElectricityConsumption";
     protected static final String HEATNETWORK_COST_INTERVAL = ONTOHEATNETWORK_PREFIX + ":CostInTimeInterval";
+    protected static final String PS_PUMPINGSTATION = PS_PREFIX + ":Pumpingstation";
     // Properties
     protected static final String RDFTYPE = RDF_PREFIX + ":type";
     protected static final String RDFS_LABEL = RDFS_PREFIX + ":label";

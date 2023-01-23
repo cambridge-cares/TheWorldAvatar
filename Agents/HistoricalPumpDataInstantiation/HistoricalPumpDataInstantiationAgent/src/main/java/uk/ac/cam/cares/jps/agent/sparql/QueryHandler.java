@@ -25,6 +25,7 @@ class QueryHandler {
         builder.addPrefix(OntologyConstant.UBEMMP_PREFIX, OntologyConstant.UBEMMP_URI);
         builder.addPrefix(OntologyConstant.ONTOHEATNETWORK_PREFIX, OntologyConstant.ONTOHEATNETWORK_URI);
         builder.addPrefix(OntologyConstant.ONTOCAPE_PREFIX, OntologyConstant.ONTOCAPE_URI);
+        builder.addPrefix(OntologyConstant.PS_PREFIX, OntologyConstant.PS_URI);
     }
 
     /**

@@ -84,6 +84,7 @@ public class SparqlAdapter {
         //builder.addTriples(OntologyConstant.OM_KWH, OntologyConstant.SKOS_NOTATION, OntologyConstant.KWH_LITERAL);
         // For each pump, add their triples
         for (String pumpIRI : timeSeriesMap.keySet()) {
+            builder.addTriples(pumpIRI, OntologyConstant.RDFTYPE, OntologyConstant.PS_PUMPINGSTATION, 1);
             // Add Electricity consumption triples
             String elecQuantityIRI = OntologyConstant.BASE_PREFIX + SEMICOLON + ELECTRICITY_INST + UUID.randomUUID();
             builder.addTriples(pumpIRI, OntologyConstant.UBEMMP_CONSUMES_UTILITIES, elecQuantityIRI, 1);

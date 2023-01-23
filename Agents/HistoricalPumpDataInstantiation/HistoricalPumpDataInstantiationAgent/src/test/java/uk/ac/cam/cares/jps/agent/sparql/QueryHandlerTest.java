@@ -16,7 +16,9 @@ class QueryHandlerTest {
     }
 
     private static String genExpectedQuery() {
-        String expectedStatement = InsertBuilderTest.PREFIX + OntologyConstant.ONTOCAPE_PREFIX + InsertBuilderTest.COLON
+        String expectedStatement = InsertBuilderTest.PREFIX + OntologyConstant.PS_PREFIX + InsertBuilderTest.COLON
+                + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.PS_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
+        expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.ONTOCAPE_PREFIX + InsertBuilderTest.COLON
                 + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.ONTOCAPE_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
         expectedStatement += InsertBuilderTest.PREFIX + OntologyConstant.ONTOHEATNETWORK_PREFIX + InsertBuilderTest.COLON
                 + InsertBuilderTest.OPEN_ANCHOR + OntologyConstant.ONTOHEATNETWORK_URI + InsertBuilderTest.CLOSED_ANCHOR + InsertBuilderTest.NEWLINE;
