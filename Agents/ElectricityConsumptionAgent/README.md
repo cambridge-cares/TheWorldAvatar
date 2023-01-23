@@ -7,7 +7,34 @@ Currently this agent is focusing on the data of electricity consumption, gas con
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
 
 &nbsp;
-# 1. Setup
+# Environment setup
+
+For development and testing reasons, follow instructions below to get started.
+
+### Virtual environment setup
+
+It is highly recommended to install `pyderivationagent` packages in a [virtual environment (python>=3.8)](https://docs.python.org/3/tutorial/venv.html). The following steps can be taken to build a virtual environment:
+
+`(Windows)`
+
+```cmd
+$ python -m venv <venv_name>
+$ <venv_name>\Scripts\activate.bat
+(<venv_name>) $
+```
+
+`(Linux)`
+```sh
+$ python3 -m venv <venv_name>
+$ source <venv_name>/bin/activate
+(<venv_name>) $
+```
+
+The above commands will create and activate the virtual environment `<venv_name>` in the current directory.
+
+
+&nbsp;
+# 1. Agent Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image. 
 
@@ -17,19 +44,7 @@ This section specifies the minimum requirements to build and deploy the Docker i
 
 Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/). 
 
-### **2) Record the CEDA account username and password as environmental variable**
-
-Once the registration is done, please run the `./agent/utils/CEDA_env_config.py` script, simply by running the following command from a powershell terminal at current folder
-```bash
-py ./agent/utils/CEDA_env_config.py
-```
-This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.
-Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module.
-
-
-
-
-### **3) The environment variables used by the agent container**
+### **2) The environment variables used by the agent container**
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
 ```bash
 # Agent configuration
@@ -46,7 +61,7 @@ ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container
 ```
 
 
-### **4) Accessing Github's Container registry**
+### **3) Accessing Github's Container registry**
 
 While building the Docker image of the agent, it also gets pushed to the [Github container registry]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
 ```
@@ -54,7 +69,7 @@ docker login ghcr.io -u <github_username>
 <github_personal_access_token>
 ```
 
-### **5) VS Code specifics**
+### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -108,30 +123,37 @@ bash ./stack.sh start <STACK_NAME>
 
 Agent start-up will automatically register a recurring task to assimilate latest data into the KG, i.e. electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape once per year. Besides those recurring background tasks, additional HTTP requests can be sent (but they might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as GET requests and all available endpoints are listed below:
 
+<center>----------- Prerequisite ------------</center>
+
+ **NOTE:** If you want to download or instantiate hadUK climate temperature data, and have registrated the CEDA account as mentioned in [Registrate an account at CEDA platform](#1-registrate-an-account-at-ceda-platform) you will then firstly need go to:
+> /api/lsoainputagent/prerequisite/login
+
+This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module.
+
 <center>-----------Data Download ------------</center>
 
 - GET request to download xslx file of UK subregional (LSOA) Electricity Consumption/meter data
-> /api/electricityconsumptionagent/download/electricity
+> /api/lsoainputagent/download/electricity
 - GET request to download xslx file of UK subregional (LSOA) Gas Consumption/meter/nonmeter data
-> api/electricityconsumptionagent/download/gas
+> api/lsoainputagent/download/gas
 - GET request to download xslx file of UK subregional (LSOA) fuel poverty data
-> /api/electricityconsumptionagent/download/fuelpoverty
+> /api/lsoainputagent/download/fuelpoverty
 - GET request to download nc files of hadUK climate data in 1km grid
-> /api/electricityconsumptionagent/download/temperature
+> /api/lsoainputagent/download/temperature
 <center>-------- Data Instantiation ------------</center>
 
 - GET request to download and instantiate all Electricity Consumption/meter data to KG
-> /api/electricityconsumptionagent/instantiate/electricity
+> /api/lsoainputagent/instantiate/electricity
 - GET request to download and instantiate all UK subregional (LSOA) Gas Consumption/meter/nonmeter data to KG
-> /api/electricityconsumptionagent/instantiate/gas
+> /api/lsoainputagent/instantiate/gas
 - GET request to download and instantiate all UK subregional (LSOA) fuel poverty data to KG
-> /api/electricityconsumptionagent/instantiate/fuelpoverty
+> /api/lsoainputagent/instantiate/fuelpoverty
 - GET request to download and instantiate all hadUK climate data in 1km grid to KG (GET request)
-> /api/electricityconsumptionagent/instantiate/temperature
+> /api/lsoainputagent/instantiate/temperature
 - GET request to download and instantiate all LSOA geometric shape to KG (GET request)
-> /api/electricityconsumptionagent/instantiate/shape
+> /api/lsoainputagent/instantiate/shape
 - GET request to download and instantiate all data as mentioned above to KG
-> /api/electricityconsumptionagent/instantiate/all
+> /api/lsoainputagent/instantiate/all
 
 
 

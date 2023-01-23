@@ -59,4 +59,10 @@ def retrieve_settings():
 
 
 # Run when module is imported
-retrieve_settings()
+#retrieve_settings()
+ONTOP_URL = ''
+QUERY_ENDPOINT = UPDATE_ENDPOINT = "http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql"
+
+DB_URL = "jdbc:postgresql:ts_example"
+DB_USER = "postgres"
+DB_PASSWORD = "postgres"

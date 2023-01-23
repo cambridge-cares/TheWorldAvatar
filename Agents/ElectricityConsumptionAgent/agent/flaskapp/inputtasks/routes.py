@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify
 
 import agentlogging
 from agent.datainstantiation.readings import upload_all, upload_elec_data_to_KG, upload_gas_data_to_KG, upload_fuel_poverty_to_KG, upload_Geoinfo_to_KG, upload_hadUK_climate_to_KG
-from utils.CEDA_env_config import record_login_info
+from agent.utils.CEDA_env_config import record_login_info
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -16,7 +16,7 @@ inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__
 )
 # Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
-@inputtasks_bp.route('/api/electricityconsumptionagent/prerequisite/login', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/prerequisite/login', methods=['GET'])
 def api_login():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -33,7 +33,7 @@ def api_login():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/electricity', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/electricity', methods=['GET'])
 def api_instantiate_electricity():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -52,7 +52,7 @@ def api_instantiate_electricity():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all UK subregional (LSOA) Gas Consumption/meter/nonmeter data
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/gas', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/gas', methods=['GET'])
 def api_instantiate_gas():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -71,7 +71,7 @@ def api_instantiate_gas():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all UK subregional (LSOA) fuel poverty data
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/fuelpoverty', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/fuelpoverty', methods=['GET'])
 def api_instantiate_fuelpoverty():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -90,7 +90,7 @@ def api_instantiate_fuelpoverty():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all hadUK climate data in 1km grid
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/temperature', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/temperature', methods=['GET'])
 def api_instantiate_temperature():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -109,7 +109,7 @@ def api_instantiate_temperature():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to instantiate all LSOA geometric shape
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/shape', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/shape', methods=['GET'])
 def api_instantiate_shape():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -128,7 +128,7 @@ def api_instantiate_shape():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all data mentioned above
-@inputtasks_bp.route('/api/electricityconsumptionagent/instantiate/all', methods=['GET'])
+@inputtasks_bp.route('/api/lsoainputagent/instantiate/all', methods=['GET'])
 def api_instantiate_all():
     # Check arguments (query parameters)
     if len(request.args) > 0:

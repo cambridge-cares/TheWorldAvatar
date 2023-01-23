@@ -18,7 +18,7 @@ downloadtasks_bp = Blueprint(
 )
 
 # Define route for API request to download electricity data
-@downloadtasks_bp.route('/api/electricityconsumptionagent/download/electricity', methods=['GET'])
+@downloadtasks_bp.route('/api/lsoainputagent/download/electricity', methods=['GET'])
 def api_download_electricity():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -37,7 +37,7 @@ def api_download_electricity():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download gas data
-@downloadtasks_bp.route('/api/electricityconsumptionagent/download/gas', methods=['GET'])
+@downloadtasks_bp.route('/api/lsoainputagent/download/gas', methods=['GET'])
 def api_download_gas():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -56,7 +56,7 @@ def api_download_gas():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download fuelpoverty data
-@downloadtasks_bp.route('/api/electricityconsumptionagent/download/fuelpoverty', methods=['GET'])
+@downloadtasks_bp.route('/api/lsoainputagent/download/fuelpoverty', methods=['GET'])
 def api_download_fuelpoverty():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -75,7 +75,7 @@ def api_download_fuelpoverty():
         return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download temperature data
-@downloadtasks_bp.route('/api/electricityconsumptionagent/download/temperature', methods=['GET'])
+@downloadtasks_bp.route('/api/lsoainputagent/download/temperature', methods=['GET'])
 def api_download_temperature():
     # Check arguments (query parameters)
     if len(request.args) > 0:

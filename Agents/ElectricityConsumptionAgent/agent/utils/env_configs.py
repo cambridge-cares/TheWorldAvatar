@@ -112,4 +112,15 @@ def retrieve_settings():
         raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
 
 # Run when module is imported
-retrieve_settings()
+#retrieve_settings()
+
+CEDA_USERNAME = 'xjieyang'
+CEDA_PASSWORD = '11111111'
+
+YEAR = '2020'
+
+DATABASE = ''
+ONTOP_FILE = ''
+LAYERNAME =''
+GEOSERVER_WORKSPACE = ''
+NAMESPACE = ''

@@ -113,4 +113,3 @@ def record_login_info():
             print('loggin Cancelled')
             logger.info('loggin Cancelled')
             break
-record_login_info()

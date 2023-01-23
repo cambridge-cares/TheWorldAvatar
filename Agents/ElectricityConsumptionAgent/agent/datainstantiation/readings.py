@@ -365,8 +365,8 @@ def upload_elec_data_to_KG (year: str = YEAR,
     met_num, consump = remove_nan_to_NAN(met_num, consump)
 
 # Define the reference time and Convert into correct format
-    start_time = datetime.datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
-    end_time = datetime.datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    start_time = datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    end_time = datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
 
 # Split the queries into Batches
 # Perform SPARQL update query in chunks to avoid heap size/memory issues
@@ -480,8 +480,8 @@ def upload_gas_data_to_KG (year: str = YEAR,
     met_num, consump, non_met_num = remove_nan_to_NAN(met_num, consump, non_met_num)
 
 # Define the reference time and Convert into correct format
-    start_time = datetime.datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
-    end_time = datetime.datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    start_time = datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    end_time = datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
 
 # Split the queries into Batches
 # Perform SPARQL update query in chunks to avoid heap size/memory issues
@@ -629,8 +629,8 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
     house_num, poor_num = remove_nan_to_NAN(house_num, poor_num)
 
     # Define the reference time and Convert into correct format
-    start_time = datetime.datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
-    end_time = datetime.datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    start_time = datetime.strptime(year + "-01-01T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
+    end_time = datetime.strptime(year + "-12-31T12:00:00.000Z", '%Y-%m-%dT%H:%M:%S.000Z')
 
 # Split the queries into Batches
 # Perform SPARQL update query in chunks to avoid heap size/memory issues
@@ -896,8 +896,8 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
               month_str = '0'+month_str
 
           LSOA_code = LSOA_IRI.split('/')[-1]
-          startUTC = datetime.datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
-          endUTC = datetime.datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+          startUTC = datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+          endUTC = datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
 
           # Initialise update query
           query = f"INSERT DATA" + "{"
