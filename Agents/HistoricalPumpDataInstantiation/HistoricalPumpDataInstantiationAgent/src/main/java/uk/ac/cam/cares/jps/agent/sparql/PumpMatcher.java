@@ -9,7 +9,7 @@ import java.util.Map;
  * @author qhouyee
  */
 class PumpMatcher {
-    private static final String pumpStationIRI = "http://www.theworldavatar.com/kg/ps/pumpstation-";
+    private static final String pumpStationIRI = "https://www.theworldavatar.com/kg/ps/pumpstation-";
 
     /**
      * Generate mappings to map each pump to their existing IRI.
