@@ -39,7 +39,7 @@
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
             'databaseName': 'timeseries_hugoball',
-            'timeLimit' : 43800
+            'timeLimit' : 175200
         }
     ]
 }
