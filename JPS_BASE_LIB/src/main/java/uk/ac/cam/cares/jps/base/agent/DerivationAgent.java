@@ -311,9 +311,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 						case FINISHED:
 							// clean up the derivation at "Finished" status
 							devClient.cleanUpFinishedDerivationUpdate(derivation);
-							LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleand up.");
-							// set flag to false as this cleaning up process is fast and no need to query again
-							queryAgain = false;
+							// set flag to true as the cleaning up process can take some time when there are a lot of triples
+							queryAgain = true;
 							break;
 						case ERROR:
 							// currently just pass
