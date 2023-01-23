@@ -1,40 +1,45 @@
 {
-    'database_name' : 'timeseries',
     'queries' : [
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/IlluminanceSensor',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_illuminance',
             'timeLimit' : 8760
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/WaterMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_house45',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/OilMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_house45',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/ElectricityMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_house45',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/Pumpingstation',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_pumps',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/Building',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_hugoball',
             'timeLimit' : 43800
         }
     ]
