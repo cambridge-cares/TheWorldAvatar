@@ -27,7 +27,7 @@ WORKDIR /app
 
 # Copies all files in config directory to destination
 COPY ./config/. /root/
-COPY ./DistrictHeatingAgent/src/test/resources. /root/
+COPY ./DistrictHeatingAgent/src/test/resources/. /root/
 
 # Set the required environment variables
 ENV CSVPATH="/root/StaticDataHeatingNetwork.csv"
