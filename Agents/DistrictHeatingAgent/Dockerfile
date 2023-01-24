@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/DistrictHeatNetworkAgent/
+WORKDIR /root/DistrictHeatingAgent/
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 # RUN mvn package
 
@@ -41,7 +41,7 @@ ENV CLIENTPROPERTY="/root/client.properties"
 # Set the required environment variable
 ENV MAPPINGSPATH="/root/mappings"
 
-COPY --from=builder /root/DistrictHeatNetworkAgent/output/heatnetwork-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/DistrictHeatingAgent/output/district-heating-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
