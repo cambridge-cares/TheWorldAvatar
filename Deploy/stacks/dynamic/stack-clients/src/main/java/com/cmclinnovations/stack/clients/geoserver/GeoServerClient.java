@@ -140,6 +140,11 @@ public class GeoServerClient extends ContainerClient {
                 fte.setMetadataVirtualTable(virtualTable);
             }
 
+            Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = geoServerSettings.getDimensions();
+            if (null != dimensions) {
+                dimensions.entrySet().forEach(entry -> fte.setMetadataDimension(entry.getKey(), entry.getValue()));
+            }
+
             if (manager.getPublisher().publishDBLayer(workspaceName,
                     layerName,
                     fte, geoServerSettings)) {
