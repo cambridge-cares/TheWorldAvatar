@@ -53,6 +53,14 @@ To build and start the agent, open up the command prompt in the same directory a
 docker-compose up -d
 ```
 
+#### Stack Deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mounts as required.
+- Start the stack manager as usual. This should start the container.
+
 This agent is reachable at "heatnetwork-agent/performheatupdate" on localhost port 1080.
 
 #### Run the agent
