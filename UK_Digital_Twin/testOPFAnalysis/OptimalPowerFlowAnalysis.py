@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 19 Dec 2022          #
+# Last Update Date: 18 Jan 2023          #
 ##########################################
 
 """
@@ -86,6 +86,11 @@ import seaborn
 from adjustText import adjust_text
 import matplotlib as mpl
 import matplotlib.ticker as ticker 
+import geojson
+import ast
+from shapely.geometry import mapping
+
+from colourPicker import sequentialHEXColourCodePicker, createColourBarLegend 
 
 ## create configuration objects
 SLASH = '/'
@@ -93,9 +98,10 @@ SLASH = '/'
 markersList = ['o', 'v', 's', '*', 'X', 'P', 'D']
 lineStyleList = ['solid', 'dotted', 'dashed', 'dashdot', (0, (3,1,1,1)), (0, (1,10)), (5, (10, 3)), (0, (5,10)), (0, (3, 10, 1, 10)), (0, (3,5,1,5)), (0, (3,5,1,5,1,5)), (0, (3,10, 1,10,1,10)), (0, (3,1,1,1,1,1))]
 
-labelFontSize = 15
-legendFontSize = 13
-dotLabel = 11
+labelFontSize = 14
+legendFontSize = 12
+dotLabel = 12
+annotateSize = 12
 
 dt = UKDT.UKDigitalTwin()
 ukmf = ModelFactor.ModelFactor()
@@ -117,7 +123,8 @@ class OptimalPowerFlowAnalysis:
         slackBusNodeIRI:str, loadAllocatorName:str, EBusModelVariableInitialisationMethodName:str,
         ELineInitialisationMethodName:str, 
         piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
-        withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, newGeneratorType:str,
+        withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, newGeneratorType:str, 
+        weighterList:list,
         discountRate:float,
         bankRate:float, 
         projectLifeSpan:float,
@@ -133,6 +140,7 @@ class OptimalPowerFlowAnalysis:
         pop_size:int,
         n_offsprings:int,
         numberOfGAGenerations:int,
+        ifReadLocalResults:bool,
         OWLUpdateEndPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
@@ -152,14 +160,16 @@ class OptimalPowerFlowAnalysis:
         self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
         self.timeStamp = datetime.now(pytz.utc).isoformat()
-        ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
-        self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
-        self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
-        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant 11: samllerLAcode   
-        if withRetrofit is True:
-            for egen in self.generatorNodeList:
-                egen.append("Extant")
-        self.capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
+        if not ifReadLocalResults:
+            ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
+            self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+            self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
+            self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode   
+            self.capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
+            if withRetrofit is True:
+                for egen in self.generatorNodeList:
+                    egen.append("Extant")
+        
         ##--2. passing arguments--##
         ## specify the topology node
         self.topologyNodeIRI = topologyNodeIRI
@@ -218,6 +228,7 @@ class OptimalPowerFlowAnalysis:
         self.GeneratorObjectList: list = []
         self.SMRSiteObjectList:list = []
         ##--8. site selection factors--##
+        self.weighterList = weighterList
         self.discountRate = discountRate
         self.bankRate = bankRate
         self.projectLifeSpan = projectLifeSpan
@@ -236,12 +247,14 @@ class OptimalPowerFlowAnalysis:
         self.retrofittingCost = 0
         ##--9. Demanding area query --##
         self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
+        self.regionalDemandingList = list(query_model.queryElectricityConsumption_Region(self.startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
+        
         ##FIXME: demanding should be queried
         # self.demandingAreaList = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
         # # find the centroid of the polygon, the value of the 
         # for ec in self.demandingAreaList:
         #     if ec['Geo_InfoList'].geom_type == 'MultiPolygon':
-        #         ec['Geo_InfoList'] = DLA.centroidOfMultipolygon(ec['Geo_InfoList']) 
+        #         ec['Geo_InfoList'] = DLA.cgen_NumberentroidOfMultipolygon(ec['Geo_InfoList']) 
         #     elif ec['Geo_InfoList'].geom_type == 'Polygon':
         #         lon = ec['Geo_InfoList'].centroid.x
         #         lat = ec['Geo_InfoList'].centroid.y
@@ -251,30 +264,82 @@ class OptimalPowerFlowAnalysis:
         self.weatherConditionName = None
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
         self.diagramPath = '.\\figFiles\\' + self.time_now + '\\'
+        self.netDemandingJSONPath = '.\\netDemandingGeoJSONFiles\\' + self.time_now + '\\'
 
     """Find the power plants located in each demanding areas"""
-    ##FIXME: this method is for the pre-opf method
     def powerPlantAndDemandingAreasMapper(self):
         for demanding in self.demandingAreaList:
             Area_LACode = str(demanding['Area_LACode'])
-            boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
-            if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
-                official_region = "E12000008"
-            elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
-                official_region = "E12000006"
-            elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
-                official_region = "E12000009" 
-            elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
-                continue
+
+            ## Find the official region of the demanding area
+            if 'Official_region' in demanding.keys():
+                official_region  = demanding['Official_region']
             else:
-                official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
+                    official_region = "E12000008"
+                elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
+                    official_region = "E12000006"
+                elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
+                    official_region = "E12000009" 
+                elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                    continue
+                else:
+                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                demanding['Official_region'] = official_region 
+
+            ## Find the boundary of the small area
+            if 'Boundary' in demanding.keys():
+                boundary = demanding['Boundary']
+            else:
+                boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                demanding['Boundary'] = boundary
             for gen in self.generatorNodeList:
-                if gen[9] in official_region:
+                if (gen[9] in official_region) or (gen[9] == official_region):
                     genLocation = shapely.geometry.Point(gen[8][1], gen[8][0])
                     interiorFlag = boundary.intersects(genLocation)
                     if interiorFlag == True:
-                        gen.append(Area_LACode)
+                        gen.append(Area_LACode) 
+        
+        ## For the power plant whose location not within the landmass boundary (e.g. the wind offshore, hydro pumps, etc)
+        ## FIXME: some PP location need to be updated as theire latlon may not in the given regional LA code 
+        for gen in self.generatorNodeList:
+                if len(gen) != 12:
+                    distanceList = []
+                    smallAreaCodeList = []
+                    for demanding in self.demandingAreaList:
+                        Area_LACode = str(demanding['Area_LACode']) 
+                        if 'Official_region' in demanding.keys():
+                            official_region  = demanding['Official_region']
+                        else:
+                            if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
+                                official_region = "E12000008"
+                            elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
+                                official_region = "E12000006"
+                            elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
+                                official_region = "E12000009" 
+                            elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                                "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                continue
+                            else:
+                                official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                            demanding['Official_region'] = official_region 
+                        
+                        if (gen[9] in official_region) or (gen[9] == official_region):
+                            if 'Boundary' in demanding.keys():
+                                boundary = demanding['Boundary']
+                            else:
+                                boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                                demanding['Boundary'] = boundary
+
+                            lon = boundary.centroid.x
+                            lat = boundary.centroid.y
+                           
+                            distance = DistanceBasedOnGPSLocation([gen[8][0], gen[8][1], lat, lon])
+                            distanceList.append(distance)
+                            smallAreaCodeList.append(Area_LACode)
+                    minDistanceIndex = distanceList.index(min(distanceList))
+                    gen.append(smallAreaCodeList[minDistanceIndex])                             
         return 
         
     """This method is called to select the site to be replaced by SMR"""
@@ -296,7 +361,7 @@ class OptimalPowerFlowAnalysis:
                 self.retrofitListBeforeSelection, self.genTypeSummary = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
             print("===The number of the generator that goes to the site selection method is (before cluster):===", len(self.retrofitListBeforeSelection))           
             ## cluster the close generators, self.retrofitListBeforeSelection will be changed
-            ##TODO:close the sire cluster using the new site selection method instead
+            ##TODO:close the site cluster using the new site selection method instead
             ##self.siteCluster()
             print("===The number of the generator that goes to the site selection method is (after cluster):===", len(self.retrofitListBeforeSelection))
             print("The total number of generator is", len(self.generatorNodeList))
@@ -446,8 +511,8 @@ class OptimalPowerFlowAnalysis:
          
     """The SMR site selection algorithm"""   
     def siteSelector(self, numberOfSMRToBeIntroduced):
-        if self.withRetrofit is True: 
-            self.numberOfSMRToBeIntroduced = numberOfSMRToBeIntroduced
+        self.numberOfSMRToBeIntroduced = numberOfSMRToBeIntroduced
+        if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
             contradictedPairs = []
             i = 0 
             while i < len(self.retrofitListBeforeSelection):
@@ -491,108 +556,141 @@ class OptimalPowerFlowAnalysis:
             return
 
     """This method is used to pick up the optima from the pareto front according to the given weighter"""
-    def optimaPicker(self, weighterList):
-        self.indexListOfSiteSelectionResults = []
-        self.retrofittingCostList = []
-        self.weighterList = weighterList
+    def optimaPicker(self):
+        if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
+            self.indexListOfSiteSelectionResults = []
+            self.retrofittingCostList = []
+            ## Form the weight list
+            weightNumpyMatrix = numpy.zeros((len(self.weighterList),2))
+            for i in range(len(self.weighterList)):
+                if float(self.weighterList[i]) > 1 or float(self.weighterList[i]) < 0:
+                    raise ValueError("Invalid weight: %s" % self.weighterList[i])
+                if float(self.weighterList[i]) < 0.000001:
+                    self.weighterList[i] = float(self.weighterList[i]) + 0.000001
+                elif float(self.weighterList[i]) > 9.999999 or abs(float(self.weighterList[i]) -1) < 0.000001:
+                    self.weighterList[i] = float(self.weighterList[i]) - 0.000001
 
-        ## Form the weight list
-        weightNumpyMatrix = numpy.zeros((len(weighterList),2))
-        for i in range(len(weighterList)):
-            if float(weighterList[i]) > 1 or float(weighterList[i]) < 0:
-                raise ValueError("Invalid weight: %s" % weighterList[i])
-            if float(weighterList[i]) < 0.000001:
-                weighterList[i] = float(weighterList[i]) + 0.000001
-            elif float(weighterList[i]) > 9.999999 or abs(float(weighterList[i]) -1) < 0.000001:
-                weighterList[i] = float(weighterList[i]) - 0.000001
+                weightNumpyMatrix[i, 0] = self.weighterList[i]
+                weightNumpyMatrix[i, 1] = float(1 - self.weighterList[i])
 
-            weightNumpyMatrix[i, 0] = weighterList[i]
-            weightNumpyMatrix[i, 1] = float(1 - weighterList[i])
+            ## Normalisation the objective space: apply the ideal and nadir point method 
+            self.approx_ideal = self.F.min(axis = 0)
+            self.approx_nadir = self.F.max(axis = 0)
+            self.nF = (self.F - self.approx_ideal) / (self.approx_nadir - self.approx_ideal)
+            ## Decomposition method called Augmented Scalarization Function (ASF),
+            decomp = ASF()
+            indexOfOptima = []
+            for weights in weightNumpyMatrix:
+                print(weights)
+                i = decomp.do(self.nF, 1/weights).argmin()
+                indexOfOptima.append(i)
+                self.indexListOfSiteSelectionResults.append(numpy.where(self.X[i] == 1)[0])
+                self.retrofittingCostList.append(round(float(self.F[i, 0]), 2))
 
-        ## Normalisation the objective space: apply the ideal and nadir point method 
-        self.approx_ideal = self.F.min(axis = 0)
-        self.approx_nadir = self.F.max(axis = 0)
-        self.nF = (self.F - self.approx_ideal) / (self.approx_nadir - self.approx_ideal)
-        ## Decomposition method called Augmented Scalarization Function (ASF),
-        decomp = ASF()
-        indexOfOptima = []
-        for weights in weightNumpyMatrix:
-            print(weights)
-            i = decomp.do(self.nF, 1/weights).argmin()
-            indexOfOptima.append(i)
-            self.indexListOfSiteSelectionResults.append(numpy.where(self.X[i] == 1)[0])
-            self.retrofittingCostList.append(round(float(self.F[i, 0]), 2))
+            ## Results diagram: Pareto Front, feasible points and optima 
+            #_X = numpy.row_stack([a.pop.get("X") for a in self.res.history])
+            _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
+            feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
+            ## Real feasible points
+            feasibleSolustions_F = _F[feasible]
+            ## Normalised feasible points
+            self.approx_ideal_feasibleNormalised = feasibleSolustions_F.min(axis = 0)
+            self.approx_nadir_feasibleNormalised = feasibleSolustions_F.max(axis = 0)
+            self.nF_feasibleNormalised = (self.F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
+            feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
 
-        ## Results diagram: Pareto Front, feasible points and optima 
-        #_X = numpy.row_stack([a.pop.get("X") for a in self.res.history])
-        _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
-        feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
-        ## Real feasible points
-        feasibleSolustions_F = _F[feasible]
-        ## Normalised feasible points
-        self.approx_ideal_feasibleNormalised = feasibleSolustions_F.min(axis = 0)
-        self.approx_nadir_feasibleNormalised = feasibleSolustions_F.max(axis = 0)
-        self.nF_feasibleNormalised = (self.F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
-        feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
-
-        plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.3, s=20, facecolors='#728FCE', edgecolors='none')
-        plt.scatter(self.nF_feasibleNormalised[:, 0], self.nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
-        
-        # optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
-        optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2))  for i_ in range(len(indexOfOptima)) ]
-        
-        x_data = []
-        y_data = []
-        for i in indexOfOptima:
-            x_data.append(self.nF_feasibleNormalised[i, 0])
-            y_data.append(self.nF_feasibleNormalised[i, 1])
-            plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')
-        pointAndText = [plt.text(x_, y_, label, fontsize = 13) for x_, y_, label in zip(x_data, y_data, optima_label_list)]
-        adjust_text(pointAndText, only_move={'text': 'y'}, arrowprops=dict(arrowstyle='-', color='grey')) 
-        # for i in indexOfOptima:
-        #     i_ = indexOfOptima.index(i)
-        #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
-        #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-        #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
-        ## plt.title("Normalised Objective Space")
-        plt.xlabel("Normalised SMR Investment and Risk Cost (-)", fontsize = labelFontSize)
-        plt.ylabel("Normalised Load-Demand Distance (-)", fontsize = labelFontSize) 
-        plt.legend(fontsize = legendFontSize, loc='upper left')
-        plt.tight_layout()
-        self.mkdirFig()
-        plt.savefig(self.diagramPath + 'SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
-        ## plt.show() ## show must come after the savefig
-        ##plt.close()
-        plt.clf()
-        plt.cla()
-        ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+            plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.3, s=20, facecolors='#728FCE', edgecolors='none')
+            plt.scatter(self.nF_feasibleNormalised[:, 0], self.nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
             
-        ##-- Create the SMR instances according to the site selection and the optima pick processing --##
-        ## self.SMRList is a list of lists containing the SMR instances that are selected from different weighters
-        self.SMRList =[] ## the length of the list of the self.SMRList should equal to the number of the weighters at the same weather condition and same carbon tax
-        for indexListOfResults_EachWeight in self.indexListOfSiteSelectionResults: 
-            SMRArrangement = []
-            for index in indexListOfResults_EachWeight:
-                s = index // self.maxmumSMRUnitAtOneSite
-                numOfSMRUnit = (index % self.maxmumSMRUnitAtOneSite) + 1
-                ## vibrate the site location from the original site a bit
-                lalon = [float(self.retrofitListBeforeSelection[s]["LatLon"][0]) + 0.004, float(self.retrofitListBeforeSelection[s]["LatLon"][1]) + 0.004]
-                ## initialise the SMR generator with the atttributes
-                SMRSite = {'PowerGenerator': None, 
-                'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
-                'Capacity': numOfSMRUnit * self.SMRCapability, 
-                'LatLon': lalon,
-                'fuelOrGenType': 'SMR', 
-                'annualOperatingHours': 0, 
-                'CO2EmissionFactor': 0.0, 
-                'place': None,
-                'NumberOfSMRUnits': numOfSMRUnit}
-                SMRArrangement.append(SMRSite)
-            self.SMRList.append(SMRArrangement)
-            ## i_ = self.indexListOfSiteSelectionResults.index(indexListOfResults_EachWeight)
-            ## weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-            ## print("At %s" % weightLabel)
-            ## print("The total number of SMR sites is", len(indexListOfResults_EachWeight))
+            # optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
+            optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2))  for i_ in range(len(indexOfOptima)) ]
+            
+            x_data = []
+            y_data = []
+            for i in indexOfOptima:
+                x_data.append(self.nF_feasibleNormalised[i, 0])
+                y_data.append(self.nF_feasibleNormalised[i, 1])
+                plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')
+            pointAndText = [plt.text(x_, y_, label, fontsize = 13) for x_, y_, label in zip(x_data, y_data, optima_label_list)]
+            adjust_text(pointAndText, only_move={'text': 'y'}, arrowprops=dict(arrowstyle='-', color='grey')) 
+            # for i in indexOfOptima:
+            #     i_ = indexOfOptima.index(i)
+            #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
+            #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+            #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
+            ## plt.title("Normalised Objective Space")
+            plt.xlabel("Normalised SMR Investment and Risk Cost (-)", fontsize = labelFontSize)
+            plt.ylabel("Normalised Load-Demand Distance (-)", fontsize = labelFontSize) 
+            plt.legend(fontsize = legendFontSize, loc='upper left', frameon=False)
+            plt.tight_layout()
+            self.mkdirFig()
+            plt.savefig(self.diagramPath + 'SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
+            ## plt.show() ## show must come after the savefig
+            ##plt.close()
+            plt.clf()
+            plt.cla()
+            ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+                
+            ##-- Create the SMR instances according to the site selection and the optima pick processing --##
+            ## self.SMRList is a list of lists containing the SMR instances that are selected from different weighters
+            self.SMRList = [] ## the length of the list of the self.SMRList should equal to the number of the weighters at the same weather condition and same carbon tax
+            for indexListOfResults_EachWeight in self.indexListOfSiteSelectionResults: 
+                SMRArrangement = []
+                for index in indexListOfResults_EachWeight:
+                    s = index // self.maxmumSMRUnitAtOneSite
+                    numOfSMRUnit = (index % self.maxmumSMRUnitAtOneSite) + 1
+                    ## vibrate the site location from the original site a bit
+                    latlon = [float(self.retrofitListBeforeSelection[s]["LatLon"][0]) + 0.004, float(self.retrofitListBeforeSelection[s]["LatLon"][1]) + 0.004]
+                    ## Look for the small area code and reginal area code for each SMR site
+                    for demanding in self.demandingAreaList:
+                        Area_LACode = str(demanding['Area_LACode'])
+                        if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                                "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                continue
+                        if 'Boundary' in demanding.keys():
+                            boundary = demanding['Boundary']
+                        else:
+                            boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                            demanding['Boundary'] = boundary 
+                        genLocation = shapely.geometry.Point(latlon[1], latlon[0])
+                        interiorFlag = boundary.intersects(genLocation)
+                        if interiorFlag == True:
+                            if 'Official_region' in demanding.keys():
+                                official_region  = demanding['Official_region']
+                            else:
+                                if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
+                                    official_region = "E12000008"
+                                elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
+                                    official_region = "E12000006"
+                                elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
+                                    official_region = "E12000009" 
+                                else:
+                                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                demanding['Official_region'] = official_region 
+
+                            ## initialise the SMR generator with the atttributes
+                            SMRSite = {'PowerGenerator': None, 
+                            'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
+                            'Capacity': numOfSMRUnit * self.SMRCapability, 
+                            'LatLon': latlon,
+                            'fuelOrGenType': 'SMR', 
+                            'annualOperatingHours': 0, 
+                            'CO2EmissionFactor': 0.0, 
+                            'place': None,
+                            'NumberOfSMRUnits': numOfSMRUnit,
+                            'RegionLACode': official_region,
+                            'SmallAreaLACode': Area_LACode}
+                            SMRArrangement.append(SMRSite)
+                            break
+                self.SMRList.append(SMRArrangement)
+                ## i_ = self.indexListOfSiteSelectionResults.index(indexListOfResults_EachWeight)
+                ## weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+                ## print("At %s" % weightLabel)
+                ## print("The total number of SMR sites is", len(indexListOfResults_EachWeight))
+        else:
+            self.SMRList = []
+            for i in range(len(self.weighterList)):
+                self.SMRList.append([])
         return 
         
     """This method is called to initialize the model entities objects: bus and branch (this initialisation will not be affected by SMR introduction or Carbon tax change"""
@@ -646,7 +744,7 @@ class OptimalPowerFlowAnalysis:
         return
 
     """This method is called to initialize the model entities objects: Generator"""
-    def ModelPythonObjectInputInitialiser_Generator(self, CarbonTaxForOPF, ifWithSMR, windOutputRatio, solarOutputRatio, weatherConditionName, decommissionFlag):  
+    def ModelPythonObjectInputInitialiser_Generator(self, CarbonTaxForOPF, windOutputRatio, solarOutputRatio, weatherConditionName, decommissionFlag):  
         ## FIXME: think over the way of introducing the decommission post-process
         # if not decommissionFlag:
         #     self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10: samllerLAcode   
@@ -659,10 +757,9 @@ class OptimalPowerFlowAnalysis:
         self.GeneratorObjectList = []
         self.SMRSiteObjectList = []
 
-        for SMRList_EachWeight in self.SMRList:
+        for i, SMRList_EachWeight in enumerate(self.SMRList):
             GeneratorObjectList_EachWeight = []
             SMRSiteObjectList_EachWeight = []
-            i = self.SMRList.index(SMRList_EachWeight)
             weighter = str(self.weighterList[i])
             if decommissionFlag:
                 self.genTag = "SMRDesign-" + str(self.numberOfSMRToBeIntroduced) + "-weighter" + weighter + "-CarbonTaxForOPF" + str(CarbonTaxForOPF) + "-weatherCondition" + str(weatherConditionName) + "-afterDecommissioned-" ## FIXME: this is the label used in the loop of the old demanding method
@@ -671,16 +768,20 @@ class OptimalPowerFlowAnalysis:
             
             for egen in self.generatorNodeList:
                 objectName = UK_PG.UKEGenModel.EGenKey + self.genTag + str(self.generatorNodeList.index(egen)) ## egen model python object name
-                uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), egen[8], float(egen[6]), None, str(egen[9]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                if len(egen) == 12: 
+                    uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), egen[8], float(egen[6]), None, str(egen[10]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, str(egen[11]), str(egen[9]))
+                else:
+                    uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), egen[8], float(egen[6]), None, str(egen[10]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+
                 uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
                 ###add EGen model parametor###
                 self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
                 GeneratorObjectList_EachWeight.append(objectName)
             self.GeneratorObjectList.append(GeneratorObjectList_EachWeight)
-        
+
             ### Initialisation of the SMR Generator Model Entities ###
-            if self.withRetrofit is True and ifWithSMR is True:
-                ## extract the emssion factor
+            ## extract the emssion factor
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 for i in range(len(modelFactorArrays)):
                     if str(self.newGeneratorType) in modelFactorArrays[i]:
                         factorArray = modelFactorArrays[i]
@@ -691,13 +792,17 @@ class OptimalPowerFlowAnalysis:
                 for egen_re in SMRList_EachWeight:
                     objectName = UK_PG.UKEGenModel.EGenRetrofitKey + self.genTag + str(SMRList_EachWeight.index(egen_re)) 
                     newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
-                    uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                    if len(egen_re) == 12: 
+                        uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, str(egen_re["SmallAreaLACode"]), str(egen_re["RegionLACode"]))
+                    else:
+                        uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                    
                     egen_re = [newGeneratorNodeIRI, float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], egen_re["Capacity"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
                     uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                     ###add EGen model parametor###
                     self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
                     SMRSiteObjectList_EachWeight.append(objectName)
-                self.SMRSiteObjectList.append(SMRSiteObjectList_EachWeight)
+            self.SMRSiteObjectList.append(SMRSiteObjectList_EachWeight) ## if the number of the SMR is 0, the SMRSiteObjectList_EachWeight is [] and appended to the SMRSiteObjectList    
         return    
 
     ## generate a list of the ppc at different weighters and the same weather condition and same carbon tax   
@@ -750,8 +855,7 @@ class OptimalPowerFlowAnalysis:
 
         self.ppc_List = []
 
-        for SMRSiteObjectList_EachWeight in self.SMRSiteObjectList:
-            i_ = self.SMRSiteObjectList.index(SMRSiteObjectList_EachWeight)
+        for i_, SMRSiteObjectList_EachWeight in enumerate(self.SMRSiteObjectList):
             GeneratorObjectList_EachWeight = self.GeneratorObjectList[i_]
             ## generator data
             # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
@@ -768,7 +872,7 @@ class OptimalPowerFlowAnalysis:
                     ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(genObjectiveName), key)
                 index_gen += 1
 
-            if self.withRetrofit is True: 
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 index_regen = 0
                 while index_gen < numOfExistAndRetrofittedGenerators:
                     SMRObjectiveName = SMRSiteObjectList_EachWeight[index_regen]
@@ -797,7 +901,7 @@ class OptimalPowerFlowAnalysis:
                         ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(genObjectiveName), key)
                 index_gen += 1
 
-            if self.withRetrofit is True: 
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 index_regen = 0
                 while index_gen < numOfExistAndRetrofittedGenerators:
                     SMRObjectiveName = SMRSiteObjectList_EachWeight[index_regen]
@@ -814,8 +918,7 @@ class OptimalPowerFlowAnalysis:
             ppc_copy = ppc.copy()
             self.ppc_List.append(ppc_copy)
         return 
-
-    
+  
     ## Generate the list of the results, total cost and OPEX for each weighter at the same weather and same carbon tax
     def OptimalPowerFlowAnalysisSimulation(self, ppc: list = None):
         """
@@ -864,22 +967,37 @@ class OptimalPowerFlowAnalysis:
             
             annualisedOPEX = round((totalOperationCost_OPF * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))), 2)
             self.annualisedOPEXList.append(annualisedOPEX)
-            OPEXRatio = round(annualisedOPEX/(annualisedOPEX + self.retrofittingCostList[i]), 2)
-            self.totalCostList.append(round((annualisedOPEX + self.retrofittingCostList[i]), 2))
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
+                OPEXRatio = round(annualisedOPEX/(annualisedOPEX + self.retrofittingCostList[i]), 2)
+                totalCost = round((annualisedOPEX + self.retrofittingCostList[i]), 2)
+            else:
+                OPEXRatio = round(annualisedOPEX/(annualisedOPEX), 2)
+                totalCost = round((annualisedOPEX), 2)
+
+            self.totalCostList.append(totalCost)
             self.OPEXRatioList.append(OPEXRatio)
             # percentageOfOPEX = round(self.annualisedOPEX/self.totalCost, 2)
             # percentageOfCAPEX = round((1- percentageOfOPEX),2)
 
-            print("***Total cost (£): ", round((annualisedOPEX + self.retrofittingCostList[i]), 2))
+            print("***Total cost (£): ", totalCost)
             print("***Annualised OPEX cost (£): ", annualisedOPEX) ## calculated from OPF, OPEX 
-            print("***RetrofittingCost (CAPEX) cost (£): ", self.retrofittingCostList[i]) ## calculated from site selection, CAPEX
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
+                print("***RetrofittingCost (CAPEX) cost (£): ", self.retrofittingCostList[i]) ## calculated from site selection, CAPEX
             ## print("***Percentage of OPEX: ", percentageOfOPEX, "and the percentage of CAPEX is: ", percentageOfCAPEX)
 
             ConvergeFlag = results["success"]
             if ConvergeFlag is True:
                 print('-----The OPF model is converged.-----')
             else:
-                print('!!!!!!The OPF model is diverged.!!!!!')
+                print('!!!!!!The OPF model is diverged!!!!!')
+
+            if not (self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0):
+                for i in range(len(self.ppc_List) - 1):
+                    self.resultsList.append(results)
+                    self.annualisedOPEXList.append(annualisedOPEX)
+                    self.totalCostList.append(totalCost)
+                    self.OPEXRatioList.append(OPEXRatio)
+                break
         return
 
     def ModelOutputFormatter(self, generateVisualisationJSON:bool):
@@ -892,7 +1010,12 @@ class OptimalPowerFlowAnalysis:
 
         """
         self.SMRTotalOutputList = []
-        self.SMRTotalOperationalRationList = []
+        self.SMRTotalOperationalRatioList = []
+
+        ## Record the raw output for all weight at the same weather condition
+        self.busOutputRecoder = []  ## busIRI, busLatLon, Va
+        self.branchOutputRecoder = [] ## BranchIRI, FromBusIRI, TOBusIRI (consist with the current direction), transmission loss (P = V2/R, MW)
+        self.genOutputRecoder = [] ## GenIRI, connected busIRI, output, LatLon, smallLACode, regionalLACode
         
         for index_ in range(len(self.resultsList)): ## the length of the results equals to the length of the weights
             results = self.resultsList[index_]
@@ -937,7 +1060,20 @@ class OptimalPowerFlowAnalysis:
                     index = int(UK_PG.UKEbusModel.OUTPUT_VARIABLE[key])
                     setattr(self.ObjectSet.get(objectiveName), key, busPostResult[index_bus][index])        
                 index_bus += 1   
-            
+
+            ## Bus results recorder 
+            busRawResult_eachWeight = []
+            for bus_index, busName in enumerate(self.BusObjectList):
+                Va = self.ObjectSet[busName].VA_OUTPUT
+                Pg = self.ObjectSet[busName].P_GEN
+                Pd_input = self.ObjectSet[busName].PD_INPUT
+                Pd_output = self.ObjectSet[busName].PD_OUTPUT
+                busIRI = self.ObjectSet[busName].BusNodeIRI
+                busNumber = self.ObjectSet[busName].BUS
+                busLatLon = self.busNodeList[bus_index]['BusLatLon']
+                busRawResult_eachWeight.append({'busIRI':busIRI, 'busNumber': busNumber, 'busLatLon': busLatLon,'Va':Va, 'Pg':Pg, 'Pd_output': Pd_output})
+            self.busOutputRecoder.append(busRawResult_eachWeight)
+   
             ##--Branch--##    
             ## FROMBUSINJECTION_P, FROMBUSINJECTION_Q, TOBUSINJECTION_P, TOBUSINJECTION_Q, LOSS_P, LOSS_Q
             ## post processsing of the branch results   
@@ -958,7 +1094,31 @@ class OptimalPowerFlowAnalysis:
                 for key in UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS:
                     index = int(UK_PG.UKElineModel.OUTPUT_VARIABLE[key])
                     setattr(self.ObjectSet.get(objectiveName), key, branchPostResult[index_br][index])        
-                index_br += 1   
+                index_br += 1 
+
+            ## Branch results recorder 
+            branchRawResult_eachWeight = []
+            for brName in self.BranchObjectList:
+                _Fr = self.ObjectSet[brName].FROMBUS
+                _To = self.ObjectSet[brName].TOBUS
+                resistance = self.ObjectSet[brName].R
+                BranchNodeIRI = self.ObjectSet[brName].BranchNodeIRI
+
+                for bus_index, busRawResult in enumerate(busRawResult_eachWeight):
+                    if busRawResult['busNumber'] == _Fr:
+                        _F_Va = busRawResult['Va']
+                    elif busRawResult['busNumber'] == _To:
+                        _T_Va = busRawResult['Va']
+                if _F_Va >= _T_Va:
+                    Fr = _Fr
+                    To = _To
+                else:
+                    Fr = _To
+                    To = _Fr
+                Loss = (_F_Va - _T_Va) ** 2 / float(resistance)
+                Loss = round(Loss, 2)
+                branchRawResult_eachWeight.append({'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss})
+            self.branchOutputRecoder.append(branchRawResult_eachWeight)  
             
             ##--Generator--##    
             ## PG_OUTPUT, QG_OUTPUT
@@ -978,25 +1138,49 @@ class OptimalPowerFlowAnalysis:
                     setattr(self.ObjectSet.get(objectiveName), key, generatorPostResult[index_gen][index])        
                 index_gen += 1
 
-            if self.withRetrofit is True:
+            ## Generator results recorder 
+            genRawResult_eachWeight = []
+            for gen_index, genName in enumerate(GeneratorObjectList_EachWeight):
+                genIRI = self.ObjectSet[genName].generatorNodeIRI
+                connectedBus = self.ObjectSet[genName].BUS
+                Pg_output = self.ObjectSet[genName].PG_OUTPUT
+                genLatLon = self.ObjectSet[genName].latlon
+                smallLACode = self.ObjectSet[genName].smallAreaCode
+                regionLACode = self.ObjectSet[genName].RegionLACode
+                fuelType = self.generatorNodeList[gen_index][7]
+                genRawResult_eachWeight.append({'genIRI':genIRI, 'connectedBus': connectedBus, 'Pg_output': Pg_output, 'genLatLon': genLatLon, 'smallLACode': smallLACode, 'regionLACode': regionLACode, 'fuelType': fuelType})
+
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0:
                 index_regen = 0
                 while index_gen < numOfExistAndRetrofittedGenerators:
                     objectiveName = SMRSiteObjectList_EachWeight[index_regen]
                     for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
                         index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])                  
                         setattr(self.ObjectSet.get(objectiveName), key, generatorPostResult[index_gen][index])        
-                    index_regen += 1
+                    index_regen += 1 
                     index_gen += 1
 
                 totalSMROutput = 0
                 for SMRName in SMRSiteObjectList_EachWeight:
                     totalSMROutput += round(float(self.ObjectSet[SMRName].PG_OUTPUT),2)
                 self.SMRTotalOutputList.append(totalSMROutput)
-                if self.numberOfSMRToBeIntroduced == 0:
-                    ratio = 0
-                else:
-                    ratio = round((totalSMROutput / (self.numberOfSMRToBeIntroduced * self.SMRCapability)), 2)
-                self.SMRTotalOperationalRationList.append(ratio)
+                ratio = round((totalSMROutput / (self.numberOfSMRToBeIntroduced * self.SMRCapability)), 2)
+                self.SMRTotalOperationalRatioList.append(ratio)
+            else:
+                self.SMRTotalOperationalRatioList.append(0)
+
+            ## SMR results recorder 
+            for SMRName in SMRSiteObjectList_EachWeight:
+                genIRI = self.ObjectSet[SMRName].generatorNodeIRI
+                connectedBus = self.ObjectSet[SMRName].BUS
+                Pg_output = self.ObjectSet[SMRName].PG_OUTPUT
+                genLatLon = self.ObjectSet[SMRName].latlon
+                smallLACode = self.ObjectSet[SMRName].smallAreaCode
+                regionLACode = self.ObjectSet[SMRName].RegionLACode
+                fuelType = 'SMR'
+                genRawResult_eachWeight.append({'genIRI':genIRI, 'connectedBus': connectedBus, 'Pg_output': Pg_output, 'genLatLon': genLatLon, 'smallLACode': smallLACode, 'regionLACode': regionLACode, 'fuelType': fuelType})
+            self.genOutputRecoder.append(genRawResult_eachWeight)
+
 
             #FIXME: modify the ModelPythonObjectOntologiser method 
             ## self.ModelPythonObjectOntologiser() 
@@ -1016,7 +1200,7 @@ class OptimalPowerFlowAnalysis:
                 ## self.visualisationFileCreator_decommissionedGenerator(DecommissionLabel)          
         return 
 
-#FIXME: still need to check why there is no generator not been used for each weather condition
+#TODO: still need to check why there is no generator not been used for each weather condition
     def decommissionPowerPlantDecider(self, numberOfSMRToBeIntroduced, slackFactor:float, generatorNameList:list):
         index_NonOutputList = []    
         apperanceTime_NonOutputList = []
@@ -1098,11 +1282,13 @@ class OptimalPowerFlowAnalysis:
         return 
 
 #FIXME: This function is used in the pre-opf method, check the LA code of the demanding, also fix the problem
-    def netDemandingCalculator(self):
+    def netDemandingCalculator_old(self):
         ## net demanding of each demanding area
-        self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
+        ## self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
         self.netDemandingList_smallArea = [] ## small areas refer to the demanding areas, ['LA_code', netDemanding]
         self.netDemandingList_busRadiatingArea = [] ## [busIRI, totalNetDemanding of the bus, LACodeList of which demanding area are allocated to this bus]
+        self.netDemandingList_reginalArea = []
+        
         LACode_indexingList = []
         busNodeList = []
         netDemanding_busArea = []
@@ -1112,14 +1298,14 @@ class OptimalPowerFlowAnalysis:
             if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
                                 "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
                 continue
-            netDemandingOfThisArea = demanding['v_TotalELecConsumption']
+            netDemandingOfThisArea = float(demanding['v_TotalELecConsumption'])
             for i in range(len(self.generatorNodeList)):
                 gen = self.generatorNodeList[i]
-                if len(gen) < 10:
+                if len(gen) < 11:
                     raiseExceptions("The generator has not be attached with a smaller area LA code, please run powerPlantAndDemandingAreasMapper at first or check if", 
                     gen[0], " has not find the smaller area LA code.")
                 if str(gen[11]) == Area_LACode:
-                    output = float(self.ObjectSet[self.GeneratorObjectList[i]].PG_OUTPUT)
+                    output = float(self.ObjectSet[self.GeneratorObjectList[i]].PG_OUTPUT) * (24 * 365) / 1000
                     netDemandingOfThisArea -= output
             self.netDemandingList_smallArea.append([Area_LACode, netDemandingOfThisArea])
             LACode_indexingList.append(Area_LACode)
@@ -1141,6 +1327,131 @@ class OptimalPowerFlowAnalysis:
         for i in range(len(busNodeList)):
             self.netDemandingList_busRadiatingArea.append(busNodeList[i], netDemanding_busArea[i], LACodeList_busArea[i])
         return 
+
+    """This method is to calculate the net demanding of the specified LACode area"""
+    def netDemandingCalculator(self, ifReadLocalResults, genRawResults):
+        if ifReadLocalResults:
+            netDemanding_smallArea_eachSMRDesign = []
+            netDemanding_regionalArea_eachSMRDesign = []
+            for gen_eachSMRDesign in genRawResults:
+                netDemanding_smallArea_eachCarbonTax = []
+                netDemanding_regionalArea_eachCarbonTax = []
+                for gen_eachCarbonTax in gen_eachSMRDesign:
+                    netDemanding_smallArea_eachWeather = []
+                    netDemanding_regionalArea_eachWeather = []
+                    for gen_eachWeather in gen_eachCarbonTax:
+                        netDemanding_smallArea_eachWeight = []
+                        netDemanding_regionalArea_eachWeight = []                    
+                        for gen_eachWeight in gen_eachWeather:
+                            netDemanding_smallArea = []
+                            netDemanding_regionalArea = []
+                            for demanding in self.demandingAreaList:
+                                Area_LACode = demanding['Area_LACode']
+                                if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                    continue
+                                netDemandingOfThisArea = float(demanding['v_TotalELecConsumption'])
+                                if 'Boundary' in demanding.keys():
+                                    boundary = demanding['Boundary']
+                                else:
+                                    boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                                    demanding['Boundary'] = boundary
+                                for gen in gen_eachWeight:
+                                    smallAreaCode = gen['smallLACode']
+                                    if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                                        genOutput = float(gen['Pg_output']) * (24 * 365) / 1000
+                                        netDemandingOfThisArea -= genOutput
+                                netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':netDemandingOfThisArea, 'smallAreaBoundery':boundary})
+                            netDemanding_smallArea_eachWeight.append(netDemanding_smallArea)
+
+                            for regionalDemanding in self.regionalDemandingList:
+                                Region_LACode = regionalDemanding['RegionOrCountry_LACode']
+                                netRegionalDemanding = float(regionalDemanding['v_TotalELecConsumption']) 
+                                if 'Boundary' in regionalDemanding.keys():
+                                    boundary = regionalDemanding['Boundary']
+                                else:
+                                    boundary = queryOPFInput.queryAreaBoundaries(Region_LACode) 
+                                    regionalDemanding['Boundary'] = boundary
+                                for gen in gen_eachWeight:
+                                    regionalAreaCode = str(gen['regionLACode'])
+                                    if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
+                                        genOutput = float(gen['Pg_output']) * (24 * 365) / 1000 
+                                        netRegionalDemanding -= genOutput
+                                netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding':netRegionalDemanding, 'regionalBoundery':boundary})
+                            netDemanding_regionalArea_eachWeight.append(netDemanding_regionalArea)  
+                        netDemanding_smallArea_eachWeather.append(netDemanding_smallArea_eachWeight)
+                        netDemanding_regionalArea_eachWeather.append(netDemanding_regionalArea_eachWeight)
+                    netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
+                    netDemanding_regionalArea_eachCarbonTax.append(netDemanding_regionalArea_eachWeather)
+                netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
+                netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
+            return netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign
+        else:
+            ## net demanding of each demanding area
+            ## self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
+            self.netDemandingList_smallAreaForEachWeight = [] ## small areas refer to the demanding areas, ['LA_code', netDemanding]
+            self.netDemandingList_regionalAreaForEachWeight = []
+            # Net demand of each demanding area (small areas)
+            for g_index in range(len(self.weighterList)):
+                genNameList = self.GeneratorObjectList[g_index]
+                SMRNameList = self.SMRSiteObjectList[g_index]
+
+                netDemanding_smallArea = []
+                netDemanding_regionalArea = []
+                for demanding in self.demandingAreaList:
+                    Area_LACode = demanding['Area_LACode']
+                    if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                        "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                        continue
+                    netDemandingOfThisArea = float(demanding['v_TotalELecConsumption'])
+                    if 'Boundary' in demanding.keys():
+                        boundary = demanding['Boundary']
+                    else:
+                        boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                        demanding['Boundary'] = boundary
+                    for genName in genNameList:
+                        smallAreaCode = str(self.ObjectSet[genName].smallAreaCode)
+                        if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                            genOutput = float(self.ObjectSet[genName].PG_OUTPUT) * (24 * 365) / 1000
+                            netDemandingOfThisArea -= genOutput
+                    for SMRName in SMRNameList: 
+                        smallAreaCode = str(self.ObjectSet[SMRName].smallAreaCode)
+                        if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                            genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000
+                            netDemandingOfThisArea -= genOutput
+                    netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':netDemandingOfThisArea, 'smallAreaBoundery':boundary})
+                self.netDemandingList_smallAreaForEachWeight.append(netDemanding_smallArea)  
+            
+                ## net demanding of the regional areas
+                for regionalDemanding in self.regionalDemandingList:
+                    Region_LACode = regionalDemanding['RegionOrCountry_LACode']
+                    netRegionalDemanding = float(regionalDemanding['v_TotalELecConsumption']) 
+                    if 'Boundary' in regionalDemanding.keys():
+                        boundary = regionalDemanding['Boundary']
+                    else:
+                        boundary = queryOPFInput.queryAreaBoundaries(Region_LACode) 
+                        regionalDemanding['Boundary'] = boundary
+                    for genName in genNameList:
+                        regionalAreaCode = str(self.ObjectSet[genName].RegionLACode)
+                        if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
+                            genOutput = float(self.ObjectSet[genName].PG_OUTPUT) * (24 * 365) / 1000 
+                            netRegionalDemanding -= genOutput
+                    for SMRName in SMRNameList: 
+                        regionalAreaCode = str(self.ObjectSet[SMRName].RegionLACode)
+                        if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
+                            genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000 
+                            netRegionalDemanding -= genOutput
+                    netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding':netRegionalDemanding, 'regionalBoundery':boundary})
+                self.netDemandingList_regionalAreaForEachWeight.append(netDemanding_regionalArea)         
+            return 
+
+##TODO: add the branch visualization 
+    """This method is to determine the current direction of each branch"""
+    ## THe input will remain the same as the output will be updated after each iteration
+    def branchOutputAttributes(self):
+        return
+
+
 
 ##FIXME: this function should be updated according to the updated version of the code   
     def ModelPythonObjectOntologiser(self):
@@ -1191,7 +1502,7 @@ class OptimalPowerFlowAnalysis:
             self.emissionCostContributionList_TotalCost.append(emissionCostContribution_TotalCost)          
         return 
 
-    def EnergySupplyBreakDownPieChartCreator(self, weighterList, CarbonTaxForOPF, weatherCondition, numberOfSMRToBeIntroduced):
+    def EnergySupplyBreakDownPieChartCreator(self, CarbonTaxForOPF, weatherCondition, numberOfSMRToBeIntroduced):
         energyBreakdownList = []
         for w in range(len(self.GeneratorObjectList)): ## the length of GeneratorObjectList should equal to the number of the weights
             genListForEachWeight = self.GeneratorObjectList[w]
@@ -1206,7 +1517,7 @@ class OptimalPowerFlowAnalysis:
                     outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)
 
             totalOutputOfSMR = 0
-            if len(self.SMRSiteObjectList) > 0:
+            if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 SMRListForEachWeight = self.SMRSiteObjectList[w]
                 for regen in SMRListForEachWeight:
                     totalOutputOfSMR += self.ObjectSet[regen].PG_OUTPUT
@@ -1255,7 +1566,7 @@ class OptimalPowerFlowAnalysis:
             plt.title('Energy Supply BreakDown')
             plt.axis('equal')
             plt.tight_layout()
-            path = 'EnergyBreakdown_PieChart_' + str(numberOfSMRToBeIntroduced) + 'SMR_weight_' + str(round(weighterList[w],2)) + '_weather_' + str(weatherCondition[2]) + '_carbonTax_' + str(CarbonTaxForOPF) + '.pdf' 
+            path = 'EnergyBreakdown_PieChart_' + str(numberOfSMRToBeIntroduced) + 'SMR_weight_' + str(round(self.weighterList[w],2)) + '_weather_' + str(weatherCondition[2]) + '_carbonTax_' + str(CarbonTaxForOPF) + '.pdf' 
             self.mkdirFig()
             plt.savefig(self.diagramPath + path, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1264,6 +1575,190 @@ class OptimalPowerFlowAnalysis:
             plt.cla()
             energyBreakdownList.append(outPutData)    
         return energyBreakdownList, genTypeLabel
+
+    def EnergyBreakdown_RegionAndSmallArea(self):
+        self.output_smallAreaForEachWeight = [] 
+        self.genTypeLabel_smallAreaForEachWeight = [] 
+        self.output_regionalAreaForEachWeight = []
+        self.genTypeLabel_regionalAreaForEachWeight = [] 
+        
+        ##-- Small area --##
+        for g_index in range(len(self.weighterList)):
+            ## list of the object names
+            genNameList = self.GeneratorObjectList[g_index]
+            SMRNameList = self.SMRSiteObjectList[g_index]
+
+            output_smallArea = []
+            genTypeLabel_smallArea = []
+            
+            for demanding in self.demandingAreaList:
+                genTypeLabel = []
+                outPutData = []
+                Area_LACode = demanding['Area_LACode']
+                if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                    continue
+                if 'Boundary' in demanding.keys():
+                    boundary = demanding['Boundary']
+                else:
+                    boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                    demanding['Boundary'] = boundary
+
+                for genName in genNameList:
+                    smallAreaCode = str(self.ObjectSet[genName].smallAreaCode)
+                    if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                        if not self.ObjectSet[genName].fueltype in genTypeLabel:
+                            genTypeLabel.append(self.ObjectSet[genName].fueltype)
+                            outPutData.append(float(self.ObjectSet[genName].PG_OUTPUT))
+                        else:
+                            i = genTypeLabel.index(self.ObjectSet[genName].fueltype) 
+                            outPutData[i] += float(self.ObjectSet[genName].PG_OUTPUT)
+
+                totalOutputOfSMR = 0
+                if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
+                    for SMRName in SMRNameList:
+                        smallAreaCode = str(self.ObjectSet[SMRName].smallAreaCode)
+                        if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                            totalOutputOfSMR += self.ObjectSet[SMRName].PG_OUTPUT
+                    genTypeLabel.append(self.newGeneratorType)
+                    outPutData.append(totalOutputOfSMR) 
+
+                if 'SourGas' in genTypeLabel and not 'NaturalGas' in genTypeLabel:
+                    i_sourgas = genTypeLabel.index('SourGas')
+                    genTypeLabel[i_sourgas] = 'NaturalGas'
+                ## reduce the energy types
+                sumUpOfotherOutput = 0
+                labelToBeDeleted = []
+                dataToBeDeleted = []
+                for label in genTypeLabel:
+                    if label in ['SourGas']:
+                        op = outPutData[genTypeLabel.index(label)]
+                        if 'NaturalGas' in genTypeLabel:
+                            outPutData[genTypeLabel.index('NaturalGas')] += op
+                            labelToBeDeleted.append('SourGas')
+                            dataToBeDeleted.append(op)
+                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                        i = genTypeLabel.index(label)
+                        labelToBeDeleted.append(label)
+                        dataToBeDeleted.append(outPutData[i])
+                        sumUpOfotherOutput += outPutData[i]
+
+                for label in labelToBeDeleted:
+                    genTypeLabel.remove(label)
+            
+                for data in dataToBeDeleted:
+                    outPutData.remove(data)
+
+                outPutData.append(sumUpOfotherOutput)
+                genTypeLabel.append('Others') 
+
+                ## convert to percentage
+                percentage = []
+                sum_up = sum(outPutData)
+                if sum_up == 0:
+                    percentage = [0]
+                else:
+                    for output in outPutData:
+                        p = round(output/sum_up, 2)
+                        percentage.append(p * 100)
+
+                lon = boundary.centroid.x
+                lat = boundary.centroid.y
+
+                if sum_up > 0:
+                    output_smallArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel, 'smallAreaBoundary': boundary, 'centroid': [lat, lon], 'smallAreaLACode': Area_LACode})
+                # genTypeLabel_smallArea.append(genTypeLabel)
+
+            self.output_smallAreaForEachWeight.append(output_smallArea)
+            # self.genTypeLabel_smallAreaForEachWeight.append(genTypeLabel_smallArea)         
+        
+        ##-- Regional area --##
+        for g_index in range(len(self.weighterList)):
+            ## list of the object names
+            genNameList = self.GeneratorObjectList[g_index]
+            SMRNameList = self.SMRSiteObjectList[g_index]
+
+            output_regionalArea = []
+            genTypeLabel_regionalArea = []
+
+            for regionalDemanding in self.regionalDemandingList:
+                genTypeLabel = []
+                outPutData = []
+                Region_LACode = regionalDemanding['RegionOrCountry_LACode']
+                if 'Boundary' in regionalDemanding.keys():
+                    boundary = regionalDemanding['Boundary']
+                else:
+                    boundary = queryOPFInput.queryAreaBoundaries(Region_LACode) 
+                    regionalDemanding['Boundary'] = boundary 
+                for genName in genNameList:
+                    regionalAreaCode = str(self.ObjectSet[genName].RegionLACode)
+                    if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
+                        if not self.ObjectSet[genName].fueltype in genTypeLabel:
+                            genTypeLabel.append(self.ObjectSet[genName].fueltype)
+                            outPutData.append(float(self.ObjectSet[genName].PG_OUTPUT))
+                        else:
+                            i = genTypeLabel.index(self.ObjectSet[genName].fueltype) 
+                            outPutData[i] += float(self.ObjectSet[genName].PG_OUTPUT)
+
+                totalOutputOfSMR = 0
+                if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0:
+                    for SMRName in SMRNameList:
+                        smallAreaCode = str(self.ObjectSet[SMRName].RegionLACode)
+                        if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                            totalOutputOfSMR += self.ObjectSet[SMRName].PG_OUTPUT
+                    genTypeLabel.append(self.newGeneratorType)
+                    outPutData.append(totalOutputOfSMR) 
+
+                if 'SourGas' in genTypeLabel and not 'NaturalGas' in genTypeLabel:
+                    i_sourgas = genTypeLabel.index('SourGas')
+                    genTypeLabel[i_sourgas] = 'NaturalGas'
+
+                ## reduce the energy types
+                sumUpOfotherOutput = 0
+                labelToBeDeleted = []
+                dataToBeDeleted = []
+                for label in genTypeLabel:
+                    if label in ['SourGas']:
+                        op = outPutData[genTypeLabel.index(label)]
+                        if 'NaturalGas' in genTypeLabel:
+                            outPutData[genTypeLabel.index('NaturalGas')] += op
+                            labelToBeDeleted.append('SourGas')
+                            dataToBeDeleted.append(op)
+                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                        i = genTypeLabel.index(label)
+                        labelToBeDeleted.append(label)
+                        dataToBeDeleted.append(outPutData[i])
+                        sumUpOfotherOutput += outPutData[i]
+
+                for label in labelToBeDeleted:
+                    genTypeLabel.remove(label)
+            
+                for data in dataToBeDeleted:
+                    outPutData.remove(data)
+
+                outPutData.append(sumUpOfotherOutput)
+                genTypeLabel.append('Others') 
+
+                ## convert to percentage
+                percentage = []
+                sum_up = sum(outPutData)
+                if sum_up == 0:
+                    percentage = [0]
+                else:
+                    for output in outPutData:
+                        p = round(output/sum_up, 2)
+                        percentage.append(p * 100)
+
+                lon = boundary.centroid.x
+                lat = boundary.centroid.y
+
+                if sum_up > 0:
+                    output_regionalArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel, 'regionalAreaBoundary': boundary, 'centroid': [lat, lon], 'ReginalLACode': Region_LACode})
+                    # genTypeLabel_regionalArea.append(genTypeLabel)
+
+            self.output_regionalAreaForEachWeight.append(output_regionalArea)
+            # self.genTypeLabel_regionalAreaForEachWeight.append(genTypeLabel_regionalArea)  
+        return 
 
     def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, file_label):
         geojson_file = """
@@ -1459,6 +1954,380 @@ class OptimalPowerFlowAnalysis:
         print('---GeoJSON written successfully: visualisationFileCreator_decommissionedGenerator---', file_label)
         return 
 
+    """This method is to generate the JSON file for creating the visualisation of the net demanding of the small areas"""
+    ## This method can be run after the calculation of the simulation, like the other fig creator functions  
+    def GeoJSONCreator_netDemandingForSmallArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):  
+        ##check the storage path
+        self.mkdirNetDemandingJSON('SmallAreaNetDemanding\\')
+        ## Determine the upper and lower bounds
+        netDemanding = []
+        for demanding_eachSMRDesign in demandingDataList:
+            for demanding_eachCarbonTax in demanding_eachSMRDesign:
+                for demanding_eachWeather in demanding_eachCarbonTax:
+                    for demanding_eachWeight in demanding_eachWeather:
+                        for demainding_eachsmallArea in demanding_eachWeight:
+                            netDemanding.append(demainding_eachsmallArea['netDemanding'])
+        upperbound = round(float(max(netDemanding)), 2)
+        lowerbound = round(float(min(netDemanding)), 2)
+
+        if lowerbound >= 0 or upperbound <= 0:
+            raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
+
+        ## create the colour bar legend
+        createColourBarLegend(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\', upperbound, lowerbound, 0)
+
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedDemandingList = demandingDataList[smrIndex][carbonTaxList][weatherIndex]
+
+                    for i_weight, demanding_eachWeight in enumerate(specifiedDemandingList):
+                        geojson_file = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        # iterating over features (rows in results array)
+                        for demanding in demanding_eachWeight:
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                            # creating point feature 
+                            feature = """{
+                                "type": "Feature",
+                                "properties": {
+                                "smallArea_LACode": "%s",
+                                "netDemanding": "%s",
+                                "fill": "%s",
+                                "fill-opacity": 0.9,
+                                "stroke-width" : 0.2,
+                                "stroke-opacity" : 0.9
+                                },
+                                "geometry":  %s             
+                            },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                            # adding new line 
+                            geojson_file += '\n'+feature   
+                        # removing last comma as is last line
+                        geojson_file = geojson_file[:-1]
+                        # finishing file end 
+                        end_geojson = """
+                            ]
+                        }
+                        """
+                        geojson_file += end_geojson
+                        # saving as geoJSON
+                        file_label = 'SmallAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                        geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                        geojson_written.write(geojson_file)
+                        geojson_written.close() 
+                        print('---GeoJSON written successfully: net Demanding for small areas---', file_label)      
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedDemandingList = demandingDataList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+
+                    geojson_file = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    # iterating over features (rows in results array)
+                    for demanding in specifiedDemandingList:
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                        # creating point feature 
+                        feature = """{
+                            "type": "Feature",
+                            "properties": {
+                            "smallArea_LACode": "%s",
+                            "netDemanding": "%s",
+                            "fill": "%s",
+                            "fill-opacity": 0.9,
+                            "stroke-width" : 0.2,
+                            "stroke-opacity" : 0.9
+                            },
+                            "geometry":  %s             
+                        },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                        # adding new line 
+                        geojson_file += '\n'+feature   
+                    # removing last comma as is last line
+                    geojson_file = geojson_file[:-1]
+                    # finishing file end 
+                    end_geojson = """
+                        ]
+                    }
+                    """
+                    geojson_file += end_geojson
+                    # saving as geoJSON
+                    file_label = 'SmallAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
+                    geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                    geojson_written.write(geojson_file)
+                    geojson_written.close() 
+                    print('---GeoJSON written successfully: net Demanding for small areas---', file_label)
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else:
+            for i_smr, demanding_eachSMRDesign in enumerate(demandingDataList):
+                for i_carbontax, demanding_eachCarbonTax in enumerate(demanding_eachSMRDesign):
+                    for i_weather, demanding_eachWeather in enumerate(demanding_eachCarbonTax):
+                        for i_weight, demanding_eachWeight in enumerate(demanding_eachWeather):
+                            geojson_file = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            # iterating over features (rows in results array)
+                            for demanding in demanding_eachWeight:
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                                # creating point feature 
+                                feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "smallArea_LACode": "%s",
+                                    "netDemanding": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.9,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.9
+                                    },
+                                    "geometry":  %s             
+                                },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                # adding new line 
+                                geojson_file += '\n'+feature   
+                            # removing last comma as is last line
+                            geojson_file = geojson_file[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file += end_geojson
+                            # saving as geoJSON
+                            file_label = 'SmallAreaNetDemanding_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: net Demanding for small areas---', file_label)
+        
+        return 
+
+    """This method is to generate the JSON file for creating the visualisation of the net demanding of the regional areas"""
+    ## This method can be run after the calculation of the simulation, like the other fig creator functions  
+    def GeoJSONCreator_netDemandingForRegionalArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):   
+        ## check the storage path
+        self.mkdirNetDemandingJSON('RegionalAreaNetDemanding\\')
+        ## Determine the upper and lower bounds
+        netDemanding = []
+        for demanding_eachSMRDesign in demandingDataList:
+            for demanding_eachCarbonTax in demanding_eachSMRDesign:
+                for demanding_eachWeather in demanding_eachCarbonTax:
+                    for demanding_eachWeight in demanding_eachWeather:
+                        for demainding_eachsmallArea in demanding_eachWeight:
+                            netDemanding.append(demainding_eachsmallArea['netDemanding'])
+        upperbound = round(float(max(netDemanding)), 2)
+        lowerbound = round(float(min(netDemanding)), 2)
+
+        if lowerbound >= 0 or upperbound <= 0:
+            raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
+
+        ## create the colour bar legend
+        createColourBarLegend(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\', upperbound, lowerbound, 0)
+
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+        
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedDemandingList = demandingDataList[smrIndex][carbonTaxList][weatherIndex]
+
+                    for i_weight, demanding_eachWeight in enumerate(specifiedDemandingList):
+                            geojson_file = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            # iterating over features (rows in results array)
+                            for demanding in demanding_eachWeight:
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['regionalBoundery'])))
+                                # creating point feature 
+                                feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "regionalArea_LACode": "%s",
+                                    "netDemanding": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.9,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.9
+                                    },
+                                    "geometry":  %s             
+                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                # adding new line 
+                                geojson_file += '\n'+feature   
+                            # removing last comma as is last line
+                            geojson_file = geojson_file[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file += end_geojson
+                            # saving as geoJSON
+                            file_label = 'RegionalAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedDemandingList = demandingDataList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+
+                    geojson_file = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    # iterating over features (rows in results array)
+                    for demanding in specifiedDemandingList:
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['regionalBoundery'])))
+                        # creating point feature 
+                        feature = """{
+                            "type": "Feature",
+                            "properties": {
+                            "regionalArea_LACode": "%s",
+                            "netDemanding": "%s",
+                            "fill": "%s",
+                            "fill-opacity": 0.9,
+                            "stroke-width" : 0.2,
+                            "stroke-opacity" : 0.9
+                            },
+                            "geometry":  %s             
+                        },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                        # adding new line 
+                        geojson_file += '\n'+feature   
+                        # removing last comma as is last line
+                        geojson_file = geojson_file[:-1]
+                        # finishing file end 
+                        end_geojson = """
+                            ]
+                        }
+                        """
+                        geojson_file += end_geojson
+                        # saving as geoJSON
+                        file_label = 'RegionalAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
+                        geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                        geojson_written.write(geojson_file)
+                        geojson_written.close() 
+                        print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else: 
+            for i_smr, demanding_eachSMRDesign in enumerate(demandingDataList):
+                for i_carbontax, demanding_eachCarbonTax in enumerate(demanding_eachSMRDesign):
+                    for i_weather, demanding_eachWeather in enumerate(demanding_eachCarbonTax):
+                        for i_weight, demanding_eachWeight in enumerate(demanding_eachWeather):
+                            geojson_file = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            # iterating over features (rows in results array)
+                            for demanding in demanding_eachWeight:
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['regionalBoundery'])))
+                                # creating point feature 
+                                feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "regionalArea_LACode": "%s",
+                                    "netDemanding": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.9,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.9
+                                    },
+                                    "geometry":  %s             
+                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                # adding new line 
+                                geojson_file += '\n'+feature   
+                            # removing last comma as is last line
+                            geojson_file = geojson_file[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file += end_geojson
+                            # saving as geoJSON
+                            file_label = 'RegionalAreaNetDemanding_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
+        
+        return 
+
     def mkdirJSON(self):
         folder = os.path.exists(self.filePathForJSON)
         if not folder:                
@@ -1475,16 +2344,24 @@ class OptimalPowerFlowAnalysis:
         else:
             print("---  There has this folder!  ---")
 
+    def mkdirNetDemandingJSON(self, addingPath):
+        folder = os.path.exists(self.netDemandingJSONPath + addingPath)
+        if not folder:                
+            os.makedirs(self.netDemandingJSONPath + addingPath)           
+            print("---  new folder %s...  ---" % self.netDemandingJSONPath + addingPath)
+        else:
+            print("---  There has this folder!  ---")
+
     """Create the heatmap for total cost and CO2 emission"""
     ## TODO: remove the title
-    def dataHeatmapCreator_totalCostAndEmission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+    def dataHeatmapCreator_totalCostAndEmission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
         self.weightRecorder = []
         self.minTotalCostIndexRecoder = []
 
         ## colour pattern, "crest" was used at the first time
-        cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+        cmap = seaborn.diverging_palette(200, 20, sep=20, as_cmap=True)
         
         for k in range(len(weatherConditionList)):
             matrix_minTotalCost = numpy.zeros((rowNum, colNum), dtype = float)
@@ -1510,7 +2387,7 @@ class OptimalPowerFlowAnalysis:
                     matrix_minTotalCost[i, j] = minTotalCost
                     matrix_minTotalCostForAnnotation[i, j] = float(minTotalCost)/1E10
                     matrix_minCO2Emission[i, j] = CO2EmissionOftheMinimumCost
-                    matrix_weight[i, j] = round(weighterList[totalCost.index(minTotalCost)], 2)   
+                    matrix_weight[i, j] = round(self.weighterList[totalCost.index(minTotalCost)], 2)   
                     matrix_minTotalCostIndex[i, j] = int(index_minTotalCost)                 
                     
             self.weightRecorder.append(matrix_weight)
@@ -1559,7 +2436,7 @@ class OptimalPowerFlowAnalysis:
 
         ## Draw the heatmap at each weight
         for k in range(len(weatherConditionList)):
-            for m in range(len(weighterList)):
+            for m in range(len(self.weighterList)):
                 matrix_totalCostAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
                 matrix_CO2EmissionAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
                 matrix_totalCostAtEachWeightForAnotation = numpy.zeros((rowNum, colNum), dtype = float)
@@ -1575,13 +2452,13 @@ class OptimalPowerFlowAnalysis:
  
                 ## Draw the heatmap of total cost
                 seaborn.heatmap(matrix_totalCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_totalCostAtEachWeightForAnotation, fmt=".3f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 1.8E10, annot_kws={'size':7.5}, vmin=1E10, vmax=2.6E10)
-                title = "Total cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+                title = "Total cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
                 plt.title(title)
                 plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
-                label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+                label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+                ## label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig()
                 plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
                 ## plt.savefig(label_svg)
@@ -1592,13 +2469,13 @@ class OptimalPowerFlowAnalysis:
 
                 ## Draw the heatmap of carbon emission
                 seaborn.heatmap(matrix_CO2EmissionAtEachWeight, linewidth=0.004, cmap=cmap, annot=True, fmt=".1f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 3000, annot_kws={'size':7}, vmin=0, vmax=6000)
-                title = "Carbon emission at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+                title = "Carbon emission at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
                 plt.title(title)
                 plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
-                label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+                label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+                ## label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig()
                 plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
@@ -1609,7 +2486,7 @@ class OptimalPowerFlowAnalysis:
 
     """Create the OPEXRatio"""
     ## TODO: remove the title
-    def dataHeatmapCreator_OPEXRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+    def dataHeatmapCreator_OPEXRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
 
@@ -1695,7 +2572,7 @@ class OptimalPowerFlowAnalysis:
 
         ## Draw the heatmap at each weight
         for k in range(len(weatherConditionList)):
-            for m in range(len(weighterList)):
+            for m in range(len(self.weighterList)):
                 matrix_SMROutputAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
                 matrix_SMROperationalRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
                 for i in range(rowNum): ## SMR design index
@@ -1711,13 +2588,13 @@ class OptimalPowerFlowAnalysis:
             ## Draw the heatmap of SMR output
             cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
             seaborn.heatmap(matrix_SMROutput, linewidth=0.004, cmap=cmap, annot=matrix_SMROutput, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2.6E4)
-            title = "SMR total output at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            title = "SMR total output at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
             plt.title(title)
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            label_png = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            label_png = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
             self.mkdirFig()
             plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1727,13 +2604,13 @@ class OptimalPowerFlowAnalysis:
 
             ## Draw the heatmap of SMR operational ratio
             seaborn.heatmap(matrix_SMROperationalRatio, linewidth=0.004, cmap="crest", annot=matrix_SMROperationalRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "SMR operational ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            title = "SMR operational ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
             plt.title(title)
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            label_png = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            label_png = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
             self.mkdirFig()
             plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1744,7 +2621,7 @@ class OptimalPowerFlowAnalysis:
     
     """This method is used to create emission heatmap"""
     ## TODO: remove the title
-    def dataHeatmapCreator_CO2Emission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
+    def dataHeatmapCreator_CO2Emission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
 
@@ -1812,7 +2689,7 @@ class OptimalPowerFlowAnalysis:
 
         ## Draw the heatmap at each weight
         for k in range(len(weatherConditionList)):
-            for m in range(len(weighterList)):
+            for m in range(len(self.weighterList)):
                 matrix_emissionCostAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
                 matrix_emissionCostAtEachWeight_Annotation = numpy.zeros((rowNum, colNum), dtype = float)
                 matrix_emissionCostOPEXRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
@@ -1832,13 +2709,13 @@ class OptimalPowerFlowAnalysis:
             ## Draw the heatmap of emission cost
             cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
             seaborn.heatmap(matrix_emissionCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_emissionCostAtEachWeight_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=5E8)
-            title = "Emission cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            title = "Emission cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
             plt.title(title)
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
             self.mkdirFig()
             plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1848,13 +2725,13 @@ class OptimalPowerFlowAnalysis:
 
             ## Draw the heatmap of emission cost and OPEX ratio
             seaborn.heatmap(matrix_emissionCostOPEXRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostOPEXRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "Emission cost and OPEX ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            title = "Emission cost and OPEX ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
             plt.title(title, fontsize = 11)
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
             self.mkdirFig()
             plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1864,13 +2741,13 @@ class OptimalPowerFlowAnalysis:
 
             ## Draw the heatmap of emission cost and total cost ratio
             seaborn.heatmap(matrix_emissionCostTotalCostRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostTotalCostRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "Emission cost and total cost ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(weighterList[m], 2)) + ")"
+            title = "Emission cost and total cost ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
             plt.title(title,fontsize = 10)
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(weighterList[m], 2)) + '.svg'
+            label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
             self.mkdirFig()
             plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
             # plt.show()
@@ -1879,10 +2756,9 @@ class OptimalPowerFlowAnalysis:
             plt.cla()
         return
         
-
     """Develope the data matrix"""
-    def resultsSheetCreator(self, weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, dataMatrix, fileName:str = None):
-        rowNum = len(NumberOfSMRUnitList) * len(weighterList) + 3 
+    def resultsSheetCreator(self, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, dataMatrix, fileName:str = None):
+        rowNum = len(NumberOfSMRUnitList) * len(self.weighterList) + 3 
         colNum = 2 * len(weatherConditionList) * len(CarbonTaxForOPFList) + 2
         resultSheet = numpy.zeros((rowNum, colNum), dtype = object)
 
@@ -1926,12 +2802,12 @@ class OptimalPowerFlowAnalysis:
         ## Fill the first two rows
         row_i = 3 ## the data row starts from row 3
         while row_i < rowNum:
-            smr_i = (row_i - 3) // len(weighterList)
+            smr_i = (row_i - 3) // len(self.weighterList)
             smrNum = str(NumberOfSMRUnitList[smr_i]) + '_SMR'
             resultSheet[row_i, 0] = smrNum
 
-            weight_i = (row_i - 3) % len(weighterList)
-            weight = str(weighterList[weight_i])
+            weight_i = (row_i - 3) % len(self.weighterList)
+            weight = str(self.weighterList[weight_i])
             resultSheet[row_i, 1] = weight
             row_i += 1
 
@@ -1946,13 +2822,13 @@ class OptimalPowerFlowAnalysis:
                     results_sameWeather = results_sameCarbonTax[k]
                     totalCost = results_sameWeather[0]
                     CO2Emission = results_sameWeather[1]
-                    for m in range(len(weighterList)):
+                    for m in range(len(self.weighterList)):
                         resultSheet[row_i, col_i] = totalCost[m]
                         resultSheet[row_i, col_i + 1] = CO2Emission[m]
                         row_i += 1
-                    row_i -= len(weighterList)
+                    row_i -= len(self.weighterList)
                     col_i += 2
-            row_i += len(weighterList)
+            row_i += len(self.weighterList)
             col_i = 2
         
         ## File name 
@@ -1975,12 +2851,12 @@ class OptimalPowerFlowAnalysis:
         return
 
     """Create the multiple lines diagram reflecting the weather condition impact under the same weight 0.5"""
-    def lineGraph_weatherImpact(self, pickedWeight, weighterList, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):     
+    def lineGraph_weatherImpact(self, pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):     
         ## will generate 3 figs and each fig has 8 lines (SMR diagram only has 4 lines and the rest: 4 lines for 4 weather condition and 4 line for their corresponding base cases.)
-        if not pickedWeight in weighterList:
+        if not pickedWeight in self.weighterList:
             raiseExceptions("The given weight is not in the list!")
         else:
-            weight_index = weighterList.index(pickedWeight)
+            weight_index = self.weighterList.index(pickedWeight)
 
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
@@ -2031,7 +2907,7 @@ class OptimalPowerFlowAnalysis:
             baseCO2EmissionResult.append(baseCO2Emission_UnderSameWeatherCondition)
 
         ## set up the clourmap
-        cmap = mpl.cm.get_cmap("viridis", len(weatherConditionList))
+        cmap = mpl.cm.get_cmap("viridis", len(weatherConditionList)) # viridis RdYlGn
         colors = cmap(numpy.linspace(0, 1, len(weatherConditionList)))
                 
         ##-- Plot the multiple line chart of the SMR number vs carbon tax --##
@@ -2039,58 +2915,84 @@ class OptimalPowerFlowAnalysis:
         ax2 = ax1.twinx()
         ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
         ax1.set_ylabel("Nunmber of SMR", fontsize = labelFontSize)
-        ax2.set_ylabel("Nunmber of SMR", fontsize = labelFontSize)
+        ax1.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+        ax2.axes.yaxis.set_ticklabels([])
 
         for i in range(len(bestSMRNumberResult)):
             ax1.plot(CarbonTaxForOPFList, bestSMRNumberResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i])
             ax2.plot(CarbonTaxForOPFList, bestSMRNumberResult[i], color = colors[i], alpha=0)
-        pos = ax1.get_position()
+        
+        ax1.vlines(10, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) ## vertical line
+        ax2.vlines(10, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax1.vlines(40, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax2.vlines(40, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        
+        plt.annotate('(a)', (0, 40), fontsize = annotateSize, xycoords='data')  ## label the zones 
+        plt.annotate('(b)', (20, 40), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(c)', (50, 40), fontsize = annotateSize, xycoords='data') 
+
+        pos = ax1.get_position() ## set legend
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
         ax1.legend(
             loc="upper center",
-            ## fontsize = legendFontSize,
+            fontsize = legendFontSize,
             ncol=4,
-            bbox_to_anchor=(0.5, 1.15),
-            ## bbox_transform=fig.transFigure 
-        )
-        ## plt.tight_layout()
+            bbox_to_anchor=(0.5, 0.065),
+            frameon=False,
+            bbox_transform=fig.transFigure 
+            ) 
+        plt.tight_layout()
         self.mkdirFig()
-        plt.savefig(self.diagramPath + 'SMRvsCarbonTax_(weatherImpact)__weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
+        plt.savefig(self.diagramPath + 'SMRvsCarbonTax_(weatherImpact)_weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
         # plt.show() ## show must come after the savefig
         # plt.close()
         plt.clf()
         plt.cla()
-
+        
+        
         ##-- Plot the multiple line chart of the total cost vs carbon tax --##
         # plt.title("Total Cost vs. Carbon Tax")
         fig, ax1 = plt.subplots()
         ax2 = ax1.twinx()
         ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
         ax1.set_ylabel("Annualised Total Cost (£)", fontsize = labelFontSize)
-        ax2.set_ylabel("Annualised Total Cost (£)", fontsize = labelFontSize)
+        ax1.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+        ax2.axes.yaxis.set_ticklabels([])
         
         for i in range(len(bestCostResult)):
-            ax1.plot(CarbonTaxForOPFList, bestCostResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i], linestyle = lineStyleList[i])
+            ax1.plot(CarbonTaxForOPFList, bestCostResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i], linestyle = lineStyleList[0])
             ax2.plot(CarbonTaxForOPFList, bestCostResult[i], color = colors[i], alpha=0)
-            ax1.plot(CarbonTaxForOPFList, baseCostResult[i], label = weatherConditionList[i][2] + '(base case)', color = colors[i], linestyle = lineStyleList[i], alpha=0.6)
+            ax1.plot(CarbonTaxForOPFList, baseCostResult[i], label = weatherConditionList[i][2] + ' (bc)', color = colors[i], linestyle = lineStyleList[2])
             ax2.plot(CarbonTaxForOPFList, baseCostResult[i], color = colors[i], alpha=0)
 
             for x, y, label in zip(CarbonTaxForOPFList, bestCostResult[i], bestSMRNumberResult[i]):
                 ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)   
         
+        ax1.vlines(10, 1E10, 2.2E10, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) ## vertical line
+        ax1.vlines(40, 1E10, 2.2E10, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax2.vlines(10, 1E10, 2.2E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax2.vlines(40, 1E10, 2.2E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+
+        plt.annotate('(a)', (-2, 2E10), fontsize = annotateSize, xycoords='data')  ## label the zones 
+        plt.annotate('(b)', (22, 2E10), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(c)', (48, 2E10), fontsize = annotateSize, xycoords='data') 
+
         pos = ax1.get_position()
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
         ax1.legend(
             loc="upper center",
-            ## fontsize = legendFontSize,
-            ncol=3,
-            bbox_to_anchor=(0.5, 1.25),
-            ## bbox_transform=fig.transFigure 
-        )
+            fontsize = legendFontSize,
+            ncol=4,
+            bbox_to_anchor=(0.5, 0.065),
+            frameon=False,
+            bbox_transform=fig.transFigure 
+            ) 
 
         plt.tight_layout()
         self.mkdirFig()
-        plt.savefig(self.diagramPath + 'CostvsCarbonTax_(weatherImpact)__weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
+        plt.savefig(self.diagramPath + 'CostvsCarbonTax_(weatherImpact)_weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
         # plt.show() ## show must come after the savefig
         # plt.close()
         plt.clf()
@@ -2100,27 +3002,42 @@ class OptimalPowerFlowAnalysis:
         fig, ax1 = plt.subplots()
         ax2 = ax1.twinx()
         ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-        ax1.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
-        ax2.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
+        ax1.set_ylabel("Annualised CO${_2}$ emission (t)", fontsize = labelFontSize)
+        ax1.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+        ax2.axes.yaxis.set_ticklabels([])
 
         for i in range(len(bestCO2EmissionResult)):
-            ax1.plot(CarbonTaxForOPFList, bestCO2EmissionResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i], linestyle = lineStyleList[i])
+            ax1.plot(CarbonTaxForOPFList, bestCO2EmissionResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i], linestyle = lineStyleList[0])
             ax2.plot(CarbonTaxForOPFList, bestCO2EmissionResult[i], color = colors[i], alpha=0)
-            ax1.plot(CarbonTaxForOPFList, baseCO2EmissionResult[i], label = weatherConditionList[i][2] + '(base case)', color = colors[i], linestyle = lineStyleList[i], alpha=0.6)
+            ax1.plot(CarbonTaxForOPFList, baseCO2EmissionResult[i], label = weatherConditionList[i][2] + '(bc)', color = colors[i], linestyle = lineStyleList[2])
             ax2.plot(CarbonTaxForOPFList, baseCO2EmissionResult[i], alpha=0)
 
             for x, y, label in zip(CarbonTaxForOPFList, bestCO2EmissionResult[i], bestSMRNumberResult[i]):
-                ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)     
+                ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)
+
+            # pointAndText = [ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85) for x, y, label in zip(CarbonTaxForOPFList, bestCO2EmissionResult[i], bestSMRNumberResult[i])]
+            # adjust_text(pointAndText, only_move={'text': 'y'}) # , arrowprops=dict(arrowstyle='-', color='grey')
         
-        pos = ax1.get_position()
+        ax1.vlines(10, 0, 6000, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) ## vertical line
+        ax1.vlines(40, 0, 6000, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax2.vlines(10, 0, 6000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax2.vlines(40, 0, 6000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+
+        plt.annotate('(a)', (-3, 4500), fontsize = annotateSize, xycoords='data')  ## label the zones 
+        plt.annotate('(b)', (22, 4500), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(c)', (50, 4500), fontsize = annotateSize, xycoords='data') 
+
+        pos = ax1.get_position() ## set up the legend position
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
         ax1.legend(
             loc="upper center",
-            ## fontsize = legendFontSize,
-            ncol=3,
-            bbox_to_anchor=(0.5, 1.25),
-            ## bbox_transform=fig.transFigure 
-        )
+            fontsize = legendFontSize,
+            ncol=4,
+            bbox_to_anchor=(0.5, 0.065),
+            frameon=False,
+            bbox_transform=fig.transFigure 
+            ) 
 
         plt.tight_layout()
         self.mkdirFig()
@@ -2132,14 +3049,14 @@ class OptimalPowerFlowAnalysis:
         return
 
     """Create the multiple lines diagram reflecting the weight impact under different weather conditions"""
-    def lineGraph_weightImpact(self, weighterList, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
+    def lineGraph_weightImpact(self, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
         ## 3 (smr, cost, co2) * 4 (weather condotions) figs in total: each fig has 6 lines (1 base line 5 lines for different weight)    
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
 
         ## set up the clourmap
-        cmap = mpl.cm.get_cmap("viridis", len(weighterList))
-        colors = cmap(numpy.linspace(0, 1, len(weighterList)))
+        cmap = mpl.cm.get_cmap("viridis", len(self.weighterList))
+        colors = cmap(numpy.linspace(0, 1, len(self.weighterList)))
 
         for w in range(len(weatherConditionList)):
             bestCost_UnderSameWeatherCondition = []
@@ -2149,7 +3066,7 @@ class OptimalPowerFlowAnalysis:
             baseCost_UnderSameWeatherCondition = []
             baseCO2Emission_UnderSameWeatherCondition = []
 
-            for weight_index in range(len(weighterList)):
+            for weight_index in range(len(self.weighterList)):
                 bestCost_UnderSameWeatherAndSameWeight = []
                 bestSMRNumber_UnderSameWeatherAndSameWeight = []
                 bestCO2Emission_UnderSameWeatherAndSameWeight = []
@@ -2194,10 +3111,12 @@ class OptimalPowerFlowAnalysis:
             ax2 = ax1.twinx()
             ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
             ax1.set_ylabel("Nunmber of SMR", fontsize = labelFontSize)
-            ax2.set_ylabel("Nunmber of SMR", fontsize = labelFontSize)
+            ax1.tick_params(direction='in')
+            ax2.tick_params(direction='in')
+            ax2.axes.yaxis.set_ticklabels([])
        
             for i in range(len(bestSMRNumber_UnderSameWeatherCondition)):
-                weightLabel = 'weight: ' + str(round(weighterList[i], 2))
+                weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i])
                 ax2.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], color = colors[i], alpha=0)
 
@@ -2205,13 +3124,14 @@ class OptimalPowerFlowAnalysis:
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
             ax1.legend(
                 loc="upper center",
-                ## fontsize = legendFontSize,
-                ncol=3,
-                bbox_to_anchor=(0.5, 1.25),
-                ## bbox_transform=fig.transFigure 
-            )
+                fontsize = legendFontSize,
+                ncol=4,
+                bbox_to_anchor=(0.5, 0.072),
+                frameon=False,
+                bbox_transform=fig.transFigure 
+                ) 
             plt.tight_layout()
-            self.mkdirFig() ##TODO: why there is no other weather condition?
+            self.mkdirFig() 
             plt.savefig(self.diagramPath + 'SMRvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
             # plt.show() ## show must come after the savefig
             # plt.close()
@@ -2223,14 +3143,17 @@ class OptimalPowerFlowAnalysis:
             ax2 = ax1.twinx()
             ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
             ax1.set_ylabel("Annualised Total Cost (£)", fontsize = labelFontSize)
-            ax2.set_ylabel("Annualised Total Cost (£)", fontsize = labelFontSize)
+            
+            ax1.tick_params(direction='in')
+            ax2.tick_params(direction='in')
+            ax2.axes.yaxis.set_ticklabels([])
 
             ## base case for the current weather condition, the base case is not changed with the weight
             ax1.plot(CarbonTaxForOPFList, baseCost_UnderSameWeatherCondition[0], label = 'Base case', color = 'red', linestyle = lineStyleList[1], alpha=0.6, linewidth = 1.7)
             ax2.plot(CarbonTaxForOPFList, baseCost_UnderSameWeatherCondition[0], alpha=0)
 
             for i in range(len(bestCost_UnderSameWeatherCondition)):
-                weightLabel = 'weight: ' + str(round(weighterList[i], 2))
+                weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i], linestyle = lineStyleList[i])
                 ax2.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
                 for x, y, label in zip(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
@@ -2240,11 +3163,12 @@ class OptimalPowerFlowAnalysis:
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
             ax1.legend(
                 loc="upper center",
-                ## fontsize = legendFontSize,
-                ncol=3,
-                bbox_to_anchor=(0.5, 1.25),
-                ## bbox_transform=fig.transFigure 
-            )
+                fontsize = legendFontSize,
+                ncol=4,
+                bbox_to_anchor=(0.5, 0.072),
+                frameon=False,
+                bbox_transform=fig.transFigure 
+                ) 
             plt.tight_layout()
             self.mkdirFig()
             plt.savefig(self.diagramPath + 'CostvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
@@ -2257,28 +3181,32 @@ class OptimalPowerFlowAnalysis:
             fig, ax1 = plt.subplots()
             ax2 = ax1.twinx()
             ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
-            ax2.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
+            ax1.set_ylabel("Annualised CO${_2}$ emission (t)", fontsize = labelFontSize)
+            
+            ax1.tick_params(direction='in')
+            ax2.tick_params(direction='in')
+            ax2.axes.yaxis.set_ticklabels([])
 
             ax1.plot(CarbonTaxForOPFList, baseCO2Emission_UnderSameWeatherCondition[0], label = 'Base case', color = 'red', linestyle = lineStyleList[1], alpha=0.6, linewidth = 1.7)
             ax2.plot(CarbonTaxForOPFList, baseCO2Emission_UnderSameWeatherCondition[0], alpha=0)
 
             for i in range(len(bestCO2Emission_UnderSameWeatherCondition)):
-                weightLabel = 'weight: ' + str(round(weighterList[i], 2))
+                weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i], linestyle = lineStyleList[i])
                 ax2.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
                 for x, y, label in zip(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
                     ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)
-        
+    
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
             ax1.legend(
                 loc="upper center",
-                ## fontsize = legendFontSize,
-                ncol=3,
-                bbox_to_anchor=(0.5, 1.25),
-                ## bbox_transform=fig.transFigure 
-            )
+                fontsize = legendFontSize,
+                ncol=4,
+                bbox_to_anchor=(0.5, 0.072),
+                frameon=False,
+                bbox_transform=fig.transFigure 
+                ) 
             plt.tight_layout()
             self.mkdirFig()
             plt.savefig(self.diagramPath + 'CO2EmissionvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
@@ -2289,12 +3217,12 @@ class OptimalPowerFlowAnalysis:
         return
 
     """Multiple line chart demonstrate the carbon emission reduction due to both the carbon tax and SMR introduction under the same weather"""
-    def lineGraph_SMRImpactForCO2Emission(self, weighterList:list, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list):    
+    def lineGraph_SMRImpactForCO2Emission(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list):    
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         
         for w in range(len(weatherConditionList)):
-            for weight_index in range(len(weighterList)):
+            for weight_index in range(len(self.weighterList)):
                 CO2Emission_sameWeatherSameWeight = []
                 zeroFlag = False
                 for sei, result_sameSMR in enumerate(summary_eachSMRDesign):
@@ -2316,10 +3244,12 @@ class OptimalPowerFlowAnalysis:
                 fig, ax1 = plt.subplots()
                 ax2 = ax1.twinx()
                 ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-                ax1.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
-                ax2.set_ylabel("Annualised ${CO_2}$ emission (t)", fontsize = labelFontSize)
- 
-                text = weatherConditionList[w][2] + " (" + str(weighterList[weight_index]) + ")"
+                ax1.set_ylabel("Annualised CO${_2}$ emission (t)", fontsize = labelFontSize)
+                ax1.tick_params(direction='in')
+                ax2.tick_params(direction='in')
+                ax2.axes.yaxis.set_ticklabels([])
+
+                text = weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"
                 for i in range(len(CO2Emission_sameWeatherSameWeight)):   
                     ax1.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], label = str(NumberOfSMRUnitList[i]) + " SMRs")
                     ax2.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], alpha=0) 
@@ -2327,8 +3257,9 @@ class OptimalPowerFlowAnalysis:
                 ax1.legend(
                     loc="upper center",
                     fontsize = legendFontSize,
-                    ncol=3,
-                    bbox_to_anchor=(0.5, 1.05),
+                    ncol=4,
+                    bbox_to_anchor=(0.5, 0.072),
+                    frameon=False,
                     bbox_transform=fig.transFigure 
                 )   
                 plt.tight_layout()
@@ -2340,15 +3271,20 @@ class OptimalPowerFlowAnalysis:
                 plt.cla()
         return
 
-    def stackAreaGraph_EnergyBreakDown(self, weighterList, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
+    """Energy breakdown graph for each SMR design vs carbon tax"""
+    def stackAreaGraph_EnergyBreakDownForEachSMRDesign(self, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
         cmap = mpl.cm.get_cmap("viridis", len(genTypeLabel))
-        colors = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
+        colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
+        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#2d37bc", "#ed2400", "#1e8700", "#873600"]
+
+        # cmap = mpl.cm.get_cmap("twilight", len(genTypeLabel))
+        # colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
 
         for w in range(len(weatherConditionList)):
-            for weight_index in range(len(weighterList)):
+            for weight_index in range(len(self.weighterList)):
                 for result_sameSMR in energyBreakdown_eachSMRDesign:
                     energyBreakdown_sameSMRNumber = [ [] for i in range(len(genTypeLabel))]
                     smrNumber = NumberOfSMRUnitList[energyBreakdown_eachSMRDesign.index(result_sameSMR)]
@@ -2361,8 +3297,9 @@ class OptimalPowerFlowAnalysis:
                     ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
                     ax1.set_ylabel("Generation Breakdown (kW)", fontsize = labelFontSize)
                     #ax2.set_ylabel("Generation Breakdown (-)", fontsize = labelFontSize)
+                    ax1.tick_params(direction='in')
 
-                    ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, labels = genTypeLabel, colors = colors)
+                    ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, labels = genTypeLabel, colors = colorList, alpha=0.8)
                     #ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
                     # def to_percent(temp, position):
                     #     return '%1.0f'%(10*temp) + '%'
@@ -2372,21 +3309,130 @@ class OptimalPowerFlowAnalysis:
                     ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
                     ax1.legend(
                         loc="upper center",
-                        ## fontsize = legendFontSize,
-                        # ncol=3,
-                        bbox_to_anchor=(0.5, 1.05),
-                        ## bbox_transform=fig.transFigure 
-                    )
-
+                        fontsize = legendFontSize,
+                        ncol=4,
+                        bbox_to_anchor=(0.5, 0.072),
+                        frameon=False,
+                        bbox_transform=fig.transFigure 
+                        ) 
                     plt.tight_layout()
+
                     self.mkdirFig()
-                    text = 'SMR_' + str(smrNumber) + '_' + weatherConditionList[w][2] + " (" + str(weighterList[weight_index]) + ")"        
+                    text = 'SMR_' + str(smrNumber) + '_' + weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"        
                     plt.savefig(self.diagramPath + 'EnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
                     # plt.show() ## show must come after the savefig
                     # plt.close()
                     plt.clf()
                     plt.cla()
         return
+
+    """Energy breakdown graph for optimised SMR design vs carbon tax at each weight level"""
+    def stackAreaGraph_EnergyBreakDownForOptimisedDesign(self, summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
+        if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
+            raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
+        ## set up the clourmap
+        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#2d37bc", "#ed2400", "#1e8700", "#873600"]
+
+        # for w in range(len(weatherConditionList)):
+        #     for weight_index in range(len(self.weighterList)):
+        #         bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
+        #         for c in range(len(CarbonTaxForOPFList)):
+        #             costResult_sameCarbonTaxDifferentSMRNumber = []
+        #             for result_sameSMR in summary_eachSMRDesign:
+        #                 cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
+        #                 costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
+        #             ## pick the minimum 
+        #             bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
+        #             index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
+        #             bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
+
+        #         energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
+        #         for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
+        #             for c in range(len(CarbonTaxForOPFList)):
+        #                 smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
+        #                 energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
+        #                 energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
+              
+        #         fig, ax1 = plt.subplots()
+        #         #ax2 = ax1.twinx()
+        #         ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
+        #         ax1.set_ylabel("Generation Breakdown (kW)", fontsize = labelFontSize)
+        #         #ax2.set_ylabel("Generation Breakdown (-)", fontsize = labelFontSize)
+        #         ax1.tick_params(direction = 'in')
+
+        #         ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
+        #         #ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
+        #         # def to_percent(temp, position):
+        #         #     return '%1.0f'%(10*temp) + '%'
+        #         # plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(to_percent))
+                
+        #         pos = ax1.get_position()
+        #         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+        #         ax1.legend(
+        #             loc="upper center",
+        #             fontsize = legendFontSize,
+        #             ncol=4,
+        #             bbox_to_anchor=(0.5, 0.072),
+        #             frameon=False,
+        #             bbox_transform=fig.transFigure 
+        #             ) 
+        #         plt.tight_layout()
+
+        #         self.mkdirFig()
+        #         text = weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"        
+        #         plt.savefig(self.diagramPath + 'OptimisedEnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
+        #         # plt.show() ## show must come after the savefig
+        #         # plt.close()
+        #         plt.clf()
+        #         plt.cla()
+
+        ##-- Create the fig including 4 subfigures for the weight 0.5 --##
+        plt.figure() ## set up a fig frame
+        for w in range(len(weatherConditionList)):
+            weight_index = self.weighterList.index(0.5)           
+            bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
+            for c in range(len(CarbonTaxForOPFList)):
+                costResult_sameCarbonTaxDifferentSMRNumber = []
+                for result_sameSMR in summary_eachSMRDesign:
+                    cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
+                    costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
+                ## pick the minimum 
+                bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
+                index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
+                bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
+
+            energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
+            for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
+                for c in range(len(CarbonTaxForOPFList)):
+                    smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
+                    energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
+                    energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
+            
+            
+            plt.subplot(2, 2, int(w) + 1)
+            plt.title(weatherConditionList[w][2], fontsize = legendFontSize)
+            plt.xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
+            plt.ylabel("Generation Output (MW)", fontsize = labelFontSize) 
+            plt.tick_params(direction = 'in')
+            plt.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
+            
+        plt.legend(
+            loc="upper center",
+            fontsize = labelFontSize,
+            ncol=len(genTypeLabel),
+            bbox_to_anchor=(-0.13, -0.15),
+            frameon=False
+            ) 
+        plt.tight_layout()
+        plt.subplots_adjust(wspace = 0.2, hspace = 0.28)
+        self.mkdirFig()        
+        plt.savefig(self.diagramPath + 'OptimisedEnergyBreakdown_FourSeasons_(weight0.5).pdf', dpi = 1200)#, bbox_inches='tight')
+        plt.show() ## show must come after the savefig
+        plt.close()
+        plt.clf()
+        plt.cla()
+        return
+
 
 if __name__ == '__main__':        
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
@@ -2434,24 +3480,34 @@ if __name__ == '__main__':
     safeDistance = 20
     ## TODO: stop generating the JSON files
     generateVisualisationJSON = True
+   
     pop_size = 1000
     n_offsprings = 1000
     numberOfGenerations = 400
+# ## TODO: for testing 
+#     pop_size = 500
+#     n_offsprings = 100
+#     numberOfGenerations = 100
 
-    pickedWeight = 0.5
+## TODO: change the picked weight 
+    pickedWeight = 0.9
 
-    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 50, 54] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
-    weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100] #, 120, 150, 200] 
-    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    # NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    # NumberOfSMRUnitList = [5] 
-    # weighterList = [0.5]
-    # CarbonTaxForOPFList = [40]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"]]
+    NumberOfSMRUnitList = [5] 
+    weighterList = [0.5]
+    CarbonTaxForOPFList = [40]
+    weatherConditionList = [[0.67, 0.74, "WHSH"]]
     
     ifReadLocalResults = True
+
+    ## Specified net demanding results for GeoJSON creation 
+    ifSpecifiedResultsForNetDemanding = True
+    specifiedConfig = [[51, 60, "WLSL"], [51, 60, "WHSH"]]
 #############10 BUS Model#################################################################################################################################################################
     # testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
     #     piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
@@ -2508,9 +3564,9 @@ if __name__ == '__main__':
 ############29 Bus model##################################################################################################################################################################
     testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
-        baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, projectLifeSpan, 
+        baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
         SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
-        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, updateEndPointURL)  
+        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
         
 ####================NEW demanding assessment method Pre-OPF method================####
     # ## Pre-OPF to determing the demanding indicator of each area without retrofitting
@@ -2542,9 +3598,10 @@ if __name__ == '__main__':
     #     testOPF_29BusModel.visualisationFileCreator_ClosedGenerator('pre-opf_29BusModel_' + str(smrUnit) + '_SMRs_retrofitted_ClosedPlants_CarbonTax' + str(CarbonTaxForOPF))
     #     print(summary)
     # print(summary)
-###TODO: check all of the index in the for loop. avoid using the same index
+
 ####================ OLD demanding assessment method: without pre-OPF ================####
     if not ifReadLocalResults:
+        testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
         testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
         ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
         testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
@@ -2553,16 +3610,32 @@ if __name__ == '__main__':
         ratio_eachSMRDesign = []
         emission_eachSMRDesign = []
         energyBreakdown_eachSMRDesign = []
+        netDemanding_smallArea_eachSMRDesign = [] 
+        netDemanding_regionalArea_eachSMRDesign = []
+        energyBreakdown_smallArea_eachSMRDesign = []
+        energyBreakdown_regionalArea_eachSMRDesign = []
+        busRawResult_eachSMRDesign = []
+        branchRawResult_eachSMRDesign = []
+        genRawResult_eachSMRDesign = []
+
         for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
             print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
             testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
-            testOPF_29BusModel.optimaPicker(weighterList)
+            testOPF_29BusModel.optimaPicker()
             ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
             summary_eachCarbonTax = []
             SMR_eachCarbonTax = []
             ratio_eachCarbonTax = []
             emission_eachCarbonTax = []
             energyBreakdown_eachCarbonTax = []
+            netDemanding_smallArea_eachCarbonTax = []
+            netDemanding_regionalArea_eachCarbonTax = []
+            energyBreakdown_smallArea_eachCarbonTax = []
+            energyBreakdown_regionalArea_eachCarbonTax = []
+            busRawResult_eachCarbonTax = []
+            branchRawResult_eachCarbonTax = []
+            genRawResult_eachCarbonTax = []
+
             for CarbonTaxForOPF in CarbonTaxForOPFList:
                 ## generatorNameList = []
                 ## before decommssion: find the potential decommssion power plant 
@@ -2571,71 +3644,151 @@ if __name__ == '__main__':
                 SMR_eachWeather = []
                 emission_eachWeather = []
                 energyBreakdown_eachWeather = []
+                netDemanding_smallArea_eachWeather = []
+                netDemanding_regionalArea_eachWeather = []
+                energyBreakdown_smallArea_eachWeather = []
+                energyBreakdown_regionalArea_eachWeather = []
+                busRawResult_eachWeather = []
+                branchRawResult_eachWeather = []
+                genRawResult_eachWeather = []
+
                 for weatherCondition in weatherConditionList:
-                    testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
+                    testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
                     testOPF_29BusModel.OPFModelInputFormatter()
                     testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-                    testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON)
+                    testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON) ## JSON file is generated at this step
                     testOPF_29BusModel.CarbonEmissionCalculator()
+                    testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, [])
+                    testOPF_29BusModel.EnergyBreakdown_RegionAndSmallArea()
                     ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
+                    
                     re_totalCostAndTotalEmission = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
                     re_OPEXRatio = [testOPF_29BusModel.OPEXRatioList]
-                    smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRationList]
+                    smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList]
                     re_emission = [testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost]
+                    
                     summary_eachWeather.append(re_totalCostAndTotalEmission)
                     ratio_eachWeather.append(re_OPEXRatio)
                     SMR_eachWeather.append(smr_outputAndRatio)
                     emission_eachWeather.append(re_emission)
-                    energyBreakdown_eachWeight, genTypeLabel = testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator(weighterList, CarbonTaxForOPF, weatherCondition, numberOfSMRToBeIntroduced)
+                    energyBreakdown_eachWeight, genTypeLabel = testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator(CarbonTaxForOPF, weatherCondition, numberOfSMRToBeIntroduced)
                     energyBreakdown_eachWeather.append(energyBreakdown_eachWeight)
+                    netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
+                    netDemanding_regionalArea_eachWeather.append(testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight)
+                    energyBreakdown_smallArea_eachWeather.append(testOPF_29BusModel.output_smallAreaForEachWeight)
+                    energyBreakdown_regionalArea_eachWeather.append(testOPF_29BusModel.output_regionalAreaForEachWeight) 
+                    ## Raw data recorder
+                    busRawResult_eachWeather.append(testOPF_29BusModel.busOutputRecoder)
+                    branchRawResult_eachWeather.append(testOPF_29BusModel.branchOutputRecoder)
+                    genRawResult_eachWeather.append(testOPF_29BusModel.genOutputRecoder)
+                 
                 summary_eachCarbonTax.append(summary_eachWeather)
                 ratio_eachCarbonTax.append(ratio_eachWeather)
                 SMR_eachCarbonTax.append(SMR_eachWeather)
                 emission_eachCarbonTax.append(emission_eachWeather)
                 energyBreakdown_eachCarbonTax.append(energyBreakdown_eachWeather)
+                netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
+                netDemanding_regionalArea_eachCarbonTax.append(netDemanding_regionalArea_eachWeather)
+                energyBreakdown_smallArea_eachCarbonTax.append(energyBreakdown_smallArea_eachWeather)
+                energyBreakdown_regionalArea_eachCarbonTax.append(energyBreakdown_regionalArea_eachWeather)
+                ## Raw data recorder
+                busRawResult_eachCarbonTax.append(busRawResult_eachWeather)
+                branchRawResult_eachCarbonTax.append(branchRawResult_eachWeather)
+                genRawResult_eachCarbonTax.append(genRawResult_eachWeather)
+
             summary_eachSMRDesign.append(summary_eachCarbonTax)
             ratio_eachSMRDesign.append(ratio_eachCarbonTax)
             SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
             emission_eachSMRDesign.append(emission_eachCarbonTax)
             energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
+            netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
+            netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
+            energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
+            energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
+            ## Raw data recorder
+            busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
+            branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
+            genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
 
         np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
         np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
         np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
         np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
         np_genTypeLabel = numpy.array(genTypeLabel) 
+        np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
+        np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
+        np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
+        np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
+        np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
+        np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
+        np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
 
         numpy.save("np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
         numpy.save("np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
         numpy.save("np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
         numpy.save("np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
         numpy.save("np_genTypeLabel.npy", np_genTypeLabel)
+        numpy.save("np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
+        numpy.save("np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
+        numpy.save("np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
+        numpy.save("np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
+        numpy.save("np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
+        numpy.save("np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
+        numpy.save("np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
     else:
-        summary_eachSMRDesign = numpy.load("np_summary_eachSMRDesign.npy")
-        SMROutputAndOperationalRatio_eachSMRDesign = numpy.load("np_SMROutputAndOperationalRatio_eachSMRDesign.npy")
-        emission_eachSMRDesign = numpy.load("np_emission_eachSMRDesign.npy")
-        energyBreakdown_eachSMRDesign = numpy.load("np_energyBreakdown_eachSMRDesign.npy")
-        genTypeLabel = numpy.load("np_genTypeLabel.npy")
+        summary_eachSMRDesign = numpy.load("np_summary_eachSMRDesign.npy", allow_pickle=True)
+        SMROutputAndOperationalRatio_eachSMRDesign = numpy.load("np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
+        emission_eachSMRDesign = numpy.load("np_emission_eachSMRDesign.npy", allow_pickle=True)
+        energyBreakdown_eachSMRDesign = numpy.load("np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
+        genTypeLabel = numpy.load("np_genTypeLabel.npy", allow_pickle=True)
+        netDemanding_smallArea_eachSMRDesign = numpy.load("np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        netDemanding_regionalArea_eachSMRDesign = numpy.load("np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+        energyBreakdown_smallArea_eachSMRDesign = numpy.load("np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        energyBreakdown_regionalArea_eachSMRDesign = numpy.load("np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+        busRawResult_eachSMRDesign = numpy.load("np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
+        branchRawResult_eachSMRDesign = numpy.load("np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
+        genRawResult_eachSMRDesign = numpy.load("np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
 
         summary_eachSMRDesign = summary_eachSMRDesign.tolist()
         SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
         emission_eachSMRDesign = emission_eachSMRDesign.tolist()
         energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
-        genTypeLabel = genTypeLabel.tolist()      
+        genTypeLabel = genTypeLabel.tolist()  
+        netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
+        netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
+        energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
+        energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
+        busRawResult_eachSMRDesign = busRawResult_eachSMRDesign.tolist()
+        branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
+        genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
 
-    # testOPF_29BusModel.resultsSheetCreator(weighterList, NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-    # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
-    # testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
-    # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)   
+    # testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
+    # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    # testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
      
-    ## The line charts showing the procesed results 
-    testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, weighterList, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
-    testOPF_29BusModel.lineGraph_weightImpact(weighterList, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(weighterList, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    testOPF_29BusModel.stackAreaGraph_EnergyBreakDown(weighterList, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    ##-- The line charts showing the procesed results --##
+    # testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
+    # testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # estOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
 
+    # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
 
-    # #testOPF_29BusModel.dataHeatmapCreator_OPEXRatio(ratio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList)         
+    # np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
+    # np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
+    # numpy.save("np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
+    # numpy.save("np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
+    # netDemanding_smallArea_eachSMRDesign = numpy.load("np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
+    # netDemanding_regionalArea_eachSMRDesign = numpy.load("np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+    # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
+    # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
+
+    testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+
+    # #testOPF_29BusModel.dataHeatmapCreator_OPEXRatio(ratio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)         
             # ## find the decommssioned power plant
             # testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
 

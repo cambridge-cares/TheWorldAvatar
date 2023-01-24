@@ -11,6 +11,7 @@ from SMRSitePreSelection.AnnualElectricityProduction import ElectricityProductio
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from shapely.wkt import loads
+from shapely.geometry import mapping
 import urllib.parse
 import requests
 import time
@@ -18,6 +19,8 @@ import gc
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from rfc3987 import parse
 from logging import raiseExceptions
+import geojson
+import ast
 
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
