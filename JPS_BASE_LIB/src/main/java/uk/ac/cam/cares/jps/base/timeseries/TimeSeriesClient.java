@@ -230,6 +230,17 @@ public class TimeSeriesClient<T> {
 			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
+
+		// if any of the dataIRI already exists in the kg, stop the process
+		List<String> singleListDataIri = new ArrayList<>();
+		dataIRIs.stream().forEach(dataIRIList -> {
+			dataIRIList.stream().forEach(singleListDataIri::add);
+		});
+		if (rdfClient.checkAnyTimeSeriesExists(singleListDataIri)) {
+			throw new JPSRuntimeException(exceptionPrefix + "One or more of the provided data IRI already has a time series attached. " + 
+			"Instantiate them individually with initTimeSeries if needed.");
+		}
+
 		try {
 			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, timeSeriesTypes, durations, units);
 		}
