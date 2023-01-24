@@ -2,6 +2,8 @@ package com.cmclinnovations.stack.clients.geoserver;
 
 import java.util.Map;
 
+import org.jdom.Element;
+
 import it.geosolutions.geoserver.rest.encoder.metadata.GSFeatureDimensionInfoEncoder;
 
 public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfoEncoder {
@@ -21,7 +23,10 @@ public class UpdatedGSFeatureDimensionInfoEncoder extends GSFeatureDimensionInfo
     }
 
     public void setDefaultValue(Map<String, String> defaultValue) {
-        this.defaultValue = defaultValue;
+        Element defaultValueNode = new Element("defaultValue");
+        defaultValue.entrySet()
+                .forEach(entry -> defaultValueNode.addContent(new Element(entry.getKey()).setText(entry.getValue())));
+        addContent(defaultValueNode);
     }
 
     public Boolean getNearestMatchEnabled() {
