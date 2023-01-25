@@ -1,6 +1,10 @@
 # Version 1 comes with only answer, score = (question, head)
 import json
 import os,sys
+import traceback
+
+from Marie.Util.CommonTools.NLPTools import NLPTools
+
 sys.path.append("..")
 import pickle
 import pandas as pd
@@ -20,7 +24,8 @@ Use the comp-pubchem dictionary, retrieve
 class OntoCompChemEngine:
     def __init__(self):
         self.marie_logger = MarieLogger()
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        self.nlp = NLPTools(tokenizer_name="bert-base-uncased")
+        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.max_length = 12
         self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph/ontocompchem')
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name='ontocompchem')
@@ -44,14 +49,16 @@ class OntoCompChemEngine:
 
         # self.score_model.load_pretrained_model(model_path)
 
-    def remove_head_entity(self, _question, _head_entity):
-        return _question.replace(_head_entity, '').strip()
+    # def remove_head_entity(self, _question, _head_entity):
+    #     return _question.replace(_head_entity, '').strip()
 
     def run(self, question, head=None, mention=None):
-        question = question.replace("'s ", " ")
+        if mention is None:
+            return ["EMPTY"], [-999], ["EMPTY"]
+        question = question.replace("'s ", " of ")
         try:
             nel_confidence, cid, mention_string, name = self.chemical_nel.find_cid(mention=mention)
-            question = self.remove_head_entity(_question=question, _head_entity=mention_string)
+            question = self.nlp.remove_head_entity(_question=question, _head_entity=mention_string)
             if head is not None:
                 cid = head
             return self.find_answers(head_entity=cid, question=question, head_name=name)
@@ -71,7 +78,7 @@ class OntoCompChemEngine:
             question = row['question']
             head = row['head']
             answer = row['answer']
-            labels, _ = self.find_answers(head, question)
+            labels, _, _ = self.find_answers(head, question)
             print("===============")
             print()
             if answer in labels:
@@ -89,31 +96,36 @@ class OntoCompChemEngine:
             return "NODE HAS NO VALUE"
 
     def find_answers(self, head_entity, question, head_name):
-        head = self.entity2idx[head_entity]
-        candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
-        question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
-                                                              candidate_entities=candidate_entities)
-        scores = self.score_model.find_answers(question=question, head=head, tail=tails)
-        k = min(5, len(tails))
-        _, indices_top_k = torch.topk(scores, k=k, largest=True)
-        labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
-        score_top_k = [scores[index].item() for index in indices_top_k]
-        target_top_k = [head_name] * k
-        return labels_top_k, score_top_k, target_top_k
-
-    def tokenize_question(self, question, repeat_num):
-        """
-        :param question: question in text
-        :param repeat_num:
-        :return:
-        """
-        tokenized_question = self.tokenizer(question,
-                                            padding='max_length', max_length=self.max_length, truncation=True,
-                                            return_tensors="pt")
-        attention_mask, input_ids = tokenized_question['attention_mask'], tokenized_question['input_ids']
-        attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
-        input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
-        return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
+        try:
+            head = self.entity2idx[head_entity]
+            candidate_entities = self.subgraph_extractor.extract_neighbour_from_idx(head)
+            question, head, tails = self.prepare_prediction_batch(question=question, head_entity=head,
+                                                                  candidate_entities=candidate_entities)
+            scores = self.score_model.find_answers(question=question, head=head, tail=tails)
+            k = min(5, len(tails))
+            _, indices_top_k = torch.topk(scores, k=k, largest=True)
+            labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
+            score_top_k = [scores[index].item() for index in indices_top_k]
+            target_top_k = [head_name] * k
+            return labels_top_k, score_top_k, target_top_k
+        except:
+            self.marie_logger.error('The attempt to find answer failed')
+            self.marie_logger.error(traceback.format_exc())
+            # return traceback.format_exc()
+            return ["EMPTY"], [-999], ["EMPTY"]
+    # def tokenize_question(self, question, repeat_num):
+    #     """
+    #     :param question: question in text
+    #     :param repeat_num:
+    #     :return:
+    #     """
+    #     tokenized_question = self.tokenizer(question,
+    #                                         padding='max_length', max_length=self.max_length, truncation=True,
+    #                                         return_tensors="pt")
+    #     attention_mask, input_ids = tokenized_question['attention_mask'], tokenized_question['input_ids']
+    #     attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
+    #     input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
+    #     return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
     def prepare_prediction_batch(self, question, head_entity, candidate_entities):
         """
@@ -126,7 +138,7 @@ class OntoCompChemEngine:
         candidate_entities = torch.LongTensor(candidate_entities).to(self.device)
         self.marie_logger.info(f" - Candidate entities: {candidate_entities}")
         repeat_num = len(candidate_entities)
-        tokenized_question_batch = self.tokenize_question(question, repeat_num)
+        tokenized_question_batch, _ = self.nlp.tokenize_question(question, repeat_num)
         self.marie_logger.info(f" - Question tokenized {question}")
         head_entity_batch = torch.LongTensor([head_entity]).repeat(repeat_num).to(self.device)
         self.marie_logger.info(f" - Head entity index {head_entity}")
