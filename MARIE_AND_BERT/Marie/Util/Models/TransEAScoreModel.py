@@ -140,11 +140,8 @@ class TransEAScoreModel(nn.Module):
         head = torch.tensor(self.ent_embedding.iloc[head].values).to(self.device)
         # attr_batch = best_match_attr.repeat(len(head), 1)
         bias_batch = best_match_bias.repeat(len(head), 1)
-        # print("attr shape", attr_batch.shape)
-        # print("bias shape", bias_batch.shape)
-        # print("head shape", head.shape)
         value = (torch.sum(head * best_match_attr, dim=1) + bias_batch)
-        return torch.abs(value[0]) / 2
+        return value[0], best_match_idx
         # return torch.sum(head * attr, dim=1) + bias
 
     def get_attribute_prediction(self, question_embedding):
