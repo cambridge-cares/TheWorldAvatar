@@ -10,6 +10,7 @@ import collections
 import requests
 from requests import status_codes
 import uuid
+import time
 import os
 
 from pyderivationagent.kg_operations import PySparqlClient
@@ -1542,14 +1543,17 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def upload_raw_hplc_report_to_kg(self, local_file_path, timestamp_last_modified, remote_report_subdir, hplc_digital_twin) -> str:
         _remote_file_subdir = remote_report_subdir.replace(':', '').replace('\\', '/').replace(' ', '_') if remote_report_subdir is not None else None
-        try:
-            remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
-            logger.info(f"HPLC raw report ({local_file_path}) was uploaded to fileserver {self.fs_url} at {timestamp_upload} with remote file path at: {remote_file_path}")
-        except Exception as e:
-            logger.error(e)
-            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
-            # TODO [when run in loop] repeat the upload process until the file is uploaded successfully?
-            raise Exception(f"HPLC raw report ({local_file_path}) upload failed with error: {e}")
+        # repeat the upload process every 10 secs until the file is uploaded successfully
+        file_uploaded = False
+        while not file_uploaded:
+            try:
+                remote_file_path, timestamp_upload = self.uploadFile(local_file_path, _remote_file_subdir)
+                logger.info(f"HPLC raw report ({local_file_path}) was uploaded to fileserver {self.fs_url} at {timestamp_upload} with remote file path at: {remote_file_path}")
+            except Exception as e:
+                logger.error(f"HPLC raw report ({local_file_path}) upload failed. Retrying in 10 seconds...", exc_info=True)
+                time.sleep(10)
+            else:
+                file_uploaded = True
 
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
         logger.info(f"The initialised HPLCReport IRI is: {hplc_report_iri}")
@@ -1559,11 +1563,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             <{ONTOHPLC_LOCALFILEPATH}> "{local_file_path}"^^xsd:string; <{ONTOHPLC_LASTLOCALMODIFIEDAT}> {timestamp_last_modified};
             <{ONTOHPLC_LASTUPLOADEDAT}> {timestamp_upload}. <{hplc_digital_twin}> <{ONTOHPLC_HASPASTREPORT}> <{hplc_report_iri}>.
         }}""".replace("\\", "\\\\")
-        try:
-            self.performUpdate(update)
-        except Exception as e:
-            logger.error(f"SPARQL update to write information about the uploaded HPLCReport (remote file path: {remote_file_path}) failed: {update}", exc_info=True)
-            raise e
+        # repeat the update process in KG every 10 secs until the update is successful
+        kg_updated = False
+        while not kg_updated:
+            try:
+                self.performUpdate(update)
+            except Exception as e:
+                logger.error(f"SPARQL update to write information about the uploaded HPLCReport (remote file path: {remote_file_path}) failed: {update}. Retrying in 10 seconds...", exc_info=True)
+                time.sleep(10)
+            else:
+                kg_updated = True
 
         return hplc_report_iri
 

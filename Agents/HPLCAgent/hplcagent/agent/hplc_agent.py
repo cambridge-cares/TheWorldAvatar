@@ -74,9 +74,14 @@ class HPLCAgent(DerivationAgent):
         while not hplc_report_detected:
             time.sleep(self.hplc_report_periodic_timescale)
             end_timestamp = datetime.now().timestamp()
-            hplc_report_detected = self.sparql_client.detect_new_hplc_report(
-                self.hplc_digital_twin, start_timestamp, end_timestamp
-            )
+            # here we catch the exception and retry in a few seconds in case the internet is cut off
+            try:
+                hplc_report_detected = self.sparql_client.detect_new_hplc_report(
+                    self.hplc_digital_twin, start_timestamp, end_timestamp
+                )
+            except Exception as e:
+                self.logger.error(f"HPLC report detection failed. Retrying in {self.hplc_report_periodic_timescale} seconds...", exc_info=True)
+                hplc_report_detected = None
 
         # NOTE to avoid the variable mysteriously stored in memory of g in collect_triples_for_hplc_job from being used
         # NOTE i.e., earlier collected triples not being erased, we initialise a new g=Graph() here
