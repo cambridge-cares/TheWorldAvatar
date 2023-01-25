@@ -289,63 +289,98 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
 
+        query = f"""SELECT DISTINCT ?rxn ?rxn_type ?variation_of ?assigned_reactor
+                    WHERE {{
+                        VALUES ?rxn_iri {{ <{'> <'.join(rxnexp_iris)}> }}
+                        VALUES ?rxn_type {{ <{ONTOREACTION_REACTIONEXPERIMENT}> <{ONTOREACTION_REACTIONVARIATION}> }}
+                        ?rxn_iri <{ONTOREACTION_ISVARIATIONOF}>? ?rxn.
+                        ?rxn a ?rxn_type.
+                        OPTIONAL {{ ?rxn <{ONTOREACTION_ISVARIATIONOF}> ?variation_of. }}
+                        OPTIONAL {{ ?rxn <{ONTOREACTION_ISASSIGNEDTO}> ?assigned_reactor. }}
+                    }}"""
+        response_of_all_rxn = self.performQuery(query)
+        # Process the response of the query to construct a few dictionaries
+        dict_exp = {} # key: reaction_experiment_to_query, value: ReactionExperiment instance
+        dict_rxn_types = {ONTOREACTION_REACTIONEXPERIMENT: [], ONTOREACTION_REACTIONVARIATION: []}
+        for res in response_of_all_rxn:
+            if res['rxn_type'] == ONTOREACTION_REACTIONEXPERIMENT:
+                dict_rxn_types[ONTOREACTION_REACTIONEXPERIMENT].append(res['rxn'])
+            elif res['rxn_type'] == ONTOREACTION_REACTIONVARIATION:
+                dict_rxn_types[ONTOREACTION_REACTIONVARIATION].append(res['rxn'])
+        dict_assigned_reactor = {res['rxn']:res['assigned_reactor'] if 'assigned_reactor' in res else None for res in response_of_all_rxn}
+        dict_variation_of = {res['rxn']:res['variation_of'] for res in response_of_all_rxn if 'variation_of' in res}
+        # Construct a list of all reaction experiment/variations IRIs to query
+        rxnexp_iris_to_query = rxnexp_iris.copy()
+        rxnexp_iris_to_query.extend([res['variation_of'] for res in response_of_all_rxn if 'variation_of' in res])
+        rxnexp_iris_to_query = list(set(rxnexp_iris_to_query))
+
+        # Query the rest of the information
+        dict_rxn_condition = self.getExpReactionCondition(rxnexp_iris_to_query)
+        dict_perf_indicator = self.getExpPerformanceIndicator(rxnexp_iris_to_query)
+        dict_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp_iris_to_query)
+        dict_output_chemical = self.get_output_chemical_of_rxn_exp(rxnexp_iris_to_query)
+        dict_chemical_reaction = self.get_chemical_reaction(rxnexp_iris_to_query)
+
+        # Construct a list of ReactionExperiment/ReactionVariation instances to be returned
         list_exp = []
-        for exp_iri in rxnexp_iris:
-            rdf_type_rxn = self.get_rdf_type_of_rxn_exp(exp_iri)
-            if rdf_type_rxn == ONTOREACTION_REACTIONEXPERIMENT:
-                list_exp.append(
-                    ReactionExperiment(
-                        instance_iri=exp_iri,
-                        hasReactionCondition=self.getExpReactionCondition(exp_iri),
-                        hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
-                        hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
-                        hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
-                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri),
-                        isOccurenceOf=self.get_chemical_reaction(exp_iri)
-                    )
-                )
-            elif rdf_type_rxn == ONTOREACTION_REACTIONVARIATION:
-                reference_reaction_exp = self.get_rxn_exp_iri_given_rxn_variation(exp_iri)
+        # First process the reaction experiment instances
+        for exp_iri in dict_rxn_types[ONTOREACTION_REACTIONEXPERIMENT]:
+            dict_exp[exp_iri] = ReactionExperiment(
+                instance_iri=exp_iri,
+                hasReactionCondition=dict_rxn_condition[exp_iri],
+                hasPerformanceIndicator=dict_perf_indicator[exp_iri],
+                hasInputChemical=dict_input_chemical[exp_iri],
+                hasOutputChemical=dict_output_chemical[exp_iri],
+                isAssignedTo=dict_assigned_reactor[exp_iri],
+                isOccurenceOf=dict_chemical_reaction[exp_iri],
+            )
+
+        # Then fill in the list to return
+        for rxnexp_iri in rxnexp_iris:
+            if rxnexp_iri in dict_rxn_types[ONTOREACTION_REACTIONEXPERIMENT]:
+                list_exp.append(dict_exp[rxnexp_iri])
+            else:
                 list_exp.append(
                     ReactionVariation(
-                        instance_iri=exp_iri,
-                        hasReactionCondition=self.getExpReactionCondition(exp_iri),
-                        hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
-                        hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
-                        hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
-                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri),
-                        isOccurenceOf=self.get_chemical_reaction(reference_reaction_exp),
-                        isVariationOf=self.getReactionExperiment(reference_reaction_exp)[0]
+                        instance_iri=rxnexp_iri,
+                        hasReactionCondition=dict_rxn_condition[rxnexp_iri],
+                        hasPerformanceIndicator=dict_perf_indicator[rxnexp_iri],
+                        hasInputChemical=dict_input_chemical[rxnexp_iri],
+                        hasOutputChemical=dict_output_chemical[rxnexp_iri],
+                        isAssignedTo=dict_assigned_reactor[rxnexp_iri],
+                        isOccurenceOf=dict_chemical_reaction[rxnexp_iri],
+                        isVariationOf=dict_exp[dict_variation_of[rxnexp_iri]],
                     )
                 )
         return list_exp
 
-    def get_rxn_exp_iri_given_rxn_variation(self, rxn_variation_iri: str) -> str:
-        rxn_variation_iri = trimIRI(rxn_variation_iri)
-        query = """SELECT ?rxn_exp WHERE { <%s> <%s> ?rxn_exp. }""" % (rxn_variation_iri, ONTOREACTION_ISVARIATIONOF)
-        response = self.performQuery(query)
-        if len(response) > 1:
-            raise Exception("OntoReaction:ReactionVariation instance <%s> is found to be variation of multiple instance of OntoReaction:ReactionExperiment: %s" % (
-                rxn_variation_iri, str(response)))
-        elif len(response) < 1:
-            raise Exception("OntoReaction:ReactionVariation instance <%s> is NOT found to be variation of any instance of OntoReaction:ReactionExperiment" % rxn_variation_iri)
-        else:
-            return [list(r.values())[0] for r in response][0]
+    def get_chemical_reaction(self, rxnexp_iris: Union[str, list]) -> Dict[str, OntoCAPE_ChemicalReaction]:
+        if not isinstance(rxnexp_iris, list):
+            rxnexp_iris = [rxnexp_iris]
+        rxnexp_iris = trimIRI(rxnexp_iris)
+        query_mapping = f"""SELECT DISTINCT ?rxn ?chem_rxn
+                            WHERE {{
+                                VALUES ?rxn {{ <{'> <'.join(rxnexp_iris)}> }}
+                                ?rxn <{ONTOREACTION_ISVARIATIONOF}>?/<{ONTOREACTION_ISOCCURENCEOF}> ?chem_rxn.
+                            }}"""
+        response_mapping = self.performQuery(query_mapping)
+        dict_rxn_chem_mapping = {}
+        for r in response_mapping:
+            rxn_iri = r['rxn']
+            chem_rxn_iri = r['chem_rxn']
+            if rxn_iri not in dict_rxn_chem_mapping:
+                dict_rxn_chem_mapping[rxn_iri] = chem_rxn_iri
+            else:
+                raise Exception(f"OntoReaction:ReactionExperiment instance <{rxn_iri}> is found to be occurence of multiple OntoCAPE:ChemicalReaction instance: {dal.get_sublist_in_list_of_dict_matching_key_value(response_mapping, 'rxn', rxn_iri)}")
 
-    def get_chemical_reaction_of_rxn_variation(self, rxn_variation_iri: str) -> OntoCAPE_ChemicalReaction:
-        rxn_variation_iri = trimIRI(rxn_variation_iri)
-        reference_reaction_exp = self.get_rxn_exp_iri_given_rxn_variation(rxn_variation_iri)
-        return self.get_chemical_reaction(reference_reaction_exp)
-
-    def get_chemical_reaction(self, rxnexp_iri: str) -> OntoCAPE_ChemicalReaction:
-        rxnexp_iri = trimIRI(rxnexp_iri)
+        lst_unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response_mapping, 'chem_rxn')
         query = f"""{PREFIX_RDF}
                     SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
                     ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
                     WHERE {{
                         VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                         VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
-                        <{rxnexp_iri}> <{ONTOREACTION_ISOCCURENCEOF}> ?chem_rxn.
+                        VALUES ?chem_rxn {{ <{'> <'.join(lst_unique_chem_rxn)}> }}
                         ?chem_rxn <{ONTOCAPE_HASREACTANT}> ?reactant; <{ONTOCAPE_HASPRODUCT}> ?product.
                         ?reactant rdf:type ?reac_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?reac_species.
                         ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
@@ -361,23 +396,28 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         }}
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
-        response = self.performQuery(query)
+        response_of_all_chem_rxn = self.performQuery(query)
+        dict_chem_rxn = {} # key: chem_rxn_iri, value: OntoCAPE_ChemicalReaction
 
-        try:
-            unique_chem_rxn = dal.get_the_unique_value_in_list_of_dict(response, 'chem_rxn')
-        except Exception as e:
-            raise Exception(f"OntoCAPE:ChemicalReaction is not correctly identified for ReactionExperiment <{rxnexp_iri}>: {dal.get_unique_values_in_list_of_dict(response, 'chem_rxn')}.")
+        for iri in lst_unique_chem_rxn:
+            response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_chem_rxn, 'chem_rxn', iri)
 
-        chem_rxn = OntoCAPE_ChemicalReaction(
-            instance_iri=unique_chem_rxn,
-            hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
-            hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
-            hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
-            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
-            hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
-        )
+            chem_rxn = OntoCAPE_ChemicalReaction(
+                instance_iri=iri,
+                hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
+                hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
+                hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
+                hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+                hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
+            )
 
-        return chem_rxn
+            dict_chem_rxn[iri] = chem_rxn
+
+        dict_exp_chem_rxn = {}
+        for exp in rxnexp_iris:
+            dict_exp_chem_rxn[exp] = dict_chem_rxn[dict_rxn_chem_mapping[exp]]
+
+        return dict_exp_chem_rxn
 
     def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> OntoCAPE_ChemicalReaction:
         chem_rxn_iri = trimIRI(chem_rxn_iri)
@@ -482,27 +522,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
             return list_species
 
-    def get_rdf_type_of_rxn_exp(self, rxnexp_iri: str) -> str:
-        rxnexp_iri = trimIRI(rxnexp_iri)
-        query = PREFIX_RDF + """SELECT ?type WHERE { VALUES ?type {<%s> <%s>}. <%s> rdf:type ?type. }""" % (ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, rxnexp_iri)
-        response = self.performQuery(query)
-        if len(response) > 1:
-            raise Exception("Multiple rdf:type identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(response)))
-        elif len(response) < 1:
-            raise Exception("Reaction experiment <%s> is missing rdf:type as either OntoReaction:ReactionExperiment or OntoReaction:ReactionVariation." % (rxnexp_iri))
-        else:
-            return response[0]['type']
-
-    def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
+    def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> Dict[str, List[InputChemical]]:
+        if not isinstance(rxnexp_iri, list):
+            rxnexp_iri = [rxnexp_iri]
         rxnexp_iri = trimIRI(rxnexp_iri)
         return self.get_ontocape_material(rxnexp_iri, ONTOREACTION_HASINPUTCHEMICAL)
 
-    def get_output_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[OutputChemical]:
+    def get_output_chemical_of_rxn_exp(self, rxnexp_iri: str) -> Dict[str, List[OutputChemical]]:
+        if not isinstance(rxnexp_iri, list):
+            rxnexp_iri = [rxnexp_iri]
         rxnexp_iri = trimIRI(rxnexp_iri)
         return self.get_ontocape_material(rxnexp_iri, ONTOREACTION_HASOUTPUTCHEMICAL)
 
-    def get_ontocape_material(self, subject_iri, predicate_iri, desired_type: str=None) -> List[OntoCAPE_Material]:
-        subject_iri = trimIRI(subject_iri)
+    def get_ontocape_material(self, subject_iris, predicate_iri, desired_type: str=None) -> Dict[str, List[OntoCAPE_Material]]:
+        if not isinstance(subject_iris, list):
+            subject_iris = [subject_iris]
+        subject_iris = trimIRI(subject_iris)
         predicate_iri = trimIRI(predicate_iri)
 
         if predicate_iri == ONTOREACTION_HASINPUTCHEMICAL:
@@ -512,121 +547,120 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             ocm_query_key = 'ontocape_material'
 
-        query = PREFIX_RDF + \
-                """
-                SELECT ?%s ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
-                WHERE {
-                    <%s> <%s> ?%s .
-                    ?%s <%s> ?single_phase .
-                    ?single_phase rdf:type <%s> .
-                    ?single_phase <%s> ?state_of_aggregation; <%s> ?composition; <%s> ?phase_component .
-                    ?composition <%s> ?phase_component_concentration .
-                    ?phase_component <%s> ?chemical_species .
-                    ?phase_component <%s> ?phase_component_concentration .
-                    ?phase_component_concentration rdf:type ?concentration_type; <%s> ?value .
-                    ?value <%s> ?unit; <%s> ?num_val.
-                }
-                """ % (
-                    ocm_query_key, subject_iri, predicate_iri, ocm_query_key, ocm_query_key,
-                    ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
-                    ONTOCAPE_HASSTATEOFAGGREGATION, ONTOCAPE_HAS_COMPOSITION, ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM,
-                    ONTOCAPE_COMPRISESDIRECTLY, ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY,
-                    ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE
-                )
+        query = f"""{PREFIX_RDF}
+                SELECT ?subject ?{ocm_query_key} ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
+                WHERE {{
+                    VALUES ?subject {{ <{'> <'.join(subject_iris)}> }}
+                    ?subject <{predicate_iri}> ?{ocm_query_key} .
+                    ?{ocm_query_key} <{ONTOCAPE_THERMODYNAMICBEHAVIOR}> ?single_phase .
+                    ?single_phase rdf:type <{ONTOCAPE_SINGLEPHASE}> .
+                    ?single_phase <{ONTOCAPE_HASSTATEOFAGGREGATION}> ?state_of_aggregation; <{ONTOCAPE_HAS_COMPOSITION}> ?composition; <{ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM}> ?phase_component .
+                    ?composition <{ONTOCAPE_COMPRISESDIRECTLY}> ?phase_component_concentration .
+                    ?phase_component <{ONTOCAPE_REPRESENTSOCCURENCEOF}> ?chemical_species .
+                    ?phase_component <{ONTOCAPE_HASPROPERTY}> ?phase_component_concentration .
+                    ?phase_component_concentration rdf:type ?concentration_type; <{ONTOCAPE_HASVALUE}> ?value .
+                    ?value <{ONTOCAPE_HASUNITOFMEASURE}> ?unit; <{ONTOCAPE_NUMERICALVALUE}> ?num_val.
+                }}"""
 
-        response = self.performQuery(query)
+        response_of_all_subject = self.performQuery(query)
 
-        # NOTE here we make that if nothing found, return None
-        if len(response) == 0:
-            logger.warning(f"Nothing found when quering: {subject_iri} {predicate_iri} ?{ocm_query_key}")
-            return None
-        else:
-            lst_ontocape_material = []
+        dict_ontocape_material = {}
+        for subject_iri in subject_iris:
+            response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_subject, 'subject', subject_iri)
+            # NOTE here we make that if nothing found, return None
+            if len(response) == 0:
+                logger.warning(f"Nothing found when quering: {subject_iri} {predicate_iri} ?{ocm_query_key}")
+                dict_ontocape_material[subject_iri] = None
 
-            # generate different list for each OntoCAPE:Material
-            unique_ontocape_material_iri = dal.get_unique_values_in_list_of_dict(response, ocm_query_key)
-            list_list_ontocape_material = []
-            for iri in unique_ontocape_material_iri:
-                list_list_ontocape_material.append([res for res in response if iri == res[ocm_query_key]])
+            else:
+                lst_ontocape_material = []
 
-            for list_om in list_list_ontocape_material:
-                ontocape_material_iri = dal.get_unique_values_in_list_of_dict(list_om, ocm_query_key)[0] # here we are sure this is the unique value of OntoCAPE:Material
+                # generate different list for each OntoCAPE:Material
+                unique_ontocape_material_iri = dal.get_unique_values_in_list_of_dict(response, ocm_query_key)
+                list_list_ontocape_material = []
+                for iri in unique_ontocape_material_iri:
+                    list_list_ontocape_material.append([res for res in response if iri == res[ocm_query_key]])
 
-                # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
-                unique_single_phase_iri = dal.get_unique_values_in_list_of_dict(list_om, 'single_phase')
-                if len(unique_single_phase_iri) > 1:
-                    raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
-                elif len(unique_single_phase_iri) < 1:
-                    raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
-                else:
-                    unique_single_phase_iri = unique_single_phase_iri[0]
+                for list_om in list_list_ontocape_material:
+                    ontocape_material_iri = dal.get_unique_values_in_list_of_dict(list_om, ocm_query_key)[0] # here we are sure this is the unique value of OntoCAPE:Material
 
-                unique_state_of_aggregation_iri = dal.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
-                if len(unique_state_of_aggregation_iri) > 1:
-                    raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
-                elif len(unique_state_of_aggregation_iri) < 1:
-                    raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-                else:
-                    if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
-                        state_of_aggregation = OntoCAPE_liquid
+                    # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
+                    unique_single_phase_iri = dal.get_unique_values_in_list_of_dict(list_om, 'single_phase')
+                    if len(unique_single_phase_iri) > 1:
+                        raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
+                    elif len(unique_single_phase_iri) < 1:
+                        raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
                     else:
-                        # TODO [future work] add support for other phase (solid, gas)
-                        pass
+                        unique_single_phase_iri = unique_single_phase_iri[0]
 
-                unique_composition_iri = dal.get_unique_values_in_list_of_dict(list_om, 'composition')
-                if len(unique_composition_iri) > 1:
-                    raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
-                elif len(unique_composition_iri) < 1:
-                    raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-                else:
-                    unique_composition_iri = unique_composition_iri[0]
-
-                # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
-                list_phase_component = []
-                list_phase_component_concentration = []
-                for r in list_om:
-                    if 'concentration_type' in r:
-                        if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
-                            concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+                    unique_state_of_aggregation_iri = dal.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
+                    if len(unique_state_of_aggregation_iri) > 1:
+                        raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
+                    elif len(unique_state_of_aggregation_iri) < 1:
+                        raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
+                    else:
+                        if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
+                            state_of_aggregation = OntoCAPE_liquid
                         else:
-                            # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
-                            raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['concentration_type'])
-                        list_phase_component_concentration.append(concentration)
+                            # TODO [future work] add support for other phase (solid, gas)
+                            pass
+
+                    unique_composition_iri = dal.get_unique_values_in_list_of_dict(list_om, 'composition')
+                    if len(unique_composition_iri) > 1:
+                        raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
+                    elif len(unique_composition_iri) < 1:
+                        raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
                     else:
-                        raise Exception("Concentration is not defined for")
+                        unique_composition_iri = unique_composition_iri[0]
 
-                    phase_component = OntoCAPE_PhaseComponent(instance_iri=r['phase_component'],representsOccurenceOf=r['chemical_species'],hasProperty=concentration)
-                    list_phase_component.append(phase_component)
+                    # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
+                    list_phase_component = []
+                    list_phase_component_concentration = []
+                    for r in list_om:
+                        if 'concentration_type' in r:
+                            if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                                concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+                            else:
+                                # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
+                                raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['concentration_type'])
+                            list_phase_component_concentration.append(concentration)
+                        else:
+                            raise Exception("Concentration is not defined for")
 
-                composition = OntoCAPE_Composition(
-                    instance_iri=unique_composition_iri,
-                    comprisesDirectly=list_phase_component_concentration
-                )
-                single_phase = OntoCAPE_SinglePhase(
-                    instance_iri=unique_single_phase_iri,
-                    hasStateOfAggregation=state_of_aggregation,
-                    isComposedOfSubsystem=list_phase_component,
-                    has_composition=composition,
-                    representsThermodynamicBehaviorOf=ontocape_material_iri
-                )
+                        phase_component = OntoCAPE_PhaseComponent(instance_iri=r['phase_component'],representsOccurenceOf=r['chemical_species'],hasProperty=concentration)
+                        list_phase_component.append(phase_component)
 
-                if desired_type is None:
-                    if predicate_iri == ONTOREACTION_HASINPUTCHEMICAL:
+                    composition = OntoCAPE_Composition(
+                        instance_iri=unique_composition_iri,
+                        comprisesDirectly=list_phase_component_concentration
+                    )
+                    single_phase = OntoCAPE_SinglePhase(
+                        instance_iri=unique_single_phase_iri,
+                        hasStateOfAggregation=state_of_aggregation,
+                        isComposedOfSubsystem=list_phase_component,
+                        has_composition=composition,
+                        representsThermodynamicBehaviorOf=ontocape_material_iri
+                    )
+
+                    if desired_type is None:
+                        if predicate_iri == ONTOREACTION_HASINPUTCHEMICAL:
+                            ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                        elif predicate_iri == ONTOREACTION_HASOUTPUTCHEMICAL:
+                            ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                        else:
+                            ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                    elif desired_type == ONTOREACTION_INPUTCHEMICAL:
                         ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                    elif predicate_iri == ONTOREACTION_HASOUTPUTCHEMICAL:
+                    elif desired_type == ONTOREACTION_OUTPUTCHEMICAL:
                         ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
                     else:
                         ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                elif desired_type == ONTOREACTION_INPUTCHEMICAL:
-                    ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                elif desired_type == ONTOREACTION_OUTPUTCHEMICAL:
-                    ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                else:
-                    ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
 
-                lst_ontocape_material.append(ocm_instance)
+                    lst_ontocape_material.append(ocm_instance)
 
-            return lst_ontocape_material
+                dict_ontocape_material[subject_iri] = lst_ontocape_material
+
+        return dict_ontocape_material
 
     def construct_query_for_autosampler(self, given_autosampler_iri: str = None) -> str:
         # TODO this query will return nothing if the autosampler is an empty rack on line "?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc."
@@ -737,7 +771,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 info_of_specific_site = info_of_specific_site[0]
 
                 if 'chemical_solution' in info_of_specific_site:
-                    lst_referred_instance_of_ontocape_material = self.get_ontocape_material(info_of_specific_site['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL)
+                    lst_referred_instance_of_ontocape_material = self.get_ontocape_material(info_of_specific_site['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL)[info_of_specific_site['chemical_solution']]
                     if lst_referred_instance_of_ontocape_material is None:
                         referred_instance_of_ontocape_material = None
                     elif len(lst_referred_instance_of_ontocape_material) > 1:
@@ -807,93 +841,121 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return list_autosampler
 
-    def getExpReactionCondition(self, rxnexp_iri: str) -> List[ReactionCondition]:
+    def getExpReactionCondition(self, rxnexp_iris: Union[str, list]) -> Dict[str, List[ReactionCondition]]:
         """
-            This method retrieves a list of ReactionCondition pointed by the given instance of OntoReaction:ReactionExperiment/ReactionVariation.
+            This method retrieves a dict of ReactionCondition pointed by the given instances of OntoReaction:ReactionExperiment/ReactionVariation.
 
             Arguments:
-                rxnexp_iri - IRI of instance of OntoReaction:ReactionExperiment/ReactionVariation
+                rxnexp_iris - IRIs of OntoReaction:ReactionExperiment/ReactionVariation instances
         """
+
+        if not isinstance(rxnexp_iris, list):
+            rxnexp_iris = [rxnexp_iris]
 
         # Delete "<" and ">" around the IRI
-        rxnexp_iri = trimIRI(rxnexp_iri)
+        rxnexp_iris = trimIRI(rxnexp_iris)
 
         # Construct query string
-        query = PREFIX_RDFS + PREFIX_RDF + PREFIX_XSD + PREFIX_OWL + """SELECT DISTINCT ?condition ?subo ?clz ?measure ?val ?unit ?parameter_setting ?id ?multi ?usage \
-                WHERE { ?subo rdfs:subPropertyOf* <%s> . <%s> ?subo ?condition .
-                ?condition rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) .
-                ?condition <%s> ?measure . ?measure <%s> ?unit; <%s> ?val .
-                OPTIONAL {?condition <%s> ?parameter_setting .} .
-                OPTIONAL {?condition <%s> ?id .} .
-                OPTIONAL {?condition <%s> ?multi .} .
-                OPTIONAL {?condition <%s> ?usage .} .
-                }""" % (ONTOREACTION_HASREACTIONCONDITION, rxnexp_iri, ONTOREACTION_REACTIONCONDITION,
-                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, ONTOLAB_TRANSLATESTOPARAMETERSETTING, ONTODOE_POSITIONALID, ONTOREACTION_INDICATESMULTIPLICITYOF, ONTOREACTION_INDICATESUSAGEOF)
+        query = f"""{PREFIX_RDFS} {PREFIX_RDF} {PREFIX_XSD} {PREFIX_OWL}
+                SELECT DISTINCT ?rxn ?condition ?subo ?clz ?measure ?val ?unit ?parameter_setting ?id ?multi ?usage
+                WHERE {{
+                    VALUES ?rxn {{ <{'> <'.join(rxnexp_iris)}> }}
+                    ?subo rdfs:subPropertyOf* <{ONTOREACTION_HASREACTIONCONDITION}> . ?rxn ?subo ?condition .
+                    ?condition rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <{ONTOREACTION_REACTIONCONDITION}>) .
+                    ?condition <{OM_HASVALUE}> ?measure . ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?val .
+                    OPTIONAL {{ ?condition <{ONTOLAB_TRANSLATESTOPARAMETERSETTING}> ?parameter_setting . }} .
+                    OPTIONAL {{ ?condition <{ONTODOE_POSITIONALID}> ?id . }} .
+                    OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESMULTIPLICITYOF}> ?multi . }} .
+                    OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESUSAGEOF}> ?usage . }} .
+                }}"""
 
         # Perform SPARQL query
-        response = self.performQuery(query)
+        response_of_all_rxn = self.performQuery(query)
 
-        # Populate the list of ReactionCondition based on query results
-        list_con = []
+        # Construct a dict of ReactionCondition
+        dict_rxn_condition = {}
 
-        unique_reaction_condition = dal.get_unique_values_in_list_of_dict(response, 'condition')
-        dct_unique_rc = {rc:dal.get_sublist_in_list_of_dict_matching_key_value(response, 'condition', rc) for rc in unique_reaction_condition}
-        for rc in unique_reaction_condition:
-            _info = dct_unique_rc[rc]
-            __clz = list(set([d['clz'] for d in _info]))
-            if len(__clz) == 1:
-                _clz = __clz[0]
-            else:
-                raise Exception("The rdf:type of ReactionCondition <%s> is not uniquely identified: %s" % (rc, __clz))
-            _subo = list(set([d['subo'] for d in _info]))
-            _id = list(set([d['id'] for d in _info if 'id' in d]))
-            _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
-            _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
-            _val = list(set([d['val'] for d in _info if 'val' in d]))
-            _parameter_setting = list(set([d['parameter_setting'] for d in _info if 'parameter_setting' in d]))
-            _multi = list(set([d['multi'] for d in _info if 'multi' in d]))
-            _usage = list(set([d['usage'] for d in _info if 'usage' in d]))
+        # Get response for each reaction
+        unique_rxn_iris = dal.get_unique_values_in_list_of_dict(response_of_all_rxn, 'rxn')
+        for rxn_iri in unique_rxn_iris:
+            response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_rxn, 'rxn', rxn_iri)
 
-            rxn_condition = ReactionCondition(
-                instance_iri=rc,
-                clz=_clz,
-                objPropWithExp=_subo,
-                hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
-                positionalID=_id[0] if len(_id) == 1 else None,
-                translateToParameterSetting=_parameter_setting[0] if len(_parameter_setting) == 1 else None,
-                indicatesMultiplicityOf=_multi[0] if len(_multi) == 1 else None,
-                indicateUsageOf=_usage[0] if len(_usage) == 1 else None
-            )
-            list_con.append(rxn_condition)
+            # Populate the list of ReactionCondition based on query results
+            list_con = []
 
-        return list_con
+            unique_reaction_condition = dal.get_unique_values_in_list_of_dict(response, 'condition')
+            dct_unique_rc = {rc:dal.get_sublist_in_list_of_dict_matching_key_value(response, 'condition', rc) for rc in unique_reaction_condition}
+            for rc in unique_reaction_condition:
+                _info = dct_unique_rc[rc]
+                __clz = list(set([d['clz'] for d in _info]))
+                if len(__clz) == 1:
+                    _clz = __clz[0]
+                else:
+                    raise Exception("The rdf:type of ReactionCondition <%s> is not uniquely identified: %s" % (rc, __clz))
+                _subo = list(set([d['subo'] for d in _info]))
+                _id = list(set([d['id'] for d in _info if 'id' in d]))
+                _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
+                _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
+                _val = list(set([d['val'] for d in _info if 'val' in d]))
+                _parameter_setting = list(set([d['parameter_setting'] for d in _info if 'parameter_setting' in d]))
+                _multi = list(set([d['multi'] for d in _info if 'multi' in d]))
+                _usage = list(set([d['usage'] for d in _info if 'usage' in d]))
 
-    def getExpPerformanceIndicator(self, rxnexp_iri: str) -> List[PerformanceIndicator]:
+                rxn_condition = ReactionCondition(
+                    instance_iri=rc,
+                    clz=_clz,
+                    objPropWithExp=_subo,
+                    hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
+                    positionalID=_id[0] if len(_id) == 1 else None,
+                    translateToParameterSetting=_parameter_setting[0] if len(_parameter_setting) == 1 else None,
+                    indicatesMultiplicityOf=_multi[0] if len(_multi) == 1 else None,
+                    indicateUsageOf=_usage[0] if len(_usage) == 1 else None
+                )
+                list_con.append(rxn_condition)
+
+            dict_rxn_condition[rxn_iri] = list_con
+
+        return dict_rxn_condition
+
+    def getExpPerformanceIndicator(self, rxnexp_iris: Union[str, list]) -> Dict[str, List[PerformanceIndicator]]:
         """
-            This method retrieves a list of PerformanceIndicator pointed by the given instance of OntoReaction:ReactionExperiment/ReactionVariation.
+            This method retrieves a dict of PerformanceIndicator pointed by the given instances of OntoReaction:ReactionExperiment/ReactionVariation.
 
             Arguments:
-                rxnexp_iri - IRI of instance of OntoReaction:ReactionExperiment/ReactionVariation
+                rxnexp_iris - IRIs of OntoReaction:ReactionExperiment/ReactionVariation instances
         """
 
+        if not isinstance(rxnexp_iris, list):
+            rxnexp_iris = [rxnexp_iris]
+
         # Delete "<" and ">" around the IRI
-        rxnexp_iri = trimIRI(rxnexp_iri)
+        rxnexp_iris = trimIRI(rxnexp_iris)
 
         # Construct query string
-        query = PREFIX_RDFS + PREFIX_RDF + PREFIX_XSD + PREFIX_OWL + """SELECT DISTINCT ?perf ?subo ?clz ?measure ?val ?unit ?id
-                WHERE { ?subo rdfs:subPropertyOf* <%s> . <%s> ?subo ?perf .
-                ?perf rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) .
-                OPTIONAL {?perf <%s> ?id .} .
-                OPTIONAL {?perf <%s> ?measure . ?measure <%s> ?unit; <%s> ?val .} .
-                }""" % (ONTOREACTION_HASPERFORMANCEINDICATOR, rxnexp_iri, ONTOREACTION_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID,
-                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        query = f"""{PREFIX_RDFS} {PREFIX_RDF} {PREFIX_XSD} {PREFIX_OWL}
+                SELECT DISTINCT ?rxn ?perf ?subo ?clz ?measure ?val ?unit ?id
+                WHERE {{
+                    VALUES ?rxn {{ <{'> <'.join(rxnexp_iris)}> }}
+                    ?subo rdfs:subPropertyOf* <{ONTOREACTION_HASPERFORMANCEINDICATOR}> . ?rxn ?subo ?perf .
+                    ?perf rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <{ONTOREACTION_PERFORMANCEINDICATOR}>) .
+                    OPTIONAL {{ ?perf <{ONTODOE_POSITIONALID}> ?id . }} .
+                    OPTIONAL {{ ?perf <{OM_HASVALUE}> ?measure . ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?val . }} .
+                }}"""
         # Perform SPARQL query
-        response = self.performQuery(query)
+        response_of_all_rxn = self.performQuery(query)
 
-        if len(response) == 0:
-            logger.info(f"ReactionExperiment/ReactionVariation {rxnexp_iri} has no PerformanceIndicator computed yet")
-            return None
-        else:
+        # Construct a dict of PerformanceIndicator, default to have everything as None
+        dict_perf_indicator = {rx:None for rx in rxnexp_iris}
+
+        # Populate the dict of PerformanceIndicator based on query results
+        unique_rxn_exp = dal.get_unique_values_in_list_of_dict(response_of_all_rxn, 'rxn')
+        if len(unique_rxn_exp) == 0:
+            logger.info(f"ReactionExperiment/ReactionVariation {rxnexp_iris} has no PerformanceIndicator computed yet")
+            return dict_perf_indicator
+
+        for rxnexp_iri in unique_rxn_exp:
+            response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_rxn, 'rxn', rxnexp_iri)
+
             # Populate the list of PerformanceIndicator based on query results
             list_perf = []
             unique_performance_indicator = dal.get_unique_values_in_list_of_dict(response, 'perf')
@@ -920,7 +982,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
                 list_perf.append(perf_indicator)
 
-            return list_perf
+            # Add the list of PerformanceIndicator to the dict, this will replace the None value
+            dict_perf_indicator[rxnexp_iri] = list_perf
+
+        return dict_perf_indicator
 
     def getDoEStrategy(self, strategy_iri: str) -> Strategy:
         """
@@ -1196,14 +1261,24 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_rxn = [res['rxnexp'] for res in response]
         return list_rxn
 
-    def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iri: str) -> str:
-        rxn_exp_iri = trimIRI(rxn_exp_iri)
-        query = """SELECT ?r4_reactor WHERE { <%s> <%s> ?r4_reactor. }""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO)
-        response = self.performQuery(query)
-        r4_reactor_iri = [res['r4_reactor'] for res in response]
-        if len(r4_reactor_iri) > 1:
-            raise Exception("ReactionExperiment <%s> is assigned to multiple VapourtecR4Reactor: <%s>" % (rxn_exp_iri, '>, <'.join(r4_reactor_iri)))
-        return r4_reactor_iri[0] if len(r4_reactor_iri) == 1 else None
+    def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iris: str) -> str:
+        if not isinstance(rxn_exp_iris, list):
+            rxn_exp_iris = [rxn_exp_iris]
+        rxn_exp_iris = trimIRI(rxn_exp_iris)
+        query = f"""SELECT DISTINCT ?rxn ?r4_reactor
+                    WHERE {{
+                        VALUES ?rxn {{ <{'> <'.join(rxn_exp_iris)}> }}
+                        ?rxn <{ONTOREACTION_ISASSIGNEDTO}> ?r4_reactor.
+                }}"""
+        response_of_all_rxn = self.performQuery(query)
+        dict_reactor = {}
+        for iri in rxn_exp_iris:
+            response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_rxn, 'rxn', iri)
+            r4_reactor_iri = [res['r4_reactor'] for res in response]
+            if len(r4_reactor_iri) > 1:
+                raise Exception(f"ReactionExperiment <{iri}> is assigned to multiple VapourtecR4Reactor: {r4_reactor_iri}")
+            dict_reactor[iri] = r4_reactor_iri[0] if len(r4_reactor_iri) == 1 else None
+        return dict_reactor
 
     def get_r4_reactor_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR4Reactor]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
@@ -1355,7 +1430,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             instance_iri=res['reagent_bottle'],
             isFilledWith=ChemicalSolution(
                 instance_iri=res['chemical_solution'],
-                refersToMaterial=self.get_ontocape_material(res['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL, ONTOCAPE_MATERIAL)[0],
+                refersToMaterial=self.get_ontocape_material(res['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL, ONTOCAPE_MATERIAL)[res['chemical_solution']][0],
                 fills=res['reagent_bottle'],
                 isPreparedBy=None, # TODO [future work] add support for isPreparedBy
                 containsUnidentifiedComponent=res['contains_unidentified_component'],
@@ -2033,7 +2108,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             records=self.get_chromatogram_point_of_hplc_report(hplc_report_iri),
             generatedFor=ChemicalSolution(
                 instance_iri=chem_sol_iri,
-                refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTOREACTION_OUTPUTCHEMICAL)[0],
+                refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTOREACTION_OUTPUTCHEMICAL)[chem_sol_iri][0],
                 fills=chem_sol_vial,
                 isPreparedBy=None, # TODO [future work] add support for isPreparedBy
                 containsUnidentifiedComponent=contains_unidentified_component,
