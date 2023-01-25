@@ -1,13 +1,14 @@
 package com.github.dockerjava.jaxrs;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
+
+import javax.ws.rs.client.Client;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.apache.connector.ApacheClientProperties;
@@ -15,9 +16,6 @@ import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 
 import com.cmclinnovations.swagger.podman.ApiClient;
-import com.cmclinnovations.swagger.podman.JSON;
-import com.cmclinnovations.swagger.podman.RFC3339DateFormat;
-import com.cmclinnovations.swagger.podman.auth.Authentication;
 import com.github.dockerjava.jaxrs.filter.ResponseStatusExceptionFilter;
 
 final public class ApiClientExtension extends ApiClient {
@@ -44,18 +42,12 @@ final public class ApiClientExtension extends ApiClient {
         };
         this.dockerHost = dockerHost;
 
-        json = new JSON();
-        httpClient = buildHttpClient(debugging);
+        httpClient = super.buildHttpClient(debugging);
+    }
 
-        this.dateFormat = new RFC3339DateFormat();
-
-        // Set default User-Agent.
-        setUserAgent("Swagger-Codegen/1.0.0/java");
-
-        // Setup authentications (key: authentication name, value: authentication).
-        authentications = new HashMap<String, Authentication>();
-        // Prevent the authentications from being modified.
-        authentications = Collections.unmodifiableMap(authentications);
+    @Override
+    protected Client buildHttpClient(boolean debugging) {
+        return null;
     }
 
     @Override
@@ -81,6 +73,8 @@ final public class ApiClientExtension extends ApiClient {
 
     private Registry<ConnectionSocketFactory> getSchemeRegistry(URI originalUri) {
         RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.create();
+
+        registryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
         registryBuilder.register("unix", new UnixConnectionSocketFactory(originalUri));
         return registryBuilder.build();
     }
