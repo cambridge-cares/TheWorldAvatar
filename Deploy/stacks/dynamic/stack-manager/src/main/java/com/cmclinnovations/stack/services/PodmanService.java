@@ -63,6 +63,10 @@ public class PodmanService extends DockerService {
         createNetwork(stackName);
     }
 
+    private String getPodName(String containerName) {
+        return containerName + "_pod";
+    }
+
     @Override
     protected void addStackConfigs() {
 
@@ -102,7 +106,7 @@ public class PodmanService extends DockerService {
 
     private Optional<ListPodsReport> getPod(ContainerService service) {
         try (ListPodsCmd listPodsCmd = getClient().getInternalClient().listPodsCmd()) {
-            return listPodsCmd.withNameFilter(List.of(service.getContainerName()))
+            return listPodsCmd.withNameFilter(List.of(getPodName(service.getContainerName())))
                     .exec().stream().findAny();
         }
     }
