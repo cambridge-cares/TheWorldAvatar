@@ -11,17 +11,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.github.dockerjava.jaxrs.ApiClientExtension;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.swagger.podman.ApiException;
 import com.cmclinnovations.swagger.podman.api.ContainersApi;
+import com.cmclinnovations.swagger.podman.api.PodsApi;
 import com.cmclinnovations.swagger.podman.model.BindOptions;
 import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
+import com.cmclinnovations.swagger.podman.model.IDResponse;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 import com.cmclinnovations.swagger.podman.model.Mount;
+import com.cmclinnovations.swagger.podman.model.Namespace;
+import com.cmclinnovations.swagger.podman.model.PerNetworkOptions;
+import com.cmclinnovations.swagger.podman.model.PodSpecGenerator;
+import com.cmclinnovations.swagger.podman.model.PortMapping;
 import com.cmclinnovations.swagger.podman.model.Secret;
 import com.cmclinnovations.swagger.podman.model.SpecGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,6 +39,11 @@ import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
 import com.github.dockerjava.api.model.ContainerSpecFile;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
+import com.github.dockerjava.api.model.EndpointSpec;
+import com.github.dockerjava.api.model.NetworkAttachmentConfig;
+import com.github.dockerjava.api.model.PortConfig;
+import com.github.dockerjava.api.model.PortConfigProtocol;
+import com.github.dockerjava.api.model.ServiceSpec;
 
 public class PodmanService extends DockerService {
 
@@ -123,19 +133,57 @@ public class PodmanService extends DockerService {
     }
 
     private Optional<Container> startPod(ContainerService service) {
-        String containerName = service.getContainerName();
-        ContainerSpec containerSpec = service.getContainerSpec();
 
-        SpecGenerator generator = new SpecGenerator();
+        ServiceSpec serviceSpec = configureServiceSpec(service);
 
-        generator.setName(containerName);
-        generator.setPod(containerName);
-        generator.setImage(service.getImage());
-        generator.setEnv(service.getConfig().getEnvironment());
-        generator.setCommand(containerSpec.getCommand());
+        String containerName = serviceSpec.getName();
+        ContainerSpec containerSpec = serviceSpec.getTaskTemplate().getContainerSpec();
+        PodSpecGenerator podSpecGenerator = new PodSpecGenerator()
+                .name(getPodName(containerName))
+                .hostname(containerName);
+        EndpointSpec endpointSpec = serviceSpec.getEndpointSpec();
+        if (null != endpointSpec) {
+            List<PortConfig> ports = endpointSpec.getPorts();
+            if (null != ports) {
+                List<PortMapping> portMappings = ports.stream()
+                        .map(port -> {
+                            PortConfigProtocol protocol = port.getProtocol();
+                            return new PortMapping()
+                                    .containerPort(port.getTargetPort())
+                                    .hostPort(port.getPublishedPort())
+                                    .protocol(null == protocol ? null : protocol.name());
+                        })
+                        .collect(Collectors.toList());
+                podSpecGenerator.portmappings(portMappings);
+            }
+        }
+        List<NetworkAttachmentConfig> networks = serviceSpec.getTaskTemplate().getNetworks();
+        if (null != networks) {
+            podSpecGenerator.setNetns(new Namespace().nsmode("bridge"));
+            podSpecGenerator.setNetworks(
+                    networks.stream().collect(
+                            Collectors.toMap(NetworkAttachmentConfig::getTarget,
+                                    network -> {
+                                        PerNetworkOptions perNetworkOptions = new PerNetworkOptions();
+                                        perNetworkOptions.setAliases(List.of(containerName));
+                                        return perNetworkOptions;
+                                    })));
+        }
+
+        try {
+            PodsApi podsApi = new PodsApi(getClient().getPodmanClient());
+            IDResponse podIDResponse = podsApi.podCreateLibpod(podSpecGenerator);
+
+            SpecGenerator containerSpecGenerator = new SpecGenerator();
+
+            containerSpecGenerator.setName(containerName);
+            containerSpecGenerator.setPod(podIDResponse.getId());
+            containerSpecGenerator.setImage(containerSpec.getImage());
+            containerSpecGenerator.setEnv(service.getConfig().getEnvironment());
+            containerSpecGenerator.setEntrypoint(containerSpec.getCommand());
         List<ContainerSpecSecret> secrets = containerSpec.getSecrets();
         if (null != secrets) {
-            generator.setSecrets(secrets.stream()
+                containerSpecGenerator.setSecrets(secrets.stream()
                     .map(dockerSecret -> {
                         ContainerSpecFile file = dockerSecret.getFile();
                         return new Secret()
@@ -152,7 +200,7 @@ public class PodmanService extends DockerService {
                 ContainerSpecFile file = dockerConfig.getFile();
                 if (null != file) {
                     Long mode = file.getMode();
-                    generator.addSecretsItem(new Secret()
+                        containerSpecGenerator.addSecretsItem(new Secret()
                             .source(file.getName())
                             .target("/" + dockerConfig.getConfigName())
                             .GID(Integer.parseInt(file.getGid()))
@@ -163,7 +211,7 @@ public class PodmanService extends DockerService {
         }
         List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
         if (null != dockerMounts) {
-            generator.setMounts(dockerMounts.stream()
+            containerSpecGenerator.setMounts(dockerMounts.stream()
                     .map(dockerMount -> new Mount()
                             .source(dockerMount.getSource())
                             .target(dockerMount.getTarget())
@@ -172,15 +220,18 @@ public class PodmanService extends DockerService {
                             .bindOptions(convertBindOptions(dockerMount.getBindOptions())))
                     .collect(Collectors.toList()));
         }
-        generator.setLabels(containerSpec.getLabels());
+            containerSpecGenerator.setLabels(containerSpec.getLabels());
 
         try {
-            ContainersApi api = new ContainersApi(new ApiClientExtension(URI.create("unix:///var/run/docker.sock")));
-            ContainerCreateResponse containerCreateResponse = api.containerCreateLibpod(generator);
+                ContainerCreateResponse containerCreateResponse = new ContainersApi(getClient().getPodmanClient())
+                        .containerCreateLibpod(containerSpecGenerator);
 
             return getContainerIfCreated(service.getContainerName());
         } catch (ApiException ex) {
             throw new RuntimeException("Failed to create Podman Container '" + containerName + "''.", ex);
+            }
+        } catch (ApiException ex) {
+            throw new RuntimeException("Failed to create Podman Pod '" + containerName + "''.", ex);
         }
     }
 
