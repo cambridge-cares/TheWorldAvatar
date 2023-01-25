@@ -173,7 +173,7 @@ public class PodmanService extends DockerService {
                     .collect(Collectors.toList()));
         }
         generator.setLabels(containerSpec.getLabels());
-        generator.setNamespace(StackClient.getStackName());
+
         try {
             ContainersApi api = new ContainersApi(new ApiClientExtension(URI.create("unix:///var/run/docker.sock")));
             ContainerCreateResponse containerCreateResponse = api.containerCreateLibpod(generator);
