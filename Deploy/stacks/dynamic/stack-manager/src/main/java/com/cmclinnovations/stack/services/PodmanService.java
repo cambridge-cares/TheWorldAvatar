@@ -228,28 +228,30 @@ public class PodmanService extends DockerService {
         if (null != secrets) {
                 containerSpecGenerator.setSecrets(secrets.stream()
                     .map(dockerSecret -> {
+                            Secret secret = new Secret().source(dockerSecret.getSecretName());
                         ContainerSpecFile file = dockerSecret.getFile();
-                        return new Secret()
-                                .source(file.getName())
+                            if (null != file) {
+                                secret.target(file.getName())
                                 .GID(Integer.parseInt(file.getGid()))
                                 .UID(Integer.parseInt(file.getUid()))
                                 .mode(file.getMode().intValue());
+                            }
+                            return secret;
                     })
                     .collect(Collectors.toList()));
         }
         List<ContainerSpecConfig> configs = containerSpec.getConfigs();
         if (null != configs) {
             configs.forEach(dockerConfig -> {
+                    Secret config = new Secret().source(dockerConfig.getConfigName());
                 ContainerSpecFile file = dockerConfig.getFile();
                 if (null != file) {
                     Long mode = file.getMode();
-                        containerSpecGenerator.addSecretsItem(new Secret()
-                            .source(file.getName())
+                        config.target(file.getName())
                             .target("/" + dockerConfig.getConfigName())
-                            .GID(Integer.parseInt(file.getGid()))
-                            .UID(Integer.parseInt(file.getUid()))
-                            .mode(mode == null ? null : Math.toIntExact(mode)));
+                                .mode(mode == null ? null : Math.toIntExact(mode));
                 }
+                    containerSpecGenerator.addSecretsItem(config);
             });
         }
         List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
