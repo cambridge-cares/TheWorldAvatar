@@ -21,6 +21,7 @@ import com.cmclinnovations.swagger.podman.api.PodsApi;
 import com.cmclinnovations.swagger.podman.model.BindOptions;
 import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
 import com.cmclinnovations.swagger.podman.model.IDResponse;
+import com.cmclinnovations.swagger.podman.model.ListContainer;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
 import com.cmclinnovations.swagger.podman.model.Mount;
 import com.cmclinnovations.swagger.podman.model.Namespace;
@@ -250,6 +251,27 @@ public class PodmanService extends DockerService {
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    protected Optional<Container> getContainerIfCreated(String containerName) {
+
+        Optional<ListContainer> container;
+        do {
+            try {
+                container = new ContainersApi(getClient().getPodmanClient())
+                        .containerListLibpod(true, 1, null, null, null, null,
+                                URLEncoder.encode("{\"name\":[\"" + containerName + "\"],\"pod\":[\""
+                                        + getPodName(containerName) + "\"]}"))
+                        .stream().findFirst();
+            } catch (ApiException ex) {
+                throw new RuntimeException("Failed to retrieve state of Container '" + containerName + "'.", ex);
+            }
+
+        } while (container.isEmpty());
+
+        String containerId = container.get().getId();
+        return getContainerFromID(containerId);
     }
 
 }
