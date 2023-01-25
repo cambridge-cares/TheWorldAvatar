@@ -134,7 +134,7 @@ public class PodmanService extends DockerService {
 
                             try (Stream<String> lines = Files.lines(file)) {
                                 String data = lines.collect(Collectors.joining("\n"));
-                                dockerClient.addSecret(configName, data);
+                                dockerClient.addConfig(configName, data);
                             }
                         }
                         return FileVisitResult.CONTINUE;
@@ -224,38 +224,38 @@ public class PodmanService extends DockerService {
             containerSpecGenerator.setImage(containerSpec.getImage());
             containerSpecGenerator.setEnv(service.getConfig().getEnvironment());
             containerSpecGenerator.setEntrypoint(containerSpec.getCommand());
-        List<ContainerSpecSecret> secrets = containerSpec.getSecrets();
-        if (null != secrets) {
+            List<ContainerSpecSecret> secrets = containerSpec.getSecrets();
+            if (null != secrets) {
                 containerSpecGenerator.setSecrets(secrets.stream()
-                    .map(dockerSecret -> {
+                        .map(dockerSecret -> {
                             Secret secret = new Secret().source(dockerSecret.getSecretName());
-                        ContainerSpecFile file = dockerSecret.getFile();
+                            ContainerSpecFile file = dockerSecret.getFile();
                             if (null != file) {
                                 secret.target(file.getName())
-                                .GID(Integer.parseInt(file.getGid()))
-                                .UID(Integer.parseInt(file.getUid()))
-                                .mode(file.getMode().intValue());
+                                        .GID(Integer.parseInt(file.getGid()))
+                                        .UID(Integer.parseInt(file.getUid()))
+                                        .mode(file.getMode().intValue());
                             }
                             return secret;
-                    })
-                    .collect(Collectors.toList()));
-        }
-        List<ContainerSpecConfig> configs = containerSpec.getConfigs();
-        if (null != configs) {
-            configs.forEach(dockerConfig -> {
+                        })
+                        .collect(Collectors.toList()));
+            }
+            List<ContainerSpecConfig> configs = containerSpec.getConfigs();
+            if (null != configs) {
+                configs.forEach(dockerConfig -> {
                     Secret config = new Secret().source(dockerConfig.getConfigName());
-                ContainerSpecFile file = dockerConfig.getFile();
-                if (null != file) {
-                    Long mode = file.getMode();
+                    ContainerSpecFile file = dockerConfig.getFile();
+                    if (null != file) {
+                        Long mode = file.getMode();
                         config.target(file.getName())
-                            .target("/" + dockerConfig.getConfigName())
+                                .target("/" + dockerConfig.getConfigName())
                                 .mode(mode == null ? null : Math.toIntExact(mode));
-                }
+                    }
                     containerSpecGenerator.addSecretsItem(config);
-            });
-        }
-        List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
-        if (null != dockerMounts) {
+                });
+            }
+            List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
+            if (null != dockerMounts) {
                 /*
                  * TODO: This is roughly how this should be done but there is an issue with the
                  * Podman Swagger spec as described here
@@ -280,17 +280,17 @@ public class PodmanService extends DockerService {
                         .map(dockerMount -> new NamedVolume()
                                 .name(dockerMount.getSource())
                                 .dest(dockerMount.getTarget()))
-                    .collect(Collectors.toList()));
-        }
+                        .collect(Collectors.toList()));
+            }
             containerSpecGenerator.setLabels(containerSpec.getLabels());
 
-        try {
+            try {
                 ContainerCreateResponse containerCreateResponse = new ContainersApi(getClient().getPodmanClient())
                         .containerCreateLibpod(containerSpecGenerator);
 
-            return getContainerIfCreated(service.getContainerName());
-        } catch (ApiException ex) {
-            throw new RuntimeException("Failed to create Podman Container '" + containerName + "''.", ex);
+                return getContainerIfCreated(service.getContainerName());
+            } catch (ApiException ex) {
+                throw new RuntimeException("Failed to create Podman Container '" + containerName + "''.", ex);
             }
         } catch (ApiException ex) {
             throw new RuntimeException("Failed to create Podman Pod '" + containerName + "''.", ex);
