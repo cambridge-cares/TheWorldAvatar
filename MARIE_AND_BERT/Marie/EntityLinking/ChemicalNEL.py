@@ -4,7 +4,7 @@ from Marie.Util.Logging import MarieLogger
 import json
 import time
 import os
-from chemdataextractor import Document
+# from chemdataextractor import Document
 from Marie.Util.location import DICTIONARY_DIR
 import fuzzyset
 import chemparse
@@ -45,15 +45,15 @@ class ChemicalNEL:
         # _, mention_string = self.ner.find_cid(question)
         # return mention_string
         question = question.replace("'s", " of ")
-
-        try:
-            _mention, smiles_string = self.ner.find_cid(question)# [2]
-            # print("mention:", mention)
-            # print("smiles_string:", smiles_string)
-            return smiles_string
-        except:
-            self.marie_logger.error(
-                f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
+        results, smiles_string = self.ner.find_cid(question)  # [2]
+        if smiles_string is None:
+            smiles_string = results[2]
+        print("results:", results)
+        print("smiles_string:", smiles_string)
+        return smiles_string
+        # except:
+        #     self.marie_logger.error(
+        #         f"Could not recognise any target from the question: {question} from {__name__}.{self.find_cid.__name__}")
 
     def find_cid(self, mention):
         try:
@@ -78,21 +78,31 @@ class ChemicalNEL:
 if __name__ == '__main__':
     cn = ChemicalNEL(dataset_name="wikidata_numerical")
     START_TIME = time.time()
+
+    print("====================================================")
     mention = cn.get_mention("what is the mass of [I-].[I-].[I-].[I-].[Po]")
     rst = cn.find_cid(mention=mention)
     print(rst)
+    print("====================================================")
 
     mention = cn.get_mention("what is the mass of C6H6")
     rst = cn.find_cid(mention=mention)
     print(rst)
+    print("====================================================")
 
     mention = cn.get_mention("what is C6H6's smiles")
     rst = cn.find_cid(mention=mention)
     print(rst)
+    print("====================================================")
 
     mention = cn.get_mention("what is CC[CH2]'s inchi")
     rst = cn.find_cid(mention=mention)
     print(rst)
+    print("====================================================")
 
+    mention = cn.get_mention("what is the molecular weight of methane")
+    rst = cn.find_cid(mention=mention)
+    print(rst)
+    print("====================================================")
 
     print(time.time() - START_TIME)
