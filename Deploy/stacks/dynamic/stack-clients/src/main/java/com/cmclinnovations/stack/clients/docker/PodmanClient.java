@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.clients.docker;
 import java.net.URI;
 import java.util.Map;
 
+import com.cmclinnovations.swagger.podman.ApiClient;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.PodmanClientImpl;
 import com.github.dockerjava.transport.DockerHttpClient;
@@ -14,6 +15,10 @@ public class PodmanClient extends DockerClient {
 
     public PodmanClient(URI dockerUri) {
         super(dockerUri);
+    }
+
+    public ApiClient getPodmanClient() {
+        return getInternalClient().getPodmanClient();
     }
 
     @Override

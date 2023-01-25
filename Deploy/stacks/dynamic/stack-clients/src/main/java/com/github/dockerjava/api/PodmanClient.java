@@ -1,9 +1,12 @@
 package com.github.dockerjava.api;
 
+import com.cmclinnovations.swagger.podman.ApiClient;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.command.RemovePodCmd;
 
 public interface PodmanClient extends DockerClient {
+
+    public ApiClient getPodmanClient();
 
     /**
      * Command to list all pods.

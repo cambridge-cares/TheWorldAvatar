@@ -3,7 +3,9 @@ package com.github.dockerjava.core;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.URI;
 
+import com.cmclinnovations.swagger.podman.ApiClient;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.DockerClientDelegate;
 import com.github.dockerjava.api.PodmanClient;
@@ -12,6 +14,7 @@ import com.github.dockerjava.api.command.PodmanCmdExecFactory;
 import com.github.dockerjava.api.command.RemovePodCmd;
 import com.github.dockerjava.core.command.ListPodsCmdImpl;
 import com.github.dockerjava.core.command.RemovePodCmdImpl;
+import com.github.dockerjava.jaxrs.ApiClientExtension;
 import com.github.dockerjava.transport.DockerHttpClient;
 
 public class PodmanClientImpl extends DockerClientDelegate implements PodmanClient {
@@ -21,6 +24,9 @@ public class PodmanClientImpl extends DockerClientDelegate implements PodmanClie
     private final DockerClientConfig dockerClientConfig;
 
     PodmanCmdExecFactory podmanCmdExecFactory;
+
+    private final ApiClient apiClient = new ApiClientExtension(URI.create("unix:///var/run/docker.sock"))
+            .setBasePath("unix://localhost:2375/v4.0.0/");
 
     PodmanClientImpl(DockerClient baseClient, DockerClientConfig dockerClientConfig) {
         checkNotNull(dockerClientConfig, "config was not specified");
@@ -62,6 +68,11 @@ public class PodmanClientImpl extends DockerClientDelegate implements PodmanClie
     @Override
     protected DockerClient getDockerClient() {
         return baseClient;
+    }
+
+    @Override
+    public ApiClient getPodmanClient() {
+        return apiClient;
     }
 
     @Override
