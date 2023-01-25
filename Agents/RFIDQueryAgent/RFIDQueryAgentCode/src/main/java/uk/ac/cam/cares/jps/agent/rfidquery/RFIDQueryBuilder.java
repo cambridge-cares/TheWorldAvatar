@@ -15,12 +15,9 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
-
-import com.hp.hpl.jena.graph.Triple;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -94,7 +91,7 @@ public class RFIDQueryBuilder {
     private static final Iri hasElementNumber = PREFIX_ONTOKIN.iri("hasElementNumber");
     private static final Iri hasNumberOfElement = PREFIX_ONTOKIN.iri("hasNumberOfElement");
 
-    	/**
+    /**
      * Classes
      */ 
 	private static final Iri MolecularFormula = PREFIX_ONTOSPECIES.iri("MolecularFormula");
@@ -154,11 +151,9 @@ public class RFIDQueryBuilder {
     public String queryForQualityWithHasQualitativeValue(String dataIRIString) {
         String result = null;
         Variable quality = SparqlBuilder.var("quality");
-        iri(dataIRIString) ;
         SelectQuery query = Queries.SELECT();
         //create triple pattern
         TriplePattern queryPattern = quality.has(hasQualitativeValue, iri(dataIRIString));
-        //TriplePattern triple = GraphPatterns.tp(quality, hasQualitativeValue, iri(dataIRIString));
         query.prefix(PREFIX_ONTODEVICE).select(quality).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
