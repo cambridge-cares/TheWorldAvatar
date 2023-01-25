@@ -106,7 +106,7 @@ public class RFIDQueryAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("Need four arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints", e.getMessage());
+            Assert.assertEquals("Need at least three arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)", e.getMessage());
         }
     }
 

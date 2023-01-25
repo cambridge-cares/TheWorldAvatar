@@ -50,6 +50,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     public static final String KEY_DATAIRIS = "dataIRIs";
 	public static final String KEY_NUMOFHOURS = "hours";
 	public static final String KEY_SPECIES_PROPERTIES = "speciesProperties";
+	public static final String KEY_CONTAINSPECIES = "containSpecies";
     
     //set kbClient
     RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -66,7 +67,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String LOADCONFIGS_ERROR_MSG = "Could not load configs from the properties file!";
     private static final String GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG = "Unable to query for latest data and/or check RFID Status Threshold!";
-    private static final String ARGUMENT_MISMATCH_MSG = "Need four arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints";
+    private static final String ARGUMENT_MISMATCH_MSG = "Need at least three arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)";
     private static final String AGENT_ERROR_MSG = "The RFID Query Agent could not be constructed!";
 
     @Override
@@ -77,15 +78,20 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
-
-      if (validateInput(requestParams)) {
-        	LOGGER.info("Passing request to Agent..");
+		String[] args;
+		if (validateInput(requestParams)) {
+			LOGGER.info("Passing request to Agent..");
         	String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
         	String DataIRIs = requestParams.getString(KEY_DATAIRIS);
 			String numOfHours = requestParams.getString(KEY_NUMOFHOURS);
+			if (requestParams.has(KEY_SPECIES_PROPERTIES) && requestParams.has(KEY_CONTAINSPECIES)){
 			String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
-
-            String[] args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties};
+			String containSpecies = requestParams.getString(KEY_CONTAINSPECIES);
+            args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies};
+		}
+		else {
+			args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours};
+		}
 
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("message","POST request has been sent successfully.");
@@ -103,7 +109,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
       boolean validate = true;
 
       String timeseriesClientProperties;
-	  String speciesProperties;
       
       if (requestParams.isEmpty()) {
     	  validate = false;
@@ -118,14 +123,10 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			validate = requestParams.has(KEY_NUMOFHOURS);
 		}
 		if (validate == true) {
-			validate = requestParams.has(KEY_SPECIES_PROPERTIES);
-		}
-		if (validate == true) {
 			timeseriesClientProperties =  (requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
-			speciesProperties = (requestParams.getString(KEY_SPECIES_PROPERTIES));
 			if (System.getenv(timeseriesClientProperties) == null) {
 				validate = false;
-				LOGGER.info("Unable to find properties files!");
+				LOGGER.info("Unable to validate location of client.properties!");
 			}
 		}
 	}
@@ -133,8 +134,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     }
     
     public JSONObject initializeAgent(String[] args) {
-    	 // Ensure that there are four arguments provided
-        if (args.length != 4) {
+    	 // Ensure that there are at least three arguments provided
+        if (args.length < 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -205,7 +206,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 
 			LOGGER.info("exceedThreshold for " + dataIRI + " is " + exceedThreshold);
 
-			if (exceedThreshold == true){
+			if (exceedThreshold == true && args.length > 3 && args[4].contains("true")){
 				LOGGER.info("Beginning queries...");
 				//Create RFIDQueryBuilder
 				RFIDQueryBuilder builder ;
@@ -260,13 +261,19 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The number of element that this species " + speciesIRI + " has is " + numberOfElement);
 
 				LOGGER.info("Preparing to send email...");
+				agent.sendEmail(dataIRI, speciesIRI, timestamp);
+				LOGGER.info("Alert Email sent for " + dataIRI);
+				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
+
+			} else if (exceedThreshold == true) {
+				LOGGER.info("Preparing to send email...");
 				agent.sendEmail(dataIRI, "Potassium Nitrate", timestamp);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}
 		}
 		 return jsonMessage;
-	 }
+	}
 
 
 	/**
