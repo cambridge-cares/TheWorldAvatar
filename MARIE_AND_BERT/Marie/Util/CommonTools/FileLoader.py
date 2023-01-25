@@ -11,14 +11,17 @@ class FileLoader:
     File loader loads embedding files, index files and so on
     """
 
-    def __init__(self, full_dataset_dir, dataset_name):
+    def __init__(self, full_dataset_dir, dataset_name=None):
         self.marie_logger = MarieLogger()
         self.full_dataset_dir = full_dataset_dir
         self.dataset_name = dataset_name
         self.marie_logger.info(f"Loading files from {self.full_dataset_dir}")
 
-    def load_value_dict(self, dict_type):
-        value_dictionary_path = os.path.join(f"{self.full_dataset_dir}/{self.dataset_name}_value_dict.{dict_type}")
+    def load_value_dict(self, dict_type, file_name=None):
+        if file_name is None:
+            value_dictionary_path = os.path.join(f"{self.full_dataset_dir}/{self.dataset_name}_value_dict.{dict_type}")
+        else:
+            value_dictionary_path = os.path.join(f"{self.full_dataset_dir}/{file_name}")
         if dict_type == 'json':
             value_dictionary = json.loads(open(value_dictionary_path).read())
         else:
@@ -26,8 +29,12 @@ class FileLoader:
             value_dictionary = pickle.load(file)
         return value_dictionary
 
-    def load_all_triples(self):
-        triple_path = os.path.join(f'{self.full_dataset_dir}/{self.dataset_name}-train.txt')
+    def load_all_triples(self, full_dataset_dir =None, dataset_name=None):
+        if full_dataset_dir is None:
+            triple_path = os.path.join(f'{self.full_dataset_dir}/{self.dataset_name}-train.txt')
+        else:
+            triple_path = os.path.join(f'{full_dataset_dir}/{dataset_name}-train.txt')
+
         triples = open(triple_path).readlines()
         return triples
 

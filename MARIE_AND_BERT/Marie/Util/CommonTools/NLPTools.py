@@ -24,4 +24,7 @@ class NLPTools:
         return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}, tokenized_question
 
     def remove_head_entity(self, _question, _head_entity):
-        return _question.upper().replace(_head_entity.upper(), '').strip().lower()
+        try:
+            return _question.upper().replace(_head_entity.upper(), '').strip().lower()
+        except AttributeError:
+            return _question.strip().lower()
