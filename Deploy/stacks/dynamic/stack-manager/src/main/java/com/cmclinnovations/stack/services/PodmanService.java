@@ -23,7 +23,7 @@ import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
 import com.cmclinnovations.swagger.podman.model.IDResponse;
 import com.cmclinnovations.swagger.podman.model.ListContainer;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
-import com.cmclinnovations.swagger.podman.model.Mount;
+import com.cmclinnovations.swagger.podman.model.NamedVolume;
 import com.cmclinnovations.swagger.podman.model.Namespace;
 import com.cmclinnovations.swagger.podman.model.PerNetworkOptions;
 import com.cmclinnovations.swagger.podman.model.PodSpecGenerator;
@@ -41,6 +41,7 @@ import com.github.dockerjava.api.model.ContainerSpecConfig;
 import com.github.dockerjava.api.model.ContainerSpecFile;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.EndpointSpec;
+import com.github.dockerjava.api.model.MountType;
 import com.github.dockerjava.api.model.NetworkAttachmentConfig;
 import com.github.dockerjava.api.model.PortConfig;
 import com.github.dockerjava.api.model.PortConfigProtocol;
@@ -212,13 +213,30 @@ public class PodmanService extends DockerService {
         }
         List<com.github.dockerjava.api.model.Mount> dockerMounts = containerSpec.getMounts();
         if (null != dockerMounts) {
-            containerSpecGenerator.setMounts(dockerMounts.stream()
-                    .map(dockerMount -> new Mount()
-                            .source(dockerMount.getSource())
-                            .target(dockerMount.getTarget())
-                            .type(dockerMount.getType().name().toLowerCase())
-                            .readOnly(dockerMount.getReadOnly())
-                            .bindOptions(convertBindOptions(dockerMount.getBindOptions())))
+                /*
+                 * TODO: This is roughly how this should be done but there is an issue with the
+                 * Podman Swagger spec as described here
+                 * https://github.com/containers/podman/issues/13717
+                 * and here https://github.com/containers/podman/issues/13092
+                 * Implementing the required changes to the Swagger spec can be done later if
+                 * required.
+                 */
+                /*
+                 * containerSpecGenerator.setMounts(dockerMounts.stream()
+                 * .map(dockerMount -> new Mount()
+                 * .source(dockerMount.getSource())
+                 * .target(dockerMount.getTarget())
+                 * .type(dockerMount.getType().name().toLowerCase())
+                 * .readOnly(dockerMount.getReadOnly())
+                 * .bindOptions(convertBindOptions(dockerMount.getBindOptions())))
+                 * .collect(Collectors.toList()));
+                 */
+                // This is the temporary workaround but it only works for named volumes
+                containerSpecGenerator.setVolumes(dockerMounts.stream()
+                        .filter(dockerMount -> dockerMount.getType() == MountType.VOLUME)
+                        .map(dockerMount -> new NamedVolume()
+                                .name(dockerMount.getSource())
+                                .dest(dockerMount.getTarget()))
                     .collect(Collectors.toList()));
         }
             containerSpecGenerator.setLabels(containerSpec.getLabels());
