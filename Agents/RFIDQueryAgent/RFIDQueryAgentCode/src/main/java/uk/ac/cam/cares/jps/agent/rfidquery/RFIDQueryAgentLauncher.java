@@ -49,6 +49,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     public static final String KEY_TIMESERIES_CLIENTPROPERTIES = "timeSeriesClientProperties";
     public static final String KEY_DATAIRIS = "dataIRIs";
 	public static final String KEY_NUMOFHOURS = "hours";
+	public static final String KEY_SPECIES_PROPERTIES = "speciesProperties";
     
     //set kbClient
     RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -63,9 +64,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
      * Error messages
      */
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
-    private static final String LOADCONFIGS_ERROR_MSG = "Could not load RDB and SPARQL configs from the properties file!";
+    private static final String LOADCONFIGS_ERROR_MSG = "Could not load configs from the properties file!";
     private static final String GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG = "Unable to query for latest data and/or check RFID Status Threshold!";
-    private static final String ARGUMENT_MISMATCH_MSG = "Need three arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours";
+    private static final String ARGUMENT_MISMATCH_MSG = "Need four arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints";
     private static final String AGENT_ERROR_MSG = "The RFID Query Agent could not be constructed!";
 
     @Override
@@ -82,8 +83,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
         	String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
         	String DataIRIs = requestParams.getString(KEY_DATAIRIS);
 			String numOfHours = requestParams.getString(KEY_NUMOFHOURS);
+			String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
 
-            String[] args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours};
+            String[] args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties};
 
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("message","POST request has been sent successfully.");
@@ -101,6 +103,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
       boolean validate = true;
 
       String timeseriesClientProperties;
+	  String speciesProperties;
       
       if (requestParams.isEmpty()) {
     	  validate = false;
@@ -115,10 +118,14 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			validate = requestParams.has(KEY_NUMOFHOURS);
 		}
 		if (validate == true) {
+			validate = requestParams.has(KEY_SPECIES_PROPERTIES);
+		}
+		if (validate == true) {
 			timeseriesClientProperties =  (requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
+			speciesProperties = (requestParams.getString(KEY_SPECIES_PROPERTIES));
 			if (System.getenv(timeseriesClientProperties) == null) {
 				validate = false;
-				LOGGER.info("Unable to find properties file!");
+				LOGGER.info("Unable to find properties files!");
 			}
 		}
 	}
@@ -126,8 +133,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     }
     
     public JSONObject initializeAgent(String[] args) {
-    	 // Ensure that there are three arguments provided
-        if (args.length != 3) {
+    	 // Ensure that there are four arguments provided
+        if (args.length != 4) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
@@ -199,6 +206,59 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			LOGGER.info("exceedThreshold for " + dataIRI + " is " + exceedThreshold);
 
 			if (exceedThreshold == true){
+				LOGGER.info("Beginning queries...");
+				//Create RFIDQueryBuilder
+				RFIDQueryBuilder builder ;
+				try {
+					builder = new RFIDQueryBuilder(args[0], args[3]);
+				} catch (IOException e) {
+					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+				}
+
+				//query for Quality IRI that ontodevice:hasQualitativeValue <data IRI>
+				String quality = builder.queryForQualityWithHasQualitativeValue(dataIRI);
+				LOGGER.info("The subject retrieved is " + quality);
+
+				//query for tag IRI with quality IRI via ontodevice:isPropertyOf
+				String tagIRI = builder.queryForTagWithQualityIRI(quality);
+				LOGGER.info("The tag IRI retrieved is " + tagIRI);
+
+				//query for bottle IRI with tag IRI via ontodevice:isAttachedTo
+				String bottleIRI = builder.queryForBottleWithIsAttachedTo(tagIRI);
+				LOGGER.info("The bottle IRI retrieved is " + bottleIRI);
+
+				//query for chemical IRI with bottle IRI via ontolab:isFilledWith
+				String chemicalIRI = builder.queryForChemicalWithIsFilledWith(bottleIRI);
+				LOGGER.info("The chemical IRI retrieved is " + chemicalIRI);
+
+				//query for material IRI with chemical IRI via ontocape_cps_behavior:refersToMaterial
+				String materialIRI = builder.queryForMaterialWithRefersToMaterial(chemicalIRI);
+				LOGGER.info("The material IRI retrieved is " + materialIRI);
+
+				//query for phase IRI with material IRI via ontocape_material:thermodynamicBehavior
+				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(materialIRI);
+				LOGGER.info("The phase IRI retrieved is " + phaseIRI);
+
+				//query for phase component IRI with phase IRI via ontocape_system:isComposedOfSubsystem
+				String phaseComponentIRI = builder.queryForPhaseComponentWithIsComposedOfSubsystem(phaseIRI);
+				LOGGER.info("The phase component IRI retrieved is " + phaseComponentIRI);
+
+				//query for species IRI with phase component IRI via ontocape_phase_system:representsOccurenceOf
+				String speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
+				LOGGER.info("The species IRI retrieved is " + speciesIRI);
+
+				//query for molecular formula IRI with species IRI via ontospecies:hasMolecularFormula
+				String molecularFormulaIRI = builder.queryForMolecularFormulaWithHasMolecularFormula(speciesIRI);
+				LOGGER.info("The molecular formula IRI retrieved is " + molecularFormulaIRI);
+
+				//query for element number IRI with molecular formula IRI via ontokin:hasElementNumber
+				String elementNumberIRI = builder.queryForElementNumberViaHasElementNumber(molecularFormulaIRI);
+				LOGGER.info("The element number IRI retrieved is " + elementNumberIRI);
+
+				//query for number of elements with element number IRI via ontokin:hasNumberOfElement
+				String numberOfElement = builder.queryForNumberViaHasNumberOfElement(elementNumberIRI);
+				LOGGER.info("The number of element that this species " + speciesIRI + " has is " + numberOfElement);
+
 				LOGGER.info("Preparing to send email...");
 				agent.sendEmail(dataIRI, "Potassium Nitrate", timestamp);
 				LOGGER.info("Alert Email sent for " + dataIRI);

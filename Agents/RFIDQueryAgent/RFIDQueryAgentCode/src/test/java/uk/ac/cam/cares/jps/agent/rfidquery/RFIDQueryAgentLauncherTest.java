@@ -44,7 +44,7 @@ public class RFIDQueryAgentLauncherTest {
         // Paths to the three different property files
        
         String clientPropertiesFile = clientPropertyFile.getCanonicalPath();
-        args = new String[] {clientPropertiesFile, "some_data_iri", "10"};
+        args = new String[] {clientPropertiesFile, "some_data_iri", "10", clientPropertiesFile};
     }
     
     @Test
@@ -63,6 +63,7 @@ public class RFIDQueryAgentLauncherTest {
         testRequestParams.put("dataIR", "some_data_IRI");
         testRequestParams.put("hours", "10");
         testRequestParams.put("timeSeriesClientProperties", "TEST_CLIENTPROPERTIES");
+        testRequestParams.put("speciesProperties","TEST_CLIENTPROPERTIES");
         try {
         testMessage = testLauncher.processRequestParameters(testRequestParams);
         }
@@ -77,7 +78,7 @@ public class RFIDQueryAgentLauncherTest {
         testRequestParams.put("dataIRIs", "some_data_IRI");
         testRequestParams.put("hours", "10");
         testRequestParams.put("timeSeriesClientProperties", "TEST_CLIENTPROPERT");
-        
+        testRequestParams.put("speciesProperties", "TEST_CLIENTPROPERTIES");
         String folderName = "configs";
         File Folder = folder.newFolder(folderName);
 
@@ -105,7 +106,7 @@ public class RFIDQueryAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("Need three arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours", e.getMessage());
+            Assert.assertEquals("Need four arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints", e.getMessage());
         }
     }
 
