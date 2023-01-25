@@ -26,8 +26,14 @@ WORKDIR /app
 # Copy in the properties file
 COPY ./config/client.properties /root/client.properties
 
+# Copy in the second properties file
+COPY ./config/species.properties /root/species.properties
+
 # Set the required environment variable for ts client properties
 ENV CLIENT_PROPERTIES="/root/client.properties"
+
+# Set the required environment variable for species properties
+ENV SPECIES_PROPERTIES="/root/species.properties"
 
 # Set the environment variable that points to where the email agent is located at
 ENV EMAIL_AGENT_URL="http://host.docker.internal:8099/email_agent"
