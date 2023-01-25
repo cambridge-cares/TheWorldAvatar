@@ -1,7 +1,9 @@
 package com.cmclinnovations.stack.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +20,7 @@ import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.swagger.podman.ApiException;
 import com.cmclinnovations.swagger.podman.api.ContainersApi;
 import com.cmclinnovations.swagger.podman.api.PodsApi;
+import com.cmclinnovations.swagger.podman.api.SecretsApi;
 import com.cmclinnovations.swagger.podman.model.BindOptions;
 import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
 import com.cmclinnovations.swagger.podman.model.IDResponse;
@@ -29,6 +32,7 @@ import com.cmclinnovations.swagger.podman.model.PerNetworkOptions;
 import com.cmclinnovations.swagger.podman.model.PodSpecGenerator;
 import com.cmclinnovations.swagger.podman.model.PortMapping;
 import com.cmclinnovations.swagger.podman.model.Secret;
+import com.cmclinnovations.swagger.podman.model.SecretInfoReport;
 import com.cmclinnovations.swagger.podman.model.SpecGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +57,8 @@ public class PodmanService extends DockerService {
 
     public PodmanService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
+
+        addStackSecrets();
     }
 
     @Override
@@ -68,11 +74,46 @@ public class PodmanService extends DockerService {
     @Override
     protected void initialise(String stackName) {
 
-        addStackSecrets();
-
         // addStackConfigs();
 
         createNetwork(stackName);
+    }
+
+    @Override
+    public void addStackSecrets() {
+        SecretsApi secretsApi = new SecretsApi(getClient().getPodmanClient());
+        try {
+            String stackName = StackClient.getStackName();
+            List<SecretInfoReport> existingStackSecrets = secretsApi
+                    .secretListLibpod(URLEncoder.encode("{\"name\":[\"^" + stackName + "_\"]}"));
+
+            for (File secretFile : Path.of("/run/secrets").toFile()
+                    .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
+                try (Stream<String> lines = Files.lines(secretFile.toPath())) {
+                    String data = lines.collect(Collectors.joining("\n"));
+                    String secretName = secretFile.getName();
+
+                    String fullSecretName = StackClient.prependStackName(secretName);
+                    Optional<SecretInfoReport> currentSecret = existingStackSecrets.stream()
+                            .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
+                            .findFirst();
+                    if (currentSecret.isEmpty()) {
+                        getClient().addSecret(secretName, data);
+                    } else {
+                        existingStackSecrets.remove(currentSecret.get());
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException("Failed to load secret file '" + secretFile.getAbsolutePath() + "'.",
+                            ex);
+                }
+            }
+
+            for (SecretInfoReport oldSecret : existingStackSecrets) {
+                secretsApi.secretDeleteLibpod(oldSecret.getID(), null);
+            }
+        } catch (ApiException ex) {
+            throw new RuntimeException("Failed to update secrets.", ex);
+        }
     }
 
     private String getPodName(String containerName) {
