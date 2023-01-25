@@ -37,7 +37,7 @@ class CrossGraphDataset(torch.utils.data.Dataset):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(os.path.join(DATA_DIR, 'CrossGraph', 'xxx.tsv'), sep='\t')
+    df = pd.read_csv(os.path.join(DATA_DIR, 'CrossGraph', 'cross_graph_alignment_training.tsv'), sep='\t')
     df_train, df_test = np.split(df.sample(frac=1, random_state=11), [int(.8 * len(df))])
 
     dataset_train = CrossGraphDataset(df_train)

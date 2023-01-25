@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # starting_lr = 1e-20  # this is probably the best lr
     starting_lr = 1e-5
     current_lr = starting_lr
-    my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/ontospecies")
+    my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/wikidata_numerical")
     my_trainer.one_train_iteration(current_lr,
                                    model_name='bert_ontospecies',
                                    resume_training=False, batch_size=32)

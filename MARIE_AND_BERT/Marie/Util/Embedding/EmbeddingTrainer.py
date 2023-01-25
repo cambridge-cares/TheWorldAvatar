@@ -17,7 +17,7 @@ class Trainer:
     def __init__(self, model, dataset_name: str, epochs: int = 100, learning_rate: float = 0.01, gamma: float = 0.9,
                  data_folder='ontocompchem_calculation', save_model: bool = False, complex: bool = True,
                  pointwise: bool = False,
-                 batch_size: int = 64, test_step: int = 50):
+                 batch_size: int = 64, test_step: int = 200, neg_rate = 100, scheduler_step = 50):
         """
         :param model:
         :param dataset_name:
@@ -33,6 +33,7 @@ class Trainer:
         self.dataset_name = dataset_name
         self.batch_size = batch_size
         self.learning_rate = learning_rate
+        self.scheduler_step = scheduler_step
         self.gamma = gamma
         self.step = 0
         self.save_model = save_model
@@ -51,10 +52,11 @@ class Trainer:
             df_test = pd.read_csv(os.path.join(DATA_DIR,
                                                f'{data_folder}/{self.dataset_name}-test.txt'), sep="\t", header=None)
 
-            # df_test = df_test.sample(frac=0.05)
-
-            self.train_set = ComplexDataset(df_train, data_folder=data_folder, dataset_name=self.dataset_name)
-            self.test_set = ComplexDataset(df_test, data_folder=data_folder, dataset_name=self.dataset_name)
+            # df_train = df_train.sample(frac=0.1)
+            # df_test = df_test.sample(frac=0.01)
+            # df_train =
+            self.train_set = ComplexDataset(df_train, data_folder=data_folder, dataset_name=self.dataset_name, mode="train", neg_rate = neg_rate)
+            self.test_set = ComplexDataset(df_test, data_folder=data_folder, dataset_name=self.dataset_name, mode="test")
         else:
             self.train_set = Dataset(train_triplets, data_folder=data_folder)
             self.test_set = Dataset(test_triplets, data_folder=data_folder)
@@ -63,7 +65,7 @@ class Trainer:
         self.e_num = self.train_set.ent_num
         self.r_num = self.train_set.rel_num
         self.model = model
-        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, self.data_folder),
@@ -90,10 +92,10 @@ class Trainer:
             print('total_loss_train: ', total_loss_train)
             print('current learning rate', self.scheduler.get_lr())
 
-            if (epoch_num + 1) % self.test_step == 0:
+            if (epoch_num + 1) % self.scheduler_step == 0:
                 self.scheduler.step()
 
-            if epoch_num % self.test_step == 0:
+            if (epoch_num + 1) % self.test_step == 0:
                 if self.pointwise:
                     self.evaluate_pointwise(epoch=epoch_num)
                 else:
@@ -101,10 +103,11 @@ class Trainer:
                 if self.save_model:
                     self.export_embeddings()
 
-            if self.pointwise:
-                self.evaluate_pointwise(epoch=epoch_num)
+        # if self.pointwise:
+            # self.evaluate_pointwise(epoch=epoch_num)
 
-    def k_hit_evaluation(self, largest=False, global_compare=True):
+
+    def k_hit_evaluation(self, largest=True, global_compare=False):
         total_counter = 0
         total_hit_1 = 0
         total_hit_5 = 0
@@ -127,8 +130,7 @@ class Trainer:
                     head_tensor = head.repeat(self.e_num)
                     rel_tensor = rel.repeat(self.e_num)
                     tail_all = torch.arange(0, self.e_num).type(torch.LongTensor)
-                    true_idx = tail_true
-                    tail_true_idx = true_idx
+                    tail_true_idx = tail_all.tolist().index(tail_true.item())
                 else:
                     tail_all = self.hop_extractor.extract_neighbour_from_idx(head.item())
                     if tail_true.item() not in tail_all:
@@ -137,28 +139,38 @@ class Trainer:
                     true_idx = tail_true_idx
                     head_tensor = head.repeat(len(tail_all))
                     rel_tensor = rel.repeat(len(tail_all))
+                    tail_all = torch.LongTensor(tail_all)
 
+                tail_filtered = []
+                for tail in tail_all:
+                    # find the
+                    triple_str = f"{head.item()}_{rel.item()}_{tail}"
+                    if not self.hop_extractor.check_triple_existence(triple_str):
+                        tail_filtered.append(tail)
+                tail_filtered.append(tail_true.item())
+                tail_true_idx_filterd = tail_filtered.index(tail_true.item())
+                tail_all = torch.LongTensor(tail_all)
+                head_filtered = head.repeat(len(tail_filtered))
+                rel_filtered = rel.repeat(len(tail_filtered))
+                tail_filtered = torch.LongTensor(tail_filtered)
                 new_triplets = torch.stack((head_tensor, rel_tensor, tail_all)).type(torch.LongTensor)
                 prediction = self.model.predict(new_triplets)
-                total_counter += 1
-                # TODO: use only one hit a k function, receiving a list of k
-                k_list = [1, 5, 10]
 
-                hit_1, hit_5, hit_10 = self.hit_at_k(prediction, true_idx, k_list, largest=largest)
-                total_hit_1 += hit_1
-                total_hit_5 += hit_5
-                total_hit_10 += hit_10
+                filtered_triplets = torch.stack((head_filtered, rel_filtered, tail_filtered)).type(torch.LongTensor)
+                prediction_filtered = self.model.predict(filtered_triplets)
+
+                total_counter += 1
+                total_hit_1 += self.hit_at_k(prediction, tail_true_idx, k=1, largest=largest)
+                total_hit_5 += self.hit_at_k(prediction, tail_true_idx, k=5, largest=largest)
+                total_hit_10 += self.hit_at_k(prediction, tail_true_idx, k=10, largest=largest)
+
+                filtered_total_hit_1 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=1, largest=largest)
+                filtered_total_hit_5 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=5, largest=largest)
+                filtered_total_hit_10 += self.hit_at_k(prediction_filtered, tail_true_idx_filterd, k=10,
+                                                       largest=largest)
 
                 true_rank += self.get_rank(prediction, tail_true_idx, largest=largest)
-                if global_compare:
-                    f_hit_1, f_hit_5, f_hit_10 = self.hit_a_k_filtered(predictions=prediction,
-                                                                       ground_truth_idx=true_idx.item(), k_list=k_list,
-                                                                       head=head.item(), rel=rel.item(),
-                                                                       all_tails=tail_all, largest=largest)
-
-                    filtered_total_hit_1 += f_hit_1
-                    filtered_total_hit_5 += f_hit_5
-                    filtered_total_hit_10 += f_hit_10
+                f_true_rank += self.get_rank(prediction_filtered, tail_true_idx_filterd, largest=largest)
 
         mrr = true_rank / total_counter
         f_mrr = f_true_rank / total_counter
@@ -190,35 +202,13 @@ class Trainer:
         rank = 1 / (indices_top_k.tolist().index(ground_truth_idx) + 1)
         return rank
 
-    def hit_a_k_filtered(self, predictions, ground_truth_idx, k_list, head, rel, all_tails, largest=False):
-        k = len(all_tails)
-        _, all_indices = torch.topk(predictions, k=k, largest=largest)
-        all_indices = all_indices.tolist()
-        for idx, tail in enumerate(all_tails):
-            triple_str = f"{head}_{rel}_{tail}"
-            exist = self.hop_extractor.check_triple_existence(triple_str=triple_str)
-            if exist and idx != ground_truth_idx:
-                all_indices.remove(idx)
-
-        rsts = []
-        pred_index = all_indices.index(ground_truth_idx)
-        for k in k_list:
-            if pred_index <= (k - 1):
-                rsts.append(1)
-            else:
-                rsts.append(0)
-        return rsts
-
-    def hit_at_k(self, predictions, ground_truth_idx, k_list, largest=False):
-        rsts = []
-        for k in k_list:
-            k = min(k, len(predictions))
-            _, indices_top_k = torch.topk(predictions, k=k, largest=largest)
-            if ground_truth_idx in indices_top_k:
-                rsts.append(1)
-            else:
-                rsts.append(0)
-        return rsts
+    def hit_at_k(self, predictions, ground_truth_idx, k: int = 10, largest=False):
+        k = min(k, len(predictions))
+        _, indices_top_k = torch.topk(predictions, k=k, largest=largest)
+        if ground_truth_idx in indices_top_k:
+            return 1
+        else:
+            return 0
 
     def export_embeddings(self):
         if self.complex:
@@ -259,12 +249,13 @@ class Trainer:
             print(f'average prediction accuracy for positive {average_prediction_pos}')
             print(f'average prediction accuracy for negative {average_prediction_neg}')
 
-            row = self.k_hit_evaluation(largest=True, global_compare=True)
+            row = self.k_hit_evaluation(largest=True, global_compare=False)
             row.append(epoch)
             self.training_records.append(row)
             df = pd.DataFrame(self.training_records)
             df.columns = ['hit_1', 'hit_5', 'hit_10', 'f_hit_1', 'f_hit_5', 'f_hit_10', 'mrr', 'f_mrr', 'epoch']
             df.to_csv(os.path.join(DATA_DIR, self.data_folder, 'training_records.csv'), sep=',')
+
 
     def evaluate_pairwise(self):
         total_loss_val = 0
