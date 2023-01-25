@@ -95,7 +95,7 @@ public class RFIDQueryAgentIntegrationTest {
             // Start postgreSQL container
             postgres.start();
         } catch (Exception e) {
-            throw new AssertionError("TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
+            throw new AssertionError("IntegrationTest: Docker container startup failed. Please try running tests again");
         }
         IRIs = new ArrayList<>();
         IRIs.add(examplePrefix+key);
