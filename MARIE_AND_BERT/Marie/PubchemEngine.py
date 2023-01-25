@@ -15,5 +15,5 @@ class PubChemQAEngine(QAEngine):
 if __name__ == "__main__":
     my_engine = PubChemQAEngine(dataset_dir="CrossGraph/pubchem", dataset_name="pubchem", embedding="others",
                                 dict_type="pkl")
-    rst = my_engine.run("what is ch2o's smiles")
+    rst = my_engine.run("how many heavy atoms are in C9H11N5O5")
     print(rst)

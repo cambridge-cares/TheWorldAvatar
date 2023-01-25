@@ -48,27 +48,13 @@ class QAEngine:
         candidate_entities = torch.LongTensor(candidate_entities).to(self.device)
         self.marie_logger.info(f" - Candidate entities: {candidate_entities}")
         repeat_num = len(candidate_entities)
-        tokenized_question_batch = self.nlp.tokenize_question(question, repeat_num)
+        tokenized_question_batch, _ = self.nlp.tokenize_question(question, repeat_num)
         self.marie_logger.info(f" - Question tokenized {question}")
         head_entity_batch = torch.LongTensor([head_entity]).repeat(repeat_num).to(self.device)
         self.marie_logger.info(f" - Head entity index {head_entity}")
         prediction_batch = {'question': tokenized_question_batch, 'e_h': head_entity_batch, 'e_t': candidate_entities}
         self.marie_logger.info(f" - Prediction batch is prepared")
         return prediction_batch
-
-    # def tokenize_question(self, question, repeat_num):
-    #     """
-    #     :param question: question in text
-    #     :param repeat_num:
-    #     :return:
-    #     """
-    #     tokenized_question = self.nlp.tokenizer(question,
-    #                                         padding='max_length', max_length=self.max_length, truncation=True,
-    #                                         return_tensors="pt")
-    #     attention_mask, input_ids = tokenized_question['attention_mask'], tokenized_question['input_ids']
-    #     attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
-    #     input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
-    #     return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
 
     def find_answers(self, question: str, head_entity: str, head_name: str, k=5):
         """
@@ -124,14 +110,14 @@ class QAEngine:
             result_list.append(row)
         return result_list
 
-    def run(self, question, head=None, mention=None, test=False):
+    def run(self, question, head=None, mention=None):
         """
         :param mention:
         :param head: directly give a head for testing and evaluation purpose.
         :param question:
         :return:
         """
-        if test:
+        if mention is None:
             mention = self.chemical_nel.get_mention(question=question)
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
