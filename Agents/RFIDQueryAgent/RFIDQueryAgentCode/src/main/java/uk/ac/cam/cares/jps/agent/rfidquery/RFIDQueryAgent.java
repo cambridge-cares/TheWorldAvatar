@@ -11,8 +11,6 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
 import java.util.TimeZone;
-
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -190,19 +188,35 @@ public class RFIDQueryAgent{
     }
 
     /**
-     * @param tagID RFID tag ID number that is usually append at the end of the data IRI
-     * @param chemicalSpeciesName Name of the chemical species that is stored in the tagged bottle
+     * @param tagID tag status IRI
+     * @param speciesLabels The JSONObject containing the labels of the chemical
      * @param latestTimeStamp latest timestamp value
      */
-    public void sendEmail(String tagID, String chemicalSpeciesName, String latestTimeStamp) {
-        try {
-            EmailSender sender = new EmailSender();
-            String emailMessages;
-            emailMessages = "The bottle with the following information has been removed since " + latestTimeStamp.toString() + 
-            ". The bottle has the following tag ID " + tagID + " and it is storing " + chemicalSpeciesName + ". This chemical species has the following information: ";
-            sender.sendEmail("Alert!", emailMessages);
-        } catch (Exception e) {
-            throw new JPSRuntimeException("Unable to send out alert email!");
+    public void sendEmail(String tagID, JSONObject speciesLabels, String latestTimeStamp) {
+        if (speciesLabels != null) {
+            try {
+                EmailSender sender = new EmailSender();
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following information: \n" + "\n Labels: { ";
+                for (int i=0; i <speciesLabels.length(); i++) {
+                    LOGGER.info(speciesLabels.get("label_"+i));
+                    emailMessages = emailMessages + speciesLabels.get("label_"+i) + " , ";
+                    LOGGER.info("The concated message is " + emailMessages);
+                }
+                emailMessages = emailMessages.substring(0, emailMessages.lastIndexOf(" , ")) + " }. ";
+                LOGGER.info("The email message is " + emailMessages);
+                sender.sendEmail("Alert!", emailMessages);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
+        } else {
+            try {
+                EmailSender sender = new EmailSender();
+                String emailMessages;
+                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following tag ID " + tagID + " .\n";
+                sender.sendEmail("Alert!", emailMessages);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
         }
     }
 }
