@@ -25,7 +25,7 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copies all files in config directory to destination
-COPY ./SewageNetworkAgent/src/test/resources. /root/
+COPY ./SewageNetworkAgent/src/test/resources/. /root/
 
 # Set the required environment variables
 ENV HGDATA0="/root/HG_instances_0.csv"
