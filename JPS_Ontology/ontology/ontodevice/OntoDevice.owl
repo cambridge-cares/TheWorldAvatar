@@ -9,7 +9,7 @@
      xmlns:OntoDevice="https://www.theworldavatar.com/kg/ontodevice/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 January 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 January 2023</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
@@ -700,6 +700,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Noise -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Noise">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sound, especially one that is loud or unpleasant or that causes disturbance. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Noise</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/OilMeter -->
 
 
@@ -1019,6 +1031,17 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries">
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TimeSeries</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sound pressure level</rdfs:label>
     </owl:Class>
 </rdf:RDF>
 

@@ -51,6 +51,8 @@ Status,Class,Quality,IS-A,,,,The current state or situation of something.,https:
 InOutStatus,Class,Status,IS-A,,,,The current state of something on whether it is inside or outside of something else like a location.,https://www.theworldavatar.com/kg/ontodevice/,In out status
 OnOffStatus,Class,Status,IS-A,,,,The current state of something on whether it is turned on or off at the moment.,https://www.theworldavatar.com/kg/ontodevice/,On off status
 PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
+Noise,Class,https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel,IS-A,,,,"A sound, especially one that is loud or unpleasant or that causes disturbance. ",https://www.theworldavatar.com/kg/ontodevice/,Noise
+https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,https://www.theworldavatar.com/kg/ontouom/,Sound pressure level
 http://www.ontology-of-units-of-measure.org/resource/om-2/Length,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Length
 http://www.ontology-of-units-of-measure.org/resource/om-2/Height,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Height
 http://www.ontology-of-units-of-measure.org/resource/om-2/Width,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Width
