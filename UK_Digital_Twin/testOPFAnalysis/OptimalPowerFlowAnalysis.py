@@ -655,6 +655,8 @@ class OptimalPowerFlowAnalysis:
                     numOfSMRUnit = (index % self.maxmumSMRUnitAtOneSite) + 1
                     ## vibrate the site location from the original site a bit
                     latlon = [float(self.retrofitListBeforeSelection[s]["LatLon"][0]) + 0.004, float(self.retrofitListBeforeSelection[s]["LatLon"][1]) + 0.004]
+                    ## the LA code founder flag
+                    ifFoundLACode = False
                     ## Look for the small area code and reginal area code for each SMR site
                     for demanding in self.demandingAreaList:
                         Area_LACode = str(demanding['Area_LACode'])
@@ -695,7 +697,58 @@ class OptimalPowerFlowAnalysis:
                             'RegionLACode': official_region,
                             'SmallAreaLACode': Area_LACode}
                             SMRArrangement.append(SMRSite)
+                            ifFoundLACode = True
                             break
+                    if not ifFoundLACode:
+                        distanceList = []
+                        smallAreaCodeList = []
+                        regionalAreaCodeList = [] 
+                        for demanding in self.demandingAreaList:
+                            Area_LACode = str(demanding['Area_LACode']) 
+                            if 'Official_region' in demanding.keys():
+                                official_region  = demanding['Official_region']
+                            else:
+                                if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
+                                    official_region = "E12000008"
+                                elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
+                                    official_region = "E12000006"
+                                elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
+                                    official_region = "E12000009" 
+                                elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                    continue
+                                else:
+                                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                demanding['Official_region'] = official_region 
+                            
+                            if 'Boundary' in demanding.keys():
+                                boundary = demanding['Boundary']
+                            else:
+                                boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                                demanding['Boundary'] = boundary
+
+                            lon = boundary.centroid.x
+                            lat = boundary.centroid.y
+                                
+                            distance = DistanceBasedOnGPSLocation([latlon[0], latlon[1], lat, lon])
+                            distanceList.append(distance)
+                            smallAreaCodeList.append(Area_LACode)
+                            regionalAreaCodeList.append(official_region)
+                        minDistanceIndex = distanceList.index(min(distanceList))
+                        ## initialise the SMR generator with the atttributes
+                        SMRSite = {'PowerGenerator': None, 
+                        'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
+                        'Capacity': numOfSMRUnit * self.SMRCapability, 
+                        'LatLon': latlon,
+                        'fuelOrGenType': 'SMR', 
+                        'annualOperatingHours': 0, 
+                        'CO2EmissionFactor': 0.0, 
+                        'place': None,
+                        'NumberOfSMRUnits': numOfSMRUnit,
+                        'RegionLACode': regionalAreaCodeList[minDistanceIndex],
+                        'SmallAreaLACode': smallAreaCodeList[minDistanceIndex]}
+                        SMRArrangement.append(SMRSite)
+                        ifFoundLACode = True
                 if len(SMRArrangement) != len(indexListOfResults_EachWeight):
                     raiseExceptions('The SmallAreaLACode and RegionLACode are not found for some of the sleceted SMR sites, please check the SMR site list and its lat-lon location.')
                 self.SMRList.append(SMRArrangement) ## The length of thre SMR list is equal to the number of the SMR sites, not the number of the SMR to be introduced to the system 
@@ -3547,27 +3600,27 @@ if __name__ == '__main__':
     ## TODO: stop generating the JSON files
     generateVisualisationJSON = True
    
-    pop_size = 1000
-    n_offsprings = 1000
-    numberOfGenerations = 400
+    # pop_size = 1000
+    # n_offsprings = 1000
+    # numberOfGenerations = 400
 # ## TODO: for testing 
-    # pop_size = 500
-    # n_offsprings = 100
-    # numberOfGenerations = 100
+    pop_size = 500
+    n_offsprings = 100
+    numberOfGenerations = 100
 
 ## TODO: change the picked weight 
     pickedWeight = 0.9
 
-    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
-    weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
-    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    # NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    # NumberOfSMRUnitList = [5] 
-    # weighterList = [0.5]
-    # CarbonTaxForOPFList = [60]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    NumberOfSMRUnitList = [25] 
+    weighterList = [0.5]
+    CarbonTaxForOPFList = [60]
+    weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ifReadLocalResults = False
 
