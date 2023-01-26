@@ -91,6 +91,7 @@ public class HeatNetworkInputAgent {
 
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(HeatNetworkInputAgentLauncher.class);
+    private static String sparqlendpoint;
     
     
     // For TS IRI
@@ -112,8 +113,9 @@ public class HeatNetworkInputAgent {
     public static String MHKWTempRuecklauf="";
 
     // The instantiation of static data
-    public void dataInstantiation() {
+    public void dataInstantiation(String endpoint) {
 
+    	sparqlendpoint = endpoint;
         String staticData = System.getenv("CSVPATH");
         String[] numericValue = ReadColInput(1,staticData,",");
 
@@ -153,7 +155,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "Consumer"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "Consumer"))
                         .addInsert(NodeFactory.createURI(KB + "HeatDemand"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatDemand"));
         UpdateRequest Consumer_ur = Consumer_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", Consumer_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, Consumer_ur.toString());
        
 
         // For the Heating Network part
@@ -173,7 +175,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HeatingNetwork"), NodeFactory.createURI(OHN + "hasMinFlowRate"), NodeFactory.createURI(KB + "VolumetricFlowRate"))
                         .addInsert(NodeFactory.createURI(KB + "VolumetricFlowRate"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_VFR));
         UpdateRequest HeatingNetwork_ur = HeatingNetwork_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", HeatingNetwork_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, HeatingNetwork_ur.toString());
         omHasValueNonTS("VolumetricFlowRate", "CubicMeterPerHour", Value_VolumetricFlowRate);
 
 
@@ -213,7 +215,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE))
                         .addInsert(NodeFactory.createURI(KB + "DownEfW" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE));
         UpdateRequest GridConnection_ur = GridConnection_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", GridConnection_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, GridConnection_ur.toString());
 
 
         // For the HeatProvider part
@@ -228,7 +230,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OHN + "hasDownstreamGridConnection"), NodeFactory.createURI(KB + "GridConnectionDownMunicipal"))
                         .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(OHN + "hasDownstreamGridConnection"), NodeFactory.createURI(KB + "GridConnectionDownEfW"));
         UpdateRequest HeatProvider_ur = HeatProvider_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", HeatProvider_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, HeatProvider_ur.toString());
 
 
         // For the MunicipalUtility part
@@ -255,7 +257,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "MunicipalUtilityCost"))
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtilityCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CostInTimeInterval"));
         UpdateRequest MunicipalUtility_ur = MunicipalUtility_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", MunicipalUtility_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, MunicipalUtility_ur.toString());
 
 
         // For HeatGenerator Part
@@ -277,7 +279,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "MaxPower" + "IncinerationPlant"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
                         .addInsert(NodeFactory.createURI(KB + "MinPower" + "IncinerationPlant"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER));
         UpdateRequest IncinerationPlant_ur = IncinerationPlant_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", IncinerationPlant_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, IncinerationPlant_ur.toString());
 
 
         // For GasTurbine part
@@ -294,7 +296,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OC_hasRevenue), NodeFactory.createURI(KB + "CoGenRevenueInTimeInterval"))
                         .addInsert(NodeFactory.createURI(KB + "CoGenRevenueInTimeInterval"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CoGenRevenueInTimeInterval"));
         UpdateRequest GasTurbine_ur = GasTurbine_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", GasTurbine_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, GasTurbine_ur.toString());
         omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "MegaWatt", Value_RatedElectricalPower);
         omHasValueNonTS("ThermalLoad" + "HeatGeneratorGT", "MegaWatt", Value_MinimumThermalLoad);
         omHasValueNonTS("IdleTime" + "HeatGeneratorGT", "Hour", Value_MinimumIdleTime);
@@ -326,7 +328,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "CumulativeEnergyCap_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_Energy))
                         .addInsert(NodeFactory.createURI(KB + "CumulativeEnergyCap_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_Energy));
         UpdateRequest Contract_ur = Contract_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", Contract_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, Contract_ur.toString());
         omHasValueNonTS("CumulativeEnergyCap_1", "GigaWattHourPerYear", Value_TierOneCap);
         omHasValueNonTS("CumulativeEnergyCap_2", "GigaWattHourPerYear", Value_TierTwoCap);
         omHasValueNonTS("UnitPrice_1", "EuroPerMegaWattHour", Value_TierOneUnitPrice);
@@ -345,7 +347,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsSchoolVacation"))
                         .addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(EMS + "AirTemperature"));
         UpdateRequest CalendarEffect_ur = CalendarEffect_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", CalendarEffect_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, CalendarEffect_ur.toString());
 
 
         // For the UnitRate part
@@ -360,7 +362,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HourlyWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HourlyWearCost"))
                         .addInsert(NodeFactory.createURI(KB + "DemandDrivenWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "emandDrivenWearCost"));
         UpdateRequest UnitRate_ur = UnitRate_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", UnitRate_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, UnitRate_ur.toString());
 
         String mappingFolder = System.getenv("MAPPINGSPATH");
         try {
@@ -407,7 +409,7 @@ public class HeatNetworkInputAgent {
         		.addInsert(NodeFactory.createURI(KB + "SumofEnergy"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Waermeeinspeisung))
         		.addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempRuecklauf));
         UpdateRequest TSIRI_ur = TSIRI_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", TSIRI_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, TSIRI_ur.toString());
       
         omHasValueTS("MegaWattHour", WaermeleistungKessel4);
         omHasValueTS("MegaWattHour", WaermeleistungKessel5);
@@ -466,7 +468,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "LabourCost"))
                         .addInsert(NodeFactory.createURI(KB + "LabourCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LabourCost"));
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", HeatGenerator_instance_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, HeatGenerator_instance_ur.toString());
         omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
         omHasValueNonTS("HigherCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_HCV);
         omHasValueNonTS("LowerCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_LCV);
@@ -485,7 +487,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit)
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
         UpdateRequest omHasValueNonTS_ur = omHasValueNonTS_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", omHasValueNonTS_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, omHasValueNonTS_ur.toString());
     }
 
 
@@ -498,7 +500,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit);
         UpdateRequest omHasValueTS_ur = omHasValueTS_ub.buildRequest();
-        AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontoheatnet", omHasValueTS_ur.toString());
+        AccessAgentCaller.updateStore(sparqlendpoint, omHasValueTS_ur.toString());
     }
 
    // Setter for the time series client.

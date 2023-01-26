@@ -40,6 +40,7 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String DATAINSTANTIATION = "Could not update static data";
     private static final String UPDATETSDATA = "Could not update time series data";
+    private static final String KEY_ENDPOINT = "endpoint";
 
     // Data format string pattern for converting the time format for TS client
     private static final SimpleDateFormat inSDF = new SimpleDateFormat("dd/MM/yyyyhh:mm:ss a");
@@ -74,9 +75,10 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
         }
 
         HeatNetworkInputAgent agent = new HeatNetworkInputAgent();
+        String endpoint = requestParams.getString(KEY_ENDPOINT);
 
         try {
-            agent.dataInstantiation();
+            agent.dataInstantiation(endpoint);
             jsonMessage.accumulate("Result", "Static data has been updated.");
         } catch (JPSRuntimeException e) {
             LOGGER.error(DATAINSTANTIATION, e);
@@ -107,7 +109,7 @@ public class HeatNetworkInputAgentLauncher extends JPSAgent {
         } catch (JPSRuntimeException e) {
             LOGGER.error(UPDATETSDATA, e);
             throw new JPSRuntimeException(UPDATETSDATA, e);
-        }
+        } 
         return jsonMessage;
     }
 
