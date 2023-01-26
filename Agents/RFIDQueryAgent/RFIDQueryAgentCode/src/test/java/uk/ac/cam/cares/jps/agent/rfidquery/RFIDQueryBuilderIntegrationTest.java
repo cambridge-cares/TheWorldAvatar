@@ -25,11 +25,11 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 /**
- * This test class is to test the RFID Query agent with a running KG and postgres database.
+ * This test class is to test the RFID Query Builder with a running KG.
  */
 
 
-@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+@Ignore("Requires both triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
         
 
