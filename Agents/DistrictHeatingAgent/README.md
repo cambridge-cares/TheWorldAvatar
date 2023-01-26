@@ -64,18 +64,18 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 This agent is reachable at "heatnetwork-agent/performheatupdate" on localhost port 1080.
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/heatnetwork-agent/performheatupdate with a JSON Object. In this agent, a random JSON Object will do. Follow the sample request shown below.
+To run the agent, a POST request must be sent to http://localhost:1080/district-heating-agent/performheatupdate with a JSON Object. In this agent, it contains the URL for sparql endpoint. Follow the sample request shown below.
 ```
 
-POST http://localhost:1080/heatnetwork-agent/performheatupdate
+POST http://localhost:1080/district-heating-agent/performheatupdate
 Content-Type: application/json
-{"HeatNetworkAgent":"DataInstantiation"}
+{"endpoint":"http://host.docker.internal:48888/ontoheatnet"}
 ```
 
 In curl syntax:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
-\"HeatNetworkAgent\":\"DataInstantiation\"}" http://localhost:1080/heatnetwork-agent/performheatupdate
+\"endpoint\":\"http://host.docker.internal:48888/ontoheatnet\"}" http://localhost:1080/district-heating-agent/performheatupdate
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
