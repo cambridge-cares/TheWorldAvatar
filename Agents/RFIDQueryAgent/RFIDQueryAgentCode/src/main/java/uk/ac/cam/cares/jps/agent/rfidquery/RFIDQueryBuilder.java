@@ -51,6 +51,7 @@ public class RFIDQueryBuilder {
     private static final String GETMOLECULARFORMULA_ERROR_MSG = "Unable to query for molecular formula IRI!" ;
     private static final String GETELEMENTNUMBER_ERROR_MSG = "Unable to query for element number IRI!" ;
     private static final String GETNUMBEROFELEMENT_ERROR_MSG = "Unable to query for number of elements!" ;
+    private static final String GETALTLABELS_ERROR_MSG = "Unable to query for alternate labels!";
     
     /**
      * Namespaces for ontologies
@@ -63,6 +64,7 @@ public class RFIDQueryBuilder {
     public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
     public static final String ONTOSPECIES_NS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#";
     public static final String ONTOKIN_NS = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#";
+    public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     
 	/**
      * Prefixes
@@ -75,6 +77,7 @@ public class RFIDQueryBuilder {
     private static final Prefix PREFIX_ONTOCAPE_SYSTEM = SparqlBuilder.prefix("ontocape_system", iri(ONTOCAPE_SYSTEM_NS));
     private static final Prefix PREFIX_ONTOSPECIES = SparqlBuilder.prefix("ontospecies", iri(ONTOSPECIES_NS));
     private static final Prefix PREFIX_ONTOKIN = SparqlBuilder.prefix("ontokin", iri(ONTOKIN_NS));
+    private static final Prefix PREFIX_SKOS = SparqlBuilder.prefix("skos", iri(SKOS_NS));
     
 	/**
      * Relationships
@@ -90,6 +93,7 @@ public class RFIDQueryBuilder {
     private static final Iri hasMolecularFormula = PREFIX_ONTOSPECIES.iri("hasMolecularFormula");
     private static final Iri hasElementNumber = PREFIX_ONTOKIN.iri("hasElementNumber");
     private static final Iri hasNumberOfElement = PREFIX_ONTOKIN.iri("hasNumberOfElement");
+    private static final Iri altLabel = PREFIX_SKOS.iri("altLabel");
 
     /**
      * Classes
@@ -252,8 +256,8 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?Phase WHERE { ?Material ontoCAPE_Material:thermodynamicBehavior ?Phase }
-     public String queryForPhaseWithThermodynamicBehavior(String IRIString) {
+    //SELECT ?Phase WHERE { ?Material ontoCAPE_Material:thermodynamicBehavior ?Phase }
+    public String queryForPhaseWithThermodynamicBehavior(String IRIString) {
         String result = null;
         Variable phase = SparqlBuilder.var("phase");
         SelectQuery query = Queries.SELECT();
@@ -273,8 +277,8 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?PhaseComponent WHERE { ?Phase ontoCAPE_System:isComposedOfSubsystem ?PhaseComponent }
-     public String queryForPhaseComponentWithIsComposedOfSubsystem(String IRIString) {
+    //SELECT ?PhaseComponent WHERE { ?Phase ontoCAPE_System:isComposedOfSubsystem ?PhaseComponent }
+    public String queryForPhaseComponentWithIsComposedOfSubsystem(String IRIString) {
         String result = null;
         Variable phaseComponent = SparqlBuilder.var("phaseComponent");
         SelectQuery query = Queries.SELECT();
@@ -294,8 +298,8 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?Species WHERE { ?PhaseComponent ontoCAPE_Phase_System:representsOccurenceOf ?Species }
-     public String queryForSpeciesWithRepresentsOccurenceOf(String IRIString) {
+    //SELECT ?Species WHERE { ?PhaseComponent ontoCAPE_Phase_System:representsOccurenceOf ?Species }
+    public String queryForSpeciesWithRepresentsOccurenceOf(String IRIString) {
         String result = null;
         Variable species = SparqlBuilder.var("species");
         SelectQuery query = Queries.SELECT();
@@ -315,9 +319,9 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?MolecularFormula WHERE { ?Species ontospecies:hasMolecularFormula ?MolecularFormula 
-     // ?MolecularFormula rdf:Type ontospecies:MolecularForumula }
-     public String queryForMolecularFormulaWithHasMolecularFormula(String IRIString) {
+    //SELECT ?MolecularFormula WHERE { ?Species ontospecies:hasMolecularFormula ?MolecularFormula 
+    // ?MolecularFormula rdf:Type ontospecies:MolecularForumula }
+    public String queryForMolecularFormulaWithHasMolecularFormula(String IRIString) {
         String result = null;
         Variable molecularFormula = SparqlBuilder.var("molecularFormula");
         SelectQuery query = Queries.SELECT();
@@ -338,8 +342,8 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?ElementNumber WHERE { ?MolecularFormula ontokin:hasElementNumber ?ElementNumber }
-     public String queryForElementNumberViaHasElementNumber(String IRIString) {
+    //SELECT ?ElementNumber WHERE { ?MolecularFormula ontokin:hasElementNumber ?ElementNumber }
+    public String queryForElementNumberViaHasElementNumber(String IRIString) {
         String result = null;
         Variable elementNumber = SparqlBuilder.var("elementNumber");
         SelectQuery query = Queries.SELECT();
@@ -359,8 +363,8 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-     //SELECT ?Number WHERE { ?ElementNumber ontokin:hasNumberOfElement ?Number }
-     public String queryForNumberViaHasNumberOfElement(String IRIString) {
+    //SELECT ?Number WHERE { ?ElementNumber ontokin:hasNumberOfElement ?Number }
+    public String queryForNumberViaHasNumberOfElement(String IRIString) {
         String result = null;
         Variable number = SparqlBuilder.var("number");
         SelectQuery query = Queries.SELECT();
@@ -376,6 +380,27 @@ public class RFIDQueryBuilder {
         }
     } catch (Exception e) {
         throw new JPSRuntimeException(GETNUMBEROFELEMENT_ERROR_MSG);
+    }
+        return result;
+    }
+
+    //SELECT ?Label WHERE { ?Species skos:altLabel ?Label }
+    public JSONArray queryForLabelsViaAltLabel(String IRIString) {
+        JSONArray result = new JSONArray();
+        Variable label = SparqlBuilder.var("label");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(altLabel, label);
+        query.prefix(PREFIX_SKOS).select(label).where(queryPattern);
+        kbClient2.setQuery(query.getQueryString());
+        try {
+        JSONArray queryResult = kbClient2.executeQuery();
+        if(!queryResult.isEmpty()){
+            LOGGER.info(kbClient2.executeQuery());
+            result = kbClient2.executeQuery();
+        }
+    } catch (Exception e) {
+        throw new JPSRuntimeException(GETALTLABELS_ERROR_MSG);
     }
         return result;
     }

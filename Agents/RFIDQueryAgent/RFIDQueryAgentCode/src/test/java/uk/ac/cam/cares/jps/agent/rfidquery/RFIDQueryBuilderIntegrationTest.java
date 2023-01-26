@@ -4,6 +4,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.GenericContainer;
@@ -65,6 +66,7 @@ public class RFIDQueryBuilderIntegrationTest {
     public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
     public static final String ONTOSPECIES_NS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#";
     public static final String ONTOKIN_NS = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#";
+    public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
     
 	/**
      * Prefixes
@@ -77,6 +79,7 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Prefix PREFIX_ONTOCAPE_SYSTEM = SparqlBuilder.prefix("ontocape_system", iri(ONTOCAPE_SYSTEM_NS));
     private static final Prefix PREFIX_ONTOSPECIES = SparqlBuilder.prefix("ontospecies", iri(ONTOSPECIES_NS));
     private static final Prefix PREFIX_ONTOKIN = SparqlBuilder.prefix("ontokin", iri(ONTOKIN_NS));
+    private static final Prefix PREFIX_SKOS = SparqlBuilder.prefix("skos", iri(SKOS_NS));
     
 	/**
      * Relationships
@@ -92,6 +95,7 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Iri hasMolecularFormula = PREFIX_ONTOSPECIES.iri("hasMolecularFormula");
     private static final Iri hasElementNumber = PREFIX_ONTOKIN.iri("hasElementNumber");
     private static final Iri hasNumberOfElement = PREFIX_ONTOKIN.iri("hasNumberOfElement");
+    private static final Iri altLabel = PREFIX_SKOS.iri("altLabel");
 
     /**
      * Classes
@@ -153,8 +157,10 @@ public class RFIDQueryBuilderIntegrationTest {
         TriplePattern updatePattern10 = molecularFormula.isA(MolecularFormula);
         TriplePattern updatePattern11 = molecularFormula.has(hasElementNumber, elementNumber);
         TriplePattern updatePattern12 = elementNumber.has(hasNumberOfElement, "3");
-        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12);
-        insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_ONTOKIN, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES);
+        TriplePattern updatePattern13 = species.has(altLabel, "test");
+        TriplePattern updatePattern14 = species.has(altLabel, "testing");
+        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14);
+        insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_ONTOKIN, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SKOS);
         kbClient.executeUpdate(insert.getQueryString());
     }
     // Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished
@@ -437,6 +443,32 @@ public class RFIDQueryBuilderIntegrationTest {
             number = builder.queryForNumberViaHasNumberOfElement("http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for number of element!", e.getMessage());
+        }
+    }
+
+    @Test
+    public void queryLabelsSuccessAndFail() throws IOException {
+        JSONArray a = new JSONArray();
+        a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals(2, a.length());
+
+        //invalid species IRI
+        try {
+            a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species");
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to query for alternate labels!", e.getMessage());
+        }
+
+        //remove altLabel link between Species and String values
+        TriplePattern Pattern = species.has(altLabel, "test").andHas(altLabel, "testing");
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
+        delete.prefix(PREFIX_SKOS);
+        kbClient.executeUpdate(delete.getQueryString());
+
+        try {
+            a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to query for alternate labels!", e.getMessage());
         }
     }
 
