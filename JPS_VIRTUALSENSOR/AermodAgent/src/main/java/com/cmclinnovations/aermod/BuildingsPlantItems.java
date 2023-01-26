@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import geotrellis.proj4.CRS;
+import geotrellis.proj4.Transform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -18,10 +21,15 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+//import org.opengis.geometry.coordinate.GeometryFactory;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.FactoryException;
+//import org.opengis.util.FactoryException;
+import org.opengis.referencing.FactoryException;
+import scala.Tuple2;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -30,6 +38,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+
+import org.geotools.geometry.jts.JTS;
+//import org.geotools.referencing.CRS;
+
+
 
 public class BuildingsPlantItems {
 
@@ -37,9 +55,9 @@ public class BuildingsPlantItems {
 
     // Class variables accessed in several agent methods
 
-    String[] locations = {"Jurong Island"};
-    String[] StackQueryEndpoint = {"jibusinessunits"} ;
-    String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
+    public static String[] locations = {"Jurong Island"};
+    public static String[] StackQueryEndpoint = {"jibusinessunits"} ;
+    public static String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
 
     public static int locindex = -1;
     public static String StackQueryIRI;
@@ -87,49 +105,41 @@ public class BuildingsPlantItems {
     public static List<Boolean> buildingUsed = new ArrayList<>() ;
     public static Integer numberGridsX, numberGridsY, numberTotalGrids ;
 
-    /* Maximum distance between stack and receptor for which AERMOD computes pollutant concentrations
-  in meters. */
+    /* The values of cutoffRadius and gridSpacing are set to the maximum distance between stack and receptor
+    for which AERMOD computes pollutant concentrations in meters. */
     public static double cutoffRadius = 100.0;
-    public static Double xlo, ylo, xhi, yhi ;
-    public static Double gridSpacing = cutoffRadius;
+    public static double gridSpacing = cutoffRadius;
+
+    /* These variables define the boundaries of the grid upon which the linked list algorithm is based. Their values are
+    * in the database coordinate system. */
+    public static double xlo, ylo, xhi, yhi ;
 
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
     public static List<String> boundaryPolygons = new ArrayList<> (
-            Arrays.asList("POLYGON ((1.216988 103.650684, 1.216988 103.743038, 1.293530 103.743038, 1.293530 103.650684, 1.216988 103.650684))")) ;
+            Arrays.asList("POLYGON ((1.216988 103.650684, 1.216988 103.743038, 1.308804 103.743038, 1.308804 103.650684, 1.216988 103.650684))")) ;
 
 
     // Variables used to run AERMOD and its preprocessors
     public static List<String> BPIPPRMBuildingInput = new ArrayList<>();
     public static List<String> BPIPPRMStackInput = new ArrayList<>() ;
 
-    public Path simulationDirectory;
+    public static Path simulationDirectory;
     public static Path bpipprmDirectory;
 
-    public BuildingsPlantItems(Path simulationDirectory, Polygon scope, int nx, int ny, int srid) throws ParseException {
-        this.simulationDirectory = simulationDirectory;
+    public static void init(Path simulationDirectory, Polygon scope, int nx, int ny, int srid) throws ParseException, FactoryException, TransformException, org.opengis.util.FactoryException {
+
+
+        simulationDirectory = simulationDirectory;
         bpipprmDirectory = simulationDirectory.resolve("bpipprm");
         bpipprmDirectory.toFile().mkdir();
 
         // Determine namespace to query based on input polygon
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
 
-        String originalSRID = "EPSG:" + scope.getSRID();
+        // The boundary.covers(scope) test works correctly only if boundary and scope have the same srid. Hence, srid of scope must be 4326.//
 
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-            double[] xyTransformed = CRSTransformer.transform(originalSRID, "EPSG:4326", scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
-            xDoubles.add(xyTransformed[0]);
-            yDoubles.add(xyTransformed[1]);
-        }
-
-        double xMax = Collections.max(xDoubles);
-        double xMin = Collections.min(xDoubles);
-        double yMax = Collections.max(yDoubles);
-        double yMin = Collections.min(yDoubles);
 
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
         Polygon boundary = null;
-
         for (int i = 0; i < boundaryPolygons.size(); i++){
             String wkt = boundaryPolygons.get(i);
             boundary = (Polygon) new WKTReader(geometryFactory).read(wkt);
@@ -143,10 +153,35 @@ public class BuildingsPlantItems {
             throw new RuntimeException("Input polygon not found in any namespace.");
         }
 
+        if (scope.getSRID() != 4326) {
+            throw new RuntimeException("Input scope does not have 4326 as its srid.");
+        }
+
         StackQueryIRI = StackQueryEndpoint[locindex];
         GeospatialQueryIRI = GeospatialQueryEndpoint[locindex];
         DatabaseCoordSys = DatabaseCRS[locindex];
         UTMCoordSys = "EPSG:" + srid;
+
+//        From this point, all coordinates are in the database coordinate system.
+
+//        Assign receptor coordinates.
+
+
+        String originalSRID = "EPSG:" + scope.getSRID();
+        List<List<Double>> inputcoordinates = new ArrayList<>() ;
+
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+            List<Double> coord = Arrays.asList(scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
+            inputcoordinates.add(coord);
+        }
+
+        List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates,originalSRID,DatabaseCoordSys);
+
+        double xMax = Collections.max(outputcoordinates.stream().map(x -> x.get(0)).collect(Collectors.toList()));
+        double xMin = Collections.min(outputcoordinates.stream().map(x -> x.get(0)).collect(Collectors.toList()));
+        double yMax = Collections.max(outputcoordinates.stream().map(x -> x.get(1)).collect(Collectors.toList()));
+        double yMin = Collections.min(outputcoordinates.stream().map(x -> x.get(1)).collect(Collectors.toList()));
 
         double dx = (xMax - xMin)/nx;
         double dy = (yMax - yMin)/ny;
@@ -155,16 +190,30 @@ public class BuildingsPlantItems {
             for (int j = 0; j < ny; j++){
                 double xCoord = xMin + (0.5 + i)*dx;
                 double yCoord = yMin + (0.5 + j)*dy;
-                double[] xyTransformed = CRSTransformer.transform("EPSG:4326", DatabaseCoordSys, xCoord, yCoord);
-                ReceptorDatabaseCoordinates.add(Arrays.asList(xyTransformed[0],xyTransformed[1]));
+                ReceptorDatabaseCoordinates.add(Arrays.asList(xCoord,yCoord));
             }
         }
+
+        // Determine corners of bounding box encompassing all entities in the namespace being queried.
 
         Envelope bounds = boundary.getEnvelopeInternal();
         xlo = bounds.getMinX();
         xhi = bounds.getMaxX();
         ylo = bounds.getMinY();
         yhi = bounds.getMaxY();
+
+        inputcoordinates.clear();
+        outputcoordinates.clear();
+        inputcoordinates.add(Arrays.asList(xlo,ylo));
+        inputcoordinates.add(Arrays.asList(xlo,yhi));
+        inputcoordinates.add(Arrays.asList(xhi,ylo));
+        inputcoordinates.add(Arrays.asList(xhi,yhi));
+        outputcoordinates = convertCoordinates(inputcoordinates,"EPSG:4326",DatabaseCoordSys);
+
+        xlo = min(outputcoordinates.get(0).get(0),outputcoordinates.get(1).get(0));
+        xhi = max(outputcoordinates.get(2).get(0),outputcoordinates.get(3).get(0));
+        ylo = min(outputcoordinates.get(0).get(1),outputcoordinates.get(2).get(1));
+        yhi = max(outputcoordinates.get(1).get(1),outputcoordinates.get(3).get(1));
 
         xlo = gridSpacing*Math.floor(xlo/gridSpacing) ;
         xhi = gridSpacing*Math.ceil(xhi/gridSpacing) ;
@@ -175,7 +224,6 @@ public class BuildingsPlantItems {
         numberGridsX = 1 + Math.round(numberIntervalsX);
         numberGridsY = 1 + Math.round(numberIntervalsY);
         numberTotalGrids = numberGridsX*numberGridsY ;
-
 
     }
 
@@ -194,15 +242,35 @@ public class BuildingsPlantItems {
         return 0;
     }
 
+//    The String inputs must be of a format similar to "EPSG:4326".
     public static List<List<Double>> convertCoordinates
             (List<List<Double>> inputcoordinates, String inputCRS, String outputCRS) {
 
         List<List<Double>> outputcoordinates = new ArrayList<>();
 
+
+        String inputSys = inputCRS.split(":")[1];
+        int inputCode = Integer.valueOf(inputSys);
+        String outputSys = outputCRS.split(":")[1];
+        int outputCode = Integer.valueOf(outputSys);
+
+        CRS sourceCRS = CRS.fromEpsgCode(inputCode);
+        CRS targetCRS = CRS.fromEpsgCode(outputCode);
+
+        var convert = Transform.apply(sourceCRS,targetCRS);
+
+
         for (int i = 0; i < inputcoordinates.size(); i++) {
-            double[] xyTransformed = CRSTransformer.transform(inputCRS, outputCRS, inputcoordinates.get(i).get(0), inputcoordinates.get(i).get(1));
-            outputcoordinates.add(Arrays.asList(xyTransformed[0],xyTransformed[1]));
+            double xi = inputcoordinates.get(i).get(0);
+            double yi = inputcoordinates.get(i).get(1);
+            Tuple2<Object, Object> res;
+            if (inputCode == 4326) res = convert.apply(yi, xi);
+            else res = convert.apply(xi,yi);
+            double xt = (double) res._1();
+            double yt = (double) res._2();
+            outputcoordinates.add(Arrays.asList(xt,yt));
         }
+
         return outputcoordinates;
     }
 
@@ -275,7 +343,7 @@ the linked lists for each of these types of structures.
                         sum_x = sum_x + Double.parseDouble(coordinates[j-3]);
                         sum_y = sum_y + Double.parseDouble(coordinates[j-2]);
                         sum_z = sum_z + Double.parseDouble(coordinates[j-1]);
-                        min_z = Math.min(min_z,Double.parseDouble(coordinates[j-1]));
+                        min_z = min(min_z,Double.parseDouble(coordinates[j-1]));
                     }
                 }
                 if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
@@ -342,7 +410,7 @@ the linked lists for each of these types of structures.
                         sum_x = sum_x + Double.parseDouble(coordinates[j-3]);
                         sum_y = sum_y + Double.parseDouble(coordinates[j-2]);
                         sum_z = sum_z + Double.parseDouble(coordinates[j-1]);
-                        min_z = Math.min(min_z,Double.parseDouble(coordinates[j-1]));
+                        min_z = min(min_z,Double.parseDouble(coordinates[j-1]));
                     }
                 }
                 if (min_z == sum_z/(coordinates.length/3) && !z_values.isEmpty()) {
@@ -363,8 +431,26 @@ the linked lists for each of these types of structures.
             int ix = (int) (Math.floor((Double.parseDouble(BuildingX) - xlo)/gridSpacing));
             int iy = (int) (Math.floor((Double.parseDouble(BuildingY) - ylo)/gridSpacing));
             int icell = ix + iy*numberGridsX ;
+
+            if (ix > numberGridsX) {
+                System.out.println("xlo = " + xlo);
+                System.out.println("BuildingX = " + BuildingX);
+                System.out.println("ix = " + ix);
+            }
+
+            if (iy > numberGridsY) {
+                System.out.println("ylo = " + ylo);
+                System.out.println("yhi = " + yhi);
+                System.out.println("BuildingY = " + BuildingY);
+                System.out.println("iy = " + iy);
+                System.out.println("numberGridsY = " + numberGridsY);
+                System.out.println(IRI);
+            }
+
             buildingList.set(i, buildingHead.get(icell));
-            buildingHead.set(icell,i);
+            buildingHead.set(icell, i);
+
+
 
         }
 
@@ -427,7 +513,8 @@ the linked lists for each of these types of structures.
 
             for (int nabor = 0; nabor < 8; nabor++) {
                 int jcell = cellmap.get(jcell0 + nabor);
-                stackIndex = stackHead.get(jcell);
+                stackIndex = -1;
+                if (jcell >= 0 && jcell <  numberTotalGrids) stackIndex = stackHead.get(jcell);
                 while (stackIndex > -1) {
                     if (!stackUsed.get(stackIndex)) {
                         String StackAttribute = StackProperties.get(stackIndex);
@@ -529,7 +616,8 @@ the linked lists for each of these types of structures.
 
             for (int nabor = 0; nabor < 8; nabor++) {
                 int jcell = cellmap.get(jcell0 + nabor);
-                buildingIndex = buildingHead.get(icell);
+                buildingIndex = -1;
+                if (jcell >= 0 && jcell <  numberTotalGrids) buildingIndex = buildingHead.get(jcell);
                 while (buildingIndex > -1) {
                     if (!buildingUsed.get(buildingIndex)) {
                         String BuildingAttribute = BuildingProperties.get(buildingIndex);
@@ -584,8 +672,8 @@ the linked lists for each of these types of structures.
 
         // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
         // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
-        String StackLine = String.valueOf(numberStacks) + " \n" ;
-        String BuildingsLine = String.valueOf(numberBuildings) + " \n" ;
+        String StackLine = numberStacks + " \n" ;
+        String BuildingsLine = numberBuildings + " \n" ;
         BPIPPRMStackInput.add(StackLine);
         BPIPPRMBuildingInput.add(BuildingsLine);
 
@@ -603,20 +691,20 @@ the linked lists for each of these types of structures.
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(frontmatter);
-        sb.append(System.lineSeparator());
+        for (String st:frontmatter) {
+            sb.append(st);
+        }
+
         int numberBuildingLines = BPIPPRMBuildingInput.size() ;
         sb.append(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
         sb.append(System.lineSeparator());
         for (int i = 0; i < numberBuildingLines-1; i++) {
             sb.append(BPIPPRMBuildingInput.get(i));
-            sb.append(System.lineSeparator());
         }
         int numberStackLines = BPIPPRMStackInput.size() ;
         sb.append(BPIPPRMStackInput.get(numberStackLines - 1));
         for (int i = 0; i < numberStackLines-1; i++) {
             sb.append(BPIPPRMStackInput.get(i));
-            sb.append(System.lineSeparator());
         }
         return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
 
@@ -665,7 +753,7 @@ the linked lists for each of these types of structures.
         StackIRIQuery.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI .");
         StackIRIQuery.append("?plant_item ocp:hasIndividualCO2Emission ?CO2 .");
         StackIRIQuery.append("?CO2 om:hasNumericalValue ?emission .}");
-        StackIRIQuery.append("LIMIT 100");
+        StackIRIQuery.append("LIMIT 10");
         JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, StackIRIQuery.toString());
         return StackIRIQueryResult;
     }

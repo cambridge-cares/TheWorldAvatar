@@ -114,8 +114,9 @@ public class AermodAgent extends DerivationAgent {
         //Run BPIPPRM
         BuildingsPlantItems bpi = null;
         try {
-            bpi = new BuildingsPlantItems(simulationDirectory,scope, nx, ny, srid);
-        } catch (ParseException e) {
+            bpi = new BuildingsPlantItems();
+            bpi.init(simulationDirectory,scope, nx, ny, srid);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         if (bpi.run() != 0) {
