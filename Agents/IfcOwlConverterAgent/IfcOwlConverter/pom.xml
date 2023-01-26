@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
         <jps.base.version>1.21.1</jps.base.version>
+        <jena.version>4.1.0</jena.version>
         <!-- Artifact ID used to download Log4J2 config (for runtime) -->
         <log.artifact>java-logging-dev</log.artifact>
     </properties>
@@ -116,8 +117,13 @@
         <!-- Necessary to ensure the relevant outdated version for IFCtoRDF dependency-->
         <dependency>
             <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-            <version>4.1.0</version>
+            <version>${jena.version}</version>
         </dependency>
         <!--  Logging  -->
         <dependency>
