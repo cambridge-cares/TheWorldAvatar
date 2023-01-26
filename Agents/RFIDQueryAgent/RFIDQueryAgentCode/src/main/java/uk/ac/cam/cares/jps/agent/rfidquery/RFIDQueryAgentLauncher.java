@@ -21,6 +21,7 @@ import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 
 
 @WebServlet(urlPatterns = {"/retrieve"})
@@ -260,14 +261,25 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				String numberOfElement = builder.queryForNumberViaHasNumberOfElement(elementNumberIRI);
 				LOGGER.info("The number of element that this species " + speciesIRI + " has is " + numberOfElement);
 
+				//query for alt labels of species
+				JSONArray altLabels = new JSONArray();
+				altLabels = builder.queryForLabelsViaAltLabel(speciesIRI);
+				JSONObject labels = new JSONObject();
+
+				for (int j=0; j < altLabels.length(); j++) {
+					labels.put("label_"+j, altLabels.getJSONObject(j).getString("label"));
+				}
+
+				LOGGER.info(labels.toString());
+
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, speciesIRI, timestamp);
+				agent.sendEmail(dataIRI, labels, timestamp);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 
 			} else if (exceedThreshold == true) {
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, "Potassium Nitrate", timestamp);
+				agent.sendEmail(dataIRI, null, timestamp);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}

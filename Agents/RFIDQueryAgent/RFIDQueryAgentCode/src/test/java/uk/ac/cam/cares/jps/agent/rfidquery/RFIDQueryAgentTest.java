@@ -2,14 +2,8 @@ package uk.ac.cam.cares.jps.agent.rfidquery;
 
 import org.json.JSONObject;
 import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
-
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
