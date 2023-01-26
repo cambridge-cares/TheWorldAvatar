@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/SewerageNetworkAgent/
+WORKDIR /root/SewageNetworkAgent/
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 
@@ -53,7 +53,7 @@ ENV Branch1="/root/HG_main_sub_instances_final_1.csv"
 ENV Branch2="/root/HG_main_sub_instances_final_2.csv"
 ENV Branch3="/root/HG_main_sub_instances_final_3.csv"
 
-COPY --from=builder /root/SewerageNetworkAgent/output/seweragenetwork-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/SewageNetworkAgent/output/sewage-network-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
