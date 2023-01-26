@@ -293,7 +293,20 @@ class OptimalPowerFlowAnalysis:
                                     "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
                     continue
                 else:
-                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                    official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                    if 'W' in official_region_List[0] or 'S' in official_region_List[0]:
+                        for code in official_region_List:
+                            if '92' in code:
+                                official_region = code
+                                break
+                    else:
+                        if isinstance(official_region_List, str):
+                            official_region = official_region_List
+                        else:
+                            official_region = official_region_List[0]
+                            if len(official_region) != 9:
+                                raiseExceptions('The official_region LA code should be string and the length of it should be 9, the queried LA code list is %s' % official_region_List)
+
                 demanding['Official_region'] = official_region 
 
             ## Find the boundary of the small area
@@ -331,7 +344,20 @@ class OptimalPowerFlowAnalysis:
                                             "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
                             continue
                         else:
-                            official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                            official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                            if 'W' in official_region_List[0] or 'S' in official_region_List[0]:
+                                for code in official_region_List:
+                                    if '92' in code:
+                                        official_region = code
+                                        break
+                            else:
+                                if isinstance(official_region_List, str):
+                                    official_region = official_region_List
+                                else:
+                                    official_region = official_region_List[0]
+                                    if len(official_region) != 9:
+                                        raiseExceptions('The official_region LA code should be string and the length of it should be 9, the queried LA code list is %s' % official_region_List)
+
                         demanding['Official_region'] = official_region 
                     
                     if (gen[9] in official_region) or (gen[9] == official_region):
@@ -681,10 +707,21 @@ class OptimalPowerFlowAnalysis:
                                 elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
                                     official_region = "E12000009" 
                                 else:
-                                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                    official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                    if 'W' in official_region_List[0] or 'S' in official_region_List[0]:
+                                        for code in official_region_List:
+                                            if '92' in code:
+                                                official_region = code
+                                                break
+                                    else:
+                                        if isinstance(official_region_List, str):
+                                            official_region = official_region_List
+                                        else:
+                                            official_region = official_region_List[0]
+                                            if len(official_region) != 9:
+                                                raiseExceptions('The official_region LA code should be string and the length of it should be 9, the queried LA code list is %s' % official_region_List)
                                 demanding['Official_region'] = official_region 
-
-                            ## initialise the SMR generator with the atttributes
+                            ## initialise the SMR generator with the atttributes ## 
                             SMRSite = {'PowerGenerator': None, 
                             'Bus': self.retrofitListBeforeSelection[s]["Bus"], 
                             'Capacity': numOfSMRUnit * self.SMRCapability, 
@@ -718,7 +755,20 @@ class OptimalPowerFlowAnalysis:
                                                     "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
                                     continue
                                 else:
-                                    official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                    official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                                    if 'W' in official_region_List[0] or 'S' in official_region_List[0]:
+                                        for code in official_region_List:
+                                            if '92' in code:
+                                                official_region = code
+                                                break
+                                    else:
+                                        if isinstance(official_region_List, str):
+                                            official_region = official_region_List
+                                        else:
+                                            official_region = official_region_List[0]
+                                            if len(official_region) != 9:
+                                                raiseExceptions('The official_region LA code should be string and the length of it should be 9, the queried LA code list is %s' % official_region_List)
+
                                 demanding['Official_region'] = official_region 
                             
                             if 'Boundary' in demanding.keys():
@@ -1518,6 +1568,7 @@ class OptimalPowerFlowAnalysis:
                 regionalDemandingList_copy = self.regionalDemandingList.copy()
                 ## counter of the generators used to fulfill the regional demanding 
                 counter_gen = 0 
+                counter_smr = 0
                 for regionalDemanding in self.regionalDemandingList:
                     Region_LACode = regionalDemanding['RegionOrCountry_LACode']
                     demandingValue_region = float(regionalDemanding['v_TotalELecConsumption']) 
@@ -1541,9 +1592,9 @@ class OptimalPowerFlowAnalysis:
                         if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
                             genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000 
                             demandingValue_region -= genOutput
-                            counter_gen += 1
+                            counter_smr += 1
                     netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding': demandingValue_region, 'regionalBoundery':boundary})
-                if counter_gen != len(genNameList) + len(SMRNameList):
+                if counter_gen + counter_smr != len(genNameList) + len(SMRNameList):
                     raiseExceptions('There are some generators in the list are not counted to fulfill the demanding, please check if the regional LACode is properly assigned as an attribute of the generator/SMR instance.')
                 self.netDemandingList_regionalAreaForEachWeight.append(netDemanding_regionalArea)         
                 # demanding surplus checking: the total demanding should equal to the total output
