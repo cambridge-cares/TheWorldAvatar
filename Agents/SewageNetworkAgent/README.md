@@ -29,6 +29,13 @@ docker-compose up -d
 
 This agent is reachable at "seweragenetwork-agent/performsewageupdate" on localhost port 1080.
 
+#### Stack Deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager.
+- Start the stack manager as usual. This should start the container.
+
 #### Run the agent
 To run the agent, a POST request must be sent to http://localhost:1080/seweragenetwork-agent/performsewageupdate with a JSON Object. In this agent, a random JSON Object will do. Follow the sample request shown below.
 ```
