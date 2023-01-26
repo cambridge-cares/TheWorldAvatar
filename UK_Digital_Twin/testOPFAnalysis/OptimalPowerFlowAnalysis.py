@@ -246,11 +246,19 @@ class OptimalPowerFlowAnalysis:
         self.numberOfGenerations = numberOfGAGenerations
         self.retrofittingCost = 0
         ##--9. Demanding area query --##
-        self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
         self.regionalDemandingList = list(query_model.queryElectricityConsumption_Region(self.startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
-        
+        demandingAreaList_original = demandingAndCentroid[self.startTime_of_EnergyConsumption]
+        self.demandingAreaList = []
+        LACodeList = []
+        for demand in demandingAreaList_original:
+            if demand['Area_LACode'] in LACodeList:
+                index_demand = LACodeList.index(demand['Area_LACode'] )
+                self.demandingAreaList[index_demand]['v_TotalELecConsumption'] += float(demand['v_TotalELecConsumption'])
+            else:
+                LACodeList.append(demand['Area_LACode'])
+                self.demandingAreaList.append(demand)
         ##FIXME: demanding should be queried
-        # self.demandingAreaList = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
+        # demandingAreaList_original = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
         # # find the centroid of the polygon, the value of the 
         # for ec in self.demandingAreaList:
         #     if ec['Geo_InfoList'].geom_type == 'MultiPolygon':
@@ -296,50 +304,56 @@ class OptimalPowerFlowAnalysis:
                 demanding['Boundary'] = boundary
             for gen in self.generatorNodeList:
                 if (gen[9] in official_region) or (gen[9] == official_region):
-                    genLocation = shapely.geometry.Point(gen[8][1], gen[8][0])
-                    interiorFlag = boundary.intersects(genLocation)
-                    if interiorFlag == True:
-                        gen.append(Area_LACode) 
+                    if len(gen) < 12:
+                        genLocation = shapely.geometry.Point(gen[8][1], gen[8][0])
+                        interiorFlag = boundary.intersects(genLocation)
+                        if interiorFlag == True:
+                            gen.append(Area_LACode) 
         
         ## For the power plant whose location not within the landmass boundary (e.g. the wind offshore, hydro pumps, etc)
-        ## FIXME: some PP location need to be updated as theire latlon may not in the given regional LA code 
+        ## FIXME: some PP location need to be updated as their latlon may not in the given regional LA code 
         for gen in self.generatorNodeList:
-                if len(gen) != 12:
-                    distanceList = []
-                    smallAreaCodeList = []
-                    for demanding in self.demandingAreaList:
-                        Area_LACode = str(demanding['Area_LACode']) 
-                        if 'Official_region' in demanding.keys():
-                            official_region  = demanding['Official_region']
+            if len(gen) < 12:
+                distanceList = []
+                smallAreaCodeList = []
+                for demanding in self.demandingAreaList:
+                    Area_LACode = str(demanding['Area_LACode']) 
+                    if 'Official_region' in demanding.keys():
+                        official_region  = demanding['Official_region']
+                    else:
+                        if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
+                            official_region = "E12000008"
+                        elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
+                            official_region = "E12000006"
+                        elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
+                            official_region = "E12000009" 
+                        elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                            "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                            continue
                         else:
-                            if Area_LACode in ["E22000303", "E22000306", "E22000311", "E14001056"]:
-                                official_region = "E12000008"
-                            elif Area_LACode in ["E41000222", "E14000981", "E14001022", "E41000225"]:
-                                official_region = "E12000006"
-                            elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
-                                official_region = "E12000009" 
-                            elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                                "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
-                                continue
-                            else:
-                                official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
-                            demanding['Official_region'] = official_region 
-                        
-                        if (gen[9] in official_region) or (gen[9] == official_region):
-                            if 'Boundary' in demanding.keys():
-                                boundary = demanding['Boundary']
-                            else:
-                                boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
-                                demanding['Boundary'] = boundary
+                            official_region = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
+                        demanding['Official_region'] = official_region 
+                    
+                    if (gen[9] in official_region) or (gen[9] == official_region):
+                        if 'Boundary' in demanding.keys():
+                            boundary = demanding['Boundary']
+                        else:
+                            boundary = queryOPFInput.queryAreaBoundaries(Area_LACode)
+                            demanding['Boundary'] = boundary
 
-                            lon = boundary.centroid.x
-                            lat = boundary.centroid.y
-                           
-                            distance = DistanceBasedOnGPSLocation([gen[8][0], gen[8][1], lat, lon])
-                            distanceList.append(distance)
-                            smallAreaCodeList.append(Area_LACode)
-                    minDistanceIndex = distanceList.index(min(distanceList))
-                    gen.append(smallAreaCodeList[minDistanceIndex])                             
+                        lon = boundary.centroid.x
+                        lat = boundary.centroid.y
+                        
+                        distance = DistanceBasedOnGPSLocation([gen[8][0], gen[8][1], lat, lon])
+                        distanceList.append(distance)
+                        smallAreaCodeList.append(Area_LACode)
+                minDistanceIndex = distanceList.index(min(distanceList))
+                gen.append(smallAreaCodeList[minDistanceIndex])      
+
+        for gen in self.generatorNodeList:
+            if len(gen) != 12:
+                raiseExceptions('There are some generators does not have specified attributes, especially the LA code.')
+
         return 
         
     """This method is called to select the site to be replaced by SMR"""
@@ -634,7 +648,7 @@ class OptimalPowerFlowAnalysis:
             ##-- Create the SMR instances according to the site selection and the optima pick processing --##
             ## self.SMRList is a list of lists containing the SMR instances that are selected from different weighters
             self.SMRList = [] ## the length of the list of the self.SMRList should equal to the number of the weighters at the same weather condition and same carbon tax
-            for indexListOfResults_EachWeight in self.indexListOfSiteSelectionResults: 
+            for indexListOfResults_EachWeight in self.indexListOfSiteSelectionResults: ## length equal to the number of the weights
                 SMRArrangement = []
                 for index in indexListOfResults_EachWeight:
                     s = index // self.maxmumSMRUnitAtOneSite
@@ -682,7 +696,9 @@ class OptimalPowerFlowAnalysis:
                             'SmallAreaLACode': Area_LACode}
                             SMRArrangement.append(SMRSite)
                             break
-                self.SMRList.append(SMRArrangement)
+                if len(SMRArrangement) != len(indexListOfResults_EachWeight):
+                    raiseExceptions('The SmallAreaLACode and RegionLACode are not found for some of the sleceted SMR sites, please check the SMR site list and its lat-lon location.')
+                self.SMRList.append(SMRArrangement) ## The length of thre SMR list is equal to the number of the SMR sites, not the number of the SMR to be introduced to the system 
                 ## i_ = self.indexListOfSiteSelectionResults.index(indexListOfResults_EachWeight)
                 ## weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
                 ## print("At %s" % weightLabel)
@@ -792,11 +808,7 @@ class OptimalPowerFlowAnalysis:
                 for egen_re in SMRList_EachWeight:
                     objectName = UK_PG.UKEGenModel.EGenRetrofitKey + self.genTag + str(SMRList_EachWeight.index(egen_re)) 
                     newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
-                    if len(egen_re) == 12: 
-                        uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, str(egen_re["SmallAreaLACode"]), str(egen_re["RegionLACode"]))
-                    else:
-                        uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
-                    
+                    uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), egen_re["LatLon"], egen_re["Capacity"], str(egen_re["PowerGenerator"]), 'Added', CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, str(egen_re["SmallAreaLACode"]), str(egen_re["RegionLACode"]))
                     egen_re = [newGeneratorNodeIRI, float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], egen_re["Capacity"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
                     uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                     ###add EGen model parametor###
@@ -1379,6 +1391,13 @@ class OptimalPowerFlowAnalysis:
                                         netRegionalDemanding -= genOutput
                                 netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding':netRegionalDemanding, 'regionalBoundery':boundary})
                             netDemanding_regionalArea_eachWeight.append(netDemanding_regionalArea)  
+                            
+                            ## demanding surplus checking: the total demanding should equal to the total outpu
+                            demandingSurplus = 0
+                            for netDemand in netDemanding_regionalArea:
+                                demandingSurplus += netDemand['netDemanding']
+                            if abs(demandingSurplus) > 1:
+                                print('The total demanding and the total output does not add up.') 
                         netDemanding_smallArea_eachWeather.append(netDemanding_smallArea_eachWeight)
                         netDemanding_regionalArea_eachWeather.append(netDemanding_regionalArea_eachWeight)
                     netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
@@ -1391,19 +1410,24 @@ class OptimalPowerFlowAnalysis:
             ## self.demandingAreaList = demandingAndCentroid[self.startTime_of_EnergyConsumption]
             self.netDemandingList_smallAreaForEachWeight = [] ## small areas refer to the demanding areas, ['LA_code', netDemanding]
             self.netDemandingList_regionalAreaForEachWeight = []
-            # Net demand of each demanding area (small areas)
+            ##-- Net demand of each demanding area (small areas) --##
             for g_index in range(len(self.weighterList)):
                 genNameList = self.GeneratorObjectList[g_index]
                 SMRNameList = self.SMRSiteObjectList[g_index]
-
+                ## Initialise the empty list for different demanding areas
                 netDemanding_smallArea = []
                 netDemanding_regionalArea = []
+                ## Copy the self.demandingAreaList, manipulate the copy later 
+                demandingAreaList_copy = self.demandingAreaList.copy()
+                ## counter of the generators used to fulfill the small area demanding 
+                counter_gen = 0
+                counter_smr = 0
                 for demanding in self.demandingAreaList:
                     Area_LACode = demanding['Area_LACode']
                     if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
                                         "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
                         continue
-                    netDemandingOfThisArea = float(demanding['v_TotalELecConsumption'])
+                    demandingValue_smallArea = float(demanding['v_TotalELecConsumption'])
                     if 'Boundary' in demanding.keys():
                         boundary = demanding['Boundary']
                     else:
@@ -1411,21 +1435,39 @@ class OptimalPowerFlowAnalysis:
                         demanding['Boundary'] = boundary
                     for genName in genNameList:
                         smallAreaCode = str(self.ObjectSet[genName].smallAreaCode)
+                        if str(smallAreaCode) == 'None':
+                            raise ValueError('small Area Code should not be None.')
                         if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
                             genOutput = float(self.ObjectSet[genName].PG_OUTPUT) * (24 * 365) / 1000
-                            netDemandingOfThisArea -= genOutput
+                            demandingValue_smallArea -= genOutput
+                            counter_gen += 1
                     for SMRName in SMRNameList: 
                         smallAreaCode = str(self.ObjectSet[SMRName].smallAreaCode)
+                        if str(smallAreaCode) == 'None':
+                            raise ValueError('small Area Code should not be None.')
                         if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
                             genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000
-                            netDemandingOfThisArea -= genOutput
-                    netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':netDemandingOfThisArea, 'smallAreaBoundery':boundary})
+                            demandingValue_smallArea -= genOutput   
+                            counter_smr += 1  
+                    netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':demandingValue_smallArea, 'smallAreaBoundery':boundary})
+                if counter_gen + counter_smr != len(genNameList) + len(SMRNameList):
+                    raiseExceptions('There are some generators in the list are not counted to fulfill the demanding, please check if the small LACode is properly assigned as an attribute of the generator/SMR instance.')
                 self.netDemandingList_smallAreaForEachWeight.append(netDemanding_smallArea)  
+                # demanding surplus checking: the total demanding should equal to the total output
+                demandingSurplus = 0
+                for netDemand in netDemanding_regionalArea:
+                    demandingSurplus += netDemand['netDemanding']
+                if abs(demandingSurplus) > 1:
+                    print('The total demanding and the total output does not add up.--small area')  
+                    print(demandingSurplus) 
             
-                ## net demanding of the regional areas
+                ##-- net demanding of the regional areas --##
+                regionalDemandingList_copy = self.regionalDemandingList.copy()
+                ## counter of the generators used to fulfill the regional demanding 
+                counter_gen = 0 
                 for regionalDemanding in self.regionalDemandingList:
                     Region_LACode = regionalDemanding['RegionOrCountry_LACode']
-                    netRegionalDemanding = float(regionalDemanding['v_TotalELecConsumption']) 
+                    demandingValue_region = float(regionalDemanding['v_TotalELecConsumption']) 
                     if 'Boundary' in regionalDemanding.keys():
                         boundary = regionalDemanding['Boundary']
                     else:
@@ -1433,25 +1475,43 @@ class OptimalPowerFlowAnalysis:
                         regionalDemanding['Boundary'] = boundary
                     for genName in genNameList:
                         regionalAreaCode = str(self.ObjectSet[genName].RegionLACode)
+                        if regionalAreaCode == None:
+                            raise ValueError('Region LA code should not be None.')
                         if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
                             genOutput = float(self.ObjectSet[genName].PG_OUTPUT) * (24 * 365) / 1000 
-                            netRegionalDemanding -= genOutput
+                            demandingValue_region -= genOutput
+                            counter_gen += 1
                     for SMRName in SMRNameList: 
                         regionalAreaCode = str(self.ObjectSet[SMRName].RegionLACode)
+                        if regionalAreaCode == None:
+                            raise ValueError('Region LA code should not be None.')
                         if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
                             genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000 
-                            netRegionalDemanding -= genOutput
-                    netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding':netRegionalDemanding, 'regionalBoundery':boundary})
+                            demandingValue_region -= genOutput
+                            counter_gen += 1
+                    netDemanding_regionalArea.append({'regionalAreaCode': Region_LACode, 'netDemanding': demandingValue_region, 'regionalBoundery':boundary})
+                if counter_gen != len(genNameList) + len(SMRNameList):
+                    raiseExceptions('There are some generators in the list are not counted to fulfill the demanding, please check if the regional LACode is properly assigned as an attribute of the generator/SMR instance.')
                 self.netDemandingList_regionalAreaForEachWeight.append(netDemanding_regionalArea)         
+                # demanding surplus checking: the total demanding should equal to the total output
+                demandingSurplus = 0
+                for netDemand in netDemanding_regionalArea:
+                    demandingSurplus += netDemand['netDemanding']
+                if abs(demandingSurplus) > 1:
+                    print('The total demanding and the total output does not add up.--regional area')   
+                    print(demandingSurplus)
+
+                totalDemand_regionalArea = 0
+                totalSupply_regionalArea = 0
+                for reDe in self.regionalDemandingList:
+                    totalDemand_regionalArea += float(reDe['v_TotalELecConsumption']) 
+                for genName in genNameList:
+                    genOutput = float(self.ObjectSet[genName].PG_OUTPUT) * (24 * 365) / 1000 
+                    totalSupply_regionalArea += genOutput
+                for SMRName in SMRNameList:  
+                    genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000 
+                    totalSupply_regionalArea += genOutput
             return 
-
-##TODO: add the branch visualization 
-    """This method is to determine the current direction of each branch"""
-    ## THe input will remain the same as the output will be updated after each iteration
-    def branchOutputAttributes(self):
-        return
-
-
 
 ##FIXME: this function should be updated according to the updated version of the code   
     def ModelPythonObjectOntologiser(self):
@@ -2328,6 +2388,12 @@ class OptimalPowerFlowAnalysis:
         
         return 
 
+    ##TODO: add the branch visualization 
+    """This method is to determine the current direction of each branch"""
+    ## THe input will remain the same as the output will be updated after each iteration
+    def GeoJSONCreator_branchGrid(self):
+        return
+   
     def mkdirJSON(self):
         folder = os.path.exists(self.filePathForJSON)
         if not folder:                
@@ -3485,25 +3551,25 @@ if __name__ == '__main__':
     n_offsprings = 1000
     numberOfGenerations = 400
 # ## TODO: for testing 
-#     pop_size = 500
-#     n_offsprings = 100
-#     numberOfGenerations = 100
+    # pop_size = 500
+    # n_offsprings = 100
+    # numberOfGenerations = 100
 
 ## TODO: change the picked weight 
     pickedWeight = 0.9
 
-    # NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
-    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
+    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    NumberOfSMRUnitList = [5] 
-    weighterList = [0.5]
-    CarbonTaxForOPFList = [40]
-    weatherConditionList = [[0.67, 0.74, "WHSH"]]
-    
-    ifReadLocalResults = True
+    # NumberOfSMRUnitList = [5] 
+    # weighterList = [0.5]
+    # CarbonTaxForOPFList = [60]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+
+    ifReadLocalResults = False
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True

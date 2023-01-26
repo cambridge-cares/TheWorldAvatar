@@ -231,9 +231,7 @@ class UKElineModel:
         else:
             self.headerBranchProperty = []
         
-     
         self.numOfBus = numOfBus
-
         
         ## Attributes ##
         # model input
