@@ -46,18 +46,24 @@ public abstract class PostgresDataSubset extends DataSubset {
 
     public void runSQLPostProcess(String database) {
         if (null != sql) {
-
-            if (sql.startsWith("@")) {
-                String sqlFile = sql.substring(1);
-                try {
-                    sql = Files.readString(Path.of(sqlFile));
-                } catch (IOException ex) {
-                    throw new RuntimeException(
-                            "Failed to read SQL file '" + sqlFile + "' for data subset '" + getName() + "'.", ex);
-                }
-            }
-
+            sql = handleFileValues(sql);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sql);
         }
+    }
+
+    public String handleFileValues(String sql) {
+        if (sql.startsWith("@")) {
+            String sqlFile = sql.substring(1);
+            try {
+                sql = Files.readString(Path.of(sqlFile));
+            } catch (IOException ex) {
+                throw new RuntimeException(
+                        "Failed to read SQL file '" + Path.of(sqlFile).toAbsolutePath().toString()
+                                + "' for data subset '"
+                                + getName() + "'.",
+                        ex);
+            }
+        }
+        return sql;
     }
 }
