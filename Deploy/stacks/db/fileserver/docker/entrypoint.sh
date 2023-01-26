@@ -13,4 +13,8 @@ fi
 sed -i "s/FS_PASSWORD/$fs_password/" /usr/local/tomcat/conf/tomcat-users.xml
 
 # Start Tomcat
-catalina.sh run
+if [[ ${DEBUG} == ON ]]; then
+  catalina.sh jpda run
+else
+  catalina.sh run
+fi

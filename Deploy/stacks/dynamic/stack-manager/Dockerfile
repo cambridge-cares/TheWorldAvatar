@@ -19,7 +19,7 @@ WORKDIR /root/code
 COPY pom.xml ./pom.xml
 
 # Retrieve all of the dependencies 
-RUN mvn clean dependency:resolve
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve --update-snapshots
 
 # Copy in the code
 COPY src ./src/
@@ -27,7 +27,13 @@ COPY src ./src/
 # Ensure that the latest versions of SNAPSHOT dependencies are always used
 ARG CACHEBUST=1
 
-RUN mvn package --update-snapshots
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn package --update-snapshots
+
+FROM builder as test
+
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+CMD ["mvn", "test"]
 
 #==================================================================================================
 

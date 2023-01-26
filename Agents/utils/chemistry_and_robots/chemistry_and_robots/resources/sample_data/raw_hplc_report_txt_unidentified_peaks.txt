@@ -1,0 +1,19 @@
+# the idea of this with unidentified peaks raw hplc report file is to mimic the situation where a lot more peaks are identified
+# the data in raw_hplc_report_xls_unidentified_peaks.xls is the same
+[Peak Table(PDA-Ch1)]
+# of Peaks	8
+Peak#	R.Time	Area
+1	0.55	3000
+2	1.55	15000
+3	2.55	3400
+4	3.55	120
+5	4.55	20
+6	5.55	900
+7	6.55	150
+8	7.55	100
+9	8.55	300
+10 	9.55	2000
+11 	10.55	30
+12	11.55	40
+
+[Compound Results(AD2)]

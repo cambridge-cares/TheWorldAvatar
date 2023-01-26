@@ -13,4 +13,8 @@ dist/
 .vscode/
 
 # Miscellaneous files/folders:
+.pytest_cache
 *.env
+
+# email_auth
+email_auth.json
