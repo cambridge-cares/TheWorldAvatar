@@ -14,9 +14,10 @@ You will need to substitute in appropriate values before running any commands.
 6. [Data Types](#data-types)
 7. [OBDA Mapping file](#obda-mapping-file)
 8. [Using Specific Data Sets](#using-specific-data-sets)
-9. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
-10. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
-11. [Troubleshooting](#troubleshooting)
+9. [Value by File Name](#value-by-file-name)
+10. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
+11. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
+12. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -212,7 +213,7 @@ If there is only one data subset then this may be left unset and the files place
 
 #### `"styles"`
 A list of GeoServer style file definition objects.
-The styles defined here wll be loaded into the GeoServer workspace associated with the dataset.
+The styles defined here will be loaded into the GeoServer workspace associated with the dataset.
 Each entry requires the following values to be specified:
 
 | Key      | Description                                                                                                |
@@ -259,7 +260,7 @@ The options for these two processes are set using the following json objects wit
 
 #### GDAL Options
 
-In most situations the default `ogr2ogr` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+In most situations the default `ogr2ogr` settings will be sufficient to upload the data but sometimes some extra options need to be supplied. [:open_file_folder:](#value-by-file-name)
 These can be specified within an `"ogr2ogrOptions"` object under the following keys:
 
 ##### `"sridIn"`
@@ -314,7 +315,7 @@ These settings are generally only required to add dynamic (value-based) styling 
 Within that the following nodes can be added.
 - `"virtualTable"` creates a [SQL View][geoserver-sql] which is specified as follows:
   - `"name"` a name is required.
-  - `"sql"` an SQL query that defines the virtual table is required.
+  - `"sql"` an SQL query that defines the virtual table is required. [:open_file_folder:](#value-by-file-name)
   - `"keyColumn"` specify column for [parameter][geoserver-sql-params] key.
   - `"escapeSql"` is Boolean `true` or `false`.
     This concerns the handling of special characters in column names such as setting single-quotes to doubled single-quotes.
@@ -344,7 +345,7 @@ The data loader does three things when uploading raster data:
 
 #### GDAL Options
 
-In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied. [:open_file_folder:](#value-by-file-name)
 These can be specified within an `"gdalTranslateOptions"` object (previously just called `"options"`) under the following keys:
 
 ##### `"sridIn"`
@@ -510,6 +511,20 @@ If you want to use a few config files you can create one master config file name
         ]
     }
     ```
+
+## Value by File Name
+
+The stack uploader supports file referencing in the config file on certain values denoted here by :open_file_folder:.
+This an be done by giving a value of '@' followed by the name of the file containing the text to be used for that value.
+For example one can avoid long SQL queries in their configs by putting them in a file in the [inputs/config](./inputs/config) directory and referencing that file in the following way.
+  ```json
+    {
+      <...>
+      "sql": "@/inputs/config/my-sql-query.sql"
+      <...>
+    }
+  ```
+Note that this file path is the path inside the container.
 
 ## Debugging the Stack Data Uploader in VSCode
 
