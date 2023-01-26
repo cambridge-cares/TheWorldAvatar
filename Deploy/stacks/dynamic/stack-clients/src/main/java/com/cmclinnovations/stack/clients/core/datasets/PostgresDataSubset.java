@@ -46,14 +46,12 @@ public abstract class PostgresDataSubset extends DataSubset {
 
     public void runSQLPostProcess(String database) {
         if (null != sql) {
-
-            sql = sqlFileToString(sql);
-
+            sql = handleFileValues(sql);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sql);
         }
     }
 
-    public String sqlFileToString(String sql) {
+    public String handleFileValues(String sql) {
         if (sql.startsWith("@")) {
             String sqlFile = sql.substring(1);
             try {
