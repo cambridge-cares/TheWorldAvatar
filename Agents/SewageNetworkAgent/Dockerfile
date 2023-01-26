@@ -25,7 +25,6 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copies all files in config directory to destination
-COPY ./config/. /root/
 COPY ./SewageNetworkAgent/src/test/resources. /root/
 
 # Set the required environment variables
