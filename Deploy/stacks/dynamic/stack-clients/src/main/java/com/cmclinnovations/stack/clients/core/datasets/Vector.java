@@ -24,6 +24,7 @@ public class Vector extends GeoServerDataSubset {
 
     @Override
     public void createLayer(String workspaceName, String database) {
+        geoServerSettings.getVirtualTable().setSql(sqlFileToString(geoServerSettings.getVirtualTable().getSql()));
         GeoServerClient.getInstance()
                 .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
     }
