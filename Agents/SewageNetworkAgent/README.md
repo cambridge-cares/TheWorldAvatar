@@ -37,18 +37,18 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 - Start the stack manager as usual. This should start the container.
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/seweragenetwork-agent/performsewageupdate with a JSON Object. In this agent, a random JSON Object will do. Follow the sample request shown below.
+To run the agent, a POST request must be sent to http://localhost:1080/sewage-network-agent/performsewageupdate with a JSON Object. In this agent, it contains the URL for sparql endpoint. Follow the sample request shown below.
 ```
 
-POST http://localhost:1080/seweragenetwork-agent/performsewageupdate
+POST http://localhost:1080/sewage-network-agent/performsewageupdate
 Content-Type: application/json
-{"SewerageNetworkAgent\":"DataInstantiation"}
+{"endpoint":"http://host.docker.internal:48888/ontosewage"}
 ```
 
 In curl syntax:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
-\"SewerageNetworkAgent\":\"DataInstantiation\"}"  http://localhost:1080/seweragenetwork-agent/performsewageupdate
+\"endpoint\":\"http://host.docker.internal:48888/ontosewage\"}"  http://localhost:1080/sewage-network-agent/performsewageupdate
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
@@ -57,4 +57,4 @@ If the agent runs successfully, you should see a returned JSON Object that is si
 ```
 
 #### Import the CSV data file into the agent
-The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under config folder. It is able to take in all the CSV files and instantiate them all at once.
+A dockerised python code is available under the DataEngineering folder to generate all the required CSV data files. The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under the resources folder. It is able to take in all the CSV files and instantiate them all at once. 
