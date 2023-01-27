@@ -39,8 +39,11 @@ public class CompoundAngleMeasureClassifier {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar("?latitude")
                 .addVar("?longitude");
-        selectBuilder.addWhere("?latitude", "rdf:type", "bim:Latitude")
-                .addWhere("?longitude", "rdf:type", "bim:Longitude");
+        selectBuilder.addWhere("?site", "rdf:type", "bot:Site")
+                .addWhere("?site", "bim:hasRefLatitude", "?latitude")
+                .addWhere("?site", "bim:hasRefLongitude", "?longitude")
+                .addWhere("?latitude", "rdf:type", "bim:CompoundPlaneAngle")
+                .addWhere("?longitude", "rdf:type", "bim:CompoundPlaneAngle");
         return selectBuilder.buildString();
     }
 

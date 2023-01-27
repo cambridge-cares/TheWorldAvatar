@@ -111,13 +111,13 @@ class IfcSpatialZonesConstructBuilderTest {
         expected.add("?element rdf:type bot:Site .");
         expected.add("?element bim:hasRefElevation ?elevation .");
         expected.add("?element bim:hasRefLatitude ?latcompoundangle .");
-        expected.add("?latcompoundangle rdf:type bim:Latitude .");
+        expected.add("?latcompoundangle rdf:type bim:CompoundPlaneAngle .");
         expected.add("?latcompoundangle bim:hasDegree ?latdegree .");
         expected.add("?latcompoundangle bim:hasMinute ?latminute .");
         expected.add("?latcompoundangle bim:hasSecond ?latsecond .");
         expected.add("?latcompoundangle bim:hasMillionthSecond ?latmilsecond .");
         expected.add("?element bim:hasRefLongitude ?longcompoundangle .");
-        expected.add("?longcompoundangle rdf:type bim:Longitude .");
+        expected.add("?longcompoundangle rdf:type bim:CompoundPlaneAngle .");
         expected.add("?longcompoundangle bim:hasDegree ?longdegree .");
         expected.add("?longcompoundangle bim:hasMinute ?longminute .");
         expected.add("?longcompoundangle bim:hasSecond ?longsecond .");
