@@ -25,9 +25,13 @@ else
             SERVICE="${SERVICE%':'*}"
             SERVICE="${SERVICE#*'/'}"
             # If pod is running remove it
-            if [ -n "$(podman pod ls -q -f "name=${STACK_NAME}_${SERVICE}")" ]; then
-                podman pod rm --force "${STACK_NAME}_${SERVICE}" > /dev/null
-            fi
+            for POD_ID in $(podman pod ls -q -f "name=${STACK_NAME}_${SERVICE}") ; do
+                podman pod rm --force "${POD_ID}" > /dev/null
+            done
+            # If container is running outside a pod remove it
+            for CONTAINER_ID in $(podman ps -a -q -f "name=${STACK_NAME}_${SERVICE}"); do
+                podman rm --force "${CONTAINER_ID}" > /dev/null
+            done
         fi
     done
     IFS=$OIFS
