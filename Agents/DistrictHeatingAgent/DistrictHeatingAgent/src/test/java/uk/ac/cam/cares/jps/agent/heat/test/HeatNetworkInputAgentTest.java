@@ -16,12 +16,13 @@ public class HeatNetworkInputAgentTest {
 		
 	@Test
 	public void testDataInstantiation () throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		String endpoint = "endpoint";
 		HeatNetworkInputAgent agent = spy(new HeatNetworkInputAgent());
-	    Method dataInstantiation =  agent.getClass().getDeclaredMethod("dataInstantiation");
+	    Method dataInstantiation =  agent.getClass().getDeclaredMethod("dataInstantiation",String.class);
 	    assertNotNull(dataInstantiation);
-	    doNothing().when(agent).dataInstantiation();
-	    dataInstantiation.invoke(agent);
-        verify(agent, times(1)).dataInstantiation();
+	    doNothing().when(agent).dataInstantiation(anyString());
+	    dataInstantiation.invoke(agent,endpoint);
+        verify(agent, times(1)).dataInstantiation(anyString());
 	}
 	
 	
