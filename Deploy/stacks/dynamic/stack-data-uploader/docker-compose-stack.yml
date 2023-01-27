@@ -25,17 +25,6 @@ volumes:
     labels:
       - com.docker.stack.namespace:${STACK_NAME}
 
-configs:
-  blazegraph:
-    name: ${STACK_NAME}_blazegraph
-    external: true
-  postgis:
-    name: ${STACK_NAME}_postgis
-    external: true
-  geoserver:
-    name: ${STACK_NAME}_geoserver
-    external: true
-
 networks:
   stack:
     name: ${STACK_NAME}
@@ -51,4 +40,13 @@ secrets:
     external: true
   geoserver_password:
     name: ${STACK_NAME}_geoserver_password
+    external: true
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
     external: true
