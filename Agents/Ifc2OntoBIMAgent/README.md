@@ -1,6 +1,20 @@
 # Ifc2OntoBim Agent
 
 This agent converts IFC files into TTL files defined by the OntoBIM ontology, and may upload them to the specified endpoint.
+It requires support from the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent).
+
+```mermaid
+    %%{init: {'theme':'neutral', 'fontFamily':'verdana'}}%%
+    flowchart LR
+    subgraph Overall Workflow
+        direction LR
+        id1{{<b>START</b> - IFC Model: <br> semantic + geometry}}:::start --- |<i>generate <br>IfcOwl Abox</i>| id2[IfcOwlConverterAgent] 
+        --- |<i>generate <br>OntoBim Abox</i>| id3[Ifc2OntoBimAgent] 
+        --> id4[(<b>Knowledge Graph</b><br><i>stores Abox</i>)]:::db
+    end
+    classDef start fill:#fff,stroke:#048A81,stroke-width:5px;
+    classDef db fill:#D0F4EA,stroke:#3066BE,stroke-width:3px, color:#0F084B;
+```
 
 ## Instructions
 ### 1. Requirements
@@ -21,10 +35,7 @@ Other elements are always linked to their Storey, even if there is a Space defin
 - Java 11
 - Apache Maven 3.8+
 - Docker
-- IFCtoRDF
-  - Download the `IFCtoRDF-0.4-shaded.jar` file from [here](https://github.com/pipauwel/IFCtoRDF)
-  - This should be placed in the working directory, when executing the agent. 
-  - Although there is a maven dependency, there are errors in the execution process
+
 
 ### 2. Building the Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document.
@@ -55,10 +66,18 @@ docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 ```
 
 **PRODUCTION ENVIRONMENT**
-- Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
+- An image of [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) 
+will need to be first created on your local Docker environment with the credentials stored.*  
+Run the following code in the CLI at the `<root>` directory of that agent:
+```
+docker build .
+```
+- Deploy the agent and its dependencies by running the following code in the CLI at the `<root>` directory:
 ```
 docker-compose up -d
 ```
+
+*WIP to transfer these Maven credentials over agents, instead of being implemented as Docker instructions
 
 #### 2.3 Running the Agent
 ##### 2.3.1 Precursor
