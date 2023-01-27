@@ -4,12 +4,13 @@
 set -e
 
 get_executables(){
+    if [ -z "$EXECUTABLE" ]; then
     # Ensure compatibility with podman
     if command -v podman &> /dev/null
     then
-        >&2 echo "ERROR Podman cannot run in swarm mode so will have to move to Kubenetes before this actually works"
+            #>&2 echo "ERROR Podman cannot run in swarm mode so will have to move to Kubenetes before this actually works"
         # The "--podman-build-args" argument requires podman compose version 0.1.8
-        pip3 install --user 'podman-compose==1.0.3'
+            pip3 install --user -q 'podman-compose==1.0.3'
         
         EXECUTABLE="podman"
         COMPOSE_EXECUTABLE="podman-compose"
@@ -23,6 +24,7 @@ get_executables(){
     export EXECUTABLE
     export COMPOSE_EXECUTABLE
     export API_SOCK
+    fi
 }
 
 init_server(){
