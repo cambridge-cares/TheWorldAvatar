@@ -38,6 +38,7 @@ networks:
     name: ${STACK_NAME}
     driver: overlay
     attachable: true
+    external: false
 
 secrets:
   postgis_password:
