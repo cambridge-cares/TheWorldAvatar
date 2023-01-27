@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  ifc2ontobim-test:
+    container_name: ifc2ontobim-agent-test
+    image: ifc2ontobim-agent:test
+    build:
+      context: ..
+      target: test
+    ports:
+      - "3025:8080"

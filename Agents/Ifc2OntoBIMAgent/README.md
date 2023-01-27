@@ -42,9 +42,22 @@ repo_username.txt should contain your Github username. repo_password.txt should 
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
 #### 2.2 Docker Deployment
-Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
+**TEST ENVIRONMENT**
+- Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory:
 ```
-docker-compose up -d 
+docker compose -f "./docker/docker-compose.test.yml" up -d --build
+```
+
+**DEBUGGER ENVIRONMENT**
+- Deploy the agent for debugging by running the following code in the CLI at the directory. The debugger will be available at port 5005.
+```
+docker compose -f "./docker/docker-compose.debug.yml" up -d --build
+```
+
+**PRODUCTION ENVIRONMENT**
+- Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
+```
+docker-compose up -d
 ```
 
 #### 2.3 Running the Agent
