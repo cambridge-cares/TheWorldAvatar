@@ -11,5 +11,5 @@ services:
       - postgis_password
       - geoserver_password
     volumes:
-      - ./inputs/data:/inputs/data
+      - ./inputs/data:/inputs/data:z
       - ./inputs/config:/inputs/config

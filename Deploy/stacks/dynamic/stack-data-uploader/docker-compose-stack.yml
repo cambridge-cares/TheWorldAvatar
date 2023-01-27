@@ -12,7 +12,7 @@ services:
     security_opt:
       - label=disable
     volumes:
-      - scratch:/stack_scratch
+      - scratch:/stack_scratch:z
       - $API_SOCK:/var/run/docker.sock
     networks:
       - stack
