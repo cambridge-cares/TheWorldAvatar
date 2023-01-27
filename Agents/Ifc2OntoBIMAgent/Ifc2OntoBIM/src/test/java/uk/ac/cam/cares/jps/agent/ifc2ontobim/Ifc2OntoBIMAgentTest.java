@@ -50,15 +50,13 @@ class Ifc2OntoBIMAgentTest {
         Set<String> ttlFileSet = genFileSet();
 
         JSONObject testMessage;
-        try (MockedConstruction<IfcOwlConverter> mockOwlConverter = Mockito.mockConstruction(IfcOwlConverter.class,
+        try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
                 // Stub the method to return the file list when it is running
-                (mock, context) -> Mockito.when(mock.listTTLFiles()).thenReturn(ttlFileSet))) {
-            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
+                (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
                 testMessage = agent.processRequestParameters(requestParams);
                 // Verify methods was called
-                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles();
+                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
-            }
         }
         String expected = ".ttl has been successfully converted!\",\"All ttl files have been generated in OntoBIM. Please check the directory.";
         assertTrue(testMessage.toString().contains(expected));
@@ -142,13 +140,13 @@ class Ifc2OntoBIMAgentTest {
     void testRunAgent() {
         // Set up
         Set<String> ttlFileSet = genFileSet();
-        try (MockedConstruction<IfcOwlConverter> mockOwlConverter = Mockito.mockConstruction(IfcOwlConverter.class,
+        try (MockedConstruction<OntoBimConverter> mockOwlConverter = Mockito.mockConstruction(OntoBimConverter.class,
                 // Stub the method to return the file list when it is running
-                (mock, context) -> Mockito.when(mock.listTTLFiles()).thenReturn(ttlFileSet))) {
+                (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
                 agent.runAgent(new String[]{});
                 // Verify methods was called
-                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles();
+                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
             }
         }
@@ -156,11 +154,11 @@ class Ifc2OntoBIMAgentTest {
 
     @Test
     void testRunAgentNoTTLFile() {
-        try (MockedConstruction<IfcOwlConverter> mockOwlConverter = Mockito.mockConstruction(IfcOwlConverter.class)) {
+        try (MockedConstruction<OntoBimConverter> mockOwlConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
                 JSONObject message = agent.runAgent(new String[]{});
                 // Verify method was called
-                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles();
+                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
                 assertThrows(IndexOutOfBoundsException.class, () -> mockBimConverter.constructed().get(0));
                 assertEquals("No TTL file detected! Please place at least 1 IFC file input.", message.getString("Result"));

@@ -13,8 +13,13 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcSpatialZon
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IgnoreClassHelper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.TTLWriter;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -30,6 +35,8 @@ public class OntoBimConverter {
     private final Map<String, String> classMapping = new HashMap<>();
     private final List<Path> tempFilePaths = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
+    private static final String TARGET_DIR_ERROR_MSG = "Failed to access target directory at: ";
+
 
     /**
      * Standard Constructor
@@ -37,6 +44,28 @@ public class OntoBimConverter {
     public OntoBimConverter() {
     }
 
+    /**
+     * List all .ttl files in the target directory and store them in a Set
+     *
+     * @return A set object containing all the ttl files in the target directory
+     */
+    public Set<String> listTTLFiles(String ttlDir) {
+        Set<String> fileSet = new HashSet<>();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(ttlDir))) {
+            for (Path path : stream) {
+                if (!Files.isDirectory(path) &&
+                        path.getFileName().toString().substring(
+                                path.getFileName().toString().lastIndexOf('.') + 1).equals("ttl")) {
+                    // Add only ttl files to the list
+                    fileSet.add(path.toString());
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.fatal(TARGET_DIR_ERROR_MSG + ttlDir + "\n" + e.getMessage());
+            throw new JPSRuntimeException(TARGET_DIR_ERROR_MSG + ttlDir + "\n" + e.getMessage());
+        }
+        return fileSet;
+    }
     /**
      * Read the ttl file output for IfcOwl, modify according to OntoBIM Tbox, and overwrite the ttl file
      */
