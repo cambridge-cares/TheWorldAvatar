@@ -6,7 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,14 +52,19 @@ class Ifc2OntoBIMAgentTest {
         Set<String> ttlFileSet = genFileSet();
 
         JSONObject testMessage;
-        try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
-                // Stub the method to return the file list when it is running
-                (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
+        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)){
+            // Stub the method to do nothing when called
+            mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
+            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
+                    // Stub the method to return the file list when called
+                    (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
                 testMessage = agent.processRequestParameters(requestParams);
                 // Verify methods was called
                 Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
+            }
         }
+
         String expected = ".ttl has been successfully converted!\",\"All ttl files have been generated in OntoBIM. Please check the directory.";
         assertTrue(testMessage.toString().contains(expected));
     }
@@ -140,13 +147,16 @@ class Ifc2OntoBIMAgentTest {
     void testRunAgent() {
         // Set up
         Set<String> ttlFileSet = genFileSet();
-        try (MockedConstruction<OntoBimConverter> mockOwlConverter = Mockito.mockConstruction(OntoBimConverter.class,
-                // Stub the method to return the file list when it is running
-                (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
-            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                agent.runAgent(new String[]{});
+        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
+            // Stub the method to do nothing when called
+            mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
+            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
+                    // Stub the method to return the file list when it is running
+                    (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
+                agent.runAgent(new String[]{"test"});
                 // Verify methods was called
-                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles(Mockito.any());
+                mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
+                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
             }
         }
@@ -154,13 +164,15 @@ class Ifc2OntoBIMAgentTest {
 
     @Test
     void testRunAgentNoTTLFile() {
-        try (MockedConstruction<OntoBimConverter> mockOwlConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
+        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
+            // Stub the method to do nothing when called
+            mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                JSONObject message = agent.runAgent(new String[]{});
+                JSONObject message = agent.runAgent(new String[]{"test"});
                 // Verify method was called
-                Mockito.verify(mockOwlConverter.constructed().get(0)).listTTLFiles(Mockito.any());
+                mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
+                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
                 // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
-                assertThrows(IndexOutOfBoundsException.class, () -> mockBimConverter.constructed().get(0));
                 assertEquals("No TTL file detected! Please place at least 1 IFC file input.", message.getString("Result"));
             }
         }
