@@ -33,8 +33,8 @@ init_server(){
             docker swarm init
         fi
     else
-        if [ ! -S "$PODMAN_SOCK" ] || [ -z "$(pidof podman)" ]; then
-            podman system service -t 0 "unix://$PODMAN_SOCK" &
+        if [ ! -S "$API_SOCK" ] || [ -z "$(pidof podman)" ]; then
+            podman system service -t 0 "unix://$API_SOCK" &
         fi
     fi
 }
