@@ -63,12 +63,6 @@ public class BuildingsPlantItems {
     public static String StackQueryIRI;
     public static String GeospatialQueryIRI;
 
-    /* Latitude and longitudes of locations where pollutant concentrations will be calculated are specified as strings
-    where numbers are separated by commas */
-    public static String Latitude;
-
-    public static String Longitude;
-
 
     /* Receptor coordinates */
     public static List<List<Double>> ReceptorDatabaseCoordinates = new ArrayList<>() ;
@@ -108,7 +102,7 @@ public class BuildingsPlantItems {
     /* The values of cutoffRadius and gridSpacing are set to the maximum distance between stack and receptor
     for which AERMOD computes pollutant concentrations in meters. */
     public static double cutoffRadius = 100.0;
-    public static double gridSpacing = cutoffRadius;
+    public static double gridSpacing = 1000.0;
 
     /* These variables define the boundaries of the grid upon which the linked list algorithm is based. Their values are
     * in the database coordinate system. */
@@ -374,6 +368,16 @@ the linked lists for each of these types of structures.
                 radius = radius +dist;
             }
             radius = radius/(coordinates.length/3);
+            if (radius < 10.0){
+                System.out.println(IRI);
+                System.out.println(StackDoubleX + ", " +StackDoubleY);
+                for (int j = 0; j < coordinates.length;j+=3){
+                    System.out.println(Double.parseDouble((coordinates[j])) + " " + Double.parseDouble((coordinates[j+1]))
+                    + " " + Double.parseDouble((coordinates[j+2])));
+                }
+                System.out.println(" ");
+            }
+
             StackDiameter.add(2*radius);
             int ix = (int) (Math.floor((Double.parseDouble(StackX) - xlo)/gridSpacing));
             int iy = (int) (Math.floor((Double.parseDouble(StackY) - ylo)/gridSpacing));
@@ -498,7 +502,7 @@ the linked lists for each of these types of structures.
 
                         Double StackEastUTM = outputCoordinates.get(0).get(0);
                         Double StackNorthUTM = outputCoordinates.get(0).get(1);
-                        String InputLine = "\'Stk" + String.valueOf(numberStacks) + "\'" + " " + "0.0 " +
+                        String InputLine = "\'Stk" + numberStacks + "\'" + " " + "0.0 " +
                                 StackHeight + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
                         BPIPPRMStackInput.add(InputLine);
                         stackUsed.set(stackIndex,true);
@@ -579,7 +583,7 @@ the linked lists for each of these types of structures.
 
                     if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
                         numberBuildings++;
-                        String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" + " \n" ;
+                        String InputLine = "Build" + numberBuildings + " " + "1 " + "0.0" + " \n" ;
                         BPIPPRMBuildingInput.add(InputLine);
                         String BasePolygonVertices = BuildingVertices.get(buildingIndex);
                         String [] BaseVertices = BasePolygonVertices.split("#");
@@ -604,12 +608,12 @@ the linked lists for each of these types of structures.
                             BPIPPRMBuildingInput.add(InputLine);
                         }
 
-                        buildingUsed.add(true);
+                        buildingUsed.set(buildingIndex,true);
 
                     }
                 }
 
-                buildingIndex = buildingList.get(stackIndex);
+                buildingIndex = buildingList.get(buildingIndex);
             }
 
             int jcell0 = 8*icell;
@@ -635,7 +639,7 @@ the linked lists for each of these types of structures.
 
                         if (dist2 < criticalDistanceSquared && StackHeight < gepHeight) {
                             numberBuildings++;
-                            String InputLine = "Build" + String.valueOf(numberBuildings) + " " + "1 " + "0.0" ;
+                            String InputLine = "Build" + numberBuildings + " " + "1 " + "0.0" ;
                             BPIPPRMBuildingInput.add(InputLine);
                             String BasePolygonVertices = BuildingVertices.get(buildingIndex);
                             String [] BaseVertices = BasePolygonVertices.split("#");
@@ -753,7 +757,7 @@ the linked lists for each of these types of structures.
         StackIRIQuery.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI .");
         StackIRIQuery.append("?plant_item ocp:hasIndividualCO2Emission ?CO2 .");
         StackIRIQuery.append("?CO2 om:hasNumericalValue ?emission .}");
-        StackIRIQuery.append("LIMIT 10");
+//        StackIRIQuery.append("LIMIT 100");
         JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, StackIRIQuery.toString());
         return StackIRIQueryResult;
     }
@@ -770,7 +774,7 @@ the linked lists for each of these types of structures.
         BuildingIRIQuery.append("?chemical_plant geo:ehContains ?building .");
         BuildingIRIQuery.append("?building rdf:type <http://www.purl.org/oema/infrastructure/Building>.");
         BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .}");
-        BuildingIRIQuery.append("LIMIT 100");
+//        BuildingIRIQuery.append("LIMIT 100");
         JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, BuildingIRIQuery.toString());
         return BuildingIRIQueryResult;
     }
