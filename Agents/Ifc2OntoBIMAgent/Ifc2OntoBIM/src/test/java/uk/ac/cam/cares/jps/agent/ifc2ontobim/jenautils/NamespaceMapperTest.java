@@ -66,7 +66,6 @@ class NamespaceMapperTest {
         results.add("rdf:");
         results.add("bot:");
         results.add("bim:");
-        results.add("saref:");
         results.add("ifc:");
         results.add("rdfs:");
         results.add("express:");
@@ -75,7 +74,6 @@ class NamespaceMapperTest {
         results.add("<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("<https://w3id.org/bot#>");
         results.add("<http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>");
-        results.add("<https://saref.etsi.org/core/>");
         results.add("<http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
         results.add("<http://www.w3.org/2000/01/rdf-schema#>");
         results.add("<https://w3id.org/express#>");

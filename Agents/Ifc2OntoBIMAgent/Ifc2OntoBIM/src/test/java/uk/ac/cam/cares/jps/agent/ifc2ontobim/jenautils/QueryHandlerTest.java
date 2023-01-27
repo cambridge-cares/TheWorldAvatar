@@ -66,7 +66,6 @@ class QueryHandlerTest {
         expected.add("PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         expected.add("PREFIX  bot:  <https://w3id.org/bot#>");
         expected.add("PREFIX  bim:  <http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>");
-        expected.add("PREFIX  saref: <https://saref.etsi.org/core/>");
         expected.add("PREFIX  ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
         expected.add("PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
         expected.add("PREFIX  express: <https://w3id.org/express#>");

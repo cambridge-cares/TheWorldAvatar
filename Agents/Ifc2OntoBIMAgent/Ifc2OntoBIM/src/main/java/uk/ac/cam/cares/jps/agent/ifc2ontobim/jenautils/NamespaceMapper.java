@@ -48,7 +48,6 @@ public class NamespaceMapper {
         nsMapping.put("om", "http://www.ontology-of-units-of-measure.org/resource/om-2/");
         nsMapping.put("bim", "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#");
         nsMapping.put("bot", "https://w3id.org/bot#");
-        nsMapping.put("saref", "https://saref.etsi.org/core/");
 
         // Duplicate IfcOwl namespaces for sub-queries - require bim as well
         nsMapping.put("ifc", "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#");

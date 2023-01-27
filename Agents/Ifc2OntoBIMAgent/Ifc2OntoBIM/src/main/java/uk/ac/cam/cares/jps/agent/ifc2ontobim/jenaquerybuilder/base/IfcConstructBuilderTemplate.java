@@ -45,8 +45,8 @@ abstract public class IfcConstructBuilderTemplate {
         if (!ifcClass.contains("ifc")) {
             throw new IllegalArgumentException("ifcClass string is missing the ifc namespace!");
         }
-        if (!bimClass.contains("bim") && !bimClass.contains("bot") && !bimClass.contains("saref")) {
-            throw new IllegalArgumentException("The namespace of bimClass string does not belong to either bim, bot, or saref!");
+        if (!bimClass.contains("bim") && !bimClass.contains("bot")) {
+            throw new IllegalArgumentException("The namespace of bimClass string does not belong to either bim or bot!");
         }
     }
 
