@@ -27,10 +27,8 @@ NO_STACK_NAME=TRUE
 . "${SCRIPTS_DIR}/common_functions.sh"
 
 ACTION=${1}
-set -x
 if [[ "$ACTION" == read ]]; then
     cat "${PORT_FILE}"
-    set +x
     exit 0
 fi
 
@@ -48,15 +46,14 @@ port=$MIN_PORT
 i=0
 while (( port < MAX_PORT )) && (( i < N_PORTS )); do
     set -e
-    if ! (${EXECUTABLE} service ls --format "{{.Ports}}" | grep ":$port->" > /dev/null); then # ! (netstat -taln | grep "$port" > /dev/null) &&
+#    if ! (${EXECUTABLE} service ls --format "{{.Ports}}" | grep ":$port->" > /dev/null); then # ! (netstat -taln | grep "$port" > /dev/null) &&
         echo "$port"
         if [[ "$ACTION" == write ]]; then
             echo "$port" > "${PORT_FILE}"
-            set +x
             exit 0
         fi
         i=$((i+1))
-    fi
+#    fi
     set +e
     port=$((port+INCREMENT))
 done
