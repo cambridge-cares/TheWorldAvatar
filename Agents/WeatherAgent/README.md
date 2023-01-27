@@ -61,8 +61,8 @@ curl -X PUT "http://localhost:8086/WeatherAgent/CreateStation?lat=0&lon=0&name=S
 
 ### WeatherAgent/UpdateStation (PUT)
 Input in the form of parameter:
-1) iri - IRI of the station to update
-
+1) iri (compulsory) - IRI of the station to update
+2) timestamp (optional) - Unix timestamp of the weather data you wish to add
 For a successful update, it will return "Updated station: [IRI of station]" in its response.
 
 Example request using curl:

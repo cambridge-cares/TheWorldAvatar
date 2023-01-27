@@ -5,9 +5,9 @@ services:
     secrets:
       - source: blazegraph
         target: /blazegraph
-      - source: postgis 
+      - source: postgis
         target: /postgis
-      - source: geoserver 
+      - source: geoserver
         target: /geoserver
       - blazegraph_password
       - postgis_password

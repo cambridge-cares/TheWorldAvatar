@@ -8,11 +8,11 @@ services:
       - geoserver_password
       - source: blazegraph
         target: /blazegraph
-      - source: ontop 
+      - source: ontop
         target: /ontop
-      - source: postgis 
+      - source: postgis
         target: /postgis
-      - source: geoserver 
+      - source: geoserver
         target: /geoserver
     volumes:
       - ./inputs/data:/inputs/data

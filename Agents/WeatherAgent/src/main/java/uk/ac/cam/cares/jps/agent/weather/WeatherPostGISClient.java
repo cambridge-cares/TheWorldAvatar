@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.weather;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,8 +19,6 @@ import org.jooq.impl.DSL;
  * mainly to create a new database, there is a weird driver issue using PostGISClient from stack-clients
  */
 public class WeatherPostGISClient {
-    private Connection conn = null;
-    private DSLContext context;
 	private Table<Record> table = DSL.table(DSL.name(Config.LAYERNAME));
     private static final Logger LOGGER = LogManager.getLogger(WeatherPostGISClient.class);
 	private String dburl;
@@ -32,42 +31,29 @@ public class WeatherPostGISClient {
 		this.dbpassword = dbpassword;
 	}
 
-    /**
-	 * Establish connection to RDB and set DSL context
-	 */
-	protected void connect() {
+	Connection getConnection() throws SQLException {
 		try {
-			if (this.conn == null || this.conn.isClosed()) {
-				// Load required driver
-				Class.forName("org.postgresql.Driver");
-				// Connect to DB (using static connection and context properties)
-	        	this.conn = DriverManager.getConnection(this.dburl, this.dbuser, this.dbpassword);
-	        	this.context = DSL.using(this.conn, SQLDialect.POSTGRES); 
-	        	System.out.println("Connecting successful: " + Config.dburl); 
-			}
-		} catch (Exception e) {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e) {
 			LOGGER.error(e.getMessage());
-			System.out.println("Connecting failed: " + Config.dburl);
-			throw new RuntimeException("Establishing database connection failed");
+			LOGGER.error("Failed to find postgre driver");
 		}
-    }
+		return DriverManager.getConnection(this.dburl, this.dbuser, this.dbpassword);
+	}
 
-    boolean checkTableExists(String table) {
-        connect();
+    boolean checkTableExists(String table, Connection conn) {
         try {
 			String condition = String.format("table_name = '%s'", table);
-            return context.select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1;
+            return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1;
         } catch (DataAccessException e) {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
-	boolean checkPointExists(double lat, double lon) {
-		connect();
-		try {
-			String sql = String.format("SELECT ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT(%f,%f),4326)) from %s",lon,lat, Config.LAYERNAME);
-			Statement stmt = conn.createStatement();
+	boolean checkPointExists(double lat, double lon, Connection conn) {
+		String sql = String.format("SELECT ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT(%f,%f),4326)) from %s",lon,lat, Config.LAYERNAME);
+		try (Statement stmt = conn.createStatement()) {
 			ResultSet result = stmt.executeQuery(sql);
 			boolean pointExists = false;
 			while (result.next()) {
@@ -77,14 +63,17 @@ public class WeatherPostGISClient {
 				}
 			}
 			return pointExists;
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
-			throw new RuntimeException(e);
+			return true; // to stop the code from proceeding
 		}
 	}
 
-	void deleteRow(String iri) {
-		connect();
-		context.deleteFrom(table).where(DSL.field("iri").eq(iri)).execute();
+	void deleteRow(String iri, Connection conn) {
+		getContext(conn).deleteFrom(table).where(DSL.field("iri").eq(iri)).execute();
+	}
+
+	DSLContext getContext(Connection conn) {
+		return DSL.using(conn, SQLDialect.POSTGRES);
 	}
 }
