@@ -41,5 +41,5 @@ else
     fi
 
     # Redeploy services
-    ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml $DEBUG_COMPOSE_FILE -p "${STACK_NAME}" up
+    ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml $DEBUG_COMPOSE_FILE -p "${STACK_NAME}" up -d
 fi
