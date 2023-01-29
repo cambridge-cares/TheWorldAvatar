@@ -12,8 +12,6 @@
 
 import os
 import warnings
-from cryptography.fernet import Fernet
-from dotenv import load_dotenv
 
 import agentlogging
 
@@ -28,7 +26,7 @@ def retrieve_settings():
 
     # Define global scope for global variables
     global YEAR, NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           ONTOP_FILE, CEDA_USERNAME, CEDA_PASSWORD
+           ONTOP_FILE
 
     # Retrieve the YEAR of which the user is interested in processing data about
     # the UK Lower-layer Super Output Area (LSOA)
@@ -88,28 +86,6 @@ def retrieve_settings():
     elif not os.path.exists(ONTOP_FILE):
         logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
-
-    load_dotenv('./downloads/.env')
-    key = os.getenv('CEDA_KEY').encode()
-    cipher = Fernet(key)
-    # Retrieve the CEDA_USERNAME
-    CEDA_USERNAME = os.getenv('CEDA_USERNAME')    
-    if CEDA_USERNAME is None:
-        logger.error('"CEDA_USERNAME" is missing in environment variables.')
-        raise ValueError('"CEDA_USERNAME" is missing in environment variables.')
-    if CEDA_USERNAME == '':
-        logger.error('No "CEDA_USERNAME" value has been provided in environment variables.')
-        raise ValueError('No "CEDA_USERNAME" value has been provided in environment variables.')
-
-    # Retrieve the CEDA_PASSWORD
-    encrypted_password = os.getenv('CEDA_PASSWORD')
-    CEDA_PASSWORD = str(cipher.decrypt(encrypted_password), 'utf-8')
-    if CEDA_PASSWORD is None:
-        logger.error('"CEDA_PASSWORD" is missing in environment variables.')
-        raise ValueError('"CEDA_PASSWORD" is missing in environment variables.')
-    if CEDA_PASSWORD == '':
-        logger.error('No "CEDA_PASSWORD" value has been provided in environment variables.')
-        raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
 
 # Run when module is imported
 #retrieve_settings()

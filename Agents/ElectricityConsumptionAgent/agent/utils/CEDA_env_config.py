@@ -14,6 +14,7 @@ import os
 from cryptography.fernet import Fernet
 import requests
 from bs4 import BeautifulSoup 
+from dotenv import load_dotenv
 
 import agentlogging
 from agent.errorhandling.exceptions import InvalidInput
@@ -113,3 +114,31 @@ def record_login_info():
             print('loggin Cancelled')
             logger.info('loggin Cancelled')
             break
+
+def retrieve_settings():
+    global CEDA_USERNAME, CEDA_PASSWORD
+    
+    load_dotenv('./downloads/.env')
+    key = os.getenv('CEDA_KEY').encode()
+    cipher = Fernet(key)
+    # Retrieve the CEDA_USERNAME
+    CEDA_USERNAME = os.getenv('CEDA_USERNAME')    
+    if CEDA_USERNAME is None:
+        logger.error('"CEDA_USERNAME" is missing in environment variables.')
+        raise ValueError('"CEDA_USERNAME" is missing in environment variables.')
+    if CEDA_USERNAME == '':
+        logger.error('No "CEDA_USERNAME" value has been provided in environment variables.')
+        raise ValueError('No "CEDA_USERNAME" value has been provided in environment variables.')
+
+    # Retrieve the CEDA_PASSWORD
+    encrypted_password = os.getenv('CEDA_PASSWORD')
+    CEDA_PASSWORD = str(cipher.decrypt(encrypted_password), 'utf-8')
+    if CEDA_PASSWORD is None:
+        logger.error('"CEDA_PASSWORD" is missing in environment variables.')
+        raise ValueError('"CEDA_PASSWORD" is missing in environment variables.')
+    if CEDA_PASSWORD == '':
+        logger.error('No "CEDA_PASSWORD" value has been provided in environment variables.')
+        raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
+
+# Run when module is imported
+retrieve_settings()

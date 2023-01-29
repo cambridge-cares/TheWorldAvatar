@@ -7,7 +7,7 @@ services:
       - STACK_NAME=${STACK_NAME}
       # The year of which data you want to process
       # e.g. '2020' (Set as default)
-      - YEAR= '2020'
+      - YEAR= 2020
       # Target Blazegraph namespace
       - NAMESPACE= ontogasgrid
       # Target layer name in geoserver, also table name in PostGIS

@@ -24,7 +24,7 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import *
-from agent.utils.env_configs import YEAR, CEDA_PASSWORD, CEDA_USERNAME
+from agent.utils.env_configs import YEAR
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 #from agent.kgutils.tsclient import jpsBaseLibView
@@ -251,6 +251,7 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
           year: the number of year of which the data you may want to read
           var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
     '''
+  from agent.utils.CEDA_env_config import CEDA_PASSWORD, CEDA_USERNAME
   # Web of interest
   url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
 
