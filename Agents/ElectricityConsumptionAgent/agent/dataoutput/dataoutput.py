@@ -330,6 +330,23 @@ def remove_unlocated_data(df):
 def add_prefix(x, prefix):
     return prefix + str(x)
 
+def generate_time_dict(year: str):
+
+      time_dict = {f'{year}-01-01 12:00:00':0,\
+             f'{year}-02-01 12:00:00':1,\
+             f'{year}-03-01 12:00:00':2,\
+             f'{year}-04-01 12:00:00':3,\
+             f'{year}-05-01 12:00:00':4,\
+             f'{year}-06-01 12:00:00':5,\
+             f'{year}-07-01 12:00:00':6,\
+             f'{year}-08-01 12:00:00':7,\
+             f'{year}-09-01 12:00:00':8,\
+             f'{year}-10-01 12:00:00':9,\
+             f'{year}-11-01 12:00:00':10,\
+             f'{year}-12-01 12:00:00':11}
+            
+      return time_dict
+
 # ------------------------ Data retrieval (from Web) ------------------------ #
 def read_from_web_monthly_distribution_elec(year:str = YEAR):
   '''
@@ -999,6 +1016,48 @@ def delta_elec(delta_gas, COP, boiler_efficiency: float = 0.8):
 
     return delta_elec
 
+# ---------------------- Calculation Agent---------------------------------- #
+def call_cop_agent(url: str, temp: np.ndarray, unit:str, lsoa_sequence:np.ndarray = None):
+    '''
+    This module will call the calculation agent(cop) to perform calculation with the parameters and url specified
+    
+    Arguments:
+    temperature: should be an array (np.ndarray) I suppose you are not interested in calculating single value...
+    unit: unit with respect to temperature, must be wrapped as a url as per OntoMeasurement. Units below are available:
+          DegreeCelsius ℃:    http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius
+          DegreeFahrenheit ℉:    http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit
+          Kelvin K:    http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin
+    lsoa_sequence: should be an array (np.ndarray), this is the respective lsoa code with the temperature you provided, which must be wrapped as a url as per OntoGasGrid
+                   if the lsoa_sequence is not provided the agent will still run and the result will still be given, with a warning in the logger
+    url: the endpoint to perform calculation
+    '''
+    
+    # Wrapping the query
+    if lsoa_sequence is not None:
+        query = {
+            'query':{'temperature':temp.tolist(),
+                    'unit':unit,
+                    'lsoa_sequence':lsoa_sequence.tolist()
+                    }
+        }
+    else:
+        query = {
+            'query':{'temperature':temp.tolist(),
+                    'unit':unit
+                    }
+        }
+
+    headers = {'Content-type': 'application/json'}
+    response = requests.get(url, headers=headers, json=query)
+
+    data = response.json()
+
+    cop = np.array(data['COP'])
+    if lsoa_sequence is not None:
+        lsoa_sequence = np.array(data['lsoa_sequence'])
+
+    return cop, lsoa_sequence
+
 # ------------------------ GeoSpatial Plot --------------------------------- #
 def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
     '''
@@ -1466,19 +1525,29 @@ for t_max, mean and min senarios
     print(f'{i} number of lines have been plotted')
 
 # ------------------------ Line chart Plot --------------------------------- #
-def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
+def plot_line_chart(filename: str, y_label: str, df_in: pd.DataFrame, temproal = True):
     '''
     To create a line chart to represent the monthly data
     Note: the input dataframe should be looks like:
+    For temproal = True:
 # -------------------------------------------------------------#
 #                Jan Feb Mar .... Nov Dec                      #
 # [index_name]                                                 #
 # [index_name]                                                 #
 #    ...                                                       #
 # -------------------------------------------------------------#
+or for temproal = False:
+# -------------------------------------------------------------#
+#                col1 col2 col3 ...                            #
+# [index_name]                                                 #
+# [index_name]                                                 #
+#    ...                                                       #
+# -------------------------------------------------------------#
+
     so for how many rows were in this df, how many line will be plotted. noted that the column names 
-    don't matter as it default the sequence as Jan to Dec. However, the [index_name] will be used as 
-    the label of this line
+    don't matter in the case of temproal = True as it default the sequence as Jan to Dec. But if which
+    is False, the column name will be used as x-axis labels (in the second example, col1, col2, col3...)
+    And in both cases, the [index_name] will be used as the label of this line
 
     If in some case you may want fill_between feature to represent a range, please provide several rows with same 
     [index_name], for those rows have same [index_name], the function will automatically fill between the row have
@@ -1489,6 +1558,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
     filename: str, name of the figure file you may want to store
     y_label: str, name of the y-axis legend
     df: pd.DataFrame, dataframe to be processd
+    temproal: if True, the plot have defalut x-axis from Jan - Dec, the df_in must be 12 columns representing data from Jan to Dec
     '''
     df = copy.deepcopy(df_in)
     # Group the rows by index name
@@ -1502,7 +1572,7 @@ def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
     for index_name, group in groups:
         if len(group) == 1:
             # Plot the line for the single-data row
-            sb.lineplot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+            sb.lineplot(x=group.columns, y=group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i])
             i+=1
 
         else:
@@ -1517,16 +1587,20 @@ def plot_temproal_line_chart(filename: str, y_label: str, df_in: pd.DataFrame):
             y1 = group.iloc[0]
             y2 = group.iloc[-1]
             # Plot the fill between the minimum and maximum rows
-            plt.fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
+            plt.fill_between(x=df.columns, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
             # Plot the remaining rows
             for _, row in group.iloc[1:-1].iterrows():
-                sb.lineplot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+                sb.lineplot(x=df.columns, y=row, label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i])
                 i+=1
     axs.legend(frameon=False)
 
     plt.subplots_adjust(left=0.175)
-    axs.set_xticks([0,1,2,3,4,5,6,7,8,9,10,11])
-    axs.set_xticklabels(labels = ['J','F','M','A','M','J','J','A','S','O','N','D'])
+    if temproal == True:
+        axs.set_xticks([0,1,2,3,4,5,6,7,8,9,10,11])
+        axs.set_xticklabels(labels = ['J','F','M','A','M','J','J','A','S','O','N','D'])
+    else:
+        axs.set_xticks(range(len(df.columns)))
+        axs.set_xticklabels(df.columns)
     axs.set_xlabel('')
     axs.set_ylabel(y_label)
 
@@ -1635,7 +1709,7 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     for index_name, group in groups:
         if len(group) == 1:
             # Plot the line for the single-data row
-            plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+            plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i])
             i+=1
 
         else:
@@ -1650,15 +1724,16 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
             y1 = group.iloc[0]
             y2 = group.iloc[-1]
             # Plot the fill between the minimum and maximum rows
-            plt.fill_between(x=independent_var, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
+            plt.fill_between(x=independent_var, y1=y1, y2=y2, color='black',linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i],alpha=0.1)
             # Plot the remaining rows
             for _, row in group.iloc[1:-1].iterrows():
-                plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot'][i])
+                plt.plot(independent_var, group.values[0], label=index_name, color='black', linewidth=2, linestyle=['solid', 'dashed', 'dotted', 'dashdot','solid', 'dashed', 'dotted', 'dashdot'][i])
                 i+=1
     plt.ylim(bottom=0)
     plt.legend(frameon=False)
     plt.subplots_adjust(left = 0.127)
     save_figures(filename)
+
 
 '''
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
@@ -1787,6 +1862,41 @@ plot_temperature_versus_var(label = 'Coefficient of Performance (-)',
                             cb_scale = 0.5)
 '''
 # ----------------------------------------------------------------
+
+# Test for generating multiple year's data (cost)-----------------
+'''
+# generating 2019 data
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+df_final = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+df_final['LSOA_code'] = df_final['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+for year in ['2015','2016','2017','2018','2019']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+    elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
+    gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = year, dict=True)
+    df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
+    df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meter.get(x, np.nan)))
+    df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
+    df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
+    df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(gas_meter.get(x, np.nan)))
+    df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
+
+    df_elec = df[['LSOA_code', 'Electricty_cosumption_per_household']]
+    df_gas = df[['LSOA_code', 'Gas_consumption_per_household']]
+
+    # Get index
+    cost_elec = read_from_web_price_elec(year=year)
+    cost_gas = read_from_web_price_gas(year=year)
+    monthly_electricity_consumption = read_from_web_monthly_distribution_elec(year=year)
+    monthly_gas_consumption = read_from_web_monthly_distribution_gas(year=year)
+
+    # Calculate fuel cost
+    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=True)
+    df_cost_total = df_cost_total[['LSOA_code', 'Annual cost']]
+    df_final[f'{year}'] = df_cost_total['Annual cost']
+
+plot_multiple_geodistribution('Fuel Cost \n (£/month/household)','household_cost_2015-2019_geoplot',df_final,0)
+'''
+# ----------------------------------------------------------------
 ##########################################################
 
 
@@ -1805,7 +1915,7 @@ df_cost_gas = get_median(df_cost_gas, 'Gas cost')
 
 # Construct df to plot
 df_to_plot = pd.concat([df_cost_total, df_cost_elec, df_cost_gas], axis=0)
-plot_temproal_line_chart(filename='household_cost', y_label = 'Fuel Cost \n (£/month/household)',df = df_to_plot)
+plot_line_chart(filename='household_cost', y_label = 'Fuel Cost \n (£/month/household)',df = df_to_plot)
 '''
 # ----------------------------------------------------------------
 
@@ -1820,7 +1930,7 @@ df_emission_gas = get_median(df_emission_gas, 'Gas emissions')
 
 # Construct df to plot
 df_to_plot = pd.concat([df_emission_total, df_emission_elec, df_emission_gas], axis=0)
-plot_temproal_line_chart(filename='household_emissions', y_label = 'Emissions \n (kgCO$_2$eq/month/household)',df = df_to_plot)
+plot_line_chart(filename='household_emissions', y_label = 'Emissions \n (kgCO$_2$eq/month/household)',df = df_to_plot)
 '''
 # ----------------------------------------------------------------
 
@@ -1857,7 +1967,7 @@ for uptake in uptake_list:
     df_toplot.index = [f"uptake = {uptake}"] * len(df_toplot)
     df_toplot_final = df_toplot_final.append(df_toplot)
 
-plot_temproal_line_chart('remaining electricity','Electricity Consumption (kWh/month)',df_toplot_final)
+plot_line_chart('remaining electricity','Electricity Consumption (kWh/month)',df_toplot_final)
 '''
 # ----------------------------------------------------------------
 
@@ -1907,7 +2017,109 @@ for uptake in uptake_list:
 plot_var_versus_result('Energy uptake','Energy Consumption (kWh/year)','% Uptake',df_toplot_final,uptake_list)
 '''
 # ----------------------------------------------------------------
+
+# Test for plot multiple year line chart (cost) ------------------
+'''
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+df_final = pd.DataFrame(columns=months)
+for year in ['2015','2016','2017','2018','2019']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+    elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
+    gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = year, dict=True)
+    df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
+    df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meter.get(x, np.nan)))
+    df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
+    
+    df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
+    df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(gas_meter.get(x, np.nan)))
+    df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
+
+    df_elec = df[['LSOA_code', 'Electricty_cosumption_per_household']]
+    df_gas = df[['LSOA_code', 'Gas_consumption_per_household']]
+
+    # Get index
+    cost_elec = read_from_web_price_elec(year=year)
+    cost_gas = read_from_web_price_gas(year=year)
+    monthly_electricity_consumption = read_from_web_monthly_distribution_elec(year=year)
+    monthly_gas_consumption = read_from_web_monthly_distribution_gas(year=year)
+
+    # Calculate fuel cost
+    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=False)
+    # Calculate median value
+    df_cost_total = get_median(df_cost_total, f'{year}')
+    df_final = pd.concat([df_final, df_cost_total], axis=0)
+plot_line_chart(filename='household_cost_2015-2019', y_label = 'Fuel Cost \n (£/month/household)',df_in = df_final)
+'''
+# ----------------------------------------------------------------
+
+# Test for plot multiple year in one-line (median annual cost) ---
+'''
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+df_final = pd.DataFrame()
+for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+    elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
+    gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = year, dict=True)
+    df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
+    df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meter.get(x, np.nan)))
+    df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
+    
+    df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
+    df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(gas_meter.get(x, np.nan)))
+    df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
+
+    df_elec = df[['LSOA_code', 'Electricty_cosumption_per_household']]
+    df_gas = df[['LSOA_code', 'Gas_consumption_per_household']]
+
+    # Get index
+    cost_elec = read_from_web_price_elec(year=year)
+    cost_gas = read_from_web_price_gas(year=year)
+    monthly_electricity_consumption = read_from_web_monthly_distribution_elec(year=year)
+    monthly_gas_consumption = read_from_web_monthly_distribution_gas(year=year)
+
+    # Calculate fuel cost
+    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=False)
+    # Calculate median value
+    df_cost_total = get_median(df_cost_total, 'Median Annual Cost')
+    df_cost_total[f'{year}'] = df_cost_total.sum(axis=1)
+    df_final[f'{year}'] = df_cost_total[f'{year}'] 
+plot_line_chart(filename='household_cost_Median Annual Cost_2010-2020', y_label = 'Fuel Cost \n (£/year/household)',df_in = df_final, temproal=False)
+'''
+# ----------------------------------------------------------------
+
+# Test for plot multiple year in one-line (annual electricity consumption) ---
+'''
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+df_final = pd.DataFrame()
+for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+    elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
+    df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
+    
+    df_sum = pd.DataFrame({'Sum': df[['Electricity_consump']].sum()})
+    df_final[f'{year}'] = df_sum['Sum']
+plot_line_chart(filename='National_Elec_consump_2010-2020', y_label = 'Electricity consumption \n (kwh/year/)',df_in = df_final, temproal=False)
+'''
+# ----------------------------------------------------------------
+
+# Test for plot multiple year in one-line (annual gas consumption) ---
+'''
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+df_final = pd.DataFrame()
+for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+    gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = year, dict=True)
+    df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
+    
+    df_sum = pd.DataFrame({'Sum': df[['Gas_consump']].sum()})
+    df_final[f'{year}'] = df_sum['Sum']
+plot_line_chart(filename='National_Gas_consump_2010-2020', y_label = 'Gas consumption \n (kwh/year/)',df_in = df_final, temproal=False)
+'''
+# ----------------------------------------------------------------
 ##########################################################
+
+
 '''
     #convert 2021 temp data to tensor
     dict_temp_2021 = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')

@@ -160,12 +160,7 @@ def output_query_template(keyword: str, year: str = '2020'):
 
 
     '''
-    if keyword == 'Temperature':
-        query = 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> '
-    else:
-        query = ''
-        
-    query += f'''SELECT DISTINCT ?s'''
+    query = f'''SELECT DISTINCT ?s'''
 
     #--------------------------Query heading------------------------------------------
     # 'Electricity' - return LSOA code, electricity usage, number of electricity meters
