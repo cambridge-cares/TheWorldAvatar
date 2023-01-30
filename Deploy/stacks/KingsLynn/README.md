@@ -21,10 +21,11 @@ The [Utilities] repository contains several helper functions to be used in the c
 &nbsp;
 ## Digital Twin Visualisation Framework (DTVF)
 
-The [DTVF] repository contains required code and resources to deploy the Digital Twin Visualisation Framework to visualise the King's Lynn use case. It also hosts relevant data and instructions to spin up the Feature Info Agent.
+The [DTVF] repository contains required code and resources to deploy the Digital Twin Visualisation Framework to visualise the King's Lynn use case. It also hosts relevant data and instructions to spin up the [Feature Info Agent].
 
 
 <!-- Links -->
 [StackDeployment]: StackDeployment
 [Utilities]: Utilities
 [DTVF]: DTVF
+[Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent
