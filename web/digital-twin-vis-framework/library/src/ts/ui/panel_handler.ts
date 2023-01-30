@@ -9,6 +9,11 @@ class PanelHandler {
     _defaultHTML: string;
 
     /**
+     * 
+     */
+    manager: Manager;
+
+    /**
      * Handles plotting time series data.
      */
     timeseriesHandler: TimeseriesHandler;
@@ -16,7 +21,8 @@ class PanelHandler {
     /**
      * Constructor
      */
-    constructor() {
+    constructor(manager) {
+        this.manager = manager;
         this.timeseriesHandler = new TimeseriesHandler();
     }
 
@@ -221,6 +227,7 @@ class PanelHandler {
         };
 
         let self = this;
+
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
             if(rawJSON === null || rawJSON === undefined) {
                 self.showBuiltInData(properties);
@@ -239,10 +246,13 @@ class PanelHandler {
             let meta = rawJSON["meta"];
             let time = rawJSON["time"];
 
+            if (meta != null) console.log("Got a meta object!");
+            if (time != null) console.log("Got a time object!");
+
             // Render metadata tree
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            if(meta !== null && meta !== undefined) {
+            if(meta != null) {
                 // Formatting
                 meta = JSONFormatter.formatJSON(meta);
 
@@ -252,14 +262,15 @@ class PanelHandler {
                 JsonView.expandChildren(metaTree);
                 // @ts-ignore
                 JsonView.selectiveCollapse(metaTree);
-            } else {
+
+            } else if(time == null) {
                 self.showBuiltInData(properties);
             }
 
             // Render timeseries
             document.getElementById("metaTimeContainer").innerHTML = "";
 
-            if(time !== null && time !== undefined) {
+            if(time != null) {
                 // Plot data
                 self.timeseriesHandler.parseData(time);
                 self.timeseriesHandler.showData("metaTimeContainer");
@@ -270,6 +281,10 @@ class PanelHandler {
             } else {
                 console.warn("No 'time' node found, skipping timeseries visualisation.");
             }
+
+            // Set visibility of UI containers
+            this.prepareMetaContainers(meta != null, time != null);
+
         })
         .fail(function() {
             console.warn("Could not get valid response from the agent, will show any in-model content instead...");
@@ -347,12 +362,23 @@ class PanelHandler {
         if(treeButton != null) treeButton.style.display = (addMeta) ? "block" : "none"; 
         if(timeButton != null) timeButton.style.display = (addTime) ? "block" : "none"; 
 
-        if(addMeta && !addTime && treeButton != null) {
+        if(addMeta && !addTime) {
             treeButton.style.width = "100%";
             treeButton.style.borderRadius = "10px";
-        } else if(addMeta && addTime && treeButton != null) {
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
+
+        } else if (!addMeta && addTime) {
+            timeButton.style.width = "100%";
+            timeButton.style.borderRadius = "10px";
+            
+            this.manager.openMetaTab("timeButton", "metaTimeContainer");
+
+        } else if(addMeta && addTime) {
             treeButton.style.width = "50%";
             treeButton.style.borderRadius = "10px 0 0 10px";
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
         }
 
         let footerContent = document.getElementById("footerContainer");
