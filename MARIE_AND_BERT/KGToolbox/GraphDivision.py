@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 
 import networkx as nx
@@ -19,7 +20,7 @@ class GraphDivider:
                                       dataset_name=self.ontology)
         self.triples = self.file_loader.load_all_triples()
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
-        self.graph_path = os.path.join(self.full_dataset_dir, "graph.json")
+        self.graph_path = os.path.join(self.full_dataset_dir, "graph.pkl")
         self.graph = nx.Graph()
         self.stop_hash = ["bba36f226cdd988cfb4953ec680b214e315b120a0de4ba0fb12363487f7e1ad6",
                           "44bd7ae60f478fae1061e11a7739f4b94d1daf917982d33b6fc8a01a63f89c21",
@@ -32,17 +33,20 @@ class GraphDivider:
 
         if os.path.exists(self.unique_reactions_path):
             self.unique_reactions = json.loads(open(self.unique_reactions_path).read())
-        else:
-            self.unique_reactions = self.create_graph()
-            with open(self.unique_reactions_path, "w") as f:
-                f.write(json.dumps(self.unique_reactions))
-                f.close()
+            # self.graph = pickle.load(open(self.graph_path))
+        #
+        # else:
+        #     self.unique_reactions = self.create_graph()
+        #     with open(self.unique_reactions_path, "w") as f:
+        #         f.write(json.dumps(self.unique_reactions))
+        #         f.close()
 
     def create_graph(self):
         """
         Iterate all the triples and create a nx Graph with undirected edges
         :return:
         """
+        # also create a dictionary mapping reaction to the species idx it has ... using the graph .
         counter = 0
         unique_reactions = []
         for triple in self.triples:
@@ -58,6 +62,10 @@ class GraphDivider:
             if o not in unique_reactions:
                 unique_reactions.append(o)
 
+        # pickle.dump(self.graph, open(self.graph_path, 'wb'))
+
+
+
         return unique_reactions
 
     """
@@ -72,8 +80,11 @@ class GraphDivider:
     There must be some overlapping between G1 and G2 ,"""
 
     def divide_graph_by_reaction_similarity(self):
-        # cluster the reactions by the species they contain
-        # directly cluster the reactions by their string similarity
+        """
+        calculate the string similarity (based on Levenshtein distance) between all reactions
+        form a M x M matrix, then use dbscan to come up with the clustering of reactions ...
+        :return:
+        """
         reaction_text_list = []
         for reaction in self.unique_reactions:
             reaction_text = self.reaction_text_dict[reaction]
@@ -93,11 +104,46 @@ class GraphDivider:
 
         # calculate the overlapping nodes between G1 and G2
 
+    def make_reaction_species_idx_mapping(self):
+        # selected_species = random.sample(self.unique_reactions, 500)
+        reaction_species_mapping = {}
+        unique_species = []
+        counter = 0
+        for triple in self.triples:
+            counter += 1
+            print(f"{counter} out of {len(self.triples)}")
+            s, p, o = [e.strip() for e in triple.split("\t")]
+            # if s not in unique_species:
+            unique_species.append(s)
+        unique_species = list(set(unique_species))
+        selected_species = unique_species
+        # selected_species = random.sample(unique_species, 1000)
+
+        counter = 0
+        for triple in self.triples:
+            counter += 1
+            print(f"{counter} out of {len(self.triples)}")
+            s, p, o = [e.strip() for e in triple.split("\t")]
+            s_idx = self.entity2idx[s]
+            o_idx = self.entity2idx[o]
+            if o_idx in reaction_species_mapping:
+                reaction_species_mapping[o_idx].append(s_idx)
+                reaction_species_mapping[o_idx] = list(set(reaction_species_mapping[o_idx]))
+            else:
+                reaction_species_mapping[o_idx] = [s_idx]
+        with open(os.path.join(self.full_dataset_dir, "reaction_species_mapping.json"), "w") as f:
+            f.write(json.dumps(reaction_species_mapping))
+            f.close()
+        with open(os.path.join(self.full_dataset_dir, "reaction_idx_list.json"), "w") as f:
+            f.write(json.dumps(list(reaction_species_mapping.keys())))
+            f.close()
+
+
     def find_subgraphs(self):
         idx_list = list(self.idx2entity.keys())
         _s = random.choice(idx_list)
         _t = random.choice(idx_list)
-        m_c = nx.minimum_cut(self.graph, _s, _t)
+        m_c = nx.minimum_node_cut(self.graph)
         print(m_c)
 
         # d = sorted(list(nx.connected_components(self.graph)))
@@ -106,7 +152,8 @@ class GraphDivider:
         #     print(len(d_graph))
 
     def run(self):
-        self.divide_graph_by_reaction_similarity()
+        self.make_reaction_species_idx_mapping()
+        # self.divide_graph_by_reaction_similarity()
         # self.create_graph()
         # self.find_subgraphs()
         # nx.draw(self.graph, with_labels=True)
