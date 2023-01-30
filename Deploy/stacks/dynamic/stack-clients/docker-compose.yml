@@ -7,9 +7,11 @@ services:
       - ontop
       - postgis
       - geoserver
+      - superset
     secrets:
       - postgis_password
       - geoserver_password
+      - superset_password
     volumes:
       - ./inputs/data:/inputs/data
       - ./inputs/config:/inputs/config

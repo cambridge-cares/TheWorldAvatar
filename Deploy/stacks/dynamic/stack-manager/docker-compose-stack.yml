@@ -31,6 +31,9 @@ configs:
   geoserver:
     name: ${STACK_NAME}_geoserver
     external: true
+  superset:
+    name: ${STACK_NAME}_superset
+    external: true
 
 networks:
   stack:
@@ -44,4 +47,7 @@ secrets:
     external: true
   geoserver_password:
     name: ${STACK_NAME}_geoserver_password
+    external: true
+  superset_password:
+    name: ${STACK_NAME}_superset_password
     external: true

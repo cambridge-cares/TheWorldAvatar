@@ -6,10 +6,12 @@ services:
       - blazegraph
       - postgis
       - geoserver
+      - superset
     secrets:
       - blazegraph_password
       - postgis_password
       - geoserver_password
+      - superset_password
     volumes:
       - ./inputs/data:/inputs/data
       - ./inputs/config:/inputs/config
