@@ -53,4 +53,8 @@ public class SupersetClient extends ContainerClient implements ClientWithEndpoin
         return apiClient;
     }
 
+    public void refreshToken() {
+        apiClient.setAccessToken(supersetEndpoint.getAccessToken());
+    }
+
 }
