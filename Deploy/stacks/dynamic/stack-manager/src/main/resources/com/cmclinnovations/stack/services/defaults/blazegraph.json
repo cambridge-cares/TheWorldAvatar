@@ -11,6 +11,11 @@
                         "Source": "blazegraph_data",
                         "Target": "/data"
                     }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "blazegraph_password"
+                    }
                 ]
             }
         }

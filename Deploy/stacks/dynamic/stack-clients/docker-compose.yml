@@ -1,8 +1,10 @@
 version: '3.8'
 services:
   stack-client:
-    image: docker.cmclinnovations.com/stack-client:1.6.3
+    image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.7.2
     configs:
+      - blazegraph
+      - ontop
       - postgis
       - geoserver
     secrets:

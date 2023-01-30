@@ -1,11 +1,13 @@
 version: '3.8'
 services:
   stack-data-uploader:
-    image: docker.cmclinnovations.com/stack-data-uploader:1.6.3
+    image: docker.cmclinnovations.com/stack-data-uploader${IMAGE_SUFFIX}:1.7.2
     configs:
+      - blazegraph
       - postgis
       - geoserver
     secrets:
+      - blazegraph_password
       - postgis_password
       - geoserver_password
     volumes:
