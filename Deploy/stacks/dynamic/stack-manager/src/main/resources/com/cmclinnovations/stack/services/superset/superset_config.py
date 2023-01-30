@@ -19,3 +19,5 @@ class ReverseProxied(object):
 
 
 ADDITIONAL_MIDDLEWARE = [ReverseProxied, ]
+
+WTF_CSRF_ENABLED = False
