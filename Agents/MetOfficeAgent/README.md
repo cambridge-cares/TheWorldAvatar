@@ -66,7 +66,11 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] to be wrapped by [py4jps]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.30`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the following information should suffice in this context:
+* When building the Docker images, the `StackClients` resource is copied from the published Docker image (details in the [Dockerfile])
+* For testing purposes, the latest `StackClients` resource is compiled and installed locally using the [py4jps] Resource Manager (see Agent Tests, step 3)
+
+Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
 
 Simply execute the following command in the same folder as this `README` to spin up the *production version* of the agent (from a *bash* terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
@@ -86,8 +90,6 @@ The *debug version* will run when built and launched through the provided VS Cod
 
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start <STACK_NAME> --debug-port <PORT from .vscode/port.txt>`
-
-> **Update JPSRM and Build and Debug**: Updated StackClient py4jps resource and build the Debug Docker image (incl. pushing to ghcr.io) and deploy it as new container (incl. creation of new `.vscode/port.txt` file)
 
 
 &nbsp;
@@ -151,7 +153,7 @@ Agent start-up will automatically register a recurring task to assimilate latest
 > `/api/metofficeagent/update/timeseries`
 - GET request to update all stations and associated readings, and add latest data for all time series (i.e. instantiate missing stations and readings and append latest time series readings)
 > `/api/metofficeagent/update/all`
-- GET request to retrieve data about Met Office stations and create respective output files for DTVF (i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query')
+- GET request to retrieve data about Met Office stations and create respective JSON output files (i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query') - **please note** that this query was required to create DTVF input files previously and is now deprecated as DTVF retrieves visualisation input from PostGIS via Geoserver. This endpoint is mainly kept here for reference purposes.
 > `/api/metofficeagent/retrieve/all`
 
 Example requests are provided in the [resources] folder. The [example retrieve all request] contains further information about allowed parameters to query station and readings data from the knowledge graph and create the respective output files.
@@ -178,22 +180,18 @@ To run the tests, please follow those instructions:
     $ python -m pip install --upgrade pip
     # Install all required packages from setup.py, incl. pytest etc.
     python -m pip install -e .[dev]
-    # Install agentlogging (separate installation required, as not possible to include in setup.py)
-    python -m pip install -r requirements.txt
     ```
-3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` directory, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
+3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` directory, and install resource for py4jps (In order to build the resource, [Java Development Kit version >=11] and Maven need to be available. To pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder (typically located at user's root directory))
     ```bash
-    # Pull Stack_Clients resource for py4jps Docker image
-    docker pull docker.cmclinnovations.com/stack-client:1.6.2
-    # Create a temporary folder for stackclients at the agent root (TheWorldAvatar\Agents\MetOfficeAgent)
-    mkdir tmp_stack 
-    # Install Stack_Clients resource for py4jps
-    jpsrm install StackClients ./tmp_stack --jar stack-clients-1.6.0.jar
+    # Build latest Stack_Clients resource for py4jps
+    bash ./build_py4jps_stackclient_resource.sh
+    # Install Stack_Clients resource for py4jps (replace <stack-clients-....jar> with actual jar-file name)
+    jpsrm install StackClients tmp_stack --jar <stack-clients-....jar>
     ```
 
 4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers:
     ```bash
-    # Uncomment integration tests and start Docker services (if wanted)
+    # Uncomment integration tests and start Docker services (if wanted) - ensure correct filepath separator for OS!
     docker compose -f "tests\docker-compose.test.yml" up -d --build 
     # Run tests
     pytest
@@ -202,7 +200,7 @@ To run the tests, please follow those instructions:
 
 &nbsp;
 # Authors
-Markus Hofmeister (mh807@cam.ac.uk), October 2022
+Markus Hofmeister (mh807@cam.ac.uk), January 2022
 
 (Parts of the agent leverage code initially developed by Daniel Nurkowski (danieln@cmclinnovations.com))
 
@@ -220,7 +218,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
+[OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoems
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
