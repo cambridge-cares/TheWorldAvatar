@@ -9,7 +9,7 @@
 import os
 import requests
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.datamodel.iris import *
 from agent.datamodel.observation_types import *

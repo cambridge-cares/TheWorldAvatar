@@ -9,7 +9,7 @@
 import uuid
 import metoffer
 
-import agentlogging
+from py4jps import agentlogging
 from agent.dataretrieval.stations import get_all_metoffice_station_ids
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.kgclient import KGClient

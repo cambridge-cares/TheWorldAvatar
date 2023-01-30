@@ -10,7 +10,7 @@ import re
 import datetime as dt
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import InvalidInput, TSException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *

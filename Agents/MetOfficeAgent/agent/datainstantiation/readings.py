@@ -12,7 +12,7 @@ import uuid
 import datetime as dt
 from math import nan
 
-import agentlogging
+from py4jps import agentlogging
 from agent.datainstantiation.stations import *
 from agent.dataretrieval.readings import *
 from agent.dataretrieval.stations import *
