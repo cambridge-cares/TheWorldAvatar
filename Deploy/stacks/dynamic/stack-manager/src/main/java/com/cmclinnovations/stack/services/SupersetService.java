@@ -72,7 +72,6 @@ public class SupersetService extends ContainerService {
                 getEnvironmentVariable("SUPERSET_ACCESS_TOKEN_FILE"));
 
         apiClient = new ApiClient();
-        apiClient.setBasePath(endpointConfig.getUrl());
     }
 
     @Override
@@ -188,6 +187,7 @@ public class SupersetService extends ContainerService {
     }
 
     public void configureAPIClient() {
+        apiClient.setBasePath(endpointConfig.getUrl());
         addSecret(DEFAULT_ACCESS_TOKEN_NAME, getAccessToken(endpointConfig));
         apiClient.setAccessToken(endpointConfig.getAccessToken());
         Configuration.setDefaultApiClient(apiClient);
