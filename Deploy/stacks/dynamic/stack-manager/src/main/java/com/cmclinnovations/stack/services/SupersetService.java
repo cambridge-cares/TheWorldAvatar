@@ -12,16 +12,13 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.superset.SupersetClient;
 import com.cmclinnovations.stack.clients.superset.SupersetEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
-import com.cmclinnovations.swagger.superset.ApiClient;
 import com.cmclinnovations.swagger.superset.ApiException;
-import com.cmclinnovations.swagger.superset.Configuration;
-import com.cmclinnovations.swagger.superset.api.DatabaseApi;
 import com.cmclinnovations.swagger.superset.api.SecurityApi;
-import com.cmclinnovations.swagger.superset.model.DatabaseRestApiPost;
 import com.cmclinnovations.swagger.superset.model.InlineResponse20050;
 import com.cmclinnovations.swagger.superset.model.SecurityLoginBody;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -34,8 +31,6 @@ public class SupersetService extends ContainerService {
     public static final String TYPE = "superset";
 
     private final SupersetEndpointConfig endpointConfig;
-
-    private final ApiClient apiClient;
 
     protected static final List<String> PROBLEMATICURIEXTENTIONS_LIST = Arrays.asList(
             "static", "superset", "sqllab", "savedqueryview", "druid", "tablemodelview", "databaseasync",
@@ -70,8 +65,6 @@ public class SupersetService extends ContainerService {
                 getEnvironmentVariable("SUPERSET_FIRSTNAME"), getEnvironmentVariable("SUPERSET_LASTNAME"),
                 getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"),
                 getEnvironmentVariable("SUPERSET_ACCESS_TOKEN_FILE"));
-
-        apiClient = new ApiClient();
     }
 
     @Override
@@ -158,8 +151,7 @@ public class SupersetService extends ContainerService {
         executeCommand("sh", "-c",
                 "pip install sqlalchemy==1.4.46 && pip install psycopg2 && superset db upgrade && superset init");
 
-        configureAPIClient();
-
+        addSecret(DEFAULT_ACCESS_TOKEN_NAME, getAccessToken(endpointConfig));
     }
 
     private void makeUser(SupersetEndpointConfig endpointConfig) {
@@ -170,7 +162,7 @@ public class SupersetService extends ContainerService {
     }
 
     private String getAccessToken(SupersetEndpointConfig endpointConfig) {
-        SecurityApi securityApi = new SecurityApi(apiClient);
+        SecurityApi securityApi = new SecurityApi(SupersetClient.getInstance().getApiClient());
 
         SecurityLoginBody securityLoginBody = new SecurityLoginBody();
         securityLoginBody.setUsername(endpointConfig.getUsername());
@@ -186,10 +178,4 @@ public class SupersetService extends ContainerService {
         }
     }
 
-    public void configureAPIClient() {
-        apiClient.setBasePath(endpointConfig.getUrl());
-        addSecret(DEFAULT_ACCESS_TOKEN_NAME, getAccessToken(endpointConfig));
-        apiClient.setAccessToken(endpointConfig.getAccessToken());
-        Configuration.setDefaultApiClient(apiClient);
-    }
 }
