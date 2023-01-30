@@ -1,8 +1,12 @@
 package com.cmclinnovations.stack.clients.superset;
 
+import java.io.BufferedReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import com.cmclinnovations.stack.clients.core.PasswordEndpointConfig;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -15,15 +19,14 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
     private final String firstName;
     private final String lastName;
     private final String email;
+    private final String credentialProvider;
+    private final String accessTokenFile;
 
     private final String url;
 
-    protected SupersetEndpointConfig() {
-        this(null, null, null, null, null, null, null, null);
-    }
-
     public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
-            String firstName, String lastName, String email) {
+            String firstName, String lastName, String email, String credentialProvider, String accessTokenFile,
+            String url) {
         super(name, passwordFile);
         this.hostName = hostName;
         this.port = port;
@@ -31,8 +34,25 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.credentialProvider = credentialProvider;
+        this.accessTokenFile = accessTokenFile;
+        this.url = url;
+    }
 
-        this.url = null;
+    public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
+            String firstName, String lastName, String email, String credentialProvider, String accessTokenFile) {
+        this(name, hostName, port, username, passwordFile,
+                firstName, lastName, email, credentialProvider, accessTokenFile, null);
+    }
+
+    public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
+            String firstName, String lastName, String email) {
+        this(name, hostName, port, username, passwordFile,
+                firstName, lastName, email, null, null, null);
+    }
+
+    protected SupersetEndpointConfig() {
+        this(null, null, null, null, null, null, null, null, null, null, null);
     }
 
     public String getHostName() {
@@ -68,4 +88,32 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
             return url;
         }
     }
+
+    public String getAccessTokenFile() {
+        return accessTokenFile;
+    }
+
+    @JsonIgnore
+    public String getAccessToken() {
+        final String accessToken;
+        if (null == accessTokenFile) {
+            accessToken = "";
+        } else {
+            try (BufferedReader infile = Files.newBufferedReader(Paths.get(accessTokenFile))) {
+                if (null == (accessToken = infile.readLine())) {
+                    throw new IllegalArgumentException("The access token file '" + accessTokenFile
+                            + "' specified for the container '" + getName() + "' is empty.");
+                }
+            } catch (Exception ex) {
+                throw new IllegalArgumentException("The access token file '" + accessTokenFile
+                        + "' specified for the container '" + getName() + "' could not be read.", ex);
+            }
+        }
+        return accessToken;
+    }
+
+    public String getCredentialProvider() {
+        return credentialProvider;
+    }
+
 }
