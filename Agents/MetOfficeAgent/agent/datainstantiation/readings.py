@@ -458,15 +458,13 @@ def add_readings_for_station(station_iri: str,
             data_iri_type = EMS_FORECAST
             creation_time = t
 
-        unit = UNITS_MAPPING[r][0]
-        symbol = UNITS_MAPPING[r][1]
+        unit = UNITS_MAPPING[r]
 
         # Add triples to instantiate
         comment = quantity_comments[i] if quantity_comments else None
         triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
-                                   data_iri, data_iri_type, unit, symbol,
-                                   is_observation, creation_time=creation_time, 
-                                   comment=comment)
+                                   data_iri, data_iri_type, unit, is_observation,
+                                   creation_time=creation_time, comment=comment)
 
         # Get data to bulkInit time series
         dataIRIs.append(data_iri)

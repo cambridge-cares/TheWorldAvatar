@@ -148,7 +148,7 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
 
 
 def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
-                    data_iri_type, unit, symbol, is_observation: bool, 
+                    data_iri_type, unit, is_observation: bool, 
                     creation_time=None, comment=None):
     """
         Create triples to instantiate station measurements
@@ -168,7 +168,6 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
         <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
         <{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
         <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-        <{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . 
     """
     triples += triple
 

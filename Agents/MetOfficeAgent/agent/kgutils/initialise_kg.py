@@ -75,16 +75,17 @@ def instantiate_all_units():
 
     # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
     #       claiming to use utf-8 encoding while actually using iso-8859-1
-    #       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
+    #       --> units displayed wrongly in GUI but corrected when retrieved in code
 
     query = f"""
         INSERT DATA {{
             <{OM_DEGREE_C}> <{OM_SYMBOL}> \"{DEG_C}\"^^<{XSD_STRING}> . 
             <{OM_HECTO_PASCAL}> <{OM_SYMBOL}> \"{HEC_PA}\"^^<{XSD_STRING}> . 
-            <{OM_PERCENT}> <{OM_SYMBOL}> \"{PERCENT}\"^^<{XSD_STRING}> .
-            <{OM_METRE}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .
-            <{OM_MPH}> <{OM_SYMBOL}> \"{MI_PH}\"^^<{XSD_STRING}> .
-            <{OM_DEGREE}> <{OM_SYMBOL}> \"{DEG}\"^^<{XSD_STRING}> .
+            <{OM_PERCENT}> <{OM_SYMBOL}> \"{PERCENT}\"^^<{XSD_STRING}> . 
+            <{OM_METRE}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> . 
+            <{OM_MPH}> <{OM_SYMBOL}> \"{MI_PH}\"^^<{XSD_STRING}> . 
+            <{OM_DEGREE}> <{OM_SYMBOL}> \"{DEG}\"^^<{XSD_STRING}> . 
+            <{OM_UNITLESS}> <{OM_SYMBOL}> \"1\"^^<{XSD_STRING}> . 
     }}"""
 
     return query
