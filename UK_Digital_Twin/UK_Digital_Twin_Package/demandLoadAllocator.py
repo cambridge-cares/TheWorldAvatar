@@ -110,8 +110,11 @@ class demandLoadAllocator(object):
       busAndDemandPairList = []
       busNumberArray = [] #list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
       for bus in res_queryBusTopologicalInformation:
-          busNumberArray.append(str(bus["BusNodeIRI"]))
+        busNumberArray.append(str(bus["BusNodeIRI"]))
       for ec in res_queryElectricityConsumption_LocalArea:
+        if ec['Area_LACode'] in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                            "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002", "N92000002"]:
+          continue
         busAndDemandPair = {}  
         if len(busInGB) > 0: 
             demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'K03000001', ons_label)
@@ -169,15 +172,14 @@ class demandLoadAllocator(object):
                     
                 if busAndDemandPair['BusNodeIRI'] in busNumberArray:
                    busNumberArray.remove(busAndDemandPair['BusNodeIRI'])
-      
+
       # check if all buses are assigned with loads  
       if len(busNumberArray) != 0:
           print("WARNING: There are buses not being assigned with any load, which are:", busNumberArray)
       else:
           print("************All buses are assigned with demand loads************") 
 
-      aggregatedBusFlag = False  
-          
+      aggregatedBusFlag = False       
       return busAndDemandPairList, res_queryElectricityConsumption_LocalArea, aggregatedBusFlag
 
     

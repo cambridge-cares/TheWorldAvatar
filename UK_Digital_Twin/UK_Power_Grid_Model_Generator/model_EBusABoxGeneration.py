@@ -129,6 +129,7 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
     ## get the load allocation method via getattr function 
     allocator = getattr(dla, loadAllocatorName)
     ## pass the arrguments to the cluster method
+    ##FIXME: demandLoadAllocator method has updated, the arrguments should be updated as well 
     EBus_Load_List, aggregatedBusFlag = allocator(res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: v_TotalELecConsumption 
     
     ## check if the allocator method is applicable
