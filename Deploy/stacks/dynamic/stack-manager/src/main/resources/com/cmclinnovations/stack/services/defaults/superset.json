@@ -4,14 +4,14 @@
         "Name": "superset",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "apache/superset:latest"
+                "Image": "apache/superset:latest",
+                "Secrets": [
+                    {
+                        "SecretName": "superset_password"
+                    }
+                ]
             }
-        },
-        "Secrets": [
-            {
-                "SecretName": "superset_password"
-            }
-        ]
+        }
     },
     "endpoints": {
         "ui": {
