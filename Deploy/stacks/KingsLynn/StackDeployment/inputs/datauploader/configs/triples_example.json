@@ -1,0 +1,16 @@
+{
+    "datasetDirectory": "triples",
+    "namespace": {
+        "name": "triples",
+        "propertiesFile": "rdfonly.properties",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.quadsMode": false
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "skip": true
+        }
+    ]
+}

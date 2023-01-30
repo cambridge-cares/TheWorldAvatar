@@ -1,0 +1,222 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Buildings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "area-of-interest",
+                    "type": "geojson",
+                    "data": "data/aoi.geojson", 
+                    "generateId": true
+                },
+                {
+                    "id": "ocgml_buildings",
+                    "type": "geojson",
+                    "data": "data/buildings/os_bha_buildings.geojson"
+                },
+                {
+                    "id": "obe_buildings",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=buildings:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest and has a long name", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 10,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.25,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
+                    }
+                },
+                {
+                    "id": "ocgml_buildings-layer",
+                    "name": "OS BHA Buildings",
+                    "source": "ocgml_buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#303030",
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "fill-extrusion-height"],
+                            ["to-number", ["get", "fill-extrusion-height"]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "obe_buildings-layer",
+                    "name": "Buildings with EPC information",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#000000",
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "buildings-outline-layer",
+                    "name": "Buildings with EPC information",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
+                    "type": "line",
+                    "minzoom": 8, 
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#000000",
+                        "line-opacity": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reporting Stations",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "metoffice",  
+                    "type": "vector",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "ea-stations",  
+                    "type": "vector",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=river_stations:river_stations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "metoffice",
+                    "name": "Weather Stations", 
+                    "source": "metoffice",
+                    "source-layer": "metoffice",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 8,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": [
+                            "match",
+                            ["get", "subtype"],
+                            "observation",
+                            "weather-obs",
+                            "forecast",
+                            "weather-for",
+                            "weather"
+                        ],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "metoffice_cluster",
+                    "name":  "Weather Stations",
+                    "source": "metoffice",
+                    "source-layer": "metoffice",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "weather",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Bold"],
+                        "text-size": 12,
+                        "text-anchor": "center",
+                        "text-offset": [0, -0.15]
+                    }
+                },
+                {
+                    "id": "ea-stations",
+                    "name": "Flood Monitoring Stations", 
+                    "source": "ea-stations",
+                    "source-layer": "river_stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 8,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": ["get", "type"],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                }
+            ]
+        },
+        {
+            "name": "Population data",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "openpopgrid",
+                    "type": "raster",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/population/wms?service=WMS&version=1.1.0&request=GetMap&layers=population:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "openpopgrid",
+                    "type": "raster",
+                    "minzoom": 8,
+                    "name": "OpenPopGrid",
+                    "source": "openpopgrid",
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        }
+    ]
+}

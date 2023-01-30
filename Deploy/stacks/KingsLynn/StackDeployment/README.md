@@ -27,7 +27,7 @@ This section explains how to spin up the core stack and upload initial data sets
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
 <span style="color:red">
-The functionality has been tested based on commit `3723a574c6685279a70b814b43df6b4027d5c305` on branch `272-ability-to-upload-triples-through-the-stack-data-uploader`.
+The functionality has been tested based on commit `6bbc6dac87d45875fc172b633941465000cc2658` on branch `272-ability-to-upload-triples-through-the-stack-data-uploader`.
 </span>
 
 &nbsp;
@@ -47,6 +47,8 @@ bash ./stack.sh remove KINGS-LYNN -v
 ```
 
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+
+After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` as required by the Digital Twin Visualisation Framework. In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and stop container followed by another `bash ./stack.sh start KINGS-LYNN` from within the `stack-manager` repository). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
 
 &nbsp;
 ## Spinning up the core Stack remotely via SSH
@@ -91,9 +93,7 @@ The following steps explain how to upload the data to the stack:
 
     c) Copy all data sub-directories from the `inputs/datauploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
-2) Create a quad- and geospatially-enabled Blazegraph namespace `ocgml` via the Blazegraph GUI, i.e. http://165.232.172.16:3838/blazegraph/ui/#namespaces
-
-3) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
+2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
@@ -187,15 +187,28 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 
 ## <u>5) Additional data incorporation </u>
 
-### MetOffice Agent
+## MetOffice Agent
 
 - no explicit namespace is created, default `kb` is used
 All sensor data (flood, AQ, metoffice) in KB
 
-### AirQuality Agent
+## AirQuality Agent
 
-### River Levels Agent
+## River Levels Agent
 
+> The following description refers to commit `03bdd20501a9901d390c76fdd3b298f6ea672c66` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+
+The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river level data from the [Environment Agency] into the KG. Details on building and deploying the agent are provided in its README and only summarised here: 
+
+* Building the agent requires both a `settings.xml` and `settings-security.xml` to be provided in the `docker/.m2` sub-repository of the agent to be able to download TWA packages from Github
+* Both the `datum.json` and `river_stations.csv` files provided in the [RiverLevelAgent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
+* To deploy the agent to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily:
+    ```bash
+    bash ./stack.sh start KINGS-LYNN
+    ```
+```diff
+- Please note: The agent populates all station data into the default "kb" namespace of Blazegraph
+```
 
 &nbsp;
 # Tracking instantiated building information
@@ -207,6 +220,7 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
@@ -222,7 +236,9 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
 [EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
+[RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
 <!-- repositories -->
 [Utilities]: ../Utilities
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
+[RiverLevelAgent input folder]: /StackDeployment/inputs/RiverLevelAgent
