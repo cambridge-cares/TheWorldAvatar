@@ -227,8 +227,8 @@ class PanelHandler {
         };
 
         let self = this;
-
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
+
             if(rawJSON === null || rawJSON === undefined) {
                 self.showBuiltInData(properties);
                 return;
@@ -256,15 +256,23 @@ class PanelHandler {
                 // Formatting
                 meta = JSONFormatter.formatJSON(meta);
 
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
+                let treeContainer = document.getElementById("metaTreeContainer");
+                if(treeContainer == null) console.log("TREE CONTAINER IS NULL, WHAT?!");
 
-            } else if(time == null) {
-                self.showBuiltInData(properties);
+                if(Array.isArray(meta) && meta.length === 0) {
+                    this.showBuiltInData(properties);
+                } else if (typeof meta === "string" && meta === "") {
+                    this.showBuiltInData(properties);
+                } else {
+                    // @ts-ignore
+                    let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
+                    // @ts-ignore
+                    JsonView.expandChildren(metaTree);
+                    // @ts-ignore
+                    JsonView.selectiveCollapse(metaTree);
+                }
+            } else {
+                this.showBuiltInData(properties);
             }
 
             // Render timeseries
@@ -283,7 +291,7 @@ class PanelHandler {
             }
 
             // Set visibility of UI containers
-            this.prepareMetaContainers(meta != null, time != null);
+            this.prepareMetaContainers(true, time != null);
 
         })
         .fail(function() {
