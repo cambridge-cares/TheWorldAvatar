@@ -48,6 +48,8 @@ class JenaStatementParserTest {
                 .addProperty(RDF.type, sampleModel.createResource(baseURI + personClass));
         sampleModel.createResource(baseURI + "IfcSite_123")
                 .addProperty(RDF.type, sampleModel.createResource(baseURI + "IfcSite"));
+        sampleModel.createResource(baseURI + "IfcDoor_123")
+                .addProperty(RDF.type, sampleModel.createResource(baseURI + "IfcDoor"));
         sampleModel.createResource(baseURI + "IfcCartesianPoint_List_3523")
                 .addProperty(RDF.type, sampleModel.createResource(baseURI + "LineVertex"))
                 .addProperty(sampleModel.createProperty(listURI+"hasNext"),sampleModel.createResource(baseURI + "IfcCartesianPoint_List_5555"))
@@ -67,6 +69,7 @@ class JenaStatementParserTest {
                 () -> assertTrue(testSet.isEmpty()),
                 // Ensure IFC instance name are replaced
                 () -> assertTrue(result.contains("eg:Site_123 rdf:type eg:Site")),
+                () -> assertTrue(result.contains("eg:Element_123 rdf:type eg:IfcDoor")),
                 () -> assertTrue(result.contains("eg:LineVertex_3523 rdf:type eg:LineVertex")),
                 // Ensure List predicates are renamed
                 () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasNextVertex eg:LineVertex_5555")),

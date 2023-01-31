@@ -134,7 +134,7 @@ class JenaStatementParser {
                 localName = node.toString().substring(namespace.length());
             }
             // Renames the instance to their respective ontoBIM class and namespace if available
-            localName = isSubjectOrObjectNode ? renameInstance(localName) : renameListPredicate(localName, namespace);
+            localName = isSubjectOrObjectNode ? renameClassAndInstance(localName) : renameListPredicate(localName, namespace);
             namespace = isSubjectOrObjectNode ? namespace :
                     (namespace.equals(listNamespace) ? "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#" : namespace);
 
@@ -145,18 +145,29 @@ class JenaStatementParser {
     }
 
     /**
-     * Rename the nodes into ontoBIM instances.
+     * Rename the nodes based on their OntoBIM instances or class.
      *
      * @param localName The local name of a node.
      * @return The required local name in the right namespace.
      */
-    private static String renameInstance(String localName) {
+    private static String renameClassAndInstance(String localName) {
         String ifcClass = StringUtils.getStringBeforeLastCharacterOccurrence(localName, StringUtils.UNDERSCORE);
         String replacementName = OntoBIMInstance.retrieveOntoBimName(ifcClass);
-
+        // If there is a replacement name mapped
         if (replacementName != "NA") {
+            // Retrieve the identifier usually the numeric portion eg 1525 in a local name of IfcWall_1525
             String identifier = StringUtils.getStringAfterLastCharacterOccurrence(localName, StringUtils.UNDERSCORE);
-            localName = replacementName + StringUtils.UNDERSCORE + identifier;
+            // For classes that can be mapped to Element, their local names should not be updated
+            // eg IfcDoor should return IfcDoor, but IfcSite would still return Site
+            if (replacementName.equals("Element")) {
+                // When these are Element classes, retain their old names
+                if (identifier.equals(localName)){ return localName;}
+            } else {
+                // When they are classes, replace only their names
+                if (identifier.equals(localName)){return replacementName;}
+            }
+            // When they are instances, update their names and keep the same identifier
+            localName =  replacementName + StringUtils.UNDERSCORE + identifier;
         }
         return localName;
     }
