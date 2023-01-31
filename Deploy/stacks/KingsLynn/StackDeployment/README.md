@@ -188,9 +188,9 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 
 ## MetOffice Agent
 
-> The following steps refer to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
 
-The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. To deploy the agent to the spun up `KINGS-LYNN` stack, simply run the following command from the [MetOffice Agent] repository (i.e. where its README is located). The target Blazegraph `namespace`, PostGIS/PostgreSQL database name, etc. are specified in the [MetOffice docker-compose file] in the same repository. Running this command will deploy the agent by pulling the respective Docker image from the [Container registry on Github]:
+The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. To deploy the agent to the spun up `KINGS-LYNN` stack, please provide the target Blazegraph namespace, PostGIS/PostgreSQL database name, etc. in the [MetOffice docker-compose file]. Afterwards, simply run the following command from the [MetOffice Agent] repository (i.e. where the [MetOffice docker-compose file] is located) to deploy the agent using its published Docker image from the [Container registry on Github]:
 ```bash
 bash ./stack.sh start KINGS-LYNN
 ```
