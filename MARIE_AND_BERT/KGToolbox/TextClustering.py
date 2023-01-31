@@ -2,6 +2,8 @@ import json
 import math
 import os
 import pickle
+import random
+
 import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.cluster import dbscan
@@ -16,7 +18,7 @@ def over_lapping_metric(i, j, reaction_species_dict):
     s_list_2 = set(reaction_species_dict[str(j)])
     l_1 = len(s_list_1)
     l_2 = len(s_list_2)
-    distance = round(len(s_list_1 ^ s_list_2) / (l_1 + l_2), 5) * 100
+    distance = round(max(len(s_list_1 ^ s_list_2) - 2, 0) / (l_1 + l_2), 5) * 10
     return distance
 
 
@@ -41,8 +43,8 @@ class TextClustering:
     def make_distance_matrix(self):
         reaction_idx_list = json.loads(open(f"{self.full_dataset_dir}/reaction_idx_list.json").read())
         reaction_species_dict = json.loads(open(f"{self.full_dataset_dir}/reaction_species_mapping.json").read())
-        test_length = 20000
-        reaction_idx_list = reaction_idx_list[0:test_length]
+        test_length = 10000
+        reaction_idx_list = random.sample(reaction_idx_list, test_length)
         counter = 0
         list_length = len(reaction_idx_list)
         matrix = []
@@ -60,9 +62,11 @@ class TextClustering:
     def cluster_by_precomputed_matrix(self):
         X = self.distance_matrix
         X = np.array(X)
+        print(X)
         print(X.shape)
-        Y = dbscan(X, metric='precomputed', eps=20, min_samples=10)
+        Y = dbscan(X, metric='precomputed', eps=2, min_samples=5)
         labels, clusters = Y
+        print(clusters)
         count_dict = {}
         for c in clusters:
             if c in count_dict:
@@ -72,6 +76,10 @@ class TextClustering:
         count_dict = dict(sorted(count_dict.items(), key=lambda item: item[1]))
         print(len(count_dict))
         print(count_dict)
+        max_value = np.amax(X)
+        min_value = np.amin(X)
+        print(f"max value {max_value}")
+        print(f"min value {min_value}")
 
         # plt.figure(figsize=(12, 9))
         # plt.annotate('Reaction clustering', xy=(0.03, 0.03), xycoords='axes fraction')
