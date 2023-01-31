@@ -1,5 +1,4 @@
 {
-    "database_name": "postgres",
     "queries": [
         {
             "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
