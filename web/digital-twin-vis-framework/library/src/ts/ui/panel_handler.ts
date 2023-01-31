@@ -228,7 +228,6 @@ class PanelHandler {
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(rawJSON) {
-
             if(rawJSON === null || rawJSON === undefined) {
                 self.showBuiltInData(properties);
                 return;
@@ -272,7 +271,7 @@ class PanelHandler {
                     JsonView.selectiveCollapse(metaTree);
                 }
             } else {
-                this.showBuiltInData(properties);
+                self.showBuiltInData(properties);
             }
 
             // Render timeseries
@@ -291,7 +290,7 @@ class PanelHandler {
             }
 
             // Set visibility of UI containers
-            this.prepareMetaContainers(true, time != null);
+            self.prepareMetaContainers(true, time != null);
 
         })
         .fail(function() {
