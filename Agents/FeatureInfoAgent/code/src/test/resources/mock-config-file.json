@@ -2,9 +2,9 @@
     
     "queries": [
         {
-            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
-            "metaFile": "station_meta.sparql",
-            "timeFile": "station_time.sparql",
+            "class": "com.cmclinnovations.kg.ClassOne",
+            "metaFile": "classOneMeta.sparql",
+            "timeFile": "classOneTime.sparql",
             "timeLimit": 48,
             "databaseName": "database-one"
         },
