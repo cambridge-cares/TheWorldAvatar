@@ -30,6 +30,9 @@ networks:
     external: true
 
 secrets:
+  blazegraph_password:
+    name: ${STACK_NAME}_blazegraph_password
+    external: true
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true
