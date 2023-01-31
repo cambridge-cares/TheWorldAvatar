@@ -14,8 +14,8 @@ class JSONFormatter {
      */
     public static formatJSON(input) {
         // Parse with a transform and return
-
-        return JSON.parse(JSON.stringify(input), function(key, value) {
+        let string = JSON.stringify(input);
+        return JSON.parse(string, function(key, value) {
 
             if(typeof key === "string") {
                 if(typeof value === "string") {
@@ -50,15 +50,17 @@ class JSONFormatter {
     private static formatValue(value) {
         let newValue = value;
 
-         // If JSON in string form, parse as JSON
-         if(newValue.startsWith("{") || newValue.startsWith("[")) {
+        // If JSON in string form, parse as JSON
+        if(newValue.startsWith("{") || newValue.startsWith("[")) {
             try {
                 return JSON.parse(newValue);
             } catch(error) {
                 // Nothing, continue to treat as a String
             }
         }
-
+        if(newValue.includes("Â")) {
+            newValue = newValue.replaceAll("Â", "");
+        }
         if(newValue.includes("\"")) {
             newValue = newValue.replaceAll("\"", "");
         }
@@ -66,11 +68,12 @@ class JSONFormatter {
             newValue = newValue.split("^^")[0];
         }
 
-        if(value.includes("[") && value.includes("]")) {
+        if(value.includes("[") && value.includes("]") && !newValue.includes("[") && !newValue.includes("]")) {
             let pattern = new RegExp("(?<=\\[).*(?=\\])");
             let unit = value.match(pattern);
             newValue = newValue.trim() + " [" + unit + "]";
         }
+
         return newValue;
     }
 

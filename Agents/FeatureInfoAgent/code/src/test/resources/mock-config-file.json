@@ -1,17 +1,19 @@
 {
-    "database_name": "flood_ontoems",
+    
     "queries": [
         {
             "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
             "metaFile": "station_meta.sparql",
             "timeFile": "station_time.sparql",
-            "timeLimit": 48
+            "timeLimit": 48,
+            "databaseName": "database-one"
         },
         {
             "class": "com.cmclinnovations.kg.ClassTwo",
             "metaFile": "classTwoMeta.sparql",
             "timeFile": "classTwoTime.sparql",
-            "timeLimit": -1
+            "timeLimit": -1,
+            "databaseName": "database-two"
         },
         {
             "class": "com.cmclinnovations.kg.ClassThree",
@@ -20,7 +22,8 @@
         },
         {
             "class": "com.cmclinnovations.kg.ClassFour",
-            "metaFile": "classFourMeta.sparql"
+            "timeFile": "classFourTime.sparql",
+            "databaseName": "database-four"
         }
     ]
 }

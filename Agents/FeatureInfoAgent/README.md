@@ -30,6 +30,8 @@ The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent fr
             1. If no data found, quietly continue.
       7. Build and return final JSON object.
 
+Note that the agent's configuration file is read and its contents cached when the system first boots (meaning any changes to the file will require a restart), but the individual query files are read as-needed (i.e. once a request has been recieved) and are not currently cached (meaning any changes to these will take effect upon subsequent requests without the requirement for a restart).
+
 It's also worth noting that in the current version of the FIA, any queries to the knowledge graphs are sent to all discovered namespace endpoints via federation. Whilst this will marginally increase processing times, these queries should be pretty quick, and shouldn't be triggered too often, so the risk of delay is hopefully less than the benefit of not having to specify the endpoint beforehand.
 
 ## Restrictions
@@ -39,8 +41,7 @@ At the time of writing, the FIA has a few restrictions that all users should be 
 - The FIA can only be run within a [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 - The FIA can only report on metadata and timeseries that are contained within the same stack.
 - The FIA can only return timeseries data on series that use the Instant class.
-- The FIA can only return timeseries data from a single PostGreSQL database.
-- The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute to return).
+- The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute or so to return).
 
 ## Requirements
 
@@ -52,13 +53,13 @@ Follow the below configuration steps within the local `queries` directory.
 
 - Create a JSON configuration file named `fia-config.json`.
   - This configuration file should be a JSON object containing the following parameters:
-    - `database_name`: This is a **required** string parameter. It should match the PostGreSQL database name that contains your timeseries data.
     - `queries`: This is a **required** array of objects defining a mapping between class names and the names of files containing pre-written SPARQL queries. Each object needs to contain the following string parameters:
       - `class`: Full IRI of the class.
       - `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
       - `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
-      - `timeLimit`: Optional, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
-  - Add the aforementioned metadata and timeseries query files. 
+      - `timeLimit`: Optonal, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
+      - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostGreSQL database name that contains your timeseries data.
+  - Add the aforementioned metadata and timeseries query files.
 
 An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
 

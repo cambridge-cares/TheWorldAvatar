@@ -1,6 +1,5 @@
 package com.cmclinnovations.featureinfo;
 
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
@@ -79,7 +78,6 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     protected static TimeSeriesClient<Instant> TS_CLIENT_OVER;
 
-
     /**
      * Common RDB connection
      */
@@ -93,7 +91,7 @@ public class FeatureInfoAgent extends JPSAgent {
     /**
      * Load the configuration file.
      */
-    private static void loadConfig() {
+    private final static void loadConfig() {
         try {
             LOGGER.info("Attempting to load configuration settings...");
             CONFIG.load();
@@ -102,6 +100,7 @@ public class FeatureInfoAgent extends JPSAgent {
             LOGGER.error("Could not initialise agent configuration!", exception);
         }
     }
+    
     /**
      * Perform required setup.
      *
@@ -160,28 +159,13 @@ public class FeatureInfoAgent extends JPSAgent {
             switch (url) {
                 case "/get":
                 case "get": {
-                    LOGGER.info("Detected request to get meta and timeseries data.");
-
-                    // Enforce a Blazegraph endpoint if passed
-                    // NOTE: Disabled until we know if the federation is acceptable
-                    // if(requestParams.has("endpoint")) {
-                    //     this.enforceEndpoint(requestParams);
-                    // }
-                    this.runLogic(requestParams, response);
+                    getRoute(requestParams, response);
                 }
                 break;
 
                 case "/status":
                 case "status": {
-                    LOGGER.info("Detected request to get agent status...");
-
-                    if(CONFIG != null && FeatureInfoAgent.VALID) {
-                        response.setStatus(Response.Status.OK.getStatusCode());
-                        response.getWriter().write("{\"description\":\"Ready to serve.\"}");
-                    } else {
-                        response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-                        response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
-                    }
+                    statusRoute(response);
                 }
                 break;
 
@@ -199,20 +183,34 @@ public class FeatureInfoAgent extends JPSAgent {
     }
 
     /**
-     * Enforce a single Blazegraph endpoint for requests.
+     * Initiate logic required to process a request on the "/get" route.
      * 
-     * @param requestParams HTTP request parameters.
+     * @param requestParams HTTP request parameters
+     * @param response HTTp response
+     * 
+     * @throws IOException
      */
-    private void enforceEndpoint(JSONObject requestParams) {
-        String endpoint = requestParams.getString("endpoint");
-        Pattern pattern = Pattern.compile("(?<=namespace\\/)(.*)(?=\\/sparql)");
-        Matcher matcher = pattern.matcher(endpoint);
+    protected void getRoute(JSONObject requestParams, HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to get meta and timeseries data.");
+        this.runLogic(requestParams, response);
+    }
 
-        if(matcher.find()) {
-            String name = matcher.group();
-            this.enforcedEndpoint = new ConfigEndpoint(name, endpoint, null, null, EndpointType.BLAZEGRAPH);
+    /**
+     * Run logic for the "/status" route.
+     * 
+     * @param response HTTO response
+     * 
+     * @throws IOException
+     */
+    protected void statusRoute(HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to get agent status...");
+
+        if(CONFIG != null && FeatureInfoAgent.VALID) {
+            response.setStatus(Response.Status.OK.getStatusCode());
+            response.getWriter().write("{\"description\":\"Ready to serve.\"}");
         } else {
-            LOGGER.warn("Could not parse requested endpoint, will federate across all.");
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not initialise agent instance!\"}");
         }
     }
 
@@ -236,10 +234,13 @@ public class FeatureInfoAgent extends JPSAgent {
 
     /**
      * Runs the main agent logic for the /get route (on valid request)
-     * @param response
+     * 
+     * @param requestParams JSONObject of request parameters
+     * @param response HTTP response
+     * 
      * @throws IOException
      */
-    private void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
+    protected void runLogic(JSONObject requestParams, HttpServletResponse response) throws IOException {
         // Check if request is valid
         boolean validRequest = validateInput(requestParams);
         if(!validRequest) {
@@ -265,7 +266,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
                 // Combine into single response
                 JSONObject result = new JSONObject();
-                result.put("meta", metaArray);
+                if(metaArray != null) result.put("meta", metaArray);
                 if(timeArray != null) result.put("time", timeArray);
 
                 // Return result
@@ -273,7 +274,6 @@ public class FeatureInfoAgent extends JPSAgent {
                 response.getWriter().write(result.toString());
 
                 LOGGER.info("JSON data has been written to the response object.");
-                LOGGER.debug(result.toString(2));
             }
 
         } catch(Exception exception) {
@@ -292,17 +292,25 @@ public class FeatureInfoAgent extends JPSAgent {
      * 
      * @return name of matching class
      */
-    private String getClass(String iri, HttpServletResponse response) throws IOException {
+    private final String getClass(String iri, HttpServletResponse response) throws IOException {
         // Get Blazegraph endpoints
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
         LOGGER.debug("Running class queries against following endpoints via federation...");
-        endpoints.forEach(point -> LOGGER.debug(point));
 
         // Build class handler
         ClassHandler handler = new ClassHandler(iri, endpoints);
 
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
+
+        // Set the username and password for access (assumes all endpoints within same stack!)
+        if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
+            rsClient.setUser(endpoints.get(0).username());
+            rsClient.setPassword(endpoints.get(0).password());
+
+            LOGGER.info("Creating a RemoteStoreClient with username: {}", rsClient.getUser());
+        }
+
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
 
         // Determine the class match
@@ -353,6 +361,15 @@ public class FeatureInfoAgent extends JPSAgent {
 
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
+
+        // Set the username and password for access (assumes all endpoints within same stack!)
+        if(endpoints.get(0).username() != null && !endpoints.get(0).username().isEmpty()) {
+            rsClient.setUser(endpoints.get(0).username());
+            rsClient.setPassword(endpoints.get(0).password());
+
+            LOGGER.info("Creating a RemoteStoreClient with username: {}", rsClient.getUser());
+        }
+
         handler.setClient((RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient);
 
         // Run queries
@@ -387,7 +404,6 @@ public class FeatureInfoAgent extends JPSAgent {
         
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
-      
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
             rsClient, 
             Instant.class
@@ -397,12 +413,20 @@ public class FeatureInfoAgent extends JPSAgent {
         List<ConfigEndpoint> endpoints = (this.enforcedEndpoint != null) ? Arrays.asList(this.enforcedEndpoint) : CONFIG.getBlazegraphEndpoints();
 
         // Build RBD client
+        String dbName = CONFIG.getDatabaseName(classMatch);
+        if(dbName == null) {
+            LOGGER.warn("No PostgreSQL database name registered for the class: {}", classMatch);
+            LOGGER.warn("Skipping timeseries queries.");
+            return null;
+        }
+
+        String dbURL = CONFIG.generatePostgresURL(dbName);
         LOGGER.info("Establishing connection to RBD for timeseries...");
-        LOGGER.info("     Using URL: {}", postEndpoint.get().url());
+        LOGGER.info("     Using URL: {}", dbURL);
         LOGGER.info("     Using Username: {}", postEndpoint.get().username());
 
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
-            postEndpoint.get().url(),
+            dbURL,
             postEndpoint.get().username(),
             postEndpoint.get().password()
         );
@@ -432,7 +456,7 @@ public class FeatureInfoAgent extends JPSAgent {
      * 
      * @param response HTTP response
      */
-    private boolean check(HttpServletResponse response) throws IOException {
+    private final boolean check(HttpServletResponse response) throws IOException {
         // Check if in valid state
         if(CONFIG == null || !VALID)  {
             LOGGER.error("FeatureInfoAgent could not start in a valid state.");

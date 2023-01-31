@@ -1,22 +1,24 @@
 {
-    "database_name": "my_postgres_db",
     "queries": [
         {
             "class": "com.cmclinnovations.kg.ClassOne",
             "metaFile": "classOneMeta.sparql",
             "timeFile": "classOneTime.sparql",
-            "timeLimit": 48
+            "timeLimit": 48,
+            "databaseName": "database-one"
         },
         {
             "class": "com.cmclinnovations.kg.ClassTwo",
             "metaFile": "classTwoMeta.sparql",
             "timeFile": "classTwoTime.sparql",
-            "timeLimit": -1
+            "timeLimit": -1,
+            "databaseName": "database-two"
         },
         {
             "class": "com.cmclinnovations.kg.ClassThree",
             "metaFile": "classOneThree.sparql",
-            "timeFile": "classOneThree.sparql"
+            "timeFile": "classOneThree.sparql",
+            "databaseName": "database-three"
         }
     ]
 }

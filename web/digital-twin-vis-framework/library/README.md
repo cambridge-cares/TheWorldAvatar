@@ -4,6 +4,8 @@ A central framework for Digital Twin Visualisations (the Digital Twin Visualisat
 
 This directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files to make them available for deployment/hosting. When creating visualisations, the hosted version of this framework should be used; files from this directory should not be copied into/directly linked to visualisation implementations.
 
+This directory also houses Docker configuration files to create an base image that can be used to create individual visualisations. A volume containing the webspace files simply needs to be added (as a volume) to the `/var/www/html/` directory; a example of this can be see in the Docker configuration files for the two example visualisations.
+
 For more details on the framework, see the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page on the GitHub wiki. For an example implementation of the framework, see the example implementations in the parent directory of this one in the repository.
 
 ### How to use the framework
@@ -28,19 +30,29 @@ A number of configuration files are also present that allow the generation of a 
 
 To spin up the container and use it as a development environment via VSCode...
 
-- Run the `docker-compose up dtvf-devel` command from within this directory.
+- Run the `docker-compose -f docker/docker-compose.yml up develop` command from within this directory.
 - Select the `Remote Explorer` menu within VSCode.
   - You many need to install the `Docker` extension if you haven't done so already.
 - Select the `Attach to Container` button for the `dtvf-devel` container.
 - Once a new VSCode window appears (and the loading completes), you can now open a file/folder within the container and begin development.
 - The entire `library` directory has been set up to share between your local machine and the container. This means that any changes you make within the container, will persist to your local filesystem.
 
-## Deployment
+## Compilation
 
-To make the DTVF ready for deployment...
+To compile and combine the DTVF library into deployable JS files...
 
-- Run the `docker-compose up dtvf-build` command from within this directory.
+- Run the `docker-compose -f docker/docker-compose.yml up compile` command from within this directory.
 - The container will compile and process the typescript files for deployment, then shutdown.
   - If successful, single JS and CSS files will be generated within the `output` directory.
   - These can then be uploaded to a web server to make them publicly available.
     - To upload these to the KG website server, please contact the support team at CMCL.
+
+
+## Deployment of Base Image
+
+To build and deploy the base DTVF image, so that others can use it to create visualisations...
+
+- Run the `docker-compose -f docker/docker-compose.yml build deploy` command from within this directory.
+- The image should then be built and tagged as `ghcr.io/cambridge-cares/dtvf-base-image:latest`
+- Use the `docker push ghcr.io/cambridge-cares/dtvf-base-image:latest` command to upload the image.
+  - This requires having set up a GitHub token and storing it using the `docker login` command. 

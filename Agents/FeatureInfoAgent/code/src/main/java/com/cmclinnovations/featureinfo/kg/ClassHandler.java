@@ -122,8 +122,9 @@ public class ClassHandler {
         while(iter.hasNext()) {
             try {
                 String className = iter.next();
-                String query = FeatureInfoAgent.CONFIG.getMetaQuery(className);
-                if(query != null) return className;
+                String metaQuery = FeatureInfoAgent.CONFIG.getMetaQuery(className);
+                String timeQuery = FeatureInfoAgent.CONFIG.getTimeQuery(className);
+                if(metaQuery != null || timeQuery != null) return className;
             } catch(IOException ioException) {
                 // Ignore and continue
             }

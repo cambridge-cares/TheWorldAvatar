@@ -1,16 +1,3 @@
-#########################
-#
-# This docker file builds an image for the Example Digital Twin visualistion.
-# It can also be used as starting point for any custom DT visualisations that
-# are created in future.
-#
-# NOTE: The "docker build" command used to build this file into an Image should
-# be run from the "example-dt-vis" folder, not from within this "docker" directory.
-# See the README for more details.
-# 
-#########################
-
-
 # Using Alpine as the base image
 FROM  alpine:3.14.0 as dtvf
 
@@ -26,10 +13,8 @@ RUN chmod 777 /usr/local/start-up.sh
 RUN chmod +x /usr/local/start-up.sh
 RUN dos2unix /usr/local/start-up.sh
 
-# Copy in the files
+# Ensure webspace directory exists
 RUN mkdir -p /var/www/html
-WORKDIR /var/www/html
-COPY . .
 
 # Custom HTTPD configuration
 COPY docker/httpd.conf /etc/apache2/httpd.conf

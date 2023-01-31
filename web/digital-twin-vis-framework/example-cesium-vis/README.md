@@ -135,9 +135,9 @@ It's worth noting that with this sample data, no stack is running so no support 
 
 ## Building the Image
 
-The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image. Please note the caveats below before attempting to build the service using Docker:
+The `docker` folder contains the required files to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
 
-- The example visualisation installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
+- Files to be hosted must be contained within the `webspace` directory.
 - A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 

@@ -121,9 +121,8 @@ public class MetaHandler {
         // Lookup queries attached to classes
         String queryTemplate = FeatureInfoAgent.CONFIG.getMetaQuery(this.classMatch);
         if(queryTemplate == null) {
-            response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
-            response.getWriter().write("{\"description\": \"Could not find any metadata queries for any of the discovered classes.\"}");
-            throw new IllegalStateException("Could not find any metadata queries for any of the discovered classes.");
+           LOGGER.debug("No metadata query registered for class, will skip this phase.");
+           return null;
         }
         LOGGER.info("Found and read the matching SPARQL query file.");
 

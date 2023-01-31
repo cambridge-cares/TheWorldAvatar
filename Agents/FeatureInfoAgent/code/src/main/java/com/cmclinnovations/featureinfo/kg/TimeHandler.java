@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
@@ -24,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -193,7 +193,7 @@ public class TimeHandler {
             LOGGER.warn("Query to get measurement details has caused an exception!");
 
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine a valid Blazegraph endpoint.\"}");
+            response.getWriter().write("{\"description\":\"intCould not determine a valid Blazegraph endpo.\"}");
             return null;
         }
     }
@@ -295,15 +295,26 @@ public class TimeHandler {
         }
 
         try {
-            // Combine into a single instance (required by client before conversion to JSON can happen)
-            TimeSeries<Instant> combinedObject = Utils.getCombinedTimeSeries(tsClient, tsObjectList.values());
+            List<Integer> ids = Arrays.stream(
+                IntStream.iterate(0, x -> x < tsObjectList.size(), x -> x + 1).toArray()
+            ).boxed().toList();
+            
+            // For some reason (unknown as there's insufficient documentation), the timeseries client requires
+            // a list of maps for the names and units of each IRI, with one map per IRI. As each IRI is a measurement
+            // and won't have more than a single name and unit, I don't see why this wasn't done as a single map
+            // containing all IRIs.
+            //
+            // Until this is resolved in the TimeSeriesClient, this fudge just copies the maps N times (where N
+            // is the number of measurement IRIs).
+            List<Map<String, String>> fudgeNames = Collections.nCopies(tsObjectList.size(), names);
+            List<Map<String, String>> fudgeUnits = Collections.nCopies(tsObjectList.size(), units);
 
             // Convert to JSON
             JSONArray timeseriesJSON = tsClient.convertToJSON(
-                    new ArrayList<>(Arrays.asList(combinedObject)),
-                    Collections.nCopies(tsObjectList.size(), 1),
-                    new ArrayList<>(Arrays.asList(units)),
-                    new ArrayList<>(Arrays.asList(names))
+                new ArrayList<>(tsObjectList.values()),
+                ids,
+                fudgeUnits,
+                fudgeNames
             );
 
             // Add additionally reported parameters

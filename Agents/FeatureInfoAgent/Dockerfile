@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y nano
 
 WORKDIR /app
 
-COPY --from=builder /root/code/output/feature-info-agent##2.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/code/output/feature-info-agent##2.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 COPY ./tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 # Start the Tomcat server

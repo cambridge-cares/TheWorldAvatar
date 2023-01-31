@@ -77,12 +77,12 @@ public class ConfigStoreTest {
     @Test
     public void readConfigFile() throws Exception {
         Assertions.assertEquals(
-            5,
+            4,
             CONFIG.metaQueries.size(), 
             "Expected number of loaded metadata queries is not correct!"
         );
         Assertions.assertEquals(
-            2,
+            3,
             CONFIG.timeQueries.size(), 
             "Expected number of loaded timeseries queries is not correct!"
         );

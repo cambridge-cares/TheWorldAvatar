@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletResponse;
@@ -191,7 +192,7 @@ public class TimeHandlerTest {
             // Build the expected response
             JSONArray expected = new JSONArray("""
                 [{\"data\":[\"MeasurementOne\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],
-                \"id\":1,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",
+                \"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",
                 \"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{\"PropertyTwo\":\"ValueTwo\",\"PropertyOne\":\"ValueOne\"}]}]
             """);
 
@@ -203,4 +204,113 @@ public class TimeHandlerTest {
             Assertions.fail("Unexpected exception thrown when trying to get timeseries data!");
         }
     }
+
+    /**
+     * Tests that multiple measurements, with different time values, can be converted to JSON and
+     * correctly returned. This has been added as previous versions of the code contained a bug
+     * that would enforce the same time values for all measurements returned in a single query.
+     */
+    @Test
+    public void testDifferentTimings() {
+        // Create a handler
+        TimeHandler handler = new TimeHandler(
+            "http://fake-sample-iri.com", 
+            "SAMPLE-CLASS",
+            CONFIG.getBlazegraphEndpoints()
+        );
+
+        try {
+            // Create mock KG client
+            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
+            when(rsClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyString()))
+                .thenReturn(
+                    new org.json.JSONArray("""
+                        [{\"Measurement\":\"http://fake-measurement-iri.com/one\",\"Name\":\"MeasurementOne\",\"Unit\":\"m/s\"},{\"Measurement\":\"http://fake-measurement-iri.com/two\",\"Name\":\"MeasurementTwo\",\"Unit\":\"cm/s\"}]
+                    """)
+                );
+
+            // Mock RDB connection
+            RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
+            when(rdbClient.getConnection())
+            .thenReturn(null);
+
+            // Create mock Timeseries client
+            TimeSeriesClient<Instant> tsClient = mock(TimeSeriesClient.class);
+
+            when(tsClient.convertToJSON(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyList(), 
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyList())
+                ).thenCallRealMethod();
+
+            // Mock response for first IRI
+            when(tsClient.getTimeSeriesWithinBounds(
+                ArgumentMatchers.argThat((ArrayList<String> arg) -> arg != null && arg.contains("http://fake-measurement-iri.com/one")),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.isNull()))
+                .thenReturn(
+                    new TimeSeries<Instant>(
+                        Arrays.asList(
+                            Instant.parse("1970-01-01T12:00:00Z"),
+                            Instant.parse("1970-01-01T13:00:00Z"),
+                            Instant.parse("1970-01-01T14:00:00Z")
+                        ),
+                        Arrays.asList("http://fake-measurement-iri.com/one"),
+                        Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
+                    )
+                );
+
+            // Mock response for second IRI
+            when(tsClient.getTimeSeriesWithinBounds(
+                ArgumentMatchers.argThat((ArrayList<String> arg) -> arg != null && arg.contains("http://fake-measurement-iri.com/two")),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.isNull()))
+                .thenReturn(
+                    new TimeSeries<Instant>(
+                        Arrays.asList(
+                            Instant.parse("1971-01-01T15:00:00Z"),
+                            Instant.parse("1971-01-01T16:00:00Z"),
+                            Instant.parse("1971-01-01T17:00:00Z")
+                        ),
+                        Arrays.asList("http://fake-measurement-iri.com/two"),
+                        Arrays.asList(Arrays.asList("4.0", "5.0", "6.0"))
+                    )
+                );
+
+            // Set up a mock response
+            HttpServletResponse httpResponse = mock(HttpServletResponse.class);
+            StringWriter strWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(strWriter);
+            when(httpResponse.getWriter()).thenReturn(printWriter);
+
+            // Handler setup
+            handler.setClients(rsClient, rdbClient, tsClient);
+
+            // Get the resulting JSON object
+            JSONArray result = handler.getData(httpResponse);
+            Assertions.assertNotNull(result, "Expected a non-null result!");
+
+             // Build the expected response
+             JSONArray expected = new JSONArray("""
+                [{\"data\":[\"MeasurementOne\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,\"units\":[\"m/s\"],\"time\":
+                [\"1970-01-01T12:00:00Z\",\"1970-01-01T13:00:00Z\",\"1970-01-01T14:00:00Z\"],\"properties\":[{},{}]},{\"data\":[\"MeasurementTwo\"],\"values\":[[\"4.0\",\"5.0\",\"6.0\"]],
+                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":1,\"units\":[\"cm/s\"],\"time\":[\"1971-01-01T15:00:00Z\",\"1971-01-01T16:00:00Z\",\"1971-01-01T17:00:00Z\"]}]
+            """);
+
+            // Compare
+            Assertions.assertTrue(result.similar(expected), "Resulting JSON does not match expected result!");
+
+
+        } catch(Exception exception) {
+            exception.printStackTrace(System.out);
+            Assertions.fail("Unexpected exception thrown when trying to get timeseries data!");
+        }
+    }
+
 }
+// End of class.
