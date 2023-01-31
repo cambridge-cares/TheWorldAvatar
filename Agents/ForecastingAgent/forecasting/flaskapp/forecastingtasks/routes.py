@@ -1,15 +1,19 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
-# based on: Markus Hofmeister (mh807@cam.ac.uk)#
+#          Markus Hofmeister (mh807@cam.ac.uk) #
 ################################################
-# the purpose of this file is to provide the routes for the flask app for the KG, which can be used to access the forecast agent 
 
-from flask import Blueprint, request, jsonify
+# The purpose of this module is to provide all routes to interact with the
+# Forecasting Agent Flask App
+
 import traceback
+from flask import Blueprint, request, jsonify
+
+from py4jps import agentlogging
 
 from forecasting.forecasting_agent.agent import forecast
 
-from py4jps import agentlogging
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 
