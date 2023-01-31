@@ -192,7 +192,7 @@ public class Aermod {
             massFlowrateInGs, ship.getChimney().getHeight(), ship.getChimney().getMixtureTemperatureInKelvin(), velocity, ship.getChimney().getDiameter()));
             sb.append(System.lineSeparator());
         }
-        return writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
+        return writeToFile(aermodDirectory.resolve("shipSources.dat"), sb.toString());
     }
     
     private int writeToFile(Path path, String content) {

@@ -6,10 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.referencing.FactoryException;
@@ -47,9 +44,6 @@ public class Buildings {
     public static String GeospatialQueryIRI;
 
 
-    /* Receptor coordinates */
-    public static List<List<Double>> ReceptorDatabaseCoordinates = new ArrayList<>() ;
-
     // Coordinate reference systems used by database (DatabaseCoordSys) and AERMOD(UTMCoordSys)
     public static String[] DatabaseCRS = {"EPSG:24500"};
     public static String DatabaseCoordSys, UTMCoordSys ;
@@ -72,7 +66,7 @@ public class Buildings {
 
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
     public static List<String> boundaryPolygons = new ArrayList<> (
-            Arrays.asList("POLYGON ((1.216988 103.650684, 1.216988 103.743038, 1.308804 103.743038, 1.308804 103.650684, 1.216988 103.650684))")) ;
+            Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))")) ;
 
 
     // Variables used to run AERMOD and its preprocessors
@@ -82,11 +76,14 @@ public class Buildings {
     public static String simulationDirectory;
     public static String bpipprmDirectory;
 
+    public static Polygon scope;
+
     public void init(String simulationDirectory, Polygon scope, int nx, int ny, int srid) throws ParseException, FactoryException, TransformException, org.opengis.util.FactoryException {
 
 
         this.simulationDirectory = simulationDirectory;
         bpipprmDirectory = simulationDirectory + "bpipprm\\";
+        this.scope = scope;
 
 
         // Determine namespace to query based on input polygon
@@ -119,36 +116,6 @@ public class Buildings {
         UTMCoordSys = "EPSG:" + srid;
 
 //        From this point, all coordinates are in the database coordinate system.
-
-//        Assign receptor coordinates.
-
-
-        String originalSRID = "EPSG:" + scope.getSRID();
-        List<List<Double>> inputcoordinates = new ArrayList<>() ;
-
-
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-            List<Double> coord = Arrays.asList(scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
-            inputcoordinates.add(coord);
-        }
-
-        List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates,originalSRID,DatabaseCoordSys);
-
-        double xMax = Collections.max(outputcoordinates.stream().map(x -> x.get(0)).collect(Collectors.toList()));
-        double xMin = Collections.min(outputcoordinates.stream().map(x -> x.get(0)).collect(Collectors.toList()));
-        double yMax = Collections.max(outputcoordinates.stream().map(x -> x.get(1)).collect(Collectors.toList()));
-        double yMin = Collections.min(outputcoordinates.stream().map(x -> x.get(1)).collect(Collectors.toList()));
-
-        double dx = (xMax - xMin)/nx;
-        double dy = (yMax - yMin)/ny;
-
-        for (int i = 0; i < nx; i++){
-            for (int j = 0; j < ny; j++){
-                double xCoord = xMin + (0.5 + i)*dx;
-                double yCoord = yMin + (0.5 + j)*dy;
-                ReceptorDatabaseCoordinates.add(Arrays.asList(xCoord,yCoord));
-            }
-        }
 
 
     }
@@ -189,8 +156,7 @@ public class Buildings {
             double xi = inputcoordinates.get(i).get(0);
             double yi = inputcoordinates.get(i).get(1);
             Tuple2<Object, Object> res;
-            if (inputCode == 4326) res = convert.apply(yi, xi);
-            else res = convert.apply(xi,yi);
+            res = convert.apply(xi,yi);
             double xt = (double) res._1();
             double yt = (double) res._2();
             outputcoordinates.add(Arrays.asList(xt,yt));
@@ -207,13 +173,12 @@ public class Buildings {
         JSONArray StackOCGMLIRI = StackQuery(StackQueryIRI) ;
         JSONArray BuildingOCGMLIRI = BuildingQuery(StackQueryIRI) ;
 
-        int numberStacks = StackOCGMLIRI.length();
-        int numberBuildings = BuildingOCGMLIRI.length();
+        int numberStacks = 0;
+        int numberBuildings = 0;
 
 
         for (int i = 0; i < StackOCGMLIRI.length(); i++) {
             Double emission = StackOCGMLIRI.getJSONObject(i).getDouble("emission");
-            StackEmissions.add(emission);
             String IRI = StackOCGMLIRI.getJSONObject(i).getString("IRI");
             StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
             coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
@@ -257,17 +222,39 @@ public class Buildings {
             StringBuffer averageCoordinate = new StringBuffer();
 
             averageCoordinate.append(StackX).append("#").append(StackY).append("#").append(StackZ);
+
+            List<List<Double>> inputcoordinates = new ArrayList<> () ;
+            List<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(StackX),Double.parseDouble(StackY)));
+            inputcoordinates.add(inputcoords);
+            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,"EPSG:4326");
+
+            Geometry point = new GeometryFactory().createPoint(new Coordinate(outputCoordinates.get(0).get(0),
+                    outputCoordinates.get(0).get(1)));
+
+            if (!scope.covers(point)) {
+                System.out.println(StackX+ ", " + StackY);
+                continue;
+//                throw new RuntimeException("Stack outside poylgon");
+            }
+
+
+            numberStacks++;
+            inputcoordinates.clear();
+            inputcoords.clear();
+            outputCoordinates.clear();
+
+            StackEmissions.add(emission);
             StackProperties.add(averageCoordinate.toString());
 
-            List<Double> inputcoords =
+            inputcoords =
                     new ArrayList<>(Arrays.asList(Double.parseDouble(StackX), Double.parseDouble(StackY))) ;
-            List<List<Double>> inputcoordinates = new ArrayList<>(Arrays.asList(inputcoords)) ;
+            inputcoordinates = new ArrayList<>(Arrays.asList(inputcoords)) ;
             // convert coordinates from Database coordinates to UTM
-            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+            outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
 
             Double StackEastUTM = outputCoordinates.get(0).get(0);
             Double StackNorthUTM = outputCoordinates.get(0).get(1);
-            String InputLine = "\'Stk" + i + "\'" + " " + "0.0 " +
+            String InputLine = "\'Stk" + numberStacks + "\'" + " " + "0.0 " +
                     StackZ + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
             BPIPPRMStackInput.add(InputLine);
 
@@ -330,9 +317,30 @@ public class Buildings {
 
             StringBuffer averageCoordinate = new StringBuffer();
             averageCoordinate.append(BuildingX).append("#").append(BuildingY).append("#").append(BuildingZ);
+
+            List<List<Double>> inputcoordinates = new ArrayList<> () ;
+            List<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BuildingX),Double.parseDouble(BuildingY)));
+            inputcoordinates.add(inputcoords);
+            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,"EPSG:4326");
+
+            Geometry point = new GeometryFactory().createPoint(new Coordinate(outputCoordinates.get(0).get(0),
+                    outputCoordinates.get(0).get(1)));
+
+            if (!scope.covers(point)) {
+                int index = BuildingVertices.size() - 1;
+                BuildingVertices.remove(index);
+                System.out.println(BuildingX+ ", " + BuildingY);
+                continue;
+//                throw new RuntimeException("Building outside poylgon");
+            }
+            numberBuildings++;
+            inputcoordinates.clear();
+            inputcoords.clear();
+            outputCoordinates.clear();
+
             BuildingProperties.add(averageCoordinate.toString());
 
-            String InputLine = "\'Build" + i + "\' " + "1 " + "0.0" + " \n" ;
+            String InputLine = "\'Build" + numberBuildings + "\' " + "1 " + "0.0" + " \n" ;
             BPIPPRMBuildingInput.add(InputLine);
             String BasePolygonVertices = BuildingVertices.get(i);
             String [] BaseVertices = BasePolygonVertices.split("#");
@@ -340,15 +348,15 @@ public class Buildings {
             InputLine = numCorners + " " + BuildingZ + " \n" ;
             BPIPPRMBuildingInput.add(InputLine);
 
-            List<List<Double>> inputcoordinates = new ArrayList<> () ;
+            inputcoordinates = new ArrayList<> () ;
 
             for (int j = 0; j < BaseVertices.length; j+=3 ){
-                ArrayList<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
+                inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
                 inputcoordinates.add(inputcoords);
             }
 
             // convert coordinates from Database coordinates to UTM
-            List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+            outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
             for (int j = 0; j < outputCoordinates.size(); j++ ) {
                 Double VertexEastUTM = outputCoordinates.get(j).get(0);
                 Double VertexNorthUTM = outputCoordinates.get(j).get(1);
@@ -356,6 +364,7 @@ public class Buildings {
                 BPIPPRMBuildingInput.add(InputLine);
             }
         }
+
 
         // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
         // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
@@ -414,7 +423,7 @@ public class Buildings {
     public static int runBPIPPRM(String runDirectory) {
         System.out.println(runDirectory);
         String execFile = runDirectory + "bpipprm.exe" ;
-        String inputFile = runDirectory + "bpipprm3.inp" ;
+        String inputFile = runDirectory + "bpipprm1.inp" ;
         String outputFile1 = runDirectory + "buildings.dat";
         String outputFile2 = runDirectory + "buildings_summary.dat";
         try {
@@ -426,6 +435,39 @@ public class Buildings {
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    public static int createAERMODSourceInput() {
+        StringBuilder sb = new StringBuilder();
+        int numberStackLines = BPIPPRMStackInput.size() ;
+
+        for (int i = 0; i < StackProperties.size(); i++) {
+            String[] avecoord = StackProperties.get(i).split("#");
+            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]),Double.parseDouble(avecoord[1]));
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+            double StackEastUTM = outputcoordinates.get(0).get(0);
+            double StackNorthUTM = outputcoordinates.get(0).get(1);
+            double StackHeight = Double.parseDouble(avecoord[2]);
+            double massFlowrateInTonYr = StackEmissions.get(i);
+            double massFlowrateInGs = massFlowrateInTonYr*1000*1000/(365*24*60*60);
+            double gasTemperatureKelvin = 890.0;
+            double atmosphericPressurePa = 101325;
+            double gasConstantJoulemolKelvin = 8.314 ;
+            double molarMassCO2gmol = 44.01;
+            double volumetricFlowRatem3s = (massFlowrateInGs/molarMassCO2gmol)*gasConstantJoulemolKelvin*gasTemperatureKelvin/atmosphericPressurePa;
+            double Diameter = StackDiameter.get(i);
+            double stackAream2 = (Math.PI/4)*Diameter*Diameter;
+            double velocityms = volumetricFlowRatem3s/stackAream2;
+
+            String stkId = "Stk" + i;
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n",stkId, StackEastUTM, StackNorthUTM, 0.0));
+            sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
+                    massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
+        }
+
+
+        return writeToFile(simulationDirectory + "aermod\\plantSources.dat",sb.toString());
     }
 
 
@@ -460,7 +502,7 @@ public class Buildings {
         BuildingIRIQuery.append("?chemical_plant geo:ehContains ?building .");
         BuildingIRIQuery.append("?building rdf:type <http://www.purl.org/oema/infrastructure/Building>.");
         BuildingIRIQuery.append("?building ns2:hasOntoCityGMLRepresentation ?IRI .}");
-//        BuildingIRIQuery.append("LIMIT 100");
+        BuildingIRIQuery.append("LIMIT 10");
         JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, BuildingIRIQuery.toString());
         return BuildingIRIQueryResult;
     }
