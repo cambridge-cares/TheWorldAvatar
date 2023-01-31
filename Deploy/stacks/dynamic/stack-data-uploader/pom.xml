@@ -7,17 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-data-uploader</artifactId>
-  <
-  <
-  <
-  <
-  <
-  <
-  < HEAD
   <version>1.7.3-566-SNAPSHOT</version>
-  =======
-  <version>1.7.2</version>
-  >>>>>>> main
 
   <name>Stack Data Uploader</name>
   <url>https://www.cmclinnovations.com</url>
@@ -39,17 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <
-      <
-      <
-      <
-      <
-      <
-      < HEAD
       <version>1.7.3-566-SNAPSHOT</version>
-      =======
-      <version>1.7.2</version>
-      >>>>>>> main
     </dependency>
 
     <dependency>
