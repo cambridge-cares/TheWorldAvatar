@@ -269,6 +269,7 @@ def get_time_series_data(station_iris: list = None,
         # Get time series names and units (as dict with dataIRIs as key)
         df_sub = df.loc[df['dataIRI'].isin(dataIRIs), ['dataIRI','unit', 'reading', 'reading_type']]
         ts_names.append(dict(zip(df_sub['dataIRI'], df_sub['reading']+df_sub['reading_type'])))
+        # NOTE: Fix encoding issue with special characters
         df_sub['unit'] = df_sub['unit'].apply(lambda x: x.encode('ISO-8859-1').decode('utf-8'))
         ts_units.append(dict(zip(df_sub['dataIRI'], df_sub['unit'])))
 
