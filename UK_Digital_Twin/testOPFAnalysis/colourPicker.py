@@ -49,7 +49,7 @@ colourHEXList_9ClasswithElimination = [## eliminate the first 2 colours
     '#006d2c',
     '#00441b']
 
-colourHEXList_6class = [ ## eliminate the first colour
+colourHEXList_11class = [ ## eliminate the first colour, 6class
     '#a50f15',
     '#de2d26',
     '#fb6a4a',
@@ -62,7 +62,27 @@ colourHEXList_6class = [ ## eliminate the first colour
     '#31a354',
     '#006d2c']
 
-def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = None, colourHEXList = colourHEXList_6class, dividend:int = 5):
+colourHEXListForBranch_7class = [
+    '#ffffb2',
+    '#fed976',
+    '#feb24c',
+    '#fd8d3c',
+    '#fc4e2a',
+    '#e31a1c',
+    '#b10026']
+
+def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = None, colourClassNumber:int = 11): 
+    if colourClassNumber == 11:
+        colourHEXList = colourHEXList_11class
+        dividend = 5
+        if middle is None:
+            middle = round((upperBound - lowerBound) / 2, 2)
+    elif colourClassNumber == 7:
+        colourHEXList = colourHEXListForBranch_7class
+        dividend = 7
+    else:
+        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11 or 6, while picking 11, the middle should be specified.')
+
     if upperBound < lowerBound:
         raise ValueError('Invalid upper bound. Expected lower bound should be smaller than upper bound.')
     elif dataValue > upperBound or dataValue < lowerBound:
@@ -75,7 +95,7 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
     if middle is not None: ## if the middle is given, it by default will be assumed to be '#ffffff'  
         if not (middle >= lowerBound and middle <= upperBound):
             raise ValueError('Invalid middle number is given. Middle should be between upper and lower bounds.')
-        elif round(dataValue) == middle:
+        elif round(dataValue) == round(middle):
             return '#ffffff'
         else:
             if (upperBound - middle) >= (middle - lowerBound):
@@ -97,8 +117,8 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
                     raise ValueError('Invalid index value. Expected to be non-negative or exceed the lenth of th colour list.')
             return colourHEXList[index]
     else:
-        interval =  round((upperBound - lowerBound) / (2*dividend), 2)
-        index = len(colourHEXList) - int((dataValue - lowerBound) / interval) - 1
+        interval =  round((upperBound - lowerBound) / dividend, 2)
+        index = math.ceil((dataValue - lowerBound) / interval) - 1
 
         if index == -1:
             index = 0
@@ -108,36 +128,56 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
                     raise ValueError('Invalid index value. Expected to be non-negative or exceed the lenth of th colour list.')
         return colourHEXList[index]
 
-def createColourBarLegend(filepath, upperBound, lowerBound, middle = None, colourHEXList = colourHEXList_6class, dividend:int = 5):
+def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:str, middle = None, colourClassNumber:int = 11):
+    
     fig, ax = plt.subplots(figsize=(0.5, 12))
     fig.subplots_adjust(bottom=0.5)
 
     upperBound = math.ceil(upperBound)
     lowerBound = math.floor(lowerBound)
 
-    upperBoundHexColourCode = sequentialHEXColourCodePicker(upperBound, upperBound, lowerBound, middle)
-    lowerBoundHexColourCode = sequentialHEXColourCodePicker(lowerBound, upperBound, lowerBound, middle)
+    if colourClassNumber == 11:
+        colourHEXList = colourHEXList_11class
+        dividend = 5
+        if middle is None:
+            middle = round((upperBound - lowerBound) / 2, 2)
 
-    ub_index = colourHEXList.index(upperBoundHexColourCode)
-    lb_index = colourHEXList.index(lowerBoundHexColourCode)
+        upperBoundHexColourCode = sequentialHEXColourCodePicker(upperBound, upperBound, lowerBound, middle)
+        lowerBoundHexColourCode = sequentialHEXColourCodePicker(lowerBound, upperBound, lowerBound, middle)
 
-    cmap_list = colourHEXList[ub_index:lb_index + 1]
-    cmap_list.reverse()
-    cmap = mpl.colors.ListedColormap(cmap_list)
+        ub_index = colourHEXList.index(upperBoundHexColourCode)
+        lb_index = colourHEXList.index(lowerBoundHexColourCode)
 
-    if (upperBound - middle) >= (middle - lowerBound):
-        interval = round((upperBound - middle) / dividend, 2)
+        cmap_list = colourHEXList[ub_index:lb_index + 1]
+        cmap_list.reverse()
+        cmap = mpl.colors.ListedColormap(cmap_list)
+
+        if (upperBound - middle) >= (middle - lowerBound):
+            interval = round((upperBound - middle) / dividend, 2)
+        else:
+            interval = round((middle - lowerBound) / dividend, 2)
+
+        bounds = []
+        for i in range(len(cmap_list) + 1):
+            if i == 0:
+                bounds.append(upperBound)
+            else: 
+                bounds.append(round(upperBound - (i * interval), 2))
+        bounds.reverse()
+    elif colourClassNumber == 7:
+        colourHEXList = colourHEXListForBranch_7class
+        dividend = 7
+        interval =  round((upperBound - lowerBound) / dividend, 2)
+        bounds = []
+        for i in range(len(colourHEXList)):
+            if i == 0:
+                bounds.append(lowerBound)
+            else: 
+                bounds.append(round(lowerBound + (i * interval), 2))
     else:
-        interval = round((middle - lowerBound) / dividend, 2)
-
-    bounds = []
-    for i in range(len(cmap_list) + 1):
-        if i == 0:
-            bounds.append(upperBound)
-        else: 
-            bounds.append(round(upperBound - (i * interval), 2))
-    bounds.reverse()
-
+        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11 or 6, while picking 11, the middle should be specified.')
+    
+    cmap = mpl.colors.ListedColormap(colourHEXList)
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     cb2 = mpl.colorbar.ColorbarBase(ax, 
                                     cmap = cmap,
@@ -147,12 +187,12 @@ def createColourBarLegend(filepath, upperBound, lowerBound, middle = None, colou
                                     ticks = bounds,
                                     spacing = 'proportional',
                                     orientation = 'vertical')
-    cb2.set_label('Net demanding (GWh/yr)')
+    cb2.set_label(str(lebel))
     ## fig.show()
     fig.set_size_inches(0.5, 12)
-    plt.savefig( filepath + 'legend-netDemanding.png', dpi = 200, bbox_inches = "tight", transparent = True)
+    plt.savefig(filepath + str(fileName) + '.png', dpi = 200, bbox_inches = "tight", transparent = True)
     return
 
 if __name__ == '__main__': 
-    ## print(sequentialHEXColourCodePicker(-0.5, 1.15, -2.7, 0))
-    createColourBarLegend('', 2.1, -1.3, 0)
+    ## print(sequentialHEXColourCodePicker(6.1, 6, 0, None, 7))
+    createColourBarLegend('', 6, 0, 'Net demanding (GWh/yr)', 'legend-netDemanding', None, 7)

@@ -8,6 +8,7 @@ Optimal Power Flow Analysis
 """
 from ast import Str
 from cgi import test
+import math
 from logging import raiseExceptions
 from pickle import TRUE
 import sys, os, numpy, uuid, time
@@ -169,7 +170,7 @@ class OptimalPowerFlowAnalysis:
             if withRetrofit is True:
                 for egen in self.generatorNodeList:
                     egen.append("Extant")
-        
+        self.numOfBus, _ = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         ##--2. passing arguments--##
         ## specify the topology node
         self.topologyNodeIRI = topologyNodeIRI
@@ -1216,7 +1217,7 @@ class OptimalPowerFlowAnalysis:
             for brName in self.BranchObjectList:
                 _Fr = self.ObjectSet[brName].FROMBUS
                 _To = self.ObjectSet[brName].TOBUS
-                resistance = self.ObjectSet[brName].R
+                Loss = round(self.ObjectSet[brName].LOSS_P, 2)
                 BranchNodeIRI = self.ObjectSet[brName].BranchNodeIRI
 
                 for bus_index, busRawResult in enumerate(busRawResult_eachWeight):
@@ -1230,9 +1231,11 @@ class OptimalPowerFlowAnalysis:
                 else:
                     Fr = _To
                     To = _Fr
-                Loss = (_F_Va - _T_Va) ** 2 / float(resistance)
-                Loss = round(Loss, 2)
-                branchRawResult_eachWeight.append({'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss})
+
+                FromBusLocation = self.busNodeList[Fr]['BusLatLon']
+                ToBusLocation = self.busNodeList[To]['BusLatLon']
+
+                branchRawResult_eachWeight.append({'BranchNodeIRI': BranchNodeIRI,'FromBusLocation':FromBusLocation, 'ToBusLocation': ToBusLocation, 'loss': Loss})
             self.branchOutputRecoder.append(branchRawResult_eachWeight)  
             
             ##--Generator--##    
@@ -2121,7 +2124,7 @@ class OptimalPowerFlowAnalysis:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\', upperbound, lowerbound, 0)
+        createColourBarLegend(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
 
         weatherNameList = []
         for weather in weatherConditionList:
@@ -2169,7 +2172,7 @@ class OptimalPowerFlowAnalysis:
                                 "stroke-opacity" : 0.9
                                 },
                                 "geometry":  %s             
-                            },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                            },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0, 11), str(boundary).replace("\'", "\""))         
                             # adding new line 
                             geojson_file += '\n'+feature   
                         # removing last comma as is last line
@@ -2225,7 +2228,7 @@ class OptimalPowerFlowAnalysis:
                             "stroke-opacity" : 0.9
                             },
                             "geometry":  %s             
-                        },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                        },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2, 11), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
                         # adding new line 
                         geojson_file += '\n'+feature   
                     # removing last comma as is last line
@@ -2268,7 +2271,7 @@ class OptimalPowerFlowAnalysis:
                                     "stroke-opacity" : 0.9
                                     },
                                     "geometry":  %s             
-                                },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                },"""%(demanding['smallAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0, 11), str(boundary).replace("\'", "\""))         
                                 # adding new line 
                                 geojson_file += '\n'+feature   
                             # removing last comma as is last line
@@ -2308,7 +2311,7 @@ class OptimalPowerFlowAnalysis:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\', upperbound, lowerbound, 0)
+        createColourBarLegend(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
 
         weatherNameList = []
         for weather in weatherConditionList:
@@ -2356,7 +2359,7 @@ class OptimalPowerFlowAnalysis:
                                     "stroke-opacity" : 0.9
                                     },
                                     "geometry":  %s             
-                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0, 11), str(boundary).replace("\'", "\""))         
                                 # adding new line 
                                 geojson_file += '\n'+feature   
                             # removing last comma as is last line
@@ -2412,7 +2415,7 @@ class OptimalPowerFlowAnalysis:
                             "stroke-opacity" : 0.9
                             },
                             "geometry":  %s             
-                        },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                        },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0, 11), str(boundary).replace("\'", "\""))         
                         # adding new line 
                         geojson_file += '\n'+feature   
                         # removing last comma as is last line
@@ -2455,7 +2458,7 @@ class OptimalPowerFlowAnalysis:
                                     "stroke-opacity" : 0.9
                                     },
                                     "geometry":  %s             
-                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0), str(boundary).replace("\'", "\""))         
+                                },"""%(demanding['regionalAreaCode'], round(float(demanding['netDemanding']), 2), sequentialHEXColourCodePicker(round(float(demanding['netDemanding']), 2), upperbound, lowerbound, 0, 11), str(boundary).replace("\'", "\""))         
                                 # adding new line 
                                 geojson_file += '\n'+feature   
                             # removing last comma as is last line
@@ -2864,11 +2867,10 @@ class OptimalPowerFlowAnalysis:
                                 plt.cla()          
         return 
 
-    """This method is to determine the current direction of each branch"""
-    ## The input will remain the same as the output will be updated after each iteration
+    """This method is to generate the visulisation GeoJSON file of the branch transmission loss"""
     def GeoJSONCreator_branchGrid(self, branchData, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
-         ## check the storage path
-        self.mkdirbranchLossJSON(self.numOfBus + '\\')
+        ## check the storage path
+        self.mkdirbranchLossJSON(str(self.numOfBus) + '\\')
         ## Determine the upper and lower bounds
         loss = []
         for loss_eachSMRDesign in branchData:
@@ -2878,19 +2880,26 @@ class OptimalPowerFlowAnalysis:
                         for loss_branch in loss_eachWeight:
                             loss.append(loss_branch['loss'])
         upperbound = round(float(max(loss)), 2)
-        lowerbound = round(float(min(loss)), 2)
+        lowerbound = 0
 
-        if lowerbound >= 0 or upperbound <= 0:
-            raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
+        counter =  0
+        while upperbound > 10:
+            upperbound = upperbound / 10
+            counter +=  1
+        upperbound = math.ceil(upperbound) * (10**counter)
+
+        if lowerbound < 0:
+            raise ValueError('Unusual lowerbound. Lowerbound should be non-nagitive numbers.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.branchLossJSONPath + self.numOfBus + '\\', upperbound, lowerbound, None)
+        createColourBarLegend(self.branchLossJSONPath + str(self.numOfBus) + '\\', upperbound, lowerbound, 'Transmission loss (MW)', 'legend-transmissionLoss', None, 7)
 
+        ## weather list 
         weatherNameList = []
         for weather in weatherConditionList:
             weatherNameList.append(weather[2])
 
-        busGPSLocation = query_model.queryBusGPSLocation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+        ## busGPSLocation = query_model.queryBusGPSLocation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         
         if ifSpecifiedResults is True:
             if specifiedConfigList == [] or specifiedConfigList == [[]]:
@@ -2920,29 +2929,23 @@ class OptimalPowerFlowAnalysis:
                             "type": "FeatureCollection",
                             "features": ["""
                         # iterating over features (rows in results array)
-                        for bd in branchData_eachWeight:
-                            for buslatlon in busGPSLocation:
-                                if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
-                                    fromBusLatlon = bd['BusLatLon']
-                                elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
-                                    toBusLatlon = bd['BusLatLon']
-
+                        for bd in branchData_eachWeight:             
                             # creating point feature 
                             feature = """{
-                                "type": "Feature",
+                                "type": "Feature", 
                                 "properties": {
                                 "Name": "%s",
                                 "Loss": "%s",
-                                "strokeColor": "%s",
-                                "stroke-width" : 0.2,
+                                "stroke": "%s",
+                                "stroke-width" : 5,
                                 "stroke-opacity" : 0.9
                                 },
                                 "geometry": {
                                     "type": "LineString",
                                     "coordinates": [[%s, %s], 
-                                                    [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                                    [%s, %s]]
                                     }            
-                            },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                            },"""%(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None, 7), bd['FromBusLocation'][1], bd['FromBusLocation'][0], bd['ToBusLocation'][1], bd['ToBusLocation'][0])         
                             # adding new line 
                             geojson_file += '\n'+feature   
                         # removing last comma as is last line
@@ -2955,7 +2958,7 @@ class OptimalPowerFlowAnalysis:
                         geojson_file += end_geojson
                         # saving as geoJSON
                         file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                        geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
                         geojson_written.close() 
                         print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
@@ -2985,28 +2988,22 @@ class OptimalPowerFlowAnalysis:
                         "features": ["""
                     # iterating over features (rows in results array)
                     for bd in specifiedbranchData:
-                        for buslatlon in busGPSLocation:
-                            if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
-                                fromBusLatlon = bd['BusLatLon']
-                            elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
-                                toBusLatlon = bd['BusLatLon']
-
                         # creating point feature 
                         feature = """{
                             "type": "Feature",
                             "properties": {
                             "Name": "%s",
                             "Loss": "%s",
-                            "strokeColor": "%s",
-                            "stroke-width" : 0.2,
+                            "stroke": "%s",
+                            "stroke-width" : 5,
                             "stroke-opacity" : 0.9
                             },
                             "geometry": {
                                 "type": "LineString",
                                 "coordinates": [[%s, %s], 
-                                                [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                                [%s, %s]] 
                                 }            
-                        },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                        },"""%(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None, 7), bd['FromBusLocation'][1], bd['FromBusLocation'][0], bd['ToBusLocation'][1], bd['ToBusLocation'][0])    
                         # adding new line 
                         geojson_file += '\n'+feature   
                     # removing last comma as is last line
@@ -3019,7 +3016,7 @@ class OptimalPowerFlowAnalysis:
                     geojson_file += end_geojson
                     # saving as geoJSON
                     file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                    geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
                     geojson_written.write(geojson_file)
                     geojson_written.close() 
                     print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
@@ -3036,27 +3033,22 @@ class OptimalPowerFlowAnalysis:
                                 "features": ["""
                             # iterating over features (rows in results array)
                             for bd in branchData_eachWeight:
-                                for buslatlon in busGPSLocation:
-                                    if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
-                                        fromBusLatlon = bd['BusLatLon']
-                                    elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
-                                        toBusLatlon = bd['BusLatLon']
                                 # creating point feature 
                                 feature = """{
                                     "type": "Feature",
                                     "properties": {
                                     "Name": "%s",
                                     "Loss": "%s",
-                                    "strokeColor": "%s",
-                                    "stroke-width" : 0.2,
+                                    "stroke": "%s",
+                                    "stroke-width" : 5,
                                     "stroke-opacity" : 0.9
                                     },
                                     "geometry": {
                                         "type": "LineString",
                                         "coordinates": [[%s, %s], 
-                                                        [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                                        [%s, %s]]
                                         }            
-                                },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                                },"""%(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None, 7), bd['FromBusLocation'][1], bd['FromBusLocation'][0], bd['ToBusLocation'][1], bd['ToBusLocation'][0])  
                                 # adding new line 
                                 geojson_file += '\n'+feature   
                             # removing last comma as is last line
@@ -3069,12 +3061,15 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'BranchGrid_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                            geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
         return 
    
+    
+    
+    
     def mkdirJSON(self):
         folder = os.path.exists(self.filePathForJSON)
         if not folder:                
@@ -4267,7 +4262,7 @@ if __name__ == '__main__':
     # CarbonTaxForOPFList = [60]
     # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
-    ifReadLocalResults = True
+    ifReadLocalResults = False
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
