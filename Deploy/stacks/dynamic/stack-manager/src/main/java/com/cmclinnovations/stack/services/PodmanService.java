@@ -247,8 +247,7 @@ public class PodmanService extends DockerService {
                     ContainerSpecFile file = dockerConfig.getFile();
                     if (null != file) {
                         Long mode = file.getMode();
-                        config.target(file.getName())
-                                .target("/" + dockerConfig.getConfigName())
+                        config.target("/" + file.getName())
                                 .mode(mode == null ? null : Math.toIntExact(mode));
                     }
                     containerSpecGenerator.addSecretsItem(config);
