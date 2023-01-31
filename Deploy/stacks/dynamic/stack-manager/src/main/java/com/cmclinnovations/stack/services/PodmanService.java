@@ -213,6 +213,9 @@ public class PodmanService extends DockerService {
                                     })));
         }
 
+        // Disable SELinux, this is required to bind mount files and sockets
+        podSpecGenerator.addSecurityOptItem("label=disable");
+
         try {
             PodsApi podsApi = new PodsApi(getClient().getPodmanClient());
             IDResponse podIDResponse = podsApi.podCreateLibpod(podSpecGenerator);
