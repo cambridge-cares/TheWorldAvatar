@@ -26,13 +26,13 @@ To log in to the Container registries, please run the following commands to esta
 This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
-The functionality has been tested based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
+> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.7.2` based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
 
 
 &nbsp;
 ## Spinning up the core Stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` on the `main` branch of the World Avatar repository and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+Navigate to `Deploy/stacks/dynamic/stack-manager` on the `main` branch of the World Avatar repository and run the following command there from a *bash* terminal. To spin up the stack using the [Stack manager], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
@@ -45,7 +45,7 @@ bash ./stack.sh stop KINGS-LYNN
 bash ./stack.sh remove KINGS-LYNN -v
 ```
 
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [Stack manager] readme.
 
 After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` as required by the Digital Twin Visualisation Framework. In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and stop container followed by another `bash ./stack.sh start KINGS-LYNN` from within the `stack-manager` repository). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
 
@@ -76,13 +76,11 @@ chmod -R +rwx <REPO NAME>
 &nbsp;
 ## Uploading initial data
 
-<span style="color:red">
-To be revised/checked, incl. links in data readmes
-</span>
+> The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.7.2` based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
 
-A few datasets/files to be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
+A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
 
-The following steps explain how to upload the data to the stack:
+The following steps explain how to upload the data to the stack using the [Stack data uploader] (please see the referenced README for more details):
 
 1) Copy all relevant files from the `inputs/datauploader` folder of this repository into the `inputs` folder of  the stack data uploader repository:
 
@@ -92,7 +90,7 @@ The following steps explain how to upload the data to the stack:
 
     c) Copy all data sub-directories from the `inputs/datauploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
-2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished):
+2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished). Specified Blazegraph/Geoserver/... namespaces will be created automatically by the uploader if not already exist.
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
@@ -107,7 +105,7 @@ QGIS is used to consolidate various geospatial data sets from Digimap (both Ordn
 
 ## 2) Creation of .gml input file for KG import (FME, *manual*)
 
-FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input in output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
+FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input and output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
 
 ## 3) Importing building data into KG (CitiesKG Importer, *partially manual*)
 
@@ -227,12 +225,15 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [OS Features API]: https://api.os.uk/features/
+
+<!-- Stack references -->
+[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
+[Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 
 <!-- Agents -->
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
