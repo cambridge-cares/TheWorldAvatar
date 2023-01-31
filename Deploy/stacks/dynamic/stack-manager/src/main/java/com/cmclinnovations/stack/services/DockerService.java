@@ -57,6 +57,9 @@ import com.github.dockerjava.api.model.VolumeOptions;
 public class DockerService extends AbstractService
         implements ContainerManagerService<DockerClient> {
 
+    // External path to socket on host
+    private static final String API_SOCK = "API_SOCK";
+    // Internal path to socket in containers
     protected static final String DOCKER_SOCKET_PATH = "/var/run/docker.sock";
 
     public static final String TYPE = "docker";
@@ -366,7 +369,7 @@ public class DockerService extends AbstractService
 
         Mount dockerSocketMount = new Mount()
                 .withType(MountType.BIND)
-                .withSource(DOCKER_SOCKET_PATH)
+                .withSource(System.getenv(API_SOCK))
                 .withTarget(DOCKER_SOCKET_PATH);
         if (!mounts.contains(dockerSocketMount)) {
             mounts.add(dockerSocketMount);
