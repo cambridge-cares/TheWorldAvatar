@@ -1,40 +1,58 @@
 from pubchemagent.kgoperations.getkgdata import *
 from pubchemagent.kgoperations.addkgdata import * 
 from pubchemagent.pug import pug_api
+import time
 
-def query_with_inchi(inchi):
+def species_instantiation(inchi):
     pug_access = pug_api()
     IRI = get_iri_data(inchi)
     if IRI:
-        uuid = IRI
-
+        uuid = IRI.partition('_')[2]
     else:
         uuid = create_uuid()
 
+    start_time = time.time()
     data = pug_access.pug_request('InChI', inchi)
-    props, identifiers = pug_access.get_props(data)
-    CID = pug_access.get_cid(data)
-    charge = pug_access.get_charge(data)
-    props_3d = pug_access.pug_request_prop_3d(CID)
-    exp_props = pug_access.pug_request_exp_prop(CID)
-    uses = pug_access.pug_request_uses(CID)
-    sh_props = pug_access.pug_request_sh_prop(CID)
-    #    atom_id = pug_access.get_atoms(data)
+    cid, props, identifiers = pug_access.get_props(data)
+    cid = pug_access.check_preferred(cid)
+    data_3d = pug_access.pug_request_prop_3d(cid)
+    if 'Record' in data_3d:
+        geometry, bonds = pug_access.get_structure('3d', data_3d)
+    else:
+        geometry, bonds = pug_access.get_structure('2d', data)
+    exp_props = pug_access.pug_request_exp_prop(cid)
+    uses = pug_access.pug_request_uses(cid)
+    ghs = pug_access.pug_request_ghs_classification(cid)
+    spectra = pug_access.pug_request_spectra(cid)
+    print("--- Import PubChem: %s seconds ---" % (time.time() - start_time))
 
-    cid = CID['cid']
-        
-    insert_ontospecies_identifiers(uuid, identifiers)
-    insert_ontospecies_props(uuid, props)
-    insert_ontospecies_props(uuid, exp_props) 
-    insert_ontospecies_props(uuid, sh_props)  
-    insert_ontospecies_props(uuid, uses)     
-    return (props, 'PubChem')
+    typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species>'  
+    start_time = time.time()
+    insert_structure(uuid, geometry, bonds)   
+    print("--- Geometry: %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    insert_ontospecies(typeIRI, 'Species', uuid, identifiers)
+    print("--- Identifier: %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    insert_ontospecies(typeIRI, 'Species', uuid, props)
+    print("--- Comp. Prop.: %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    insert_ontospecies(typeIRI, 'Species', uuid, exp_props) 
+    print("--- Exp. Prop.: %s seconds ---" % (time.time() - start_time)) 
+    start_time = time.time()
+    insert_ontospecies(typeIRI, 'Species', uuid, uses) 
+    print("--- Uses: %s seconds ---" % (time.time() - start_time)) 
+    start_time = time.time()
+    insert_ontospecies(typeIRI, 'Species', uuid, ghs) 
+    print("--- GHS: %s seconds ---" % (time.time() - start_time))   
+    start_time = time.time()
+    insert_spectra(uuid, spectra)
+    print("--- Spectra: %s seconds ---" % (time.time() - start_time))
 
-def populate_elements():
+def element_instantiation(el):
     pug_access = pug_api()
-    for el in range(1,118):
-        data = pug_access.pug_request_element(el)
-        uuid = create_uuid()
-        insert_ontospecies_element(uuid,data)
+    data = pug_access.pug_request_element(el)
+    uuid = create_uuid()
+    typeIRI = '<http://www.daml.org/2003/01/periodictable/PeriodicTable#Element>'
+    insert_ontospecies(typeIRI, 'Element', uuid, data)
 
-        
