@@ -1,11 +1,11 @@
 # Digital Twin Visualisation Framework (DTVF)
 
-The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]). The file structure is based on the [example Mapbox visualisation].
+The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]) version `3.3.4`. The configuration file structure (i.e. `data.json`) is based on the [example Mapbox visualisation].
 
 &nbsp;
 ## Creating the Visualisation
 
-Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from the [DTVF] directory:
+Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from the [DTVF subdirectory] (i.e. the location where this README is located):
 
 ```bash
 # To build the Image:
@@ -17,15 +17,15 @@ docker-compose -p kings-lynn -f ./docker/docker-compose.yml up -d --force-recrea
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
+**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:80`.
 
 
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following descriptions refers to commit `216b8a6ea8e35fb41ece61724c6d721e5d38c691` of the `dev-feature-info-agent` branch
+> The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.0` as of commit `???` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
-The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to the spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **Please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
+The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **However, please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
 
 ```bash
 # Build the agent image
@@ -33,17 +33,13 @@ The Feature Info Agent is used to retrieve meta data for visualisation(s). Detai
 ```
 Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former **before** running the container should automatically make them available to the agent. **Please note** that you need to redeploy the agent after adding new or updating files in the `queries` directory. 
 
-The required `fia-config.json` and `.sparql` files to be placed inside the agent before building/deploying the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository (as well as to be found in the `resource` folders of the respective input agents (i.e. MetOfficeAgent, EPCInstantiationAgent)).
-```diff
-- Pending To Do: 
-    - Ensure this is true after verifying that the queries work
-```
+The required `fia-config.json` and `.sparql` files to be placed inside the agent before building/deploying the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository.
 
-To deploy the agent to the spun up Stack, please run the following command from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM). :
+To deploy the agent to the spun up `KINGS-LYNN` stack, please run the following command from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM):
 
 ```bash
- # Deploy the agent
- bash ./stack.sh start <STACK_NAME>
+ # Deploy the agent to the stack
+ bash ./stack.sh start KINGS-LYNN
 ```
 After deploying the agent, the NGINX routing configuration needs to be added. **Please note** that this is required after each agent startup, details are provided below.
 
@@ -51,13 +47,15 @@ After deploying the agent, the NGINX routing configuration needs to be added. **
 &nbsp;
 ## Important Pre-requisites
 
-The ensure communication between the DTVF and the Feature Info Agent, the following pre-requisites must be met:
+To ensure communication between the DTVF and the Feature Info Agent, the following pre-requisites must be met:
 
 * **Allow CORS (i.e. Cross-Origin Resource Sharing)**: The FIA relies on CORS information to retrieve metadata from the stack after clicking on any displayed feature. A current work-around to enable this is installing a browser plug-in to blanket-allow CORS requests. However, one should be aware of the security implications of this!
 
 * **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack NGINX configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
 
     ```bash
+    # Potentially navigate to location where helper script is located
+    cd DTVF/FeatureInfoAgent/routing/
     # Run helper script to add Feature Info Agent NGINX configuration
     bash ./update_nginx_conf.sh
     ```
@@ -66,7 +64,9 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 ```diff
 - Pending To Dos 
     - update visualised (fudged) building data with actual data after running building matching agent
-    - refine clustering with vector tiles
+    - refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
+    - add attributions in settings.json
+    - include further icons for different types of buildings
 ```
 
 <!-- Links -->
@@ -77,5 +77,5 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 
 <!-- repositories -->
 [FeatureInfoAgent queries]: FeatureInfoAgent/queries
-[DTVF]: DTVF
+[DTVF subdirectory]: /DTVF
 [update_nginx_conf.sh]: /DTVF/FeatureInfoAgent/routing/update_nginx_conf.sh

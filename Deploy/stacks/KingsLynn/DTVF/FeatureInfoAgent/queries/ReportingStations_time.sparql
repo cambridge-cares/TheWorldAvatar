@@ -3,7 +3,7 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
 
-SELECT ?Measurement ?Name ?Unit
+SELECT ?Measurement ?Name ?Unit ?LastUpdate
 WHERE {
   {
   # Observations/Measurements
@@ -17,7 +17,8 @@ WHERE {
   [IRI] ems:reports/ems:hasForecastedValue ?Measurement . 
   #?Measurement ^om:hasValue/rdf:type <https://www.theworldavatar.com/kg/ontoems/RelativeHumidity> . 
   ?Measurement ^ems:hasForecastedValue/rdf:type ?type ; 
-               om:hasUnit/om:symbol ?Unit .                
+                ems:createdOn ?LastUpdate ; 
+                om:hasUnit/om:symbol ?Unit .            
   BIND (concat(replace(str(?type), str(ems:), ''), ' forecast') as ?Name)    
   }
 }

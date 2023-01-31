@@ -1,18 +1,18 @@
 {
-    "database_name": "postgres",
     "queries": [
         {
             "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
             "metaFile": "ReportingStations.sparql",
             "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres",
             "timeLimit": 48
         },
         {
-            "class": "<https://www.theworldavatar.com/kg/ontobuiltenv/Flat>",
+            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat",
             "metaFile": "BuildingsFlats.sparql"
         },
         {
-            "class": "<http://www.purl.org/oema/infrastructure/Building>",
+            "class": "http://www.purl.org/oema/infrastructure/Building",
             "metaFile": "BuildingsFlats.sparql"
         }
     ]
