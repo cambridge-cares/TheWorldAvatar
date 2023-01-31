@@ -77,7 +77,7 @@ To properly parse the metadata and timeseries queries, the agent requires the re
     <img src="meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
 </p>
 
-<ins>Queries for timeseries</ins> data need to return the measurement/forecast IRIs, i.e. the IRIs which are connected via `ts:hasTimeSeries` to the actual timeseries instances. Those IRIs will be used to grab the actual values from PostGreSQL as well as parameters associated with each measurement/forecast. Required columns are `Measurement` (or `Forecast`) containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
+<ins>Queries for timeseries</ins> data need to return the measurement/forecast IRIs, i.e. the IRIs which are connected via `ts:hasTimeSeries` to the actual timeseries instances. Those IRIs will be used to grab the actual values from PostGreSQL as well as parameters associated with each measurement/forecast. Required columns are `Measurement` containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
 
 
 <p align="center">
