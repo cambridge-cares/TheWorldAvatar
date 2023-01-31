@@ -23,17 +23,16 @@ To log in to the Container registries, please run the following commands to esta
 &nbsp;
 # Spinning up the Stack
 
-This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and (optionally) OntoCityGml building instances.
+This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
-<span style="color:red">
-The functionality has been tested based on commit `6bbc6dac87d45875fc172b633941465000cc2658` on branch `272-ability-to-upload-triples-through-the-stack-data-uploader`.
-</span>
+The functionality has been tested based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
+
 
 &nbsp;
 ## Spinning up the core Stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+Navigate to `Deploy/stacks/dynamic/stack-manager` on the `main` branch of the World Avatar repository and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
@@ -63,7 +62,7 @@ $ cd <REPO NAME>
 $ git checkout dev-MetOfficeAgent-withinStack
 $ git pull
 ```
-Once the repository clone is obtained, please follow these instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+Once the repository clone is obtained, please follow the instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://<host IP>:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
 To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
@@ -189,8 +188,14 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 
 ## MetOffice Agent
 
-- no explicit namespace is created, default `kb` is used
-All sensor data (flood, AQ, metoffice) in KB
+> The following description refers to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
+
+The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. To deploy the agent to the spun up `KINGS-LYNN` stack, please provide the target Blazegraph namespace, PostGIS/PostgreSQL database name, etc. in the [MetOffice docker-compose file]. Afterwards, simply run the following command from the [MetOffice Agent] repository (i.e. where the [MetOffice docker-compose file] is located) to deploy the agent using its published Docker image from the [Container registry on Github]:
+```bash
+bash ./stack.sh start KINGS-LYNN
+```
+
+
 
 ## AirQuality Agent
 
@@ -230,6 +235,8 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [OS Features API]: https://api.os.uk/features/
 
 <!-- Agents -->
+[MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
+[MetOffice docker-compose file]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/docker-compose.yml
 [UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
