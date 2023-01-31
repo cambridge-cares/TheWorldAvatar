@@ -28,7 +28,7 @@ def species_instantiation(inchi):
 
     typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species>'  
     start_time = time.time()
-    insert_structure(uuid, geometry, bonds)   
+    insert_structure(typeIRI, 'Species', uuid, geometry, bonds)   
     print("--- Geometry: %s seconds ---" % (time.time() - start_time))
     start_time = time.time()
     insert_ontospecies(typeIRI, 'Species', uuid, identifiers)
@@ -46,7 +46,7 @@ def species_instantiation(inchi):
     insert_ontospecies(typeIRI, 'Species', uuid, ghs) 
     print("--- GHS: %s seconds ---" % (time.time() - start_time))   
     start_time = time.time()
-    insert_spectra(uuid, spectra)
+    insert_spectra(typeIRI, 'Species', uuid, spectra)
     print("--- Spectra: %s seconds ---" % (time.time() - start_time))
 
 def element_instantiation(el):

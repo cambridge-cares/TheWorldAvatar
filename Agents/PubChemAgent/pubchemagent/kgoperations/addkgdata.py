@@ -8,6 +8,8 @@ import re
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''
+    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
+    insert_str1 = ' '
     for item in data:
         insert_str = ''
         if data[item].get('key') == prev_key:
@@ -47,14 +49,18 @@ def insert_ontospecies(typeIRI, type, uuid, data):
             insert_str = pubchem_use_insert(typeIRI, type, uuid, i, prov_uuid, use_uuid, data[item])
 
         prev_key = data[item].get('key')
+        insert_str1 = insert_str1 + insert_str
 
-        if insert_str != '':
-            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
-            # create a SPARQL object for performing the query
-            kg_client = kg_operations(sparqlendpoint)
-            kg_client.insertkg(insertStr=insert_str)
+    insert_str = insert_str0 + insert_str1 + '}'
 
-def insert_structure(uuid, geometry, bonds):
+    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    # create a SPARQL object for performing the query
+    kg_client = kg_operations(sparqlendpoint)
+    kg_client.insertkg(insertStr=insert_str)
+
+def insert_structure(typeIRI, type, uuid, geometry, bonds):
+
+    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
 
     sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
     # create a SPARQL object for performing the query
@@ -72,14 +78,21 @@ def insert_structure(uuid, geometry, bonds):
         elementIRI = get_element_IRI(geometry[item].get('element'))
         geometry[item]['element']=elementIRI
     
-    insert_str = pubchem_atom_insert_2(uuid, geomIRI, prov_uuid, unit_uuid, geometry)
-    kg_client.insertkg(insertStr=insert_str)
+    insert_str1 = pubchem_atom_insert(uuid, geomIRI, prov_uuid, unit_uuid, geometry)
+    #kg_client.insertkg(insertStr=insert_str)
 
+    insert_str2 = ''
     for item in bonds:
         insert_str = pubchem_bond_insert(uuid, item+1, bonds[item])
-        kg_client.insertkg(insertStr=insert_str)
+        insert_str2 = insert_str2 + insert_str
+    
+    insert_str = insert_str0 + insert_str1 + insert_str2 +'}'
+    
+    kg_client.insertkg(insertStr=insert_str)
 
-def insert_spectra(uuid, data):
+def insert_spectra(typeIRI, type, uuid, data):
+    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
+    insert_str1 = ' '
     prev_key = ''
     for item in data:
         if data[item].get('key') == prev_key:
@@ -133,11 +146,14 @@ def insert_spectra(uuid, data):
             insert_str = pubchem_ms_insert(uuid, i, prov_uuid, im_uuid, it_uuid, data[item])
 
         prev_key = data[item].get('key')
+        insert_str1 = insert_str1 + insert_str
 
-        sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
-        # create a SPARQL object for performing the query
-        kg_client = kg_operations(sparqlendpoint)
-        kg_client.insertkg(insertStr=insert_str)
+    insert_str = insert_str0 + insert_str1 + '}'
+
+    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    # create a SPARQL object for performing the query
+    kg_client = kg_operations(sparqlendpoint)
+    kg_client.insertkg(insertStr=insert_str)
 
 
 def find_uuid(name, typeIRI, string, comment = ''):

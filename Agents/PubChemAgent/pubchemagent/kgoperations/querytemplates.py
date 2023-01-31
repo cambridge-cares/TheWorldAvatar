@@ -30,21 +30,27 @@ def spec_inchi_query(inchi_string):
     """
     return query
 
-# identifiers insert
-def pubchem_id_insert(typeIRI, type, uuid, item, prov_iri, data):
+# insert string prefixs
+def pubchem_start_insert(typeIRI, type, uuid):
     insert_str = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX gc: <http://purl.org/gc/>
     
     INSERT DATA
     {
     <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
+    """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid)
+
+    return insert_str
+
+# identifiers insert
+def pubchem_id_insert(typeIRI, type, uuid, item, prov_iri, data):
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
     os:#key# rdf:type os:Identifier . 
     <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:value \'#value#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:hasProvenance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:hasProvenance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .    
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#item#', str(item))
     for item in data.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
@@ -53,22 +59,14 @@ def pubchem_id_insert(typeIRI, type, uuid, item, prov_iri, data):
 
 # numerical properties insert (not thermo)
 def pubchem_num_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
     os:#key# rdf:type os:Property .
     <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:value \'#value#\' .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#>  .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:hasProvenance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:dateOfAccess \'#dateofaccess#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \"#description#\" .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \"#description#\" .  
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#unit_uuid#', unit_iri).replace('#item#', str(item))
     for item in data['value'].keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data['value'].get(item)))
@@ -78,14 +76,7 @@ def pubchem_num_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, data)
     return insert_str
 
 def pubchem_thermo_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, ref_unit_iri, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
     os:#key# rdf:type os:ThermoProperty .
     <http://www.theworldavatar.com/kg/ontospecies/ReferenceState_#key#_#item#_#type#_#uuid#>  rdf:type os:ReferenceState .
     <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> .
@@ -96,8 +87,7 @@ def pubchem_thermo_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, re
     <http://www.theworldavatar.com/kg/ontospecies/ReferenceState_#key#_#item#_#type#_#uuid#> os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#ref_unit_uuid#>  .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:hasProvenance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:dateOfAccess \'#dateofaccess#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \"#description#\" .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \"#description#\" .   
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#unit_uuid#', unit_iri).replace('#item#', str(item)).replace('#ref_unit_uuid#', ref_unit_iri)
     for item in data['value'].keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data['value'].get(item)))
@@ -107,21 +97,14 @@ def pubchem_thermo_prop_insert(typeIRI, type, uuid, item, prov_iri, unit_iri, re
     return insert_str
 
 def pubchem_string_prop_insert(typeIRI, type, uuid, item, prov_iri, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> rdf:type os:#key# .
     os:#key# rdf:type os:Property .
     <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:value \'#description#\' .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:hasProvenance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:dateOfAccess \'#dateofaccess#\' .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \'#description#\' .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_#type#_#uuid#> os:originalDataString \'#description#\' .  
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#item#', str(item))
     for item in data.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
@@ -129,18 +112,10 @@ def pubchem_string_prop_insert(typeIRI, type, uuid, item, prov_iri, data):
     return insert_str
 
 def pubchem_classification_insert(typeIRI, type, uuid, item, prov_iri, classification_uuid, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#classification_uuid#> rdf:type os:#key# .
     os:#key# rdf:type os:Classification .
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#classification_uuid#> .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#classification_uuid#> .   
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#item#', str(item)).replace('#classification_uuid#', classification_uuid)
     for item in data.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
@@ -148,75 +123,60 @@ def pubchem_classification_insert(typeIRI, type, uuid, item, prov_iri, classific
     return insert_str
 
 def pubchem_use_insert(typeIRI, type, uuid, item, prov_iri, use_uuid, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> rdf:type #TypeIRI# .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#use_uuid#> rdf:type os:#key# .
-    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#use_uuid#> .
-    }    
+    <http://www.theworldavatar.com/kg/ontospecies/#type#_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#use_uuid#> .   
     """.replace('#TypeIRI#', typeIRI).replace('#type#', type).replace('#uuid#', uuid).replace('#prov_uuid#', prov_iri).replace('#item#', str(item)).replace('#use_uuid#', use_uuid)
     for item in data.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
         
     return insert_str
 
-def pubchem_atom_insert(uuid, elementIRI, geometryIRI, prov_uuid, unit_uuid, data):
+def pubchem_atom_insert(uuid, geometryIRI, prov_uuid, unit_uuid, data):
     insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX gc: <http://purl.org/gc/>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species ;
-        gc:hasAtom <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> ;
-        os:hasGeometry #GeometryIRI# .
+    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:hasGeometry #GeometryIRI# .
     #GeometryIRI# rdf:type os:Geometry ;
         os:hasProverance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
-    <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> rdf:type gc:Atom ;
-        os:hasXCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> ;
-        os:hasYCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> ;
-        os:hasZCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> ;
-        os:hasCanonicalOrder \'#id#\' ;
-        gc:isElement <#ElementIRI#> .
-    <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-        os:value \'#x#\' ;
-        os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-        os:fromGeometry #GeometryIRI# .
-    <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-        os:value \'#y#\' ;
-        os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-        os:fromGeometry #GeometryIRI# .
-    <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-        os:value \'#z#\' ;
-        os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-        os:fromGeometry #GeometryIRI# .
-    }    
-    """.replace('#GeometryIRI#', geometryIRI).replace('#ElementIRI#', elementIRI).replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#unit_uuid#', unit_uuid)
-    for item in data.keys():
-        insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
+    #atoms#    
+    """
+    text_atom = ''
+    for p_item in data.keys():
+        text="""<http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> gc:hasAtom <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> .
+            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> rdf:type gc:Atom ;
+                os:hasXCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> ;
+                os:hasYCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> ;
+                os:hasZCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> ;
+                os:hasCanonicalOrder \'#id#\' ;
+                gc:isElement <#element#> .
+            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
+                os:value \'#x#\' ;
+                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
+                os:fromGeometry #GeometryIRI# .
+            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
+                os:value \'#y#\' ;
+                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
+                os:fromGeometry #GeometryIRI# .
+            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
+                os:value \'#z#\' ;
+                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
+                os:fromGeometry #GeometryIRI# .
+        """
+        for item in data[p_item].keys():
+            text = text.replace('#'+str(item)+'#',str(data[p_item].get(item)))
+        text_atom = text_atom + text
         
+    insert_str=insert_str.replace('#atoms#', text_atom)
+    insert_str=insert_str.replace('#GeometryIRI#', geometryIRI).replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#unit_uuid#', unit_uuid)
+
     return insert_str
 
 def pubchem_bond_insert(uuid, item, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species ;
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species ;
         os:hasAtomicBond <http://www.theworldavatar.com/kg/ontospecies/Bond_#item#_Species_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/Bond_#item#_Species_#uuid#> rdf:type os:AtomicBond ;
         os:hasBondOrder \'#order#\' ;
         os:definedBy <http://www.theworldavatar.com/kg/ontospecies/Atom_#id1#_Species_#uuid#> ;
-        os:definedBy <http://www.theworldavatar.com/kg/ontospecies/Atom_#id2#_Species_#uuid#> .
-    }    
+        os:definedBy <http://www.theworldavatar.com/kg/ontospecies/Atom_#id2#_Species_#uuid#> .   
     """.replace('#uuid#', uuid).replace('#item#', str(item))
     for item in data.keys():
         insert_str=insert_str.replace('#'+str(item)+'#',str(data.get(item)))
@@ -228,14 +188,7 @@ def pubchem_1DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         frequency =  str(data['frequency'].get('value'))
     else:
         frequency = ''
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> rdf:type os:#key# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> rdf:type os:#key# .
         os:#key# rdf:type os:1DNMRSpectra .
         os:1DNMRSpectra rdf:type os:SpectralInformation .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> .
@@ -248,8 +201,7 @@ def pubchem_1DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         os:hasYAxis \'Intensity\' .
     <http://www.theworldavatar.com/kg/ontospecies/Frequency_#key#_#item#_Species#_#uuid#> os:value \'#frequency#\' ;
         os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> .
-    #peaks#    
-    }    
+    #peaks#        
     """.replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#unit_uuid#', unit_uuid).replace('#item#', str(i)).replace('#solvent_uuid#', solvent_uuid).replace('#it_uuid#', it_uuid).replace('#frequency#', frequency)
     text_peak = ''
     k = 0
@@ -273,14 +225,7 @@ def pubchem_2DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         frequency =  str(data['frequency'].get('value'))
     else:
         frequency = ''
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
-    <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> rdf:type os:#key# .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> rdf:type os:#key# .
         os:#key# rdf:type os:2DNMRSpectra .
         os:2DNMRSpectra rdf:type os:SpectralInformation .
     <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> os:has#key# <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> .
@@ -294,8 +239,7 @@ def pubchem_2DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         os:hasYAxis \'Intensity\' .
     <http://www.theworldavatar.com/kg/ontospecies/Frequency_#key#_#item#_Species#_#uuid#> os:value \'#frequency#\' ;
         os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> .
-    #peaks#    
-    }    
+    #peaks#        
     """.replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#unit_uuid#', unit_uuid).replace('#item#', str(i)).replace('#solvent_uuid#', solvent_uuid).replace('#it_uuid#', it_uuid).replace('#frequency#', frequency)
     text_peak = ''
     k = 0
@@ -317,13 +261,7 @@ def pubchem_2DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
     return insert_str  
 
 def pubchem_ms_insert(uuid, i, prov_uuid, im_uuid, it_uuid, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
+    insert_str = """<http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species .
     <http://www.theworldavatar.com/kg/ontospecies/#key#_#item#_Species_#uuid#> rdf:type os:#key# .
         os:#key# rdf:type os:MassSpectrometry .
         os:MassSpectrometry rdf:type os:SpectralInformation .
@@ -334,8 +272,7 @@ def pubchem_ms_insert(uuid, i, prov_uuid, im_uuid, it_uuid, data):
         os:hasSpectraGraph <http://www.theworldavatar.com/kg/ontospecies/SpectraGraph_#key#_#item#_Species_#uuid#> .
     <http://www.theworldavatar.com/kg/ontospecies/SpectraGraph_#key#_#item#_Species_#uuid#> os:hasX1Axis \'m/z\' ;
         os:hasYAxis \'Intensity\' .
-    #peaks#    
-    }    
+    #peaks#        
     """.replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#item#', str(i)).replace('#im_uuid#', im_uuid).replace('#it_uuid#', it_uuid)
     text_peak = ''
     k = 0
@@ -402,50 +339,3 @@ def element_query(symbol):
     }    
     """.replace('#Symbol#', symbol)
     return query
-
-
-def pubchem_atom_insert_2(uuid, geometryIRI, prov_uuid, unit_uuid, data):
-    insert_str = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX gc: <http://purl.org/gc/>
-    
-    INSERT DATA
-    {
-    <http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> rdf:type os:Species ;
-        os:hasGeometry #GeometryIRI# .
-    #GeometryIRI# rdf:type os:Geometry ;
-        os:hasProverance <http://www.theworldavatar.com/kg/ontospecies/Reference_#prov_uuid#> .
-    #atoms#
-    }    
-    """
-    text_atom = ''
-    for p_item in data.keys():
-        text="""<http://www.theworldavatar.com/kg/ontospecies/Species_#uuid#> gc:hasAtom <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> .
-            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_Species_#uuid#> rdf:type gc:Atom ;
-                os:hasXCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> ;
-                os:hasYCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> ;
-                os:hasZCoordinate <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> ;
-                os:hasCanonicalOrder \'#id#\' ;
-                gc:isElement <#element#> .
-            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_XCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-                os:value \'#x#\' ;
-                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-                os:fromGeometry #GeometryIRI# .
-            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_YCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-                os:value \'#y#\' ;
-                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-                os:fromGeometry #GeometryIRI# .
-            <http://www.theworldavatar.com/kg/ontospecies/Atom_#id#_ZCoordinate_1_Species_#uuid#> rdf:type os:XCoordinate ;
-                os:value \'#z#\' ;
-                os:unit <http://www.theworldavatar.com/kg/ontospecies/Unit_#unit_uuid#> ;
-                os:fromGeometry #GeometryIRI# .
-        """
-        for item in data[p_item].keys():
-            text = text.replace('#'+str(item)+'#',str(data[p_item].get(item)))
-        text_atom = text_atom + text
-        
-    insert_str=insert_str.replace('#atoms#', text_atom)
-    insert_str=insert_str.replace('#GeometryIRI#', geometryIRI).replace('#uuid#', uuid).replace('#prov_uuid#', prov_uuid).replace('#unit_uuid#', unit_uuid)
-
-    return insert_str
