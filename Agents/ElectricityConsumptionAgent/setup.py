@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name='myproject', version='1.0', 
+setup(name='myproject', version='0.0', 
       packages=find_packages(exclude=("tests")),
       install_requires= [
         'tqdm==4.64.1',
@@ -31,6 +31,7 @@ setup(name='myproject', version='1.0',
         'py4jps==1.0.27', 
         'requests==2.28.1',
         'gunicorn==20.1.0',
+        'click>=8.0'
     ],
     extras_require={
         "dev": [

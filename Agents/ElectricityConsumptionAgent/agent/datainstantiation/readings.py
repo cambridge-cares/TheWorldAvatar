@@ -67,23 +67,6 @@ def call_pickle(pathname):
         
     return results
 
-def generate_time_dict(year: str = YEAR):
-
-      time_dict = {f'{year}-01-01T12:00:00.000Z':0,\
-             f'{year}-02-01T12:00:00.000Z':1,\
-             f'{year}-03-01T12:00:00.000Z':2,\
-             f'{year}-04-01T12:00:00.000Z':3,\
-             f'{year}-05-01T12:00:00.000Z':4,\
-             f'{year}-06-01T12:00:00.000Z':5,\
-             f'{year}-07-01T12:00:00.000Z':6,\
-             f'{year}-08-01T12:00:00.000Z':7,\
-             f'{year}-09-01T12:00:00.000Z':8,\
-             f'{year}-10-01T12:00:00.000Z':9,\
-             f'{year}-11-01T12:00:00.000Z':10,\
-             f'{year}-12-01T12:00:00.000Z':11}
-            
-      return time_dict
-
 # ------------------------- Read data from source -------------------------------- #
 def read_from_web_elec (year: str = YEAR):
   '''
@@ -251,8 +234,8 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
           year: the number of year of which the data you may want to read
           var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
     '''
-  from agent.utils.CEDA_env_config import CEDA_PASSWORD, CEDA_USERNAME
-  # Web of interest
+  from agent.utils.CEDA_env_config import retrieve_settings
+  CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()# Web of interest
   url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
 
   # Create a session to persist the login

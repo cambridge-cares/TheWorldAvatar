@@ -4,7 +4,7 @@
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.8-slim-buster as base
+FROM python:3.8.10-slim-buster as base
 # Meta data
 LABEL authors = "jx309@cam.ac.uk"
 LABEL description = "LSOAInput (Lower-layer Super Output Area in the UK) agent"

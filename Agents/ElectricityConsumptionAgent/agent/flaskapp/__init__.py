@@ -34,7 +34,7 @@ def create_app(test_config=None):
         # app.register_blueprint(outputtasks.outputtasks_bp)
 
     # Create Blazegraph namespace if not exists (on app startup)
-    create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
+    #create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
 
     # Upload ontology if not exists (on app startup)
     #upload_ontology()

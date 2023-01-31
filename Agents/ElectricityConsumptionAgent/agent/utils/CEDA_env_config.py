@@ -140,5 +140,4 @@ def retrieve_settings():
         logger.error('No "CEDA_PASSWORD" value has been provided in environment variables.')
         raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
 
-# Run when module is imported
-retrieve_settings()
+    return CEDA_USERNAME, CEDA_PASSWORD
