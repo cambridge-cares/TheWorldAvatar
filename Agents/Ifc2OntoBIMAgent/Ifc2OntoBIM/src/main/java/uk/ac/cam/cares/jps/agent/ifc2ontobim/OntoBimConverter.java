@@ -146,44 +146,36 @@ public class OntoBimConverter {
      * @param statementSet Stores the relevant queried statements into this set.
      */
     private void genElementsStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
-        Map<String, String> ifcElements = new HashMap<>();
-        ifcElements.put("ifc:IfcDoor", "bim:Door");
-        ifcElements.put("ifc:IfcWindow", "bim:Window");
-        ifcElements.put("ifc:IfcColumn", "bim:Column");
+        List<String> ifcElements = new ArrayList<>();
+        ifcElements.add("ifc:IfcDoor");
+        ifcElements.add("ifc:IfcWindow");
+        ifcElements.add("ifc:IfcColumn");
         // Actual class is IfcSlab but added identifier to put into Map as separate keys
-        ifcElements.put("ifc:IfcSlabF", "bim:Floor");
-        ifcElements.put("ifc:IfcSlabR", "bim:Roof");
-        ifcElements.put("ifc:IfcRoof", "bim:Roof");
-        ifcElements.put("ifc:IfcWall", "bim:Wall");
-        ifcElements.put("ifc:IfcWallStandardCase", "bim:Wall");
-        ifcElements.put("ifc:IfcCovering", "bim:Ceiling"); // haven't tested
-        ifcElements.put("ifc:IfcStair", "bim:Stair");
-        ifcElements.put("ifc:IfcBuildingElementProxy", "bim:IfcBuildingElementProxy");
-        ifcElements.put("ifc:IfcFlowTerminal", "bim:IfcFlowTerminal");
-        ifcElements.put("ifc:IfcFurnishingElement", "bim:IfcFurnishingElement");
+        ifcElements.add("ifc:IfcSlabF");
+        ifcElements.add("ifc:IfcSlabR");
+        ifcElements.add("ifc:IfcRoof");
+        ifcElements.add("ifc:IfcWall");
+        ifcElements.add("ifc:IfcWallStandardCase");
+        ifcElements.add("ifc:IfcCovering");
+        ifcElements.add("ifc:IfcStair");
+        ifcElements.add("ifc:IfcBuildingElementProxy");
+        ifcElements.add("ifc:IfcFlowTerminal");
+        ifcElements.add("ifc:IfcFurnishingElement");
 
-        for (String ifcElement : ifcElements.keySet()) {
+        for (String ifcElement : ifcElements) {
             // Clone the builder to ensure that query statements are not transferred across different elements
             ConstructBuilder tempBuilder = builder.clone();
             LOGGER.info("Preparing query for the element: " + ifcElement);
-            String query = new IfcElementConstructBuilder().createSparqlQuery(tempBuilder, ifcElement, ifcElements.get(ifcElement));
+            String query = new IfcElementConstructBuilder().createSparqlQuery(tempBuilder, ifcElement, ifcElement);
             QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, statementSet);
             if (!statementSet.isEmpty()) {
                 switch (ifcElement) {
-                    case "ifc:IfcFurnishingElement":
-                    case "ifc:IfcBuildingElementProxy":
-                    case "ifc:IfcFlowTerminal":
-                        GenericElementClassifier.addClassMapping(ifcElements.get(ifcElement), statementSet, classMapping);
-                        break;
                     case "ifc:IfcSlabF":
                     case "ifc:IfcSlabR":
-                        SlabClassifier.addClassMapping(ifcElements.get(ifcElement), statementSet, classMapping);
-                        break;
-                    case "ifc:IfcStair":
-                        StairClassifier.addClassMapping(statementSet, classMapping);
+                        SlabClassifier.addClassMapping(ifcElement, statementSet, classMapping);
                         break;
                     case "ifc:IfcCovering":
-                        CoveringClassifier.addClassMapping(ifcElements.get(ifcElement), statementSet, classMapping);
+                        CoveringClassifier.addClassMapping(ifcElement, statementSet, classMapping);
                         break;
                 }
                 LOGGER.info("Retrieved statements related to elements of " + ifcElement);

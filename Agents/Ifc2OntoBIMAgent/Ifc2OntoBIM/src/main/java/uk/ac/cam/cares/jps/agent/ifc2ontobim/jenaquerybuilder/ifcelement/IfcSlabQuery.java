@@ -28,23 +28,34 @@ class IfcSlabQuery {
      * Switch function that adds the relevant statements according to input.
      *
      * @param builder  Construct Builder object to add Construct query statements.
-     * @param bimClass The object's class name in the OntoBIM ontology.
+     * @param ifcIdentifier The class identifier of the element, which is either IfcSlabF, IfcSlabR, or IfcRoof.
      */
-    protected static void addSlabQueryComponents(ConstructBuilder builder, String bimClass) {
+    protected static void addSlabQueryComponents(ConstructBuilder builder, String ifcIdentifier) {
+        switch (ifcIdentifier) {
+            case "ifc:IfcSlabF":
+                addCommonQueryComponents(builder);
+                addFloorFilterQueryComponents(builder);
+                break;
+            case "ifc:IfcSlabR":
+                addCommonQueryComponents(builder);
+                addRoofFilterQueryComponents(builder);
+                addRoofSpatialLocationQueryComponents(builder);
+                break;
+            default: // No action to be taken for other values
+                break;
+        }
+    }
+
+    /**
+     * Add common statements for the roof and floor slabs
+     *
+     * @param builder Construct Builder object to add Construct query statements.
+     */
+    private static void addCommonQueryComponents(ConstructBuilder builder) {
         builder.addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelDefinesByType")
                 .addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, "ifc:relatedObjects_IfcRelDefines", IfcElementConstructBuilder.ELEMENT_VAR)
                 .addWhere(IfcElementConstructBuilder.REL_TYPE_DEF_VAR, "ifc:relatingType_IfcRelDefinesByType", IfcElementConstructBuilder.ELEMENT_TYPE_VAR)
                 .addWhere(IfcElementConstructBuilder.ELEMENT_TYPE_VAR, "ifc:predefinedType_IfcSlabType", SLAB_ENUM_VAR);
-
-        switch (bimClass) {
-            case "bim:Floor":
-                addFloorFilterQueryComponents(builder);
-                break;
-            case "bim:Roof":
-                addRoofFilterQueryComponents(builder);
-                addRoofSpatialLocationQueryComponents(builder);
-                break;
-        }
     }
 
     /**

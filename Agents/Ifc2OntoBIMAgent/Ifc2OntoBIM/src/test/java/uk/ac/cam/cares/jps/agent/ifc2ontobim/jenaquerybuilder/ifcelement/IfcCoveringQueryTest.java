@@ -18,7 +18,7 @@ class IfcCoveringQueryTest {
 
     @Test
     void testAddCoveringQueryComponentsForCeiling() {
-        IfcCoveringQuery.addCoveringQueryComponents(builder, "bim:Ceiling");
+        IfcCoveringQuery.addCeilingQueryComponents(builder);
         String query = builder.buildString();
         String expected = this.genExpectedResultsForCeiling();
         assertTrue(query.contains(expected));

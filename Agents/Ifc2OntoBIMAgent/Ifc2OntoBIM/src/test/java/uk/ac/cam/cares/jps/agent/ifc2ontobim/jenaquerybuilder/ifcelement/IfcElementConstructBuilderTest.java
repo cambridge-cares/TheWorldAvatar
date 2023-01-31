@@ -21,7 +21,7 @@ class IfcElementConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForColumn() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcColumn", "bim:Column");
+        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcColumn", "ifc:IfcColumn");
         String expected = this.genExpectedResultsForColumn();
         // In the first test, check all common query statements are included
         assertTrue(query.contains(expected));
@@ -29,7 +29,7 @@ class IfcElementConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForDoor() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcDoor", "bim:Door");
+        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcDoor", "ifc:IfcDoor");
         // Check that some additional statements for door are called correctly
         // Not all statements are verified as the relevant test has ensured output is correct
         String expected = this.genExpectedResultsForDoor();
@@ -38,7 +38,7 @@ class IfcElementConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForFloor() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabF", "bim:Floor");
+        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabF", "ifc:IfcSlabF");
         // Check that some additional statements for floor are called correctly
         // Not all statements are verified as the relevant test has ensured output is correct
         List<String> expected = this.genExpectedResultsForFloor();
@@ -47,7 +47,7 @@ class IfcElementConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForStair() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcStair", "bim:Stair");
+        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcStair", "ifc:IfcStair");
         // Check that some additional statements for stair are called correctly
         // Not all statements are verified as the relevant test has ensured output is correct
         List<String> expected = this.genExpectedResultsForStair();
@@ -60,7 +60,7 @@ class IfcElementConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForRoof() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabR", "bim:Roof");
+        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabR", "ifc:IfcSlabR");
         // This query component must not be included
         StringBuilder excluded = new StringBuilder();
         appendSpatialLocationQueryComponents(excluded);
@@ -80,11 +80,12 @@ class IfcElementConstructBuilderTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?element rdf:type bim:Column .\n")
+                .append("    ?element rdf:type ifc:IfcColumn .\n")
                 .append("    ?element bim:hasIfcId ?uid .\n")
                 .append("    ?element rdfs:label ?name .\n")
                 .append("    ?element bim:hasLocalPosition ?localplacement .\n")
                 .append("    ?localplacement rdf:type bim:LocalPlacement .\n")
+                .append("    ?element rdf:type bot:Element .\n")
                 .append("    ?zone bot:containsElement ?element .\n")
                 .append("    ?element bim:hasGeometricRepresentation ?instshaperep .\n")
                 .append("    ?instshaperep rdf:type bim:ModelRepresentation3D .\n")

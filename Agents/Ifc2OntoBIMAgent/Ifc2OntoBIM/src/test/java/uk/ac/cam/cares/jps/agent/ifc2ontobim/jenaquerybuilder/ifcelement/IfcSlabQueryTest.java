@@ -21,7 +21,7 @@ class IfcSlabQueryTest {
 
     @Test
     void testAddSlabQueryComponentsForFloor() {
-        IfcSlabQuery.addSlabQueryComponents(builder, "bim:Floor");
+        IfcSlabQuery.addSlabQueryComponents(builder, "ifc:IfcSlabF");
         String query = builder.buildString();
         String expected = this.genExpectedResultsForFloor();
         assertTrue(query.contains(expected));
@@ -29,7 +29,7 @@ class IfcSlabQueryTest {
 
     @Test
     void testAddSlabQueryComponentsForRoof() {
-        IfcSlabQuery.addSlabQueryComponents(builder, "bim:Roof");
+        IfcSlabQuery.addSlabQueryComponents(builder, "ifc:IfcSlabR");
         String query = builder.buildString();
         List<String> expected = this.genExpectedResultsForRoof();
         expected.forEach(line -> assertTrue(query.contains(line)));
@@ -38,10 +38,8 @@ class IfcSlabQueryTest {
     @Test
     void testAddSlabQueryComponentsFail() {
         ConstructBuilder failBuilder = new ConstructBuilder();
-        IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class,
-                () -> IfcSlabQuery.addSlabQueryComponents(failBuilder, "bim:Roof"));
-        assertTrue(thrownError.getMessage().contains("Predicate"));
-        assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
+        IfcSlabQuery.addSlabQueryComponents(failBuilder, "ifc:IfcRoof");
+        assertEquals(new ConstructBuilder().buildString(), failBuilder.buildString());
     }
 
     private String genExpectedResultsForFloor() {

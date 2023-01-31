@@ -8,7 +8,7 @@ class OntoBIMInstanceTest {
     @Test
     void testRetrieveOntoBimName() {
         assertEquals("Project", OntoBIMInstance.retrieveOntoBimName("IfcProject"));
-        assertEquals("Roof", OntoBIMInstance.retrieveOntoBimName("IfcRoof"));
+        assertEquals("Element", OntoBIMInstance.retrieveOntoBimName("IfcRoof"));
         assertEquals("GeometricRepresentationContext", OntoBIMInstance.retrieveOntoBimName("IfcGeometricRepresentationContext"));
         assertEquals("Polyline", OntoBIMInstance.retrieveOntoBimName("IfcPolyline"));
         assertEquals("CartesianPoint", OntoBIMInstance.retrieveOntoBimName("IfcCartesianPoint"));

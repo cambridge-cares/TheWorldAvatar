@@ -32,7 +32,7 @@ class IfcOpeningQuery {
      * @param builder Construct Builder object to add Construct query statements.
      */
     protected static void addHostElementQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(HOST_ELEMENT_VAR, "bim:hasWallSubElement", IfcElementConstructBuilder.ELEMENT_VAR);
+        builder.addConstruct(HOST_ELEMENT_VAR, "bot:hasSubElement", IfcElementConstructBuilder.ELEMENT_VAR);
         builder.addWhere(REL_FILLS_ELEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelFillsElement")
                 .addWhere(REL_FILLS_ELEMENT_VAR, "ifc:relatedBuildingElement_IfcRelFillsElement", IfcElementConstructBuilder.ELEMENT_VAR)
                 .addWhere(REL_FILLS_ELEMENT_VAR, "ifc:relatingOpeningElement_IfcRelFillsElement", OPENING_ELEMENT_VAR)

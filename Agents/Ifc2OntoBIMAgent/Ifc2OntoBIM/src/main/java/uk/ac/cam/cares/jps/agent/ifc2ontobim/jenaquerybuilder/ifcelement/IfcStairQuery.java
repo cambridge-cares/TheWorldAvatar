@@ -26,14 +26,18 @@ class IfcStairQuery {
      * @param builder Construct Builder object to add Construct query statements.
      */
     protected static void addSubElementsQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", STAIRFLIGHT_VAR)
-                .addConstruct(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, "bim:StairFlight")
-                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", LANDING_VAR)
-                .addConstruct(LANDING_VAR, QueryHandler.RDF_TYPE, "bim:Landing")
-                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", RAILING_VAR)
-                .addConstruct(RAILING_VAR, QueryHandler.RDF_TYPE, "bim:Railing")
-                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bim:hasStairSubElement", STRUCTURAL_COMPONENT_VAR)
-                .addConstruct(STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, "bim:StructuralComponent");
+        builder.addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bot:hasSubElement", STAIRFLIGHT_VAR)
+                .addConstruct(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcStairFlight")
+                .addConstruct(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, "bot:Element")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bot:hasSubElement", LANDING_VAR)
+                .addConstruct(LANDING_VAR, QueryHandler.RDF_TYPE, "ifc:IfcSlab")
+                .addConstruct(LANDING_VAR, QueryHandler.RDF_TYPE, "bot:Element")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bot:hasSubElement", RAILING_VAR)
+                .addConstruct(RAILING_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRailing")
+                .addConstruct(RAILING_VAR, QueryHandler.RDF_TYPE, "bot:Element")
+                .addConstruct(IfcElementConstructBuilder.ELEMENT_VAR, "bot:hasSubElement", STRUCTURAL_COMPONENT_VAR)
+                .addConstruct(STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcMember")
+                .addConstruct(STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, "bot:Element");
         builder.addWhere(IfcElementConstructBuilder.RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
                 .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", IfcElementConstructBuilder.ELEMENT_VAR)
                 .addWhere(IfcElementConstructBuilder.RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", STAIRFLIGHT_VAR)

@@ -39,14 +39,18 @@ class IfcStairQueryTest {
     private List<String> genExpectedResults() {
         List<String> expected = new ArrayList<>();
         // Construct statements
-        expected.add("?element bim:hasStairSubElement ?stairflight");
-        expected.add("?stairflight rdf:type bim:StairFlight");
-        expected.add("?element bim:hasStairSubElement ?landing");
-        expected.add("?landing rdf:type bim:Landing");
-        expected.add("?element bim:hasStairSubElement ?railing");
-        expected.add("?railing rdf:type bim:Railing");
-        expected.add("?element bim:hasStairSubElement ?structurecomponent");
-        expected.add("?structurecomponent rdf:type bim:StructuralComponent");
+        expected.add("?element bot:hasSubElement ?stairflight");
+        expected.add("?stairflight rdf:type ifc:IfcStairFlight");
+        expected.add("?stairflight rdf:type bot:Element");
+        expected.add("?element bot:hasSubElement ?landing");
+        expected.add("?landing rdf:type ifc:IfcSlab");
+        expected.add("?landing rdf:type bot:Element");
+        expected.add("?element bot:hasSubElement ?railing");
+        expected.add("?railing rdf:type ifc:IfcRailing");
+        expected.add("?railing rdf:type bot:Element");
+        expected.add("?element bot:hasSubElement ?structurecomponent");
+        expected.add("?structurecomponent rdf:type ifc:IfcMember");
+        expected.add("?structurecomponent rdf:type bot:Element");
         expected.add("?stairflight bim:hasNumOfRiser ?riserno");
         expected.add("?stairflight bim:hasNumOfTread ?treadno");
         expected.add("?stairflight bim:hasRiserHeight ?riserheight");

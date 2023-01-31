@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author qhouyee
  */
 public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
+    public static final String ELEMENT_CLASS = "bot:Element";
     public static final String ELEMENT_TYPE_VAR = "?elementtype";
     public static final String SHAPEREP_VAR = "?shaperep";
     public static final String INST_SHAPEREP_VAR = "?instshaperep";
@@ -41,8 +42,11 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      */
     public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String bimClass) {
         // Replace ifcClass with their actual classes if identifiers are used
-        ifcClass = (ifcClass.equals("ifc:IfcSlabF") || ifcClass.equals("ifc:IfcSlabR")) ? "ifc:IfcSlab" : ifcClass;
+        bimClass = bimClass.equals("ifc:IfcSlabF") ? "ifc:IfcSlab" :
+                bimClass.equals("ifc:IfcSlabR") ? "ifc:IfcRoof" : bimClass;
         this.createTemplateSparqlQuery(builder, ifcClass, bimClass);
+        // Add the main Element class
+        builder.addConstruct(ELEMENT_VAR, QueryHandler.RDF_TYPE, "bot:Element");
         this.switchFunctionDependingOnInput(builder, ifcClass, bimClass);
         return builder.buildString();
     }
@@ -52,13 +56,11 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      */
     @Override
     protected void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String bimClass) {
-        switch (ifcClass) {
+        switch (bimClass) {
             case "ifc:IfcSlab":
-                IfcOpeningQuery.addVoidRepresentationQueryComponents(builder);
-                IfcSlabQuery.addSlabQueryComponents(builder, bimClass);
-                break;
             case "ifc:IfcRoof":
                 IfcOpeningQuery.addVoidRepresentationQueryComponents(builder);
+                IfcSlabQuery.addSlabQueryComponents(builder, ifcClass);
                 break;
             case "ifc:IfcDoor":
             case "ifc:IfcWindow":
@@ -72,16 +74,17 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
                 IfcStairQuery.addSubElementsQueryComponents(builder);
                 break;
             case "ifc:IfcCovering":
-                IfcCoveringQuery.addCoveringQueryComponents(builder, bimClass);
+                IfcCoveringQuery.addCeilingQueryComponents(builder);
                 break;
         }
 
         // Spatial location are usually the same for most elements except for the following classes
-        if (!(bimClass.equals("bim:Roof") && ifcClass.equals("ifc:IfcSlab"))) {
+        // -- IfcSlab that are classified as Roofs are usually not attached to any zone
+        if (!(ifcClass.equals("ifc:IfcSlabR") && bimClass.equals("ifc:IfcRoof"))) {
             this.addSpatialLocationQueryComponents(builder);
         }
         // Geometric representation are usually the same for most elements except for the following classes
-        if (!bimClass.equals("bim:Stair")) {
+        if (!bimClass.equals("ifc:IfcStair")) {
             this.addGeometricRepresentationQueryComponents(builder);
         }
     }

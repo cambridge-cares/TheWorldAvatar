@@ -45,7 +45,7 @@ class IfcOpeningQueryTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?hostelement bim:hasWallSubElement ?element .\n")
+                .append("    ?hostelement bot:hasSubElement ?element .\n")
                 .append("  }\n")
                 .append("WHERE\n")
                 .append("  { ?relfillselement\n")

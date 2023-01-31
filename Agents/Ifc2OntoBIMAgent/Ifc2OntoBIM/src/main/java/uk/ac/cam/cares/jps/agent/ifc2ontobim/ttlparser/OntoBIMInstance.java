@@ -32,32 +32,22 @@ class OntoBIMInstance {
                 break;
             // Elements
             case "IfcRoof":
-                replacementName = "Roof";
-                break;
             case "IfcWall":
             case "IfcWallStandardCase":
-                replacementName = "Wall";
-                break;
             case "IfcDoor":
-                replacementName = "Door";
-                break;
             case "IfcWindow":
-                replacementName = "Window";
+            case "IfcColumn":
+            case "IfcStair":
+            case "IfcStairFlight":
+            case "IfcRailing":
+            case "IfcFurnishingElement":
+            case "IfcBuildingElementProxy":
+            case "IfcFlowTerminal":
+            case "IfcMember":
+                replacementName = "Element";
                 break;
             case "IfcOpeningElement":
                 replacementName = "GeometryVoid";
-                break;
-            case "IfcColumn":
-                replacementName = "Column";
-                break;
-            case "IfcStair":
-                replacementName = "Stair";
-                break;
-            case "IfcStairFlight":
-                replacementName = "StairFlight";
-                break;
-            case "IfcRailing":
-                replacementName = "Railing";
                 break;
             // Geospatial Operators
             case "IfcGeometricRepresentationContext":
