@@ -17,7 +17,7 @@ docker-compose -p kings-lynn -f ./docker/docker-compose.yml up -d --force-recrea
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file.
+**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:80`.
 
 
 &nbsp;
@@ -66,7 +66,7 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 ```diff
 - Pending To Dos 
     - update visualised (fudged) building data with actual data after running building matching agent
-    - refine clustering with vector tiles
+    - refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
     - add attributions in settings.json
     - include further icons for different types of buildings
 ```
