@@ -8207,7 +8207,7 @@ definitions:
                     there are conflicts.
                     Optional.
                 items:
-                    $ref: "#/definitions/Mount"
+                    $ref: "#/definitions/MountPoint"
                 type: array
                 x-go-name: Mounts
             name:

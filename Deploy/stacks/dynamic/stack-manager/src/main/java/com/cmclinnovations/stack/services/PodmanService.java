@@ -21,11 +21,11 @@ import com.cmclinnovations.swagger.podman.ApiException;
 import com.cmclinnovations.swagger.podman.api.ContainersApi;
 import com.cmclinnovations.swagger.podman.api.PodsApi;
 import com.cmclinnovations.swagger.podman.api.SecretsApi;
-import com.cmclinnovations.swagger.podman.model.BindOptions;
 import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
 import com.cmclinnovations.swagger.podman.model.IDResponse;
 import com.cmclinnovations.swagger.podman.model.ListContainer;
 import com.cmclinnovations.swagger.podman.model.ListPodsReport;
+import com.cmclinnovations.swagger.podman.model.MountPoint;
 import com.cmclinnovations.swagger.podman.model.NamedVolume;
 import com.cmclinnovations.swagger.podman.model.Namespace;
 import com.cmclinnovations.swagger.podman.model.PerNetworkOptions;
@@ -34,11 +34,8 @@ import com.cmclinnovations.swagger.podman.model.PortMapping;
 import com.cmclinnovations.swagger.podman.model.Secret;
 import com.cmclinnovations.swagger.podman.model.SecretInfoReport;
 import com.cmclinnovations.swagger.podman.model.SpecGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.command.ListPodsCmd;
 import com.github.dockerjava.api.command.RemovePodCmd;
-import com.github.dockerjava.api.model.BindPropagation;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
@@ -263,20 +260,23 @@ public class PodmanService extends DockerService {
                  * Podman Swagger spec as described here
                  * https://github.com/containers/podman/issues/13717
                  * and here https://github.com/containers/podman/issues/13092
-                 * Implementing the required changes to the Swagger spec can be done later if
-                 * required.
+                 * I've bodged the Swagger API so that it uses the slightly more appropriate
+                 * MountPoint class (it has "destination" rather than "target"),
+                 * this class doesn't have all of the correct fields though.
+                 * The correct class is defined here:
+                 * https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#
+                 * L112-L127
                  */
-                /*
-                 * containerSpecGenerator.setMounts(dockerMounts.stream()
-                 * .map(dockerMount -> new Mount()
-                 * .source(dockerMount.getSource())
-                 * .target(dockerMount.getTarget())
-                 * .type(dockerMount.getType().name().toLowerCase())
-                 * .readOnly(dockerMount.getReadOnly())
-                 * .bindOptions(convertBindOptions(dockerMount.getBindOptions())))
-                 * .collect(Collectors.toList()));
-                 */
-                // This is the temporary workaround but it only works for named volumes
+
+                containerSpecGenerator.setMounts(dockerMounts.stream()
+                        .filter(dockerMount -> dockerMount.getType() != MountType.VOLUME)
+                        .map(dockerMount -> new MountPoint()
+                                .source(dockerMount.getSource())
+                                .destination(dockerMount.getTarget())
+                                .type(dockerMount.getType().name().toLowerCase()))
+                        .collect(Collectors.toList()));
+
+                // This is a temporary workaround for named volumes
                 containerSpecGenerator.setVolumes(dockerMounts.stream()
                         .filter(dockerMount -> dockerMount.getType() == MountType.VOLUME)
                         .map(dockerMount -> new NamedVolume()
@@ -296,23 +296,6 @@ public class PodmanService extends DockerService {
             }
         } catch (ApiException ex) {
             throw new RuntimeException("Failed to create Podman Pod '" + containerName + "''.", ex);
-        }
-    }
-
-    private BindOptions convertBindOptions(com.github.dockerjava.api.model.BindOptions dockerBindOptions) {
-        try {
-            if (null == dockerBindOptions) {
-                return null;
-            } else {
-                BindPropagation propagation = dockerBindOptions.getPropagation();
-                BindOptions podmanBindOptions = new BindOptions();
-                if (null != propagation) {
-                    podmanBindOptions.propagation(new ObjectMapper().writeValueAsString(propagation));
-                }
-                return podmanBindOptions;
-            }
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException(ex);
         }
     }
 
