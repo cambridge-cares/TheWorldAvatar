@@ -54,6 +54,8 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 * **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack NGINX configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
 
     ```bash
+    # Potentially navigate to location where helper script is located
+    cd DTVF/FeatureInfoAgent/routing/
     # Run helper script to add Feature Info Agent NGINX configuration
     bash ./update_nginx_conf.sh
     ```
