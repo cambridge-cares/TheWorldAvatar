@@ -76,6 +76,40 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
         r['GenerationLinkedToBusNode'] = generationOfBusNode    
     return int(len(res)), res 
 
+def queryBusGPSLocation(topologyNodeIRI, endpoint):
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif parse(endpoint, rule='IRI'):
+        endPointIRI = endpoint
+    else:
+        raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
+    
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    SELECT DISTINCT ?BusNodeIRI ?BusLatLon
+    WHERE
+    {
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?BusNodeIRI . 
+    ?BusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode . 
+    ?BusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .  
+
+    }
+    """ % (topologyNodeIRI)
+    
+    print('...remoteQuery queryBusTopologicalInformation...')
+    res = json.loads(performQuery(endPointIRI, queryStr))
+    print('...queryBusTopologicalInformation is done...')
+    
+    for r in res:
+        r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])]    
+    return res 
+
 ####EGen information query####
 
 def queryEGenInfo(topologyNodeIRI, endPoint):

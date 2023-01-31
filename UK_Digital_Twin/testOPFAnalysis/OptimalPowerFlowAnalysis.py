@@ -274,6 +274,7 @@ class OptimalPowerFlowAnalysis:
         self.diagramPath = '.\\figFiles\\' + self.time_now + '\\'
         self.netDemandingJSONPath = '.\\netDemandingGeoJSONFiles\\' + self.time_now + '\\'
         self.pieChartPath = '.\\regionalEnergyBreakdownPieChart\\' + self.time_now + '\\'
+        self.branchLossJSONPath = '.\\branchLossGeoJSONFiles\\' + self.time_now + '\\'
 
 
     """Find the power plants located in each demanding areas"""
@@ -1181,7 +1182,6 @@ class OptimalPowerFlowAnalysis:
             for bus_index, busName in enumerate(self.BusObjectList):
                 Va = self.ObjectSet[busName].VA_OUTPUT
                 Pg = self.ObjectSet[busName].P_GEN
-                Pd_input = self.ObjectSet[busName].PD_INPUT
                 Pd_output = self.ObjectSet[busName].PD_OUTPUT
                 busIRI = self.ObjectSet[busName].BusNodeIRI
                 busNumber = self.ObjectSet[busName].BUS
@@ -2616,7 +2616,7 @@ class OptimalPowerFlowAnalysis:
                             ## plt.legend(loc='upper right')
                             file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
                             plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
-                            plt.show()
+                            ## plt.show()
                             # plt.close()
                             plt.clf()
                             plt.cla()
@@ -2864,11 +2864,216 @@ class OptimalPowerFlowAnalysis:
                                 plt.cla()          
         return 
 
-    ##TODO: add the branch visualization 
     """This method is to determine the current direction of each branch"""
-    ## THe input will remain the same as the output will be updated after each iteration
-    def GeoJSONCreator_branchGrid(self):
-        return
+    ## The input will remain the same as the output will be updated after each iteration
+    def GeoJSONCreator_branchGrid(self, branchData, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
+         ## check the storage path
+        self.mkdirbranchLossJSON(self.numOfBus + '\\')
+        ## Determine the upper and lower bounds
+        loss = []
+        for loss_eachSMRDesign in branchData:
+            for loss_eachCarbonTax in loss_eachSMRDesign:
+                for loss_eachWeather in loss_eachCarbonTax:
+                    for loss_eachWeight in loss_eachWeather:
+                        for loss_branch in loss_eachWeight:
+                            loss.append(loss_branch['loss'])
+        upperbound = round(float(max(loss)), 2)
+        lowerbound = round(float(min(loss)), 2)
+
+        if lowerbound >= 0 or upperbound <= 0:
+            raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
+
+        ## create the colour bar legend
+        createColourBarLegend(self.branchLossJSONPath + self.numOfBus + '\\', upperbound, lowerbound, None)
+
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+
+        busGPSLocation = query_model.queryBusGPSLocation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+        
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedbranchData = branchData[smrIndex][carbonTaxList][weatherIndex]
+
+                    for i_weight, branchData_eachWeight in enumerate(specifiedbranchData):
+                        geojson_file = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        # iterating over features (rows in results array)
+                        for bd in branchData_eachWeight:
+                            for buslatlon in busGPSLocation:
+                                if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
+                                    fromBusLatlon = bd['BusLatLon']
+                                elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
+                                    toBusLatlon = bd['BusLatLon']
+
+                            # creating point feature 
+                            feature = """{
+                                "type": "Feature",
+                                "properties": {
+                                "Name": "%s",
+                                "Loss": "%s",
+                                "strokeColor": "%s",
+                                "stroke-width" : 0.2,
+                                "stroke-opacity" : 0.9
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [[%s, %s], 
+                                                    [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                    }            
+                            },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                            # adding new line 
+                            geojson_file += '\n'+feature   
+                        # removing last comma as is last line
+                        geojson_file = geojson_file[:-1]
+                        # finishing file end 
+                        end_geojson = """
+                            ]
+                        }
+                        """
+                        geojson_file += end_geojson
+                        # saving as geoJSON
+                        file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                        geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                        geojson_written.write(geojson_file)
+                        geojson_written.close() 
+                        print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedbranchData = branchData[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+                    
+                    geojson_file = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    # iterating over features (rows in results array)
+                    for bd in specifiedbranchData:
+                        for buslatlon in busGPSLocation:
+                            if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
+                                fromBusLatlon = bd['BusLatLon']
+                            elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
+                                toBusLatlon = bd['BusLatLon']
+
+                        # creating point feature 
+                        feature = """{
+                            "type": "Feature",
+                            "properties": {
+                            "Name": "%s",
+                            "Loss": "%s",
+                            "strokeColor": "%s",
+                            "stroke-width" : 0.2,
+                            "stroke-opacity" : 0.9
+                            },
+                            "geometry": {
+                                "type": "LineString",
+                                "coordinates": [[%s, %s], 
+                                                [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                }            
+                        },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                        # adding new line 
+                        geojson_file += '\n'+feature   
+                    # removing last comma as is last line
+                    geojson_file = geojson_file[:-1]
+                    # finishing file end 
+                    end_geojson = """
+                        ]
+                    }
+                    """
+                    geojson_file += end_geojson
+                    # saving as geoJSON
+                    file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
+                    geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                    geojson_written.write(geojson_file)
+                    geojson_written.close() 
+                    print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else: 
+            for i_smr, branchData_eachSMRDesign in enumerate(branchData):
+                for i_carbontax, branchData_eachCarbonTax in enumerate(branchData_eachSMRDesign):
+                    for i_weather, branchData_eachWeather in enumerate(branchData_eachCarbonTax):
+                        for i_weight, branchData_eachWeight in enumerate(branchData_eachWeather):
+                            geojson_file = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            # iterating over features (rows in results array)
+                            for bd in branchData_eachWeight:
+                                for buslatlon in busGPSLocation:
+                                    if buslatlon['BusNodeIRI'] == bd['FromBus'] or buslatlon['BusNodeIRI'] in bd['FromBus']:
+                                        fromBusLatlon = bd['BusLatLon']
+                                    elif buslatlon['BusNodeIRI'] == bd['ToBus'] or buslatlon['BusNodeIRI'] in bd['ToBus']:
+                                        toBusLatlon = bd['BusLatLon']
+                                # creating point feature 
+                                feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "Name": "%s",
+                                    "Loss": "%s",
+                                    "strokeColor": "%s",
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.9
+                                    },
+                                    "geometry": {
+                                        "type": "LineString",
+                                        "coordinates": [[%s, %s], 
+                                                        [%s, %s]]   ##'BranchNodeIRI': BranchNodeIRI,'FromBus':Fr, 'ToBus': To, 'loss': Loss
+                                        }            
+                                },""" %(bd['BranchNodeIRI'], round(float(bd['loss']), 2), sequentialHEXColourCodePicker(round(float(bd['loss']), 2), upperbound, lowerbound, None), fromBusLatlon[1], fromBusLatlon[0], toBusLatlon[1], toBusLatlon[0])         
+                                # adding new line 
+                                geojson_file += '\n'+feature   
+                            # removing last comma as is last line
+                            geojson_file = geojson_file[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file += end_geojson
+                            # saving as geoJSON
+                            file_label = 'BranchGrid_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.branchLossJSONPath + self.numOfBus + '\\' + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
+        return 
    
     def mkdirJSON(self):
         folder = os.path.exists(self.filePathForJSON)
@@ -2901,6 +3106,15 @@ class OptimalPowerFlowAnalysis:
             print("---  new folder %s...  ---" % self.pieChartPath + addingPath)
         else:
             print("---  There has this folder!  ---")
+
+    def mkdirbranchLossJSON(self, addingPath):
+        folder = os.path.exists(self.branchLossJSONPath + addingPath)
+        if not folder:                
+            os.makedirs(self.branchLossJSONPath + addingPath)           
+            print("---  new folder %s...  ---" % self.branchLossJSONPath + addingPath)
+        else:
+            print("---  There has this folder!  ---")
+
 
     """Create the heatmap for total cost and CO2 emission"""
     ## TODO: remove the title
@@ -4347,8 +4561,8 @@ if __name__ == '__main__':
 
     # testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-
+    # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
 
 
 
