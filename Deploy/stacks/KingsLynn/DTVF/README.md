@@ -1,11 +1,11 @@
 # Digital Twin Visualisation Framework (DTVF)
 
-The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]). The file structure is based on the [example Mapbox visualisation].
+The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]) version `3.3.4`. The configuration file structure (i.e. `data.json`) is based on the [example Mapbox visualisation].
 
 &nbsp;
 ## Creating the Visualisation
 
-Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from the [DTVF] directory:
+Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from the [DTVF subdirectory] (i.e. the location where this README is located):
 
 ```bash
 # To build the Image:
@@ -67,6 +67,8 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 - Pending To Dos 
     - update visualised (fudged) building data with actual data after running building matching agent
     - refine clustering with vector tiles
+    - add attributions in settings.json
+    - include further icons for different types of buildings
 ```
 
 <!-- Links -->
@@ -77,5 +79,5 @@ The ensure communication between the DTVF and the Feature Info Agent, the follow
 
 <!-- repositories -->
 [FeatureInfoAgent queries]: FeatureInfoAgent/queries
-[DTVF]: DTVF
+[DTVF subdirectory]: /DTVF
 [update_nginx_conf.sh]: /DTVF/FeatureInfoAgent/routing/update_nginx_conf.sh

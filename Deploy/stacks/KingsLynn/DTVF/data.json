@@ -27,7 +27,7 @@
             "layers": [
                 {
                     "id": "aoi-layer",
-                    "name": "This layer is the area of interest and has a long name", 
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,
@@ -44,7 +44,7 @@
                 },
                 {
                     "id": "ocgml_buildings-layer",
-                    "name": "OS BHA Buildings",
+                    "name": "OS BHA Buildings (i.e. buildings without EPC information)",
                     "source": "ocgml_buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
