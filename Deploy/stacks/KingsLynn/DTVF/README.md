@@ -9,15 +9,15 @@ Detailed instructions on how to create (and customise) the visualisation can be 
 
 ```bash
 # To build the Image:
-docker-compose -p kings-lynn -f ./docker/docker-compose.yml build --force-rm
+docker-compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml build --force-rm
 # To generate a Container (i.e. run the Image):
-docker-compose -p kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
+docker-compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
 
 # To rebuild the image and deploy the container:
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:80`.
+**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
 
 
 &nbsp;
