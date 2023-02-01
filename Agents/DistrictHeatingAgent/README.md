@@ -1,4 +1,4 @@
-# Heating Network Agent
+# District Heating Agent
 
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the district heating network located in a midsize town in Germany. Its purpose is to instantiate instances of the district heating network. The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
@@ -13,6 +13,8 @@ It is required to have access to a knowledge graph SPARQL endpoint and Postgres 
 
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
+This agent requires a running instance of the Access Agent. Once this has been spun up, appropriate routing information needs to be uploaded, mapping the `districtheating` label (or equivalent) to the query and update endpoints of the relevant blazegraph namespace (examples see below). Please consult the Access Agent documentation on how to do this.
+
 #### Time-series client properties
 The time-series client property file is required and it needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
 - `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database
@@ -24,9 +26,13 @@ The time-series client property file is required and it needs to contain all cre
 More information can be found in the example property file `client.properties` in the `config` folder. Please take note the namespace set in the db.url has to be the same as the one set in the PostgreSQL Databases. 
 
 #### Routing setup for local Blazegraph
-The query endpoint and update endpoint for routing information has to be set as  
+The query endpoint and update endpoint for routing information has to be set as, e.g.
 ```
 http://blazegraph-access-agent:8080/blazegraph/namespace/ontoheatnet/sparql
+```
+If running within a stack, use e.g.
+```
+http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/districtheating/sparql
 ```
 
 #### Mapping files
@@ -76,6 +82,11 @@ In curl syntax:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
 \"endpoint\":\"http://host.docker.internal:48888/ontoheatnet\"}" http://localhost:1080/district-heating-agent/performheatupdate
+```
+
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"endpoint\":\"http://<STACK NAME>-access-agent:8080/districtheating\"}" http://localhost:3838/district-heating-agent/performheatupdate
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
