@@ -9,9 +9,9 @@ Detailed instructions on how to create (and customise) the visualisation can be 
 
 ```bash
 # To build the Image:
-docker-compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml build --force-rm
+docker compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml build --force-rm
 # To generate a Container (i.e. run the Image):
-docker-compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
+docker compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml up -d --force-recreate
 
 # To rebuild the image and deploy the container:
 bash ./redeploy.sh
