@@ -62,8 +62,9 @@ colourHEXList_11class = [ ## eliminate the first colour, 6class
     '#31a354',
     '#006d2c']
 
-colourHEXListForBranch_7class = [
-    '#ffffb2',
+colourHEXListForBranch_8class = [
+    '#ffffcc',
+    '#ffeda0',
     '#fed976',
     '#feb24c',
     '#fd8d3c',
@@ -71,15 +72,25 @@ colourHEXListForBranch_7class = [
     '#e31a1c',
     '#b10026']
 
+# colourHEXListForBranch_8class = [
+#     '#fde0dd',
+#     '#fcc5c0',
+#     '#fa9fb5',
+#     '#f768a1',
+#     '#dd3497',
+#     '#ae017e',
+#     '#7a0177',
+#     '#49006a']
+
 def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = None, colourClassNumber:int = 11): 
     if colourClassNumber == 11:
         colourHEXList = colourHEXList_11class
         dividend = 5
         if middle is None:
             middle = round((upperBound - lowerBound) / 2, 2)
-    elif colourClassNumber == 7:
-        colourHEXList = colourHEXListForBranch_7class
-        dividend = 7
+    elif colourClassNumber == 8:
+        colourHEXList = colourHEXListForBranch_8class
+        dividend = 8
     else:
         raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11 or 6, while picking 11, the middle should be specified.')
 
@@ -164,9 +175,9 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
             else: 
                 bounds.append(round(upperBound - (i * interval), 2))
         bounds.reverse()
-    elif colourClassNumber == 7:
-        colourHEXList = colourHEXListForBranch_7class
-        dividend = 7
+    elif colourClassNumber == 8:
+        colourHEXList = colourHEXListForBranch_8class
+        dividend = 8
         interval =  round((upperBound - lowerBound) / dividend, 2)
         bounds = []
         for i in range(len(colourHEXList)):
@@ -195,4 +206,4 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
 
 if __name__ == '__main__': 
     ## print(sequentialHEXColourCodePicker(6.1, 6, 0, None, 7))
-    createColourBarLegend('', 6, 0, 'Net demanding (GWh/yr)', 'legend-netDemanding', None, 7)
+    createColourBarLegend('', 6, 0, 'Net demanding (GWh/yr)', 'legend-netDemanding', None, 8)
