@@ -120,11 +120,11 @@ It is **not** recommended to re-do step 3 and instead use the pre-instantiated O
 All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker container in order to access the target KG namespaces. Details on how to deploy the AccessAgent and upload required routing information are detailed in the [AccessAgent] README and summarised below:
 
 1) Navigate to `JPS_ACCESS_AGENT/access-agent-dev-stack` on TWAs `main` branch
-2) Pull Docker image and start container by running `docker-compose up -d --no-build`
+2) Pull Docker image and start container by running `docker-compose up -d --no-build`. The agent shall start at port `48888`
 3) Replace initial `routing.json` within AccessAgent repository with provided [routing.json] file
-4) Upload routing information by running `bash ./uploadRouting.sh`
+4) Upload routing information by running `bash ./uploadRouting.sh` (again within `JPS_ACCESS_AGENT/access-agent-dev-stack` repo)
 
-**Please note** that the `uri.route` within the [CKG config.properties] file need to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48080/ocgml_buildings`.
+**Please note** that the `uri.route` within the [CKG config.properties] file needs to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48888/ocgml_buildings`. After providing the correct `uri.route`, the City Agents `.war` file can be built and deployed as described in the [CityImportAgent] README. The `.war` file built of commit `de911a62235d5c3d6c87ff9692bbdc5c11ce7d9b` is provided in the `../../Data/03 OntoCityGml Instantiation/City agents war file/` repository (for reference).
 
 
 ### 1) City Import Agent
