@@ -22,7 +22,8 @@ from darts.metrics import mape, mse, rmse, smape
 from py4jps import agentlogging
 
 from forecasting.utils.tools import *
-from forecasting.utils.env_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from forecasting.utils.env_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                          DB_URL, DB_USER, DB_PASSWORD
 from forecasting.datamodel.iris import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.kgutils.kgclient import KGClient
@@ -33,7 +34,9 @@ from forecasting.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
+def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
+             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT, 
+             rdb_url=DB_URL, rdb_user=DB_USER, rdb_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -43,11 +46,17 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     :param forecast_start_date: The date from which you want to start forecasting
     :param use_model_configuration: If you want to force a specific model configuration, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
+    :param query_endpoint: The endpoint to query the KG
+    :param update_endpoint: The endpoint to update the KG
+    :param rdb_url: The url to the RDB
+    :param rdb_user: The user to the RDB
+    :param rdb_password: The password to the RDB
+    
     :return: The forecast is being returned.
     """
-    # initialise the  client
-    kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-    tsClient = TSClient(kg_client=kgClient)
+    # Initialise the KG and TS clients
+    kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+    tsClient = TSClient(kg_client=kgClient, rdb_url=rdb_url, rdb_user=rdb_user, rdb_password=rdb_password)
 
     covariates, backtest_series = None, None
 

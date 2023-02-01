@@ -44,7 +44,6 @@ def api_forecast():
     except Exception as ex:
         logger.error('No "iri" provided.')
         return jsonify({'status': '500', 'msg': '"iri" must be provided.'}), 500
-
     
     # Retrieve horizon 
     try:
@@ -56,8 +55,7 @@ def api_forecast():
 
     if horizon <= 0:
         logger.error('Invalid "horizon" provided. Must be higher than 0.')
-        return jsonify({'status': '500', 'msg': 'Invalid "horizon" provided. Must be higher than 0.'}), 500
-        
+        return jsonify({'status': '500', 'msg': 'Invalid "horizon" provided. Must be higher than 0.'}), 500        
     
     # Retrieve forecast_start_date 
     try:
@@ -85,10 +83,22 @@ def api_forecast():
         logger.warning('No data_length, using data_length from "DEFAULT" configuration.')
 
         data_length = None
-        
+
+    # Retrieve KG and RDB settings
+    endpoints = {}
+    endpoints['query_endpoint'] = query.get('query_endpoint')
+    endpoints['update_endpoint'] = query.get('update_endpoint')
+    endpoints['rdb_url'] = query.get('rdb_url')
+    endpoints['rdb_user'] = query.get('rdb_user')
+    endpoints['rdb_password'] = query.get('rdb_password')
+    # Remove None values
+    given_endpoints = {k: v for k, v in endpoints.items() if v is not None}
+
+
     try:
         # Forecast iri
-        res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length = data_length)
+        res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length=data_length,
+                       **given_endpoints)
         res['status'] = '200'
         logger.info('forecasting successful')
         return jsonify(res)
