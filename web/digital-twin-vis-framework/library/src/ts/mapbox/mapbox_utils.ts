@@ -1,11 +1,11 @@
 /**
- * Utilities specific to MapBox implementations
+ * Utilities specific to Mapbox implementations
  */
-class MapBoxUtils {
+class MapboxUtils {
 
     /**
      * Returns true if the input feature is contained within a layer
-     * created by CMCL (rather than an existing one from MapBox).
+     * created by CMCL (rather than an existing one from Mapbox).
      * 
      * @param feature 
      * 
@@ -38,13 +38,13 @@ class MapBoxUtils {
     }
 
     /**
-     * Generates and displays a descriptive popup on a MapBox map.
+     * Generates and displays a descriptive popup on a Mapbox map.
      * 
      * @param feature selected feature
      */
     public static showPopup(event: Object, feature: Object) {
-        if(MapBoxUtils.isCluster(feature)) {
-            MapBoxUtils.showClusterPopup(event, feature);
+        if(MapboxUtils.isCluster(feature)) {
+            MapboxUtils.showClusterPopup(event, feature);
             return;
         }
 
@@ -70,7 +70,7 @@ class MapBoxUtils {
         }
 
         // Show popup
-        MapHandler_MapBox.POPUP.setLngLat(event["lngLat"])
+        MapHandler_Mapbox.POPUP.setLngLat(event["lngLat"])
             .setHTML(html)
             .addTo(MapHandler.MAP);
     }
@@ -87,7 +87,7 @@ class MapBoxUtils {
 
         // Show popup
         let html = "<h3>" + name + "</h3>" + desc;
-        MapHandler_MapBox.POPUP.setLngLat(event["lngLat"])
+        MapHandler_Mapbox.POPUP.setLngLat(event["lngLat"])
             .setHTML(html)
             .addTo(MapHandler.MAP);
     }   
@@ -99,9 +99,9 @@ class MapBoxUtils {
         for(let i = 0; i < features.length; i++) {
             let feature = features[i];
 
-            if(MapBoxUtils.isCluster(feature)) {
+            if(MapboxUtils.isCluster(feature)) {
                 // Clustered point, get leafs
-                let result = await MapBoxUtils.getClusterLeaves(feature, feature["layer"]["source"], 999, 0) as Array<Object>;
+                let result = await MapboxUtils.getClusterLeaves(feature, feature["layer"]["source"], 999, 0) as Array<Object>;
 
                 result.forEach(leaf => {
                     if(leaf["layer"] === null || leaf["layer"] === undefined) {
@@ -109,7 +109,7 @@ class MapBoxUtils {
                     }
                 });
 
-                MapBoxUtils.recurseFeatures(leafs, result);
+                MapboxUtils.recurseFeatures(leafs, result);
             } else {
                 leafs.push(feature);
             }
@@ -173,30 +173,49 @@ class MapBoxUtils {
 
 
     /**
-     * Change the underlying MapBox style.
+     * Change the underlying Mapbox style.
      * 
      * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
      */
     public static  changeTerrain(mode) {
-        if(mode === "light") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
-        } else if(mode === "dark") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/dark-v10?optimize=true");
-        } else if(mode === "outdoors") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
-        } else if(mode === "satellite") {
-            MapHandler.MAP.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
-        }
+        let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+        if(imagerySettings == null) return;
+
+        let url = imagerySettings[mode];
+        if(url == null) return;
+        
+        if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+        MapHandler.MAP.setStyle(url);
 
         // Store the current terrain as a global variable
         window.terrain = mode;
         
         // Hide default building outlines
-        MapBoxUtils.hideBuildings();
+        MapboxUtils.hideBuildings();
+    }
+
+     /**
+     * Generates a JSON object defining the default imagery options if none is provided
+     * by the developer in the settings.json file.
+     */
+      public static generateDefaultImagery() {
+        let imagerySettings = {};
+
+        // Add possible imagery options
+        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v10?optimize=true";
+        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v10?optimize=true";
+        imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
+        imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
+
+        // Set default imagery to Light
+        imagerySettings["default"] = "Light";
+
+        // Push settings
+        Manager.SETTINGS.putSetting("imagery", imagerySettings);
     }
 
     /**
-     * Hide building outlines provided by MapBox as these may conflict with custom
+     * Hide building outlines provided by Mapbox as these may conflict with custom
      * building data.
      */
     public static hideBuildings() {
@@ -209,33 +228,20 @@ class MapBoxUtils {
     }
 
     /**
-     * Reset the camera to a default position.
-     * 
-     * @param {String} mode {"bird", "pitch"}
+     * Reset the camera to default position.
      */
-    public static changeCamera(mode) {
+      public static resetCamera() {
         let mapOptions = MapHandler.MAP_OPTIONS;
+        if(mapOptions == null) return;
 
-        if(mode === "bird") {
-            MapHandler.MAP.flyTo({
-                curve: 1.9,
-                speed: 1.6,
-                pitch: 0.0,
-                bearing: mapOptions["bearing"],
-                zoom: mapOptions["zoom"],
-                center: mapOptions["center"]
-            });
-
-        } else if(mode === "pitch") {
-            MapHandler.MAP.flyTo({
-                curve: 1.9,
-                speed: 1.6,
-                pitch: 65,
-                bearing: mapOptions["bearing"],
-                zoom: mapOptions["zoom"],
-                center: mapOptions["center"]
-            });
-        } 
+        MapHandler.MAP.flyTo({
+            curve: 1.9,
+            speed: 1.6,
+            pitch: mapOptions["pitch"],
+            bearing: mapOptions["bearing"],
+            zoom: mapOptions["zoom"],
+            center: mapOptions["center"]
+        });
     }
 
     /**
@@ -252,12 +258,12 @@ class MapBoxUtils {
 		if(enabled) {
 			var self = this;
 			MapHandler.MAP.on("zoom", function() {
-				MapBoxUtils.updateTiltShift();
+				MapboxUtils.updateTiltShift();
 			});
 			MapHandler.MAP.on("pitch", function() {
-				MapBoxUtils.updateTiltShift();
+				MapboxUtils.updateTiltShift();
 			});
-			MapBoxUtils.updateTiltShift();
+			MapboxUtils.updateTiltShift();
 		}
 	}
 
@@ -292,7 +298,7 @@ class MapBoxUtils {
 	}
 
     /**
-     * Adds 3D terrain provided by MapBox. 
+     * Adds 3D terrain provided by Mapbox. 
      * WARNING: This may not be compatible with 3D building data unless the
      * building's base height has been set correctly.
      */
@@ -315,7 +321,7 @@ class MapBoxUtils {
     }
 
     /**
-	 * Shows/hides place name labels supplied by MapBox.
+	 * Shows/hides place name labels supplied by Mapbox.
 	 * 
 	 * @param {Boolean} enabled 
 	 */
@@ -340,9 +346,9 @@ class MapBoxUtils {
 	}
 
     /**
-	 * Show or hide a single (MapBox) layer on the map.
+	 * Show or hide a single (Mapbox) layer on the map.
 	 * 
-	 * @param {String} layerID MapBox layer name.
+	 * @param {String} layerID Mapbox layer name.
 	 * @param {boolean} visible desired visibility.
 	 */
 	public static toggleLayer(layerID, visible) {
@@ -392,6 +398,13 @@ class MapBoxUtils {
         }
 	}
 
+    /**
+     * Given a list of features, this returns a new list without any
+     * duplicates (as defined by matching IDs).
+     * 
+     * @param features 
+     * @returns 
+     */
     public static deduplicate(features: Object[]) {
         let result = [];
 
@@ -405,6 +418,29 @@ class MapBoxUtils {
         });
 
         return result;
+    }
+
+    /**
+     * Load search terms and populate the drop down box.
+     */
+    public static loadSearchTerms() {
+        let terms = Manager.SETTINGS.getSetting("search");
+        if(terms == null) {
+            terms = {};
+            terms["Name"] = "name";
+        }
+
+        let searchSelect = document.getElementById("search-select");
+        for (const [key, value] of Object.entries(terms)) {
+            let option = document.createElement("option");
+            option.text = key;
+
+            // @ts-ignore
+            option.value = value;
+
+            // @ts-ignore
+            searchSelect.add(option);
+        }
     }
 
 }

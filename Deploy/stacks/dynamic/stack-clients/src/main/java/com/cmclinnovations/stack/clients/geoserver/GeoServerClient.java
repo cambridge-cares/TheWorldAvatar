@@ -118,8 +118,8 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
-    public void createPostGISLayer(String dataSubsetDir, String workspaceName,
-            String database, String layerName, GeoServerVectorSettings geoServerSettings) {
+    public void createPostGISLayer(String workspaceName, String database, String layerName,
+            GeoServerVectorSettings geoServerSettings) {
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.

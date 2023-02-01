@@ -8,25 +8,33 @@ public class BlazegraphService extends ContainerService {
 
     public static final String TYPE = "blazegraph";
 
-    private static final String DEFAULT_USERNAME = "";
-    private static final String DEFAULT_PORT = "8080";
-    private static final String DEFAULT_PASSWORD_FILE = null;
+    private static final String BLAZEGRAPH_USER_KEY = "BLAZEGRAPH_USER";
+    private static final String BLAZEGRAPH_PASSWORD_FILE_KEY = "BLAZEGRAPH_PASSWORD_FILE";
 
-    private final BlazegraphEndpointConfig endpointConfig;
+    private static final String DEFAULT_USERNAME = "bg_user";
+    private static final String DEFAULT_PORT = "8080";
+    private static final String DEFAULT_PASSWORD_FILE = "/run/secrets/blazegraph_password";
 
     public BlazegraphService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
+    }
 
-        setEnvironmentVariableIfAbsent("BLAZEGRAPH_USER", DEFAULT_USERNAME);
-        setEnvironmentVariableIfAbsent("BLAZEGRAPH_PASSWORD_FILE", DEFAULT_PASSWORD_FILE);
-
-        endpointConfig = new BlazegraphEndpointConfig(
-                EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
-                getEnvironmentVariable("BLAZEGRAPH_USER"), getEnvironmentVariable("BLAZEGRAPH_PASSWORD_FILE"));
+    @Override
+    public void doPreStartUpConfiguration() {
+        if (ensureOptionalSecret("blazegraph_password")) {
+            setEnvironmentVariableIfAbsent(BLAZEGRAPH_USER_KEY, DEFAULT_USERNAME);
+            setEnvironmentVariableIfAbsent(BLAZEGRAPH_PASSWORD_FILE_KEY, DEFAULT_PASSWORD_FILE);
+        } else {
+            removeEnvironmentVariable(BLAZEGRAPH_USER_KEY);
+            removeEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY);
+        }
     }
 
     @Override
     public void doPostStartUpConfiguration() {
+        BlazegraphEndpointConfig endpointConfig = new BlazegraphEndpointConfig(
+                EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
+                getEnvironmentVariable(BLAZEGRAPH_USER_KEY), getEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY));
         writeEndpointConfig(endpointConfig);
     }
 }

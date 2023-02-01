@@ -58,7 +58,7 @@ public class RouterUploadAgent  extends JPSAgent{
     	LOGGER.info("Uploading to: "+routerEndpoint);
     	int nUploaded = uploadTriples(array, storeClient);
         
-        return new JSONObject().put("result", Integer.toString(nUploaded)+" endpoint(s) uploaded.");
+        return new JSONObject().put(JPSConstants.RESULT_KEY, Integer.toString(nUploaded)+" endpoint(s) uploaded.");
     }
     
     public StoreClientInterface getStoreClient(String endpoint) {

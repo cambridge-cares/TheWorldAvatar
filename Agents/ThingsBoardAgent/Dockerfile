@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-8-slim as builder
+FROM maven:3.6-openjdk-11-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -47,7 +47,7 @@ COPY ./config/mappings /root/mappings
 # Set the required environment variable
 ENV THINGSBOARD_AGENT_MAPPINGS="/root/mappings"
 
-COPY --from=builder /root/ThingsBoardInputAgent/output/thingsboard-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/ThingsBoardInputAgent/output/thingsboard-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

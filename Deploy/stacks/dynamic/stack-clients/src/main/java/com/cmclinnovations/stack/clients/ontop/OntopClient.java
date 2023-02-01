@@ -6,14 +6,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.utils.TempFile;
 
-public class OntopClient extends ContainerClient {
+public class OntopClient extends ContainerClient implements ClientWithEndpoint {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
     private static OntopClient instance = null;
+
+    private OntopEndpointConfig ontopEndpoint;
 
     public static OntopClient getInstance() {
         if (null == instance) {
@@ -23,6 +27,14 @@ public class OntopClient extends ContainerClient {
     }
 
     private OntopClient() {
+    }
+
+    @Override
+    public OntopEndpointConfig getEndpoint() {
+        if (null == ontopEndpoint) {
+            ontopEndpoint = readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
+        }
+        return ontopEndpoint;
     }
 
     public void updateOBDA(Path newMappingFilePath) {

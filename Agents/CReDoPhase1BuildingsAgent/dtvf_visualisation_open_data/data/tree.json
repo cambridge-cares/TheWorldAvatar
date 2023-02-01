@@ -1,0 +1,32 @@
+[
+    {
+        "groupName": "Buildings",
+        "layers": [
+            {
+                "layerName": "Education",
+                "defaultState": "visible",
+                "layerIDs": ["education"]
+            },
+            {
+                "layerName": "Medical care",
+                "defaultState": "visible",
+                "layerIDs": ["medical_care"]
+            },
+            {
+                "layerName": "Emergency services",
+                "defaultState": "visible",
+                "layerIDs": ["emergency_service"]
+            },
+            {
+                "layerName": "Other buildings",
+                "defaultState": "visible",
+                "layerIDs": ["other_buildings"]
+            }
+        ]
+    },
+	{
+        "layerName": "Flood areas",
+        "defaultState": "visible",
+        "layerIDs": ["flood-areas", "flood-warnings"]
+    }
+]

@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoHPLC,TBox,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoHPLC,TBox,1.4,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoHPLC,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoHPLC,TBox,OntoHPLC is an ontology developed for expressing a high performance liquid chromatography.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoHPLC,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 HighPerformanceLiquidChromatography,Class,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#LabEquipment,IS-A,,,,"A separation technique in which the mobile phase is a liquid. Liquid chromatography can be carried out either in a column or on a plane. Present-day liquid chromatography generally utilizing very small particles and a relatively high inlet pressure is often characterized by the term high-performance (or high-pressure) liquid chromatography, and the acronym HPLC. [https://doi.org/10.1351/goldbook.L03578]",https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
@@ -38,7 +38,7 @@ indicatesComponent,Object Property,,,ChromatogramPoint,http://www.theworldavatar
 hasPeakArea,Object Property,,,ChromatogramPoint,PeakArea,exactly 1,The relation between the chromatogram point and the peak area it calculated.,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 atRetentionTime,Object Property,,,ChromatogramPoint,RetentionTime,exactly 1,The relation between chromatogram point and the retention time at which the point was referring to.,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 refersToSpecies,Object Property,,,ResponseFactor UNION RetentionTime,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,only,The relationship between the response factor/retention time and the species which the previous quantity is referring to.,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
-http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit,Object Property,,,PeakArea,http://theworldavatar.com/resource/ontouom/milli_absorbance_unit_multiplies_minute,,,http://www.ontology-of-units-of-measure.org/resource/om-2,
+http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit,Object Property,,,PeakArea,http://www.ontology-of-units-of-measure.org/resource/om-2/milliAbsorbanceUnitMinute-Time,,,http://www.ontology-of-units-of-measure.org/resource/om-2,
 remoteFilePath,Data Property,,,HPLCReport,anyURI,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 localFilePath,Data Property,,,HPLCReport,string,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 lastLocalModifiedAt,Data Property,,,HPLCReport,decimal,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
@@ -46,3 +46,4 @@ lastUploadedAt,Data Property,,,HPLCReport,decimal,only,,https://raw.githubuserco
 localFilePath,Data Property,,,HPLCMethod,string,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 remoteFilePath,Data Property,,,HPLCMethod,anyURI,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
 localReportDirectory,Data Property,,,HighPerformanceLiquidChromatography,string,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,
+unidentified,Data Property,,,ChromatogramPoint,boolean,only,,https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl,

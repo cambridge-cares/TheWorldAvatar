@@ -35,6 +35,7 @@ public class Stack {
 
         manager.initialiseService(name, "geoserver");
 
+        manager.initialiseUserServices(name);
     }
 
 }

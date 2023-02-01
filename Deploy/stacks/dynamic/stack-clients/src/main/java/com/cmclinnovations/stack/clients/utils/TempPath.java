@@ -3,7 +3,9 @@ package com.cmclinnovations.stack.clients.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.UserPrincipal;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
 public abstract class TempPath implements AutoCloseable {
 
@@ -14,32 +16,30 @@ public abstract class TempPath implements AutoCloseable {
 
     private final Path path;
 
-    private final UserPrincipal commonUser;
-
-    protected Path changeOwner(Path path) {
+    protected Path changePermissions(Path path) {
         try {
-            return Files.setOwner(path, commonUser);
+            Set<PosixFilePermission> perms = Files.readAttributes(path, PosixFileAttributes.class).permissions();
+
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            perms.add(PosixFilePermission.GROUP_WRITE);
+            perms.add(PosixFilePermission.GROUP_READ);
+            perms.add(PosixFilePermission.GROUP_EXECUTE);
+            perms.add(PosixFilePermission.OTHERS_WRITE);
+            perms.add(PosixFilePermission.OTHERS_READ);
+            perms.add(PosixFilePermission.OTHERS_EXECUTE);
+            return Files.setPosixFilePermissions(path, perms);
         } catch (IOException ex) {
             throw new RuntimeException(
-                    "Failed to change the owner of the file/directory '" + path + "' to '" + commonUser.getName()
-                            + "'.",
+                    "Failed to change the permissions of the file/directory '" + path + "' to '777'.",
                     ex);
         }
     }
 
     protected TempPath(Path path) {
 
-        try {
-            this.commonUser = path.getFileSystem().getUserPrincipalLookupService().lookupPrincipalByName(COMMON_USER);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to lookup user '" + COMMON_USER + "'.");
-        }
-        try {
-            Files.setOwner(path, commonUser);
-        } catch (IOException e) {
-            throw new RuntimeException(
-                    "Failed to set owner of temporary file/directory '" + path + "' to user '" + COMMON_USER + "'.");
-        }
+        changePermissions(path);
 
         this.path = path;
     }

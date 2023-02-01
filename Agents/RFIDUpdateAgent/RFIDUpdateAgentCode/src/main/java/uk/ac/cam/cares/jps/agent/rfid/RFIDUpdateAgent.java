@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +48,7 @@ public class RFIDUpdateAgent{
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "rfid";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "rfid";
     /**
      * The time unit used for all time series maintained by the ThingsBoard agent
      */
@@ -149,12 +150,10 @@ public class RFIDUpdateAgent{
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 try {
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
-            } finally {
-            	tsClient.disconnectRDB();
             }
             }
         }
@@ -182,8 +181,6 @@ public class RFIDUpdateAgent{
         		else {
         			throw e;
         		}        		
-        	} finally {
-        		tsClient.disconnectRDB();
         	}
         }
         return true;
@@ -214,8 +211,6 @@ public class RFIDUpdateAgent{
                 	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not get max time!");
-                } finally {
-                	tsClient.disconnectRDB();
                 }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
@@ -233,8 +228,6 @@ public class RFIDUpdateAgent{
                 }
                 } catch (Exception e) {
                 	throw new JPSRuntimeException ("Could not add timeseries data!");
-                } finally {
-                	tsClient.disconnectRDB();
                 }
               
             }

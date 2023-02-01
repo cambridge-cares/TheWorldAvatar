@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.6.0-3DCityDB-SNAPSHOT</version>
+  <version>1.8.0-3DCityDB-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -13,7 +15,7 @@
   <parent>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>jps-parent-pom</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
   </parent>
 
   <properties>
@@ -39,55 +41,43 @@
   </repositories>
 
   <dependencies>
+
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
-      <version>3.2.13</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5 -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java-transport-httpclient5</artifactId>
-      <version>3.2.13</version>
     </dependency>
 
     <dependency>
       <groupId>it.geosolutions</groupId>
       <artifactId>geoserver-manager</artifactId>
-      <version>1.7.0</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.odiszapc</groupId>
       <artifactId>nginxparser</artifactId>
-      <version>0.9.6</version>
     </dependency>
 
     <dependency>
       <groupId>it.unibz.inf.ontop</groupId>
       <artifactId>ontop-system-sql-owlapi</artifactId>
-      <version>4.2.1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>jgrapht-core</artifactId>
-          <groupId>org.javabits.jgrapht</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- used in the DerivationClient to detect circular dependencies -->
     <dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-core</artifactId>
-      <version>1.5.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.4.0</version>
     </dependency>
 
     <dependency>
@@ -102,8 +92,17 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.py4j</groupId>
+      <artifactId>py4j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-base-lib</artifactId>
+      <version>1.32.0</version>
     </dependency>
 
   </dependencies>
@@ -118,19 +117,21 @@
         <configuration>
           <archive>
             <manifest>
-              <!-- These properties add the copied dependencies to the classpath so the .jar can find them at runtime. -->
+              <!-- These properties add the copied dependencies to the classpath so the .jar can
+              find them at runtime. -->
               <addClasspath>true</addClasspath>
-              <classpathPrefix>.</classpathPrefix>
-              <classpathLayoutType>repository</classpathLayoutType>
-              <mainClass>com.cmclinnovations.stack.App</mainClass>
+              <classpathPrefix>./lib/</classpathPrefix>
+              <classpathLayoutType>simple</classpathLayoutType>
               <useUniqueVersions>false</useUniqueVersions>
+              <mainClass>com.cmclinnovations.stack.App</mainClass>
             </manifest>
           </archive>
-          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+          <outputDirectory>${project.build.directory}</outputDirectory>
         </configuration>
       </plugin>
       <plugin>
-        <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target directory. -->
+        <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
+        directory. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -143,12 +144,13 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <useRepositoryLayout>true</useRepositoryLayout>
+              <useRepositoryLayout>false</useRepositoryLayout>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
+
   </build>
 
 </project>

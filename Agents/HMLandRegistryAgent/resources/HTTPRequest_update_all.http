@@ -1,0 +1,13 @@
+// Example HTTP request to update transaction records for all instantiated properties, incl. property price indices
+
+// min_confidence: (optional) minimum confidence score for address matching when retrieveing property sales
+//                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
+//                 (default: 90)
+
+POST http://165.232.172.16:5002/api/landregistry/update_all
+Content-Type: application/json
+
+{ "query": {
+      "min_confidence": 95
+    }
+}

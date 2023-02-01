@@ -5,7 +5,7 @@
     "datasetDirectory": "population",
     "dataSubsets": [
         {
-            "type": "Raster",
+            "type": "raster",
             "name": "population",
             "skip": false
         }

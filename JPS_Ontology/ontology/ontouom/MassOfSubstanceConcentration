@@ -28,27 +28,27 @@
 
   <!-- Mass of Substance Concentration Upper Ontology -->
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
     <rdfs:label xml:lang="en">Mass concentration is defined as the mass of a constituent divided by the volume of the mixture</rdfs:label>
     <om:alternativeLabel xml:lang="en">mass concentration</om:alternativeLabel>
-    <rdfs:subClassOf rdf:resource="&om;Quantity"/>
+    <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     <om:symbol>C</om:symbol> 
   </owl:Class>
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration">
-    <om:commonlyHasUnit rdf:resource="http://theworldavatar.com/resource/ontouom/microgramPerCubicMetre"/>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
+    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/microgramPerCubicMetre"/>
   </owl:Class>
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasDimension"/>
-        <owl:hasValue rdf:resource="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration-Dimension"/>
+        <owl:hasValue rdf:resource="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration-Dimension"/>
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasValue"/>
@@ -56,7 +56,7 @@
           <owl:Restriction>
             <owl:onProperty rdf:resource="&om;hasUnit"/>
             <owl:allValuesFrom>
-              <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentrationUnit"/>
+              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentrationUnit"/>
             </owl:allValuesFrom>
           </owl:Restriction>
         </owl:allValuesFrom>

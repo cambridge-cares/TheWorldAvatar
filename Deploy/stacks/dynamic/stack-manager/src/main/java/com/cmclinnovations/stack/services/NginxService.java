@@ -147,19 +147,13 @@ public final class NginxService extends ContainerService implements ReverseProxy
                         locationBlock.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true));
                         locationBlock.findParam("proxy_pass")
                                 .addValue(getProxyPassValue(connection, upstreamName));
-
-                        String publishedPort = Integer.toString(getConfig().getDockerServiceSpec().getEndpointSpec()
-                                .getPorts().get(0).getPublishedPort());
-                        locationBlock.findAll(NgxParam.class, "proxy_set_header").stream()
-                                .map(NgxParam.class::cast)
-                                .forEach(param -> param.getTokens().stream()
-                                        .filter(token -> token.getToken().contains("$server_port"))
-                                        .forEach(token -> token
-                                                .setToken(token.getToken().replace("$server_port", publishedPort))));
                         upstreams.put(upstreamName, getServerURL(connection, serviceName));
+                        service.addServerSpecificNginxSettingsToLocationBlock(locationBlock, upstreams,
+                                endpoint);
                     }
                     locationConfigOut.addEntry(locationBlock);
                 }
+                service.addServerSpecificNginxLocationBlocks(locationConfigOut, upstreams, endpoint);
             }
         }
     }

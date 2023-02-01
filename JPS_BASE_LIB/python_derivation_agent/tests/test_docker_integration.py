@@ -1,26 +1,34 @@
+import builtins
 import requests
 import pytest
+import random
 import time
 
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
+from .agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATION
 
-from tests.conftest import create_rng_agent
-from tests.conftest import create_min_agent
-from tests.conftest import create_max_agent
-from tests.conftest import create_diff_agent
-from tests.conftest import RNGAGENT_ENV
-from tests.conftest import MINAGENT_ENV
-from tests.conftest import MAXAGENT_ENV
-from tests.conftest import DIFFAGENT_ENV
+from .conftest import create_rng_agent
+from .conftest import create_min_agent
+from .conftest import create_max_agent
+from .conftest import create_diff_agent
+from .conftest import create_diff_reverse_agent
+from .conftest import RNGAGENT_ENV
+from .conftest import MINAGENT_ENV
+from .conftest import MAXAGENT_ENV
+from .conftest import DIFFAGENT_ENV
+from .conftest import DIFFREVERSEAGENT_ENV
 
-import tests.utils as utils
+from .conftest import host_docker_internal_to_localhost
 
-import logging
-logger = logging.getLogger('test_docker_integration')
+from . import utils
+
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 pytest_plugins = ["docker_compose"]
 
@@ -59,7 +67,6 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
     try:
         all_instances = utils.initialise_triples_assert_pure_inputs(
             sparql_client=sparql_client,
-            derivation_client=derivation_client,
             delete_all_triples=True
         )
     except Exception as e:
@@ -70,11 +77,12 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
 
     # Initialise derivation agents
     # NOTE register_agent_in_kg is not done by agents in docker due to delay between spinning up docker containers and the blazegraph becoming reachable
-    # register_agent_in_kg for each agent is automatically called when instantiating rng_agent, min_agent, max_agent, diff_agent (as register_agent=True)
-    rng_agent = create_rng_agent(env_file=RNGAGENT_ENV, register_agent=True)
-    min_agent = create_min_agent(env_file=MINAGENT_ENV, register_agent=True)
-    max_agent = create_max_agent(env_file=MAXAGENT_ENV, register_agent=True)
-    diff_agent = create_diff_agent(env_file=DIFFAGENT_ENV, register_agent=True)
+    # register_agent_in_kg for each agent is automatically called when instantiating rng_agent, min_agent, max_agent, diff_agent, diff_reverse_agent (as register_agent=True)
+    rng_agent = create_rng_agent(env_file=RNGAGENT_ENV, register_agent=True, in_docker=False)
+    min_agent = create_min_agent(env_file=MINAGENT_ENV, register_agent=True, in_docker=False)
+    max_agent = create_max_agent(env_file=MAXAGENT_ENV, register_agent=True, in_docker=False)
+    diff_agent = create_diff_agent(env_file=DIFFAGENT_ENV, register_agent=True, in_docker=False)
+    diff_reverse_agent = create_diff_reverse_agent(env_file=DIFFREVERSEAGENT_ENV, register_agent=True, in_docker=False)
 
     logger.info("Initialising derivation agents finished.")
 
@@ -93,6 +101,38 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
         logger.error(f"Failed to execute test generate new info: {e}")
         raise e
 
+    # Now generate a few difference reverse derivations
+    diff_reverse_derivation_iri_lst = []
+    random_int = random.randint(2, 4)
+    for i in range(random_int):
+        diff_reverse_derivation_iri_lst.append(
+            derivation_client.createAsyncDerivationForNewInfo(
+                diff_reverse_agent.agentIRI, [sparql_client.getMaxValueIRI(), sparql_client.getMinValueIRI()]
+            )
+        )
+
+    # Wait for all difference reverse derivations to finish
+    diff_reverse_derivation_current_timestamp = 0
+    while diff_reverse_derivation_current_timestamp == 0:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        diff_reverse_derivation_current_timestamp = builtins.min(
+            [
+                utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+            ]
+        )
+
+    # Check if the difference reverse is calculated correctly
+    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
+    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
+    print("======================================")
+    print(f"queried_diff_reverse_dct: {queried_diff_reverse_dct}")
+    print(f"diff_reverse_derivation_iri_lst: {diff_reverse_derivation_iri_lst}")
+    print(sparql_client.getValue(sparql_client.getDifferenceIRI()))
+    print("======================================")
+    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
+    assert all([queried_diff_reverse_dct[iri] + sparql_client.getValue(sparql_client.getDifferenceIRI()) == 0 for iri in queried_diff_reverse_dct])
+
     logger.info("New information generation finished.")
 
     ####################################################################
@@ -109,6 +149,9 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
     #############################################
     ## V. Request for an update of derivations ##
     #############################################
+    # We also need to check the difference reverse derivation
+    ts = time.time()
+
     try:
         execute_update_derivation(
             all_instances=all_instances,
@@ -118,6 +161,22 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
     except Exception as e:
         logger.error(f"Failed to execute update derivation: {e}")
         raise e
+
+    # Wait until all difference reverse derivation are updated
+    # i.e. the timestamp of all these derivations are greater than the timestamp before the update
+    _derivation_current_timestamp = ts
+    while _derivation_current_timestamp <= ts:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        _derivation_current_timestamp = builtins.min([utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst])
+        logger.info(f"Waiting for difference reverse derivation to be updated, current minimum timestamp: {_derivation_current_timestamp}, timestamp before update request: {ts}")
+
+    # Check if the difference reverse is calculated correctly
+    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
+    _difference_after_update = sparql_client.getValue(sparql_client.getDifferenceIRI())
+    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
+    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
+    assert all([queried_diff_reverse_dct[iri] + _difference_after_update == 0 for iri in queried_diff_reverse_dct])
 
     logger.info("All existing information update finished.")
     logger.info(f"==================== Test case [{rng}-{max}-{min}-{diff}] end ====================")
@@ -170,6 +229,12 @@ def assert_all_information_are_up_to_date(all_instances, sparql_client, before_i
     # test if all values in the KG are correct
     # test if it contains correct number of points in the derivation DAG
     assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(sparql_client.getPointsInList(sparql_client.getListOfPoints()))
+    # test if the rdfs:comment of all points are correct
+    pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
+    assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(pt_comment_dict)
+    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
+    # Also check if the special values are correctly generated and parsed
+    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_comment_dict])
     # test if no duplicate information written to KG in the situation of concurrent
     # HTTP request
     assert sparql_client.getValue(sparql_client.getNumOfPoints()) == len(sparql_client.getPointsInKG())
@@ -181,7 +246,7 @@ def assert_all_information_are_up_to_date(all_instances, sparql_client, before_i
     difference = sparql_client.getValue(sparql_client.getMaxValueIRI()) - sparql_client.getValue(sparql_client.getMinValueIRI())
     assert difference == sparql_client.getValue(sparql_client.getDifferenceIRI())
 
-    logger.debug("All information in the knowledge graph are correct and up-to-date.")
+    logger.debug("All information in the knowledge graph for RNG/Min/Max/Diff derivations are correct and up-to-date. Information on DiffReverse derivations remain to be checked.")
 
 
 def initialise_derivations(
@@ -195,8 +260,9 @@ def initialise_derivations(
     diff_deriv_inputs = []
 
     if rng:
-        rng_derivation = derivation_client.createSyncDerivationForNewInfo(
-            rng_agent.agentIRI, pure_inputs, ONTODERIVATION_DERIVATION
+        rng_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+            rng_agent.agentIRI, host_docker_internal_to_localhost(rng_agent.agentEndpoint),
+            pure_inputs, ONTODERIVATION_DERIVATION
         )
 
         all_instances.DERIV_RNG = rng_derivation.getIri()
@@ -218,8 +284,9 @@ def initialise_derivations(
 
         # create maxvalue, minvalue via derivations
         if max:
-            max_derivation = derivation_client.createSyncDerivationForNewInfo(
-                max_agent.agentIRI, max_deriv_inputs, ONTODERIVATION_DERIVATION
+            max_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                max_agent.agentIRI, host_docker_internal_to_localhost(max_agent.agentEndpoint),
+                max_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_MAX = max_derivation.getIri()
             logger.info("Created MaxValue derivation <" + all_instances.DERIV_MAX + ">")
@@ -240,8 +307,9 @@ def initialise_derivations(
             diff_deriv_inputs.append(all_instances.DERIV_MAX)
 
         if min:
-            min_derivation = derivation_client.createSyncDerivationForNewInfo(
-                min_agent.agentIRI, min_deriv_inputs, ONTODERIVATION_DERIVATION
+            min_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                min_agent.agentIRI, host_docker_internal_to_localhost(min_agent.agentEndpoint),
+                min_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_MIN = min_derivation.getIri()
             logger.info("Created MinValue derivation <" + all_instances.DERIV_MIN + ">")
@@ -263,8 +331,9 @@ def initialise_derivations(
 
         if diff:
             # create difference via difference derivation
-            diff_derivation = derivation_client.createSyncDerivationForNewInfo(
-                diff_agent.agentIRI, diff_deriv_inputs, ONTODERIVATION_DERIVATION
+            diff_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                diff_agent.agentIRI, host_docker_internal_to_localhost(diff_agent.agentEndpoint),
+                diff_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_DIFF = diff_derivation.getIri()
             logger.info("Created Difference derivation <" + all_instances.DERIV_DIFF + ">")

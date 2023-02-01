@@ -8,26 +8,24 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerRasterSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Raster extends DataSubset {
+public class Raster extends GeoServerDataSubset {
 
     @JsonProperty
-    private GDALTranslateOptions options = new GDALTranslateOptions();
+    private GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
 
     @JsonProperty
     private GeoServerRasterSettings geoServerSettings = new GeoServerRasterSettings();
 
     @Override
-    public void loadData(String datasetDir, String database) {
-        Path dirPath = Path.of(datasetDir, getSubdirectory());
+    public void loadData(Path dirPath, String database) {
         GDALClient.getInstance()
-                .uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), options, false);
+                .uploadRasterFilesToPostGIS(database, getTable(), dirPath.toString(), gdalTranslateOptions, false);
     }
 
     @Override
-    public void createLayer(String dataSubsetDir, String workspaceName,
-            String database) {
+    public void createLayer(String workspaceName, String database) {
         GeoServerClient.getInstance()
-                .createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indicies", "public", geoServerSettings);
+                .createGeoTiffLayer(workspaceName, getName(), "geoserver_raster_indices", "public", geoServerSettings);
     }
 
 }

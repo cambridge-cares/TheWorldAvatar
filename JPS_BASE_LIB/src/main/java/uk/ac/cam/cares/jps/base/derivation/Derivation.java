@@ -25,6 +25,7 @@ public class Derivation {
 	private boolean updated = false;
 
 	private Status status; // for asynchronous derivation
+	private String errMsg;
 
 	/**
 	 * Inner class Status, for asynchronous derivation (DerivationAsyn)
@@ -66,6 +67,14 @@ public class Derivation {
 		inputs = new ArrayList<Entity>();
 		directedUpstreams = new ArrayList<Derivation>();
 		directedDownstreams = new ArrayList<Derivation>();
+	}
+
+	public void setErrMsg(String errMsg) {
+		this.errMsg = errMsg;
+	}
+
+	public String getErrMsg() {
+		return this.errMsg;
 	}
 
 	public String getIri() {
@@ -196,14 +205,14 @@ public class Derivation {
 		List<Entity> inputs = this.getInputs();
 
 		for (Entity input : inputs) {
-			long input_timestamp;
+			long inputTimestamp;
 			if (input.hasBelongsTo()) {
-				input_timestamp = input.getBelongsTo().getTimestamp();
+				inputTimestamp = input.getBelongsTo().getTimestamp();
 			} else {
-				input_timestamp = input.getTimestamp();
+				inputTimestamp = input.getTimestamp();
 			}
 
-			if (input_timestamp > this.timestamp) {
+			if (inputTimestamp > this.timestamp) {
 				outOfDate = true;
 				return outOfDate;
 			}

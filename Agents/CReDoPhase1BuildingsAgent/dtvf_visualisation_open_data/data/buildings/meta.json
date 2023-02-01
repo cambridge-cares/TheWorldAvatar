@@ -1,0 +1,32 @@
+{
+    "dataSets": [
+        {
+            "name": "education",
+            "dataType": "geojson",
+            "dataLocation": "education.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["education-meta.json"]
+        },
+        {
+            "name": "medical_care",
+            "dataType": "geojson",
+            "dataLocation": "medical_care.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["medical_care-meta.json"]
+        },
+        {
+            "name": "emergency_service",
+            "dataType": "geojson",
+            "dataLocation": "emergency_service.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["emergency_service-meta.json"]
+        },
+        {
+            "name": "other_buildings",
+            "dataType": "geojson",
+            "dataLocation": "other_buildings.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["other_buildings-meta.json"]
+        }
+    ]
+}

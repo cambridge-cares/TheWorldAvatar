@@ -1,0 +1,31 @@
+@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
+@prefix saref:             <https://saref.etsi.org/core/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix ontogoal:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#> .
+@prefix :                <http://www.theworldavatar.com/resource/plans/RxnOpt/> .
+
+:rxnoptplan
+    a ontogoal:RxnOptPlan;
+    ontogoal:hasStep :doe;
+    ontogoal:hasStep :schedule_exe;
+    ontogoal:hasStep :postpro;
+.
+
+:doe
+    a ontogoal:DesignOfExperiment;
+    ontogoal:hasNextStep :schedule_exe;
+    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__DoE/Service>;
+.
+
+:schedule_exe
+    a ontogoal:RxnExpExecution;
+    ontogoal:hasNextStep :postpro;
+    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service>;
+.
+
+:postpro
+    a ontogoal:PostProcessing;
+    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service>;
+.

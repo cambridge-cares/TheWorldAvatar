@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v3.0.0</title>
+        <title>DTVF v3.3.2</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <meta charset="utf-8">
@@ -14,7 +14,7 @@
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.js"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.2/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -25,7 +25,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.css" rel="stylesheet" />
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.2/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -52,8 +52,7 @@
                         <p>Camera</p>
                     </div>
                     <div class="controlContents">
-                        <a href="#" onclick="CesiumUtils.changeCamera('bird')">Bird's Eye</a><br/>
-                        <a href="#" onclick="CesiumUtils.changeCamera('pitch')">Pitched</a>
+                        <a href="#" onclick="CesiumUtils.resetCamera()">Reset to default</a><br/>
                     </div>
                 </div>
 
@@ -62,15 +61,7 @@
                     <div id="controlTitle" class="controlTitle" style="padding-right: 0px !important;">
                         <p>Imagery</p>
                     </div>
-                    <div class="controlContents">
-                        <input type="radio" name="terrain" id="light" onclick="CesiumUtils.changeTerrain('light')">
-                        <label for="light">Light</label><br/>
-                        <input type="radio" name="terrain" id="dark" onclick="CesiumUtils.changeTerrain('dark')" checked>
-                        <label for="dark">Dark</label><br/>
-                        <input type="radio" name="terrain" id="outdoors" onclick="CesiumUtils.changeTerrain('outdoors')">
-                        <label for="outdoors">Outdoors</label><br/>
-                        <input type="radio" name="terrain" id="satellite" onclick="CesiumUtils.changeTerrain('satellite')">
-                        <label for="satellite">Satellite</label><br/>
+                    <div id="imageryContainer" class="controlContents">
                     </div>
                 </div>
 
@@ -83,6 +74,14 @@
                         <div id="layerTreeContainer">
                             <div class="hummingbird-treeview-converter"></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
                     </div>
                 </div>
 
@@ -136,7 +135,8 @@
             $("#sidePanelInner").tabs();
 
             // ===== CUSTOMISABLE =====
-            // Enter Mapbox API key here, even in Cesium visualisations!
+            // Enter Mapbox account name and API key here, even in Cesium visualisations!
+            MapHandler.MAP_USER = "";
             MapHandler.MAP_API = "";
             // ===== CUSTOMISABLE =====
 
@@ -152,18 +152,6 @@
              * Starts the visualisation setup process.
              */
              function start() {
-                // ===== CUSTOMISABLE =====
-                // Optionally provide default map settings.
-                // If no options are provided here , any included in the root group of the first stack that responds and loads
-                // will be used (this is unreliable, so if visualising multiple stacks, I recommend using this override). - Michael
-                let optionsOverride = {
-                    "target": [7.605, 49.196, 750],
-                    "heading": 0.0,
-                    "pitch": -45,
-                    "roll": 0.0
-                };
-                // ===== CUSTOMISABLE =====
-
                 // Initialise the map object
                 manager.initialiseMap();
 
@@ -192,7 +180,6 @@
                 // Plot data
                 manager.plotData();
             }
-          
         </script>
     </body>
 </html>

@@ -22,7 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * Cloning Tool
@@ -131,7 +131,7 @@ public class TaggingCloningTool {
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
-	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB) {
+	public void clone(TripleStoreClientInterface sourceKB, TripleStoreClientInterface targetKB) {
 		clone(sourceKB, null, targetKB, null);
 	}
 	
@@ -141,7 +141,7 @@ public class TaggingCloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB, String graph) {
+	public void clone(TripleStoreClientInterface sourceKB, TripleStoreClientInterface targetKB, String graph) {
 		clone(sourceKB, graph, targetKB, graph); 
 	}
 	
@@ -152,7 +152,7 @@ public class TaggingCloningTool {
 	 * @param targetKB
 	 * @param targetGraph
 	 */
-	public void clone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	public void clone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
 		WhereBuilder whereCountAll = new WhereBuilder()
 				.addWhere(varS, varP, varO);		    
@@ -176,7 +176,7 @@ public class TaggingCloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void singleStepClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	public void singleStepClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);
@@ -198,7 +198,7 @@ public class TaggingCloningTool {
 	 * @param targetKB
 	 * @param target graph
 	 */
-	private void performClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	private void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
 		createTag(sourceKB);
 
@@ -280,7 +280,7 @@ public class TaggingCloningTool {
 	 * Creates a tag by hashing the source KB endpoint and current date and time.
 	 * @param sourceKB
 	 */
-	private void createTag(StoreClientInterface kbClient) {
+	private void createTag(TripleStoreClientInterface kbClient) {
 		LocalDateTime dateTime = LocalDateTime.now();
 		String name = kbClient.getQueryEndpoint() + dateTime.toString();
 		int hash = name.hashCode();
@@ -296,7 +296,7 @@ public class TaggingCloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkCount(StoreClientInterface kbClient, String graph) {
+	public boolean checkCount(TripleStoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO);
@@ -310,7 +310,7 @@ public class TaggingCloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkNoTags(StoreClientInterface kbClient, String graph) {
+	public boolean checkNoTags(TripleStoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
@@ -332,7 +332,7 @@ public class TaggingCloningTool {
 	 * @param where statement
 	 * @return
 	 */
-	private int countTriples(StoreClientInterface kbClient, String graph, WhereBuilder where) {
+	private int countTriples(TripleStoreClientInterface kbClient, String graph, WhereBuilder where) {
 		String query = countQuery(graph, where);
 		JSONArray result = kbClient.executeQuery(query);
 	    JSONObject jsonobject = result.getJSONObject(0);
