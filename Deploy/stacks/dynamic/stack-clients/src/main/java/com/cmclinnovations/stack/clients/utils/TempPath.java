@@ -9,11 +9,6 @@ import java.util.Set;
 
 public abstract class TempPath implements AutoCloseable {
 
-    /**
-     *
-     */
-    private static final String COMMON_USER = "1000";
-
     private final Path path;
 
     protected Path changePermissions(Path path) {

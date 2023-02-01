@@ -109,31 +109,4 @@ public class Dataset {
         return skip;
     }
 
-    public void loadData() {
-        if (!skip) {
-
-            String fullDatasetDirStr = fullDatasetDir.toString();
-
-            if (null != database) {
-                PostGISClient.getInstance().createDatabase(database);
-            }
-
-            if (dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).count() > 0
-                    || !geoserverStyles.isEmpty()) {
-                GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                geoServerClient.createWorkspace(workspaceName);
-
-                geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
-            }
-
-            dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
-                    subset -> {
-                        subset.loadData(fullDatasetDirStr, database);
-                        subset.runSQLPostProcess(database);
-                        subset.createLayer(fullDatasetDirStr, workspaceName, database);
-                    });
-
-            ontopMappings.forEach(mapping -> OntopClient.getInstance().updateOBDA(fullDatasetDir.resolve(mapping)));
-        }
-    }
 }
