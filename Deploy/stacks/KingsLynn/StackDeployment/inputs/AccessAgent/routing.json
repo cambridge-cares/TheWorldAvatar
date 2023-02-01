@@ -1,0 +1,7 @@
+[
+	{
+		"label": "ocgml_buildings",
+		"queryEndpoint": "http://165.232.172.16:3838/blazegraph/namespace/uprn-test/sparql",
+		"updateEndpoint": "http://165.232.172.16:3838/blazegraph/namespace/uprn-test/sparql"
+	}
+]

@@ -115,6 +115,18 @@ The [CityImportAgent] can be used to import the `.gml` file from the previous st
 
 It is **not** recommended to re-do step 3 and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
 
+### 0) Access Agent
+
+All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker container in order to access the target KG namespaces. Details on how to deploy the AccessAgent and upload required routing information are detailed in the [AccessAgent] README and summarised below:
+
+1) Navigate to `JPS_ACCESS_AGENT/access-agent-dev-stack` on TWAs `main` branch
+2) Pull Docker image and start container by running `docker-compose up -d --no-build`
+3) Replace initial `routing.json` within AccessAgent repository with provided [routing.json] file
+4) Upload routing information by running `bash ./uploadRouting.sh`
+
+**Please note** that the `uri.route` within the [CKG config.properties] file need to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48080/ocgml_buildings`.
+
+
 ### 1) City Import Agent
 
 Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
@@ -246,7 +258,11 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
-<!-- repositories -->
+<!-- Repositories -->
 [Utilities]: ../Utilities
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
 [RiverLevelAgent input folder]: /StackDeployment/inputs/RiverLevelAgent
+
+<!-- Files -->
+[routing.json]: /StackDeployment\inputs\AccessAgent\routing.json
+[CKG config.properties]: https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/src/main/resources/config.properties
