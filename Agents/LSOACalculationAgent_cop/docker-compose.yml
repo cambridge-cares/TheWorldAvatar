@@ -12,7 +12,7 @@ services:
       # Target PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
-      - GEOSERVER_WORKSPACE=lsoa
+      - GEOSERVER_WORKSPACE=lsoacalculationagent_cop
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
       - "5000:5000"
