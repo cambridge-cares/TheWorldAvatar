@@ -16,7 +16,8 @@ logger = agentlogging.get_logger('prod')
 
 def retrieve_settings():
     """
-        Reads settings from environment variables (as global variables).
+        Reads settings from environment variables as global variables, i.e. 
+        only global within this sub-module
     """
 
     # Define global scope for global variables
