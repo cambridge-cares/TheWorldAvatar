@@ -23,8 +23,7 @@ def api_calculation_cop():
     # Check arguments (query parameters)
     #
     inputs = {'temperature':None,
-             'unit':None,
-             'lsoa_sequence':None
+             'unit':None
     }
 
         # Get received 'query' JSON object which holds all parameters
@@ -56,15 +55,7 @@ def api_calculation_cop():
             cop = COP_kelvin(inputs['temperature'])
         if inputs['unit'] == OM_FAHRENHEIT:
             cop = COP_Fahrenheit(inputs['temperature'])
-        # Get lsoa_sequence
-        if 'lsoa_sequence' in query:
-            inputs['lsoa_sequence'] = np.array(query['lsoa_sequence'])
-            output = {'COP': cop.tolist(),
-                    'lsoa_sequence':inputs['lsoa_sequence'].tolist()
-                }
-        else:
-            logger.warning('No lsoa sequence provided! the input temperature is \'blind\' at the moment (temperature have no reference to which lsoa area)')
-            output = {'COP': cop.tolist()
+        output = {'COP': cop.tolist()
                 }
             
     except Exception as ex:
