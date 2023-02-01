@@ -2,11 +2,6 @@
 
 from flask import Flask
 
-#from agent.utils.stack_configs import UPDATE_ENDPOINT
-from agent.utils.stack_configs import UPDATE_ENDPOINT
-from agent.kgutils.initialise_kg import create_blazegraph_namespace #, upload_ontology
-
-
 def create_app(test_config=None):
     """
     Create and configure an instance of the Flask application.
@@ -25,16 +20,5 @@ def create_app(test_config=None):
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(calculationtask.calculationtask_bp)
-        
-        # # Data retrieval only kept as "backup" to create geojson files on demand
-        # # Regular visualisation now handled via Postgis/Geoserver
-        # import agent.flaskapp.outputtasks.routes as outputtasks
-        # app.register_blueprint(outputtasks.outputtasks_bp)
-
-    # Create Blazegraph namespace if not exists (on app startup)
-    create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
-
-    # Upload ontology if not exists (on app startup)
-    #upload_ontology()
 
     return app

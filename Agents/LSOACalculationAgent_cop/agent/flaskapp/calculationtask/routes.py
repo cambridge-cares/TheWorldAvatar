@@ -1,6 +1,4 @@
 import numpy as np
-import datetime as dt
-import json
 from flask import Blueprint, request, jsonify
 
 import agentlogging
