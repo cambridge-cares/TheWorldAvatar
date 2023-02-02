@@ -47,14 +47,24 @@ def api_calculation_cop():
     except Exception as ex:
         logger.error('Required unit could not be determined.')
         raise InvalidInput('Required unit could not be determined.') from ex
+    
+    if query['t_h']:
+        t_h = float(query['t_h'])
+    else:
+        t_h = 318.15
+
+    if query['hp_efficiency']:
+        hp_efficiency = float(query['hp_efficiency'])
+    else:
+        hp_efficiency = 0.35
 
     try: 
         if inputs['unit'] == OM_DEGREE_C:
-            cop = COP_degreeC(inputs['temperature'])
+            cop = COP_degreeC(inputs['temperature'],hp_efficiency,t_h)
         if inputs['unit'] == OM_KELVIN:
-            cop = COP_kelvin(inputs['temperature'])
+            cop = COP_kelvin(inputs['temperature'],hp_efficiency,t_h)
         if inputs['unit'] == OM_FAHRENHEIT:
-            cop = COP_Fahrenheit(inputs['temperature'])
+            cop = COP_Fahrenheit(inputs['temperature'],hp_efficiency,t_h)
         output = {'COP': cop.tolist()
                 }
             

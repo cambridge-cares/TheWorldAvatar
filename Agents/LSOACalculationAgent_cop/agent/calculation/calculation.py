@@ -11,7 +11,7 @@ import numpy as np
 def COP_degreeC(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
     '''
     Based on a given temperature to calculate the COP
-    Note: COP = hp_efficiency * T_H / (T_H - T_C), where the input temperature is represented as T_C
+    Note: COP = (hp_efficiency * T_H) / (T_H - T_C), where the input temperature is represented as T_C
     T_H, hp_efficiency are hypothesd as constant, which have default value as 318.15 and 0.35
     respectfully. I suggest to check if that default value is up to date or if that hypothesis is 
     valid in your case
