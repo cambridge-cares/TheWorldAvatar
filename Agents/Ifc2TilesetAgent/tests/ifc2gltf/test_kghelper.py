@@ -19,7 +19,7 @@ def test_create_query():
     expected += "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n"
     expected += "PREFIX bot:<https://w3id.org/bot#>\n"
     expected += "PREFIX ontobim:<http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>\n"
-    expected += "PREFIX ifc2x3:<https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#>\n"
+    expected += "PREFIX ifc2x3:<http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>\n"
     expected += "PREFIX ifc4:<https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#>\n"
     expected += "SELECT ?iri ?uid ?name WHERE {?iri rdf:type bot:Element.\n"
     expected += "?iri ontobim:hasIfcId ?uid.\n"

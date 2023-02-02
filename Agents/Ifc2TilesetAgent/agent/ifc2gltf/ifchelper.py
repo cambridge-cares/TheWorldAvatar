@@ -5,6 +5,7 @@ This module provides helper functions to generate glTF models from the IFC file.
 """
 
 # Third party imports
+import pandas as pd
 from py4jps import agentlogging
 
 # Self imports
@@ -88,7 +89,7 @@ def gendict4split(dataframe):
         assetdata = dataframe.loc[~dataframe['file'].isin(aggregatelist)]
         append_individual_asset(assetdata, dict_elements)
     else:
-        assetdata = {}
+        assetdata = pd.DataFrame()
     return dict_elements, assetdata
 
 

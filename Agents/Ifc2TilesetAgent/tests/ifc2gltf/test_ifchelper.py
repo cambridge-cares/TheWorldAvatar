@@ -110,7 +110,7 @@ def test_gendict4split_simple():
     assert "solarpanel" not in dict_output
     assert "asset1" not in dict_output
     # Check asset dataframe is empty without any asset
-    assert not assetdata
+    assert assetdata.empty
 
 
 def test_gendict4split_furniture():

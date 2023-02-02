@@ -31,7 +31,8 @@ RUN curl https://s3.amazonaws.com/ifcopenshell-builds/ifcopenshell-python-39-v0.
 
 # Install npm
 RUN curl -fsSL https://deb.nodesource.com/setup_19.x | bash - &&\
-    apt install -y nodejs
+    apt install -y nodejs &&\
+    exit
 # Install gltf-pipeline from https://github.com/CesiumGS/gltf-pipeline
 RUN npm install -g gltf-pipeline
 

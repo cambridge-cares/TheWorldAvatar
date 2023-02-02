@@ -28,7 +28,7 @@ def create_query():
     builder.add_prefix("http://www.w3.org/2000/01/rdf-schema#", RDFS_PREFIX)
     builder.add_prefix("https://w3id.org/bot#", BOT_PREFIX)
     builder.add_prefix("http://www.theworldavatar.com/ontology/ontobim/ontoBIM#", BIM_PREFIX)
-    builder.add_prefix("https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#", IFC2_PREFIX)
+    builder.add_prefix("http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#", IFC2_PREFIX)
     builder.add_prefix("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#", IFC4_PREFIX)
     builder.add_select_var(IRI_VAR, ID_VAR, NAME_VAR)
     builder.add_where_triple(IRI_VAR, RDF_PREFIX + ":type", BOT_PREFIX+":Element", 1)
