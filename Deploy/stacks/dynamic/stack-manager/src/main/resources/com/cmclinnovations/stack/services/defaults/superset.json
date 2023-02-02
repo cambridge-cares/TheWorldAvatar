@@ -5,6 +5,9 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "apache/superset:latest",
+                "Env": [
+                    "APP_NAME=Dashboard"
+                ],
                 "Secrets": [
                     {
                         "SecretName": "superset_password"

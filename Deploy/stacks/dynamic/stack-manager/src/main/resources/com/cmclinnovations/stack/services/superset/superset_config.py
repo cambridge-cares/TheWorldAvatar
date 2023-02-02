@@ -21,3 +21,5 @@ class ReverseProxied(object):
 ADDITIONAL_MIDDLEWARE = [ReverseProxied, ]
 
 WTF_CSRF_ENABLED = False
+
+APP_NAME = os.environ.get('APP_NAME')
