@@ -8,9 +8,6 @@
 
 from agent.datamodel.iris import *
 from agent.utils.env_configs import YEAR
-'''
-from agent.kgutils.stackclients import PostGISClient
-'''
 
 def output_query_template(keyword: str, year: str = YEAR):
     '''

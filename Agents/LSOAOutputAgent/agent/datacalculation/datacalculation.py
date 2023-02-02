@@ -19,36 +19,33 @@ import requests
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-# ---------------------- Calculation Agent---------------------------------- #
-def call_cop_agent(url: str, temp: np.ndarray, unit:str, lsoa_sequence:np.ndarray = None):
+# ----------------------Call Calculation Agent---------------------------------- #
+def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_efficiency: float = None):
     '''
     This module will call the calculation agent(cop) to perform calculation with the parameters and url specified
     
     Arguments:
+    url: the endpoint to perform calculation
     temperature: should be an array (np.ndarray) I suppose you are not interested in calculating single value...
     unit: unit with respect to temperature, must be wrapped as a url as per OntoMeasurement. Units below are available:
           DegreeCelsius ℃:    http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius
           DegreeFahrenheit ℉:    http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit
           Kelvin K:    http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin
-    lsoa_sequence: should be an array (np.ndarray), this is the respective lsoa code with the temperature you provided, which must be wrapped as a url as per OntoGasGrid
-                   if the lsoa_sequence is not provided the agent will still run and the result will still be given, with a warning in the logger
-    url: the endpoint to perform calculation
+          t_h: hot side temperature (see equation above), if not provided, 318.15 will be used as default value.
+          hp_efficiency: heat pump efficiency (see equation above), if not provided, 0.35 will be used as default value.
     '''
     
     # Wrapping the query
-    if lsoa_sequence is not None:
-        query = {
-            'query':{'temperature':temp.tolist(),
-                    'unit':unit,
-                    'lsoa_sequence':lsoa_sequence.tolist()
-                    }
+    query = {
+        'query':{'temperature':temp.tolist(),
+                'unit':unit
+                }
         }
-    else:
-        query = {
-            'query':{'temperature':temp.tolist(),
-                    'unit':unit
-                    }
-        }
+    
+    if t_h:
+        query['query']['t_h'] = t_h
+    if hp_efficiency:
+        query['query']['hp_efficiency'] = hp_efficiency
 
     headers = {'Content-type': 'application/json'}
     response = requests.get(url, headers=headers, json=query)
@@ -56,7 +53,6 @@ def call_cop_agent(url: str, temp: np.ndarray, unit:str, lsoa_sequence:np.ndarra
     data = response.json()
 
     cop = np.array(data['COP'])
-    if lsoa_sequence is not None:
-        lsoa_sequence = np.array(data['lsoa_sequence'])
 
-    return cop, lsoa_sequence
+    return cop
+

@@ -7,6 +7,8 @@
 
 import agentlogging
 from agent.errorhandling.exceptions import *
+from agent.utils.env_configs import YEAR
+from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 import matplotlib.pyplot as plt
 import scipy.stats as st
@@ -21,6 +23,30 @@ import pickle
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
+def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
+    '''
+    To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
+    from monthly_ref
+    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
+    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
+    that won't affect the result
+    Arguments:
+    df: two-column data frame which MUST have the data to disaggregate placed at the second column
+    (i.e. at position [1])
+    monthly_ref: reference monthly distribution.
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
+    '''
+    global months
+    df = copy.deepcopy(df_in)
+    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    total = sum(monthly_ref)
+    for i in range(12):
+        df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
+    if annual == False:
+        df = drop_column(df,1)
+    return df
+    
 # ------------------------ Some 'shortcut' functions ----------------------- #
 def convert_to_int(val):
     '''
@@ -160,7 +186,7 @@ def drop_column(df,index):
         df = df.drop(columns=[index])
     return df
 
-def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None):
+def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None, year:str =YEAR):
     '''
     This module is to create tensor, specific for the type of data like:
 [LSOA_1:[Jan: [tasmin: ,  tas:   , tasmax:  ],
@@ -183,47 +209,45 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
     Arguments:
     input: can be dict or df. If it's a dict, which should have structure like:
     dict = { LSOA_1: 
-                {'2020-01-01T12:00:00.000Z':
+                {'2020-01-01 12:00:00:
                 {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                {'2020-02-01T12:00:00.000Z':
+                {'2020-02-01 12:00:00:
                 {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
                     .......
             LSOA_2: 
-                {'2020-01-01T12:00:00.000Z':
+                {'2020-01-01 12:00:00:
                 {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                {'2020-02-01T12:00:00.000Z':
+                {'2020-02-01 12:00:00:
                 {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
                     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
                     .......
             }
     if it is a df, should have a structure like:
-        LSOA_code   temp
-    0   LSOA_1    {'2020-01-01T12:00:00.000Z':
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                    '2020-02-01T12:00:00.000Z':
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                    .......}
+        LSOA_code   date                      var                                                                 temp
+    0   LSOA_1      '2020-01-01 12:00:00      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'    3
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'       5
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'    7
+                
+                    '2020-02-01 12:00:00:     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'    3
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'       5
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'    7
+                    .......
             
-    1   LSOA_2    {'2020-01-01T12:00:00.000Z':
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                    '2020-02-01T12:00:00.000Z':
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                    .......}       
+    1   LSOA_2      '2020-01-01 12:00:00      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'    3
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'       5
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'    7
+                
+                    '2020-02-01 12:00:00:     'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'    3
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'       5
+        ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'    7
+                    .......     
 
     or df can be this shape:
                 LSOA_code   elec_consump
@@ -237,7 +261,7 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
         1       LSOA_2      100   ...
         2       LSOA_3      100   ...
         ....
-    if the input df is in first shape, it will firstly disaggrate the value into monthly distribution (like the second shape), 
+    if the input df is in former shape, it will firstly disaggrate the value into monthly distribution (like the second shape), 
     and then parse the result having the same shape as np.zeros((3, len(df), 12)). 
     Note that in this senario, the monthly data will be distributed into the Axis-2 as which have 12 positions, 
     data for each LSOA will be distributed into Axis-1 based on LSOA_index (and need to be provided in this case)
@@ -252,32 +276,37 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
     to serve delta_electricity_consumption_tensor, to get remaining_electricity_consumption_tensor. so they need
     to know which index is located in which LSOA area, so, this LSOA_index_id is needed for match up the date **
     '''
-    t_dict = {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-          'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2}
-    date_dict = generate_time_dict('2020')
+    
     if type(input) == pd.DataFrame:
         df = input
-        if type(df.iloc[1,1]) == dict:
-            # initialize a results_tensor= np.zeros((3, length of row,12))
-            results_tensor = np.zeros((3, len(df), 12))
-            # loop all the rows, and
-            LSOA_index = {}
-            for i, row in df.iterrows():
-                # Make a dict called LSOA_index, using row index as key and data in the first column as value
-                LSOA_index[row[0]] = i
+        if df.shape[1] == 4:
+            # Create dicts for assigning index
+            t_dict = {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2}
+            date_dict = generate_time_dict(year)
+
+            # Parse the df results
+            all_results = df.values
+
+            # Get unique LSOA keys
+            LSOA_index = np.unique(all_results[:,0]) 
+
+            # Create dict for lsoa code
+            lsoa_dict = {}
+            for i in range(len(LSOA_index)):
+                lsoa_dict[LSOA_index[i]] = i 
             
-            # The data in the second column is a dict contain 12 pairs, for each pair, the value are dicts as well.
-            # The second level dict have 3 pairs, each key have it's value
-            for i, data in df[df.columns[1]].items():
-                # Parse the values in second column into results_tensor to fit in the shape
-                for j, value in data.items():
-                    for k, v in value.items():
-                        t_index = t_dict[k]
-                        date_index = date_dict[j]
-                        results_tensor[t_index][i][date_index] = v
+            # Allocate the data into tensor
+            results_tensor = np.zeros((3,len(LSOA_index),12)) 
+            for j in range(len(all_results[:, 0])):
+                t_ind = t_dict[all_results[j, 2]]
+                d_ind = date_dict[all_results[j, 1]]
+                lsoa_ind = lsoa_dict[all_results[j, 0]]
+                # allocating a value (last index is value)
+                results_tensor[t_ind, lsoa_ind, d_ind] = all_results[j, -1]
         else:
-            # initialize a results_tensor= np.zeros((3, length of row,12))
+            # initialize a results_tensor = np.zeros((3, length of row,12))
             results_tensor = np.zeros((3, len(LSOA_index_id), 12))
             if df.shape[1] == 2:
                 df = monthly_disaggregation(df, monthly_ref)
@@ -336,6 +365,25 @@ def generate_time_dict(year: str):
              f'{year}-12-01 12:00:00':11}
             
       return time_dict
+
+def get_median(df_in:pd.DataFrame, row_name: str = '0'):
+    '''
+    for given dataframes, calculate the median value of each column, and return one dataframe
+    which contain only one row data of the median value result. The row name can be customised 
+    and the column name remain unchanged.
+    Arguments:
+    df: dataframe to be calculated
+        Note that for a column in df that contain strings, i.e. this column is not median-able, therefore 
+        this column will be automatically excluded in the return df
+        (This is a bonus! No need to remove the 'LSOA_code' column in advance! :)
+    row_name: row name you may want to customise, default as 'o' 
+    '''
+    df = copy.deepcopy(df_in)
+    medians = df.median()
+    median_df = medians.to_frame().transpose()
+    median_df.index = [row_name]
+
+    return median_df
 
 def call_pickle(pathname):
     '''

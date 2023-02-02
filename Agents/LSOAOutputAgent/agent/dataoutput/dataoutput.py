@@ -12,6 +12,7 @@ import agentlogging
 from agent.errorhandling.exceptions import *
 from agent.dataretrieval.dataretrival import *
 from agent.datacalculation.datacalculation import *
+from agent.datamodel.iris import OM_DEGREE_C
 
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -140,25 +141,7 @@ def fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, carbon_intens
     
     return df_emission_total, df_emission_elec, df_emission_gas
 
-def get_median(df_in:pd.DataFrame, row_name: str = '0'):
-    '''
-    for given dataframes, calculate the median value of each column, and return one dataframe
-    which contain only one row data of the median value result. The row name can be customised 
-    and the column name remain unchanged.
-    Arguments:
-    df: dataframe to be calculated
-        Note that for a column in df that contain strings, i.e. this column is not median-able, therefore 
-        this column will be automatically excluded in the return df
-        (This is a bonus! No need to remove the 'LSOA_code' column in advance! :)
-    row_name: row name you may want to customise, default as 'o' 
-    '''
-    df = copy.deepcopy(df_in)
-    medians = df.median()
-    median_df = medians.to_frame().transpose()
-    median_df.index = [row_name]
-
-    return median_df
-
+# COP agent
 def COP(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
     '''
     Based on a given temperature to calculate the COP
@@ -893,6 +876,25 @@ df_elec = df_full[['LSOA_code', 'Electricity_consump']]
 df_gas = df_full[['LSOA_code', 'Gas_consump']]
 df_temp = df_full[['LSOA_code', 'temp']]
 '''
+
+######### Test for calling cop calculation agent #########
+# Read the temp data
+df_temp = retrieve_temp_from_KG()
+
+# Convert df into tensor
+unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
+
+# call calculation agent
+url = 'http://localhost:5003/api/lsoacalculationagent_cop/calculation/cop'
+cop = call_cop_agent(url, results_tensor, OM_DEGREE_C,300)
+
+print(cop)
+##########################################################
+
+
+
+
+
 
 ############### Test for plot_geodistribution ############
 # Test for geodistribution_with_cities ---------------------------
