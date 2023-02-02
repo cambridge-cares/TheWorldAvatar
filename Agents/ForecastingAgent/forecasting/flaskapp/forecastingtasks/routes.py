@@ -9,13 +9,12 @@
 import traceback
 from flask import Blueprint, request, jsonify
 
-from py4jps import agentlogging
-
 from forecasting.forecasting_agent.agent import forecast
-from forecasting.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
-                                              DB_URL, DB_USER, DB_PASSWORD, \
-                                              QUERY_ENDPOINT, UPDATE_ENDPOINT
+from forecasting.utils.default_configs import STACK_NAME
+from forecasting.utils.stack_configs import retrieve_stack_settings                                              
 from forecasting.errorhandling.exceptions import InvalidInput
+
+from py4jps import agentlogging
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
@@ -109,6 +108,7 @@ def api_forecast():
 
         data_length = None
 
+    # Execute forecast
     try:
         # Forecast iri
         res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length=data_length,
@@ -129,14 +129,17 @@ def validate_connection_parameters(provided_http_parameters):
     """
     # Initialise connection parameters to use
     conn_params = {}
+    stack_params = {}
 
     # 1) Standalone deployment
     if STACK_NAME == '':
         relevant = ['query_endpoint', 'update_endpoint', 'db_url', 'db_user', 'db_password']
         for r in relevant:
+            # Retrieve parameter from HTTP request if provided ...
             if provided_http_parameters[r] is not None:
                 conn_params[r] = str(provided_http_parameters[r])
             else:
+                # ... otherwise use default value
                 default = eval(r.upper())
                 if default == '':                    
                     logger.error(f'No "{r}" value provided in HTTP request despite missing default value.')
@@ -147,5 +150,24 @@ def validate_connection_parameters(provided_http_parameters):
     # 2) Stack deployment
     else:
         relevant = ['namespace', 'database']
+        for r in relevant:
+            # Retrieve parameter from HTTP request if provided ...
+            if provided_http_parameters[r] is not None:
+                stack_params[r] = str(provided_http_parameters[r])
+            else:
+                # ... otherwise use default value
+                default = eval(r.upper())
+                if default == '':                    
+                    logger.error(f'No "{r}" value provided in HTTP request despite missing default value.')
+                    raise InvalidInput(f'No "{r}" value provided in HTTP request, despite missing default value.')
+                else:
+                    stack_params[r] = default
+        # Retrieve connection parameters from stack clients (returned as:
+        # DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+        stack_conn_param = retrieve_stack_settings(**stack_params)
+
+        # Construct conn_params
+        param_oder = ['db_url', 'db_user', 'db_password', 'query_endpoint', 'update_endpoint']
+        conn_params = dict(zip(param_oder, stack_conn_param))
 
     return conn_params

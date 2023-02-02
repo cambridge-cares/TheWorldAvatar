@@ -87,6 +87,7 @@ def retrieve_default_settings():
             logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         
         # Retrieve settings from Stack Clients
+        # TODO: Review and check what happens/is returned if empty strings are provided
         DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT = \
         retrieve_stack_settings(database=DATABASE,namespace=NAMESPACE)
 
