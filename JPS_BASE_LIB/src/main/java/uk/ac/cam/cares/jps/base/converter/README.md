@@ -59,3 +59,24 @@ To achieve these goals, fill out the template as follows.
 
 > **_NOTE:_**  A) Write class names using CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and BulkPhase. B) Provide the user facing name of the class under the Label column. Some examples are Reaction Mechanism, Phase and Bulk Phase. C) Define ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclose any description containing a comma provided under the Comment column within double quote. For example, see the comment of the ReactionMechansim class. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provide the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is provided.
 
+#### Object Properties
+Object properties can be represented just below TBox Data and Metadata rows. However, it is recommended that object properties should be provided after classes.
+
+Assume that you want to:
+1. define the object properties exists in, contained in and has element with the following descriptions:
+- exists in: A relation between a site phase or bulk phase and a material in which they exist.
+- contained in: A relation that identifies that a gas phase or material is contained in a reaction mechanism.
+- has element: A relation that defines that a species or molecular entity contains a chemical element.
+2. specify that a Site Phase or Bulk Phase exists in a Material, a Gas Phase or Material is contained in a Reaction Mechanism and a Species has an Element.
+3. impose a restriction on the exists in relation to express that when this relation is applied to any instance of Site Phase or Bulk Phase it can only be linked to an instance of Material.
+4. impose a cardinality restriction on the contained in relation to express that any instance of Gas Phase or Material must be linked to exactly 1 instance of Reaction Mechanism.
+
+To achieve these goals, fill out the template as follows:
+
+|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
+|---------------------------------------------------------------------------------------|
+|existsIn,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+|containedIn,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+|hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+
+> **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
