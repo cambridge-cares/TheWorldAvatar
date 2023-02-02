@@ -51,8 +51,7 @@ public class MobileAppAgent extends JPSAgent {
     public static final String bearing = "bearing";
     public static final String speed = "speed";
     public static final String altitude = "altitude";
-    public static final String longitude = "longitude";
-    public static final String latitude = "latitude";
+    public static final String geom_location = "geom_location";
     public static final String magnetometer_x = "magnetometer_x";
     public static final String magnetometer_y = "magnetometer_y";
     public static final String magnetometer_z = "magnetometer_z";
@@ -62,7 +61,7 @@ public class MobileAppAgent extends JPSAgent {
     public static List<String> accelerometerHeader = Arrays.asList(timestamp, accel_x, accel_y, accel_z);
     public static List<String> gravityHeader = Arrays.asList(timestamp, gravity_x, gravity_y, gravity_z);
     public static List<String> lightHeader = Arrays.asList(timestamp, light_value);
-    public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, longitude, latitude);
+    public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, geom_location);
     public static List<String> magnetometerHeader = Arrays.asList(timestamp, magnetometer_x, magnetometer_y, magnetometer_z);
     public static List<String> microphoneHeader = Arrays.asList(timestamp, dbfs);
 //    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader);
@@ -70,11 +69,11 @@ public class MobileAppAgent extends JPSAgent {
 //    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone);
     public static List<String> tableList = Arrays.asList( location);
 
-    private static final String dbURL = "jdbc:postgresql://localhost:5432/developing";
+    private static final String dbURL = "jdbc:postgresql://localhost:5432/develop";
     private static final String user = "postgres";
     private static final String password = "postgres";
     private static RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/developing/sparql", "http://127.0.0.1:9999/blazegraph/namespace/developing/sparql");
+    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/develop/sparql", "http://127.0.0.1:9999/blazegraph/namespace/develop/sparql");
     private static TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
     private JSONArray dataArray;
     private String Query;
@@ -226,23 +225,20 @@ public class MobileAppAgent extends JPSAgent {
      * @return
      */
     private TimeSeries parseDataToLists(int tableNumber, JSONArray dataArray, List<String> dataIRIList) {
-        List<TimeSeries<Double>> tsList = new ArrayList<>();
         List<String> timesList = new ArrayList<>();
-        List<Double> valueList = new ArrayList<>();
+        List<Object> valueList = new ArrayList<>();
         List tableHeader= tableHeaderList.get(tableNumber);
         List<List<Object>> lolvalues = new ArrayList<>();
-        List<Point> pointList=new ArrayList<>();
 
         //Initialize arraylist
         for (int i = 1; i < tableHeader.size(); i++)  {
             lolvalues.add(new ArrayList<>());
         }
-        if (tableHeader==locationHeader) {
-            lolvalues.add(new ArrayList<>());
-        }
 
 
-        Double value;
+
+        Double value = null;
+        Object obj = null;
         String timestamp;
 
         //iterate through row, i is a row
@@ -253,23 +249,19 @@ public class MobileAppAgent extends JPSAgent {
 
             //Another for loop here to get values, return lolvalues
             for (int column = 1; column < tableHeader.size();column++){
-                value = dataArray.getJSONObject(row).getDouble((tableHeader.get(column)).toString());
-                valueList.add(value);
+                if ((locationHeader == tableHeader) && (column ==tableHeader.size()-1)) {
+                    obj = dataArray.getJSONObject(row).get((tableHeader.get(column)).toString());
+                    valueList.add(obj);
+                }
+                else {
+                    value = dataArray.getJSONObject(row).getDouble((tableHeader.get(column)).toString());
+                    valueList.add(value);
+                }
                 lolvalues.get(column-1).addAll(valueList);
                 valueList.removeAll(valueList);
+
             }
 
-            //Convert Lat and Long into Class Point
-            if (tableHeader==locationHeader) {
-                Double Long = dataArray.getJSONObject(row).getDouble((tableHeader.get(4)).toString());
-                Double Lat = dataArray.getJSONObject(row).getDouble((tableHeader.get(5)).toString());
-
-                point = new Point(Long,Lat);
-                point.setSrid(4326);
-                pointList.add(point);
-                lolvalues.get(locationHeader.size()-1).addAll(pointList);
-                pointList.removeAll(pointList);
-            }
         }
         //Pass time list, dataIRI List - just one, lolvalues, add timeseries to output
         return new TimeSeries(timesList, dataIRIList, lolvalues);
@@ -291,17 +283,17 @@ public class MobileAppAgent extends JPSAgent {
         }
 
 
-
-        List <Class> dataClasInit = (Collections.nCopies(tableHeader.size()-1,Double.class));
-        List<Class> dataClass = new ArrayList<>(dataClasInit);
         String timeUnit = OffsetDateTime.class.getSimpleName();
+        List<Class> dataClass = new ArrayList<>();
 
-        //Add Geom dataIRI when intiliazing timeseries
+        //Add geom class when initilizating location
         if (tableHeader==locationHeader) {
-            String dataIRIName =BASEURI+ "geom"+ "_"+ UUID.randomUUID();
-            dataIRIList.add(dataIRIName);
+            List <Class> dataClassInit = (Collections.nCopies(tableHeader.size()-2,Double.class));
+            dataClass = new ArrayList<>(dataClassInit);
             dataClass.add(Point.class);
-
+        }else //Dont need to initliaze
+        {
+            dataClass = (Collections.nCopies(tableHeader.size()-1,Double.class));
         }
 
         try (Connection conn = rdbStoreClient.getConnection()) {
@@ -311,7 +303,6 @@ public class MobileAppAgent extends JPSAgent {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
         return dataIRIList;
     }
 
@@ -381,7 +372,6 @@ public class MobileAppAgent extends JPSAgent {
                 } catch (Exception e) {
                     throw new JPSRuntimeException("Could not get max time!");
                 }
-
 
                 OffsetDateTime startCurrentTime = convertStringToOffsetDateTime(String.valueOf(ts.getTimes().get(0)));
 
