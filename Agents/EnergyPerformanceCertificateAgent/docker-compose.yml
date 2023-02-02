@@ -11,7 +11,7 @@ services:
       # Layer name in geoserver, also table name in PostGIS
       - LAYERNAME=buildings
       # Target Blazegraph namespace
-      - NAMESPACE=
+      - NAMESPACE=buildings
       # Specify PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
