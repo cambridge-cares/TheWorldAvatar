@@ -486,3 +486,35 @@ function selectBranch(Name, From_Bus, To_Bus, para_R, para_X, para_B, para_RateA
 		// Update text container 
 		setSidePanelText(``);
 }
+
+	// select the retrofit result_exanct
+	function majorEnergySource(smallArea_LACode, majorOutput, majorEnergySource) {
+	// Set title to offtake name
+	setSidePanelTitle(`
+		<h2> ` + fuel + `</h2>
+	`);
+
+	// Show meta data
+	var metaHTML = `
+	<table width="100%">
+		<tr>
+			<td width="25%">Small Area LA Code:</td>
+			<td width="75%" style="text-align: right;">` + smallArea_LACode + `</td>
+		</tr>
+		<tr>
+			<td width="25%">Major Output:</td>
+			<td width="75%" style="text-align: right;">` + majorOutput + ` MW</td>
+		</tr>
+		<tr>
+			<td width="35%">Major Energy Source:</td>
+			<td width="65%" style="text-align: right;">` + majorEnergySource + ` MW</td>
+		</tr>
+	`;
+
+
+	metaHTML += "</table>";
+	setSidePanelMeta(metaHTML);
+
+	// Update text container 
+	setSidePanelText(``);
+}
