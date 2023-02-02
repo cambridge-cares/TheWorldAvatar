@@ -22,7 +22,7 @@ services:
       context: .
       target: prod
     ports:
-      - "5000:5000"
+      - "5005:5000"
     volumes:
       - logs:/root/.jps
 

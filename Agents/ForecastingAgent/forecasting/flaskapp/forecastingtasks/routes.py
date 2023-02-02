@@ -10,7 +10,9 @@ import traceback
 from flask import Blueprint, request, jsonify
 
 from forecasting.forecasting_agent.agent import forecast
-from forecasting.utils.default_configs import STACK_NAME
+from forecasting.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
+                                              DB_URL, DB_USER, DB_PASSWORD, \
+                                              QUERY_ENDPOINT, UPDATE_ENDPOINT
 from forecasting.utils.stack_configs import retrieve_stack_settings                                              
 from forecasting.errorhandling.exceptions import InvalidInput
 
@@ -105,7 +107,6 @@ def api_forecast():
         logger.info('data_length: ' + str(data_length))
     except KeyError as ex:
         logger.warning('No data_length, using data_length from "DEFAULT" configuration.')
-
         data_length = None
 
     # Execute forecast

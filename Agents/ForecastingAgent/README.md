@@ -34,7 +34,10 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 
 The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
-**Please note:** A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
+**Please note**: 
+1) All variables defined here (except for `STACK_NAME`) serve as default values. If corresponding keys are provided in the HTTP request to the agent, those will be used instead. Otherwise, these default values will be used. In case neither is provided, the agent will cause an exception.
+
+2) A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
 
 &nbsp;
 ## 1.2 Miscellaneous
@@ -93,7 +96,7 @@ Deploy the dockerised agent by running the following code in the command prompt 
 docker-compose -f <docker-compose file> up
 ```
 
-To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5000` in your browser. 
+To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5005` in your browser. 
 
 ### **Stack Deployment**
 
@@ -106,14 +109,24 @@ If you want to spin up this agent as part of a stack, do the following:
 &nbsp;
 ## 2.3 Forecasting time series via HTTP requests
 
-Forecasting a time series is triggered by received HTTP requests. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
+Forecasting a time series is triggered by receiving an HTTP `POST` request with a JSON body. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
 
-### Input parameters
-- **iri**: the `iri` of the instance which has a time series attached to it. This iri will receive the `hasForecastedValue` relationship.
-- **horizon**: the number of time steps the agent forecasts autorecursively into the future.
-- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error.
-- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network. (If not set the default value from the [mapping file] is used)
-- **use_model_configuration**: if specified this model configuration from the [mapping file] is used.  
+### HTTP request parameters
+
+- **iri**: the `iri` of the instance which has a time series attached to it. This `iri` will receive the `hasForecastedValue` relationship
+- **horizon**: the number of time steps to forecast autorecursively into the future
+- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error
+- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network (If not set the default value from the [mapping file] is used)
+- **use_model_configuration**: if specified this model configuration from the [mapping file] is used
+
+Further optional parameters can be provided to specify the connection configurations to use. All specified parameters overwrite potential default values specified in the docker-compose file. To use the default values, simply exclude the respective parameter from the HTTP request:
+- **namespace**: target Blazegraph namespace (only relevant for Stack deployment)
+- **database**: target PostGIS database (only relevant for Stack deployment)
+- **query_endpoint**: SPARQL query endpoint (only relevant for standalone deployment)
+- **update_endpoint**: SPARQL update endpoint (only relevant for standalone deployment)
+- **db_url**: PostGIS/PostgreSQL database URL (only relevant for standalone deployment)
+- **db_user**: PostGIS/PostgreSQL database user (only relevant for standalone deployment)
+- **db_password**" PostGIS/PostgreSQL database password (only relevant for standalone deployment)
 
 
 ## 2.4 Custom model configurations and new models
