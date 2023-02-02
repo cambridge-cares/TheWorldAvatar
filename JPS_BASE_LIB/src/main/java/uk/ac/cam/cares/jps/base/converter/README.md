@@ -45,17 +45,17 @@ Assume that you want to:
      - Phase: A phase of a substance is a form of matter.
      - Bulk Phase: A solid phase that is contiguous with site phases and remote from the gas phase.
      - Rate Coefficient: The coefficients used to evaluate the reaction rate expression.
- 2. Desribe that the Bulk Phase class is a subclass of the Phase class and the Rate Coefficient class is equivalent to the Reaction Rate Coefficient class defined in the behaviour ontology available at http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl.
+ 2. Desribe that the Bulk Phase class is a subclass of the Phase class and the Rate Coefficient class is equivalent to the Reaction Rate Coefficient class defined in the Cyber Physical System (CPS) Behaviour ontology available at http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl.
  3. Specify that theses classes are defined in an ontology that has the following URL: http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 
 To achieve these goals, fill out the template as follows.
 
 |Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
 |---------------------------------------------------------------------------------------|
-|ReactionMechanism, Class, , , , , , A reaction mechanism refers to a set of elementary reactions", http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism |
+|ReactionMechanism, Class, , , , , , "A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.", http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism |
 |Phase, Class, , , , , , A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase |
 |BulkPhase, Class, Phase, IS-A, , , , A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Bulk Phase |
 |RateCoefficient, Class, http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient, EQUIVALENT-TO, , , , The coefficients used to evaluate the reaction rate expression., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Rate Coefficient |
 
-> **_NOTE:_**  A) Write class names using CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and BulkPhase. B) Provide the user facing name of the class under the Label column. Some examples are Reaction Mechanism, Phase and Bulk Phase. C) Define ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO.D) Currently, the tool does not support the representation of the disjoint class relationship.
+> **_NOTE:_**  A) Write class names using CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and BulkPhase. B) Provide the user facing name of the class under the Label column. Some examples are Reaction Mechanism, Phase and Bulk Phase. C) Define ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclose any description containing a comma provided under the Comment column within double quote. For example, see the comment of the ReactionMechansim class. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provide the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is provided.
 
