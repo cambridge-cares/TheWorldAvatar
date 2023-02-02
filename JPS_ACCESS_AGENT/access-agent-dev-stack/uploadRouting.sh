@@ -1,12 +1,13 @@
 #! /bin/bash
 
-#NOTE: the port number must match that in docker-compose
+# NB: The port number must match that in docker-compose, or, if running
+# within a stack, the main entry port to the stack, e.g. 3838.
 accessagentURL=http://localhost:48888/access-agent/upload
 
-#Routing information
+# Routing information
 routingInfo=./routing.json
 
-## Upload routing information 
+# Upload routing information 
 echo "Uploading routing information to $accessagentURL"
 
 # Upload triples to blazegraph
