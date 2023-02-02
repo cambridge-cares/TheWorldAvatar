@@ -48,7 +48,7 @@ def retrieve_default_settings():
         logger.info('No "STACK_NAME" value has been provided in environment variables. '
                     'Deploying agent in "standalone" mode.')
         
-        # Retrieve global variables
+        # Retrieve global variables for default connection settings
         vars_names = ['DB_URL', 'DB_USER', 'DB_PASSWORD', 'QUERY_ENDPOINT', 'UPDATE_ENDPOINT']
         for v in vars_names:
             globals()[v] = os.getenv(v)
@@ -64,14 +64,15 @@ def retrieve_default_settings():
         # 2) Stack deployment: retrieve settings from Stack Clients
         logger.info('Deploying agent to stack "{STACK_NAME}".')
 
-        # Retrieve target Blazegraph name for data to instantiate
+        # Retrieve target Blazegraph namespace for data to instantiate
         NAMESPACE = os.getenv('NAMESPACE')
         if NAMESPACE is None:
             logger.error('"NAMESPACE" name is missing in environment variables.')
             raise ValueError('"NAMESPACE" name is missing in environment variables.')
         if NAMESPACE == '':
-            logger.error('No "NAMESPACE" value has been provided in environment variables.')
-            raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+            warning_msg = f'No default "NAMESPACE" value has been provided in environment variables. '
+            warning_msg += f'Ensure that "NAMESPACE" is provided in HTTP request to the agent to avoid issues.'
+            logger.warning(warning_msg)
 
         # Retrieve target PostgreSQL/PostGIS database name
         DATABASE = os.getenv('DATABASE')
@@ -79,9 +80,10 @@ def retrieve_default_settings():
             logger.error('"DATABASE" name is missing in environment variables.')
             raise ValueError('"DATABASE" name is missing in environment variables.')
         if DATABASE == '':
-            logger.error('No "DATABASE" value has been provided in environment variables.')
-            raise ValueError('No "DATABASE" value has been provided in environment variables.')
-        if DATABASE != 'postgres':
+            warning_msg = f'No default "DATABASE" value has been provided in environment variables. '
+            warning_msg += f'Ensure that "DATABASE" is provided in HTTP request to the agent to avoid issues.'
+            logger.warning(warning_msg)
+        elif DATABASE != 'postgres':
             logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         
         # Retrieve settings from Stack Clients
