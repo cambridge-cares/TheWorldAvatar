@@ -42,8 +42,6 @@ class SubGraphAnalysis:
             unique_reactions.add(obj)
 
         for reaction in unique_reactions:
-            # if (reaction=="ChemicalReaction_1749249908527558_12"):
-            #     k=1
             reaction_triples = [(subject, predicate, obj) for subject, predicate, obj in self.filtered_triples if obj == reaction]
             
             cnt=0
@@ -73,9 +71,8 @@ class SubGraphAnalysis:
                 cnt+=1
 
             PFI[reaction] = (reaction_count/cnt, worst_species, min)
-            # print(PFI)
 
-        with open('C:/Users/MAGA01/CARES/PFI_2.csv', 'w', newline='') as file:
+        with open('PFI.csv', 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['Key', 'Value'])
             for key, value in PFI.items():
