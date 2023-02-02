@@ -76,6 +76,7 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
+                # If it is a flat, then create/retrieve parent building IRI
                 if epc_data.get('property-type') in ['Flat', 'Maisonette']:
                     parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                     # Retrieve parent building IRI if already instantiated, otherwise create            
@@ -83,8 +84,6 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                         parent_iri = parent
                     else:
                         parent_iri = KB + 'Building_' + str(uuid.uuid4())
-                #TODO: Potentially incorporate more thorough check here, i.e. to
-                # avoid Flats (according to EPC data) having OCGML building representation
                 else:
                     parent_iri = None
 
@@ -119,10 +118,13 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                 if not instantiated:
                     # 2) No EPC data instantiated yet --> Instantiate data
                     # Create Property IRI
-                    if epc_data.get('property-type') in ['Flat', 'Maisonette']:
-                        data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
-                    else:
-                        data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
+                    if (epc_endpoint == 'domestic'):
+                        if epc_data.get('property-type') in ['Flat', 'Maisonette']:
+                            data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
+                        else:
+                            data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
+                    elif (epc_endpoint == 'non-domestic' or epc_endpoint == 'display'):
+                        data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
 
                     # Add postcode and district IRIs
                     postcode = epc_data.get('postcode')
@@ -152,13 +154,13 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                                       'property_type_iri','usage_iri', 'usage_label',
                                       'construction_end','floor_description', 
                                       'roof_description','wall_description', 
-                                      'windows_description','floor_area', 'epc_rating', 'rooms']
+                                      'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
                     elif (epc_endpoint == 'non-domestic'):
                         data_to_update = ['epc_lmkkey','property_type_iri','usage_iri', 'usage_label',
-                                          'floor_area', 'epc_rating']
+                                          'floor_area', 'epc_rating', 'weightage']
                     elif (epc_endpoint == 'display'):
                         data_to_update = ['epc_lmkkey', 'property_type_iri','usage_iri', 'usage_label',
-                                          'floor_area', 'epc_rating']
+                                          'floor_area', 'epc_rating', 'weightage']
                     data_to_update = {k: v for k, v in data_to_instantiate.items() if k in data_to_update}
                     data_to_update['property_iri'] = instantiated[0].get('property')
 
@@ -231,6 +233,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         if uprns:
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
+                # If it is a flat, then create/retrieve parent building IRI
                 if row.get('property-type') in ['Flat', 'Maisonette']:
                     parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                     # Retrieve parent building IRI if already instantiated, otherwise create            
@@ -238,8 +241,6 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                         parent_iri = parent
                     else:
                         parent_iri = KB + 'Building_' + str(uuid.uuid4())
-                #TODO: Potentially incorporate more thorough check here, i.e. to
-                # avoid Flats (according to EPC data) having OCGML building representation
                 else:
                     parent_iri = None
             else:
@@ -273,10 +274,13 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                 if not instantiated:                 
                     # 2) No EPC data instantiated yet --> Instantiate data
                     # Create Property IRI
-                    if row.get('property-type') in ['Flat', 'Maisonette']:
-                        data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
-                    else:
-                        data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
+                    if (epc_endpoint == 'domestic'):
+                        if row.get('property-type') in ['Flat', 'Maisonette']:
+                            data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
+                        else:
+                            data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
+                    elif (epc_endpoint == 'non-domestic' or epc_endpoint == 'display'):
+                        data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
 
                     # Add postcode and district IRIs
                     postcode = row.get('postcode')
@@ -306,18 +310,19 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                                       'property_type_iri','usage_iri', 'usage_label',
                                       'construction_end','floor_description', 
                                       'roof_description','wall_description', 
-                                      'windows_description','floor_area', 'epc_rating', 'rooms']
+                                      'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
                     if (epc_endpoint == 'non-domestic'):
                         data_to_update = ['epc_lmkkey','property_type_iri','usage_iri', 'usage_label',
-                                          'floor_area', 'epc_rating']
+                                          'floor_area', 'epc_rating', 'weightage']
                     elif (epc_endpoint == 'display'):
-                        data_to_update = ['epc_lmkkey', 'property_type_iri','usage_iri', 'usage_label',
-                                          'floor_area', 'epc_rating']
+                        data_to_update = ['epc_lmkkey', 'property_type_iri',
+                                          'floor_area', 'epc_rating', 'weightage', 'usage_iri', 'usage_label']
                     data_to_update = {k: v for k, v in data_to_instantiate.items() if k in data_to_update}
                     data_to_update['property_iri'] = instantiated[0].get('property')
 
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                     update_query = update_epc_data(**data_to_update)
+
                     kgclient_epc.performUpdate(update_query)
                     updated_epcs += 1
         else:
@@ -376,7 +381,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
                                 epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
                                 query_endpoint=query_endpoint, update_endpoint=update_endpoint,
                                 kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
-                                summarise=False)
+                                summarise=True)
 
         # Update number of amended EPC instances
         all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
@@ -435,11 +440,14 @@ def condition_epc_data(data):
     data_to_instantiate['addr_unit_name'] = addressinfo['unit_name']
   
     # Property type and built form
-    data_to_instantiate['built_form_iri'] = EPC_DATA.get(data.get('built-form'))
-    data_to_instantiate['property_type_iri'] = EPC_DATA.get(data.get('property-type'))
+    built_form = data.get('built-form')
+    if built_form in EPC_DATA:
+        data_to_instantiate['built_form_iri'] = str(EPC_DATA.get(built_form))
+    
+    data_to_instantiate['property_type_iri'] = str(EPC_DATA.get(data.get('property-type'))) 
 
     # Usage: assumption that all EPC from domestic API are single residential usage
-    data_to_instantiate['usage_iri'] = OBE_SINGLERESIDENTIAL
+    data_to_instantiate['usage_iri'] = OBE_SINGLERESIDENTIAL 
 
     # Energy rating 
     data_to_instantiate[EPC_KEYS.get('current-energy-rating')] = data.get('current-energy-rating')
@@ -516,11 +524,8 @@ def condition_epc_non_domestic_data(data):
     data_to_instantiate['addr_bldg_name'] = addressinfo['bldg_name']
     data_to_instantiate['addr_unit_name'] = addressinfo['unit_name']
 
-    # Property type and usage IRI assumed to be same
-    data_to_instantiate['property_type_iri'] = EPC_DATA.get((data.get('property-type')))
-
-    # Usage: Property type and usage IRI assumed to be same because the property types decsribe the usage of the building
-    data_to_instantiate['usage_iri'] = data_to_instantiate['property_type_iri']
+    # Usage: 'property-type' category from API data describes the building usage for non-domestic EPC
+    data_to_instantiate['usage_iri'] = str(EPC_DATA.get((data.get('property-type'))))
 
     data_to_instantiate['usage_label'] = data.get('property-type')
 
@@ -564,7 +569,8 @@ def condition_epc_display_data(data):
         'usage_iri': None, 
         'usage_label': None,
         'floor_area': None, 
-        'epc_rating': None, 
+        'epc_rating': None,
+        'weightage': None, 
     }
 
     # Extract address information from provided address fields --> assumption that address 
@@ -579,18 +585,36 @@ def condition_epc_display_data(data):
     data_to_instantiate['addr_bldg_name'] = addressinfo['bldg_name']
     data_to_instantiate['addr_unit_name'] = addressinfo['unit_name']
 
-    # TODO: Figure out how to map Display EPC property type IRI 
-    data_to_instantiate['property_type_iri'] = OBE_NON_DOMESTIC
+    # Usage: Defined by "Building Category" codes, there can be multiple usage categories for a single building
+    # Preprocess the usage retrieved from API by removing any whitespace and splitting into individual usages 
+    usage_list = (data.get('building-category')).replace(" ", "").split(';')
 
-    # Usage: Assumed to be defined by "Building Category codes"
-    usage_list = (data.get('building-category')).split(';')
+    # Empty space ('') in data retrieved from API can be counted as a usage, 
+    # hence removing all empty space ('') from the list of usages retrieved
+    if '' in usage_list : usage_list.remove('')
     usage = []
-    for item in usage_list:
-        usage.append(EPC_DATA.get(item))
-        data_to_instantiate['usage_iri'] = usage 
+    weightage = []
+    len_usage = len(usage_list)
 
-    # TODO: weightage and usage_label
-    # data_to_instantiate['usage_label'] = data.get('property-type')
+    # Only calculate weights if there are multiple usages
+    if len_usage > 1:            
+        for item in usage_list:
+            count = usage_list.count(item)
+            weight = count/len_usage
+            if (EPC_DATA.get(item) not in usage):
+                usage.append(EPC_DATA.get(item))                  
+                weightage.append(weight)
+
+        # Usage_iri here is a list of usages
+        data_to_instantiate['usage_iri'] = usage 
+        # Usage Share (weights)
+        data_to_instantiate['weightage'] = weightage
+
+    else:            
+        # Usage_iri for single usage
+        data_to_instantiate['usage_iri'] = EPC_DATA.get(usage_list[0]) 
+
+    data_to_instantiate['usage_label'] = data.get('property-type')
 
     # Energy rating 
     data_to_instantiate['epc_rating'] = data.get('operational-rating-band')
@@ -898,22 +922,22 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
             'postcode_iri', 'district_iri', 'built_form_iri', 'property_type_iri',
             'usage_iri', 'usage_label', 'construction_start', 'construction_end',
             'floor_description', 'roof_description', 'wall_description',
-            'windows_description', 'floor_area', 'epc_rating', 'rooms']
+            'windows_description', 'floor_area', 'epc_rating', 'rooms', 'weightage']
         
         columns_to_update = ['property_iri', 'built_form_iri', 'property_type_iri',
                             'usage_iri', 'usage_label', 'construction_end',
                             'floor_description', 'roof_description', 'wall_description', 
-                            'windows_description','floor_area', 'epc_rating', 'rooms']
+                            'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
 
     elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
         columns_to_instantiate = ['property_iri', 'uprn',
             'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'addr_unit_name',
             'postcode_iri', 'district_iri', 'property_type_iri',
-            'usage_iri', 'usage_label', 'floor_area', 'epc_rating']
+            'usage_iri', 'usage_label', 'floor_area', 'epc_rating', 'weightage']
         
         columns_to_update = ['property_iri', 'property_type_iri',
                             'usage_iri', 'usage_label', 
-                            'floor_area', 'epc_rating']
+                            'floor_area', 'epc_rating', 'weightage']
 
     # Instantiate / Update EPC information for parent buildings
     for index, row in summarized.iterrows():
@@ -922,12 +946,9 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
             data_to_instantiate = {k: v for k, v in row.items() if k in columns_to_instantiate}
             if (row['usage_iri'] and (';' in row['usage_iri'])):
                 split_usage = row['usage_iri'].split(';')
-                # len_usage = len(split_usage)
-                # weightage = []
-                # for item in split_usage:
-                #     count = split_usage.count(item)
-                #     weightage.append(str(count/len_usage))
+                split_weight = row['weightage'].split(';')
                 data_to_instantiate['usage_iri'] = split_usage
+                data_to_instantiate['weightage'] = split_weight
             logger.info('Parent building data not yet instantiated. Instantiate data ... ')
             insert_query = instantiate_epc_data(**data_to_instantiate)
             kgclient.performUpdate(insert_query)
@@ -938,12 +959,9 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
             data_to_update = {k: v for k, v in row.items() if k in columns_to_update}
             if (row['usage_iri'] and (';' in row['usage_iri'])):
                 split_usage = row['usage_iri'].split(';')
-                # len_usage = len(split_usage)
-                # weightage = []
-                # for item in split_usage:
-                #     count = split_usage.count(item)
-                #     weightage.append(count/len_usage)
+                split_weight = row['weightage'].split(';')
                 data_to_update['usage_iri'] = split_usage
+                data_to_update['weightage'] = split_weight
             logger.info('Parent building data already instantiated. Updated data ... ')
             update_query = update_epc_data(**data_to_update)
             kgclient.performUpdate(update_query)
@@ -965,7 +983,7 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
             'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
             'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
             'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
-            'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
+            'usage_iri', 'usage_label', 'wall_description', 'windows_description', 'weightage'] 
     """
 
     # Create KG client if not provided
@@ -1003,7 +1021,7 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
     elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
         cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
                 'district_iri', 'epc_rating', 'floor_area', 'parent_iri', 'parent_id', 
-                'postcode_iri', 'property_iri', 'property_type_iri', 'usage_iri', 'usage_label'] 
+                'postcode_iri', 'property_iri', 'property_type_iri', 'usage_iri', 'usage_label', 'weightage'] 
         df = pd.DataFrame(columns=cols, data=res)
 
         # Cast data types
@@ -1012,6 +1030,7 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
                 'property_type_iri', 'usage_iri', 'usage_label'] :
             df[c] = df[c].astype('string')
         df['floor_area'] = df['floor_area'].astype('float')
+        df['weightage'] = df['weightage'].astype('float')
 
     # Fill missing data with None
     df = df.replace('nan', None)
@@ -1037,9 +1056,9 @@ def summarize_epc_data(data, epc_endpoint):
     if (epc_endpoint == 'domestic'):
         # Initialise return DataFrame
         cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
-                'district_iri', 'built_form_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
+                'district_iri', 'built_form_iri', 'property_type_iri', 'usage_iri',
                 'construction_start', 'construction_end', 'floor_description', 'roof_description', 
-                'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms', 'created']
+                'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms', 'created', 'weightage']
         df = pd.DataFrame(columns=cols)
 
         #
@@ -1050,7 +1069,7 @@ def summarize_epc_data(data, epc_endpoint):
         # 2) Use most common value of children properties
         most_common = ['epc_rating', 'built_form_iri', 'property_type_iri']
         # 3) Aggregate / concatenate distinct values
-        agg = ['usage_iri', 'usage_label', 'floor_description', 'roof_description', 
+        agg = ['usage_iri',  'floor_description', 'roof_description',
             'wall_description', 'windows_description']
 
         # Summarize data per parent building
@@ -1069,16 +1088,36 @@ def summarize_epc_data(data, epc_endpoint):
             # Replace invalid maisonette property type
             if df.loc[p, 'property_type_iri'] == OBE_MAISONETTE:
                 df.loc[p, 'property_type_iri'] = OBE_HOUSE
+
             # concatenate distinct values
             for i in agg:
-                vals = list(d[i].unique())
-                vals = [v for v in vals if v]
-                if vals:
-                    concatenated = ';'.join(vals)
-                    # Replace invalid single residential usage
-                    if i == 'usage_iri':
-                        concatenated = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
-                    df.loc[p, i] = concatenated
+                if (i=='usage_iri'):
+                    usage_list = list(d['usage_iri'])
+                    total_usages = len(usage_list)
+
+                    vals = list(d['usage_iri'].unique())
+                    weightage = []
+                    if len(vals) > 1:
+                        for item in vals:
+                            count = (usage_list.count(item))
+                            weight = count/total_usages
+                            weightage.append((weight))
+                        df.loc[p, 'weightage'] = ';'.join([str(w) for w in weightage])
+
+                    vals = [v for v in vals if v]                
+                    
+                    if vals:
+                        concatenated = ';'.join(vals)
+                        # Replace invalid single residential usage
+                        concatenated_fixed = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
+                        df.loc[p, 'usage_iri'] = concatenated_fixed
+
+                else:
+                    vals = list(d[i].unique())
+                    vals = [v for v in vals if v]
+                    if vals:
+                        concatenated = ';'.join(vals)
+                        df.loc[p, i] = concatenated
 
             # Retrieve construction dates
             try:
@@ -1156,8 +1195,8 @@ def summarize_epc_data(data, epc_endpoint):
     elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
         # Initialise return DataFrame
         cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
-                'district_iri', 'property_type_iri', 'usage_iri', 'usage_label', 
-                 'floor_area', 'epc_rating', 'created']
+                'district_iri', 'property_type_iri', 'usage_iri',
+                 'floor_area', 'epc_rating', 'created', 'weightage']
         df = pd.DataFrame(columns=cols)
 
         #
@@ -1168,7 +1207,7 @@ def summarize_epc_data(data, epc_endpoint):
         # 2) Use most common value of children properties
         most_common = ['epc_rating', 'property_type_iri']
         # 3) Aggregate / concatenate distinct values
-        agg = ['usage_iri', 'usage_label']
+        agg = ['usage_iri']
 
         # Summarize data per parent building
         parents = data['parent_iri'].unique()
@@ -1182,16 +1221,24 @@ def summarize_epc_data(data, epc_endpoint):
                 if not d[i].value_counts().empty:
                     # Retrieve most common value (i.e. value with highest count)
                     df.loc[p, i] = d[i].value_counts().index[0]
+            
             # concatenate distinct values
-            for i in agg:
-                vals = list(d[i].unique())
-                vals = [v for v in vals if v]
-                if vals:
-                    concatenated = ';'.join(vals)
-                    # # Replace invalid single residential usage
-                    # if i == 'usage_iri':
-                    #     concatenated = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
-                    df.loc[p, i] = concatenated
+            usage_list = list(d['usage_iri'])
+            total_usages = len(usage_list)
+
+            vals = list(d['usage_iri'].unique())
+            weightage = []
+            if len(vals) > 1:
+                for item in vals:
+                    count = (usage_list.count(item))
+                    weight = count/total_usages
+                    weightage.append((weight))
+                df.loc[p, 'weightage'] = ';'.join([str(i) for i in weightage])
+
+            vals = [v for v in vals if v]
+            if vals:
+                concatenated = ';'.join(vals)
+                df.loc[p, 'usage_iri'] = concatenated
 
             # Retrieve postcode and admin district IRIs
             try:
@@ -1256,7 +1303,7 @@ def summarize_epc_data(data, epc_endpoint):
                     df.loc[p, 'addr_bldg_name'] = concatenated
             except Exception:
                 logger.info('No Building name information could be obtained.')
-    
+
 
     # Create 'property_iri' column
     df['property_iri'] = df.index
@@ -1265,6 +1312,7 @@ def summarize_epc_data(data, epc_endpoint):
     df = df.replace('nan', None)
     df = df.replace('', None)
     df = df.replace({np.nan: None})
+
     return df
 
 
@@ -1367,10 +1415,28 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                 # Get building usage
                 query = get_buildings_usage(b)
                 try:
-                    usage = kgclient_epc.performQuery(query)
+                    retrieved_usage = kgclient_epc.performQuery(query)
                 except KGException as ex:
                     logger.error('Unable to retrieve building usage category.')
                     raise KGException('Unable to retrieve building usage category.') from ex
+                
+                # Map usage
+                if len(retrieved_usage) == 1:
+                    usage = USAGE_MAPPING.get(retrieved_usage)
+                else:
+                    max_weight = 0
+                    for u in retrieved_usage:
+                        query = get_usage_share(u)
+                        try:
+                            weight = (kgclient_epc.performQuery(query))
+                        except KGException as ex:
+                            logger.error('Unable to retrieve usage share.')
+                            raise KGException('Unable to retrieve usage share.') from ex
+                        if weight > max_weight:
+                            max_weight = weight
+                            primary_usage = u
+                    usage = USAGE_MAPPING.get(primary_usage)
+
                 # Extract all floor surface geometries for this building
                 surf = data[data['obe_bldg'] == b]
                 # Initialise list of surface geometry coordinates (polygons)
@@ -1418,6 +1484,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     # Optional (for styling)
                     'type': feature_type,
                     'usage': usage,
+                    'usage_categories': retrieved_usage,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])

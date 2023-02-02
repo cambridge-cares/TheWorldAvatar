@@ -17,7 +17,7 @@ from agent.kgutils.querytemplates import *
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import APIException
 from agent.utils.api_endpoints import *
-from agent.utils.env_configs import ENCODED_AUTH, API_TOKEN
+from agent.utils.env_configs import ENCODED_AUTH
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
@@ -75,7 +75,7 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
                     'asset-rating-band', 'floor-area']
     elif (endpoint == 'display'):
         relevant = ['lmk-key', 'address1', 'address2', 'address3',
-                    'postcode', 'local-authority', 'uprn', 'property-type',
+                    'postcode', 'local-authority', 'uprn', 'property-type', 'building-category',
                     'operational-rating-band', 'total-floor-area']
 
     try:
@@ -215,7 +215,7 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/',
     postcodes = [r['postcode'] for r in res]
 
     # Prepare authentication header for EPC API
-    headers = {'Authorization': 'Basic {}'.format(API_TOKEN),
+    headers = {'Authorization': 'Basic {}'.format(ENCODED_AUTH),
                'Accept': 'application/json'}
 
     # Initialise variables
