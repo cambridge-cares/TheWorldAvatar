@@ -10,21 +10,26 @@ import os
 
 from py4jps import agentlogging
 
+from .stack_configs import retrieve_stack_settings
+
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 
-def retrieve_settings():
+def retrieve_default_settings():
     """
-        Reads settings from environment variables as global variables, i.e. 
-        only global within this sub-module
+        Reads default settings from environment variables as global variables, 
+        i.e. only global within this sub-module
     """
 
     # Define global scope for global variables
     global NAMESPACE, DATABASE, STACK_NAME, \
            DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
     
-    # Initialise potentially not provided variables
+    # Initialise variables (to ensure working imports even if not defined in env vars)
+    NAMESPACE = None
+    DATABASE = None 
+    STACK_NAME = None
     DB_URL = None
     DB_USER = None
     DB_PASSWORD = None
@@ -51,15 +56,13 @@ def retrieve_settings():
                 logger.error(f'"{v}" is missing in environment variables.')
                 raise ValueError(f'"{v}" is missing in environment variables.')
             if globals()[v] == '':
-                logger.error(f'No "{v}" value has been provided in environment variables.')
-                raise ValueError(f'No "{v}" value has been provided in environment variables.')
+                warning_msg = f'No default "{v}" value has been provided in environment variables. '
+                warning_msg += f'Ensure that "{v}" is provided in HTTP request to the agent to avoid issues.'
+                logger.warning(warning_msg)
+
     else:
         # 2) Stack deployment: retrieve settings from Stack Clients
         logger.info('Deploying agent to stack "{STACK_NAME}".')
-
-        # Import stack_configs module only when needed to avoid import issues/
-        # potentially unnecessary installation of py4jps StackClients resource
-        from .stack_configs import retrieve_stack_settings
 
         # Retrieve target Blazegraph name for data to instantiate
         NAMESPACE = os.getenv('NAMESPACE')
@@ -93,4 +96,4 @@ def retrieve_settings():
 
 
 # Run when module is imported
-retrieve_settings()
+retrieve_default_settings()

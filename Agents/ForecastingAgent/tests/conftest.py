@@ -21,7 +21,7 @@ from forecasting.utils.tools import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
 
-from forecasting.utils.env_configs import DB_USER, DB_PASSWORD
+from forecasting.utils.default_configs import DB_USER, DB_PASSWORD
 
 
 # ----------------------------------------------------------------------------------

@@ -22,8 +22,8 @@ from darts.metrics import mape, mse, rmse, smape
 from py4jps import agentlogging
 
 from forecasting.utils.tools import *
-from forecasting.utils.env_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                          DB_URL, DB_USER, DB_PASSWORD
+from forecasting.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                              DB_URL, DB_USER, DB_PASSWORD
 from forecasting.datamodel.iris import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.kgutils.kgclient import KGClient
@@ -36,7 +36,7 @@ logger = agentlogging.get_logger('prod')
 
 def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
              query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT, 
-             rdb_url=DB_URL, rdb_user=DB_USER, rdb_password=DB_PASSWORD):
+             db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -48,15 +48,15 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     :param data_length: The number of time steps which should be loaded from the DB
     :param query_endpoint: The endpoint to query the KG
     :param update_endpoint: The endpoint to update the KG
-    :param rdb_url: The url to the RDB
-    :param rdb_user: The user to the RDB
-    :param rdb_password: The password to the RDB
+    :param db_url: The url to the RDB
+    :param db_user: The user to the RDB
+    :param db_password: The password to the RDB
     
     :return: The forecast is being returned.
     """
     # Initialise the KG and TS clients
     kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
-    tsClient = TSClient(kg_client=kgClient, rdb_url=rdb_url, rdb_user=rdb_user, rdb_password=rdb_password)
+    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, rdb_password=db_password)
 
     covariates, backtest_series = None, None
 

@@ -20,7 +20,7 @@ from py4jps import agentlogging
 from forecasting.datamodel.iris import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.utils.tools import *
-from forecasting.utils.env_configs import *
+from forecasting.utils.default_configs import *
 from forecasting.forecasting_agent.agent import *
 
 from . import conftest as cf

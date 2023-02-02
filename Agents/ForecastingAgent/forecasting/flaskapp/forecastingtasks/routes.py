@@ -12,6 +12,10 @@ from flask import Blueprint, request, jsonify
 from py4jps import agentlogging
 
 from forecasting.forecasting_agent.agent import forecast
+from forecasting.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
+                                              DB_URL, DB_USER, DB_PASSWORD, \
+                                              QUERY_ENDPOINT, UPDATE_ENDPOINT
+from forecasting.errorhandling.exceptions import InvalidInput
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
@@ -28,10 +32,31 @@ def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:
         query = request.json["query"]
-        logger.info('recieved query - start to extract data')
+        logger.info('Received query, starting to extract data...')
     except Exception as ex:
         logger.error('No JSON "query" object could be identified.')
         return jsonify({'status': '500', 'msg': 'No JSON "query" object could be identified.'}), 500
+    
+    #
+    ### Retrieve KG and RDB connection parameters ###
+    #
+    # Retrieve parameters from HTTP request
+    http_conn_params = {}
+    http_conn_params['namespace'] = query.get('namespace')
+    http_conn_params['database'] = query.get('database')
+    http_conn_params['query_endpoint'] = query.get('query_endpoint')
+    http_conn_params['update_endpoint'] = query.get('update_endpoint')
+    http_conn_params['db_url'] = query.get('db_url')
+    http_conn_params['db_user'] = query.get('db_user')
+    http_conn_params['db_password'] = query.get('db_password')
+    
+    # Ensure that required connection parameters are provided, 
+    # either in HTTP request or by default values in docker-compose file 
+    conn_params = validate_connection_parameters(http_conn_params)
+
+    #
+    ### Retrieve forecast parameters ###
+    #
     # Retrieve data IRI to be updated
     try:
         iri = str(query['iri'])
@@ -84,21 +109,10 @@ def api_forecast():
 
         data_length = None
 
-    # Retrieve KG and RDB settings
-    endpoints = {}
-    endpoints['query_endpoint'] = query.get('query_endpoint')
-    endpoints['update_endpoint'] = query.get('update_endpoint')
-    endpoints['rdb_url'] = query.get('rdb_url')
-    endpoints['rdb_user'] = query.get('rdb_user')
-    endpoints['rdb_password'] = query.get('rdb_password')
-    # Remove None values
-    given_endpoints = {k: v for k, v in endpoints.items() if v is not None}
-
-
     try:
         # Forecast iri
         res = forecast(iri, horizon, forecast_start_date, use_model_configuration, data_length=data_length,
-                       **given_endpoints)
+                       **conn_params)
         res['status'] = '200'
         logger.info('forecasting successful')
         return jsonify(res)
@@ -107,3 +121,31 @@ def api_forecast():
         logger.error(traceback.format_exc())
         return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)}), 500
 
+
+def validate_connection_parameters(provided_http_parameters):
+    """
+        Verify that all required connection parameters have been provided,
+        either by defaults in environment variables or by HTTP request parameters
+    """
+    # Initialise connection parameters to use
+    conn_params = {}
+
+    # 1) Standalone deployment
+    if STACK_NAME == '':
+        relevant = ['query_endpoint', 'update_endpoint', 'db_url', 'db_user', 'db_password']
+        for r in relevant:
+            if provided_http_parameters[r] is not None:
+                conn_params[r] = str(provided_http_parameters[r])
+            else:
+                default = eval(r.upper())
+                if default == '':                    
+                    logger.error(f'No "{r}" value provided in HTTP request despite missing default value.')
+                    raise InvalidInput(f'No "{r}" value provided in HTTP request, despite missing default value.')
+                else:
+                    conn_params[r] = default
+
+    # 2) Stack deployment
+    else:
+        relevant = ['namespace', 'database']
+
+    return conn_params
