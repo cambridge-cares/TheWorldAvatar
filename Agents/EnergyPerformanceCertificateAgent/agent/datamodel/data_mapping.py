@@ -45,6 +45,7 @@ EPC_DATA = {
     'Bungalow': OBE_BUNGALOW,
     'Park home': OBE_PARKHOME,
     'Maisonette': OBE_MAISONETTE,
+    'Flat': OBE_FLAT,
     # Built forms
     'Detached': OBE_DETACHED,
     'Semi-Detached': OBE_SEMI_DETACHED,
@@ -84,9 +85,9 @@ EPC_DATA = {
     'England and Wales: before 1900': (None, '1900-12-31T23:59:59Z'),
 
     ### Non-domestic EPC data
-    # Property types (their descriptions in comments)
+    # Property types - mapped as OBE Property Usage
     'A1/A2 Retail and Financial/Professional services': OBE_RETAILESTABLISHMENT,                       
-    'A3/A4/A5 Restaurant and Cafes/Drinking Establishments and Hot Food takeaways': OBE_EATINGESTABLISHMENT, #and DRINKING ESTABLISHMENT? 
+    'A3/A4/A5 Restaurant and Cafes/Drinking Establishments and Hot Food takeaways': OBE_EATINGESTABLISHMENT, 
     'Airport terminals': OBE_TRANSPORTFACILITY,              
     'B1 Offices and Workshop businesses': OBE_OFFICE,        
     'B2 to B7 General Industrial and Special Industrial Groups': OBE_INDUSTRIALFACILITY, 
@@ -95,26 +96,27 @@ EPC_DATA = {
     'C1 Hotels': OBE_HOTEL,                                  
     'C2 Residential Institutions - Hospitals and Care Homes': OBE_HOSPITAL,
     'C2 Residential Institutions - Residential schools': OBE_SCHOOL,
-    'C2 Residential Institutions - Universities and colleges': OBE_UNIVERSITY,
+    'C2 Residential Institutions - Universities and colleges': OBE_UNIVERSITYFACILITY,
     'D1 Non-residential Institutions - Community/Day Centre': OBE_CULTURALFACILITY,
     'D1 Non-residential Institutions - Education': OBE_EDUCATION,
     'D1 Non-residential Institutions - Libraries Museums and Galleries': OBE_CULTURALFACILITY,
-    'D1 Non-residential Institutions - Primary Health Care Building': OBE_MEDICALCARE,
-    'D2 General Assembly and Leisure plus Night Clubs and Theatres': OBE_CULTURALFACILITY,
+    'D1 Non-residential Institutions - Primary Health Care Building': OBE_CLINIC,
+    'D2 General Assembly and Leisure plus Night Clubs and Theatres': OBE_DRINKINGESTABLISHMENT,
+    'D1 Non-residential Institutions - Crown and County Courts': OBE_CULTURALFACILITY,
     'Emergency services': OBE_EMERGENCYSERVICE,
-    'Further education universities': OBE_UNIVERSITY,
+    'Further education universities': OBE_UNIVERSITYFACILITY,
     'Hospital': OBE_HOSPITAL,
     'Hotel': OBE_HOTEL,
     'Industrial process building': OBE_INDUSTRIALFACILITY,
     'Libraries/museums/galleries': OBE_CULTURALFACILITY,
-    'Nursing residential homes and hostels': OBE_CLINIC,
+    'Nursing residential homes and hostels': OBE_MEDICALCARE,
     'Office': OBE_OFFICE,
-    'Others - Car Parks 24 hrs': OBE_TRANSPORTFACILITY,
+    'Others - Car Parks 24 hrs': OBE_NON_DOMESTIC,
     'Others - Emergency services': OBE_EMERGENCYSERVICE,
     'Others - Passenger terminals': OBE_TRANSPORTFACILITY,
     'Primary health care buildings': OBE_MEDICALCARE,
     'Primary school': OBE_SCHOOL,
-    'Restaurant/public house': OBE_EATINGESTABLISHMENT, #and DRINKING ESTABLISHMENT?
+    'Restaurant/public house': OBE_EATINGESTABLISHMENT,
     'Retail': OBE_RETAILESTABLISHMENT,                      
     'Retail warehouses': OBE_RETAILESTABLISHMENT,           
     'Secondary school': OBE_SCHOOL, 	                    
@@ -122,24 +124,29 @@ EPC_DATA = {
     'Sports centre/leisure centre': OBE_SPORTSFACILITY,
     'Sports ground arena': OBE_SPORTSFACILITY, 
     'Theatres/cinemas/music halls and auditoria': OBE_CULTURALFACILITY, 
-    
-    ## Following categories are currently unmapped for non-residential EPC
+    'C2A Secure Residential Institutions': OBE_DOMESTIC,
+    'Community/day centre': OBE_CULTURALFACILITY,
+ 	'Crown and county courts': OBE_NON_DOMESTIC,
+    'Dwelling': OBE_DOMESTIC,
+    'Launderette': OBE_NON_DOMESTIC,
+    'Miscellaneous 24hr activities': OBE_NON_DOMESTIC,
+    'Others - Miscellaneous 24hr activities': OBE_NON_DOMESTIC,
+    'Others -Telephone exchanges': OBE_NON_DOMESTIC,
+    'Others - Stand alone utility block': OBE_NON_DOMESTIC,
+    'Residential spaces': OBE_DOMESTIC,
+    'Prisons': OBE_NON_DOMESTIC,
+    'Telephone exchanges': OBE_NON_DOMESTIC,
+    'Workshops/maintenance depot': OBE_INDUSTRIALFACILITY,
+    'Warehouse and storage': OBE_INDUSTRIALFACILITY,
+    'Retail/Financial and Professional Services': OBE_RETAILESTABLISHMENT,
+    'Restaurants and Cafes/Drinking Establishments/Takeaways': OBE_EATINGESTABLISHMENT,
+    'Non-residential Institutions: Libraries, Museums, and Galleries': OBE_CULTURALFACILITY,
+    'General Industrial and Special Industrial Groups': OBE_INDUSTRIALFACILITY,
+    'Offices and Workshop Businesses': OBE_OFFICE,
+    'Hotels': OBE_HOTEL,
+    'General Assembly and Leisure, Night Clubs, and Theatres': OBE_DRINKINGESTABLISHMENT,
+    'Residential Institutions: Hospitals and Care Homes': OBE_HOSPITAL,
 
-    #'c2a-secure-res':  	C2A Secure Residential Institutions
-    #'community-day-centre' 	Community/day centre
-    # crown-county-court 	Crown and county courts
-    # d1-crown-county-court 	D1 Non-residential Institutions - Crown and County Courts
-    # dwelling 	Dwelling
-    # launderette 	Launderette
-    # 'miscellaneous-24': 	#Miscellaneous 24hr activities
-    # others-misc-24h 	Others - Miscellaneous 24hr activities
-    # 'others-telephone-exchange'	Others -Telephone exchanges
-    # others-utility-block 	Others - Stand alone utility block
-    # 'residential-space': Residential spaces
-    # 'prison' 	Prisons
-    # telephone-exchange 	Telephone exchanges
-    # workshop-maintenance-depot
-    # warehouse-storage 	Warehouse and storage
     
     ### Display EPC data 
     # Building category codes (explanation in comments)    
@@ -147,8 +154,8 @@ EPC_DATA = {
     'C2': OBE_OFFICE,                       # High Street Agency
     'C3': OBE_RETAILESTABLISHMENT,          # General Retail
     'C4': OBE_RETAILESTABLISHMENT,          # Large Non-Food Shop
-    'C5': OBE_EATINGESTABLISHMENT,          # Small Food Store
-    'C6': OBE_EATINGESTABLISHMENT,          # Large Food Store
+    'C5': OBE_RETAILESTABLISHMENT,          # Small Food Store
+    'C6': OBE_RETAILESTABLISHMENT,          # Large Food Store
     'H1': OBE_EATINGESTABLISHMENT,          # Restaurant
     'H2': OBE_DRINKINGESTABLISHMENT,        # Bar, Pub Or Licensed Club
     'H3': OBE_HOTEL,                        # Hotel
@@ -158,23 +165,43 @@ EPC_DATA = {
     'H7': OBE_SPORTSFACILITY,               # Fitness And Health Centre
     'H8': OBE_SPORTSFACILITY,               # Dry Sports And Leisure Facility
     'S1': OBE_TRANSPORTFACILITY,            # Covered Car Park
-    'S2': OBE_OFFICE,                       # Public Buildings With Light Usage
+    'S2': OBE_NON_DOMESTIC,                 # Public Buildings With Light Usage
     'S3': OBE_SCHOOL,                       # Schools And Seasonal Public Buildings
-    'S4': OBE_UNIVERSITY,                   # University Campus
+    'S4': OBE_UNIVERSITYFACILITY,           # University Campus
     'S5': OBE_CLINIC,                       # Clinic
     'S6': OBE_HOSPITAL,                     # Hospital - Clinical And Research
-    'S7': OBE_SINGLERESIDENTIAL,            # Long Term Residential
-    'S8': OBE_HOTEL,                        # General Accommodation
+    'S7': OBE_DOMESTIC,                     # Long Term Residential
+    'S8': OBE_DOMESTIC,                     # General Accommodation
     'S9': OBE_EMERGENCYSERVICE,             # Emergency Services
     'S10': OBE_MEDICALCARE,                 # Laboratory Or Operating Theatre
-    'W1': OBE_TRANSPORTFACILITY,            # Public waiting or circulation
+    'W1': OBE_NON_DOMESTIC,                 # Public waiting or circulation
     'W2': OBE_TRANSPORTFACILITY,            # Terminal
+    'W3': OBE_NON_DOMESTIC,                 # Workshop
+    'W4': OBE_NON_DOMESTIC,                 # Storage Facility
+    'W5': OBE_RETAILESTABLISHMENT           # Cold Storage
 
-    # Following categories unmapped for Display EPC API
-    # 'W3':                                   # Workshop
-    # 'W4':                                   # Storage Facility
-    # 'W5':                                   # Cold Storage
+}
 
+# Usage mapping for PostGIS
+USAGE_MAPPING = {
+    OBE_OFFICE: OBE_NON_DOMESTIC,
+    OBE_RETAILESTABLISHMENT: OBE_NON_DOMESTIC,
+    OBE_RELIGIOUSFACILITY: OBE_NON_DOMESTIC,
+    OBE_INDUSTRIALFACILITY: OBE_NON_DOMESTIC,
+    OBE_EATINGESTABLISHMENT: OBE_NON_DOMESTIC,
+    OBE_DRINKINGESTABLISHMENT: OBE_NON_DOMESTIC,
+    OBE_HOTEL: OBE_NON_DOMESTIC,
+    OBE_SPORTSFACILITY: OBE_NON_DOMESTIC,
+    OBE_CULTURALFACILITY: OBE_NON_DOMESTIC,
+    OBE_TRANSPORTFACILITY: OBE_NON_DOMESTIC,
+    OBE_FIRESTATION: OBE_EMERGENCYSERVICE,
+    OBE_POLICESTATION: OBE_EMERGENCYSERVICE,
+    OBE_HOSPITAL: OBE_MEDICALCARE,
+    OBE_CLINIC: OBE_MEDICALCARE,
+    OBE_SCHOOL: OBE_EDUCATION,
+    OBE_UNIVERSITYFACILITY: OBE_EDUCATION,
+    OBE_SINGLERESIDENTIAL: OBE_DOMESTIC,
+    OBE_MULTIRESIDENTIAL: OBE_DOMESTIC
 }
 
 # Mapping of units to OM units and symbols

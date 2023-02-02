@@ -90,9 +90,8 @@ def upload_ontology():
     """
         Uploads TBox and ABox from TWA to KG namespace
     """
-    # URLs to .owl files
+    # URL to .owl files
     tbox = TBOX_URL
-    abox = ABOX_URL
 
     # Create KGclient to upload .owl files
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
@@ -109,29 +108,28 @@ def upload_ontology():
         raise KGException("Unable to retrieve TBox version from KG.") from ex
 
     if not res:
-        # Upload TBox and ABox if not already instantiated
+        # Upload TBox if not already instantiated
         temp_fp = 'tmp.owl'
-        for i in [tbox, abox]:
+        try:
+            # Retrieve .owl file
+            logger.info(f'Retrieving TBox from TWA ...')
             try:
-                # Retrieve .owl file
-                logger.info(f'Retrieving {i.capitalize()} from TWA ...')
-                try:
-                    content = requests.get(i)
-                except Exception as ex:
-                    logger.error(f"Unable to retrieve {i.capitalize()} from TWA server.")
-                    raise KGException(f"Unable to retrieve {i.capitalize()} from TWA server.") from ex
-                logger.info(f'Writing temporary {i.capitalize()} .owl file ...')
-                with open(temp_fp, 'w') as f:
-                    f.write(content.text)
-                # Create Java file
-                temp_f = jpsBaseLib_view.java.io.File(temp_fp)
-                # Upload .owl file to KG
-                logger.info(f'Uploading {i.capitalize()} .owl file to KG ...')
-                kg_client.kg_client.uploadFile(temp_f)
-                os.remove(temp_fp)
+                content = requests.get(tbox)
             except Exception as ex:
-                logger.error("Unable to initialise knowledge base with TBox and ABox.")
-                raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
+                logger.error(f"Unable to retrieve TBox from GitHub.")
+                raise KGException(f"Unable to retrieve TBox from GitHub.") from ex
+            logger.info(f'Writing temporary TBox .owl file ...')
+            with open(temp_fp, 'w') as f:
+                f.write(content.text)
+            # Create Java file
+            temp_f = jpsBaseLib_view.java.io.File(temp_fp)
+            # Upload .owl file to KG
+            logger.info(f'Uploading TBox .owl file to KG ...')
+            kg_client.kg_client.uploadFile(temp_f)
+            os.remove(temp_fp)
+        except Exception as ex:
+            logger.error("Unable to initialise knowledge base with TBox.")
+            raise KGException("Unable to initialise knowledge base with TBox.") from ex
         
         # Upload GBP symbols to KG (not directly part of OntoBuiltEnv ontology TBox or ABox,
         # but required within KG for proper agent execution later on (i.e. derivation agents,
