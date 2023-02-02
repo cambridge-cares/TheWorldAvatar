@@ -58,7 +58,13 @@ A brief explanation of the initial steps for local deployment has been included 
 **TEST ENVIRONMENT**
 - Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the `<root>` directory:
 ```
-docker compose -f "./config/docker-compose.test.yml" up -d --build 
+docker compose -f "./docker/docker-compose.test.yml" up -d --build 
+```
+
+**DEBUGGER ENVIRONMENT**
+- Deploy the agent for debugging by running the following code in the CLI at the `<root>` directory. The debugger will be available at port 5678.
+```
+docker compose -f "./docker/docker-compose.debug.yml" up -d --build 
 ```
 
 **PRODUCTION ENVIRONMENT**
