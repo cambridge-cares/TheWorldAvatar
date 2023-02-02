@@ -20,11 +20,9 @@ Before building and deploying the Docker image, several key properties need to b
 ### **1) The environment variables used by the agent container**
 
 
-7) OCGML_ENDPOINT (SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs)
-
 ```bash
-API_AUTH              # Authentication token for EPC API
-ENCODED_AUTH          # Base64-encoded authentication token for EPC API
+ENCODED_AUTH          # Base64-encoded authentication token for EPC API, composed of your email address and api-key
+                      # Obtained from https://epc.opendatacommunities.org/docs/api/domestic#using_this_api
 STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)

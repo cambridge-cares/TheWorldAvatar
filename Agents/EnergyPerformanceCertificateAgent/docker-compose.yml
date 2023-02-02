@@ -5,14 +5,13 @@ services:
     image: ghcr.io/cambridge-cares/epc_agent:1.0.0-SNAPSHOT
     environment:
       - STACK_NAME=${STACK_NAME}
-      # Authentication token for EPC API
-      - API_AUTH=
-      # Base64-encoded authentication token for EPC API
+      # Base64-encoded authentication token for EPC API (identifier composed of your email address and api-key)
+      # Obtained from https://epc.opendatacommunities.org/docs/api/domestic when signed in 
       - ENCODED_AUTH=
       # Layer name in geoserver, also table name in PostGIS
       - LAYERNAME=buildings
       # Target Blazegraph namespace
-      - NAMESPACE=buildings
+      - NAMESPACE=
       # Specify PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres

@@ -16,7 +16,7 @@ logger = agentlogging.get_logger("prod")
 
 
 # Initialise global variables to be read from Docker compose file
-global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
        OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
 
@@ -26,17 +26,8 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+    global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
            OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
-
-    # Retrieve MetOffice API key
-    API_TOKEN = os.getenv('API_AUTH')    
-    if API_TOKEN is None:
-        logger.error('"API_AUTH" is missing in environment variables.')
-        raise ValueError('"API_AUTH" is missing in environment variables.')
-    if API_TOKEN == '':
-        logger.error('No "API_AUTH" value has been provided in environment variables.')
-        raise ValueError('No "API_AUTH" value has been provided in environment variables.')
 
     # Retrieve ONTOP mapping file
     OCGML_ENDPOINT = os.getenv('OCGML_ENDPOINT')
