@@ -879,14 +879,15 @@ df_temp = df_full[['LSOA_code', 'temp']]
 
 ######### Test for calling cop calculation agent #########
 # Read the temp data
-df_temp = retrieve_temp_from_KG()
+# df_temp = retrieve_temp_from_KG()
 
-# Convert df into tensor
-unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
+# # Convert df into tensor
+# unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
 
-# call calculation agent
+# # call calculation agent
+results_tensor = np.array([1,2,3])
 url = 'http://localhost:5003/api/lsoacalculationagent_cop/calculation/cop'
-cop = call_cop_agent(url, results_tensor, OM_DEGREE_C,300)
+cop = call_cop_agent(url, results_tensor, OM_DEGREE_C)
 
 print(cop)
 ##########################################################

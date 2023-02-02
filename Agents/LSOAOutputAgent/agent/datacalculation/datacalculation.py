@@ -44,15 +44,22 @@ def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_e
     
     if t_h:
         query['query']['t_h'] = t_h
+    else:
+        logger.info('Using default hot side temperature (318.15K) when calculating COP')
+
     if hp_efficiency:
         query['query']['hp_efficiency'] = hp_efficiency
+    else:
+        logger.info('Using default heat pump efficiency (0.35) when calculating COP')
 
+    logger.info('Sending data to calculationagent_cop...')
     headers = {'Content-type': 'application/json'}
     response = requests.get(url, headers=headers, json=query)
 
     data = response.json()
 
     cop = np.array(data['COP'])
+    logger.info('COP successfully calculated')
 
     return cop
 

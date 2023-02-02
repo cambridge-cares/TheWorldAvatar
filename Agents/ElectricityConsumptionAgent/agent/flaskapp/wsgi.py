@@ -15,13 +15,13 @@ from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from agent.flaskapp import create_app
-from agent.datainstantiation.readings import upload_all
+from agent.datainstantiation.readings import upload_all,read_from_web_elec
 
 
 # Initialise background scheduler and add recurring background task to 
 # assimilate latest time series data once per year
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(upload_all, trigger='cron', day='1', month='1', hour='0', minute='0', timezone=utc)
+sched.add_job(read_from_web_elec, trigger='cron', day='1', month='1', hour='0', minute='0', timezone=utc)
 sched.start()
 
 app = create_app()

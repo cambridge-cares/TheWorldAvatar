@@ -28,11 +28,6 @@ def create_app(test_config=None):
         app.register_blueprint(downloadtasks.downloadtasks_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
         
-        # # Data retrieval only kept as "backup" to create geojson files on demand
-        # # Regular visualisation now handled via Postgis/Geoserver
-        # import agent.flaskapp.outputtasks.routes as outputtasks
-        # app.register_blueprint(outputtasks.outputtasks_bp)
-
     # Create Blazegraph namespace if not exists (on app startup)
     #create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
 

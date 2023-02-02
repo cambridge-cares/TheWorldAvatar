@@ -23,7 +23,7 @@ def api_calculation_cop():
     # Check arguments (query parameters)
     #
     inputs = {'temperature':None,
-             'unit':None
+             'unit':None,
     }
 
         # Get received 'query' JSON object which holds all parameters
@@ -48,12 +48,12 @@ def api_calculation_cop():
         logger.error('Required unit could not be determined.')
         raise InvalidInput('Required unit could not be determined.') from ex
     
-    if query['t_h']:
+    if 't_h' in query.keys():
         t_h = float(query['t_h'])
     else:
-        t_h = 318.15
+        t_h = 318.15 
 
-    if query['hp_efficiency']:
+    if 'hp_efficiency' in query.keys():
         hp_efficiency = float(query['hp_efficiency'])
     else:
         hp_efficiency = 0.35
