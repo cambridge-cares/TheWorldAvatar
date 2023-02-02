@@ -60,7 +60,7 @@ To achieve these goals, fill out the template as follows.
 > **_NOTE:_**  A) Write class names using CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and BulkPhase. B) Provide the user facing name of the class under the Label column. Some examples are Reaction Mechanism, Phase and Bulk Phase. C) Define ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclose any description containing a comma provided under the Comment column within double quote. For example, see the comment of the ReactionMechansim class. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provide the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is provided.
 
 #### Object Properties
-Object properties can be represented just below TBox Data and Metadata rows. However, it is recommended that object properties should be provided after classes.
+Object properties can be represented just below [TBox Data and Metadata](####TBox-Data-and-Metadata) rows. However, it is recommended that object properties should be provided after classes.
 
 Assume that you want to:
 1. define the object properties exists in, contained in and has element with the following descriptions:
@@ -80,3 +80,22 @@ To achieve these goals, fill out the template as follows:
 |hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
 
 > **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
+
+#### Data Properties
+Data properties or Datatype properties can be represented just below [TBox Data and Metadata](####TBox-Data-and-Metadata) rows. However, it is recommended that data properties should be provided after classes. Data properties can be provided before or after object properties.
+
+Assume that you want to:
+1. define the data properties identifier, dimension and requires species validation.
+2. specify that the data type of identifier is String
+3. specify that the data type of dimension is Integer and it is applied to the instances of the Phase class
+4. specify that the data type of requires species validation is String and it is applied to the instances of the Reaction Mechanism class.
+
+To achieve these goals, fill out the template as follows:
+
+|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
+|---------------------------------------------------------------------------------------|
+|http://purl.org/dc/elements/1.1/identifier,Data Property,,,,String,,,http://purl.org/dc/elements, |
+|http://www.opengis.net/ont/geosparql#dimension,Data Property,,,Phase,Integer,,,http://www.opengis.net/ont/geosparql, |
+|requiresSpeciesValidation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+
+> **_NOTE:_**  A) Data property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, requiresSpeciesValidation.
