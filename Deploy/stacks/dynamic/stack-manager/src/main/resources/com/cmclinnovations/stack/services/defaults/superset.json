@@ -6,7 +6,8 @@
             "ContainerSpec": {
                 "Image": "apache/superset:latest",
                 "Env": [
-                    "APP_NAME=Dashboard"
+                    "APP_NAME=Dashboard",
+                    "PUBLIC_ROLE_LIKE=Gamma"
                 ],
                 "Secrets": [
                     {
