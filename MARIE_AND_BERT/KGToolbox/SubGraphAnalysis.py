@@ -24,31 +24,62 @@ class SubGraphAnalysis:
         self.unique_reactions = set()
         for _,_,obj in self.triples:
             self.unique_reactions.add(obj)
+        
+        self.filtered_triples=[]
+
+        for reaction in self.unique_reactions:
+            species = set()
+            reaction_triples = [(subject, predicate, obj) for subject, predicate, obj in self.triples if obj == reaction]
+            species = {subject for subject, _, _ in reaction_triples}
+            if(len(species)==len(reaction_triples)):
+                self.filtered_triples.extend(reaction_triples)
+        print(len(self.filtered_triples))
 
     def PFI_Calculation(self):
         PFI={}
-        for reaction in self.unique_reactions:
-            reaction_triples = [(subject, predicate, obj) for subject, predicate, obj in self.triples if obj == reaction]
+        unique_reactions = set()
+        for _,_,obj in self.filtered_triples:
+            unique_reactions.add(obj)
+
+        for reaction in unique_reactions:
+            # if (reaction=="ChemicalReaction_1749249908527558_12"):
+            #     k=1
+            reaction_triples = [(subject, predicate, obj) for subject, predicate, obj in self.filtered_triples if obj == reaction]
+            
             cnt=0
-            species_count=0
+            reaction_count=0
+            
+            species = set()
             for sub,_,_ in reaction_triples:
-                count=0
+                species.add(sub)
+            
+            for sub in species:
+                species_reaction_cnt=0
+                
                 for s, p, o in self.triples:
                     if s==sub:
-                        count+=1
-                if(count>1):
-                    species_count+=(count-1)
-                else:
-                    species_count+=0
+                        species_reaction_cnt+=1
+
+                reaction_count+=species_reaction_cnt
+
+                if(cnt==0):
+                    min=species_reaction_cnt
+                    worst_species=sub
+
+                if(species_reaction_cnt<min):
+                    min=species_reaction_cnt
+                    worst_species=sub
+
                 cnt+=1
-            PFI[reaction] = species_count/cnt
+
+            PFI[reaction] = (reaction_count/cnt, worst_species, min)
             # print(PFI)
 
-        # with open('PFI.csv', 'w', newline='') as file:
-        #     writer = csv.writer(file)
-        #     writer.writerow(['Key', 'Value'])
-        #     for key, value in PFI.items():
-        #         writer.writerow([key, value])
+        with open('C:/Users/MAGA01/CARES/PFI_2.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Key', 'Value'])
+            for key, value in PFI.items():
+                writer.writerow([key, value])
 
 if __name__ == "__main__":
     subgraph = SubGraphAnalysis()
