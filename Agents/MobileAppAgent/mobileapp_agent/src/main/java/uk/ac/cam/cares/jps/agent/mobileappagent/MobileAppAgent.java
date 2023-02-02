@@ -64,11 +64,8 @@ public class MobileAppAgent extends JPSAgent {
     public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, geom_location);
     public static List<String> magnetometerHeader = Arrays.asList(timestamp, magnetometer_x, magnetometer_y, magnetometer_z);
     public static List<String> microphoneHeader = Arrays.asList(timestamp, dbfs);
-//    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader);
-    public static List<List<String>> tableHeaderList= Arrays.asList(locationHeader);
-//    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone);
-    public static List<String> tableList = Arrays.asList( location);
-
+    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader);
+    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone);
     private static final String dbURL = "jdbc:postgresql://localhost:5432/develop";
     private static final String user = "postgres";
     private static final String password = "postgres";
@@ -78,11 +75,8 @@ public class MobileAppAgent extends JPSAgent {
     private JSONArray dataArray;
     private String Query;
     private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
-
     private static final Logger LOGGER = LogManager.getLogger(MobileAppAgent.class);
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
-
-    public static Point point = new Point();
 
 
     /**
@@ -116,7 +110,7 @@ public class MobileAppAgent extends JPSAgent {
                 {
                     String IRIQuery;
 
-                    IRIQuery = getDataIRIFromDBTable(i);
+                    IRIQuery = getQueryDataIRIFromDBTable(i);
                     JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
 
                     //Get the newest timeseries
@@ -156,7 +150,7 @@ public class MobileAppAgent extends JPSAgent {
             {
                 String IRIQuery;
 
-                IRIQuery = getDataIRIFromDBTable(i);
+                IRIQuery = getQueryDataIRIFromDBTable(i);
                 JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
 
                 //Get the newest timeseries
@@ -170,18 +164,15 @@ public class MobileAppAgent extends JPSAgent {
         }
     }
 
-    /**
-     *
+    /** Boolean operation that checks if timeseries exists by querying the DBTable, if DBTable returns 0 or catch exception, it does not exist
      * @param i
      * @return
      */
 
-
-
     private boolean checkIfTimeSeriesExists(int i){
         String IRIQuery;
         try {
-            IRIQuery = getDataIRIFromDBTable(i);
+            IRIQuery = getQueryDataIRIFromDBTable(i);
             JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
             if (dataIRIArray.length() == 0){
                 return false;
@@ -195,11 +186,9 @@ public class MobileAppAgent extends JPSAgent {
     }
 
 
-
-    /**
-     *
-     * @param i
-     * @param dataArray
+    /** Initiliaze timeseries if it does not exists,
+     * @param i table number
+     * @param dataArray that was previously queried
      */
     private void initTimeseriesIfNotExist(int i , JSONArray dataArray){
         //Create Timeseries
@@ -217,12 +206,11 @@ public class MobileAppAgent extends JPSAgent {
         }
     }
 
-
-    /**
+    /** Pass in tableNumber, dataArray and dataIRIList, parse dataArray into list of lists. Create timeseries <T> class.
      * @param tableNumber
      * @param dataArray
      * @param dataIRIList
-     * @return
+     * @return Timeseries
      */
     private TimeSeries parseDataToLists(int tableNumber, JSONArray dataArray, List<String> dataIRIList) {
         List<String> timesList = new ArrayList<>();
@@ -234,9 +222,6 @@ public class MobileAppAgent extends JPSAgent {
         for (int i = 1; i < tableHeader.size(); i++)  {
             lolvalues.add(new ArrayList<>());
         }
-
-
-
         Double value = null;
         Object obj = null;
         String timestamp;
@@ -259,17 +244,15 @@ public class MobileAppAgent extends JPSAgent {
                 }
                 lolvalues.get(column-1).addAll(valueList);
                 valueList.removeAll(valueList);
-
             }
-
         }
         //Pass time list, dataIRI List - just one, lolvalues, add timeseries to output
         return new TimeSeries(timesList, dataIRIList, lolvalues);
     }
 
-    /**
+    /** Pass in tableNumber, create dataIRI and assign random UUID.
      * @param tableNumber
-     * @return
+     * @return dataIRIList
      */
     private List<String> createTimeSeries(int tableNumber) {
         List tableHeader= tableHeaderList.get(tableNumber);
@@ -281,7 +264,6 @@ public class MobileAppAgent extends JPSAgent {
 
             dataIRIList.add(dataIRIName);
         }
-
 
         String timeUnit = OffsetDateTime.class.getSimpleName();
         List<Class> dataClass = new ArrayList<>();
@@ -306,7 +288,7 @@ public class MobileAppAgent extends JPSAgent {
         return dataIRIList;
     }
 
-    /**
+    /** Generate QueryString to query for dataArray subsequently 
      * @param i
      * @return
      */
@@ -323,12 +305,11 @@ public class MobileAppAgent extends JPSAgent {
         return query;
     }
 
-
-    /**
+    /** Generate query to retrieve dataIRI from DBTable
      * @param i
      * @return
      */
-    private static String getDataIRIFromDBTable(int i){
+    private static String getQueryDataIRIFromDBTable(int i){
         String query;
 
         query = "SELECT \"dataIRI\" FROM public.\"dbTable\" WHERE \"dataIRI\" LIKE ";
@@ -339,24 +320,23 @@ public class MobileAppAgent extends JPSAgent {
 
         return query;
     }
-    /**
+
+    /** Parse JSONArray into a List, in this case dataIRIList
      * @param jArray
      * @return
      */
-
     private static ArrayList<String> parseJSONArrayToList (JSONArray jArray){
         ArrayList<String> listdata = new ArrayList<String>();
         if (jArray != null) {
             for (int i=0;i<jArray.length();i++){
                 JSONObject row = jArray.getJSONObject(i);
-
                 listdata.add(row.get("dataIRI").toString());
             }
         }
         return listdata;
     }
 
-    /**
+    /** Pass in timeseries to update data
      * @param ts
      * @throws IllegalArgumentException
      */
@@ -398,9 +378,6 @@ public class MobileAppAgent extends JPSAgent {
 
     }
 
-
-
-
     /**
      * Prunes a times series so that all timestamps and corresponding values start after the threshold.
      * @param timeSeries The times series tp prune
@@ -440,7 +417,7 @@ public class MobileAppAgent extends JPSAgent {
         return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
     }
 
-    /**
+    /** Convert StringToOffsetDateTime
      * @param timestamp
      * @return
      */
@@ -457,9 +434,7 @@ public class MobileAppAgent extends JPSAgent {
                 .toFormatter();
         LocalDateTime localTime = LocalDateTime.parse(timestamp, formatter);
 
-
         // Then add the zone id
         return OffsetDateTime.of(localTime, MobileAppAgent.ZONE_OFFSET);
     }
-
 }
