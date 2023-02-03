@@ -1,14 +1,14 @@
 # TBox Generator
 
-TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the Web Ontology Language (OWL). TBox Generator requires to describe metadata of a TBox, e.g., IRI, version and comment.
+TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the [Web Ontology Language (OWL)](#https://www.w3.org/TR/owl-ref/). TBox Generator requires to describe metadata of a TBox, e.g., IRI, version and comment. You can use a text editor such as Notepad++ or any spreadsheet software such as Google Sheets or Microsoft Excel in filling out the CSV-file based template. This documentation shows how to fill out the template using a text editor.
 
 ## CSV file-based template
 ### Header Row
 
 The header row consists of the following attributes or columns:
 
-|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
-|---------------------------------------------------------------------------------------|
+|Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
+|----------------------------------------------------------------------------|
 1. Source: the ontological element that needs to be defined.
 2. Type: the type of the element provided in the Source column.
 3. Target: the element that is related to the element in the Source column.
@@ -21,17 +21,17 @@ The header row consists of the following attributes or columns:
 10. Label: a natural language label or name of the Source column element.
 
 ### Value Rows
-
+Values rows include TBox metadata, classes, object properties and data properties.
 #### TBox Metadata
 1. The value rows that MUST follow the header row in the template are the TBox IRI, version, comment and import rows.
 2. Assume that you want to develop a TBox called OntoKin with the IRI http://www.theworldavatar.com/ontology/ontokin, version number 1 and the comment "OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms" and by importing the OntoCAPE TBox that has the IRI http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl, then fill out the template as follows.
 
-|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
-|---------------------------------------------------------------------------------------|
-|OntoKin, TBox, http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , ,                                                                                         |
-|OntoKin, TBox, 1, http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
-|OntoKin, TBox, OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms, http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
-|OntoKin, TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl, http://www.w3.org/2002/07/owl#imports, , , , , , |
+|Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
+|----------------------------------------------------------------------------|
+|OntoKin, TBox, http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
+|OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
+|OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms,http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
+|OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl,http://www.w3.org/2002/07/owl#imports, , , , , , |
 
 > **_NOTE:_** To skip the import of a TBox, do not provide any IRI in the corresponding position. To import multiple TBoxes, provide IRIs separated by comma and enclose the IRIs within double quotes.
 
@@ -56,17 +56,27 @@ To achieve these goals, fill out the template as follows.
 
 |Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
 |---------------------------------------------------------------------------------------|
-|ReactionMechanism, Class, , , , , , "A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.", http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism|
-|Phase, Class, , , , , , A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase|
-|GasPhase,Class,Phase,IS-A,,,,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Gas Phase|
-|SitePhase,Class,Phase,IS-A,,,,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Site Phase|
-|BulkPhase, Class, Phase, IS-A, , , , A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Bulk Phase|
-|Species,Class,,,,,,"An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Species|
-|Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Element|
-|Material,Class,,,,,,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Material|
-|RateCoefficient, Class, http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient, EQUIVALENT-TO, , , , The coefficients used to evaluate the reaction rate expression., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Rate Coefficient |
+|ReactionMechanism,Class, , , , , ,A reaction mechanism refers to a set of elementary reactions., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism|
+|Phase,Class, , , , , ,A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase|
+|GasPhase,Class,Phase,IS-A, , , ,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Gas Phase|
+|SitePhase,Class,Phase,IS-A, , , ,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Site Phase|
+|BulkPhase,Class,Phase,IS-A, , , ,A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Bulk Phase|
+|Species,Class, , , , , ,An ensemble of chemically identical molecular entities (McNaught & Wilkinson - 1997).,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Species|
+|Element,Class, , , , , ,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Element|
+|Material,Class, , , , , ,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Material|
+|RateCoefficient,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient,EQUIVALENT-TO, , , ,The coefficients used to evaluate the reaction rate expression.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Rate Coefficient |
 
-> **_NOTE:_**  A) Class names have CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and GasPhase. B) User facing names of classes are provided under the Label column. Some examples are Reaction Mechanism, Phase and Gas Phase. C) Defined ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclosed any description containing a comma within double quotes. For example, see the descriptions of the ReactionMechansim and Species classes under the Comment column. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provided the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is used.
+> **_NOTE:_**  A) Class names have CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and GasPhase. B) User facing names of classes are provided under the Label column. Some examples are Reaction Mechanism, Phase and Gas Phase. C) Defined ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Any description containing a comma should be enclosed within double quotes. E) Provided the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is used.
+
+##### Class-class relationships
+The [OWL](#https://www.w3.org/TR/owl-ref/) language supported constructs rdfs:subClassOf and owl:equivalentClass are used for representing subclass of and equivalent class relationships, respectively. The mapping between these relationships and the TBox Generator acceptable relationships is shown below:
+
+|  OWL relationship                      | TBox Generator acceptable relationship |
+| ---------------------------------------| -------------------------------------- |
+| rdfs:subClassOf                        | IS-A                                   |
+| owl:equivalentClass                    | EQUIVALENT-TO                          |
+
+> **_NOTE:_** Currently, owl:disjointWith that expresses the disjoint relationship between classes is not supported.
 
 #### Object Properties
 Object properties can be represented just below TBox Metadata rows. However, it is recommended that object properties should be provided after classes.
@@ -82,16 +92,16 @@ Assume that you want to:
 
 To achieve these goals, fill out the template as follows:
 
-|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
-|---------------------------------------------------------------------------------------|
-|existsIn,Object Property,,,SitePhase UNION BulkPhase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
-|containedIn,Object Property,,,GasPhase UNION Material,ReactionMechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, contained in|
-|hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, has element|
+|Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
+|----------------------------------------------------------------------------|
+|existsIn,Object Property, , ,SitePhase UNION BulkPhase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
+|containedIn,Object Property, , ,GasPhase UNION Material,ReactionMechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,contained in|
+|hasElement,Object Property, , ,Species,Element, ,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,has element|
 
 > **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) To specify the fact that a Site Phase or Bulk Phase exists only in a Material, SitePhase UNION BulkPhase is represented under the Domain column, Material is represented under the Range column and only is provided under the Quantifier column . C) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
 
 #### Data Properties
-Data properties or Datatype properties can be represented just below TBox Metadata rows. However, it is recommended that data properties are provided after classes. Data properties can be provided above or below object properties.
+Data properties or datatype properties can be represented just below TBox Metadata rows. However, it is recommended that data properties are provided after classes. Data properties can be provided above or below object properties.
 
 Assume that you want to:
 1. define the data properties identifier, dimension and requires species validation.
@@ -101,11 +111,11 @@ Assume that you want to:
 
 To achieve these goals, fill out the template as follows:
 
-|Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
-|---------------------------------------------------------------------------------------|
-|http://purl.org/dc/elements/1.1/identifier,Data Property,,,,String,,,http://purl.org/dc/elements, |
-|http://www.opengis.net/ont/geosparql#dimension,Data Property,,,Phase,Integer,,,http://www.opengis.net/ont/geosparql, |
-|requiresSpeciesValidation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+|Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
+|----------------------------------------------------------------------------|
+|http://purl.org/dc/elements/1.1/identifier,Data Property, , , ,String, , ,http://purl.org/dc/elements, |
+|http://www.opengis.net/ont/geosparql#dimension,Data Property, , ,Phase,Integer, , ,http://www.opengis.net/ont/geosparql, |
+|requiresSpeciesValidation,Data Property, , ,Reaction Mechanism,String, , ,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
 
 > **_NOTE:_**  A) Data property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, requiresSpeciesValidation. B) Complete URLs are provided for the properties reused from external ontologies. For example, the URLs http://purl.org/dc/elements/1.1/identifier and http://www.opengis.net/ont/geosparql#dimension are used in the definitions of identifier and dimension, respoectively.
 
@@ -148,3 +158,28 @@ TBox Generator supports all [OWL2 data types](#http://owlcs.github.io/owlapi/api
 | XSD_UNSIGNED_INT    | unsigned int                        |
 | XSD_UNSIGNED_LONG   | unsigned long                       |
 | XSD_UNSIGNED_SHORT  | unsigned short                      |
+
+## Filled out CSV file-based template
+If you have followed the instructions provided for filling out the template in the TBox Metadata, Classes, Object Properties and Data Properties sections, your CSV file will have exactly the following information.
+
+|Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
+|----------------------------------------------------------------------------|
+|OntoKin, TBox, http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
+|OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
+|OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms,http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
+|OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl,http://www.w3.org/2002/07/owl#imports, , , , , , |
+|ReactionMechanism,Class, , , , , ,A reaction mechanism refers to a set of elementary reactions., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism|
+|Phase,Class, , , , , ,A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase|
+|GasPhase,Class,Phase,IS-A, , , ,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Gas Phase|
+|SitePhase,Class,Phase,IS-A, , , ,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Site Phase|
+|BulkPhase,Class,Phase,IS-A, , , ,A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Bulk Phase|
+|Species,Class, , , , , ,An ensemble of chemically identical molecular entities (McNaught & Wilkinson - 1997).,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Species|
+|Element,Class, , , , , ,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Element|
+|Material,Class, , , , , ,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Material|
+|RateCoefficient,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient,EQUIVALENT-TO, , , ,The coefficients used to evaluate the reaction rate expression.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,Rate Coefficient |
+|existsIn,Object Property, , ,SitePhase UNION BulkPhase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
+|containedIn,Object Property, , ,GasPhase UNION Material,ReactionMechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,contained in|
+|hasElement,Object Property, , ,Species,Element, ,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,has element|
+|http://purl.org/dc/elements/1.1/identifier,Data Property, , , ,String, , ,http://purl.org/dc/elements, |
+|http://www.opengis.net/ont/geosparql#dimension,Data Property, , ,Phase,Integer, , ,http://www.opengis.net/ont/geosparql, |
+|requiresSpeciesValidation,Data Property, , ,Reaction Mechanism,String, , ,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
