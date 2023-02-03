@@ -199,6 +199,5 @@ jpsBaseLibGW.launchGateway()
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.converter.*")
 tbox_generation = jpsBaseLib_view.TBoxGeneration()
-# NOTE replace './ontosomething.csv' with the desired ontology
 tbox_generation.generateTBox('./<FILE_NAME>.csv')
 ```
