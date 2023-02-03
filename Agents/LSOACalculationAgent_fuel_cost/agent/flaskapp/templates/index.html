@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+<body><b>Functionality: <br></b>
+
+    The <b>lsoacalculationagent_fuel_cost</b> offers the following function via the specified API endpoints:<br><br>Request
+    to calculate the fuel cost, generate dataframe of total cost, gas cost and electricity cost in JSON format, based on given annual consumption of gas & electricity (GET request):<br>(request expects all
+    individual query parameter to be provided in a single nested JSON object with key 'query', see details
+    below):<br>&nbsp;&nbsp; <a href="/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost">
+        /api/lsoacalculationagent_fuel_cost/calculation/fuel_cost </a> <br><br>
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <p>
+        <div style="text-align:center;">
+          <table style="display: inline-block;">
+            <tr>
+                <td rowspan="1" style="text-align: center; padding: 0px 8px;">
+                    Fuel Cost &nbsp;= <u>Electricity Consumption &times; Electricity Price</u> + <u>Gas Consumption &times; Gas Price</u>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="" style="text-align: center; padding: 0px 8px;">
+                Electricity cost &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gas cost
+                </td>
+            </tr>
+          </table>
+        </div>
+      </p>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example query:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'query':{'df_electricity': df_electricity ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'df_gas': df_gas<br></code>
+                <div style="text-indent: 120px;">
+                    <code>                 'year': '2020'<br></code>
+                <div style="text-indent: 48px;">
+                    <code>                 <em>(optional)</em>'annual': False<br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>df_electricity:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
+                                    respectively, the annual electricity consumption data should be placed at the second column (i.e. at position [1])
+                                        <div style="text-indent: 25px;"> </div>
+                                </li><br>
+                                <li><b>df_gas:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
+                                    respectively, the annual gas consumption data should be placed at the second column (i.e. at position [1])<br>
+                                    <div style="text-indent: 0px;"><em><b>NOTE:</b> if df_electricity, df_gas are both provided, the output will return total cost, electricity cost and gas Cost
+                                        if only one of them are provided, the output will only return the respective cost.
+                                    </em></div>
+                                        <div style="text-indent: 25px;"> </div><br>
+                                                <li><b>year:</b> 'year' will be used to parse index from the web.
+                                                    Including the fuel prices, monthly consumptions, which will be used to calculate fuel cost and monthly disaggregation<br>
+                                                    <div style="text-indent: 0px;"><em><b>NOTE:</b> the source files will be downloaded into <code>./downloads</code> folder.
+                                                    </em></div><br>
+                                                    <li><b>annual:</b> If provided as True, the second column will include the annual value (with monthly data)
+                                                        if not provided, or False, only monthly value will be returned <br>
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {'df_cost_total': df_cost_total, <br>
+                                                            <div style="text-indent: 120px;">'df_cost_elec': df_cost_elec, <br></div>
+                                                            <div style="text-indent: 120px;">'df_cost_gas': df_cost_gas <br></div>
+                                                        </code>
+                                                        <div style="text-indent: 120px;">
+                                                            <div style="text-indent: 100px;"><code>       }</code><br>
+                                                            </div>
+                                                            <div style="text-indent: 0px;"><em><b>NOTE:</b> Return dataframe which have first column as LSOA code, and the annual cost (if 'annual' = True when inputting data), and the following 12
+                                                                columns for each month's data
+                                                            </em></div><br>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
