@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ImpExpOptions {
 
     public enum Subcommand {
-        IMPORT("import"),
+        IMPORT("import", "--import-mode=delete"),
         EXPORT("export"),
         VIS_EXPORT("export-vis"),
         DELETE("delete"),
@@ -19,14 +19,22 @@ public class ImpExpOptions {
 
         private final String string;
 
-        private Subcommand(String string) {
+        private final List<String> defaultArgs;
+
+        private Subcommand(String string, String... defaultArgs) {
             this.string = string;
+            this.defaultArgs = List.of(defaultArgs);
         }
 
         @Override
         public String toString() {
             return string;
         }
+
+        public List<String> getDefaultArgs() {
+            return defaultArgs;
+        }
+
     }
 
     private Subcommand subcommand;
@@ -42,6 +50,7 @@ public class ImpExpOptions {
         List<String> allArgs = new ArrayList<>();
         allArgs.add("impexp");
         allArgs.add(subcommand.toString());
+        allArgs.addAll(subcommand.getDefaultArgs());
 
         options.forEach((option, values) -> {
             allArgs.add(option);
