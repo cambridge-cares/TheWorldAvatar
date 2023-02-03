@@ -307,3 +307,4 @@ def read_from_web_carbon_index(var: str, year:str):
     please check the {file_name} located on the file in ./downloads folder, see if the desire sheet (and sheet name) exist") from ex
   
   return index
+

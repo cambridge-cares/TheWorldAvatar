@@ -1,7 +1,7 @@
 # The purpose of this module is to print available HTTP requests (i.e. routes)
 # at the application root
 
-from flask import Blueprint, render_template
+from flask import Blueprint
 
 
 # Blueprint Configuration
@@ -12,4 +12,7 @@ home_bp = Blueprint(
 # Show an instructional message at the app root
 @home_bp.route('/', methods=['GET'])
 def default():
-    return render_template('index.html')
+    with open("./agent/flaskapp/templates/index.html", "r") as file:
+        msg = file.read()
+    
+    return msg

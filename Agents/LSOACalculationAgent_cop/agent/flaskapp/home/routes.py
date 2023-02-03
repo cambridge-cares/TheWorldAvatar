@@ -12,4 +12,9 @@ home_bp = Blueprint(
 # Show an instructional message at the app root
 @home_bp.route('/', methods=['GET'])
 def default():
+    # --------- Try this code if the render_template can't find index.html file ------- #
+    # with open("./agent/flaskapp/templates/index.html", "r") as file:
+    #     msg = file.read()
+    
+    # return msg
     return render_template('index.html')

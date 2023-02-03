@@ -55,13 +55,45 @@
                                 </li><br>
                                 <li><b>df_gas:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
                                     respectively, the annual gas consumption data should be placed at the second column (i.e. at position [1])<br>
-                                    <div style="text-indent: 0px;"><em><b>NOTE:</b> if df_electricity, df_gas are both provided, the output will return total cost, electricity cost and gas Cost
-                                        if only one of them are provided, the output will only return the respective cost.
+                                    <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> if df_electricity, df_gas are both provided, the output will return total cost, electricity cost and gas cost
+                                        .If only one of them are provided, the output will only return the respective cost.
+                                        <div style="text-indent: 70px;">column names don't matters as long as the position is correct</div>
                                     </em></div>
+                                    <div style="text-indent: 25px; font-size: smaller;"><b>Example input df_electricity/df_gas:</b></div>
+                                    <table style="margin-left: 50px; font-size: smaller;">
+                                        <thead>
+                                          <tr style="text-align: right;">
+                                            <th></th>
+                                            <th>LSOA_code</th>
+                                            <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                            <th>Electricity consumption</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr>
+                                            <td>0&nbsp;&nbsp;</td>
+                                            <td>E01011954</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                          <tr>
+                                            <td>1</td>
+                                            <td>E01011969</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                          <tr>
+                                            <td>2</td>
+                                            <td>E01011970</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                        </tbody>
+                                    </table>
                                         <div style="text-indent: 25px;"> </div><br>
                                                 <li><b>year:</b> 'year' will be used to parse index from the web.
                                                     Including the fuel prices, monthly consumptions, which will be used to calculate fuel cost and monthly disaggregation<br>
-                                                    <div style="text-indent: 0px;"><em><b>NOTE:</b> the source files will be downloaded into <code>./downloads</code> folder.
+                                                    <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> the source files will be downloaded into <code>./downloads</code> folder.
                                                     </em></div><br>
                                                     <li><b>annual:</b> If provided as True, the second column will include the annual value (with monthly data)
                                                         if not provided, or False, only monthly value will be returned <br>
@@ -75,9 +107,58 @@
                                                         <div style="text-indent: 120px;">
                                                             <div style="text-indent: 100px;"><code>       }</code><br>
                                                             </div>
-                                                            <div style="text-indent: 0px;"><em><b>NOTE:</b> Return dataframe which have first column as LSOA code, and the annual cost (if 'annual' = True when inputting data), and the following 12
-                                                                columns for each month's data
-                                                            </em></div><br>
+                                                            <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> Return dataframe which have first column as LSOA code, and the annual cost (if 'annual' = True when inputting data), and the following 12
+                                                                columns for each month's data</em><br></div>
+                                                                <div style="text-indent: 25px; font-size: smaller;"><b>Example output df_cost:</b></div>
+                                                                <table style="margin-left: 50px; font-size: smaller;">
+                                                                    <thead>
+                                                                      <tr style="text-align: right;">
+                                                                        <th></th>
+                                                                        <th>LSOA_code</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                        <th>Annual Cost</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                        <th>January</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                        <th>Febuary</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                        <th>...</th>
+                                                                      </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                      <tr>
+                                                                        <td>0&nbsp;&nbsp;</td>
+                                                                        <td>E01011954</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>1000</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                      </tr>
+                                                                      <tr>
+                                                                        <td>1</td>
+                                                                        <td>E01011969</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>1000</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                      </tr>
+                                                                      <tr>
+                                                                        <td>2</td>
+                                                                        <td>E01011970</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>1000</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>100</td>
+                                                                      </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            <br>
                                                         </div>
                                                     </div>
                                 </li>

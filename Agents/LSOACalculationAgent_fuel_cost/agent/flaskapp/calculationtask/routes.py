@@ -37,12 +37,12 @@ def api_calculation_cop():
 
         # Get df_electricity
     if 'df_electricity' in query.keys():
-        inputs['df_electricity'] = pd.read_json(query['df_electricity'], orient='list')
+        inputs['df_electricity'] = pd.DataFrame.from_dict(query['df_electricity'])
         logger.info('Electricity consumption data recieved, only cost of electricity will be returned...')
 
         # Get df_gas
     if 'df_gas' in query.keys():
-        inputs['df_gas'] = pd.read_json(query['df_gas'], orient='list')
+        inputs['df_gas'] = pd.DataFrame.from_dict(query['df_gas'])
         logger.info('Gas consumption data recieved, only cost of electricity will be returned...')
     
         # Make sure at least one consumption is given otherwise you are kidding me
@@ -65,10 +65,12 @@ def api_calculation_cop():
         logger.info('No Annual data will be returned as per specified in query')
 
 
+    print(inputs)
     try: 
         if 'df_gas' in query.keys() and 'df_electricity' in query.keys():
             df_cost_total, df_cost_elec, df_cost_gas = calculating_fuel_cost(inputs['df_electricity'],inputs['df_gas'], \
                                                                             inputs['year'], inputs['annual'] )
+            
             output = {'df_cost_total': df_cost_total.to_dict(orient='list'),
                     'df_cost_elec': df_cost_elec.to_dict(orient='list'),
                     'df_cost_gas': df_cost_gas.to_dict(orient='list'),

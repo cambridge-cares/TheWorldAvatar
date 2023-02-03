@@ -53,13 +53,74 @@ def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_e
         logger.info('Using default heat pump efficiency (0.35) when calculating COP')
 
     logger.info('Sending data to calculationagent_cop...')
-    headers = {'Content-type': 'application/json'}
-    response = requests.get(url, headers=headers, json=query)
+    
+    try:
+        headers = {'Content-type': 'application/json'}
+        response = requests.get(url, headers=headers, json=query)
 
-    data = response.json()
+    except Exception as ex:
+        logger.error(f'Fail to connect to calculation agent (cop) -- Response code {response.status_code}')
+        raise ConnectionError(f'Fail to connect to calculation agent (cop) -- Response code {response.status_code}') from ex
+
+    try:
+        data = response.json()
+
+    except Exception as ex:
+        logger.error(f'No valid JSON context from response -- Response code {response.status_code}')
+        raise InvalidInput(f'No valid JSON context from response -- Response code {response.status_code}') from ex
 
     cop = np.array(data['COP'])
     logger.info('COP successfully calculated')
 
     return cop
 
+def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, year: str = YEAR, annual: bool = None):
+    '''
+    To calculate the fuel cost per LSOA, normally on per household basis
+    Returns three dataframe which have first column as LSOA code, and the following 12
+    columns for each month of df_cost_total, df_cost_elec, df_cost_gas
+    Arguments:
+    df_elec: two-column data frame which MUST have the electricity data placed at the second column
+    (i.e. at position [1])
+    df_gas: two-column data frame which MUST have the gas data placed at the second column
+    (i.e. at position [1])
+    year: choose the year for index: prices of gas & elec, monthly distribution references of gas & elec
+    annual: if True, the second column will include the annual value (with monthly data)
+            if False, only monthly value will be returned
+    '''
+    # Make a copy so it won't ruin the original df
+    df_elec = copy.deepcopy(df_elec_in)
+    df_gas = copy.deepcopy(df_gas_in)
+
+    # Wrapping the query
+    query = {
+        'query':{'df_electricity':df_elec.to_dict(orient='list'),
+                'df_gas':df_gas.to_dict(orient='list'),
+                'year':year
+                }
+        }
+    if annual:
+        query['query']['annual'] = str(annual)
+
+        logger.info('Sending data to calculationagent_cop...')
+    
+    try:
+        headers = {'Content-type': 'application/json'}
+        response = requests.get(url, headers=headers, json=query)
+
+    except Exception as ex:
+        logger.error(f'Fail to connect to calculation agent (cop) -- Response code {response.status_code}')
+        raise ConnectionError(f'Fail to connect to calculation agent (cop) -- Response code {response.status_code}') from ex
+
+    try:
+        data = response.json()
+
+    except Exception as ex:
+        logger.error(f'No valid JSON context from response -- Response code {response.status_code}')
+        raise InvalidInput(f'No valid JSON context from response -- Response code {response.status_code}') from ex
+    
+    df_cost_total = pd.DataFrame.from_dict(data['df_cost_total'])
+    df_cost_elec = pd.DataFrame.from_dict(data['df_cost_elec'])
+    df_cost_gas = pd.DataFrame.from_dict(data['df_cost_gas'])
+    
+    return df_cost_total, df_cost_elec, df_cost_gas

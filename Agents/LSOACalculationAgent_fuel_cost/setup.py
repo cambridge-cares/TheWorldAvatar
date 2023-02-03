@@ -7,6 +7,7 @@ setup(name='myproject', version='1.0',
         'bs4==0.0.1'
         'docopt==0.6.2',
         'Flask==2.2.2',
+        'openpyxl==3.0.10',
         'pandas==1.3.5',
         'JayDeBeApi==1.2.3',
         'py4jps==1.0.27', 

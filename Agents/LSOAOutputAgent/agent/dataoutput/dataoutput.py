@@ -878,18 +878,33 @@ df_temp = df_full[['LSOA_code', 'temp']]
 '''
 
 ######### Test for calling cop calculation agent #########
+# Test for COP agent ---------------------------------------------
+'''
 # Read the temp data
-# df_temp = retrieve_temp_from_KG()
+df_temp = retrieve_temp_from_KG()
 
-# # Convert df into tensor
-# unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
+# Convert df into tensor
+unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
 
-# # call calculation agent
-results_tensor = np.array([1,2,3])
+# call calculation agent
 url = 'http://localhost:5003/api/lsoacalculationagent_cop/calculation/cop'
 cop = call_cop_agent(url, results_tensor, OM_DEGREE_C)
 
 print(cop)
+'''
+# ----------------------------------------------------------------
+
+# Test for fuel cost agent----------------------------------------
+
+# Retrieve consumption data from KG
+df_elec = retrieve_elec_data_from_KG()
+df_gas = retrieve_gas_data_from_KG()
+
+# Call the Calculation agent
+url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'
+df_cost,df_ele, df_gas = call_fuel_cost_agent(url,df_elec,df_gas,'2020',annual=True)
+print(df_cost)
+# ----------------------------------------------------------------
 ##########################################################
 
 
