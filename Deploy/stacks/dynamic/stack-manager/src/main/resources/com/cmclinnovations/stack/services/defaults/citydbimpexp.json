@@ -4,7 +4,7 @@
         "Name": "citydbimpexp",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "3dcitydb/impexp",
+                "Image": "3dcitydb/impexp:latest",
                 "Command": [
                     "tail",
                     "-f",
