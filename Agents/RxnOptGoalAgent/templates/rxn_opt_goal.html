@@ -1,0 +1,172 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>RxnOptGoalAgent</title>
+        <script>
+            {% if goal_spec_from_flask is defined and goal_spec_from_flask %}
+            var goal_spec = {{ goal_spec_from_flask | tojson }};
+            {% endif %}
+            window.onload = function() {
+                var first_goal_clz_sel = document.getElementById("first_goal_clz");
+                var first_goal_unit_sel = document.getElementById("first_goal_unit");
+                var second_goal_clz_sel = document.getElementById("second_goal_clz");
+                var second_goal_unit_sel = document.getElementById("second_goal_unit");
+                for (var x in goal_spec) {
+                    first_goal_clz_sel.options[first_goal_clz_sel.options.length] = new Option(goal_spec[x].display, goal_spec[x].iri);
+                }
+                first_goal_clz_sel.onchange = function() {
+                    //empty first_goal_unit, second_goal_clz and second_goal_unit dropdowns
+                    first_goal_unit_sel.length = 1;
+                    second_goal_clz_sel.length = 1;
+                    second_goal_unit_sel.length = 1;
+                    //display correct values for the first_goal_unit dropdown
+                    var u = goal_spec[this.value].units;
+                    for (var i = 0; i < u.length; i++) {
+                        first_goal_unit_sel.options[first_goal_unit_sel.options.length] = new Option(u[i].display, u[i].iri);
+                    }
+                    //display correct values for the second_goal_clz dropdown
+                    var sec_goal_excl = goal_spec[this.value].iri;
+                    for (var x in goal_spec) {
+                        if (goal_spec[x].iri != sec_goal_excl) {
+                            second_goal_clz_sel.options[second_goal_clz_sel.options.length] = new Option(goal_spec[x].display, goal_spec[x].iri);
+                        }
+                    }
+                }
+                second_goal_clz_sel.onchange = function() {
+                    //empty second_goal_unit_sel dropdown
+                    second_goal_unit_sel.length = 1;
+                    //display correct values for the second_goal_unit dropdown
+                    var u = goal_spec[this.value].units;
+                    for (var i = 0; i < u.length; i++) {
+                        second_goal_unit_sel.options[second_goal_unit_sel.options.length] = new Option(u[i].display, u[i].iri);
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <h1>RxnOptGoalAgent</h1>
+        <form action="/goal_specification" method="post">
+            <!-- chemical reaction -->
+            <fieldset class="chem-rxn">
+                <legend>Chemical Reaction</legend>
+                <span class="chem-rxn">Please specify the chemical reaction:</span><br><br>
+
+                <!-- chemical reaction iri -->
+                <select name="chem_rxn" id="chem_rxn" class="Input">
+                    <option value="" disabled selected>Please select chemical reaction IRI</option>
+                    {% for o in chem_rxn_iri %}
+                    <option value="{{ o.iri }}">{{ o.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- first goal -->
+            <fieldset class="first-goal">
+                <legend>First Goal</legend>
+                <span class="first-goal">Please specify the first Goal:</span><br><br>
+
+                <!-- rdf:type of the goal target quantity -->
+                <select name="first_goal_clz" id="first_goal_clz" class="Input">
+                    <option value="" disabled selected="selected">Please select first goal</option>
+                </select>
+
+                <!-- type of desire for the goal target quantity -->
+                <select name="first_goal_desires" id="first_goal_desires" class="Input">
+                    <option value="" disabled selected>Select desires</option>
+                    {% for o in desires_type %}
+                    <option value="{{ o.iri }}">{{ o.display }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- numerical value of the goal target quantity -->
+                <input type="text" placeholder="Type in numerical value" name="first_goal_num_val">
+
+                <!-- unit of the goal target quantity -->
+                <select name="first_goal_unit" id="first_goal_unit" class="Input">
+                    <option value="" disabled selected>Please select first goal rdf:type first</option>
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- second goal -->
+            <fieldset class="second-goal">
+                <legend>Second Goal</legend>
+                <span class="second-goal">Please specify the second Goal:</span><br><br>
+
+                <!-- rdf:type of the goal target quantity -->
+                <select name="second_goal_clz" id="second_goal_clz" class="Input">
+                    <option value="" disabled selected="selected">Please select first goal first</option>
+                </select>
+
+                <!-- type of desire for the goal target quantity -->
+                <select name="second_goal_desires" id="second_goal_desires" class="Input">
+                    <option value="" disabled selected>Select desires</option>
+                    {% for o in desires_type %}
+                    <option value="{{ o.iri }}">{{ o.display }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- numerical value of the goal target quantity -->
+                <input type="text" placeholder="Type in numerical value" name="second_goal_num_val">
+
+                <!-- unit of the goal target quantity -->
+                <select name="second_goal_unit" id="second_goal_unit" class="Input">
+                    <option value="" disabled selected>Please select second goal rdf:type first</option>
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- rxn opt goal plan -->
+            <fieldset class="rxn-opt-goal-plan">
+                <legend>Reaction Optimisation Goal Plan</legend>
+                <span class="rxn-opt-goal-plan">Please select the rxn opt plan:</span><br><br>
+
+                <!-- rxn opt plan -->
+                <select name="rxn_opt_goal_plan" id="rxn_opt_goal_plan" class="Input">
+                    <option value="" disabled selected>Please select rxn opt goal plan</option>
+                    {% for p in rxn_opt_goal_plan %}
+                    <option value="{{ p.iri }}">{{ p.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- restrictions -->
+            <fieldset class="restrictions">
+                <legend>Restrictions</legend>
+                <span class="restrictions">Please input the restrictions:</span><br><br>
+                <!-- cycleAllowance -->
+                <label for="cycleAllowance">CycleAllowance (between 1 and 150):</label>
+                <input type="number" id="cycleAllowance" name="cycleAllowance" min="1" max="150"><br><br>
+
+                <!-- deadline -->
+                <label for="deadline">Deadline (time at your current time zone)</label>
+                <input type="datetime-local" id="deadline" name="deadline"><br><br>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- laboratories involved -->
+            <fieldset class="laboratories">
+                <legend>Laboratories</legend>
+                <span class="laboratories">Please tick the laboratories to be involved in the campaign:</span><br><br>
+                <!-- laboratories -->
+                {% for lab in available_labs %}
+                    <input type="checkbox" name="labs" value="{{ lab.iri }}">{{lab.display}}<br>
+                {% endfor %}
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- submit button -->
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

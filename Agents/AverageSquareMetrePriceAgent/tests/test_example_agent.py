@@ -76,6 +76,7 @@ def test_example_data_instantiation(initialise_clients):
     [
         (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, True),   # local agent instance test
         (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, True),  
+        (cf.DERIVATION_INPUTS_3, cf.POSTCODE_2, cf.AVGPRICE_2, True), 
         (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, False),  # deployed docker agent test
         pytest.param(
             cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, False, 

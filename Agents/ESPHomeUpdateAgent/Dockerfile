@@ -47,7 +47,7 @@ COPY ./config/mappings /root/mappings
 # Set the required environment variable
 ENV ESPHOME_UPDATE_AGENT_MAPPINGS="/root/mappings"
 
-COPY --from=builder /root/ESPHomeUpdateAgent/output/esphome-update-agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/ESPHomeUpdateAgent/output/esphome-update-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

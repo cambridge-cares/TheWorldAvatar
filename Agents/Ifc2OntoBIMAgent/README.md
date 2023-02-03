@@ -8,10 +8,14 @@ This agent converts IFC files into TTL files defined by the OntoBIM ontology, an
 This agent is designed to work with IFC2x3 TC1 schema. IFC4 schema are not yet included. The scope coverage is also 
 non-exhaustive at this point, including only the relevant concepts.
 
-Some excluded concepts include:
+Some excluded concepts are:
  - Property Sets
  - Niche Geometries
  - Material Information
+
+Notes:
+- In the IFC schema, only certain elements (IfcFurnishingElement, IfcBuildingElementProxy) are linked to their Spaces. 
+Other elements are always linked to their Storey, even if there is a Space defined.
 
 #### 1.2 Technical Requirements
 - Java 11

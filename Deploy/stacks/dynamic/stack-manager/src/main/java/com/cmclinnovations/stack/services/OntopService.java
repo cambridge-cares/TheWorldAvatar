@@ -1,8 +1,5 @@
 package com.cmclinnovations.stack.services;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,22 +68,9 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        new OntopClient().updateOBDA(null);
+        OntopClient.getInstance().updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
-    }
-
-    @Deprecated
-    private void copyInJDBCLibrary() {
-        try {
-            URL url = new URL(getEnvironmentVariable(ONTOP_DB_DRIVER_URL));
-            String filename = Path.of(url.getPath()).getFileName().toString();
-            String folderPath = "/opt/ontop/jdbc";
-            downloadFileAndSendItToContainer(url, folderPath, filename, false);
-        } catch (MalformedURLException ex) {
-            throw new IllegalArgumentException("Value provided for the environment variable '" + ONTOP_DB_DRIVER_URL
-                    + "' for contianer '" + getName() + "' is not a valid URL.", ex);
-        }
     }
 
 }

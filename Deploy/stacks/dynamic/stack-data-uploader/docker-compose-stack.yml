@@ -15,6 +15,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - stack
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
 
 volumes:
   scratch:
@@ -23,6 +25,9 @@ volumes:
       - com.docker.stack.namespace:${STACK_NAME}
 
 configs:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
   postgis:
     name: ${STACK_NAME}_postgis
     external: true
@@ -37,6 +42,9 @@ networks:
     external: true
 
 secrets:
+  blazegraph_password:
+    name: ${STACK_NAME}_blazegraph_password
+    external: true
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true
