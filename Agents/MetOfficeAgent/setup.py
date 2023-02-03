@@ -19,7 +19,7 @@ setup(
         'Flask==2.2.2',
         'pandas==1.3.5',
         'JayDeBeApi==1.2.3',
-        'py4jps==1.0.27', 
+        'py4jps==1.0.30', 
         'requests==2.28.1',
         'gunicorn==20.1.0',
         'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer'
