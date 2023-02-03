@@ -33,6 +33,8 @@ public class Stack {
 
         manager.initialiseService(name, "citydbimpexp");
 
+        manager.initialiseService(name, "citytiler");
+
         manager.initialiseService(name, "geoserver");
 
         manager.initialiseUserServices(name);
