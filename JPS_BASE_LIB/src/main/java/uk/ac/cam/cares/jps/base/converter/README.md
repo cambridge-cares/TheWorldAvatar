@@ -1,6 +1,6 @@
 # TBox Generator
 
-TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the Web Ontology Language (OWL). TBox Generator allows to describe data and metadata of a TBox, e.g., IRI, version and comment.
+TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the Web Ontology Language (OWL). TBox Generator requires to describe metadata of a TBox, e.g., IRI, version and comment.
 
 ## CSV file-based template
 ### Header Row
@@ -33,7 +33,7 @@ The header row consists of the following attributes or columns:
 |OntoKin, TBox, OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms, http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
 |OntoKin, TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl, http://www.w3.org/2002/07/owl#imports, , , , , , |
 
-> **_NOTE:_** To skip the import of a TBox, do not provide any IRI in the corresponding position.
+> **_NOTE:_** To skip the import of a TBox, do not provide any IRI in the corresponding position. To import multiple TBoxes, provide IRIs separated by comma and enclose the IRIs within double quotes.
 
 #### Classes
 
@@ -108,3 +108,43 @@ To achieve these goals, fill out the template as follows:
 |requiresSpeciesValidation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
 
 > **_NOTE:_**  A) Data property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, requiresSpeciesValidation. B) Complete URLs are provided for the properties reused from external ontologies. For example, the URLs http://purl.org/dc/elements/1.1/identifier and http://www.opengis.net/ont/geosparql#dimension are used in the definitions of identifier and dimension, respoectively.
+
+##### Data types
+TBox Generator supports all [OWL2 data types](#http://owlcs.github.io/owlapi/apidocs_5/org/semanticweb/owlapi/vocab/OWL2Datatype.html) included in the OWL API. Data types in the CSV-file template are case insensitive and do not require to be prefixed with XSD, RDF, RDFS or OWL. For example, instead of XSD_STRING, you can write String or string. The complete mapping between the OWL2 data type and the TBox Generator acceptable data type is shown below.
+
+| OWL2 data type      | TBox Generator acceptable data type |
+| ------------------- | ----------------------------------- |
+| OWL_RATIONAL        | rational                            |
+| OWL_REAL            | real                                |
+| RDF_LANG_STRING     | lang string                         |
+| RDF_PLAIN_LITERAL   | plain literal                       |
+| RDF_XML_LITERAL     | xml literal                         |
+| XSD_ANY_URI         | any uri                             |
+| XSD_BASE_64_BINARY  | base 64 binary                      |
+| XSD_BOOLEAN         | boolean                             |
+| XSD_BYTE            | byte                                |
+| XSD_DATE_TIME       | date time                           |
+| XSD_DATE_TIME_STAMP | date time stamp                     |
+| XSD_DECIMAL         | decimal                             |
+| XSD_DOUBLE          | double                              |
+| XSD_FLOAT           | float                               |
+| XSD_HEX_BINARY      | hex binary                          |
+| XSD_INT             | int                                 |
+| XSD_INTEGER         | integer                             |
+| XSD_LANGUAGE        | language                            |
+| XSD_LONG            | long                                |
+| XSD_NAME            | name                                |
+| XSD_NCNAME          | ncname                              |
+| XSD_NEGATIVE_INTEGER| negative integer                    |
+| XSD_NMTOKEN         | nmtoken                             |
+| XSD_NON_NEGATIVE_INTEGER| non negative integer            |
+| XSD_NON_POSITIVE_INTEGER| non positive integer            |
+| XSD_NORMALIZED_STRING| normalized string                  |
+| XSD_POSITIVE_INTEGER| positive integer                    |
+| XSD_SHORT           | short                               |
+| XSD_STRING          | string                              |
+| XSD_TOKEN           | token                               |
+| XSD_UNSIGNED_BYTE   | unsigned byte                       |
+| XSD_UNSIGNED_INT    | unsigned int                        |
+| XSD_UNSIGNED_LONG   | unsigned long                       |
+| XSD_UNSIGNED_SHORT  | unsigned short                      |
