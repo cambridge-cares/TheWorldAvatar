@@ -18,6 +18,7 @@ CO FINISHED
 SO STARTING
 SO INCLUDED shipSources.dat
 SO INCLUDED plantSources.dat
+   INCLUDED ../bpipprm/buildings.dat
 SO SRCGROUP ALL
 SO FINISHED
 

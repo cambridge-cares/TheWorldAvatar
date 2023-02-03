@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\20\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\21\\";
     //    Two equivalent polygons which define a rectangular region within Jurong Island. The values in wkt are in EPSG:4326/WGS84 coordinates
     //    while those in wkt2 are in EPSG:3857 coordinates.
     // For EPSG:4326/Wgs84 format, longitude is specified before latitude.
@@ -66,7 +66,7 @@ public class BuildingsTest {
         }
 
         int numStacks = 569;
-        int numBuildings = 4979;
+        int numBuildings = 10;
         bp.init(simulationDirectory, scope, nx, ny, srid);
         Assertions.assertTrue(bp.locindex > -1);
 //        bp.getStacksBuildings();
@@ -76,13 +76,12 @@ public class BuildingsTest {
         Assertions.assertEquals(bp.BPIPPRMStackInput.size(),1+numStacks);
         Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
 
-
         int res = bp.createBPIPPRMInput();
         Assertions.assertEquals(res,0);
         int res2 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res2,0);
-//        int rds = bp.runBPIPPRM();
-//        Assertions.assertEquals(rds,0);
+        int rds = bp.runBPIPPRM(simulationDirectory+"bpipprm\\");
+        Assertions.assertEquals(rds,0);
 //        int res = bp.run();
 //        Assertions.assertEquals(res,0);
 

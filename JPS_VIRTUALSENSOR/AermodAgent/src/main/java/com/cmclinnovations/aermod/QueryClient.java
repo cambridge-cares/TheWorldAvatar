@@ -491,19 +491,13 @@ public class QueryClient {
 
         GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,building),
                 building.has(RDF.TYPE,BUILDING).andHas(OCGML_REP,IRI));
-        query.select(IRI).where(gp).limit(5000);
+        query.select(IRI).where(gp).limit(10);
 
         JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
         return BuildingIRIQueryResult;
     }
 
     public static JSONArray StackGeometricQuery(String GeospatialQueryIRI, List<String> ObjectIRI) {
-
-//        StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
-//        coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
-//        coordinateQuery.append("?geometricIRI ocgml:GeometryType ?polygonData.\n") ;
-//        coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(IRI).append(">.}");
-//        JSONArray coordinateQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI, coordinateQuery.toString());
 
         SelectQuery query = Queries.SELECT().prefix(P_OCGML);
         Variable geometricIRI = SparqlBuilder.var("geometricIRI");

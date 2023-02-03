@@ -32,7 +32,7 @@ import static java.lang.Math.min;
 
 public class Buildings {
 
-    private static final Logger LOGGER = LogManager.getLogger(BuildingsPlantItems.class);
+    private static final Logger LOGGER = LogManager.getLogger(Buildings.class);
 
     // Class variables accessed in several agent methods
 
@@ -699,7 +699,7 @@ public class Buildings {
     public static int runBPIPPRM(String runDirectory) {
         System.out.println(runDirectory);
         String execFile = runDirectory + "bpipprm.exe" ;
-        String inputFile = runDirectory + "bpipprm1.inp" ;
+        String inputFile = runDirectory + "bpipprm.inp" ;
         String outputFile1 = runDirectory + "buildings.dat";
         String outputFile2 = runDirectory + "buildings_summary.dat";
         try {
@@ -736,7 +736,7 @@ public class Buildings {
             double stackAream2 = (Math.PI/4)*Diameter*Diameter;
             double velocityms = volumetricFlowRatem3s/stackAream2;
 
-            String stkId = "Stk" + i;
+            String stkId = "Stk" + (i+1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n",stkId, StackEastUTM, StackNorthUTM, 0.0));
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
