@@ -2,20 +2,22 @@
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
 # Date: 30 Nov 2022                            #
 ################################################
-# The purpose of this file is to provide helper functions to query and update the KG. Those functions are used in the forecasting agent.
 
-from forecasting.datamodel.iris import *
+# The purpose of this file is to provide helper functions to query and update the KG
 
-from darts import concatenate
 import numpy as np
-from darts import TimeSeries
-from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
-from darts.dataprocessing.transformers import Scaler
 import pandas as pd
+from darts import TimeSeries
 from darts import concatenate
-from forecasting.errorhandling.exceptions import KGException
+from darts.dataprocessing.transformers import Scaler
+from darts.utils.timeseries_generation import datetime_attribute_timeseries as dt_attr
 
 from py4jps import agentlogging
+
+from forecasting.datamodel.iris import *
+from forecasting.errorhandling.exceptions import KGException
+
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 
@@ -160,26 +162,30 @@ def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", d
 
 
 def get_unit(iri, kgClient):
-    # get unit of iri
+    # Get unit (potentially) associated with dataIRI
     query = f"""
     SELECT ?unit
     WHERE {{
         <{iri}> <{OM_HASVALUE}> ?measure . 
         ?measure <{OM_HASUNIT}> ?unit . 
         }}"""
-    unit = kgClient.performQuery(query)[0]["unit"]
+    unit = kgClient.performQuery(query)
+    if len(unit) == 1:
+        unit = unit[0]["unit"]
+    else:
+        unit = None
     return unit
 
 
 def get_time_format(iri, kgClient):
-    # get unit of iri
+    # Get time format of tsIRI
     query = f"""
     SELECT ?format
     WHERE {{
-        <{iri}> <{OM_HASVALUE}> ?measure . 
-        ?measure <{TS_HASTIMESERIES}> ?ts . 
+        <{iri}> <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts . 
         ?ts <{TS_HASTIMEUNIT}> ?format . 
         }}"""
+    #TODO: Revisit to check if time format is always required
     time_format = kgClient.performQuery(query)[0]["format"]
     return time_format
 
