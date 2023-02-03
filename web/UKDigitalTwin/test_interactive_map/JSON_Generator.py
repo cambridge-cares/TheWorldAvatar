@@ -26,7 +26,7 @@ print("************************Start querying power plant data******************
 """Electricity consumption query"""
 print("************************Start querying Electricity consumption data************************")
 # ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, startTime_of_EnergyConsumption, True) # query the region consumption
-# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, startTime_of_EnergyConsumption, False) # query the sub areas consumption
+##ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, startTime_of_EnergyConsumption, False) # query the sub areas consumption
 
 """Grid model query"""
 print("************************Start querying Grid model************************")
@@ -40,7 +40,7 @@ print("************************Start querying Grid model************************
 
 # ret_genLocation_10 = queryGeneratorLocation(ukdigitaltwin_label, 10)
 
-BusAndGenLatlon_10busmodel = queryGeneratorAndBusLocation(ukdigitaltwin_label, topologyIRI)
+##BusAndGenLatlon_10busmodel = queryGeneratorAndBusLocation(ukdigitaltwin_label, topologyIRI)
 
 """Labels"""
 class_label_pp = 'UK_PowerPlants'
@@ -80,8 +80,8 @@ class_label_29_gen_GPS = "UK_Grid_29_gen_GPS"
 # genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS)
 ##genLocationJSONCreator(ret_genLocation_10, class_label_10_gen_GPS)
 
-busLocationJSONCreator(BusAndGenLatlon_10busmodel, BusLocation_10busmodel_label)
+# busLocationJSONCreator(BusAndGenLatlon_10busmodel, BusLocation_10busmodel_label)
 
-genLocationJSONCreator(BusAndGenLatlon_10busmodel, GenLocation_10busmodel_label)
+# genLocationJSONCreator(BusAndGenLatlon_10busmodel, GenLocation_10busmodel_label)
 
 print("*******************The JSON_Generator.py is finished*******************")

@@ -84,6 +84,7 @@ def queryPowerPlantForVisualisation(ukdigitaltwin_label):
 # ukdigitaltwin: http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql
 # ONS_GEO_Info_endpoint: http://statistics.data.gov.uk/sparql.json
 # TODO:check the dbpedia, can use the centroid of the place from the dbpedia 
+##FIXME: update the query string according to the new KG structure 
 def queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwin, ONS, startTime_of_EnergyConsumption, regionOrArea):
 
   # the query string for querying the electricity consumption of 11 official regions
@@ -183,9 +184,9 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwin, ONS, startT
   start = time.time()
   print("Federated Querying ONS and UK Digital Twin...")
   if regionOrArea == True:    
-      ret = json.loads(performFederatedQuery(query_region, ukdigitaltwin, ONS))    
+      ret = json.loads(performFederatedQuery(query_region, [ukdigitaltwin, ONS]))    
   else:
-      ret = json.loads(performFederatedQuery(query_area, ukdigitaltwin, ONS))         
+      ret = json.loads(performFederatedQuery(query_area, [ukdigitaltwin, ONS]))         
   end = time.time()
   if len(ret) == 0:
       raise Exception("The query is failed.")
@@ -1002,10 +1003,11 @@ missing_area_2017 = ['http://statistics.data.gov.uk/id/statistical-geography/E07
 if __name__ == '__main__': 
     
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
-    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
-    ukdigitaltwin_label = "ukdigitaltwin"
+    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
+    ukdigitaltwin_label = "ukdigitaltwin_test2"
     # res = queryPowerPlantForVisualisation(ukdigitaltwin_label)
     res = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS_json, "2017-01-31", False)   
+    print(res[0,5])
     # res = test_queryLACode(lacode, ukdigitaltwinendpoint, "2017-01-31")
     # res = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
     # res = queryBranchConnectedGPSLocation(ukdigitaltwin_label, 29)
