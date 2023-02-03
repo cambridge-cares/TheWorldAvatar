@@ -83,8 +83,12 @@ public final class ServiceManager {
         return serviceConfigs.get(serviceName);
     }
 
-    public <S extends Service> S initialiseService(String stackName, String serviceName) {
-        ServiceConfig config = serviceConfigs.get(serviceName);
+    public <S extends Service> S initialiseService(String stackName, String serviceTemplate) {
+        return initialiseService(stackName, serviceTemplate, serviceTemplate);
+    }
+
+    public <S extends Service> S initialiseService(String stackName, String serviceTemplate, String serviceName) {
+        ServiceConfig config = serviceConfigs.get(serviceTemplate);
         String type = config.getType();
 
         Class<S> typeClass = AbstractService.getTypeClass(type.toLowerCase());
