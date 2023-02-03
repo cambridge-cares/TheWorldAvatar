@@ -7,7 +7,7 @@ from torch.nn.init import xavier_uniform
 from torch import matmul
 from Marie.Util.Embedding.EmbeddingTrainer import Trainer
 from Marie.Util.Dataset.TransE_Dataset import Dataset
-from Marie.Util.location import  DATA_DIR
+from Marie.Util.location import DATA_DIR
 
 
 class TransR(nn.Module):
@@ -21,7 +21,7 @@ class TransR(nn.Module):
         self.ent_embedding = self._init_embedding(num=self.ent_num, dim=self.ent_dim)
         self.rel_embedding = self._init_embedding(num=self.rel_num, dim=self.rel_dim)
         self.proj_matrix = self._init_embedding(num=self.rel_num, dim=self.rel_dim * self.ent_dim)
-        self.criterion = nn.MarginRankingLoss()
+        self.criterion = nn.MarginRankingLoss(margin=6)
         self.normalize_parameters()
 
     def loss(self, pos_distance, neg_distance):
@@ -41,7 +41,16 @@ class TransR(nn.Module):
         return self.loss(dist_pos, dist_neg)
 
     def predict(self, triples):
-        return self.distance(triples)
+        ent_num = self.ent_num
+        head = triples[0]
+        rel = triples[1]
+        true_tail = triples[2]
+        # repeat the head and rel
+        heads = head.repeat(ent_num)
+        rels = rel.repeat(ent_num)
+        tails = torch.LongTensor(torch.arange(0, ent_num))
+        test_triples = (heads, rels, tails)
+        return self.distance(test_triples), true_tail
 
     def project(self, ent, proj_mat):
         proj_e = matmul(proj_mat, ent.view(-1, self.ent_dim, 1))
@@ -56,6 +65,16 @@ class TransR(nn.Module):
                                                    p=2, dim=1)
         self.rel_embedding.weight.data = normalize(self.ent_embedding.weight.data,
                                                    p=2, dim=1)
+
+    # def infer_reaction(self, reactants, rel2idx):
+    #     r_idx = rel2idx["isReactant"]
+    #     r_idx = torch.LongTensor([r_idx])
+    #     r = self.rel_embedding(r_idx)
+    #     reactants_idx = torch.LongTensor(reactants)
+    #     pass
+
+
+
 
     def distance(self, triples):
         """
@@ -83,7 +102,7 @@ class TransR(nn.Module):
         projected_e_t = self.project(ent=e_t, proj_mat=proj_mat)
 
         # use l2 dissimilarity
-        return (projected_e_h + r - projected_e_t).norm(p=2, dim=-1) ** 2
+        return (projected_e_h + r - projected_e_t).norm(p=2, dim=-1)
 
 
 if __name__ == '__main__':
@@ -100,10 +119,5 @@ if __name__ == '__main__':
     rel_num = train_set.rel_num
     ent_num = train_set.ent_num
     model = TransR(rel_dim, rel_num, ent_dim, ent_num)
-    my_trainer = Trainer(model=model, dataset_name='pubchem100', epochs=5000, learning_rate= 0.00001)
+    my_trainer = Trainer(model=model, dataset_name='pubchem100', epochs=5000, learning_rate=0.00001)
     my_trainer.train()
-
-
-
-
-
