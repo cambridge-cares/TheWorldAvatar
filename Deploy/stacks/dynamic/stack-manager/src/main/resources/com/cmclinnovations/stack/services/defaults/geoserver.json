@@ -12,17 +12,23 @@
                 "Mounts": [
                     {
                         "Type": "volume",
+                        "Source": "geoserver_datadir",
+                        "Target": "/var/geoserver/datadir",
+                        "VolumeOptions": {
+                            "NoCopy": false
+                        }
+                    },
+                    {
+                        "Type": "volume",
                         "Source": "geotiffs",
                         "Target": "/geotiffs",
                         "ReadOnly": false
                     },
                     {
                         "Type": "volume",
-                        "Source": "geoserver_datadir",
-                        "Target": "/var/geoserver/datadir",
-                        "VolumeOptions": {
-                            "NoCopy": false
-                        }
+                        "Source": "3dtiles",
+                        "Target": "/var/geoserver/datadir/www/3dtiles",
+                        "ReadOnly": false
                     },
                     {
                         "Type": "volume",
