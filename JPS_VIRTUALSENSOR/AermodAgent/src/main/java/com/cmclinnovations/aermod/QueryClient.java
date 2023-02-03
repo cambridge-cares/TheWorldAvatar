@@ -1,5 +1,6 @@
 package com.cmclinnovations.aermod;
 
+import com.hp.hpl.jena.ontology.Individual;
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -12,6 +13,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -26,6 +28,7 @@ import com.cmclinnovations.aermod.objects.WeatherData;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -58,12 +61,19 @@ public class QueryClient {
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/dispersion/";
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    private static final String ONTO_BUILD = "https://www.theworldavatar.com/kg/ontobuiltenv/" ;
+    public static final String CHEM = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#" ;
+    public static final String ONTO_CITYGML = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
+
     private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX_DISP));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
     private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
     private static final Prefix P_EMS = SparqlBuilder.prefix("ems", iri(ONTO_EMS));
-    
+    private static final Prefix P_BUILD = SparqlBuilder.prefix("build",iri(ONTO_BUILD));
+    private static final Prefix P_CHEM = SparqlBuilder.prefix("chem",iri(CHEM));
+    private static final Prefix P_OCGML = SparqlBuilder.prefix("ocgml",iri(ONTO_CITYGML));
+
     // classes
     public static final String REPORTING_STATION = "https://www.theworldavatar.com/kg/ontoems/ReportingStation";
     public static final String NX = PREFIX_DISP + "nx";
@@ -80,6 +90,10 @@ public class QueryClient {
     public static final String TEMPERATURE = OM_STRING + "Temperature";
     public static final String MASS_FLOW = OM_STRING + "MassFlow";
     private static final Iri SHIP = P_DISP.iri("Ship");
+    private static final Iri CHEMICALPLANT = P_CHEM.iri("ChemicalPlant") ;
+    private static final Iri PLANTITEM = iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem") ;
+    private static final Iri BUILDING = iri("http://www.purl.org/oema/infrastructure/Building") ;
+
 
     // weather types
     private static final String CLOUD_COVER = ONTO_EMS + "CloudCover";
@@ -113,6 +127,14 @@ public class QueryClient {
     private static final Iri IS_DERIVED_FROM = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
     private static final Iri BELONGS_TO = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri REPORTS = P_EMS.iri("reports");
+    private static final Iri CONTAINS = P_GEO.iri("ehContains");
+    private static final Iri OCGML_REP = P_BUILD.iri("hasOntoCityGMLRepresentation");
+    private static final Iri HAS_INDIVIDUALCO2Emission = P_CHEM.iri("hasIndividualCO2Emission");
+    private static final Iri OCGML_GEOM = P_OCGML.iri("GeometryType");
+    private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
+    private static final Iri OCGML_LOD2MULTISURFACEID = P_OCGML.iri("lod2MultiSurfaceId");
+    private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
+
     
     // fixed units for each measured property
 	private static final Map<String, Iri> UNIT_MAP = new HashMap<>(); 
@@ -438,6 +460,88 @@ public class QueryClient {
             return;
         }
     }
+
+    // SPARQL queries for buildings class
+
+    public static JSONArray StackQuery (String StackQueryIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
+        Variable IRI = SparqlBuilder.var("IRI");
+        Variable emission = SparqlBuilder.var("emission");
+        Variable chemPlant = SparqlBuilder.var("chemPlant");
+        Variable plantItem = SparqlBuilder.var("plantItem");
+        Variable CO2 = SparqlBuilder.var("CO2");
+
+        GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,plantItem),
+                plantItem.has(RDF.TYPE,PLANTITEM).andHas(OCGML_REP,IRI).andHas(HAS_INDIVIDUALCO2Emission,CO2),
+                CO2.has(HAS_NUMERICALVALUE,emission));
+        query.select(IRI,emission).where(gp);
+
+        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
+        return StackIRIQueryResult;
+    }
+
+    public static JSONArray BuildingQuery (String StackQueryIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
+        Variable IRI = SparqlBuilder.var("IRI");
+        Variable chemPlant = SparqlBuilder.var("chemPlant");
+        Variable building = SparqlBuilder.var("building");
+
+
+        GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,building),
+                building.has(RDF.TYPE,BUILDING).andHas(OCGML_REP,IRI));
+        query.select(IRI).where(gp).limit(5000);
+
+        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
+        return BuildingIRIQueryResult;
+    }
+
+    public static JSONArray StackGeometricQuery(String GeospatialQueryIRI, List<String> ObjectIRI) {
+
+//        StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
+//        coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
+//        coordinateQuery.append("?geometricIRI ocgml:GeometryType ?polygonData.\n") ;
+//        coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(IRI).append(">.}");
+//        JSONArray coordinateQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI, coordinateQuery.toString());
+
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable geometricIRI = SparqlBuilder.var("geometricIRI");
+        Variable polygonData = SparqlBuilder.var("polygonData");
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+
+
+        GraphPattern gp = GraphPatterns.and(geometricIRI.has(OCGML_GEOM,polygonData).andHas(OCGML_CITYOBJECT,objectIRI));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, ObjectIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(polygonData,objectIRI).where(gp,vp).orderBy(objectIRI);
+        JSONArray GeometricQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI,query.getQueryString());
+
+        return GeometricQueryResult;
+    }
+
+
+    public static JSONArray BuildingGeometricQuery(String GeospatialQueryIRI, List<String> ObjectIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable geometricIRI = SparqlBuilder.var("geometricIRI");
+        Variable polygonData = SparqlBuilder.var("polygonData");
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+        Variable surfaceIRI = SparqlBuilder.var("surfaceIRI");
+
+
+        GraphPattern gp = GraphPatterns.and(surfaceIRI.has(OCGML_GEOM,polygonData),
+                geometricIRI.has(OCGML_LOD2MULTISURFACEID,surfaceIRI).andHas(OCGML_BUILDINGID,objectIRI));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, ObjectIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(polygonData,objectIRI).where(gp,vp).orderBy(objectIRI);
+        JSONArray GeometricQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI,query.getQueryString());
+
+        return GeometricQueryResult;
+    }
+
+
+
+
+
 
     @Deprecated
     List<String> getShipsWithinTimeAndScopeViaKG(long simulationTime, String scopeIri) {

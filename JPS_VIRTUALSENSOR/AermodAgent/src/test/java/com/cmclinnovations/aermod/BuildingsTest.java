@@ -1,24 +1,35 @@
 package com.cmclinnovations.aermod;
 
+import org.apache.jena.base.Sys;
+import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\19\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\20\\";
     //    Two equivalent polygons which define a rectangular region within Jurong Island. The values in wkt are in EPSG:4326/WGS84 coordinates
     //    while those in wkt2 are in EPSG:3857 coordinates.
     // For EPSG:4326/Wgs84 format, longitude is specified before latitude.
@@ -30,6 +41,11 @@ public class BuildingsTest {
     Polygon scope = (Polygon) new WKTReader(geometryFactory).read(wkt3);
     int nx = 100;
     int ny = 100;
+
+    private QueryClient queryClient;
+
+
+
 
     Buildings bp = new Buildings() ;
 
@@ -49,9 +65,18 @@ public class BuildingsTest {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
+        int numStacks = 569;
+        int numBuildings = 4979;
         bp.init(simulationDirectory, scope, nx, ny, srid);
         Assertions.assertTrue(bp.locindex > -1);
-        bp.getStacksBuildings();
+//        bp.getStacksBuildings();
+        bp.getProperties();
+
+        Assertions.assertEquals(bp.StackEmissions.size(),numStacks);
+        Assertions.assertEquals(bp.BPIPPRMStackInput.size(),1+numStacks);
+        Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
+
+
         int res = bp.createBPIPPRMInput();
         Assertions.assertEquals(res,0);
         int res2 = bp.createAERMODSourceInput();
@@ -74,6 +99,8 @@ public class BuildingsTest {
 
 
     }
+
+
 
     @Test
     public void testCoordinates() {
@@ -157,9 +184,63 @@ public class BuildingsTest {
     }
 
     @Test
+    public void testQuery() {
+        StringBuilder sb = new StringBuilder("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
+        sb.append("SELECT ?polygonData WHERE {\n");
+        sb.append("<http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/UUID_6c0444ae-b5ab-40d2-840e-82dda85bc2e6/> ocgml:GeometryType ?polygonData.\n");
+//        sb.append("<http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/UUID_01d45708-9d63-4026-83a0-0d249f8d9859/> ocgml:GeometryType ?polygonData.\n");
+        sb.append("} \n");
+        JSONArray queryResult = AccessAgentCaller.queryStore("jriEPSG24500", sb.toString());
+
+        String res = queryResult.getJSONObject(0).getString("polygonData");
+        System.out.println(res);
+        Assertions.assertFalse(res.contains("#"));
+
+//        System.out.println(queryResult.getJSONObject(0).getString("polygonData"));
+    }
+
+    @Test
+    public void testQuery2() {
+        StringBuilder sb = new StringBuilder("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
+        sb.append("SELECT ?polygonData ?objectIRI ?geometricIRI \n");
+        sb.append("WHERE { { ?geometricIRI ocgml:GeometryType ?polygonData ; \n");
+        sb.append("ocgml:cityObjectId ?objectIRI . } \n");
+        sb.append("VALUES ?objectIRI {<http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityfurniture/UUID_4de83001-0c75-4155-b835-e21f1a46ac77/> } }\n");
+        sb.append("ORDER BY ?polygonData");
+        JSONArray queryResult = AccessAgentCaller.queryStore("jriEPSG24500", sb.toString());
+        int nw = 0;
+        for (int i = 0; i < queryResult.length(); i++) {
+            String vertex = queryResult.getJSONObject(i).getString("polygonData");
+            if (!vertex.contains("#")){
+                nw++;
+                continue;
+            }
+        }
+        System.out.println(nw);
+
+    }
+
+    @Test
     public void testrun() throws IOException {
         int rds = Buildings.runBPIPPRM(simulationDirectory+"bpipprm\\");
         Assertions.assertEquals(rds,0);
+    }
+    @Test
+    public void testStackBuildingQueryusingQueryClient() {
+
+        int numStacks = 570;
+        int numBuildings = 4979;
+
+        JSONArray StackIRIQueryResult = QueryClient.StackQuery("jibusinessunits");
+        Assertions.assertEquals(numStacks,StackIRIQueryResult.length());
+        JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery("jibusinessunits");
+        Assertions.assertEquals(numBuildings,BuildingIRIQueryResult.length());
+
+    }
+
+    @Test
+    public void testgetProperties() {
+
     }
 
 

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -165,16 +166,291 @@ public class Buildings {
         return outputcoordinates;
     }
 
-    /* Query stacks and buildings
- */
+    /* Get geometrical and geospatial properties of stacks and buildings */
+    public static void getProperties() {
+
+        JSONArray StackIRIQueryResult = QueryClient.StackQuery(StackQueryIRI);
+        List<String> StackIRIString = IntStream
+                .range(0,StackIRIQueryResult.length())
+                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
+                .collect(Collectors.toList());
+        JSONArray StackGeometricQueryResult = QueryClient.StackGeometricQuery(GeospatialQueryIRI,StackIRIString);
+
+        String objectIRIPrev = StackGeometricQueryResult.getJSONObject(0).getString("objectIRI");
+//        double minZ, maxZ;
+        int numberStacks = 0;
+
+
+        // Determine indices at which data for a new object starts
+        List<Integer> resultIndices = new ArrayList<>();
+        resultIndices.add(0);
+
+        for (int i = 0; i < StackGeometricQueryResult.length(); i++) {
+            String objectIRI = StackGeometricQueryResult.getJSONObject(i).getString("objectIRI");
+            if (!objectIRI.equals(objectIRIPrev) ) {
+                resultIndices.add(i);
+                objectIRIPrev = objectIRI;
+            }
+        }
+
+        for (int i = 0; i < resultIndices.size(); i++){
+            // Determine range of indices for each object
+            int firstIndex = resultIndices.get(i);
+            int lastIndex;
+            if (i == resultIndices.size()-1){
+                lastIndex = StackGeometricQueryResult.length();
+            } else {
+                lastIndex = resultIndices.get(i+1);
+            }
+
+            // Process results for each object;
+            double minZ = 0.0;
+            double maxZ = 0.0;
+            double StackEastUTM = 0.0;
+            double StackNorthUTM = 0.0;
+            boolean includeObject = true;
+            String objectIRI = "";
+            double radius = 0.0;
+            for (int k = firstIndex; k < lastIndex; k++) {
+                JSONObject result = StackGeometricQueryResult.getJSONObject(k);
+                String polygonVertex = result.getString("polygonData");
+                objectIRI = result.getString("objectIRI");
+                if (!polygonVertex.contains("#")){
+                    continue;
+                }
+                String[] vertexCoordinates = polygonVertex.split("#");
+                List<Double> xcoord = new ArrayList<>();
+                List<Double> ycoord = new ArrayList<>();
+                List<Double> zcoord = new ArrayList<>();
+                for (int j = 0; j < vertexCoordinates.length; j+=3){
+                    xcoord.add(Double.parseDouble(vertexCoordinates[j]));
+                    ycoord.add(Double.parseDouble(vertexCoordinates[j+1]));
+                    zcoord.add(Double.parseDouble(vertexCoordinates[j+2]));
+                }
+                double polyMinZ = Collections.min(zcoord);
+                double polyMaxZ = Collections.max(zcoord);
+
+                if (k == firstIndex ) {
+                    minZ = polyMinZ;
+                    maxZ = polyMaxZ;
+                } else {
+                    minZ = Math.min(minZ,polyMinZ);
+                    maxZ = Math.max(maxZ,polyMaxZ);
+                }
+
+
+                if (polyMinZ == polyMaxZ && minZ == polyMinZ  ) {
+                    double aveX = xcoord.stream().mapToDouble(d->d).average().orElse(0.0);
+                    double aveY = ycoord.stream().mapToDouble(d->d).average().orElse(0.0);
+
+                    List<List<Double>> inputcoordinates = new ArrayList<> () ;
+                    List<Double> inputcoords = new ArrayList<>(Arrays.asList(aveX,aveY));
+                    inputcoordinates.add(inputcoords);
+                    List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,"EPSG:4326");
+
+                    Geometry point = new GeometryFactory().createPoint(new Coordinate(outputCoordinates.get(0).get(0),
+                            outputCoordinates.get(0).get(1)));
+
+                    if (!scope.covers(point)) {
+                        System.out.println(aveX+ ", " + aveY);
+                        includeObject = false;
+                        break;
+//                throw new RuntimeException("Stack outside poylgon");
+                    }
+
+                    radius = 0.0;
+                    for (int j = 0; j < xcoord.size();j++){
+                        double dx = xcoord.get(j) - aveX;
+                        double dy = ycoord.get(j) - aveY;
+                        double dist = Math.sqrt(dx*dx + dy*dy);
+                        radius = radius + dist;
+                    }
+                    radius /= xcoord.size();
+
+
+                    outputCoordinates.clear();
+                    outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+
+                    StackEastUTM = outputCoordinates.get(0).get(0);
+                    StackNorthUTM = outputCoordinates.get(0).get(1);
+                }
+
+            }
+
+            if (includeObject){
+                numberStacks++;
+                String InputLine = "\'Stk" + numberStacks + "\'" + " " + "0.0 " +
+                        maxZ + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                BPIPPRMStackInput.add(InputLine);
+                StringBuffer averageCoordinate = new StringBuffer();
+                averageCoordinate.append(StackEastUTM).append("#").append(StackNorthUTM).append("#").append(maxZ);
+                StackProperties.add(averageCoordinate.toString());
+                // Search for IRI in StackIRIString
+                int ind = StackIRIString.indexOf(objectIRI);
+                Double emission = StackIRIQueryResult.getJSONObject(ind).getDouble("emission");
+                StackEmissions.add(emission);
+                StackDiameter.add(2*radius);
+            }
+
+        }
+
+
+        JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery(StackQueryIRI);
+        List<String> BuildingIRIString = IntStream
+                .range(0,BuildingIRIQueryResult.length())
+                .mapToObj(i -> BuildingIRIQueryResult.getJSONObject(i).getString("IRI"))
+                .collect(Collectors.toList());
+        JSONArray BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery(GeospatialQueryIRI,BuildingIRIString);
+
+        objectIRIPrev = BuildingGeometricQueryResult.getJSONObject(0).getString("objectIRI");
+//        double minZ, maxZ;
+        int numberBuildings = 0;
+
+
+        // Determine indices at which data for a new object starts
+        resultIndices.clear();
+        resultIndices.add(0);
+
+        for (int i = 0; i < BuildingGeometricQueryResult.length(); i++) {
+            String objectIRI = BuildingGeometricQueryResult.getJSONObject(i).getString("objectIRI");
+            if (!objectIRI.equals(objectIRIPrev) ) {
+                resultIndices.add(i);
+                objectIRIPrev = objectIRI;
+            }
+        }
+
+        for (int i = 0; i < resultIndices.size(); i++){
+            // Determine range of indices for each object
+            int firstIndex = resultIndices.get(i);
+            int lastIndex;
+            if (i == resultIndices.size()-1){
+                lastIndex = BuildingGeometricQueryResult.length();
+            } else {
+                lastIndex = resultIndices.get(i+1);
+            }
+
+            // Process results for each object;
+            double minZ = 0.0;
+            double maxZ = 0.0;
+            double BuildingEastUTM = 0.0;
+            double BuildingNorthUTM = 0.0;
+            boolean includeObject = true;
+            String objectIRI = "";
+            double radius = 0.0;
+            int basePolygonIndex = -1;
+            for (int k = firstIndex; k < lastIndex; k++) {
+                JSONObject result = BuildingGeometricQueryResult.getJSONObject(k);
+                String polygonVertex = result.getString("polygonData");
+                objectIRI = result.getString("objectIRI");
+                if (!polygonVertex.contains("#")){
+                    continue;
+                }
+                String[] vertexCoordinates = polygonVertex.split("#");
+                List<Double> xcoord = new ArrayList<>();
+                List<Double> ycoord = new ArrayList<>();
+                List<Double> zcoord = new ArrayList<>();
+                for (int j = 0; j < vertexCoordinates.length; j+=3){
+                    xcoord.add(Double.parseDouble(vertexCoordinates[j]));
+                    ycoord.add(Double.parseDouble(vertexCoordinates[j+1]));
+                    zcoord.add(Double.parseDouble(vertexCoordinates[j+2]));
+                }
+                double polyMinZ = Collections.min(zcoord);
+                double polyMaxZ = Collections.max(zcoord);
+
+                if (k == firstIndex ) {
+                    minZ = polyMinZ;
+                    maxZ = polyMaxZ;
+                } else {
+                    minZ = Math.min(minZ,polyMinZ);
+                    maxZ = Math.max(maxZ,polyMaxZ);
+                }
+
+
+                if (polyMinZ == polyMaxZ && minZ == polyMinZ  ) {
+                    double aveX = xcoord.stream().mapToDouble(d->d).average().orElse(0.0);
+                    double aveY = ycoord.stream().mapToDouble(d->d).average().orElse(0.0);
+
+                    List<List<Double>> inputcoordinates = new ArrayList<> () ;
+                    List<Double> inputcoords = new ArrayList<>(Arrays.asList(aveX,aveY));
+                    inputcoordinates.add(inputcoords);
+                    List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,"EPSG:4326");
+
+                    Geometry point = new GeometryFactory().createPoint(new Coordinate(outputCoordinates.get(0).get(0),
+                            outputCoordinates.get(0).get(1)));
+
+                    if (!scope.covers(point)) {
+                        System.out.println(aveX+ ", " + aveY);
+                        includeObject = false;
+                        break;
+//                throw new RuntimeException("Stack outside poylgon");
+                    }
+
+                    outputCoordinates.clear();
+                    outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+
+                    BuildingEastUTM = outputCoordinates.get(0).get(0);
+                    BuildingNorthUTM = outputCoordinates.get(0).get(1);
+                    basePolygonIndex = k;
+                }
+
+            }
+
+            if (includeObject){
+                numberBuildings++;
+                StringBuffer averageCoordinate = new StringBuffer();
+                averageCoordinate.append(BuildingEastUTM).append("#").append(BuildingNorthUTM).append("#").append(maxZ);
+                BuildingProperties.add(averageCoordinate.toString());
+
+                String InputLine = "\'Build" + numberBuildings + "\' " + "1 " + "0.0" + " \n" ;
+                BPIPPRMBuildingInput.add(InputLine);
+                String BasePolygonVertices = BuildingGeometricQueryResult.getJSONObject(basePolygonIndex).getString("polygonData");
+
+                String [] BaseVertices = BasePolygonVertices.split("#");
+                int numCorners = BaseVertices.length/3;
+                InputLine = numCorners + " " + maxZ + " \n" ;
+                BPIPPRMBuildingInput.add(InputLine);
+                List<List<Double>> inputcoordinates = new ArrayList<> () ;
+
+                for (int j = 0; j < BaseVertices.length; j+=3 ){
+                    List<Double> inputcoords = new ArrayList<>(Arrays.asList(Double.parseDouble(BaseVertices[j]), Double.parseDouble(BaseVertices[j+1]))) ;
+                    inputcoordinates.add(inputcoords);
+                }
+
+                List<List<Double>> outputCoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+                for (int j = 0; j < outputCoordinates.size(); j++ ) {
+                    Double VertexEastUTM = outputCoordinates.get(j).get(0);
+                    Double VertexNorthUTM = outputCoordinates.get(j).get(1);
+                    InputLine = VertexEastUTM + " " + VertexNorthUTM + " \n" ;
+                    BPIPPRMBuildingInput.add(InputLine);
+                }
+                BuildingVertices.add(BasePolygonVertices);
+
+
+            }
+
+        }
+
+        // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
+        // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
+        String StackLine = numberStacks + " \n" ;
+        String BuildingsLine = numberBuildings + " \n" ;
+        BPIPPRMStackInput.add(StackLine);
+        BPIPPRMBuildingInput.add(BuildingsLine);
+    }
+
+
+
+    /* Query stacks and buildings */
     public static void getStacksBuildings () {
 
 
-        JSONArray StackOCGMLIRI = StackQuery(StackQueryIRI) ;
-        JSONArray BuildingOCGMLIRI = BuildingQuery(StackQueryIRI) ;
+        JSONArray StackOCGMLIRI = QueryClient.StackQuery(StackQueryIRI) ;
+        JSONArray BuildingOCGMLIRI = QueryClient.BuildingQuery(StackQueryIRI) ;
 
         int numberStacks = 0;
         int numberBuildings = 0;
+
+
 
 
         for (int i = 0; i < StackOCGMLIRI.length(); i++) {
