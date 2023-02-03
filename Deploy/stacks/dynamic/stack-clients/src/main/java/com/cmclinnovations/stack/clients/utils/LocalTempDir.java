@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 
-public class LocalTempDir extends TempDir {
+public class LocalTempDir extends LocalTempPath implements TempDir {
 
     public LocalTempDir() throws IOException {
         super(Files.createTempDirectory(Path.of(StackClient.SCRATCH_DIR), "tmp"));
@@ -56,4 +56,5 @@ public class LocalTempDir extends TempDir {
                     + "' as the source was neither a file nor a directory.");
         }
     }
+
 }
