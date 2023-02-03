@@ -1,6 +1,6 @@
 # TBox Generator
 
-TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the Web Ontology Language (OWL). TBox Generator also allows to describe data and metadata of a TBox, e.g., IRI, version and comment.
+TBox Generator is developed to represent classes and properties of a TBox provided in a CSV (Comma-Separated Values) file-based template using the Web Ontology Language (OWL). TBox Generator allows to describe data and metadata of a TBox, e.g., IRI, version and comment.
 
 ## CSV file-based template
 ### Header Row
@@ -22,8 +22,7 @@ The header row consists of the following attributes or columns:
 
 ### Value Rows
 
-#### TBox Data and Metadata
-
+#### TBox Metadata
 1. The value rows that MUST follow the header row in the template are the TBox IRI, version, comment and import rows.
 2. Assume that you want to develop a TBox called OntoKin with the IRI http://www.theworldavatar.com/ontology/ontokin, version number 1 and the comment "OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms" and by importing the OntoCAPE TBox that has the IRI http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl, then fill out the template as follows.
 
@@ -40,27 +39,37 @@ The header row consists of the following attributes or columns:
 
 Classes MUST follow the TBox Data and Metadata block.
 Assume that you want to:
-1. Define the classes Reaction Mechanism, Phase, Bulk Phase, and Rate Coefficient with the following descriptions:
+1. Define the classes Reaction Mechanism, Phase, Gas Phase, Site Phase, Bulk Phase, Species, Element, Material and Rate Coefficient with the following descriptions:
      - Reaction Mechanism: A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.
      - Phase: A phase of a substance is a form of matter.
+     - Gas Phase: A continuous gaseous phase.
+     - Site Phase: A phase that exists at the interface between the gas phase and a bulk phase.
      - Bulk Phase: A solid phase that is contiguous with site phases and remote from the gas phase.
+     - Species: An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).
+     - Element: An atom or isotope.
+     - Material: A substance that contains at least one site or bulk phase.
      - Rate Coefficient: The coefficients used to evaluate the reaction rate expression.
- 2. Desribe that the Bulk Phase class is a subclass of the Phase class and the Rate Coefficient class is equivalent to the Reaction Rate Coefficient class defined in the Cyber Physical System (CPS) Behaviour ontology available at http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl.
+ 2. Desribe that the Gas Phase, Site Phase and Bulk Phase classes are subclasses of the Phase class and the Rate Coefficient class is equivalent to the Reaction Rate Coefficient class defined in the Cyber Physical System (CPS) Behaviour ontology available at http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl.
  3. Specify that theses classes are defined in an ontology that has the following URL: http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 
 To achieve these goals, fill out the template as follows.
 
 |Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
 |---------------------------------------------------------------------------------------|
-|ReactionMechanism, Class, , , , , , "A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.", http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism |
-|Phase, Class, , , , , , A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase |
-|BulkPhase, Class, Phase, IS-A, , , , A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Bulk Phase |
+|ReactionMechanism, Class, , , , , , "A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.", http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Reaction Mechanism|
+|Phase, Class, , , , , , A phase of a substance is a form of matter., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Phase|
+|GasPhase,Class,Phase,IS-A,,,,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Gas Phase|
+|SitePhase,Class,Phase,IS-A,,,,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Site Phase|
+|BulkPhase, Class, Phase, IS-A, , , , A solid phase that is contiguous with site phases and remote from the gas phase., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Bulk Phase|
+|Species,Class,,,,,,"An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Species|
+|Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Element|
+|Material,Class,,,,,,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Material|
 |RateCoefficient, Class, http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient, EQUIVALENT-TO, , , , The coefficients used to evaluate the reaction rate expression., http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, Rate Coefficient |
 
-> **_NOTE:_**  A) Write class names using CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and BulkPhase. B) Provide the user facing name of the class under the Label column. Some examples are Reaction Mechanism, Phase and Bulk Phase. C) Define ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclose any description containing a comma provided under the Comment column within double quote. For example, see the comment of the ReactionMechansim class. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provide the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is provided.
+> **_NOTE:_**  A) Class names have CamelBack notation as shown under the Source column in the table above. Some examples are ReactionMechanism, Phase, and GasPhase. B) User facing names of classes are provided under the Label column. Some examples are Reaction Mechanism, Phase and Gas Phase. C) Defined ontological subclass of relationship using IS-A and equivalent class relationship using EQUIVALENT-TO. D) Enclosed any description containing a comma within double quotes. For example, see the descriptions of the ReactionMechansim and Species classes under the Comment column. E) Currently, the tool does not support the representation of the disjoint class relationship. F) Provided the complete URL of classes reused from another ontology. For example, ReactionRateCoefficient is reused from the Cyber Physical System Behaviour ontology, therefore, its URL http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient is used.
 
 #### Object Properties
-Object properties can be represented just below [TBox Data and Metadata](####TBox-Data-and-Metadata) rows. However, it is recommended that object properties should be provided after classes.
+Object properties can be represented just below TBox Metadata rows. However, it is recommended that object properties should be provided after classes.
 
 Assume that you want to:
 1. define the object properties exists in, contained in and has element with the following descriptions:
@@ -75,14 +84,14 @@ To achieve these goals, fill out the template as follows:
 
 |Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
 |---------------------------------------------------------------------------------------|
-|existsIn,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
-|containedIn,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
-|hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
+|existsIn,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
+|containedIn,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, contained in|
+|hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, has element|
 
 > **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
 
 #### Data Properties
-Data properties or Datatype properties can be represented just below [TBox Data and Metadata](####TBox-Data-and-Metadata) rows. However, it is recommended that data properties should be provided after classes. Data properties can be provided before or after object properties.
+Data properties or Datatype properties can be represented just below TBox Metadata rows. However, it is recommended that data properties are provided after classes. Data properties can be provided above or below object properties.
 
 Assume that you want to:
 1. define the data properties identifier, dimension and requires species validation.
