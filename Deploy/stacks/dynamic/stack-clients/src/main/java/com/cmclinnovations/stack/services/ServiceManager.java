@@ -79,16 +79,16 @@ public final class ServiceManager {
         return serviceNames;
     }
 
-    public ServiceConfig getServiceConfig(String serviceName) {
-        return serviceConfigs.get(serviceName);
+    private ServiceConfig getServiceConfig(String serviceName) {
+        ServiceConfig serviceConfig = serviceConfigs.get(serviceName);
+        if (null == serviceConfig) {
+            throw new RuntimeException("No ServiceConfig loaded with name '" + serviceName + "'.");
+        }
+        return serviceConfig;
     }
 
-    public <S extends Service> S initialiseService(String stackName, String serviceTemplate) {
-        return initialiseService(stackName, serviceTemplate, serviceTemplate);
-    }
-
-    public <S extends Service> S initialiseService(String stackName, String serviceTemplate, String serviceName) {
-        ServiceConfig config = serviceConfigs.get(serviceTemplate);
+    public <S extends Service> S initialiseService(String stackName, String serviceName) {
+        ServiceConfig config = getServiceConfig(serviceName);
         String type = config.getType();
 
         Class<S> typeClass = AbstractService.getTypeClass(type.toLowerCase());
