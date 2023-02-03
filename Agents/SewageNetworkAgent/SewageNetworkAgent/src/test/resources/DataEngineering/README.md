@@ -1,10 +1,36 @@
 # **Primasens Sewage Data Instantiation**
 
-This project provides functionality to instantiate data for the sewage network in Pirmasens. This repository provides tools to analyse the xml data structure and clean the provided data for further process; however, the data itself is confidential information and not available on github!
+This project provides functionality to instantiate data for the sewage network in Pirmasens. This repository provides tools to analyze the XML data structure and clean the provided data for further process; However, the data itself is confidential information and not available on GitHub!
 
-## Setting up a virtual environment
+## **Description of modules**
 
-It is highly recommended to use a virtual environment for this project. The virtual environment can be created as follows (`python` command might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variables):
+The `./Data` directory should exist before running the project. The `./Data/raw/` directory contains all the required input files including `dictionary.csv`, `main_datamodel.ttl`, `sub_datamodel.ttl`, `priority_tags_in_ontology.csv`, `sub_network_connections_consolidated_wo_geodata.csv`, and `HALTUNGEN-ALLE-5-2022.xml`. The `./Data/results/` directory contains all the output files generated during the running of scripts. 
+
+Available scripts:
+
+`create_HG_KG_instances.py` extracts data from XML file based on priority tags, and cleans data for further processing. The output files created with this script are needed in the other two scripts.
+
+`match_KG_main_sub_instances.py` uses the `main_datamodel.ttl` and `sub_datamodel.ttl` files to extract KG labels of sub and main networks and find the corresponding KG instance name of each label.
+
+`match_HG_main_sub_instances.py` uses the `sub_network_connections_consolidated_wo_geodata.csv` file to extract HG labels of sub and main networks and then, find the corresponding HG instance name of each label.
+Also, it does some data cleaning.
+
+
+## **Running the project**
+
+
+### **Run with Docker**
+The `Dockerfile` file contains the instructions to build an Image and run all the above scripts. To build and start the agent locally, open up the command prompt in the same directory as this README, run
+
+`docker-compose up -d`
+
+The `./Data` folder would be used as a Docker Volume and outputs will be generated in `./Data/results`.
+
+### **Run with python virtual environment**
+
+#### **Creating virtual environment**
+
+The virtual environment can be created as follows (`python` command might need to be replaced with `py` depending on whether Python is specified in the system's `PATH` variables):
 
 `(Windows)`
 
@@ -14,27 +40,23 @@ $ ps_sewage_venv\Scripts\activate.bat
 (ps_sewage_venv) $
 ```
 
+The above commands will create and activate the virtual environment `ps_sewage_venv` in the current directory.
 
-
-The above commands will create and activate the virtual environment ps_sewage_venv in the current directory.
-
-## Installation of required packages
+#### **Installation of required packages**
 
 Use the following command to install all required packages to run the project:
 
 `pip install -r requirements.txt`
 
-## Description of running the code
+#### **Running the scripts**
 
-Available modules:
+Run the scripts in the following order, using the following commands. The results will be generated in `./Data/results`.
 
-`create_HG_KG_instances.py` extracts data from XML file based on priority tags to and clean data for further processing. The output files created with this script are needed in the other two scripts.
 
-`match_KG_main_sub_instances.py` uses the `main_datamodel.ttl` and `sub_datamodel.ttl` files to extract KG labels of sub and main networks and find the corresponding KG instance name of each label.
+```
+(ps_sewage_venv) $ python create_HG_KG_instances.py 
 
-`match_HG_main_sub_instances.py` uses the `sub_network_connections_consolidated_wo_geodata.csv` file to extract HG labels of sub and main networks and then, find the corresponding HG instance name of each label.
-Also, it does some data cleaning.
+(ps_sewage_venv) $ python match_KG_main_sub_instances.py
 
-The `Data/raw/` directory needs to contain some initial data files for the code to take in 
-
-The `Data/results/` directory contains all the output files generated during the running of scripts.
+(ps_sewage_venv) $ python match_HG_main_sub_instances.py
+```
