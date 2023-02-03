@@ -117,6 +117,10 @@ public class SupersetService extends ContainerService {
 
     @Override
     public void doPreStartUpConfiguration() {
+        writeSupersetFlaskConfig();
+    }
+
+    private void writeSupersetFlaskConfig() {
         ContainerSpec containerSpec = getContainerSpec();
 
         try (InputStream supersetConfig = SupersetService.class.getResourceAsStream("superset/superset_config.py");
