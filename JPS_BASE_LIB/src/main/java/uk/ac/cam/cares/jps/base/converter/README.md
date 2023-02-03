@@ -28,7 +28,7 @@ Values rows include TBox metadata, classes, object properties and data propertie
 
 |Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
 |----------------------------------------------------------------------------|
-|OntoKin, TBox, http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
+|OntoKin,TBox,http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
 |OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
 |OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms,http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
 |OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl,http://www.w3.org/2002/07/owl#imports, , , , , , |
@@ -164,7 +164,7 @@ Suppose you followed the instructions for filling out the template in the TBox M
 
 |Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label|
 |----------------------------------------------------------------------------|
-|OntoKin, TBox, http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
+|OntoKin,TBox,http://www.theworldavatar.com/kg/ontokin, https://www.w3.org/2007/05/powder-s#hasIRI, , , , , , |
 |OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo, , , , , , |
 |OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms,http://www.w3.org/2000/01/rdf-schema#comment, , , , , , |
 |OntoKin,TBox,http://theworldavatar.com/ontology/ontocape/OntoCAPE.owl,http://www.w3.org/2002/07/owl#imports, , , , , , |
@@ -188,7 +188,7 @@ Suppose you followed the instructions for filling out the template in the TBox M
 Copy all tabular data from the *Filled out CSV file-based template* Section, paste them in a newly opened Notepad++ file and save the file as a CSV file.
 > **_NOTE:_**  TBox Generator supports a specific type of CSV file. UTF-8 encoded CSV files created in Microsoft Excel don't work.
 
-Once you have created the CSV file, you can convert it into OWL by running [TBoxGenerator](#https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter/TBoxGeneration.java) developed using Java.
+Once you create the CSV file, you can convert it into OWL by running [TBoxGenerator](#https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter/TBoxGeneration.java) developed using Java. If you run the TBoxGeneration.java file, it will show a file selection pop-up window. There, browse and select the CSV file you have just created or any other CSV file aligned with the requirements of the CSV file-based template. Following the file selection, TBox Generator will convert the CSV file into OWL and create an OWL file at the same path where the CSV file is located.
 
 To run TBox Generator from Python, use the following code:
 ```
