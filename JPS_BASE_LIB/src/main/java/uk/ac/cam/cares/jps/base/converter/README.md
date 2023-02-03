@@ -76,7 +76,7 @@ Assume that you want to:
 - exists in: A relation between a site phase or bulk phase and a material in which they exist.
 - contained in: A relation that identifies that a gas phase or material is contained in a reaction mechanism.
 - has element: A relation that defines that a species or molecular entity contains a chemical element.
-2. specify that a Site Phase or Bulk Phase exists in a Material, a Gas Phase or Material is contained in a Reaction Mechanism and a Species has an Element.
+2. specify that a Site Phase or Bulk Phase exists only in a Material, a Gas Phase or Material is contained exactly in one Reaction Mechanism and a Species has an Element.
 3. impose a restriction on the exists in relation to express that when this relation is applied to any instance of Site Phase or Bulk Phase it can only be linked to an instance of Material.
 4. impose a cardinality restriction on the contained in relation to express that any instance of Gas Phase or Material must be linked to exactly 1 instance of Reaction Mechanism.
 
@@ -84,11 +84,11 @@ To achieve these goals, fill out the template as follows:
 
 |Source, Type, Target, Relation, Domain, Range, Quantifier, Comment, Defined By, Label  |
 |---------------------------------------------------------------------------------------|
-|existsIn,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
-|containedIn,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, contained in|
+|existsIn,Object Property,,,SitePhase UNION BulkPhase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, exists in|
+|containedIn,Object Property,,,GasPhase UNION Material,ReactionMechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, contained in|
 |hasElement,Object Property,,,Species,Element,,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, has element|
 
-> **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
+> **_NOTE:_**  A) Object property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, existsIn and containedIn. B) To specify the fact that a Site Phase or Bulk Phase exists only in a Material, SitePhase UNION BulkPhase is represented under the Domain column, Material is represented under the Range column and only is provided under the Quantifier column . C) An example cardinality restriction is shown in the definition of the containedIn object property. To represent the cardinality of at least 1 provide minimum 1 or and for at most 1 provide maxium 1. Currently, the TBox Generator does not support the cardinality more than 1, for example, exactly 2, at least 3 or at most 4 are not supported.
 
 #### Data Properties
 Data properties or Datatype properties can be represented just below TBox Metadata rows. However, it is recommended that data properties are provided after classes. Data properties can be provided above or below object properties.
@@ -107,4 +107,4 @@ To achieve these goals, fill out the template as follows:
 |http://www.opengis.net/ont/geosparql#dimension,Data Property,,,Phase,Integer,,,http://www.opengis.net/ont/geosparql, |
 |requiresSpeciesValidation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl, |
 
-> **_NOTE:_**  A) Data property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, requiresSpeciesValidation.
+> **_NOTE:_**  A) Data property names have the similar syntax of CamelBack notation except the beginning lower case letter. For example, requiresSpeciesValidation. B) Complete URLs are provided for the properties reused from external ontologies. For example, the URLs http://purl.org/dc/elements/1.1/identifier and http://www.opengis.net/ont/geosparql#dimension are used in the definitions of identifier and dimension, respoectively.
