@@ -102,7 +102,7 @@
     <dependency>
       <groupId>uk.ac.cam.cares.jps</groupId>
       <artifactId>jps-base-lib</artifactId>
-      <version>1.32.0</version>
+      <version>1.33.0</version>
     </dependency>
 
   </dependencies>
