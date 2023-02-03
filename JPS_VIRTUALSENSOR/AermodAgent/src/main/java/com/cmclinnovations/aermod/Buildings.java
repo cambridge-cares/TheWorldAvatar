@@ -2,6 +2,7 @@ package com.cmclinnovations.aermod;
 
 import geotrellis.proj4.CRS;
 import geotrellis.proj4.Transform;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -17,8 +18,12 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -123,8 +128,9 @@ public class Buildings {
 
     public static int run() {
         try {
-            getStacksBuildings();
-            if (createBPIPPRMInput() == 0) runBPIPPRM(bpipprmDirectory);
+//            getStacksBuildings();
+            getProperties();
+            if (createBPIPPRMInput() == 0) runBPIPPRM(simulationDirectory);
             else {
                 LOGGER.error("Failed to create BPIPPRM input file, terminating");
                 return 1;
@@ -679,7 +685,7 @@ public class Buildings {
         for (int i = 0; i < numberStackLines-1; i++) {
             sb.append(BPIPPRMStackInput.get(i));
         }
-        return writeToFile(bpipprmDirectory + "bpipprm.inp", sb.toString());
+        return writeToFile(simulationDirectory + "bpipprm.inp", sb.toString());
 
     }
 
@@ -713,6 +719,7 @@ public class Buildings {
         return 0;
     }
 
+
     public static int createAERMODSourceInput() {
         StringBuilder sb = new StringBuilder();
         int numberStackLines = BPIPPRMStackInput.size() ;
@@ -743,8 +750,53 @@ public class Buildings {
         }
 
 
-        return writeToFile(simulationDirectory + "aermod\\plantSources.dat",sb.toString());
+        return writeToFile(simulationDirectory + "plantSources.dat",sb.toString());
     }
+
+
+    public int runAermet() {
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+
+        String latSuffix = "N";
+        String lonSuffix = "E";
+        if (lat < 0 ) latSuffix = "S";
+        if (lon < 0) lonSuffix = "W";
+        lat = Math.abs(lat);
+        lon = Math.abs(lon);
+        String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
+
+
+        String aermetInputFile = simulationDirectory + "aermet.inp";
+        Path path = Paths.get(aermetInputFile);
+        Charset charset = StandardCharsets.UTF_8;
+
+
+
+        try {
+            String content = new String(Files.readAllBytes(path), charset);
+            content = content.replaceAll("REPLACED_BY_AERMOD_AGENT", location);
+            Files.write(path, content.getBytes(charset));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        String execFile = simulationDirectory + "aermet.exe" ;
+
+        try {
+            Process p = new ProcessBuilder(execFile).start();
+            p.waitFor();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return 1;
+        }
+
+        return 0;
+
+    }
+
 
 
     public static JSONArray StackQuery (String StackQueryIRI) {

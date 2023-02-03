@@ -1,5 +1,6 @@
 package com.cmclinnovations.aermod;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.base.Sys;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -18,7 +19,10 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,17 +48,18 @@ public class BuildingsTest {
 
     private QueryClient queryClient;
 
-
-
-
     Buildings bp = new Buildings() ;
 
     public BuildingsTest() throws ParseException {  }
 
 
-    /* Test the initialization code within the constructor of the BuildingsPlantItems class. */
+    /* 1. Query buildings and plant items data from the knowledge graph.
+    2. Prepare the input for BPIPPRM and the AERMOD source data file.
+    3. Run BPIPPRM.
+
+    . */
     @Test
-    public void testInit() throws org.opengis.util.FactoryException, FactoryException, TransformException, ParseException {
+    public void testInit() throws org.opengis.util.FactoryException, FactoryException, TransformException, ParseException, IOException, InterruptedException {
 
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
         System.out.println(centreZoneNumber);
@@ -80,8 +85,15 @@ public class BuildingsTest {
         Assertions.assertEquals(res,0);
         int res2 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res2,0);
-        int rds = bp.runBPIPPRM(simulationDirectory+"bpipprm\\");
+        int rds = bp.runBPIPPRM(simulationDirectory);
         Assertions.assertEquals(rds,0);
+        int res3 = bp.runAermet();
+        Assertions.assertEquals(res3,0);
+
+
+
+
+
 //        int res = bp.run();
 //        Assertions.assertEquals(res,0);
 
@@ -98,6 +110,38 @@ public class BuildingsTest {
 
 
     }
+
+    //Prepare weather data files. Doesn't work as the Python script cannot be executed.
+    @Test
+    public void getWeatherData() throws IOException, InterruptedException {
+
+        String inp1 = simulationDirectory + "SurfaceWeatherData.py" ;
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+        String inp2 = String.valueOf(lat);
+        String inp3 = String.valueOf(lon);
+
+        String command = inp1 + " " + lat + " " + lon;
+        System.out.println(command);
+//        Process p = Runtime.getRuntime().exec(command);
+//        p.waitFor();
+
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.directory(new File(simulationDirectory));
+        pb.command(command);
+        Process p = pb.start();
+        p.waitFor();
+
+//        Process p = new ProcessBuilder("py",inp1, inp2, inp3).start();
+
+//        p.waitFor();
+
+
+
+
+    }
+
+
 
 
 
