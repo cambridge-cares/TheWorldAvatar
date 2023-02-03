@@ -12,8 +12,8 @@ import pandas as pd
 
 # Self import
 from agent.ifc2tileset import gen_tilesets
-from tests.ifc2tileset.test_tile_helper import retrieve_tileset_contents
-from tests.ifc2tileset.test_asset_tiles import gen_sample_df
+from tests.unit_test.ifc2tileset.test_tile_helper import retrieve_tileset_contents
+from tests.unit_test.ifc2tileset.test_asset_tiles import gen_sample_df
 
 
 def test_gen_tilesets_solarpanel():
