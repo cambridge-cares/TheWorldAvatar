@@ -26,6 +26,7 @@ from bs4 import BeautifulSoup
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+
 # ------------------------ Data retrieval (from Web) ------------------------ #
 def read_from_web_monthly_distribution_elec(year:str = YEAR):
   '''
@@ -339,6 +340,7 @@ def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     query = output_query_template('Electricity', year)
 
     # Construct kg client
+    logger.info('Querying electricity consumption data from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
@@ -346,15 +348,17 @@ def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     df = pd.DataFrame(columns=['s','usage','meter'])
     df = df.append(result)
 
-    # Adjust the format, get rid of 'NaN' variables
+    # Adjust the format
     df["usage"] = df["usage"].apply(convert_to_float)
     df["meter"] = df["meter"].apply(convert_to_int)
 
     if per_household == True:
         df['elec_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
     
+    # Get rid of 'NaN' variables
     df = remove_unlocated_data(df)
     df = remove_NaN(df)
+    logger.info(f'{df.shape[0]} number of LSOA of which electricity consumption/meter data have been retrieved')
 
     return df 
 
@@ -377,6 +381,7 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
     query = output_query_template('Gas', year)
 
     # Construct kg client
+    logger.info('Querying Gas consumption data from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
@@ -384,21 +389,23 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
     df = pd.DataFrame(columns=['s','usage','meter','nonmeter'])
     df = df.append(result)
 
-    # Adjust the format, get rid of 'NaN' variables
+    # Adjust the format
     df["nonmeter"] = df["nonmeter"].apply(convert_to_zero)
     df["usage"] = df["usage"].apply(convert_to_float)
     df["meter"] = df["meter"].apply(convert_to_int)
 
+    # Get rid of 'NaN' variables
     df = remove_NaN(df)
     df = remove_unlocated_data(df)
 
+    # Calculate consuming meter which is the only meaningful var
     df['consuming meter'] = df['meter'] - df['nonmeter']
-    df = drop_column(df,'meter')
-    df = drop_column(df,'nonmeter')
+    df = drop_column(df,['meter','nonmeter'])
 
     if per_household == True:
         df['gas_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
     
+    logger.info(f'{df.shape[0]} number of LSOA of which gas consumption/consuming meter data have been retrieved')
     return df
 
 def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = YEAR) -> pd.DataFrame:
@@ -419,6 +426,7 @@ def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     query = output_query_template('Fuel poverty', year)
 
     # Construct kg client
+    logger.info('Querying Fuel Poverty data from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
@@ -426,12 +434,14 @@ def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     df = pd.DataFrame(columns=['s', 'result', 'num'])
     df = df.append(result)
 
-    # Adjust the format, get rid of 'NaN' variables
+    # Adjust the format
     df["result"] = df["result"].apply(convert_to_float)
     df["num"] = df["num"].apply(convert_to_int)
 
+    # Get rid of 'NaN' variables
     df = remove_unlocated_data(df)
     df = remove_NaN(df)
+    logger.info(f'{df.shape[0]} number of LSOA of which Fuel poverty/number of household data have been retrieved')
 
     return df
 
@@ -454,6 +464,7 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     query = output_query_template('ONS output area', year, iris= False)
 
     # Construct kg client
+    logger.info('Querying ONS output area shape from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
@@ -488,11 +499,12 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     df = df.set_crs("EPSG:4326")
     print('Converting to Mercator projection (better than WGS84 for UK)')
     df = df.to_crs("EPSG:3395")
-    # Enable it to save the df to pickle file, save the time for querying and processing :)
+    # Enable the func below to save the df to pickle file, save the time for querying and processing :)
     #save_pickle_variable(df_geo = df)
 
     df = remove_unlocated_data(df)
 
+    logger.info(f'{df.shape[0]} number of LSOA of which ONS output area shape data have been retrieved')
     return df
 
 def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = YEAR) -> pd.DataFrame:
@@ -514,6 +526,7 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     query = output_query_template('Temperature', year)
 
     # Construct kg client
+    logger.info('Querying Climate temperature data from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
@@ -525,4 +538,5 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     df = remove_unlocated_data(df)
     df = remove_NaN(df)
 
+    logger.info(f'{df.shape[0]/36} number of LSOA of which Climate tempeature data (max, mean, min of each 12 months) have been retrieved')
     return df

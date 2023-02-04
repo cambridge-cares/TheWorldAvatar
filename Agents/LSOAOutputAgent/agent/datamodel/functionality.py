@@ -8,6 +8,7 @@
 import agentlogging
 from agent.errorhandling.exceptions import *
 from agent.utils.env_configs import YEAR
+from agent.datacalculation.datacalculation import monthly_disaggregation
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 import matplotlib.pyplot as plt
@@ -23,30 +24,6 @@ import pickle
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
-    '''
-    To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
-    from monthly_ref
-    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
-    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
-    that won't affect the result
-    Arguments:
-    df: two-column data frame which MUST have the data to disaggregate placed at the second column
-    (i.e. at position [1])
-    monthly_ref: reference monthly distribution.
-    annual: if True, the second column will include the annual value
-            if False, only monthly value will be returned
-    '''
-    global months
-    df = copy.deepcopy(df_in)
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-    total = sum(monthly_ref)
-    for i in range(12):
-        df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
-    if annual == False:
-        df = drop_column(df,1)
-    return df
-    
 # ------------------------ Some 'shortcut' functions ----------------------- #
 def convert_to_int(val):
     '''
@@ -197,16 +174,27 @@ def remove_NaN(df_in: pd.DataFrame):
         logger.info(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
         print(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
 
+    df.reset_index(drop=True, inplace=True)
     return df
 
-def drop_column(df,index):
+def drop_column(df, indices):
     '''
-    drop a column using index, can using index number or name
+    drop multiple columns using indices, can use index numbers or names
     '''
-    if type(index) == int:
-        df = df.drop(columns=df.columns[index])
+    if all(isinstance(index, int) for index in indices):
+        df = df.drop(columns=[df.columns[index] for index in indices])
     else:
-        df = df.drop(columns=[index])
+        df = df.drop(columns=indices)
+    return df
+
+def select_column(df, indices):
+    '''
+    select multiple columns using indices, can use index numbers or names
+    '''
+    if all(isinstance(index, int) for index in indices):
+        df = df[[df.columns[index] for index in indices]]
+    else:
+        df = df[indices]
     return df
 
 def convert_to_tensor(input, monthly_ref = None, LSOA_index_id = None, year:str =YEAR):

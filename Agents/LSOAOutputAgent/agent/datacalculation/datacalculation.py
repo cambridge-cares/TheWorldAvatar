@@ -11,14 +11,41 @@
 import agentlogging
 from agent.errorhandling.exceptions import *
 from agent.dataretrieval.dataretrival import *
+from agent.utils.env_configs import YEAR
 
 import numpy as np
+import pandas as pd
 import requests
+import copy
 
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
+def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
+    '''
+    To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
+    from monthly_ref
+    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
+    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
+    that won't affect the result
+    Arguments:
+    df: two-column data frame which MUST have the data to disaggregate placed at the second column
+    (i.e. at position [1])
+    monthly_ref: reference monthly distribution.
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
+    '''
+    global months
+    df = copy.deepcopy(df_in)
+    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    total = sum(monthly_ref)
+    for i in range(12):
+        df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
+    if annual == False:
+        df = drop_column(df,1)
+    return df
+    
 # ----------------------Call Calculation Agent---------------------------------- #
 def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_efficiency: float = None):
     '''
@@ -74,7 +101,7 @@ def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_e
 
     return cop
 
-def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, year: str = YEAR, annual: bool = None):
+def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame = pd.DataFrame(), df_gas_in:pd.DataFrame = pd.DataFrame(), year: str = YEAR, annual: bool = None):
     '''
     To calculate the fuel cost per LSOA, normally on per household basis
     Returns three dataframe which have first column as LSOA code, and the following 12
@@ -88,17 +115,28 @@ def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame, df_gas_in:pd.DataFram
     annual: if True, the second column will include the annual value (with monthly data)
             if False, only monthly value will be returned
     '''
-    # Make a copy so it won't ruin the original df
-    df_elec = copy.deepcopy(df_elec_in)
-    df_gas = copy.deepcopy(df_gas_in)
 
     # Wrapping the query
     query = {
-        'query':{'df_electricity':df_elec.to_dict(orient='list'),
-                'df_gas':df_gas.to_dict(orient='list'),
+        'query':{
                 'year':year
                 }
         }
+
+    if not df_elec_in.empty:
+        # Make a copy so it won't ruin the original df
+        df_elec = copy.deepcopy(df_elec_in)
+        query['query']['df_electricity'] = df_elec.to_dict(orient='list')
+    
+    if not df_gas_in.empty:
+        # Make a copy so it won't ruin the original df
+        df_gas = copy.deepcopy(df_gas_in)
+        query['query']['df_gas'] = df_gas.to_dict(orient='list')
+
+    # At lease should have one input consumption
+    if df_elec_in.empty and df_gas_in.empty:
+        raise InvalidInput('None of gas consumption or electricity consumption provided.')
+    
     if annual:
         query['query']['annual'] = str(annual)
 
@@ -119,8 +157,22 @@ def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame, df_gas_in:pd.DataFram
         logger.error(f'No valid JSON context from response -- Response code {response.status_code}')
         raise InvalidInput(f'No valid JSON context from response -- Response code {response.status_code}') from ex
     
-    df_cost_total = pd.DataFrame.from_dict(data['df_cost_total'])
-    df_cost_elec = pd.DataFrame.from_dict(data['df_cost_elec'])
-    df_cost_gas = pd.DataFrame.from_dict(data['df_cost_gas'])
+    if not df_elec_in.empty and not df_gas_in.empty:
+        df_cost_total = pd.DataFrame.from_dict(data['df_cost_total'])
+    else:
+        # Empty :)
+        df_cost_total= pd.DataFrame()
+    
+    if not df_elec_in.empty:
+        df_cost_elec = pd.DataFrame.from_dict(data['df_cost_elec'])
+    else:
+        # Empty :)
+        df_cost_elec= pd.DataFrame()
+
+    if not df_gas_in.empty:
+        df_cost_gas = pd.DataFrame.from_dict(data['df_cost_gas'])
+    else:
+        # Empty :)
+        df_cost_gas= pd.DataFrame()
     
     return df_cost_total, df_cost_elec, df_cost_gas

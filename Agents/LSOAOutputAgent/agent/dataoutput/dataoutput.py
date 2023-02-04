@@ -897,15 +897,15 @@ print(cop)
 # Test for fuel cost agent----------------------------------------
 
 # Retrieve consumption data from KG
-df_elec = retrieve_elec_data_from_KG()
-df_elec = df_elec[['s','usage']]
+df_elec = retrieve_elec_data_from_KG() 
+df_elec = select_column(df_elec, ['s','usage']) 
 df_gas = retrieve_gas_data_from_KG()
-df_gas = df_gas[['s','usage']]
+df_gas = select_column(df_gas, ['s','usage']) 
 
 # Call the Calculation agent
 url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'
-df_cost,df_ele, df_gas = call_fuel_cost_agent(url,df_elec,df_gas,'2020',annual=True)
-print(df_cost)
+df_cost, df_ele, df_gas = call_fuel_cost_agent(df_elec_in = df_elec, df_gas_in = df_gas, url= url,  year = '2020',annual=True)
+print(df_gas)
 # ----------------------------------------------------------------
 ##########################################################
 

@@ -65,7 +65,6 @@ def api_calculation_cop():
         logger.info('No Annual data will be returned as per specified in query')
 
 
-    print(inputs)
     try: 
         if 'df_gas' in query.keys() and 'df_electricity' in query.keys():
             df_cost_total, df_cost_elec, df_cost_gas = calculating_fuel_cost(inputs['df_electricity'],inputs['df_gas'], \

@@ -55,7 +55,8 @@ def calculating_fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, year:
     df_cost_gas = calculating_single_cost_gas(df_gas_in, year, annual)
     
     # Merge to total cost
-    df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0], how='outer')
+    df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0], how='inner')
+    
     # Iterate through the columns of the merged dataframe and add the values
     for col in df_cost_gas.columns[1:]:
         df_cost_total[col] = df_cost_total[col + '_x'] + df_cost_total[col + '_y']
