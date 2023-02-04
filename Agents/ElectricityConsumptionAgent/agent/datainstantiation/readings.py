@@ -503,6 +503,7 @@ def upload_gas_data_to_KG (year: str = YEAR,
             region = LSOA_codes[i + j + 1]
             meters = met_num[i + j + 1]
             cons = consump[i + j + 1]
+            non_meters = non_met_num[i + j + 1]
 
             used_uuid = COMPA + 'hasConsumed_' + str(uuid.uuid4())
             met_uuid = COMPA + 'GasMeter_' + str(uuid.uuid4())
@@ -514,6 +515,7 @@ def upload_gas_data_to_KG (year: str = YEAR,
         region = LSOA_codes[int(len_query[g + 1]) - 1]
         meters = met_num[int(len_query[g + 1]) - 1]
         cons = consump[int(len_query[g + 1]) - 1]
+        non_meters = non_met_num[int(len_query[g + 1]) - 1]
 
         used_uuid = COMPA + 'hasConsumed_' + str(uuid.uuid4())
         met_uuid = COMPA + 'GasMeter_' + str(uuid.uuid4())
@@ -964,9 +966,10 @@ if __name__ == '__main__':
 # for year in years:
 #         upload_year(year)
     
-    num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
-    print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
-    print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
-    print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
-    print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
-    print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
+    # num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
+    # print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
+    # print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
+    # print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
+    # print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
+    # print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
+    upload_gas_data_to_KG()
