@@ -354,13 +354,14 @@ def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
         df['elec_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
     
     df = remove_unlocated_data(df)
+    df = remove_NaN(df)
 
     return df 
 
 def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = YEAR, per_household: bool = False) -> pd.DataFrame:
     '''
     perform SPARQL query to get the data from Blazegraph, return a DataFrame looks like:
-        's'  'usage'  'meter'  'nonmeter' ('gas_consump_perhousehold')
+        's'  'usage'  'consuming meter' ('gas_consump_perhousehold')
     0
     1
     2
@@ -384,15 +385,20 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
     df = df.append(result)
 
     # Adjust the format, get rid of 'NaN' variables
+    df["nonmeter"] = df["nonmeter"].apply(convert_to_zero)
     df["usage"] = df["usage"].apply(convert_to_float)
     df["meter"] = df["meter"].apply(convert_to_int)
-    df["nonmeter"] = df["nonmeter"].apply(convert_to_int)
+
+    df = remove_NaN(df)
+    df = remove_unlocated_data(df)
+
+    df['consuming meter'] = df['meter'] - df['nonmeter']
+    df = drop_column(df,'meter')
+    df = drop_column(df,'nonmeter')
 
     if per_household == True:
         df['gas_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
     
-    df = remove_unlocated_data(df)
-
     return df
 
 def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT, year: str = YEAR) -> pd.DataFrame:
@@ -425,6 +431,7 @@ def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     df["num"] = df["num"].apply(convert_to_int)
 
     df = remove_unlocated_data(df)
+    df = remove_NaN(df)
 
     return df
 
@@ -514,6 +521,8 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     df = pd.DataFrame(columns=['s', 'start', 'var', 't' ])
     df = df.append(result)
 
+    df["t"] = df["t"].apply(convert_to_float)
     df = remove_unlocated_data(df)
+    df = remove_NaN(df)
 
     return df

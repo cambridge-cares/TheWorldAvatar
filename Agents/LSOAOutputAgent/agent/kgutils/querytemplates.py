@@ -102,4 +102,3 @@ def output_query_template(keyword: str, year: str = YEAR):
     #--------------------------Query end here----------------------------------
     query+= "}"
     return query
-

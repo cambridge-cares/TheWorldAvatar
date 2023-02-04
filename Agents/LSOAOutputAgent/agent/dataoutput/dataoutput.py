@@ -898,7 +898,9 @@ print(cop)
 
 # Retrieve consumption data from KG
 df_elec = retrieve_elec_data_from_KG()
+df_elec = df_elec[['s','usage']]
 df_gas = retrieve_gas_data_from_KG()
+df_gas = df_gas[['s','usage']]
 
 # Call the Calculation agent
 url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'

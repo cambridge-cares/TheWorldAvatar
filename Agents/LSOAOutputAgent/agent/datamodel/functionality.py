@@ -68,6 +68,15 @@ def convert_to_float(val):
         val = round(val,3)
         return val
 
+def convert_to_zero(val):
+    '''
+    get rid of all Nan data, and convert to 0
+    '''
+    if val == 'NaN':
+        return 0
+    else:
+        return int(val)
+
 def save_figures(arg_name):
     '''
     Save the figure under ./'figure_output folder, both png and pdf format
@@ -164,7 +173,7 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     # Set the label for the colorbar
     colorbar.set_label(label)
 
-def remove_NaN(df: pd.DataFrame):
+def remove_NaN(df_in: pd.DataFrame):
     '''
     Remove all the row which contain the value 'NaN' 
     iteration start from second column and above, as the first column is always LSOA code for identification
@@ -172,8 +181,22 @@ def remove_NaN(df: pd.DataFrame):
     
     Note: This function is only used for data processing as this will delete the row
     '''
-    df = df[df.iloc[:, 1:].notnull().all(axis=1)]
-    df = df.reset_index(drop=True)
+    df = copy.deepcopy(df_in)
+
+    nan_rows = df[df.isnull().any(1)].index
+    deleted_rows = []
+    for i in nan_rows:
+        row = df.iloc[i, :]
+        first_col_value = row[df.columns[0]]
+        nan_cols = row.isnull().index[row.isnull() == True].tolist()
+        deleted_rows.append((first_col_value, nan_cols))
+
+    df = df.drop(nan_rows)
+
+    for row in deleted_rows:
+        logger.info(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
+        print(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
+
     return df
 
 def drop_column(df,index):
@@ -398,3 +421,29 @@ def call_pickle(pathname):
         raise InvalidInput("filepath can not be read -- check if the file exist") from ex
         
     return results
+
+def get_key(val, my_dict):
+    for key, value in my_dict.items():
+        if val == value:
+            return key
+    return None
+
+def parse_to_file(query, filepath = "demofile"):
+  '''
+  This module is to parse the result into a file, (default as called demofile.txt) so you can visualise it
+  could be useful when the terminal contain too much annoying logging message
+  '''
+  f = open(f'./Data/{filepath}.txt', "w")
+  f.write(str(query))
+  f.close()
+
+  #open and read the file after the appending:
+  f = open(f"./Data/{filepath}.txt", "r")
+
+def convert_df(df, filename: str = 'df'):
+  '''
+  This module is to parse the dataframe into a file called df.txt so you can visualise it
+  could be useful when the terminal contain too much annoying logging message
+  '''
+  df.to_csv(f'./Data/{filename}.txt', sep='\t', index=False)
+  print(f'Dataframe successfully printed at ./Data/{filename}.txt')
