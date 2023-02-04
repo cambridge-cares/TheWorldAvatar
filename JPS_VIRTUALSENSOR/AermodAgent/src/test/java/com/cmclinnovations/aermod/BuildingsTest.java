@@ -1,18 +1,11 @@
 package com.cmclinnovations.aermod;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.jena.base.Sys;
-import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.referencing.FactoryException;
@@ -21,19 +14,15 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\21\\";
+//    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\21\\";
+    String simulationDirectory = "C:\\Users\\NAGARAJAN KARTHIK\\test\\1\\";
     //    Two equivalent polygons which define a rectangular region within Jurong Island. The values in wkt are in EPSG:4326/WGS84 coordinates
     //    while those in wkt2 are in EPSG:3857 coordinates.
     // For EPSG:4326/Wgs84 format, longitude is specified before latitude.
@@ -70,7 +59,7 @@ public class BuildingsTest {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        int numStacks = 569;
+        int numStacks = 19;
         int numBuildings = 10;
         bp.init(simulationDirectory, scope, nx, ny, srid);
         Assertions.assertTrue(bp.locindex > -1);

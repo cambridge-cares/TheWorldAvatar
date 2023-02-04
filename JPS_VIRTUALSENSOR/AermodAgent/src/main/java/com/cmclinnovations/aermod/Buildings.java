@@ -2,7 +2,6 @@ package com.cmclinnovations.aermod;
 
 import geotrellis.proj4.CRS;
 import geotrellis.proj4.Transform;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -15,10 +14,8 @@ import org.opengis.referencing.operation.TransformException;
 import scala.Tuple2;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 
@@ -703,7 +699,7 @@ public class Buildings {
     }
 
     public static int runBPIPPRM(String runDirectory) {
-        System.out.println(runDirectory);
+
         String execFile = runDirectory + "bpipprm.exe" ;
         String inputFile = runDirectory + "bpipprm.inp" ;
         String outputFile1 = runDirectory + "buildings.dat";
@@ -768,16 +764,19 @@ public class Buildings {
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
 
 
-        String aermetInputFile = simulationDirectory + "aermet.inp";
-        Path path = Paths.get(aermetInputFile);
+        String aermetInputFile = simulationDirectory + "aermet_template.inp";
+        Path inPath = Paths.get(aermetInputFile);
         Charset charset = StandardCharsets.UTF_8;
+        String aermetOutFile = simulationDirectory + "aermet_template.inp";
+        Path outPath = Paths.get(aermetOutFile);
 
 
 
         try {
-            String content = new String(Files.readAllBytes(path), charset);
+            String content = new String(Files.readAllBytes(inPath), charset);
             content = content.replaceAll("REPLACED_BY_AERMOD_AGENT", location);
-            Files.write(path, content.getBytes(charset));
+//            Files.write(outPath, content.getBytes(charset));
+            return writeToFile(simulationDirectory + "aermet.inp",content);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -786,8 +785,8 @@ public class Buildings {
         String execFile = simulationDirectory + "aermet.exe" ;
 
         try {
-            Process p = new ProcessBuilder(execFile).start();
-            p.waitFor();
+            Process process = Runtime.getRuntime().exec(new String[]{execFile, "aermet.inp"}, null, Paths.get(simulationDirectory).toFile());
+            process.waitFor();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return 1;
