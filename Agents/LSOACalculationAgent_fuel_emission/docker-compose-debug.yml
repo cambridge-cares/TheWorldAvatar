@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  lsoacalculationagent_fuel_emission:
+    image: ghcr.io/cambridge-cares/lsoa_agent_debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
+    ports:
+      - "${DEBUG_PORT}:5678"
+    volumes:
+      - ./agent:/app/agent

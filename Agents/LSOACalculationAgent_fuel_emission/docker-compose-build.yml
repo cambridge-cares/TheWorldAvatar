@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  lsoacalculationagent_fuel_emission:
+    build:
+      context: .
+      target: prod
