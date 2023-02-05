@@ -17,7 +17,7 @@ calculationtask_bp = Blueprint(
 # All query parameters are expected as SINGLE JSON object 'query' (to follow
 # the convention introduced in the JPS_BASE_LIB)
 @calculationtask_bp.route('/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost', methods=['GET'])
-def api_calculation_cop():
+def api_calculation_fuel_cost():
     #
     # Check arguments (query parameters)
     #
