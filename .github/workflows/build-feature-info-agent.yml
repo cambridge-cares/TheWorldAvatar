@@ -12,12 +12,12 @@ name: Build the FeatureInfoAgent
 
 # Trigger this workflow on pull requests to the main branch,
 # but ONLY when files within the agent's directory are changed.
-on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - Agents/FeatureInfoAgent/**
+#on:
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - Agents/FeatureInfoAgent/**
 
 
 # Job definitions

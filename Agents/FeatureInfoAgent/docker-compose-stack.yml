@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
 
+  # Feature Info Agent
   feature-info-agent:
     deploy:
       mode: replicated

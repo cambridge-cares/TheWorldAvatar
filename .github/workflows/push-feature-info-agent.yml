@@ -20,14 +20,12 @@ name: Push the FeatureInfoAgent
 on:
   push:
     branches:
-      - develop
-      - master
+      - main
     paths:
       - Agents/EmailAgent/**
   pull_request:
     branches:
-      - develop
-      - master
+      - main
     paths:
       - Agents/EmailAgent/**
 

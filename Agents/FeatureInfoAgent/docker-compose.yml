@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
 
+  # Feature Info Agent
   feature-info-agent:
     image: ghcr.io/cambridge-cares/feature-info-agent:2.0.0
     build: .

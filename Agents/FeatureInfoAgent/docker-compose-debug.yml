@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
 
+  # Feature Info Agent
   feature-info-agent:
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
