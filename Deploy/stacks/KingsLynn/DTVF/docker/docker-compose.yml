@@ -15,5 +15,5 @@ services:
         authors: "support@cmclinnovations"
         description: "Example implementation of the Digital Twin Visualisation Framework (Mapbox)."
     ports:
-      - "80:80"
+      - "5555:80"
  
