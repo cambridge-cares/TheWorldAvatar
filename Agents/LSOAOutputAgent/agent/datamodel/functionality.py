@@ -8,7 +8,6 @@
 import agentlogging
 from agent.errorhandling.exceptions import *
 from agent.utils.env_configs import YEAR
-from agent.datacalculation.datacalculation import monthly_disaggregation
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 import matplotlib.pyplot as plt
@@ -25,6 +24,39 @@ import pickle
 logger = agentlogging.get_logger("prod")
 
 # ------------------------ Some 'shortcut' functions ----------------------- #
+# data calculation ----------------------- #
+def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
+    '''
+    To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
+    from monthly_ref
+    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
+    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
+    that won't affect the result
+    Arguments:
+    df: two-column data frame which MUST have the data to disaggregate placed at the second column
+    (i.e. at position [1])
+    monthly_ref: reference monthly distribution.
+    annual: if True, the second column will include the annual value
+            if False, only monthly value will be returned
+    '''
+    global months
+    df = copy.deepcopy(df_in)
+    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    total = sum(monthly_ref)
+    for i in range(12):
+        df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
+    if annual == False:
+        df = drop_column(df,[1])
+    return df
+
+def T_from_COP(COP):
+    '''
+    Return temperature based on a given COP
+    '''
+    T = 45 - ((45+273.15)/(COP/0.35))
+
+    return T
+
 # df data treatment ----------------------- #
 def convert_to_int(val):
     '''
@@ -130,30 +162,33 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
     i.e. for all data relating to temperature, such as COP, change of gas, electricity etc
     convert into tensor will make it faster to calculate
     Beside the tensor, this function will return an LSOA_index as well, which using row index as 
-    key, LSOA code as value, for the later match up.
+    key, LSOA code as value, for the later match up. This index is a dict like:
+    {LSOA_1:0, LSOA_2:1, LSOA_3:2, ...}
+    i.e, {LOSA_code: tenosr index}
     Arguments:
-    input: can be dict or df. If it's a dict, which should have structure like:
-    dict = { LSOA_1: 
-                {'2020-01-01 12:00:00:
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                {'2020-02-01 12:00:00:
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
-                    .......
-            LSOA_2: 
-                {'2020-01-01 12:00:00:
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
-                {'2020-02-01 12:00:00:
-                {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
-                    'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
-                    .......
-            }
+    input: can be dict or df. 
+        If it's a dict, which should have structure like:
+        dict = { LSOA_1: 
+                    {'2020-01-01 12:00:00:
+                    {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    {'2020-02-01 12:00:00:
+                    {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
+                        .......
+                LSOA_2: 
+                    {'2020-01-01 12:00:00:
+                    {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}
+                    {'2020-02-01 12:00:00:
+                    {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas':1,\
+                        'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax':2,\}}
+                        .......
+                }
     if it is a df, should have a structure like:
         LSOA_code   date                      var                                                                 temp
     0   LSOA_1      '2020-01-01 12:00:00      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'    3
@@ -173,8 +208,8 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
         ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'       5
         ...          ...                      'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'    7
                     .......     
-
-    or df can be this shape:
+    
+    or df is not relating to temperature, which can be this shape:
                 LSOA_code   elec_consump
         0       LSOA_1      100
         1       LSOA_2      100
@@ -194,8 +229,10 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
     As this senario only apply to those data are not temperature related, making them into this shape is just for the sake of calculation.
     
     monthly_ref: ONLY NEED when input is a df and have only two column, and this monthly_ref is been used 
-    to disaggregate into monthly data
+        to disaggregate into monthly data
     LSOA_index_id: ONLY NEED when input is a df, and are not-temperature related (such as consumption/usage)
+                   This should be returned when initially call this function to convert temperature tensor, 
+                   and can be used from their directly.
     ** The logic is, for those data are not temperature related to perform this operation, they ultimately 
     are used to serve data that DO is temperature related, for example, convert electricity consumption into tensor,
     to serve delta_electricity_consumption_tensor, to get remaining_electricity_consumption_tensor. so they need
@@ -214,35 +251,34 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
             # Parse the df results
             all_results = df.values
 
-            # Get unique LSOA keys
-            LSOA_index = np.unique(all_results[:,0]) 
+            # Get unique LSOA keys, generate LSOA_index dict
+            LSOA_index = {}
+            lsoa_array = np.unique(all_results[:,0]) 
+            for i in range(len(lsoa_array)):
+                LSOA_index[lsoa_array[i]] = i
 
-            # Create dict for lsoa code
-            lsoa_dict = {}
-            for i in range(len(LSOA_index)):
-                lsoa_dict[LSOA_index[i]] = i 
-            
             # Allocate the data into tensor
             results_tensor = np.zeros((3,len(LSOA_index),12)) 
             for j in range(len(all_results[:, 0])):
                 t_ind = t_dict[all_results[j, 2]]
                 d_ind = date_dict[all_results[j, 1]]
-                lsoa_ind = lsoa_dict[all_results[j, 0]]
+                lsoa_ind = LSOA_index[all_results[j, 0]]
                 # allocating a value (last index is value)
                 results_tensor[t_ind, lsoa_ind, d_ind] = all_results[j, -1]
         else:
-            # initialize a results_tensor = np.zeros((3, length of row,12))
-            results_tensor = np.zeros((3, len(LSOA_index_id), 12))
+            # if annual data, disaggrate it
             if df.shape[1] == 2:
                 df = monthly_disaggregation(df, monthly_ref)
-            # Select all rows and columns starting from the second column of the DataFrame
-            values = df.iloc[:, 1:].values
-            # Flatten the 2D array into a 1D array
-            values = values.flatten()
+            
+            # initialize a results_tensor = np.zeros((3, length of row, 12))
+            results_tensor = np.full(shape=(3, len(LSOA_index_id), 12), fill_value=np.nan, dtype=float) 
+
             # Iterate over the indices and LSOA codes in the dictionary
-            for i, (lsoa, index) in enumerate(LSOA_index_id.items()):
-                # Use the at method to assign the values to the array
-                results_tensor[:, index, :] = values[i * 12: (i + 1) * 12]
+            for key, value in LSOA_index_id.items():
+                row = df.loc[df[df.columns[0]] == key]
+                if not row.empty:
+                    results_tensor[:, value, :] = row.iloc[:, 1:].values
+
             # No LSOA_index in this case
             LSOA_index = None
 
@@ -260,6 +296,27 @@ LSOA_2:[Jan: [tasmin: ,  tas:   , tasmax:  ],
                     results_tensor[t_index][lsoa_index][date_index] = v
 
     return LSOA_index, results_tensor
+
+def compare_tensor(array_temp, unique_LSOA, *array_to_compare):
+    '''
+    Compare two array see if they have nan value due to comprimisation from fitting to temperature array
+    can accept multiple array_to_compare
+    '''
+    # Create mask if applicable
+    mask = np.isnan(np.hstack(array_to_compare)).any(axis=(0,2))
+    nan_indices = set(np.where(mask)[0])
+
+    # modify lsoa index dict
+    unique_LSOA = {k: v for k, v in unique_LSOA.items() if v not in nan_indices}
+    unique_LSOA = {k: i for i, (k, v) in enumerate(unique_LSOA.items())}
+    
+    # modify array to compare
+    array_to_compare = np.array([np.delete(arr, np.where(mask), axis=1) for arr in array_to_compare])
+    
+    # modify temperature array
+    array_temp = np.delete(array_temp, np.where(mask), axis=1)
+    
+    return array_temp, unique_LSOA, *array_to_compare
 
 def remove_unlocated_data(df):
     # Create a boolean mask indicating which rows contain 'Unallocated' in the first column

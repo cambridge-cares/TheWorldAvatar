@@ -10,7 +10,7 @@
 
 import agentlogging
 from agent.errorhandling.exceptions import *
-from agent.dataretrieval.dataretrival import *
+from agent.dataretrieval.dataretrival import drop_column
 from agent.utils.env_configs import YEAR
 
 import numpy as np
@@ -22,30 +22,6 @@ import copy
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
-    '''
-    To calculate the monthly distribution, based on the whole year data from df, and reference monthly distribution
-    from monthly_ref
-    Note: In many cases, monthly disaggregation can be done before or after a variable is calculated, 
-    such as cost, emission, you can calculate a annual one and disaggregate into monthly data
-    that won't affect the result
-    Arguments:
-    df: two-column data frame which MUST have the data to disaggregate placed at the second column
-    (i.e. at position [1])
-    monthly_ref: reference monthly distribution.
-    annual: if True, the second column will include the annual value
-            if False, only monthly value will be returned
-    '''
-    global months
-    df = copy.deepcopy(df_in)
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-    total = sum(monthly_ref)
-    for i in range(12):
-        df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
-    if annual == False:
-        df = drop_column(df,1)
-    return df
-    
 # ----------------------Call Calculation Agent---------------------------------- #
 def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_efficiency: float = None):
     '''
@@ -101,7 +77,7 @@ def call_cop_agent(url: str, temp: np.ndarray, unit:str, t_h: float = None, hp_e
 
     return cop
 
-def call_change_of_fuel_agent(url: str, uptake: float, gas_consumption: np.ndarray, propotion_of_heating: float = None, cop: np.ndarray = None, boiler_efficiency: float = None):
+def call_change_of_fuel_agent(url: str, uptake: float, gas_consumption: np.ndarray, propotion_of_heating: float = None, cop: np.ndarray = np.array([]), boiler_efficiency: float = None):
     '''
     This module will call the calculation agent(change of fuel) to perform calculation with the parameters and url specified
     
@@ -129,7 +105,7 @@ def call_change_of_fuel_agent(url: str, uptake: float, gas_consumption: np.ndarr
     else:
         logger.info('Using default propotion of heating (0.9) when calculating change of gas consumption')
 
-    if cop:
+    if cop.any():
         query['query']['cop'] = cop.tolist()
     else:
         logger.info('No COP data provided, only change of gas consumption will be returned')
@@ -160,9 +136,9 @@ def call_change_of_fuel_agent(url: str, uptake: float, gas_consumption: np.ndarr
     change_of_gas = np.array(data['change of gas'])
     logger.info('change_in_fuel successfully calculated')
     # Empty :)
-    change_of_electricity = np.array()
-    
-    if cop:
+    change_of_electricity = np.array([])
+
+    if cop.any():
         change_of_electricity = np.array(data['change of electricity'])
         logger.info('change_in_fuel successfully calculated')
     

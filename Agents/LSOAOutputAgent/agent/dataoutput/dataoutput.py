@@ -13,6 +13,9 @@ from agent.errorhandling.exceptions import *
 from agent.dataretrieval.dataretrival import *
 from agent.datacalculation.datacalculation import *
 from agent.datamodel.iris import OM_DEGREE_C
+from agent.datamodel.functionality import T_from_COP ,call_pickle, data_treatment, \
+                    normalization, create_color_bar,save_figures,convert_to_tensor, \
+                    select_column, get_median, compare_tensor
 
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -28,7 +31,7 @@ import copy
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
-
+"""
 # ------------------------- Calculation ------------------------------------ #
 def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
     '''
@@ -186,7 +189,7 @@ def delta_elec(delta_gas, COP, boiler_efficiency: float = 0.8):
     delta_elec = boiler_efficiency * delta_gas / COP
 
     return delta_elec
-
+"""
 # ------------------------ GeoSpatial Plot --------------------------------- #
 def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
     '''
@@ -928,24 +931,35 @@ print(df_emission_elec)
 
 # Read the temp data
 df_temp = retrieve_temp_from_KG()
-
+df_temp = df_temp[:-62136]
 # Convert df into tensor
-unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
+unique_LSOA, temp_tensor = convert_to_tensor(input = df_temp)
 
 # call calculation agent
-# url = 'http://localhost:5005/api/lsoacalculationagent_cop/calculation/cop'
-# cop = call_cop_agent(url, results_tensor, OM_DEGREE_C)
+url = 'http://localhost:5005/api/lsoacalculationagent_cop/calculation/cop'
+cop = call_cop_agent(url, temp_tensor, OM_DEGREE_C)
 
 # call calculation agent
 url = 'http://localhost:5003/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel'
 uptake = 0.5
 
 # convert gas consumption into tensor according to unique_LSOA
+# get gas consumption df
 df_gas = retrieve_gas_data_from_KG()
+df_gas = select_column(df_gas, ['s','usage'])
+
+# get monthly distribution gas
 gas_monthly_distribution = read_from_web_monthly_distribution_gas()
-_, gas_tensor = convert_to_tensor(df_gas, gas_monthly_distribution, unique_LSOA)
-change_of_gas, _ = call_change_of_fuel_agent(url, uptake, gas_monthly_distribution)
-print(change_of_gas)
+
+# convert gas df to tensor
+_, gas_tensor = convert_to_tensor(input = df_gas, monthly_ref= gas_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+
+# compare the shape, select the shorther one
+temp_tensor, unique_LSOA, gas_tensor, cop = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop)
+
+# call agent
+change_of_gas, change_of_elec = call_change_of_fuel_agent(url, uptake, gas_tensor,0.7,cop)
+print(change_of_elec)
 
 
 

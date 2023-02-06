@@ -12,7 +12,7 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import output_query_template
 from agent.errorhandling.exceptions import *
-from agent.datamodel.functionality import *
+from agent.datamodel.functionality import drop_column,convert_to_float,convert_to_int,remove_unlocated_data,remove_NaN,convert_to_zero
 from agent.utils.env_configs import YEAR
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
