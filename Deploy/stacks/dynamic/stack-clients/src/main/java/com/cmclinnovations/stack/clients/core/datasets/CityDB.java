@@ -16,6 +16,11 @@ public class CityDB extends DataSubset {
     private CityTilerOptions cityTilerOptions = new CityTilerOptions();
 
     @Override
+    public boolean usesPostGIS() {
+        return true;
+    }
+
+    @Override
     void loadInternal(Dataset parent) {
         Path dataSubsetDir = parent.getDirectory().resolve(this.getSubdirectory());
         loadData(dataSubsetDir);
