@@ -54,9 +54,10 @@ RUN python -m pip install pytest
 COPY ./tests ./tests
 
 # Make the required directories for testing
-RUN mkdir -p data/ifc data/glb data/gltf && \  
+RUN mkdir -p data/ifc data/glb data/gltf
+ 
 # Execute unit test
-pytest
+CMD pytest
 
 #==================================================================================================
 

@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+  # Agent
   ifc2tileset-agent-test:
     container_name: ifc2tileset-agent-test
     image: ifc2tileset-agent:test
@@ -9,3 +10,13 @@ services:
       target: test
     ports:
       - 5105:5105
+    depends_on:
+      - blazegraph_test
+  # Blazegraph
+  blazegraph_test:
+    image: nawer/blazegraph:2.1.5
+    container_name: blazegraph_test
+    restart: unless-stopped
+    # Ports must be exposed locally for KG client to work
+    ports:
+      - 9999:9999 

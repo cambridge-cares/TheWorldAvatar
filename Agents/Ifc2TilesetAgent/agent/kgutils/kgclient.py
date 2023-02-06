@@ -69,5 +69,5 @@ class KGClient:
         try:
             self.kg_client.executeUpdate(update)
         except Exception as ex:
-            logger.error("SPARQL update not successful.")
+            logger.error("SPARQL update not successful." + str(ex))
             raise KGException("SPARQL update not successful.") from ex
