@@ -25,6 +25,7 @@ import pickle
 logger = agentlogging.get_logger("prod")
 
 # ------------------------ Some 'shortcut' functions ----------------------- #
+# df data treatment ----------------------- #
 def convert_to_int(val):
     '''
     get rid of all Nan data, and convert the data format to int
@@ -63,93 +64,6 @@ def save_figures(arg_name):
     plt.savefig('figure_output/'+f"{arg_name}".lower()+'.png',dpi=200) 
     plt.savefig('figure_output/'+f"{arg_name}".lower()+'.pdf')
 
-def data_treatment(df, arg_name, arg_value_in):
-        '''
-    This function is created to append a new column in the existing dataframe (at last position)
-    and creat a np.darray contain all the new data, excluded nan data, to be used
-    to set the scale of colorbar
-
-    Arguments:
-                *** Please use this function with plot_geodistribution***
-    df: dataframe to be appended
-    arg_name: the name you want to give to this new column
-    arg_value: two column pd.DataFrame, which MUST have a column with name 's' which contain LSOA code for data identification
-            and another column for data
-    '''
-        df_copy = copy.deepcopy(df)
-        arg_value = copy.deepcopy(arg_value_in)
-        for col in arg_value.columns[1:]: 
-            # Create a dict, which will make the data matching soooooo fast 
-            dictionary = {row[arg_value.columns[0]]: row[col] for _, row in arg_value.iterrows()}
-
-            if arg_name == False:
-                # Appended the variable data to the df_geo
-                df_copy = df_copy.assign(**{f"{col}": np.nan})
-                df_copy[f"{col}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
-            else:
-                df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
-                df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
-                
-        # ------------ This val_values is normally used for colorbar plot ------------------- #
-        try:
-            # Specify the value to plot
-            val_values = df_copy[f"{arg_name}"].values
-        except:
-            # If can not found, default as the last column
-            val_values = df_copy.iloc[:, -1].values
-            
-        # Check if this array is applicable for normalization
-        if isinstance(val_values[0], (int, float)):
-            # Create a boolean mask indicating which elements are NaN values
-            mask = np.isnan(val_values)
-            # Select only the non-NaN values from the array
-            val_values = val_values[~mask]
-        else:
-            # if still can't find (or data type not applicable) then give a none
-            val_values = np.empty(df_copy.shape[0])
-            val_values[:] = 0
-            print('val_values not applicable to generate an non-nan array, return zero array instead')
-
-
-        return df_copy, val_values
-
-def normalization(val_values, cb_scale):
-    '''
-    Provide normalization for color bar
-    Arguments:
-                *** Please use this function with plot_geodistribution***
-    val_values: NDArray which have NO nan data
-    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
-                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
-                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
-    '''
-    iqr = st.iqr(val_values)
-    q1,q3 = st.mstats.idealfourths(val_values)
-    bottom = q1 - cb_scale * iqr
-    top = q3 + cb_scale * iqr
-    divnorm = cl.Normalize(vmin=bottom, vmax=top)
-
-    return divnorm
-
-def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: pd.DataFrame):
-    '''
-    Provide color bar
-    Arguments:
-                *** Please use this function with plot_geodistribution***
-    color_theme: color theme of the map
-    divnorm: normalization result returned from function normalization(val_values, cb_scale)
-    label: the label of the color bar (or say legend)
-    axs: define the axs, should be consistent with the previous plt
-    cax1: define the cax1, should be consistent with the previous plt
-    val_df: a pd.Dataframe (should have one column of data ONLY so which can be set as array)
-    '''
-    # Create a colorbar for the plot
-    scalar_mappable = cm.ScalarMappable(cmap=color_theme, norm=divnorm)
-    scalar_mappable.set_array(val_df)
-    colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
-    # Set the label for the colorbar
-    colorbar.set_label(label)
-
 def remove_NaN(df_in: pd.DataFrame):
     '''
     Remove all the row which contain the value 'NaN' 
@@ -172,7 +86,7 @@ def remove_NaN(df_in: pd.DataFrame):
 
     for row in deleted_rows:
         logger.info(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
-        print(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
+        #print(f"LSOA area {row[0]} was deleted due to NaN values in columns {row[1]}")
 
     df.reset_index(drop=True, inplace=True)
     return df
@@ -357,6 +271,95 @@ def remove_unlocated_data(df):
 
     return df
 
+# Figure generation ----------------------- #
+def data_treatment(df, arg_name, arg_value_in):
+        '''
+    This function is created to append a new column in the existing dataframe (at last position)
+    and creat a np.darray contain all the new data, excluded nan data, to be used
+    to set the scale of colorbar
+
+    Arguments:
+                *** Please use this function with plot_geodistribution***
+    df: dataframe to be appended
+    arg_name: the name you want to give to this new column
+    arg_value: two column pd.DataFrame, which MUST have a column with name 's' which contain LSOA code for data identification
+            and another column for data
+    '''
+        df_copy = copy.deepcopy(df)
+        arg_value = copy.deepcopy(arg_value_in)
+        for col in arg_value.columns[1:]: 
+            # Create a dict, which will make the data matching soooooo fast 
+            dictionary = {row[arg_value.columns[0]]: row[col] for _, row in arg_value.iterrows()}
+
+            if arg_name == False:
+                # Appended the variable data to the df_geo
+                df_copy = df_copy.assign(**{f"{col}": np.nan})
+                df_copy[f"{col}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+            else:
+                df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
+                df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+                
+        # ------------ This val_values is normally used for colorbar plot ------------------- #
+        try:
+            # Specify the value to plot
+            val_values = df_copy[f"{arg_name}"].values
+        except:
+            # If can not found, default as the last column
+            val_values = df_copy.iloc[:, -1].values
+            
+        # Check if this array is applicable for normalization
+        if isinstance(val_values[0], (int, float)):
+            # Create a boolean mask indicating which elements are NaN values
+            mask = np.isnan(val_values)
+            # Select only the non-NaN values from the array
+            val_values = val_values[~mask]
+        else:
+            # if still can't find (or data type not applicable) then give a none
+            val_values = np.empty(df_copy.shape[0])
+            val_values[:] = 0
+            print('val_values not applicable to generate an non-nan array, return zero array instead')
+
+
+        return df_copy, val_values
+
+def normalization(val_values, cb_scale):
+    '''
+    Provide normalization for color bar
+    Arguments:
+                *** Please use this function with plot_geodistribution***
+    val_values: NDArray which have NO nan data
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    '''
+    iqr = st.iqr(val_values)
+    q1,q3 = st.mstats.idealfourths(val_values)
+    bottom = q1 - cb_scale * iqr
+    top = q3 + cb_scale * iqr
+    divnorm = cl.Normalize(vmin=bottom, vmax=top)
+
+    return divnorm
+
+def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: pd.DataFrame):
+    '''
+    Provide color bar
+    Arguments:
+                *** Please use this function with plot_geodistribution***
+    color_theme: color theme of the map
+    divnorm: normalization result returned from function normalization(val_values, cb_scale)
+    label: the label of the color bar (or say legend)
+    axs: define the axs, should be consistent with the previous plt
+    cax1: define the cax1, should be consistent with the previous plt
+    val_df: a pd.Dataframe (should have one column of data ONLY so which can be set as array)
+    '''
+    # Create a colorbar for the plot
+    scalar_mappable = cm.ScalarMappable(cmap=color_theme, norm=divnorm)
+    scalar_mappable.set_array(val_df)
+    colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
+    # Set the label for the colorbar
+    colorbar.set_label(label)
+
+# Others ----------------------- #
 def add_prefix(x, prefix):
     return prefix + str(x)
 

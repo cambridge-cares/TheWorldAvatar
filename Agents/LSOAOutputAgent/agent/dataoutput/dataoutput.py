@@ -895,7 +895,22 @@ print(cop)
 # ----------------------------------------------------------------
 
 # Test for fuel cost agent----------------------------------------
+'''
+# Retrieve consumption data from KG
+df_elec = retrieve_elec_data_from_KG() 
+df_elec = select_column(df_elec, ['s','usage']) 
+# df_gas = retrieve_gas_data_from_KG()
+# df_gas = select_column(df_gas, ['s','usage']) df_gas_in = df_gas,
 
+# Call the Calculation agent
+url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'
+df_cost, df_ele, df_gas = call_fuel_cost_agent(df_elec_in = df_elec,  url= url,  year = '2020',annual=True)
+print(df_ele)
+'''
+# ----------------------------------------------------------------
+
+# Test for fuel emission agent----------------------------------------
+'''
 # Retrieve consumption data from KG
 df_elec = retrieve_elec_data_from_KG() 
 df_elec = select_column(df_elec, ['s','usage']) 
@@ -903,9 +918,37 @@ df_gas = retrieve_gas_data_from_KG()
 df_gas = select_column(df_gas, ['s','usage']) 
 
 # Call the Calculation agent
-url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'
-df_cost, df_ele, df_gas = call_fuel_cost_agent(df_elec_in = df_elec, df_gas_in = df_gas, url= url,  year = '2020',annual=True)
-print(df_gas)
+url = 'http://localhost:5004/api/lsoacalculationagent_fuel_emission/calculation/fuel_emission'
+df_emission_total, df_emission_elec, df_emission_gas = call_fuel_emission_agent(df_gas_in = df_gas, df_elec_in = df_elec,  url= url,  year = '2020',annual=True)
+print(df_emission_elec)
+'''
+# ----------------------------------------------------------------
+
+# Test for change of fuel agent ---------------------------------------------
+
+# Read the temp data
+df_temp = retrieve_temp_from_KG()
+
+# Convert df into tensor
+unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
+
+# call calculation agent
+# url = 'http://localhost:5005/api/lsoacalculationagent_cop/calculation/cop'
+# cop = call_cop_agent(url, results_tensor, OM_DEGREE_C)
+
+# call calculation agent
+url = 'http://localhost:5003/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel'
+uptake = 0.5
+
+# convert gas consumption into tensor according to unique_LSOA
+df_gas = retrieve_gas_data_from_KG()
+gas_monthly_distribution = read_from_web_monthly_distribution_gas()
+_, gas_tensor = convert_to_tensor(df_gas, gas_monthly_distribution, unique_LSOA)
+change_of_gas, _ = call_change_of_fuel_agent(url, uptake, gas_monthly_distribution)
+print(change_of_gas)
+
+
+
 # ----------------------------------------------------------------
 ##########################################################
 
