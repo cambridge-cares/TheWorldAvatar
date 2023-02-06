@@ -38,6 +38,9 @@ def get_number_of_triples(endpoint):
 
 
 def get_all_building_iris(endpoint):
+    """
+        Get all instantiated building IRIs
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
@@ -61,6 +64,10 @@ def get_all_building_iris(endpoint):
 
 
 def get_building_iris_w_old_but_wo_new_uprn(endpoint):
+    """
+        Get all instantiated building IRIs which do have UPRN information
+        from FME workflow but not from UPRN agent
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
@@ -102,6 +109,10 @@ def get_building_iris_w_old_but_wo_new_uprn(endpoint):
 
 
 def get_building_iris_wo_new_uprn(endpoint):
+    """
+        Get all instantiated building IRIs which do not have UPRN information
+        from UPRN agent
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
