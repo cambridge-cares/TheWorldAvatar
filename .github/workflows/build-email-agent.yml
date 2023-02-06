@@ -12,19 +12,19 @@ name: Run EmailAgent Tests
 # Trigger this workflow on pushes to/pull requests for
 # the develop and master branches, but ONLY when files
 # within the EmailAgent project directory are changed.
-on:
-  push:
-    branches:
-      - develop
-      - master
-    paths:
-      - Agents/EmailAgent/**
-  pull_request:
-    branches:
-      - develop
-      - master
-    paths:
-      - Agents/EmailAgent/**
+#on:
+#  push:
+#    branches:
+#      - develop
+#      - master
+#    paths:
+#      - Agents/EmailAgent/**
+#  pull_request:
+#    branches:
+#      - develop
+#      - master
+#    paths:
+#      - Agents/EmailAgent/**
 
 
 # Job definitions

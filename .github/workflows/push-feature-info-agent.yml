@@ -20,9 +20,16 @@ name: Push the FeatureInfoAgent
 on:
   push:
     branches:
-      - main
+      - develop
+      - master
     paths:
-      - Agents/FeatureInfoAgent/**
+      - Agents/EmailAgent/**
+  pull_request:
+    branches:
+      - develop
+      - master
+    paths:
+      - Agents/EmailAgent/**
 
 
 # Job definitions
