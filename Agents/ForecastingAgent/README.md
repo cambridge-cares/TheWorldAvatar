@@ -105,6 +105,26 @@ If you want to spin up this agent as part of a stack, do the following:
 2) Copy the `forecasting-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mount as required.
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>`). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 
+### **Stack Troubleshooting**
+
+In case NGINX faces issues to locate the agent after startup, try the following commands from within the NGINX container:
+
+```bash
+# Test NGINX configuration to determine potentially erroneous (upstream) configuration
+nginx -t
+# Delete potentially erroneous/outdated configuration files
+rm /etc/nginx/conf.d/...
+rm /etc/nginx/conf.d/locations/...
+# Verify that NGINX configuration is corrected
+nginx -t
+# expected output: the configuration file /etc/nginx/nginx.conf syntax is ok
+# expected output: configuration file /etc/nginx/nginx.conf test is successful
+
+# Reload NGINX configuration
+nginx -s reload  
+# expected output: signal process started
+```
+
 
 &nbsp;
 ## 2.3 Forecasting time series via HTTP requests
