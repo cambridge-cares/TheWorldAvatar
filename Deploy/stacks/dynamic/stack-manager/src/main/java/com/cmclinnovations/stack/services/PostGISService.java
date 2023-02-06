@@ -10,6 +10,11 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public final class PostGISService extends ContainerService {
 
+    /**
+     *
+     */
+    private static final String POSTGRES_USER_KEY = "POSTGRES_USER";
+
     public static final String TYPE = "postgres";
 
     private static final Path PGPASS_FILE = Path.of("/root", ".pgpass");
@@ -23,13 +28,14 @@ public final class PostGISService extends ContainerService {
     public PostGISService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
 
-        setEnvironmentVariableIfAbsent("POSTGRES_USER", DEFAULT_USERNAME);
+        setEnvironmentVariableIfAbsent(POSTGRES_USER_KEY, DEFAULT_USERNAME);
+        setEnvironmentVariableIfAbsent("PGUSER", getEnvironmentVariable(POSTGRES_USER_KEY));
         setEnvironmentVariableIfAbsent("POSTGRES_PASSWORD_FILE", DEFAULT_PASSWORD_FILE);
         setEnvironmentVariableIfAbsent("PGPASSFILE", PGPASS_FILE.toString());
 
         endpointConfig = new PostGISEndpointConfig(
                 EndpointNames.POSTGIS, getHostName(), DEFAULT_PORT,
-                getEnvironmentVariable("POSTGRES_USER"), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
+                getEnvironmentVariable(POSTGRES_USER_KEY), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
     }
 
     @Override
