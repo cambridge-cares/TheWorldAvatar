@@ -4,7 +4,7 @@ setup(name='myproject', version='1.0',
       packages=find_packages(exclude=("tests")),
       install_requires= [
         'numpy==1.21.6',
-        'bs4==0.0.1'
+        'bs4==0.0.1',
         'docopt==0.6.2',
         'Flask==2.2.2',
         'openpyxl==3.0.10',

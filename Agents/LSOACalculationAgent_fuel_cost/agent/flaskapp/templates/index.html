@@ -52,13 +52,13 @@
                         <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
                             <div style="text-indent: 25px;">
                                 <li><b>df_electricity:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
-                                    respectively, the annual electricity consumption data should be placed at the second column (i.e. at position [1])
+                                    respectively, the annual electricity consumption data should be placed at the second column (i.e. at position [1]) using the unit of <b>kWh</b>
                                         <div style="text-indent: 25px;"> </div>
                                 </li><br>
                                 <li><b>df_gas:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
-                                    respectively, the annual gas consumption data should be placed at the second column (i.e. at position [1])<br>
+                                    respectively, the annual gas consumption data should be placed at the second column (i.e. at position [1]) using the unit of <b>kWh</b><br>
                                     <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> if df_electricity, df_gas are both provided, the output will return total cost, electricity cost and gas cost
-                                        .If only one of them are provided, the output will only return the respective cost.
+                                        . If only one of them are provided, the output will only return the respective cost.
                                         <div style="text-indent: 70px;">column names don't matters as long as the position is correct</div>
                                     </em></div>
                                     <div style="text-indent: 25px; font-size: smaller;"><b>Example input df_electricity/df_gas:</b></div>
@@ -110,7 +110,7 @@
                                                             <div style="text-indent: 100px;"><code>       }</code><br>
                                                             </div>
                                                             <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> Return dataframe which have first column as LSOA code, and the annual cost (if 'annual' = True when inputting data), and the following 12
-                                                                columns for each month's data</em><br></div>
+                                                                columns for each month's data. The unit of the cost is in <b>pound sterling</b></em><br></div>
                                                                 <div style="text-indent: 25px; font-size: smaller;"><b>Example output df_cost:</b></div>
                                                                 <table style="margin-left: 50px; font-size: smaller;">
                                                                     <thead>
