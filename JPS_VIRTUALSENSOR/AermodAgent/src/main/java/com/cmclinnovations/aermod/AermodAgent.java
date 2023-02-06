@@ -1,13 +1,10 @@
 package com.cmclinnovations.aermod;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +20,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Ship;
@@ -35,7 +31,6 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
-import org.locationtech.jts.io.ParseException;
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -115,7 +110,7 @@ public class AermodAgent extends DerivationAgent {
         Buildings bpi;
         try {
             bpi = new Buildings();
-            bpi.init(String.valueOf(simulationDirectory),scope, nx, ny, srid);
+            bpi.init(String.valueOf(simulationDirectory),scope, srid);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

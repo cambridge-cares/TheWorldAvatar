@@ -13,6 +13,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import scala.Tuple2;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class Buildings {
 
     public static Polygon scope;
 
-    public void init(String simulationDirectory, Polygon scope, int nx, int ny, int srid) throws ParseException, FactoryException, TransformException, org.opengis.util.FactoryException {
+    public void init(String simulationDirectory, Polygon scope, int srid) throws ParseException {
 
 
         this.simulationDirectory = simulationDirectory;
@@ -718,39 +719,40 @@ public class Buildings {
 
     public static int createAERMODSourceInput() {
         StringBuilder sb = new StringBuilder();
-        int numberStackLines = BPIPPRMStackInput.size() ;
+        int numberStackLines = BPIPPRMStackInput.size();
 
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");
-            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]),Double.parseDouble(avecoord[1]));
+            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
             List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates,DatabaseCoordSys,UTMCoordSys);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
             double StackEastUTM = outputcoordinates.get(0).get(0);
             double StackNorthUTM = outputcoordinates.get(0).get(1);
             double StackHeight = Double.parseDouble(avecoord[2]);
             double massFlowrateInTonYr = StackEmissions.get(i);
-            double massFlowrateInGs = massFlowrateInTonYr*1000*1000/(365*24*60*60);
+            double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
             double gasTemperatureKelvin = 890.0;
             double atmosphericPressurePa = 101325;
-            double gasConstantJoulemolKelvin = 8.314 ;
+            double gasConstantJoulemolKelvin = 8.314;
             double molarMassCO2gmol = 44.01;
-            double volumetricFlowRatem3s = (massFlowrateInGs/molarMassCO2gmol)*gasConstantJoulemolKelvin*gasTemperatureKelvin/atmosphericPressurePa;
+            double volumetricFlowRatem3s = (massFlowrateInGs / molarMassCO2gmol) * gasConstantJoulemolKelvin * gasTemperatureKelvin / atmosphericPressurePa;
             double Diameter = StackDiameter.get(i);
-            double stackAream2 = (Math.PI/4)*Diameter*Diameter;
-            double velocityms = volumetricFlowRatem3s/stackAream2;
+            double stackAream2 = (Math.PI / 4) * Diameter * Diameter;
+            double velocityms = volumetricFlowRatem3s / stackAream2;
 
-            String stkId = "Stk" + (i+1);
-            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n",stkId, StackEastUTM, StackNorthUTM, 0.0));
+            String stkId = "Stk" + (i + 1);
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
         }
 
+        return writeToFile(simulationDirectory + "source.dat",sb.toString());
 
-        return writeToFile(simulationDirectory + "plantSources.dat",sb.toString());
     }
 
 
-    public int runAermet() {
+
+    public int createAermetInput() {
 
         double lat = scope.getCentroid().getCoordinate().getY();
         double lon = scope.getCentroid().getCoordinate().getX();
@@ -762,39 +764,77 @@ public class Buildings {
         lat = Math.abs(lat);
         lon = Math.abs(lon);
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
+        String newLine = System.getProperty("line.separator");
+
+        StringBuilder sb = new StringBuilder("JOB \n");
+        sb.append("   REPORT aermet_report.txt \n")
+                .append("   MESSAGES aermet_message.txt \n")
+                .append(newLine)
+                .append("UPPERAIR \n")
+                .append("   DATA      UpperAirIGRA.txt IGRA \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   LOCATION  00072202  " + location + " \n")
+                .append("   QAOUT aermet_uair_qaout.txt \n")
+                .append(newLine)
+                .append("SURFACE \n")
+                .append("   DATA      SurfaceCD144.txt CD144 \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   LOCATION  00072202  " + location + "\n")
+                .append("   QAOUT aermet_surface_qaout.txt \n")
+                .append(newLine)
+                .append("METPREP \n")
+                .append("   OUTPUT surf.dat \n")
+                .append("   PROFILE upper.dat \n")
+                .append("   NWS_HGT WIND 6.7 \n")
+                .append("   METHOD REFLEVEL SUBNWS \n")
+                .append("   METHOD WIND_DIR RANDOM \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   FREQ_SECT ANNUAL 1 \n")
+                .append("   SECTOR 1 0 360 \n")
+                .append("   SITE_CHAR 1 1 0.16 2.0 1.0 \n");
 
 
-        String aermetInputFile = simulationDirectory + "aermet_template.inp";
-        Path inPath = Paths.get(aermetInputFile);
-        Charset charset = StandardCharsets.UTF_8;
-        String aermetOutFile = simulationDirectory + "aermet_template.inp";
-        Path outPath = Paths.get(aermetOutFile);
+        return writeToFile(simulationDirectory + "aermet.inp",sb.toString());
 
-
-
-        try {
-            String content = new String(Files.readAllBytes(inPath), charset);
-            content = content.replaceAll("REPLACED_BY_AERMOD_AGENT", location);
-//            Files.write(outPath, content.getBytes(charset));
-            return writeToFile(simulationDirectory + "aermet.inp",content);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-
-        String execFile = simulationDirectory + "aermet.exe" ;
-
-        try {
-            Process process = Runtime.getRuntime().exec(new String[]{execFile, "aermet.inp"}, null, Paths.get(simulationDirectory).toFile());
-            process.waitFor();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return 1;
-        }
-
-        return 0;
 
     }
+
+    public static int createAERMODReceptorInput(int nx, int ny) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            double xc = scope.getCoordinates()[i].x;
+            double yc = scope.getCoordinates()[i].y;
+
+
+            List<Double> inputcoords = Arrays.asList(xc, yc);
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, "EPSG:4326", UTMCoordSys);
+
+            xDoubles.add(outputcoordinates.get(0).get(0));
+            yDoubles.add(outputcoordinates.get(0).get(1));
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo)/nx;
+        double dy = (yhi - ylo)/ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
+        String rec = String.format("                 XYINC %f %d %f %f %d %f",xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec + " \n");
+        sb.append("RE GRIDCART POL1 END \n");
+
+
+        return writeToFile(simulationDirectory + "receptor.dat",sb.toString());
+    }
+
 
 
 

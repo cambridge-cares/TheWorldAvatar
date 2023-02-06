@@ -475,7 +475,7 @@ public class QueryClient {
         GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,plantItem),
                 plantItem.has(RDF.TYPE,PLANTITEM).andHas(OCGML_REP,IRI).andHas(HAS_INDIVIDUALCO2Emission,CO2),
                 CO2.has(HAS_NUMERICALVALUE,emission));
-        query.select(IRI,emission).where(gp).limit(20);
+        query.select(IRI,emission).where(gp);
 
         JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
         return StackIRIQueryResult;
