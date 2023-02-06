@@ -61,28 +61,60 @@ Follow the below configuration steps within the local `queries` directory.
       - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostGreSQL database name that contains your timeseries data.
   - Add the aforementioned metadata and timeseries query files.
 
-An example configuration file is provided within the `queries` directory.
+An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
 
 #### Query Restrictions
 
 To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfill a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
-- `[IRI]`: The IRI of the feature in the request will be injected
+- `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the DTVF (the IRI will be injected here into the request)
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
 
-Queries for metadata should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. These are case sensitive and any other columns will be ignored.
+<ins>Queries for metadata</ins> should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. **These are case sensitive and any other columns will be ignored**.
 
 
 <p align="center">
     <img src="meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
 </p>
 
-Queries for timeseries data need to return the measurement/forecast IRIs (that will be used to grab the actual values from PostGreSQL), as well as parameters associated with each measurement/forecast. Required columns are `Measurement` (or `Forecast`) containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
+<ins>Queries for timeseries</ins> data need to return the measurement/forecast IRIs, i.e. the IRIs which are connected via `ts:hasTimeSeries` to the actual timeseries instances. Those IRIs will be used to grab the actual values from PostGreSQL as well as parameters associated with each measurement/forecast. Required columns are `Measurement` containing the IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank). In this case, any other columns reported by the query **will** be picked up and passed back to the visualisation as regular key-value properties.
 
 
 <p align="center">
     <img src="time-query-example.jpg" alt="Example result of a timeseries query" width="75%"/>
 </p>
+
+<a id="example"></a>
+### Example queries
+
+The provided example `.sparql` queries refer to a reporting station instantiated using the [OntoEMS] ontology:
+
+```
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix ts:  <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+prefix : <https://www.example.com/>
+
+:ReportingStation_1 rdf:type ems:ReportingStation ; 
+                    rdfs:label "Reporting Station 1" ;
+                    ems:hasIdentifier "Example identifier" ;
+                    ems:hasObservationElevation "100"^^xsd:double ;
+                    ems:reports :Quantity_1 . 
+:Quantity_1 rdf:type ems:RelativeHumidity ; 
+            om:hasValue :Measure_1 ;  
+            ems:hasForecastedValue :Forecast_1 .
+:Measure_1 ts:hasTimeSeries :Timeseries_1 ; 
+           om:hasUnit om:kilometrePerHour .
+:Forecast_1 ts:hasTimeSeries :Timeseries_2 ; 
+            ems:createdOn "2021-01-01T00:00:00Z"^^xsd:dateTime ;
+            om:hasUnit om:kilometrePerHour .
+
+# Defined by ontology of units of measure
+om:kilometrePerHour om:symbol "km/h"^^xsd:string .
+```
+
 
 ### Requests
 
@@ -104,3 +136,7 @@ bash ./stack.sh start <STACK_NAME>
 After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
 
 It is worth noting that the docker compose setup for this agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former before running the container should automatically make them available to the agent.
+
+<!-- Links -->
+[queries]: queries
+[OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
