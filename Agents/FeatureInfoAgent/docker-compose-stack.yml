@@ -1,5 +1,7 @@
 version: '3.8'
+
 services:
+
   feature-info-agent:
     deploy:
       mode: replicated
@@ -17,12 +19,14 @@ services:
       - stack
 
 volumes:
+
   scratch:
     name: ${STACK_NAME}_scratch
     labels:
       - com.docker.stack.namespace:${STACK_NAME}
 
 configs:
+
   blazegraph:
     name: ${STACK_NAME}_blazegraph
     external: true
@@ -34,11 +38,13 @@ configs:
     external: true
 
 secrets:
+
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true
 
 networks:
+
   stack:
     name: ${STACK_NAME}
     driver: overlay
