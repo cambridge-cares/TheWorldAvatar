@@ -23,7 +23,7 @@ bash ./redeploy.sh
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.0` as of commit `???` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.0` as of commit `f01834fec13ac25b205faeed05eb2b7ce83169d2` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **However, please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
 
