@@ -8,7 +8,7 @@ import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CityDB extends DataSubset {
+public class CityDB extends PostgresDataSubset {
 
     @JsonProperty
     private ImpExpOptions importOptions = new ImpExpOptions();
@@ -16,18 +16,12 @@ public class CityDB extends DataSubset {
     private CityTilerOptions cityTilerOptions = new CityTilerOptions();
 
     @Override
-    public boolean usesPostGIS() {
-        return true;
+    void loadInternal(Dataset parent) {
+        super.loadInternal(parent);
+        createLayer(parent.getDatabase());
     }
 
     @Override
-    void loadInternal(Dataset parent) {
-        Path dataSubsetDir = parent.getDirectory().resolve(this.getSubdirectory());
-        String database = parent.getDatabase();
-        loadData(dataSubsetDir, database);
-        createLayer(database);
-    }
-
     public void loadData(Path dataSubsetDir, String database) {
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, false);
