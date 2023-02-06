@@ -7,8 +7,12 @@
                 "Image": "3dcitydb/3dcitydb-pg:14-3.3-4.4.0-alpine",
                 "Env": [
                     "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
-                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
-                    "SRID=4329"
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                ],
+                "Command": [
+                    "sh",
+                    "-c",
+                    "chmod +x /docker-entrypoint-initdb.d/3dcitydb-initdb.sh && docker-entrypoint.sh postgres"
                 ],
                 "Mounts": [
                     {
