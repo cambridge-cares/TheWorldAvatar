@@ -8,8 +8,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.33.2</version>
-
+    <version>1.33.1</version>
     <!-- Project Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -306,7 +305,7 @@
 			<artifactId>bigdata-core</artifactId>
 			<version>2.1.4</version>
 		</dependency>
-		
+
         <!-- Following RDF4J dependencies are added for enabling the federated query
 		feature supported by FedX-->
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
@@ -423,11 +422,15 @@
             <artifactId>owlapi-distribution</artifactId>
             <version>5.1.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena -->
         <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
+            <groupId>org.apache.jena</groupId>
             <artifactId>jena</artifactId>
-            <version>2.6.4</version>
+            <version>4.6.1</version>
+            <type>pom</type>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
         <dependency>
             <groupId>commons-validator</groupId>

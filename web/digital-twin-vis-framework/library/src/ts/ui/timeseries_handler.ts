@@ -17,8 +17,9 @@ class TimeseriesHandler {
      * 
      * @param {JSONObject[]} entries 
      */
-    public parseData(entries) {
+    public parseData(json) {
         this._selectedData = [];
+        let entries = JSONFormatter.formatJSON(json);
 
         if(!Array.isArray(entries)) {
             // Not a JSON Array, wrap in one
@@ -90,7 +91,7 @@ class TimeseriesHandler {
                 // Store
                 this._selectedData.push({
                     "name": tableName,
-                    "id": entry["id"],
+                    "id": this._selectedData.length,
                     "unit": tableUnit,
                     "times": tableTimes,
                     "values": tableValues,
@@ -99,6 +100,8 @@ class TimeseriesHandler {
                 });
             }            
         }
+
+        console.log(this._selectedData);
     }
 
     /**
@@ -145,25 +148,24 @@ class TimeseriesHandler {
     /**
      * Update both the table and chart contents.
      * 
-     * @param {String} setName data set name
+     * @param {Integer} setID timeseries ID
      */
-    public update(setName) {
-        this.updateTable(setName);
-        this.updateChart(setName);
+    public update(setID) {
+        this.updateTable(setID);
+        this.updateChart(setID);
     }
 
     /**
      * Build the table containing raw timeseries data.
      * 
-     * @param {String} tableName name of the table.
+     * @param {Integer} setID timeseries ID
      */
-    public buildTable(tableName) {
+    public buildTable(setID) {
         // Find the correct data entry
         var data = null;
         this._selectedData.forEach(entry => {
-            if(entry["name"] === tableName) {
+            if(data === null && entry["id"] === +setID) {
                 data = entry;
-                return;
             }
         });
         if(data == null) return;
@@ -174,7 +176,7 @@ class TimeseriesHandler {
 
         // Build the HTML for the table
         var tableHTML = `<table class="time-series-table" width="100%">`;
-        tableHTML += `<tr><th>Time</th><th>` + tableName + `</th></tr>`;
+        tableHTML += `<tr><th>Time</th><th>` + data["name"] + `</th></tr>`;
 
         for(var r = 0; r < independents.length; r++) {
             // Build HTML for one row
@@ -200,15 +202,14 @@ class TimeseriesHandler {
     /**
      * Build the chart displaying timeseries data.
      * 
-     * @param {String} tableName name of the table.
+     * @param {Integer} setID timeseries ID
      */
-    public buildChart(tableName) {
+    public buildChart(setID) {
         // Find the correct data entry
         var data = null;
         this._selectedData.forEach(entry => {
-            if(entry["name"] === tableName) {
+            if(data === null && entry["id"] === +setID) {
                 data = entry;
-                return;
             }
         });
         if(data == null) return;
@@ -292,7 +293,7 @@ class TimeseriesHandler {
                             },
                             title: {
                                 display: true,
-                                text: tableName,
+                                text: data["name"],
                                 font: {
                                     weight: 700,
                                     size: 12
@@ -304,7 +305,7 @@ class TimeseriesHandler {
                 data: {
                     labels: independents,
                     datasets: [{
-                        label: tableName,
+                        label: data["name"],
                         pointBorderColor: "rgba(33, 150, 243, 0.70)",
                         borderColor: "rgba(33, 150, 243, 0.35)",
                         data: dependents
@@ -327,7 +328,7 @@ class TimeseriesHandler {
 
         this._selectedData.forEach(entry => {
             selectHTML += `
-                <option value="` + entry["name"] + `">` + entry["name"] + `</option>
+                <option value="` + entry["id"] + `">` + entry["name"] + `</option>
             `;
         });
         selectHTML += `</select>`;

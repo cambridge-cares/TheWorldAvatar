@@ -101,11 +101,14 @@ class LabEquipment(Saref_Device):
     clz: str = ONTOLAB_LABEQUIPMENT
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
     isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
-    hasPowerSupply: Union[str, PowerSupply] # NOTE TODO here str is provided as an optional to simplify the implementation
+    hasPowerSupply: Union[str, PowerSupply] # NOTE TODO [future work] here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
     isSpecifiedBy: Optional[EquipmentSettings] = None
-    # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
+    # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
     isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
+
+    def consists_of_lab_equipment(self, lab_equipment_iris: List[str]) -> bool:
+        return bool([le for le in self.consistsOf if le.instance_iri in lab_equipment_iris])
 
 class PreparationMethod(BaseOntology):
     clz: str = ONTOLAB_PREPARATIONMETHOD
@@ -119,14 +122,17 @@ class OntoCAPE_MaterialAmount(BaseOntology):
 class ChemicalSolution(OntoCAPE_MaterialAmount):
     clz: str = ONTOLAB_CHEMICALSOLUTION
     refersToMaterial: Optional[OntoCAPE_Material] # NOTE OntoCAPE_Material is made optional to accommodate the situation where ChemicalSolution is generated but not characterised yet, i.e. unknow concentration
-    # NOTE "files" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
+    # NOTE "fills" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
     # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
     # NOTE str will be used for simplicity until a good way to resolve circular import can be find
     # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalSolution.update_forward_ref() in ontovapourtec
     # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalSolution fully resolvable
     # NOTE which defeats the whole point of making them separate
+    # NOTE "fills" should also be able to point to actual instance of ontolab.ReagentBottle
+    # TODO [future work] provide super class for ontovapourtec.Vial and ontolab.ReagentBottle, e.g. ontolab.Container
     fills: str
     isPreparedBy: Optional[PreparationMethod] = None
+    containsUnidentifiedComponent: Optional[bool] = False
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # <chemical_solution> <rdf:type> <ChemicalSolution>
@@ -142,4 +148,28 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
         if self.isPreparedBy is not None:
             g = self.isPreparedBy.create_instance_for_kg(g)
 
+        if self.containsUnidentifiedComponent is not None:
+            # NOTE only add this triple when it's known, otherwise just skip it
+            # <chemical_solution> <containsUnidentifiedComponent> boolean
+            g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT), Literal(self.containsUnidentifiedComponent)))
+
         return g
+
+class ReagentBottle(BaseOntology):
+    clz: str = ONTOLAB_REAGENTBOTTLE
+    isFilledWith: ChemicalSolution
+    hasFillLevel: OM_Volume
+    hasWarningLevel: OM_Volume
+    hasMaxLevel: OM_Volume
+
+    def contains_chemical_species(
+        self,
+        solute: str,
+        solvent_as_constraint: List[str]=None,
+        species_to_exclude: List[str]=None,
+    ) -> bool:
+        if self.isFilledWith is not None:
+            if self.isFilledWith.refersToMaterial is not None:
+                if self.isFilledWith.refersToMaterial.contains_chemical_species(solute, solvent_as_constraint, species_to_exclude):
+                    return True
+        return False

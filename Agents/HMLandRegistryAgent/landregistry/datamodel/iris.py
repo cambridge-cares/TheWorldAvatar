@@ -20,7 +20,7 @@ UKHPI = 'http://landregistry.data.gov.uk/def/ukhpi/'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
-UOM = 'http://theworldavatar.com/resource/ontouom/'
+UOM = 'https://www.theworldavatar.com/kg/ontouom/'
 OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
 OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 # Knowledge base

@@ -13,7 +13,7 @@ import requests
 
 from pyderivationagent.kg_operations import PySparqlClient
 
-import agentlogging
+from py4jps import agentlogging
 from avgsqmpriceagent.datamodel.iris import *
 from avgsqmpriceagent.datamodel.data import GBP_PER_SM
 from avgsqmpriceagent.errorhandling.exceptions import APIException
@@ -113,7 +113,7 @@ class KGClient(PySparqlClient):
         return tx_iris
 
 
-    def get_tx_count_for_postcodes(self, postcodes:list) -> str:
+    def get_tx_count_for_postcodes(self, postcodes:list) -> dict:
         # Retrieve number of available sales transactions for postcode(s) and
         # return dictionary with postcode as key and number of transactions as value
         values_statement = self.format_literal_values_statement(postcodes)    
@@ -204,10 +204,7 @@ class KGClient(PySparqlClient):
             <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
             <{measure_iri}> <{OM_NUM_VALUE}> \"{avg_price}\"^^<{XSD_INTEGER}> . 
             <{measure_iri}> <{OM_HAS_UNIT}> <{UOM_GBP_M2}> . 
-            <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
         """
-        #TODO: Triple with symbol potentially to be removed once OntoUOM contains
-        #      all relevant units/symbols and is uploaded to the KB
         return self.remove_unnecessary_whitespace(query)
 
 

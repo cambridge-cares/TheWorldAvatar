@@ -3,9 +3,11 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import org.jooq.tools.jdbc.MockConnection;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * The methods in this class are roughly separated into two categories:
  * 1) methods that receive a connection object in the argument, e.g. initTimeSeries(List<String>, List<Class<?>>, String, Connection)
  * 2) methods that do not need a connection object initTimeSeries(List<String>, List<Class<?>>, String)
- * 
+ *
  * The main motivation for the methods with the connection object is to improve performance in codes that need to interact with the RDB
  * repetitively, as closing the connection each time causes performance issues.
  * To create a connection object: create an instance of {@link uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient RemoteRDBStoreClient}
@@ -39,11 +41,11 @@ import org.apache.logging.log4j.Logger;
  * }
  * Note: The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources)
  * as shown in the example above. This is to ensure the connection is closed automatically by Java.
- * 
+ *
  * To use the methods without the connection argument, you must use the constructors with the RDB endpoint in it, e.g.
  * TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password).
  * These methods open a single connection with try-with-resources for each call.
- * @author 
+ * @author
  * @author Markus Hofmeister, Niklas Kasenburg, Mehal Agarwal (ma988@cam.ac.uk), Kok Foong Lee
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  */
@@ -57,7 +59,14 @@ public class TimeSeriesClient<T> {
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	private static final String CONNECTION_ERROR = "Failed to connect to database. If you are using the methods without the connection argument, " +
 	"the RDB endpoint (URL, username and password) needs to be set in the constructor of TimeSeriesClient";
-	
+
+	public enum Type{
+		AVERAGE,
+		STEPWISECUMULATIVE,
+		CUMULATIVETOTAL,
+		INSTANTANEOUS,
+		GENERAL
+	}
     /**
      * Constructor with pre-defined kbClient
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
@@ -78,35 +87,57 @@ public class TimeSeriesClient<T> {
     	this.rdfClient.setKBClient(kbClient);
     }
 
-    /**
-     * Initialise time series in triple store and relational database
-     * @param dataIRIs list of dataIRIs as Strings
-     * @param dataClass list of data classes for each dataIRI
-     * @param timeUnit time unit as (full) IRI
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
 	 * @param conn connection to the RDB
-     */
-    public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn) {
+	 * @param type type of TimeSeries data to be instantiated.
+	 *             Allowed values of Type enum: Type.AVERAGE, Type.INSTANTANEOUS, Type.STEPWISECUMULATIVE, Type.CUMULATIVETOTAL
+	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
+	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
+	 *             Allowed values of type ChronoUnit:
+	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+	 *
+	 */
 
-    	// Create random time series IRI in the format: <Namespace><ClassName>_<UUID>
-    	String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-    	
-    	// Step1: Initialise time series in knowledge base
-    	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
-    	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-		
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn, Type type, Duration duration, ChronoUnit unit) {
+
+		// Step1: Initialise time series in knowledge base
+		// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before
+		// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+		String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
+		Iri timeseriesType = null;
+
+		if(type.equals(Type.AVERAGE)){
+			timeseriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
+		}
+		else if(type.equals(Type.STEPWISECUMULATIVE)){
+			timeseriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
+		}
+		else if(type.equals(Type.CUMULATIVETOTAL)){
+			timeseriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
+		}
+		else if(type.equals(Type.INSTANTANEOUS)){
+			timeseriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
+		}
+		else if(type.equals(Type.GENERAL)){
+			timeseriesType = TimeSeriesSparql.TIMESERIES;
+		}
+
 		// Obtain RDB URL from connection object, exception thrown when connection is down
 		String rdbURL;
 		try {
 			rdbURL = conn.getMetaData().getURL();
 		} catch (SQLException e) {
-			// this ensures rdfClient.initTS always has a valid string
+			// this ensures rdfClient.bulkInitTS always has a valid string
 			LOGGER.warn(e.getMessage());
 			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
-		
-   		try {
-   			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
+		try {
+			rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeseriesType, duration, unit);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
@@ -135,12 +166,14 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRIs
 	 * @param dataClass
 	 * @param timeUnit
-	 * @param srid
 	 * @param conn
+	 * @param type
+	 * @param durations
+	 * @param units
      */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
-		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
-	} 
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn, type, durations, units);
+	}
 
 	/**
 	 * similar to initTimeSeries, but uploads triples in one connection
@@ -150,21 +183,44 @@ public class TimeSeriesClient<T> {
 	 * @param timeUnit
 	 * @param srid
 	 * @param conn
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
-        // create random time series IRI
-    	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
-    	
-    	for (int i = 0; i < dataIRIs.size(); i++) {
-    		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
-    		tsIRIs.add(i, tsIRI);
-    	}
-    	
+    private void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
+
+		// create random time series IRI
+		List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+		List<Iri> timeSeriesTypes = new ArrayList<>(dataIRIs.size());
+
+		Iri timeSeriesType = null;
+
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
+			if (type.get(i).equals(Type.AVERAGE)){
+				timeSeriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
+			}
+			else if(type.get(i).equals(Type.STEPWISECUMULATIVE)){
+				timeSeriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
+			}
+			else if(type.get(i).equals(Type.CUMULATIVETOTAL)){
+				timeSeriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
+			}
+			else if(type.get(i).equals(Type.INSTANTANEOUS)){
+				timeSeriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
+			}
+			else if(type.get(i).equals(Type.GENERAL)){
+				timeSeriesType = TimeSeriesSparql.TIMESERIES;
+			}
+			tsIRIs.add(i, tsIRI);
+			timeSeriesTypes.add(i, timeSeriesType);
+		}
+
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
 
-		// Obtain RDB URL from connection object, exception thrown when connection is down 
+		// Obtain RDB URL from connection object, exception thrown when connection is down
 		String rdbURL;
 		try {
 			rdbURL = conn.getMetaData().getURL();
@@ -174,14 +230,26 @@ public class TimeSeriesClient<T> {
 			LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
 			rdbURL = "";
 		}
+
+		// if any of the dataIRI already exists in the kg, stop the process
+		List<String> singleListDataIri = new ArrayList<>();
+		dataIRIs.stream().forEach(dataIRIList -> {
+			dataIRIList.stream().forEach(singleListDataIri::add);
+		});
+		if (rdfClient.checkAnyTimeSeriesExists(singleListDataIri)) {
+			throw new JPSRuntimeException(exceptionPrefix + "One or more of the provided data IRI already has a time series attached. " + 
+			"Instantiate them individually with initTimeSeries if needed.");
+		}
+
 		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit);
+			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, timeSeriesTypes, durations, units);
 		}
 		catch (Exception eRdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
 		}
    		
    	    // Step2: Try to initialise time series in relational database
+		List<List<String>> failedDataIris = new ArrayList<>(dataIRIs.size());
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
 				rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
@@ -196,9 +264,11 @@ public class TimeSeriesClient<T> {
    	    			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
    							" , as database related instantiation failed but KG triples were created.");
    	    		}
-   	    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdbCreate);
+				failedDataIris.add(dataIRIs.get(i));
    	    	}
-   		}	
+   		}
+		if (!failedDataIris.isEmpty())
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created for the following data IRIs: " + failedDataIris);
     }
     
     /**
@@ -217,7 +287,7 @@ public class TimeSeriesClient<T> {
 	/**
      * Append time series data to an already instantiated time series 
 	 * (i.e. add data for several time series in a single RDB connection)
-	 * @param ts_list List of TimeSeries objects to add
+	 * @param tsList List of TimeSeries objects to add
 	 * @param conn connection to the RDB
      */
     public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
@@ -300,7 +370,41 @@ public class TimeSeriesClient<T> {
 		// Extract "backup" information (dataIRIs, TimeUnit, DBUrl) for potential later re-instantiation (in case RDB deletion fails)
 		List<String> dataIRIs = rdfClient.getAssociatedData(tsIRI);
 		String timeUnit = rdfClient.getTimeUnit(tsIRI);  // can be null
-		
+
+		//Get time series type
+		String type = rdfClient.getTimeSeriesType(tsIRI);
+		Iri timeSeriesType = null;
+		if(type.equals(TimeSeriesSparql.AVERAGE_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
+		}
+		else if(type.equals(TimeSeriesSparql.INSTANTANEOUS_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
+		}
+		else if(type.equals(TimeSeriesSparql.STEPWISE_CUMULATIVE_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
+		}
+		else if(type.equals(TimeSeriesSparql.CUMULATIVE_TOTAL_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
+		}
+		else if(type.equals(TimeSeriesSparql.TIMESERIES_TYPE_STRING)){
+			timeSeriesType = TimeSeriesSparql.TIMESERIES;
+		}
+		else {
+			throw new JPSRuntimeException(exceptionPrefix + "Invalid TimeSeries Type: "+type);
+		}
+
+		String temporalUnit = null;
+		Double numericDuration = null;
+		String durIRI = null;
+
+		if(timeSeriesType.equals(TimeSeriesSparql.AVERAGE_TIMESERIES)){
+			TimeSeriesSparql.CustomDuration customDuration = rdfClient.getCustomDuration(tsIRI);
+			temporalUnit = customDuration.getUnit();
+			numericDuration = customDuration.getValue();
+			durIRI = rdfClient.getAveragingPeriod(tsIRI);
+
+		}
+
 		// Step1: Delete time series with all associations in knowledge base
 		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 		try {
@@ -309,7 +413,7 @@ public class TimeSeriesClient<T> {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", eRdfDelete);
 		}
 
-		// Obtain RDB URL from connection object, exception thrown when connection is down 
+		// Obtain RDB URL from connection object, exception thrown when connection is down
 		String rdbURL;
 		try {
 			rdbURL = conn.getMetaData().getURL();
@@ -330,7 +434,7 @@ public class TimeSeriesClient<T> {
 			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
 			//		a different exception depending on what the problem was, and how it should be handled
 			try {
-				rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit);
+				rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeSeriesType, durIRI, numericDuration, temporalUnit);
 			} catch (Exception eRdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
 						" , as database related deletion failed but KG triples were deleted.", eRdfCreate);
@@ -466,7 +570,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if a time series instance with the tsIRI exists, false otherwise
 	 */
     public boolean checkTimeSeriesExists(String tsIRI) {
-    	return rdfClient.checkTimeSeriesExists(tsIRI);
+		return rdfClient.checkTimeSeriesExists(tsIRI);
     }
     
 	/**
@@ -485,7 +589,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if tsIRI exists and has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
-    	return rdfClient.checkTimeUnitExists(tsIRI);
+		return rdfClient.checkTimeUnitExists(tsIRI);
     }
     
     /**
@@ -544,14 +648,25 @@ public class TimeSeriesClient<T> {
 	public List<String> getAllTimeSeries() {
 		return rdfClient.getAllTimeSeries();
 	}
+
+	/**
+	 * Returns the custom duration object containing the numerical duration value and temporal unit
+	 * associated with the avergae time series iri.
+	 * Returns null if the average time series does not exist or if the given time series is not of average time series type.
+	 * @param tsIRI Average time series
+	 * @return custom duration with numerical duration and temporal unit
+	 */
+	public TimeSeriesSparql.CustomDuration getCustomDuration(String tsIRI) {
+		return rdfClient.getCustomDuration(tsIRI);
+	}
 	
 	/**
 	 * converts list of time series into required format for visualisation
 	 * please do not modify without consulting the visualisation team at CMCL
-	 * @param ts_list
+	 * @param tsList
 	 * @param id
-	 * @param units_map
-	 * @param table_header_map
+	 * @param unitsMap
+	 * @param tableHeaderMap
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> tsList, List<Integer> id,
@@ -710,10 +825,17 @@ public class TimeSeriesClient<T> {
      * @param dataIRIs list of dataIRIs as Strings
      * @param dataClass list of data classes for each dataIRI
      * @param timeUnit time unit as (full) IRI
+	 * @param type type of TimeSeries data to be instantiated.
+	 *             Allowed values of Type enum: Type.AVERAGE, Type.INSTANTANEOUS, Type.STEPWISECUMULATIVE, Type.CUMULATIVETOTAL
+	 * @param duration Required for Average Time Series. Numeric duration of the averaging period for Average TimeSeries of type Duration. Only positive values are allowed. (optional)
+	 * @param unit Required for Average Time Series. Temporal unit type of the averaging period for Average TimeSeries. (optional)
+	 *             Allowed values of type ChronoUnit:
+	 *             ChronoUnit.SECONDS, ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS, ChronoUnit.MONTHS, ChronoUnit.YEARS
+	 *
      */
-	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Type type, Duration duration, ChronoUnit unit) {
 		try (Connection conn = rdbClient.getConnection()) {
-			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn, type, duration, unit);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -724,10 +846,13 @@ public class TimeSeriesClient<T> {
 	 * @param dataIRIs
 	 * @param dataClass
 	 * @param timeUnit
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -740,10 +865,13 @@ public class TimeSeriesClient<T> {
 	 * @param dataClass
 	 * @param timeUnit
 	 * @param srid
+	 * @param type
+	 * @param durations
+	 * @param units
 	 */
-	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
 		try (Connection conn = rdbClient.getConnection()) {
-			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, type, durations, units);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
@@ -762,10 +890,9 @@ public class TimeSeriesClient<T> {
 	}
 
 	/**
-     * Append time series data to an already instantiated time series 
+     * Append time series data to an already instantiated time series
 	 * (i.e. add data for several time series in a single RDB connection)
-	 * @param ts_list List of TimeSeries objects to add
-	 * @param conn connection to the RDB
+	 * @param tsList List of TimeSeries objects to add
      */
 	public void bulkaddTimeSeriesData(List<TimeSeries<T>> tsList) {
 		// Add time series data to respective database tables
@@ -806,9 +933,8 @@ public class TimeSeriesClient<T> {
 	}
 
 	/**
-     * Delete time series and all associated dataIRI connections from triple store and relational database 
+     * Delete time series and all associated dataIRI connections from triple store and relational database
      * @param tsIRI time series IRI as String
-	 * @param conn connection to the RDB
      */
 	public void deleteTimeSeries(String tsIRI) {
 		try (Connection conn = rdbClient.getConnection()) {
@@ -847,7 +973,7 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	/** 
+	/**
      * Retrieve entire time series data history for given dataIRIs
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
@@ -864,7 +990,7 @@ public class TimeSeriesClient<T> {
 		}
 	}
 
-	/** 
+	/**
      * Retrieve entire time series data history for given dataIRIs
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
@@ -958,6 +1084,90 @@ public class TimeSeriesClient<T> {
 	public boolean checkDataHasTimeSeries(String dataIRI) {
 		try (Connection conn = rdbClient.getConnection()) {
 			return rdbClient.checkDataHasTimeSeries(dataIRI, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
+	 */
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
+		try (Connection conn = rdbClient.getConnection()) {
+			initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * Initialise time series in triple store and relational database
+	 * @param dataIRIs list of dataIRIs as Strings
+	 * @param dataClass list of data classes for each dataIRI
+	 * @param timeUnit time unit as (full) IRI
+	 * @param conn connection to the RDB
+	 */
+	public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit, Connection conn) {
+		initTimeSeries(dataIRIs, dataClass, timeUnit, conn, Type.GENERAL, null, null);
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param conn
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Connection conn) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null, conn);
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * srid is used if the time series values contain geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 * @param conn
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid, Connection conn) {
+		List<Type> types = new ArrayList<>(dataIRIs.size());
+		for (int i = 0; i < dataIRIs.size(); i++) {
+			types.add(Type.GENERAL);
+		}
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn, types, null, null);
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, (Integer) null, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * similar to initTimeSeries, but uploads triples in one connection#
+	 * Provide SRID if time series data contains geometries
+	 * @param dataIRIs
+	 * @param dataClass
+	 * @param timeUnit
+	 * @param srid
+	 */
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
+		try (Connection conn = rdbClient.getConnection()) {
+			bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, srid, conn);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}

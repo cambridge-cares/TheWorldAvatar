@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoBuiltEnv,TBox,http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoBuiltEnv,TBox,https://www.theworldavatar.com/kg/ontobuiltenv/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoBuiltEnv,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoBuiltEnv,TBox,"The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoBuiltEnv,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
@@ -73,12 +73,13 @@ House,Class,PropertyType,IS-A,,,,"A dwelling that serves as living quarters for 
 Bungalow,Class,PropertyType,IS-A,,,,A small house with a single story.,https://www.theworldavatar.com/kg/ontobuiltenv/,Bungalow
 ParkHome,Class,PropertyType,IS-A,,,,Typically offsite manufactured bungalow-style homes that are located within a private estate.,https://www.theworldavatar.com/kg/ontobuiltenv/,ParkHome
 Maisonette,Class,PropertyType,IS-A,,,,A self-contained apartment (usually on two floors) in a larger building and with its own entrance from the outside.,https://www.theworldavatar.com/kg/ontobuiltenv/,Maisonette
-PropertyUsageCategory,Class,,,,,,Description of the (intended) usage and/or function of a property.,https://www.theworldavatar.com/kg/ontobuiltenv/,Property usage category
-hasUsageCategory,Object Property,,,Property,PropertyUsageCategory,,,https://www.theworldavatar.com/kg/ontobuiltenv/,has usage category
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Property,string,exactly 1,A relationship between a property and a textual description of it (e.g. its name or (intended) usage classification).,https://www.theworldavatar.com/kg/ontobuiltenv/,label
+PropertyUsage,Class,,,,,,"Description of the (intended) usage and/or function of a property. One property can have multiple usages. If multiple usages are assigned to one property, they have an usage share assigned to them (for single usage assignments this is assumed 1).",https://www.theworldavatar.com/kg/ontobuiltenv/,Property usage
+hasPropertyUsage,Object Property,,,Property,PropertyUsage,,A relationship between a property and its (intended) usage and/or function.,https://www.theworldavatar.com/kg/ontobuiltenv/,has property usage
+hasUsageShare,Data Property,,,PropertyUsage,float,exactly 1,A relationship between a property usage and its relative share if property has multiple usages associated with it (between 0 and 1).,https://www.theworldavatar.com/kg/ontobuiltenv/,usage share
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PropertyUsage,string,exactly 1,A relationship between a property usage and a textual description of it (e.g. its name or (intended) usage classification).,https://www.theworldavatar.com/kg/ontobuiltenv/,usage label
 hasLatestEPC,Data Property,,,Property,string,exactly 1,A relationship between a property and its latest Energy Performance record (i.e. unique lodgement identifier).,https://www.theworldavatar.com/kg/ontobuiltenv/,latest EPC
-Domestic,Class,PropertyUsageCategory,IS-A,,,,A property that serves as living space for one or more parties.,https://www.theworldavatar.com/kg/ontobuiltenv/,Domestic
-Non-Domestic,Class,PropertyUsageCategory,IS-A,,,,"A property that serves non-living purposes (i.e. commercial, industrial, public propertys).",https://www.theworldavatar.com/kg/ontobuiltenv/,Non-Domestic
+Domestic,Class,PropertyUsage,IS-A,,,,A property that serves as living space for one or more parties.,https://www.theworldavatar.com/kg/ontobuiltenv/,Domestic
+Non-Domestic,Class,PropertyUsage,IS-A,,,,"A property that serves non-living purposes (i.e. commercial, industrial, public propertys).",https://www.theworldavatar.com/kg/ontobuiltenv/,Non-Domestic
 SingleResidential,Class,Domestic,IS-A,,,,A property that serves as living space for one party.,https://www.theworldavatar.com/kg/ontobuiltenv/,Single residential
 MultiResidential,Class,Domestic,IS-A,,,,A property that serves as living space for more than one party.,https://www.theworldavatar.com/kg/ontobuiltenv/,Multi residential
 EmergencyService,Class,Non-Domestic,IS-A,,,,Emergency services are organizations which ensure public safety and health by addressing different emergencies.,https://www.theworldavatar.com/kg/ontobuiltenv/,Emergency service
