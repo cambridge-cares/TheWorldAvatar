@@ -23,24 +23,24 @@ The above commands will create and activate the virtual environment `venv` in th
 &nbsp;
 ## 1) Using the UPRN Agent scripts
 
-> The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent`
+> The following steps refer to commit `68abb0eb4c24438fa46a3acdb2f6a3c3786292a8` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
 
-The scripts within the `uprn_agent` subdirectory help to run the UPRN Agent from `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` in batches of individual buildings. This workaround is necessary to avoid heap space issues when processing ~38,000 buildings in King's Lynn at once. Furthermore, a script is provided to verifying whether all relevant UPRN information has been added "correctly" to the KG.
+The scripts within the `uprn_agent` subdirectory help to run the UPRN Agent from `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents` in batches of individual buildings. This workaround might be necessary to 1) avoid heap space issues when processing the entire Blazegraph namespace at once (i.e. containing ~38,000 buildings for King's Lynn) and/or JSON Exceptions "arbitrarily" thrown by the UPRN Agent. Furthermore, a script is provided to verifying whether all relevant UPRN information has been added "correctly" to the KG.
 
 ### _run_uprn_agent_in_chunks.py_
 Requirements:
 
-1) Build CKG agents following the instructions on branch `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents` (commit `63c0321e10e1ed0cbc0b561de8aac80438bf0d7c`), but please use the correct UPRN agent branch for the actual code: `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` (requires Java 8!)
+1) Build CKG agents following the instructions in [Semantic 3D City Agents README] on branch `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents` (requires Java 8!)
 
 2) Deploy .war file in local Tomcat server
 
-3) Deploy Access Agent via Docker as described here `https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT` (commit `18ded8d1626ad05b62c05eab73f6740d35c57944`) and upload correct endpoint mappings `https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/access-agent-dev-stack/routing.json` 
+3) Deploy Access Agent (locally) via Docker as described in [Access Agent README] (commit `db76f502fd293c69c509371cc9694d19accda0fa` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`) and upload correct endpoint mappings
 
-4) Start local Blazegraph with OntoCityGML building instances (which need to be already enriched with LOD0 footprints using the TSD Agent as described here `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents#footprint-mode`) (commit `63c0321e10e1ed0cbc0b561de8aac80438bf0d7c`)
+4) Ensure Blazegraph namespace with OntoCityGML building instances is available (which need to be already enriched with LOD0 footprints using the TSD Agent as described here `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents#footprint-mode`)
 
-5) Specify `blazegraph` and `agent` endpoints in `run_uprn_agent_in_chunks.py` as well as waiting time between individual agent requests - this might need experimenting, as the HTTP request to agent returns <200> after a successful request; however, the actual upload of triples to Blazegraph might take longer. Hence, too little waiting time between requests will suppress successful instantiation of UPRN triples in Blazegraph. 10s waiting time seem to work well.
+5) Specify `blazegraph` namespace and `agent` endpoins in [run_uprn_agent_in_chunks.py] as well as waiting time between individual agent requests - this might need experimenting, as the HTTP request to agent returns <200> after a successful request; however, the actual upload of triples to Blazegraph might take longer. Hence, too little waiting time between requests will suppress successful instantiation of UPRN triples in Blazegraph. 5-10s waiting time seem to work well.
 
-6) An KG export in N-Quads after successfully running the UPRN agent on the King's Lynn building data is provided in `\Data\KG snapshots\20220901 kings_lynn`
+6) An KG export in N-Quads after successfully running the UPRN agent on the King's Lynn building data is provided in `\Data\KG snapshots\3_ontocitygml_tsd_uprn`
 
 ### _compare_uprns.py_
 
@@ -61,3 +61,8 @@ The scripts within the `kg_utils` subdirectory provide functionality to interact
 > The `import_triples.py` script can be used to upload all triples from a `.nt` file to an online Blazegraph SPARQL endpoint. The specified namespace might need to be created manually beforehand.
 
 > The `compare_rdf_files.py` script can be used to compare two `.nt` files and identify differences, i.e. triples only present in one file but not the other as well as triples which are present in both files.
+
+<!-- Links -->
+[Semantic 3D City Agents README]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[Access Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT
+[run_uprn_agent_in_chunks.py]: \uprn_agent\run_uprn_agent_in_chunks.py

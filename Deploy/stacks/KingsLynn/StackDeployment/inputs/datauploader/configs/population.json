@@ -7,7 +7,7 @@
             "type": "Raster",
             "schema": "public",
             "table": "population",
-            "options": {
+            "gdalTranslateOptions": {
                 "sridIn": "EPSG:27700"
             },
             "skip": false

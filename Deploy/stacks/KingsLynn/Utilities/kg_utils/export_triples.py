@@ -29,12 +29,9 @@ def get_all_triples(endpoint, filepath):
 if __name__ == '__main__':
 
     # Specify SPARQL query endpoint
-    endpoint = "http://localhost:9999/blazegraph/namespace/derivation/sparql"
-    #endpoint = "http://165.232.172.16:3838/blazegraph/namespace/buildings_test/sparql"
+    endpoint = "http://165.232.172.16:3838/blazegraph/namespace/placeholder/sparql"
     # Output file for triples (relative path)
-    #fp = r'..\data\outputs\hmtest_without_sales.nt'
-    #fp = r'..\data\outputs\hmtest_with_sales.nt'
-    fp = r'..\data\outputs\derivation_triples.nt'
+    fp = r'..\data\outputs\placeholder.nt'
 
     # Get all Triples and serialise as turtle
     file_name = os.path.join(Path(__file__).parent, fp)

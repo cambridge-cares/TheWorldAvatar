@@ -13,9 +13,9 @@ import time
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
-# Specify SPARQL endpoint to Blazegraph namespace
+# Specify Blazegraph namespace used to prefix named graph IRIs and (newly) instantiated object IRIs
 blazegraph = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
-# Specify agent endpoint
+# Specify UPRN agent endpoint
 uprn_agent = "http://localhost:8080/agents/uprn"
 
 # Specify waiting time between agent requests (in s)
@@ -38,6 +38,9 @@ def get_number_of_triples(endpoint):
 
 
 def get_all_building_iris(endpoint):
+    """
+        Get all instantiated building IRIs
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
@@ -61,6 +64,10 @@ def get_all_building_iris(endpoint):
 
 
 def get_building_iris_w_old_but_wo_new_uprn(endpoint):
+    """
+        Get all instantiated building IRIs which do have UPRN information
+        from FME workflow but not from UPRN agent
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
@@ -102,6 +109,10 @@ def get_building_iris_w_old_but_wo_new_uprn(endpoint):
 
 
 def get_building_iris_wo_new_uprn(endpoint):
+    """
+        Get all instantiated building IRIs which do not have UPRN information
+        from UPRN agent
+    """
     sparql = SPARQLWrapper(endpoint)
     sparql.setReturnFormat(JSON)
     query_string = f"""
@@ -145,7 +156,7 @@ def call_uprn_agent_in_batches(agent_endpoint, namespace,
     # Construct payload and execute query
     # processed buildings with "get_all_building_iris": 4860
     # processed buildings with "get_building_iris_w_old_but_wo_new_uprn": 7105 (all)
-    i = 12400
+    i = 1
     for bldg in bldg_iris[i-1:]:
         print(f'Processing building {i:>6}/{n:>6}')
         print(f'{bldg}')
@@ -176,9 +187,9 @@ if __name__ == '__main__':
     print(f'\nNumber of triples: {triples1:>8}')
 
     # Get Building and CityObject IRIs
-    #bldgs = get_all_building_iris(blazegraph)
+    bldgs = get_all_building_iris(blazegraph)
     #bldgs = get_building_iris_w_old_but_wo_new_uprn(blazegraph)
-    bldgs = get_building_iris_wo_new_uprn(blazegraph)
+    #bldgs = get_building_iris_wo_new_uprn(blazegraph)
 
     # Call UPRN agent in chunks
     call_uprn_agent_in_batches(uprn_agent, blazegraph, bldgs, t_wait)
