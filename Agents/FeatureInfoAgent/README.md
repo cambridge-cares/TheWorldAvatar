@@ -2,6 +2,7 @@
 
 This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and timeseries data of an individual feature (i.e. a single geographical location) before display within the visualisation's side panel.
 
+
 ## Overview
 
 The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
@@ -34,6 +35,7 @@ Note that the agent's configuration file is read and its contents cached when th
 
 It's also worth noting that in the current version of the FIA, any queries to the knowledge graphs are sent to all discovered namespace endpoints via federation. Whilst this will marginally increase processing times, these queries should be pretty quick, and shouldn't be triggered too often, so the risk of delay is hopefully less than the benefit of not having to specify the endpoint beforehand.
 
+
 ## Restrictions
 
 At the time of writing, the FIA has a few restrictions that all users should be aware of. These are as follows:
@@ -43,9 +45,11 @@ At the time of writing, the FIA has a few restrictions that all users should be 
 - The FIA can only return timeseries data on series that use the Instant class.
 - The FIA cannot handle large, intensive queries (i.e. anything that takes more than a minute or so to return).
 
+
 ## Requirements
 
 For the FIA to function, a number of configuration steps need to take place before deployment. Additionally, incoming HTTP requests to the agent must meet a set format. These are detailed in the subsections below. It is also neccessary for users to have good knowledge of Docker, JSON, and to be familiar with management of the Stack system.
+
 
 ### Configuration
 
@@ -62,6 +66,7 @@ Follow the below configuration steps within the local `queries` directory.
   - Add the aforementioned metadata and timeseries query files.
 
 An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
+
 
 #### Query Restrictions
 
@@ -83,6 +88,7 @@ To properly parse the metadata and timeseries queries, the agent requires the re
 <p align="center">
     <img src="time-query-example.jpg" alt="Example result of a timeseries query" width="75%"/>
 </p>
+
 
 <a id="example"></a>
 ### Example queries
@@ -132,6 +138,7 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
 
 # Build the agent image
 bash ./stack.sh build
+
 
 # Deploy the agent
 bash ./stack.sh start <STACK_NAME>

@@ -61,7 +61,7 @@ jobs:
         id: extractor
         uses: mikefarah/yq@master
         with:
-          cmd: echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)\n" >> $GITHUB_OUTPUT
+          cmd: echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $GITHUB_OUTPUT
         
       # Login to Docker image registry
       - name: Login to Docker registry
