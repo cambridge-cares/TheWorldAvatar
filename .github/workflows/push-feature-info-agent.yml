@@ -52,6 +52,7 @@ jobs:
           USERNAME: ${{github.actor}}
           PASSWORD: ${{github.token}}
         
+        
       # Create & boot a builder using the default docker-container driver.
       - name: Set up Docker build
         uses: docker/setup-buildx-action@v2
@@ -60,8 +61,8 @@ jobs:
       - name: Extract image tag
         id: extractor
         uses: mikefarah/yq@master
-        with:
-          cmd: echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $GITHUB_OUTPUT
+        run: |
+          echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $$GITHUB_ENV
         
       # Login to Docker image registry
       - name: Login to Docker registry
@@ -76,6 +77,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{steps.extractor.outputs.tag}}
+          tags: ${{ env.tag }}
           context: ./Agents/FeatureInfoAgent
       

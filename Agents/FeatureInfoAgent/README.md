@@ -137,6 +137,9 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
 
 
 # Build the agent image
+
+To build the agent's image, simply run the below command.
+
 bash ./stack.sh build
 
 
