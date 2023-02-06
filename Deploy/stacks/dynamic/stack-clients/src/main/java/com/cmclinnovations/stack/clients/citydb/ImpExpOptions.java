@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ImpExpOptions {
 
     public enum Subcommand {
-        IMPORT("import", "--import-mode=delete"),
+        IMPORT("import", "--import-mode=skip"),
         EXPORT("export"),
         VIS_EXPORT("export-vis"),
         DELETE("delete"),
