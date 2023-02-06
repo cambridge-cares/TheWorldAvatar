@@ -38,7 +38,7 @@
     },
     "endpoints": {
         "rest": {
-            "url": "http://localhost:5005/api/forecastingAgent/",
+            "url": "http://localhost:5000/api/forecastingAgent/",
             "externalPath": "/forecastingAgent/"
         }
     }
