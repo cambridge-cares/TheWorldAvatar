@@ -170,7 +170,7 @@ def read_from_web_carbon_index(var: str, year:str):
   if var == 'Gas':
     try:
         df = pd.read_excel('./downloads/'+ file_name, sheet_name = 'Fuels', engine='openpyxl',skiprows=10)
-        # Find the cell that contains the value 'Activity'
+        # Find the cell that contains the value 'Natural gas'
         df_boo = df.apply(lambda x: x.astype(str).str.find('Natural gas'))
         cell_value = df[df_boo != -1].dropna(how='all')
         index = df.iloc[cell_value.index[0]+3, 4]
