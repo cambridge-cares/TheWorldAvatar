@@ -23,13 +23,14 @@ public class CityDB extends DataSubset {
     @Override
     void loadInternal(Dataset parent) {
         Path dataSubsetDir = parent.getDirectory().resolve(this.getSubdirectory());
-        loadData(dataSubsetDir);
-        createLayer(parent.getDatabase());
+        String database = parent.getDatabase();
+        loadData(dataSubsetDir, database);
+        createLayer(database);
     }
 
-    public void loadData(Path dataSubsetDir) {
+    public void loadData(Path dataSubsetDir, String database) {
         CityDBClient.getInstance()
-                .uploadFilesToPostGIS(dataSubsetDir.toString(), importOptions, false);
+                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, false);
 
     }
 

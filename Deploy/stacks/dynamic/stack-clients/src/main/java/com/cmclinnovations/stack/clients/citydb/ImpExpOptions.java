@@ -50,7 +50,7 @@ public class ImpExpOptions {
         this.subcommand = subcommand;
     }
 
-    String[] appendArgs(String... filepaths) {
+    String[] appendArgs(String filepath, String... otherArgs) {
         List<String> allArgs = new ArrayList<>();
         allArgs.add("impexp");
         allArgs.add(subcommand.toString());
@@ -61,8 +61,9 @@ public class ImpExpOptions {
             values.stream().collect(Collectors.toCollection(() -> allArgs));
         });
 
+        allArgs.addAll(List.of(otherArgs));
         allArgs.add("--");
-        allArgs.addAll(List.of(filepaths));
+        allArgs.add(filepath);
         return allArgs.toArray(new String[0]);
     }
 }

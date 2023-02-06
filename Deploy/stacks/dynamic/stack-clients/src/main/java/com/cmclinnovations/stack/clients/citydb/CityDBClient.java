@@ -28,20 +28,23 @@ public class CityDBClient extends ContainerClient {
     private CityDBClient() {
     }
 
-    public void uploadCityGMLStringToPostGIS(String fileContents, ImpExpOptions options, boolean append) {
-        uploadStringToPostGIS("gml", fileContents, options, append);
+    public void uploadCityGMLStringToPostGIS(String fileContents,
+            String database, ImpExpOptions options, boolean append) {
+        uploadStringToPostGIS("gml", fileContents, database, options, append);
     }
 
-    public void uploadCityJSONStringToPostGIS(String fileContents, ImpExpOptions options, boolean append) {
-        uploadStringToPostGIS("kml", fileContents, options, append);
+    public void uploadCityJSONStringToPostGIS(String fileContents,
+            String database, ImpExpOptions options, boolean append) {
+        uploadStringToPostGIS("kml", fileContents, database, options, append);
     }
 
-    private void uploadStringToPostGIS(String fileType, String fileContents, ImpExpOptions options, boolean append) {
+    private void uploadStringToPostGIS(String fileType, String fileContents,
+            String database, ImpExpOptions options, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path filePath = Files.createTempFile(tmpDir.getPath(), "citydb", "." + fileType);
             try {
                 Files.writeString(filePath, fileContents);
-                uploadToPostGIS(filePath.toString(), options, append);
+                uploadToPostGIS(filePath.toString(), database, options, append);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to write string for '" + fileType
                         + "' layer to a file in a temporary directory.", ex);
@@ -51,19 +54,19 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void uploadFilesToPostGIS(String dirPath, ImpExpOptions options, boolean append) {
+    public void uploadFilesToPostGIS(String dirPath, String database, ImpExpOptions options, boolean append) {
         try (Stream<Path> paths = Files.list(Path.of(dirPath))) {
             if (paths.filter(path -> Files.isRegularFile(path)
                     && Stream.of(".gz", ".gzip", ".zip")
                             .anyMatch(extension -> path.toString().endsWith(extension)))
                     .map(path -> {
-                        uploadFileToPostGIS(path.toString(), options, append);
+                        uploadFileToPostGIS(path.toString(), database, options, append);
                         return path;
                     })
                     .count() == 0) {
                 try (TempDir tmpDir = makeLocalTempDir()) {
                     tmpDir.copyFrom(Path.of(dirPath));
-                    uploadToPostGIS(tmpDir.toString(), options, append);
+                    uploadToPostGIS(tmpDir.toString(), database, options, append);
                 }
             }
         } catch (IOException ex) {
@@ -71,28 +74,28 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void uploadFileToPostGIS(String filePath, ImpExpOptions options, boolean append) {
+    public void uploadFileToPostGIS(String filePath, String database, ImpExpOptions options, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path sourcePath = Path.of(filePath);
             tmpDir.copyFrom(sourcePath);
 
             uploadToPostGIS(tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
-                    options, append);
+                    database, options, append);
         }
     }
 
-    public void uploadURLToPostGIS(String url, ImpExpOptions options, boolean append) {
-        uploadToPostGIS(url, options, append);
+    public void uploadURLToPostGIS(String url, String database, ImpExpOptions options, boolean append) {
+        uploadToPostGIS(url, database, options, append);
     }
 
-    private void uploadToPostGIS(String filePath, ImpExpOptions options, boolean append) {
+    private void uploadToPostGIS(String filePath, String database, ImpExpOptions options, boolean append) {
 
         String containerId = getContainerId("citydbimpexp");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        String execId = createComplexCommand(containerId, options.appendArgs(filePath))
+        String execId = createComplexCommand(containerId, options.appendArgs(filePath, "--db-name", database))
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
