@@ -55,13 +55,16 @@ jobs:
         
       # Login to the Docker registry
       - name: Docker login
+        working-directory: ./Agents/FeatureInfoAgent
         run: docker login ghcr.io/cambridge-cares/ -u ${{github.actor}} -p ${{github.token}}
         
       # Build the image using docker compose
       - name: Build the image
+        working-directory: ./Agents/FeatureInfoAgent
         run: docker compose -f docker-compose.yml -f docker-compose.yml -f docker-compose-build.yml -f docker-compose-stack.yml build
         
       # Push the image using docker compose
       - name: Push the image
+        working-directory: ./Agents/FeatureInfoAgent
         run: docker compose -f docker-compose.yml -f docker-compose.yml -f docker-compose-build.yml -f docker-compose-stack.yml push
    

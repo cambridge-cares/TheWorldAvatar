@@ -138,16 +138,16 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
 
 # Build the agent image
 
-To build the agent's image, simply run the below command:
+To build the agent's image, simply run the below command.
 
-bash ./stack.sh build
+`bash ./stack.sh build`
 
 
 # Deploy the agent
 
-To start the agent's image, simply run the below command:
+To start the agent's image, simply run the below command.
 
-bash ./stack.sh start <STACK_NAME>
+`bash ./stack.sh start <STACK_NAME>`
 
 After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
 
