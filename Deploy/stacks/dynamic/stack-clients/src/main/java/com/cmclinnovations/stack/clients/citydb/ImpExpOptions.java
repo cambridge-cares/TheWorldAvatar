@@ -40,6 +40,9 @@ public class ImpExpOptions {
     private Subcommand subcommand;
 
     @JsonProperty
+    private final String sridIn;
+
+    @JsonProperty
     private final Map<String, List<String>> options = new HashMap<>();
 
     public ImpExpOptions() {
@@ -48,6 +51,11 @@ public class ImpExpOptions {
 
     public ImpExpOptions(Subcommand subcommand) {
         this.subcommand = subcommand;
+        sridIn = "";
+    }
+
+    public String getSridIn() {
+        return sridIn;
     }
 
     String[] appendArgs(String filepath, String... otherArgs) {

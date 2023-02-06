@@ -90,6 +90,8 @@ public class CityDBClient extends ContainerClient {
 
     private void uploadToPostGIS(String filePath, String database, ImpExpOptions options, boolean append) {
 
+        updateDatabase(database, options.getSridIn());
+
         String containerId = getContainerId("citydbimpexp");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -102,6 +104,25 @@ public class CityDBClient extends ContainerClient {
                 .exec();
 
         handleErrors(errorStream, execId, logger);
+    }
+
+    private void updateDatabase(String database, String sridIn) {
+
+        String containerId = getContainerId("postgis");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String execId = createComplexCommand(containerId, "sh", "-c",
+                "psql -d ${POSTGRES_DB} -c \"SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'citydb');\" --csv | grep -x \"t\" || /docker-entrypoint-initdb.d/3dcitydb-initdb.sh")
+                .withEnvVar("POSTGRES_DB", database)
+                .withEnvVar("SRID", sridIn)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+
+        handleErrors(errorStream, execId, logger);
+
     }
 
 }
