@@ -64,12 +64,18 @@ def retrieve_default_settings():
         # 2) Stack deployment: retrieve settings from Stack Clients
         logger.info('Deploying agent to stack "{STACK_NAME}".')
 
+        # Initialise boolean flags whether namespace and database are missing
+        namespace_given = True
+        database_given = True
+
         # Retrieve target Blazegraph namespace for data to instantiate
         NAMESPACE = os.getenv('NAMESPACE')
         if NAMESPACE is None:
-            logger.error('"NAMESPACE" name is missing in environment variables.')
-            raise ValueError('"NAMESPACE" name is missing in environment variables.')
+            # Replace missing namespace with empty string to avoid exceptions
+            # when calling stack client functions
+            NAMESPACE = ''
         if NAMESPACE == '':
+            namespace_given = False
             warning_msg = f'No default "NAMESPACE" value has been provided in environment variables. '
             warning_msg += f'Ensure that "NAMESPACE" is provided in HTTP request to the agent to avoid issues.'
             logger.warning(warning_msg)
@@ -77,9 +83,11 @@ def retrieve_default_settings():
         # Retrieve target PostgreSQL/PostGIS database name
         DATABASE = os.getenv('DATABASE')
         if DATABASE is None:
-            logger.error('"DATABASE" name is missing in environment variables.')
-            raise ValueError('"DATABASE" name is missing in environment variables.')
+            # Replace missing database with empty string to avoid exceptions
+            # when calling stack client functions
+            DATABASE = ''
         if DATABASE == '':
+            database_given = False
             warning_msg = f'No default "DATABASE" value has been provided in environment variables. '
             warning_msg += f'Ensure that "DATABASE" is provided in HTTP request to the agent to avoid issues.'
             logger.warning(warning_msg)
@@ -87,9 +95,16 @@ def retrieve_default_settings():
             logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         
         # Retrieve settings from Stack Clients
-        # TODO: Review and check what happens/is returned if empty strings are provided
-        DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT = \
-        retrieve_stack_settings(database=DATABASE,namespace=NAMESPACE)
+        db_url, db_user, db_pw, query_endpoint, update_endpoint = \
+        retrieve_stack_settings(database=DATABASE, namespace=NAMESPACE)
+        # Assign retrieved settings to global variables
+        if namespace_given:
+            QUERY_ENDPOINT = query_endpoint
+            UPDATE_ENDPOINT = update_endpoint
+        if database_given:
+            DB_URL = db_url
+            DB_USER = db_user
+            DB_PASSWORD = db_pw
 
         logger.info(f"DB_URL: {DB_URL}")
         logger.info(f"DB_USER: {DB_USER}")
