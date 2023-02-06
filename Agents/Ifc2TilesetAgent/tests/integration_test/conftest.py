@@ -31,7 +31,6 @@ def initialise_client():
     # Clean up operations at the end of the test
     clear_triplestore(kg_client)
     clear_loggers()
-    
 
 
 # ----------------------------------------------------------------------------------
