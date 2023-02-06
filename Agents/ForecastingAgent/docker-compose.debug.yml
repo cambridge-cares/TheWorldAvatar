@@ -22,7 +22,7 @@ services:
       context: .
       target: debug
     ports:
-      - "5005:5000"
+      - "5001:5000"
       - "5678:5678"
     volumes:
       - logs:/root/.jps

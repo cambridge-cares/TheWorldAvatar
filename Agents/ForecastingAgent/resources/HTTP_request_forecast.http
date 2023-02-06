@@ -1,8 +1,8 @@
 # This file shows a sample http request to acces the forecastingAgent. The keys are descriped in the README.md file.
 
 # Docker deployment:
-POST http://127.0.0.1:5005/api/forecastingAgent/forecast
-# Stack deployment:
+POST http://127.0.0.1:5001/forecast
+# Stack deployment (using stack-manager-input-config.json via stack-manager):
 #POST http://localhost:3840/forecastingAgent/forecast
 Content-Type: application/json
 

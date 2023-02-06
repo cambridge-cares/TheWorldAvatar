@@ -28,7 +28,7 @@ forecastingtasks_bp = Blueprint(
 
 
 # Define route for API to forecast
-@forecastingtasks_bp.route("/api/forecastingAgent/forecast", methods=["POST"])
+@forecastingtasks_bp.route("/forecast", methods=["POST"])
 def api_forecast():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:

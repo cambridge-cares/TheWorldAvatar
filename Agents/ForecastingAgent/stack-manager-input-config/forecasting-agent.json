@@ -11,7 +11,7 @@
                 "Mounts": [
 					{
 						"Type": "bind",
-						"Source": "C:/TheWorldAvatar-git/Agents/ForecastingAgent/forecasting",
+						"Source": "/home/caresuser/TWA-git/Agents/ForecastingAgent/forecasting",
 						"Target": "/app/forecasting"
 					},
 					{
@@ -38,7 +38,7 @@
     },
     "endpoints": {
         "rest": {
-            "url": "http://localhost:5000/api/forecastingAgent/",
+            "url": "http://localhost:5000/",
             "externalPath": "/forecastingAgent/"
         }
     }

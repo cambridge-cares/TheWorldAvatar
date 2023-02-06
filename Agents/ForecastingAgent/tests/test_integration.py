@@ -71,7 +71,7 @@ def test_prophet(query_dict, expected, test_client, initialise_clients):
     cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
     # Send request to flask app
-    response = test_client.post('/api/forecastingAgent/forecast', 
+    response = test_client.post('/forecast', 
                                 json={"headers": {'content_type': 'application/json'},
                                 **query_dict
                                 }).json
@@ -113,7 +113,7 @@ def test_prophet_error(query_dict, expected_error_message, test_client, initiali
     # Create clean slate for test and initialise data as required
     cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast',
+    res = test_client.post('/forecast',
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            })
@@ -135,7 +135,7 @@ def test_tft(query_dict, expected, test_client, initialise_clients):
     # Create clean slate for test and initialise data as required
     cf.initialise_tft(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast', 
+    res = test_client.post('/forecast', 
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            }).json
@@ -174,7 +174,7 @@ def test_tft_error(query_dict, expected_error_message, test_client, initialise_c
     # Create clean slate for test and initialise data as required
     cf.initialise_tft(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast', 
+    res = test_client.post('/forecast', 
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            })
@@ -200,7 +200,7 @@ def test_http_connection_config(query_dict, expected_code, expected_error, test_
     # Create clean slate for test and initialise data as required
     cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast', 
+    res = test_client.post('/forecast', 
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            })

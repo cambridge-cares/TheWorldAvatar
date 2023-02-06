@@ -25,7 +25,7 @@ def default():
     msg += "<BR>"
     msg += "Request to forecast the provided dataIRI (POST request):<BR>"
     msg += "(this IRI will also receive the `hasForecastedValue` relationship to the predicted TimeSeries)<BR>"
-    msg += '&nbsp&nbsp /api/forecastingAgent/forecast'
+    msg += '&nbsp&nbsp /forecast'
     msg += '<BR><BR>'
     msg += 'Checkout the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/">Forecasting Agent README</a> for more information.'
 

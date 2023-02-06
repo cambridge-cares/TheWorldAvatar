@@ -96,7 +96,7 @@ Deploy the dockerised agent by running the following code in the command prompt 
 docker-compose -f <docker-compose file> up
 ```
 
-To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5005` in your browser. 
+To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5001` in your browser. 
 
 ### **Stack Deployment**
 
