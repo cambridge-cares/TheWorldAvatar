@@ -60,6 +60,8 @@ A brief explanation of the initial steps for local deployment has been included 
 ```
 docker compose -f "./docker/docker-compose.test.yml" up -d --build 
 ```
+- Verified that all tests have passed by looking at the container logs 
+-- Container must be built (regardless of failure) to ensure services are running for tests.
 
 **DEBUGGER ENVIRONMENT**
 - Deploy the agent for debugging by running the following code in the CLI at the `<root>` directory. The debugger will be available at port 5678.
