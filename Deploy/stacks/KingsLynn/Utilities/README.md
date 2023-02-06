@@ -40,7 +40,7 @@ Requirements:
 
 5) Specify `blazegraph` namespace and `agent` endpoins in [run_uprn_agent_in_chunks.py] as well as waiting time between individual agent requests - this might need experimenting, as the HTTP request to agent returns <200> after a successful request; however, the actual upload of triples to Blazegraph might take longer. Hence, too little waiting time between requests will suppress successful instantiation of UPRN triples in Blazegraph. 5-10s waiting time seem to work well.
 
-6) An KG export in N-Quads after successfully running the UPRN agent on the King's Lynn building data is provided in `\Data\KG snapshots\20220901 kings_lynn`
+6) An KG export in N-Quads after successfully running the UPRN agent on the King's Lynn building data is provided in `\Data\KG snapshots\3_ontocitygml_tsd_uprn`
 
 ### _compare_uprns.py_
 

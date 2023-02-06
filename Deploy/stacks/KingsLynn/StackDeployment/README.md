@@ -131,7 +131,7 @@ All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker 
 
 Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
 
-The current version at commit `7c378e97d268b02e0d70661257894d5bff8e3655` seems unable to handle large `.gml` files. Hence, the CityImportAgent is primarily used to split the large `.gml` file into multiple smaller `.gml` files to be manually uploaded by the Import GUI as described in the next step.
+The used version at commit `7c378e97d268b02e0d70661257894d5bff8e3655` seems unable to handle large `.gml` files. Hence, the CityImportAgent is primarily used to split the large `.gml` file into multiple smaller `.gml` files to be manually uploaded by the Import GUI as described in the next step.
 
 ### 2) Import GUI
 
@@ -151,16 +151,26 @@ PUT http://localhost:8080/agents/discovery/thematicsurface
 Content-Type: application/json
 
 { "namespace": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/",
-  "mode": "footprint"}
+  "mode": "footprint" }
 ```
 
 - A KG export after successfully amended by the TSD Agent is provided in `../../Data/99 KG snapshots/2_ontocitygml_tsd`
 
 ## 4.2) UPRN Agent (in chunks)
 
-> The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` 
+> The following steps refer to commit `68abb0eb4c24438fa46a3acdb2f6a3c3786292a8` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` 
 
-The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. As the agent creates heap space issues when processing ~38,000 buildings for King's Lynn at once, a workaround is necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
+The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. The agent is designed to either process all buildings within a namespace or a single building provided as `cityObjectIRI`:
+
+```
+PUT http://localhost:8080/agents/uprn
+Content-Type: application/json
+
+{ "namespace":"http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/",
+  // Optional key-value pair to specify a single building to be processed
+  "cityObjectIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/UUID_0004923f-7eed-419e-aa0c-19a9974be52e/" }
+```
+As the agent tends to fail when processing an entire namespace on particular machines (heap space issues or "arbitrary "JSON exceptions have been observed), a workaround is necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
 
 - A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
 
