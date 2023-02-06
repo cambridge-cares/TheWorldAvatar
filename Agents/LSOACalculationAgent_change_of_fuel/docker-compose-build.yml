@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  lsoacalculationagent_change_of_fuel:
+    build:
+      context: .
+      target: prod

@@ -1,0 +1,2 @@
+### LSOA Calculation Agent_Change of fuel
+Details about how to use the agent please see the [home page](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOACalculationAgent_remaining_fuel/agent/flaskapp/templates/index.html) of this agent
