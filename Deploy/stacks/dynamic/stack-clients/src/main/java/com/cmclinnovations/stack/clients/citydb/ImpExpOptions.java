@@ -42,6 +42,10 @@ public class ImpExpOptions {
     @JsonProperty
     private final Map<String, List<String>> options = new HashMap<>();
 
+    public ImpExpOptions() {
+        this(Subcommand.IMPORT);
+    }
+
     public ImpExpOptions(Subcommand subcommand) {
         this.subcommand = subcommand;
     }

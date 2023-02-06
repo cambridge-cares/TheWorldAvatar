@@ -6,13 +6,13 @@ import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
-import com.cmclinnovations.stack.clients.citydb.ImpExpOptions.Subcommand;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CityDB extends DataSubset {
 
     @JsonProperty
-    private ImpExpOptions importOptions = new ImpExpOptions(Subcommand.IMPORT);
+    private ImpExpOptions importOptions = new ImpExpOptions();
+    @JsonProperty
     private CityTilerOptions cityTilerOptions = new CityTilerOptions();
 
     @Override
