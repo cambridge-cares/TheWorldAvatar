@@ -98,6 +98,7 @@ public class CityDBClient extends ContainerClient {
         String execId = createComplexCommand(containerId, options.appendArgs(filePath, "--db-name", database))
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
+                .withEvaluationTimeout(600)
                 .exec();
 
         handleErrors(errorStream, execId, logger);
