@@ -21,13 +21,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - Agents/FeatureInfoAgent/**
   pull_request:
     branches:
       - main
-    paths:
-      - Agents/FeatureInfoAgent/**
 
 
 # Job definitions
@@ -68,8 +64,8 @@ jobs:
         
         
       - name: Test the tag format
-        with:
-          cmd: echo "TAG IS: ${{ steps.extractor.tag }}"
+        run: echo "TAG IS: ${{ steps.extractor.tag }}"
+        
           
       # Login to Docker image registry
       - name: Login to Docker registry
