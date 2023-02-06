@@ -22,12 +22,12 @@ on:
     branches:
       - main
     paths:
-      - Agents/EmailAgent/**
+      - Agents/FeatureInfoAgent/**
   pull_request:
     branches:
       - main
     paths:
-      - Agents/EmailAgent/**
+      - Agents/FeatureInfoAgent/**
 
 
 # Job definitions

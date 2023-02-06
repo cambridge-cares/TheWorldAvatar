@@ -120,6 +120,7 @@ om:kilometrePerHour om:symbol "km/h"^^xsd:string .
 
 All incoming requests should use the `/get` route, containing a `query` parameter that has a JSON body (compatible with the agent framework in the JPS Base Lib), which in turn contains a single `iri` parameter. In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
 
+
 ## Deployment
 
 The Docker image for this agent should be automatically built and pushed by GitHub whenever a pull request to the main branch is approved and merged. However, it is worth noting that the user that triggers this will require an active GitHub token that has permissions to push packages to the GitHub registry.
@@ -128,8 +129,10 @@ Local building can be carried out using the provided docker-compose files as cre
 
 To build the Agent image and deploy it to the spun up stack, please run the following commands from the FeatureInfoAgent directory wherever the stack is running (i.e. potentially on the remote VM):
 
+
 # Build the agent image
 bash ./stack.sh build
+
 # Deploy the agent
 bash ./stack.sh start <STACK_NAME>
 
