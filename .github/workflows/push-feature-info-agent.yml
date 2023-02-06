@@ -64,7 +64,7 @@ jobs:
         
         
       - name: Test the tag format
-        run: echo "TAG IS: ${{ steps.extractor.tag }}"
+        run: echo "TAG IS ${{ steps.extractor.tag }}"
         
           
       # Login to Docker image registry
