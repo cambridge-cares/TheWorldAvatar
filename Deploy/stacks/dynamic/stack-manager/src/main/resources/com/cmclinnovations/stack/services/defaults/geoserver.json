@@ -73,6 +73,10 @@
         "ui": {
             "url": "http://localhost:8080/geoserver/",
             "externalPath": "/geoserver/"
+        },
+        "3dtiles": {
+            "url": "http://localhost:8080/geoserver/www/3dtiles/",
+            "externalPath": "/3dtiles/"
         }
     }
 }
