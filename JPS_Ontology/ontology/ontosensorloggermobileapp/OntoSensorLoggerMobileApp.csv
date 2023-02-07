@@ -8,6 +8,7 @@ http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,h
 http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Unit
 https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit,Class,,,,,,,https://www.theworldavatar.com/kg/ontouom/,SoundPressureLevelUnit
 https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Time Series
+Bearing,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp,Bearing
 http://www.ontology-of-units-of-measure.org/resource/om-2/Speed,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Speed
 http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,MagneticFluxDensity
 http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Acceleration
