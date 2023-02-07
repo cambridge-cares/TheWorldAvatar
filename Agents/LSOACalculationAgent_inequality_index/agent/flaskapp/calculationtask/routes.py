@@ -16,15 +16,13 @@ calculationtask_bp = Blueprint(
 # output files for Digital Twin Visualisation Framework
 # All query parameters are expected as SINGLE JSON object 'query' (to follow
 # the convention introduced in the JPS_BASE_LIB)
-@calculationtask_bp.route('/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost', methods=['GET'])
+@calculationtask_bp.route('/api/lsoacalculationagent_inequality_index/calculation/inequality_index', methods=['GET'])
 def api_calculation_fuel_cost():
     #
     # Check arguments (query parameters)
     #
-    inputs = {'df_electricity':None,
-             'df_gas':None,
-             'year':None,
-             'annual':None
+    inputs = {'df_change_of_cost':None,
+             'df_fuel_poverty':None
     }
 
         # Get received 'query' JSON object which holds all parameters
@@ -35,55 +33,54 @@ def api_calculation_fuel_cost():
         logger.error('No JSON "query" object could be identified.')
         raise InvalidInput('No JSON "query" object could be identified.') from ex
 
-        # Get df_electricity
-    if 'df_electricity' in query.keys():
-        inputs['df_electricity'] = pd.DataFrame.from_dict(query['df_electricity'])
-        logger.info('Electricity consumption data recieved, only cost of electricity will be returned...')
-
-        # Get df_gas
-    if 'df_gas' in query.keys():
-        inputs['df_gas'] = pd.DataFrame.from_dict(query['df_gas'])
-        logger.info('Gas consumption data recieved, only cost of electricity will be returned...')
-    
-        # Make sure at least one consumption is given otherwise you are kidding me
-    if 'df_gas' not in query.keys() and 'df_electricity' not in query.keys():
-        logger.error('Both Gas and Eleciricty consumption data are not provided! No cost to determine...')
-        raise InvalidInput('Both Gas and Eleciricty consumption data are not provided! No cost to determine...')
-
-        # Get year
+        # Get df_change_of_cost
     try:
-        inputs['year'] = str(query['year'])
+        inputs['df_change_of_cost'] = str(query['df_change_of_cost'])
     except Exception as ex:
-        logger.error('Required year could not be determined.')
-        raise InvalidInput('Required year could not be determined.') from ex
+        logger.error('Required df_change_of_cost could not be determined.')
+        raise InvalidInput('Required df_change_of_cost could not be determined.') from ex
 
-    if 'annual' in query.keys():
-        inputs['annual'] = bool(query['annual'])
-        logger.info('Annual data will be returned as per specified in query')
+        # Get df_fuel_poverty
+    try:
+        inputs['df_fuel_poverty'] = str(query['df_fuel_poverty'])
+    except Exception as ex:
+        logger.error('Required df_fuel_poverty could not be determined.')
+        raise InvalidInput('Required df_fuel_poverty could not be determined.') from ex
+
+    if 'min change of cost nth-percentile' in query.keys():
+        min_dc = float(query['min change of cost nth-percentile'])
+        logger.info(f'Specify min change of cost as {min_dc}th-percentile')
     else:
-        inputs['annual'] = False
-        logger.info('No Annual data will be returned as per specified in query')
+        min_dc = 1
+        logger.info('min change of cost as default value: 1th-percentile')
 
+    if 'max change of cost nth-percentile' in query.keys():
+        max_dc = float(query['max change of cost nth-percentile'])
+        logger.info(f'Specify max change of cost as {max_dc}th-percentile')
+    else:
+        max_dc = 99
+        logger.info('max change of cost as default value: 99th-percentile')
+
+    if 'min fuel poverty' in query.keys():
+        min_fp = float(query['min fuel poverty'])
+        logger.info(f'Specify min fuel poverty as {min_fp}')
+    else:
+        min_fp = 0
+        logger.info('min fuel poverty as default value: 0')
+
+    if 'max fuel poverty' in query.keys():
+        max_fp = float(query['max fuel poverty'])
+        logger.info(f'Specify max fuel poverty as {max_fp}')
+    else:
+        max_fp = 0.2
+        logger.info('max fuel poverty as default value: 0.2')
 
     try: 
-        if 'df_gas' in query.keys() and 'df_electricity' in query.keys():
-            df_cost_total, df_cost_elec, df_cost_gas = calculating_fuel_cost(inputs['df_electricity'],inputs['df_gas'], \
-                                                                            inputs['year'], inputs['annual'] )
-            
-            output = {'df_cost_total': df_cost_total.to_dict(orient='list'),
-                    'df_cost_elec': df_cost_elec.to_dict(orient='list'),
-                    'df_cost_gas': df_cost_gas.to_dict(orient='list'),
-                    }
-        if 'df_gas' in query.keys() and 'df_electricity' not in query.keys():
-            df_cost_gas = calculating_single_cost_gas(inputs['df_gas'],inputs['year'], inputs['annual'] )
-            output = {
-                    'df_cost_gas': df_cost_gas.to_dict(orient='list')
-                    }
-        if 'df_gas' not in query.keys() and 'df_electricity' in query.keys():
-            df_cost_elec = calculating_single_cost_elec(inputs['df_electricity'],inputs['year'], inputs['annual'] )
-            output = {
-                    'df_cost_elec': df_cost_elec.to_dict(orient='list')
-                    }
+        df_index = calculate_df(inputs['df_change_of_cost'],inputs['df_fuel_poverty'], \
+                                        min_dc, max_dc, min_fp, max_fp)
+        
+        output = {'df_inequality_index': df_index.to_dict(orient='list')
+                }
 
     except Exception as ex:
         print(ex)
