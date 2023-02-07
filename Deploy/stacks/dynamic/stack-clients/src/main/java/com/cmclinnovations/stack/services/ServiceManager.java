@@ -162,17 +162,13 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = (DockerService) services.getOrDefault(DockerService.TYPE,
-                    initialiseService(stackName, DockerService.TYPE));
-            if (null != dockerService) {
-                dockerService.doPreStartUpConfiguration(newContainerService);
-                dockerService.startContainer(newContainerService);
-                dockerService.doPostStartUpConfiguration(newContainerService);
-            }
+            DockerService dockerService = getOrInitialiseService(stackName, DockerService.TYPE);
+            dockerService.doPreStartUpConfiguration(newContainerService);
+            dockerService.startContainer(newContainerService);
+            dockerService.doPostStartUpConfiguration(newContainerService);
 
             if (!NginxService.TYPE.equals(serviceName)) {
-                ReverseProxyService reverseProxyService = (ReverseProxyService) services.getOrDefault(NginxService.TYPE,
-                        initialiseService(stackName, NginxService.TYPE));
+                ReverseProxyService reverseProxyService = getOrInitialiseService(stackName, NginxService.TYPE);
                 reverseProxyService.addService(newContainerService);
             }
         }
@@ -184,6 +180,13 @@ public final class ServiceManager {
 
     <S extends Service> S getService(String otherServiceName) {
         return (S) services.get(otherServiceName);
+    }
+
+    <S extends Service> S getOrInitialiseService(String stackName, String otherServiceName) {
+        if (!services.containsKey(otherServiceName)) {
+            initialiseService(stackName, otherServiceName);
+        }
+        return getService(otherServiceName);
     }
 
     public void initialiseUserServices(String stackName) {
