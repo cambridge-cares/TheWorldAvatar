@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.4.1', 'rxnoptgoaliteragent', 'pandas==1.3.5', 'pydantic==1.9.0', 'chemistry_and_robots>=1.2.7', 'matplotlib', 'yagmail'],
+    install_requires=['pyderivationagent>=1.4.3', 'rxnoptgoaliteragent>=0.0.2', 'pandas==1.3.5', 'pydantic==1.9.0', 'chemistry_and_robots>=1.3.0', 'matplotlib', 'yagmail'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
