@@ -64,7 +64,7 @@ public class TimeSeriesRDBClient<T> {
 	// Constants
 	private static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 	// Central database table
-	private String centralTableName = "dbTable";
+	private static final String DB_TABLE_NAME = "dbTable";
 	private static final Field<String> DATA_IRI_COLUMN = DSL.field(DSL.name("dataIRI"), String.class);
 	private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name("timeseriesIRI"), String.class);
 	private static final Field<String> TABLENAME_COLUMN = DSL.field(DSL.name("tableName"), String.class);
@@ -510,7 +510,7 @@ public class TimeSeriesRDBClient<T> {
 				context.alterTable(getDSLTable(tsTableName)).drop(columnName).execute();
 
 				// Delete entry in central lookup table
-				context.delete(getDSLTable(centralTableName)).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
+				context.delete(getDSLTable(DB_TABLE_NAME)).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
 
 			} else {
 				// Delete entire RDB table for single column time series (data column + time column)
@@ -562,7 +562,7 @@ public class TimeSeriesRDBClient<T> {
 			context.dropTable(getDSLTable(tsTableName)).execute();
 
 			// Delete entries in central lookup table
-			context.delete(getDSLTable(centralTableName)).where(TS_IRI_COLUMN.equal(tsIRI)).execute();
+			context.delete(getDSLTable(DB_TABLE_NAME)).where(TS_IRI_COLUMN.equal(tsIRI)).execute();
 
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
@@ -591,7 +591,7 @@ public class TimeSeriesRDBClient<T> {
 			if (checkCentralTableExists(conn)) {
 
 				// Retrieve all time series table names from central lookup table
-				Table<?> dbTable = getDSLTable(centralTableName);
+				Table<?> dbTable = getDSLTable(DB_TABLE_NAME);
 				List<String> queryResult = context.selectDistinct(TABLENAME_COLUMN).from(dbTable).fetch(TABLENAME_COLUMN);
 
 				if (!queryResult.isEmpty()) {
@@ -621,11 +621,11 @@ public class TimeSeriesRDBClient<T> {
 	private void initCentralTable(Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
 		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
-		try (CreateTableColumnStep createStep = context.createTableIfNotExists(getDSLTable(centralTableName))) {
+		try (CreateTableColumnStep createStep = context.createTableIfNotExists(getDSLTable(DB_TABLE_NAME))) {
 			createStep.column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN)
 			.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
 		}
-		context.createIndex().on(getDSLTable(centralTableName), Arrays.asList(DATA_IRI_COLUMN,TS_IRI_COLUMN,TABLENAME_COLUMN,COLUMNNAME_COLUMN)).execute();
+		context.createIndex().on(getDSLTable(DB_TABLE_NAME), Arrays.asList(DATA_IRI_COLUMN,TS_IRI_COLUMN,TABLENAME_COLUMN,COLUMNNAME_COLUMN)).execute();
 	}
 
 	private boolean checkCentralTableExists(Connection conn) {
@@ -633,7 +633,7 @@ public class TimeSeriesRDBClient<T> {
 	    Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
 		Field<String> tableNameColumn = DSL.field("table_name", String.class);
 
-		Condition condition = tableNameColumn.eq(centralTableName);
+		Condition condition = tableNameColumn.eq(DB_TABLE_NAME);
 		if (schema != null) {
 			Field<String> schemaColumn = DSL.field("table_schema", String.class);
 			condition.and(schemaColumn.eq(schema));
@@ -652,7 +652,7 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	private void populateCentralTable(String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
-		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(getDSLTable(centralTableName),
+		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(getDSLTable(DB_TABLE_NAME),
 				DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN);
 
 		// Populate columns row by row
@@ -837,7 +837,7 @@ public class TimeSeriesRDBClient<T> {
 	boolean checkDataHasTimeSeries(String dataIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
 		// Look for the entry dataIRI in dbTable
-		Table<?> table = getDSLTable(centralTableName);
+		Table<?> table = getDSLTable(DB_TABLE_NAME);
 		return context.fetchExists(selectFrom(table).where(DATA_IRI_COLUMN.eq(dataIRI)));
 	}
 	boolean checkDataHasTimeSeries(String dataIRI) {
@@ -879,7 +879,7 @@ public class TimeSeriesRDBClient<T> {
 	private String getTimeSeriesIRI(String dataIRI, DSLContext context) {
 		try {
 			// Look for the entry dataIRI in dbTable
-			Table<?> table = getDSLTable(centralTableName);
+			Table<?> table = getDSLTable(DB_TABLE_NAME);
 			List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(TS_IRI_COLUMN);
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
@@ -899,7 +899,7 @@ public class TimeSeriesRDBClient<T> {
 	private String getColumnName(String dataIRI, DSLContext context) {
 		try {
 			// Look for the entry dataIRI in dbTable
-			Table<?> table = getDSLTable(centralTableName);
+			Table<?> table = getDSLTable(DB_TABLE_NAME);
 			List<String> queryResult = context.select(COLUMNNAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(COLUMNNAME_COLUMN);
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
@@ -919,7 +919,7 @@ public class TimeSeriesRDBClient<T> {
 	private String getTimeseriesTableName(String dataIRI, DSLContext context) {
 		try {
 			// Look for the entry dataIRI in dbTable
-			Table<?> table = getDSLTable(centralTableName);
+			Table<?> table = getDSLTable(DB_TABLE_NAME);
 			List<String> queryResult = context.select(TABLENAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(TABLENAME_COLUMN);
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);

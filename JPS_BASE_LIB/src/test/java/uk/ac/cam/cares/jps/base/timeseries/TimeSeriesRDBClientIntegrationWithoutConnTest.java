@@ -183,7 +183,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
     @Test
     public void testInitCentralTable() throws NoSuchFieldException, IllegalAccessException {
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
 
@@ -232,7 +232,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         Assert.assertEquals(2, context.meta().getTables().size());
 
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
@@ -286,7 +286,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         client.addTimeSeriesData(ts_list1);
 
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
@@ -472,7 +472,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         // Test for lower bound out of range (ts2 has time stamps after ts1)
         client.deleteAll();
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         // Verify all tables are deleted
@@ -612,7 +612,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         // Add time series data
         client.addTimeSeriesData(ts_list1);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
@@ -714,7 +714,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         client.addTimeSeriesData(ts_list1);
         client.addTimeSeriesData(ts_list3);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
-        Field tableNameField = client.getClass().getDeclaredField("centralTableName");
+        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
         tableNameField.setAccessible(true);
         String tableName = (String) tableNameField.get(client);
         Table<?> table = context.meta().getTables(tableName).get(0);
