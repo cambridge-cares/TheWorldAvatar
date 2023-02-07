@@ -10,14 +10,14 @@ ONTOCAPE_MATERIAL = 'http://www.theworldavatar.com/ontology/ontocape/material/ma
 ONTOCAPE_SYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#'
 ONTOCAPE_BEHAVIOR = 'http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#'
 
-ONTODOE = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#'
-ONTOREACTION = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#'
+ONTODOE = 'https://www.theworldavatar.com/kg/ontodoe/'
+ONTOREACTION = 'https://www.theworldavatar.com/kg/ontoreaction/'
 ONTOKIN = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#'
 ONTOSPECIES = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#'
-ONTOLAB = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#'
-ONTOVAPOURTEC = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#'
-ONTOHPLC = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#'
-ONTOBPR = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#'
+ONTOLAB = 'https://www.theworldavatar.com/kg/ontolab/'
+ONTOVAPOURTEC = 'https://www.theworldavatar.com/kg/ontovapourtec/'
+ONTOHPLC = 'https://www.theworldavatar.com/kg/ontohplc/'
+ONTOBPR = 'https://www.theworldavatar.com/kg/ontobpr/'
 
 
 ###--- Some IRIs from OM ---###

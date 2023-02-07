@@ -408,22 +408,22 @@ class RxnOptGoalAgent(ABC):
                     # the cycleAllowance will be updated depending on how many ROGI derivation is to be updated
                     # example SPARQL update with sub query:
                     # DELETE {
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     # }
                     # INSERT {
-                    # <http://a_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://another_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance_update.
+                    # <http://a_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance_update.
                     # }
                     # WHERE {
                     # SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
                     # WHERE {
                     #     VALUES ?rogi_derivation { <http://a_rogi_derivation_up_to_date> <http://another_rogi_derivation_up_to_date> }
-                    #     ?result <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#belongsTo> ?rogi_derivation;
-                    #             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#refersTo> ?pi.
-                    #     ?pi ^<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator> ?rxn_exp.
-                    #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    #     ?result <https://www.theworldavatar.com/kg/ontoderivation/belongsTo> ?rogi_derivation;
+                    #             <https://www.theworldavatar.com/kg/ontogoal/refersTo> ?pi.
+                    #     ?pi ^<https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator> ?rxn_exp.
+                    #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     #     BIND (?cycle_allowance -2 AS ?cycle_allowance_update)
                     # }
                     # }

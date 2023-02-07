@@ -4,7 +4,7 @@ import pytest
 
 INPUTCHEMICAL_1 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_1',
@@ -89,7 +89,7 @@ INPUTCHEMICAL_1 = InputChemical(
 )
 INPUTCHEMICAL_2 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_2',
@@ -169,7 +169,7 @@ INPUTCHEMICAL_2 = InputChemical(
 )
 INPUTCHEMICAL_3 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_3',
@@ -252,15 +252,15 @@ INPUTCHEMICAL_3 = InputChemical(
 )
 AUTOSAMPLERSITE_1 = AutoSamplerSite(
     instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Site_1',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#AutoSamplerSite',
+    clz='https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite',
     namespace_for_init=None,
     holds=Vial(
         instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
-        clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#Vial',
+        clz='https://www.theworldavatar.com/kg/ontovapourtec/Vial',
         namespace_for_init=None,
         isFilledWith=ChemicalSolution(
             instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalSolution_1',
-            clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#ChemicalSolution',
+            clz='https://www.theworldavatar.com/kg/ontolab/ChemicalSolution',
             namespace_for_init=None,
             refersToMaterial=OntoCAPE_Material(
                 instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1',

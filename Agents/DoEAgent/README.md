@@ -47,13 +47,13 @@ If you wish to try out a previous version where DoE Agent itself is an HTTP serv
 ```json
 {
    "agent_input":{
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse":[
+      "https://www.theworldavatar.com/kg/ontodoe/Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
+      "https://www.theworldavatar.com/kg/ontodoe/Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
+      "https://www.theworldavatar.com/kg/ontodoe/SystemResponse":[
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1",
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2"
       ],
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
+      "https://www.theworldavatar.com/kg/ontodoe/HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
    }
 }
 ```
@@ -112,8 +112,8 @@ If everything is working as expected, an output on console should be expected si
 
 As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoRxn:ReactionVariation` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
 ```
-PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-PREFIX OntoDoE:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoDerivation:     <https://www.theworldavatar.com/kg/ontoderivation/>
+PREFIX OntoDoE:            <https://www.theworldavatar.com/kg/ontodoe/>
 
 SELECT ?ontorxn_rxn_exp
 WHERE {

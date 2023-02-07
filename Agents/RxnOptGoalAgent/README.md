@@ -59,13 +59,13 @@ Once all the inputs are filled, the user can click the `Submit` button to fire t
     "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
     "deadline": "2022-11-26T10:00:00",
-    "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
-    "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
     "first_goal_num_val": 99,
     "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
     "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
-    "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
-    "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
+    "second_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost",
+    "second_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresLessThan",
     "second_goal_num_val": 0.001,
     "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre",
     "labs": [
@@ -75,7 +75,7 @@ Once all the inputs are filled, the user can click the `Submit` button to fire t
 }
 ```
 
-At the backend, ROG agent creates an instance of [`OntoGoal:GoalSet`](https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#GoalSet) that to be pursued by the ROGI agent. This is done via instantiating derivation instances of ROGI agent, which further creates other derivations to perform the reaction experiment. The ROG agent also adds a periodical job to monitor the created ROGI derivations, which will later determine if to enter the next iteration (i.e. request for new experiment) or end goal iteration depends on if the goal is met or any of the restrictions is no longer satisfied. In a moment, a response similar to one below will appear:
+At the backend, ROG agent creates an instance of [`OntoGoal:GoalSet`](https://www.theworldavatar.com/kg/ontogoal/GoalSet) that to be pursued by the ROGI agent. This is done via instantiating derivation instances of ROGI agent, which further creates other derivations to perform the reaction experiment. The ROG agent also adds a periodical job to monitor the created ROGI derivations, which will later determine if to enter the next iteration (i.e. request for new experiment) or end goal iteration depends on if the goal is met or any of the restrictions is no longer satisfied. In a moment, a response similar to one below will appear:
 
 ```json
 {
@@ -83,7 +83,7 @@ At the backend, ROG agent creates an instance of [`OntoGoal:GoalSet`](https://ra
         "http://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a649298f-4af2-438e-8eec-dedfd235e213",
         "http://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a2753927-0e73-4756-aa92-77aa43e5b5ce"
     ],
-    "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#GoalSet": "http://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146"
+    "https://www.theworldavatar.com/kg/ontogoal/GoalSet": "http://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146"
 }
 ```
 

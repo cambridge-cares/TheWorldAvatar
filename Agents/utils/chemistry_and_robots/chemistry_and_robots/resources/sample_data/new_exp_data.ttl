@@ -1,6 +1,6 @@
 @prefix ns1: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
-@prefix ns2: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
-@prefix ns3: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix ns2: <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix ns3: <https://www.theworldavatar.com/kg/ontodoe/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_02c2c471-cf86-4b6c-b41a-aa8cde84b457> a ns1:Measure ;

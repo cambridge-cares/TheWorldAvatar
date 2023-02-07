@@ -1,6 +1,6 @@
 @prefix ns1: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
-@prefix ns2: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
-@prefix ns3: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix ns2: <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix ns3: <https://www.theworldavatar.com/kg/ontodoe/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 # This ttl file contains three ReactionExperiment instances that are intentionally created with reaction conditions out of the domain of the doe_template.ttl
