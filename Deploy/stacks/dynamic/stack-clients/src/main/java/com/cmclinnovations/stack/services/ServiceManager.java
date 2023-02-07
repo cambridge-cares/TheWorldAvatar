@@ -23,6 +23,9 @@ public final class ServiceManager {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final URL DEFAULT_CONFIG_DIR = ServiceManager.class.getResource("defaults");
+    private static final Path USER_CONFIG_DIR = Path.of("/inputs/config");
+
     @JsonProperty(value = "services")
     private final Map<String, ServiceConfig> serviceConfigs = new HashMap<>();
 
@@ -33,23 +36,28 @@ public final class ServiceManager {
     private final List<String> userServices;
 
     public ServiceManager() {
+        this(true);
+    }
+
+    public ServiceManager(boolean loadUserConfigs) {
         try {
-            URL url = ServiceManager.class.getResource("defaults");
-            defaultServices = loadConfigs(url);
+            defaultServices = loadConfigs(DEFAULT_CONFIG_DIR);
         } catch (IOException | URISyntaxException ex) {
             throw new RuntimeException("Failed to load default service configs.", ex);
         }
-
-        try {
-            Path configDir = Path.of("/inputs/config");
-            if (Files.exists(configDir)) {
-                userServices = loadConfigs(configDir);
-                userServices.removeAll(defaultServices);
-            } else {
-                userServices = Collections.emptyList();
+        if (loadUserConfigs) {
+            try {
+                if (Files.exists(USER_CONFIG_DIR)) {
+                    userServices = loadConfigs(USER_CONFIG_DIR);
+                    userServices.removeAll(defaultServices);
+                } else {
+                    userServices = Collections.emptyList();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                throw new RuntimeException("Failed to load user specified service configs.", ex);
             }
-        } catch (IOException | URISyntaxException ex) {
-            throw new RuntimeException("Failed to load user specified service configs.", ex);
+        } else {
+            userServices = Collections.emptyList();
         }
     }
 
