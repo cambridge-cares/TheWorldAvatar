@@ -19,7 +19,8 @@ from forecasting.errorhandling.exceptions import InvalidInput
 from py4jps import agentlogging
 
 # Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
+logger = agentlogging.get_logger('dev')
+#logger = agentlogging.get_logger('prod')
 
 
 forecastingtasks_bp = Blueprint(
@@ -52,8 +53,15 @@ def api_forecast():
     http_conn_params['db_password'] = query.get('db_password')
     
     # Ensure that required connection parameters are provided, 
-    # either in HTTP request or by default values in docker-compose file 
-    conn_params = validate_connection_parameters(http_conn_params)
+    # either in HTTP request or by default values in docker-compose file
+    try:
+        conn_params = validate_connection_parameters(http_conn_params)
+        logger.info('Retrieved connection parameters for current forecast:')
+        for key, value in conn_params.items():
+            logger.info(f'{key}: {value}')
+    except InvalidInput as ex:
+        logger.error("Missing connection parameters to process forecast.", ex)
+        return jsonify({'status': '500', 'msg': 'Missing connection parameters to process forecast: ' + str(ex)}), 500
 
     #
     ### Retrieve forecast parameters ###
@@ -120,7 +128,7 @@ def api_forecast():
     except Exception as ex:
         logger.error("Unable to forecast.", ex)
         logger.error(traceback.format_exc())
-        return jsonify({'status': '500', 'msg': 'Forecast failed. \n' + str(ex)}), 500
+        return jsonify({'status': '500', 'msg': 'Forecast failed: ' + str(ex)}), 500
 
 
 def validate_connection_parameters(provided_http_parameters):
@@ -142,7 +150,8 @@ def validate_connection_parameters(provided_http_parameters):
             else:
                 # ... otherwise use default value
                 default = eval(r.upper())
-                if default == '':                    
+                if not default:                    
+                    # In case no default has been provided, raise exception
                     logger.error(f'No "{r}" value provided in HTTP request despite missing default value.')
                     raise InvalidInput(f'No "{r}" value provided in HTTP request, despite missing default value.')
                 else:

@@ -13,7 +13,8 @@ from py4jps import agentlogging
 from .stack_configs import retrieve_stack_settings
 
 # Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
+logger = agentlogging.get_logger('dev')
+#logger = agentlogging.get_logger('prod')
 
 
 def retrieve_default_settings():
@@ -43,7 +44,7 @@ def retrieve_default_settings():
         raise ValueError('"STACK_NAME" is missing in environment variables.')
 
     # Retrieve Blazegraph and PostgreSQL/PostGIS settings depending on deployment mode
-    if STACK_NAME == '':
+    if not STACK_NAME:
         # 1) Standalone: retrieve settings from docker compose env vars
         logger.info('No "STACK_NAME" value has been provided in environment variables. '
                     'Deploying agent in "standalone" mode.')
@@ -52,10 +53,8 @@ def retrieve_default_settings():
         vars_names = ['DB_URL', 'DB_USER', 'DB_PASSWORD', 'QUERY_ENDPOINT', 'UPDATE_ENDPOINT']
         for v in vars_names:
             globals()[v] = os.getenv(v)
-            if globals()[v] is None:
-                logger.error(f'"{v}" is missing in environment variables.')
-                raise ValueError(f'"{v}" is missing in environment variables.')
-            if globals()[v] == '':
+            if not globals()[v]:
+                # In case variable key is missing or empty value provided
                 warning_msg = f'No default "{v}" value has been provided in environment variables. '
                 warning_msg += f'Ensure that "{v}" is provided in HTTP request to the agent to avoid issues.'
                 logger.warning(warning_msg)
@@ -70,11 +69,10 @@ def retrieve_default_settings():
 
         # Retrieve target Blazegraph namespace for data to instantiate
         NAMESPACE = os.getenv('NAMESPACE')
-        if NAMESPACE is None:
-            # Replace missing namespace with empty string to avoid exceptions
-            # when calling stack client functions
+        if not NAMESPACE:
+            # In case no NAMESPACE is provided (i.e. missing key or left blank),
+            # set to empty string to avoid exception when calling stack client functions
             NAMESPACE = ''
-        if NAMESPACE == '':
             namespace_given = False
             warning_msg = f'No default "NAMESPACE" value has been provided in environment variables. '
             warning_msg += f'Ensure that "NAMESPACE" is provided in HTTP request to the agent to avoid issues.'
@@ -82,11 +80,10 @@ def retrieve_default_settings():
 
         # Retrieve target PostgreSQL/PostGIS database name
         DATABASE = os.getenv('DATABASE')
-        if DATABASE is None:
-            # Replace missing database with empty string to avoid exceptions
-            # when calling stack client functions
+        if not DATABASE:
+            # In case no DATABASE is provided (i.e. missing key or left blank),
+            # set to empty string to avoid exception when calling stack client functions
             DATABASE = ''
-        if DATABASE == '':
             database_given = False
             warning_msg = f'No default "DATABASE" value has been provided in environment variables. '
             warning_msg += f'Ensure that "DATABASE" is provided in HTTP request to the agent to avoid issues.'
@@ -106,11 +103,13 @@ def retrieve_default_settings():
             DB_USER = db_user
             DB_PASSWORD = db_pw
 
-        logger.info(f"DB_URL: {DB_URL}")
-        logger.info(f"DB_USER: {DB_USER}")
-        logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
-        logger.info(f"QUERY_ENDPOINT: {QUERY_ENDPOINT}")
-        logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
+    # Log retrieved default settings
+    logger.info('Retrieved default connection parameters:')
+    logger.info(f"DB_URL: {DB_URL}")
+    logger.info(f"DB_USER: {DB_USER}")
+    logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
+    logger.info(f"QUERY_ENDPOINT: {QUERY_ENDPOINT}")
+    logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
 
 
 # Run when module is imported
