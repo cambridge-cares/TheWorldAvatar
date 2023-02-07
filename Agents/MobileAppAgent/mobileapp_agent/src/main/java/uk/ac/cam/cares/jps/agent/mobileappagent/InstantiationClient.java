@@ -47,6 +47,13 @@ public class InstantiationClient {
         Quantity quantity = context.createNewModel(Quantity.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity_"+UUID.randomUUID());
 
         Acceleration acceleration = context.createNewModel(Acceleration.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration_"+UUID.randomUUID());
+        MagneticFluxDensity magneticFluxDensity = context.createNewModel(MagneticFluxDensity.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity_"+UUID.randomUUID());
+        Speed speed = context.createNewModel(Speed.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Speed_"+UUID.randomUUID());
+        Bearing bearing = context.createNewModel(Bearing.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Illuminance_"+UUID.randomUUID());
+        Noise noise = context.createNewModel(Noise.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration_"+UUID.randomUUID());
+        SoundPressureLevel soundPressureLevel = context.createNewModel(SoundPressureLevel.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration_"+UUID.randomUUID());
+        Illuminance illuminance = context.createNewModel(Illuminance.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Illuminance"+UUID.randomUUID());
+
 
         
 
@@ -68,6 +75,13 @@ public class InstantiationClient {
         gravity_z.gravitysensor=gravitySensor;
 
         quantity.quantities.add(acceleration);
+        quantity.quantities.add(magneticFluxDensity);
+        quantity.quantities.add(bearing);
+        quantity.quantities.add(speed);
+        quantity.quantities.add(soundPressureLevel);
+        quantity.quantities.add(illuminance);
+
+        noise.soundPressureLevel=soundPressureLevel;
 
 
 
@@ -141,12 +155,12 @@ public class InstantiationClient {
 
     public static class Quantity extends OMModel{
 
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#", innerType = OMModel.class)
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",backward = true, innerType = OMModel.class)
         protected ArrayList<OMModel> quantities;
 
+    }
 
-
-
+    public static class Acceleration extends Quantity{
     }
 
 
@@ -156,12 +170,22 @@ public class InstantiationClient {
 
     public static class Speed extends Quantity{
     }
+    public static class Bearing extends Quantity{
+    }
 
     public static class SoundPressureLevel extends Quantity{
     }
+    public static class Noise extends SoundPressureLevel{
 
-    public static class Bearing extends Quantity{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        protected SoundPressureLevel soundPressureLevel;
     }
+
+
+    public static class Illuminance extends Quantity{
+    }
+
+
 
 
 
