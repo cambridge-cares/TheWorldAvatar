@@ -22,6 +22,8 @@ public final class OntopService extends ContainerService {
 
     public static final String TYPE = "ontop";
 
+    public static final String ONTOP_DB_NAME = "ONTOP_DB_NAME";
+
     private static final String ONTOP_DB_URL = "ONTOP_DB_URL";
     private static final String ONTOP_DB_DRIVER = "ONTOP_DB_DRIVER";
     private static final String ONTOP_DB_DRIVER_URL = "ONTOP_DB_DRIVER_URL";
@@ -32,13 +34,16 @@ public final class OntopService extends ContainerService {
 
     private final OntopEndpointConfig endpointConfig;
 
+    private final String instanceName;
+
     private Path postgresqlDriverScratchPath;
 
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
+        instanceName = config.getName().substring(stackName.length() + 1);
         endpointConfig = new OntopEndpointConfig(
-                EndpointNames.ONTOP, getHostName(), DEFAULT_PORT,
+                instanceName, getHostName(), DEFAULT_PORT,
                 "", null);
     }
 
@@ -69,7 +74,7 @@ public final class OntopService extends ContainerService {
         if (dbConfigRef.isPresent()) {
             PostGISEndpointConfig postgreSQLEndpoint = readEndpointConfig(dbConfigRef.get().getConfigName(),
                     PostGISEndpointConfig.class);
-            String databaseName = getEnvironmentVariable("ONTOP_DB_NAME");
+            String databaseName = getEnvironmentVariable(ONTOP_DB_NAME);
             setEnvironmentVariableIfAbsent(ONTOP_DB_URL, postgreSQLEndpoint.getJdbcURL(databaseName));
             setEnvironmentVariableIfAbsent(ONTOP_DB_DRIVER, postgreSQLEndpoint.getJdbcDriver());
             setEnvironmentVariableIfAbsent(ONTOP_DB_DRIVER_URL, postgreSQLEndpoint.getJdbcDriverURL());
@@ -101,7 +106,7 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        OntopClient.getInstance().updateOBDA(null);
+        OntopClient.getInstance(instanceName).updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
 
