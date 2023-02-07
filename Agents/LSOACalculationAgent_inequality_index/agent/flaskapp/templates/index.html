@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <style>
+    .math {
+      font-size: 1em;
+    }
+  </style>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+<body><b>Functionality: <br></b>
+
+    The <b>lsoacalculationagent_inequality_index</b> offers the following function via the specified API endpoints:<br><br>Request
+    to calculate the inequality index, generate dataframe in JSON format, based on given change of fuel cost and fuel poverty proportion (GET request):<br>(request expects all
+    individual query parameter to be provided in a single nested JSON object with key 'query', see details
+    below):<br>&nbsp;&nbsp; <a href="/api/lsoacalculationagent_inequality_index/calculation/fuel_cost">
+        /api/lsoacalculationagent_inequality_index/calculation/fuel_cost </a> <br><br>
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <body>
+      <p class="math">
+        $$IE =  \left(2 \frac{\Delta C - \min(\Delta C)}{\max(\Delta C) - \min(\Delta C)} - 1\right) \cdot \frac{\varphi_{FP} - \min(\varphi_{FP})}{\max(\varphi_{FP}) - \min(\varphi_{FP})}$$
+      </p>
+      
+      where ∆C is the change in domestic fuel cost per household <b>per year</b>, and φFP is the proportion of fuel poverty. 
+      The purpose of the min and max terms is to normalise the index. In principle they could be true extrema. 
+      However, in the analysis that follows we choose the following default parameterisation: <br><br>
+      <div style="text-align: center;"> min<sub>∆C</sub> = P<sub>1</sub>(∆C), max<sub>∆C</sub> = P<sub>99</sub>(∆C)</div>
+      <div style="text-align: center;"> min<sub>φFP</sub> = 0, max<sub>φFP</sub> = 0.2</div>
+      <br>
+    </body>
+    where Pn(·) denotes the n<sup>th</sup>-percentile of the distribution of the argument across all households. 
+    The reason for this choice is to exclude outliers, such that the inequality index for the majority of households is relatively evenly distributed in the interval [−1,1].
+    parameterisation parameters mentioned above can be amended if provided in the input, see details below
+    <br>  
+    <b>NOTE:</b> builded python function to call this agent can be found on: <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAOutputAgent/agent/datacalculation/datacalculation.py">
+        call_inequality_index_agent </a><br><br>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example query:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'query':{'df_change_of_cost': df_change_of_cost ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'df_fuel_poverty': df_fuel_poverty<br></code>
+                <div style="text-indent: 48px;">
+                    <code>                 <em>(optional)</em>'min change of cost nth-percentile': 1<br></code>
+                <div style="text-indent: 48px;">
+                  <code>                 <em>(optional)</em>'max change of cost nth-percentile': 99<br></code>
+                  <div style="text-indent: 48px;">
+                      <code>                 <em>(optional)</em>'min fuel poverty': 0<br></code>
+                      <div style="text-indent: 48px;">
+                          <code>                 <em>(optional)</em>'max fuel poverty': 0.2<br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>df_change_of_cost:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
+                                    respectively, the annual change of fuel cost data should be placed at the second column (i.e. at position [1]) using the unit of <b>sterling pound</b>
+                                        <div style="text-indent: 25px;"> </div>
+                                </li><br>
+                                <li><b>df_fuel_poverty:</b> two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers,
+                                    respectively, the fuel poverty data should be placed at the second column (i.e. at position [1]).  <b>No unit for this index</b><br>
+                                    <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> column names don't matters as long as the position is correct</div>
+                                    </em></div>
+                                    <div style="text-indent: 25px; font-size: smaller;"><b>Example input df:</b></div>
+                                    <table style="margin-left: 50px; font-size: smaller;">
+                                        <thead>
+                                          <tr style="text-align: right;">
+                                            <th></th>
+                                            <th>LSOA_code</th>
+                                            <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                            <th>Change of fuel cost</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr>
+                                            <td>0&nbsp;&nbsp;</td>
+                                            <td>E01011954</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                          <tr>
+                                            <td>1</td>
+                                            <td>E01011969</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                          <tr>
+                                            <td>2</td>
+                                            <td>E01011970</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                            <td>1000</td>
+                                          </tr>
+                                        </tbody>
+                                    </table>
+                                        <div style="text-indent: 25px;"> </div><br>
+                                                <li><b>min change of cost n<sup>th</sup>-percentile:</b> input a float number(let's say 'n'), 
+                                                  which means 'n<sup>th</sup>'-percentile of the distribution of the argument across all households,
+                                                   will be used as the min change of cost for normalisation (see equation above)<br>
+                                                   If not provided, default value 1 will be used <br><br>
+                                                   <li><b>max change of cost n<sup>th</sup>-percentile:</b> input a float number(let's say 'n'), 
+                                                    which means 'n<sup>th</sup>'-percentile of the distribution of the argument across all households,
+                                                     will be used as the max change of cost for normalisation (see equation above)<br>
+                                                     If not provided, default value 99 will be used <br><br>
+                                                     <li><b>min fuel poverty:</b> input a float number, 
+                                                      which will be used as the min fuel poverty for normalisation (see equation above)<br>
+                                                       If not provided, default value 0 will be used <br><br>
+                                                       <li><b>max fuel poverty:</b> input a float number, 
+                                                        which will be used as the max fuel poverty for normalisation (see equation above)<br>
+                                                         If not provided, default value 0.2 will be used <br><br>
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {'df_inequality_index': df_inequality_index, <br>
+                                                        </code>
+                                                            <div style="text-indent: 120px;"><code>       }</code><br>
+                                                            </div>
+                                                            <div style="text-indent: 25px; font-size: smaller;"><em><b>NOTE:</b> Return dataframe which have first column as LSOA code, 
+                                                              and the inequality index placed at the second column. <b>This index have no unit</b></em><br></div>
+                                                                <div style="text-indent: 25px; font-size: smaller;"><b>Example output df_inequality_index:</b></div>
+                                                                <table style="margin-left: 50px; font-size: smaller;">
+                                                                    <thead>
+                                                                      <tr style="text-align: right;">
+                                                                        <th></th>
+                                                                        <th>LSOA_code</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                        <th>Inequality Index</th>
+                                                                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+                                                                      </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                      <tr>
+                                                                        <td>0&nbsp;&nbsp;</td>
+                                                                        <td>E01011954</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>0.1</td>
+                                                                      </tr>
+                                                                      <tr>
+                                                                        <td>1</td>
+                                                                        <td>E01011969</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>0.1</td>
+                                                                      </tr>
+                                                                      <tr>
+                                                                        <td>2</td>
+                                                                        <td>E01011970</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+                                                                        <td>0.1</td>
+                                                                      </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            <br>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
