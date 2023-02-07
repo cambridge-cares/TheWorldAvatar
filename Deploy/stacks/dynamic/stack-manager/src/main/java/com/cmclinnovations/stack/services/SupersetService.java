@@ -18,7 +18,7 @@ import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.odiszapc.nginxparser.NgxBlock;
-import com.github.odiszapc.nginxparser.NgxConfig;
+import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxParam;
 
 public class SupersetService extends ContainerService {
@@ -27,10 +27,11 @@ public class SupersetService extends ContainerService {
 
     private final SupersetEndpointConfig endpointConfig;
 
-    protected static final List<String> PROBLEMATICURIEXTENTIONS_LIST = Arrays.asList(
-            "static", "superset", "sqllab", "savedqueryview", "druid", "tablemodelview", "databaseasync",
-            "dashboardmodelview", "slicemodelview", "dashboardasync", "druiddatasourcemodelview", "api",
-            "csstemplateasyncmodelview", "chart", "savedqueryviewapi", "r", "datasource", "sliceaddview");
+    protected static final List<String> BODY_SUBSTITUTIONS_PATH_LIST = Arrays.asList(
+            "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
+            "/dashboardasync/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout", "/superset/");
+    protected static final List<String> SUB_FILTER_TYPES = Arrays.asList(
+            "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
 
     private static final String DEFAULT_USERNAME = "admin";
@@ -64,55 +65,43 @@ public class SupersetService extends ContainerService {
         Connection connection = endpoint.getValue();
         URI externalPath = connection.getExternalPath();
 
-        // adding "proxy_redirect off;"
+        locationBlock.addEntry(new NgxComment("# "));
+
+        locationBlock.addEntry(new NgxComment("# Subsitution of redirect \"Location\" headder"));
+        NgxParam proxyRedirectParam = new NgxParam();
+        proxyRedirectParam.addValue("proxy_redirect");
+        proxyRedirectParam.addValue("~^(http://localhost)?/(.*)");
+        proxyRedirectParam.addValue("$scheme://$http_host/analytics/$2");
+        locationBlock.addEntry(proxyRedirectParam);
+
+        locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http incuded by default)"));
+        NgxParam subFilterTypesParam = new NgxParam();
+        subFilterTypesParam.addValue("sub_filter_types");
+        BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subFilterTypesParam::addValue);
+        locationBlock.addEntry(subFilterTypesParam);
+
+        locationBlock
+                .addEntry(new NgxComment("# Sub_filter_once on by default and needed multiple times in same file"));
+        NgxParam subFilterOnceParam = new NgxParam();
+        subFilterOnceParam.addValue("sub_filter_once");
+        subFilterOnceParam.addValue("off");
+        locationBlock.addEntry(subFilterOnceParam);
+
+        locationBlock.addEntry(new NgxComment("# Prevents zipping of response as that would prevent subfiltering"));
         NgxParam proxySetHeaderParam = new NgxParam();
-        proxySetHeaderParam.addValue("proxy_redirect");
-        proxySetHeaderParam.addValue("off");
+        proxySetHeaderParam.addValue("Accept-Encoding");
+        proxySetHeaderParam.addValue("\"\"");
         locationBlock.addEntry(proxySetHeaderParam);
 
-        // adding "proxy_set_header X-Script-Name /dashboard;" or whatever is specified
-        // as the externalPath
-        NgxParam proxyRedirectParam = new NgxParam();
-        proxyRedirectParam.addValue("proxy_set_header");
-        proxyRedirectParam.addValue("X-Script-Name");
-        proxyRedirectParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, false));
-        locationBlock.addEntry(proxyRedirectParam);
-    }
-
-    @Override
-    public void addServerSpecificNginxLocationBlocks(NgxConfig locationConfigOut,
-            Map<String, String> upstreams, Entry<String, Connection> endpoint) {
-        Connection connection = endpoint.getValue();
-        URI externalPath = connection.getExternalPath();
-
-        // adding redirection of problematic uris
-        NgxBlock specialRedirectionBlock = new NgxBlock();
-        specialRedirectionBlock.addValue(LOCATION);
-        specialRedirectionBlock.addValue("~");
-        specialRedirectionBlock.addValue("^/(" + String.join("|", PROBLEMATICURIEXTENTIONS_LIST) + ")");
-
-        NgxParam tryFileParam = new NgxParam();
-        tryFileParam.addValue("try_files");
-        tryFileParam.addValue("$uri");
-        tryFileParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true) + "$uri");
-        tryFileParam.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true) + "$uri?$query_string");
-        tryFileParam.addValue("@rules");
-        specialRedirectionBlock.addEntry(tryFileParam);
-        locationConfigOut.addEntry(specialRedirectionBlock);
-
-        // adding @rules "return 308
-        // http://localhost:3850/dashboard$uri$is_args$query_string;"
-        NgxBlock rulesBlock = new NgxBlock();
-        rulesBlock.addValue(LOCATION);
-        rulesBlock.addValue("@rules");
-
-        NgxParam ruleParam = new NgxParam();
-        ruleParam.addValue("return");
-        ruleParam.addValue("308");
-        ruleParam.addValue("$scheme://$http_host" + FileUtils.fixSlashs(externalPath.getPath(), true, false)
-                + "$uri$is_args$query_string");
-        rulesBlock.addEntry(ruleParam);
-        locationConfigOut.addEntry(rulesBlock);
+        locationBlock.addEntry(new NgxComment("# Substitutaion expressions for response body"));
+        BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subPath -> {
+            NgxParam subFilterParam = new NgxParam();
+            subFilterParam.addValue("sub_filter");
+            subFilterParam.addValue("\"" + subPath + "\"");
+            subFilterParam.addValue("\"" + FileUtils.fixSlashs(externalPath.getPath(), true, false) + subPath + "\"");
+            // TODO: need to add in extra path here if on front of other nginx
+            locationBlock.addEntry(subFilterParam);
+        });
     }
 
     @Override
