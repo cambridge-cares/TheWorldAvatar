@@ -167,7 +167,8 @@ def validate_connection_parameters(provided_http_parameters):
             else:
                 # ... otherwise use default value
                 default = eval(r.upper())
-                if default == '':                    
+                if not default:
+                    # In case no default has been provided, raise exception          
                     logger.error(f'No "{r}" value provided in HTTP request despite missing default value.')
                     raise InvalidInput(f'No "{r}" value provided in HTTP request, despite missing default value.')
                 else:

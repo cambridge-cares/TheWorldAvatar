@@ -32,10 +32,10 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 - UPDATE_ENDPOINT=
 ```
 
-The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
+The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, default Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
 **Please note**: 
-1) All variables defined here (except for `STACK_NAME`) serve as default values. If corresponding keys are provided in the HTTP request to the agent, those will be used instead. Otherwise, these default values will be used. In case neither is provided, the agent will cause an exception.
+1) All variables defined here (except for `STACK_NAME`) serve as default values. To omit any of those default values, either remove the key completely or just leave it blank. If corresponding keys are provided in the HTTP request to the agent, those will be used instead. Otherwise, these default values will be used. In case neither is provided, the agent will cause an exception.
 
 2) A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
 
