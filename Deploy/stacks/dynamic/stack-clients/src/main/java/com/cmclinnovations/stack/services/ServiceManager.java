@@ -119,15 +119,17 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = this.<DockerService>getService("docker");
+            DockerService dockerService = (DockerService) services.getOrDefault(DockerService.TYPE,
+                    initialiseService(stackName, DockerService.TYPE));
             if (null != dockerService) {
                 dockerService.doPreStartUpConfiguration(newContainerService);
                 dockerService.startContainer(newContainerService);
                 dockerService.doPostStartUpConfiguration(newContainerService);
             }
 
-            ReverseProxyService reverseProxyService = this.<ReverseProxyService>getService("nginx");
-            if (null != reverseProxyService) {
+            if (!NginxService.TYPE.equals(serviceName)) {
+                ReverseProxyService reverseProxyService = (ReverseProxyService) services.getOrDefault(NginxService.TYPE,
+                        initialiseService(stackName, NginxService.TYPE));
                 reverseProxyService.addService(newContainerService);
             }
         }
