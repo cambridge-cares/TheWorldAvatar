@@ -67,6 +67,10 @@ public abstract class AbstractService implements Service {
         return checkPropertyNonNull("name", config.getName());
     }
 
+    public final void setName(String name) {
+        config.setName(name);
+    }
+
     public final Map<String, Connection> getEndpoints() {
         return config.getEndpoints();
     }
