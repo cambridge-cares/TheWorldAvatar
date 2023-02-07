@@ -241,7 +241,12 @@
     return rootNode;
   }
 
-  function renderJSON(jsonData, targetElement, rootName = "All Entries:") {
+  function renderJSON(rawData, targetElement, rootName = "All Entries:") {
+    let jsonData = rawData;
+    if(Array.isArray(rawData) && rawData.length === 1) {
+        jsonData = rawData[0];
+    }
+
     var parsedData = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
     var tree = createTree(parsedData, rootName);
     render(tree, targetElement);

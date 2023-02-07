@@ -62,7 +62,7 @@ public class DerivationSparql {
 	private String derivationInstanceBaseURL; // an example of this can be
 												// "https://www.example.com/triplestore/repository/"
 
-	public static String derivednamespace = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+	public static String derivednamespace = "https://www.theworldavatar.com/kg/ontoderivation/";
 
 	// placeholder string used by method getAllDerivations()
 	private static final String PLACEHOLDER = "http://This_is_a_placeholder_string";
@@ -1050,7 +1050,7 @@ public class DerivationSparql {
 	private void addTimeInstance(Map<String, Long> entitiesTimestamp) {
 		// example complete SPARQL update string for two entities
 		// PREFIX derived:
-		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// <https://www.theworldavatar.com/kg/ontoderivation/>
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// INSERT { ?instance time:hasTime ?timeInstant .
 		// ?timeInstant a time:Instant ;
@@ -1474,7 +1474,7 @@ public class DerivationSparql {
 
 		// Complete query string:
 		// PREFIX derived:
-		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// <https://www.theworldavatar.com/kg/ontoderivation/>
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// SELECT DISTINCT ?upstreamDerivation ?upstreamDerivationType
 		// WHERE {
@@ -1549,7 +1549,7 @@ public class DerivationSparql {
 		// complete query string
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// PREFIX derived:
-		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// <https://www.theworldavatar.com/kg/ontoderivation/>
 		// INSERT { ?derivation derived:hasStatus <statusIRI> .
 		// <statusIRI> a derived:Requested . }
 		// WHERE { { SELECT ?derivation
