@@ -1,8 +1,8 @@
 #######################################
 ## The World Avatar related packages ##
 #######################################
-pyderivationagent==1.4.1
-chemistry_and_robots==1.2.7
+pyderivationagent==1.4.3
+chemistry_and_robots==1.3.0
 
 ##########################
 ## Third-party packages ##
